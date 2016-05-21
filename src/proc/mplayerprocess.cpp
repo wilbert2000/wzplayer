@@ -915,7 +915,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// AO driver
 	if (rx_ao.indexIn(line) >= 0) {
 		md->ao = rx_ao.cap(1);
-        logger()->debug("parseLine: audio driver " + md->ao);
+        logger()->debug("parseLine: audio driver '%1'", md->ao);
 		return true;
 	}
 
@@ -1008,7 +1008,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		if (md->titles.contains(title))
 			return parseTitleChapters(md->titles[title].chapters,
 									  rx_dvdnav_chapters.cap(2));
-        logger()->warn("parseLine: unexpected title %1", title);
+        logger()->warn("parseLine: unexpected title '%1'", title);
 		return false;
 	}
 	if (rx_dvdnav_switched_vts.indexIn(line) >= 0) {
@@ -1041,10 +1041,10 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	if (rx_stream_title_and_url.indexIn(line) >= 0) {
 		QString s = rx_stream_title_and_url.cap(1);
 		QString url = rx_stream_title_and_url.cap(2);
-        logger()->debug("parseLine: stream title: '" + s + "'");
-        logger()->debug("parseLine: stream_url: '" + url + "'");
+        logger()->debug("parseLine: stream title: '%1'", s);
+        logger()->debug("parseLine: stream_url: '%1'", url);
 		md->detected_type = TMediaData::TYPE_STREAM;
-		md->title = s;
+        md->title = Helper::cleanTitle(s);
 		md->stream_url = url;
 		emit receivedStreamTitle();
 		return true;
@@ -1052,9 +1052,9 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	if (rx_stream_title.indexIn(line) >= 0) {
 		QString s = rx_stream_title.cap(1);
-        logger()->debug("parseLine: stream title '" + s + "'");
+        logger()->debug("parseLine: stream title '%1'", s);
 		md->detected_type = TMediaData::TYPE_STREAM;
-		md->title = s;
+        md->title = Helper::cleanTitle(s);
 		emit receivedStreamTitle();
 		return true;
 	}
@@ -1062,7 +1062,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// Screenshot
 	if (rx_screenshot.indexIn(line) >= 0) {
 		QString shot = rx_screenshot.cap(1);
-        logger()->debug("parseLine: screenshot: '" + shot + "'");
+        logger()->debug("parseLine: screenshot: '%1'", shot);
 		emit receivedScreenshot(shot);
 		return true;
 	}
