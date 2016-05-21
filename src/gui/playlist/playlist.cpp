@@ -1508,28 +1508,27 @@ bool TPlaylist::maybeSave() {
         return true;
     }
 
-    if (!filename.isEmpty()
-        && QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
+    if (filename.isEmpty()) {
+        logger()->debug("maybeSave: discarding changes to unnamed playlist");
+        return true;
+    }
+
+    if (QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
         logger()->debug("maybeSave: auto save");
         return save();
     }
 
-    QString msg;
-    if (filename.isEmpty()) {
-        msg = tr("The playlist has been modified, do you want to save the"
-                 " changes?");
-    } else {
-        msg = tr("The playlist has been modified, do you want to save the"
-                 " changes to \"%1\"?").arg(filename);
-    }
-
-    int res = QMessageBox::question(this, tr("Playlist modified"), msg,
-        QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+    int res = QMessageBox::question(this, tr("Playlist modified"),
+                                    tr("The playlist has been modified, do you"
+                                       " want to save the changes to \"%1\"?")
+                                    .arg(filename),
+                                    QMessageBox::Yes, QMessageBox::No,
+                                    QMessageBox::Cancel);
 
     switch (res) {
         case QMessageBox::No:
             playlistWidget->clearModified();
-            logger()->info("maybeSave: not saving");
+            logger()->info("maybeSave: no saving");
             return true;
         case QMessageBox::Cancel:
             logger()->info("maybeSave: canceling save");
