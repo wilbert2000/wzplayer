@@ -59,6 +59,7 @@ void TAddFilesThread::run() {
     root->setFlags(ROOT_FLAGS);
 
     addFiles();
+
     if (abortRequested) {
         delete root;
         root = 0;
@@ -71,11 +72,19 @@ void TAddFilesThread::run() {
 
 bool TAddFilesThread::blacklisted(QString filename) {
 
+    // TODO: find the file sys func reporting case
+    Qt::CaseSensitivity cs =
+            #ifdef Q_OS_WIN
+                        Qt::CaseInsensitive;
+            #else
+                        Qt::CaseSensitive;
+            #endif
+
     filename = QDir::toNativeSeparators(filename);
 
     // Note: using case insensitive
     if (filename.isEmpty()
-        || blacklist.contains(filename, Qt::CaseInsensitive)) {
+        || blacklist.contains(filename, cs)) {
         logger()->warn("blacklisted: ignoring '%1', it would create an infinite"
                        " playlist", filename);
         return true;
@@ -219,6 +228,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
             logger()->trace("addItem: found relative path to '%1'",
                             fi.fileName());
         } else if (fi.fileName() == TConfig::WZPLAYLIST) {
+            parent->setModified();
             // Try directory
             fi.setFile(fi.dir().path());
             if (!fi.exists()) {
@@ -334,8 +344,9 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         i = files.indexOf(QRegExp(filename, Qt::CaseInsensitive,
                                   QRegExp::FixedString));
         if (i >= 0) {
-            playlistItem->plChild(i)->setFilename(
-                playlistPath + QDir::separator() + filename);
+            TPlaylistWidgetItem* child = playlistItem->plChild(i);
+            child->setFilename(playlistPath + QDir::separator() + filename);
+            child->setModified();
             continue;
         }
 #endif
@@ -352,9 +363,11 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         if (fi.isDir()) {
             if (recurse) {
                 addDirectory(playlistItem, fi);
+                playlistItem->setModified();
             }
         } else {
             addFile(playlistItem, fi);
+            playlistItem->setModified();
         }
     }
 
