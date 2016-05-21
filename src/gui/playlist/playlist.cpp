@@ -482,6 +482,7 @@ void TPlaylist::addCurrentFile() {
             false,
             iconProvider.iconForFile(core->mdat.filename));
         i->setPlayed(true);
+        i->setModified();
     }
 }
 
