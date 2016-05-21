@@ -297,6 +297,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
 
     emit displayMessage(playlistInfo.filePath(), 0);
 
+    // Collect relative file names
     QStringList files;
     QString path = playlistPath;
     if (!path.endsWith(QDir::separator())) {
@@ -314,7 +315,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
     }
 
     QStringList blacklist = playlistItem->getBlacklist();
-    Qt::CaseSensitivity cs =
+    static Qt::CaseSensitivity cs =
 #ifdef Q_OS_WIN
             Qt::CaseInsensitive;
 #else
@@ -436,7 +437,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
 
     file.close();
 
-    if (wzplaylist) {
+    if (!stopRequested && wzplaylist) {
         addNewItems(playlistItem, fi);
     }
     return true;
