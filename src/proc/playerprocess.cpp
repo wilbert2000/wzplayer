@@ -361,11 +361,9 @@ bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) 
 		md->video_out_height = dh;
 	}
 
-    logger()->debug(QString("parseVO: VO ") + md->vo
-                    + " " + QString::number(md->video_width)
-                    + " x " + QString::number(md->video_height)
-                    + " => " + QString::number(md->video_out_width)
-                    + " x " + QString::number(md->video_out_height));
+    logger()->debug(QString("parseVO: VO '%1' %2 x %3 => %4 x %5")
+                    .arg(md->vo).arg(md->video_width).arg(md->video_height)
+                    .arg(md->video_out_width).arg(md->video_out_height));
 
 	if (notified_player_is_running) {
 		emit receivedVideoOut();
@@ -392,32 +390,32 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 	*/
 	if (name == "ASPECT") {
 		md->video_aspect = value;
-        logger()->debug("parseAspectRatio: video aspect ratio set to "
-                      + md->video_aspect);
+        logger()->debug("parseVideoProperty: video aspect ratio set to '%1'",
+                        md->video_aspect);
 		return true;
 	}
 	if (name == "FPS") {
 		md->video_fps = value.toDouble();
-        debug << "parseVideoProperty: video_fps set to" << md->video_fps
-              << debug;
+        logger()->debug("parseVideoProperty: video_fps set to %1",
+                        QString::number(md->video_fps));
 		return true;
 	}
 	if (name == "BITRATE") {
 		md->video_bitrate = value.toInt();
         logger()->debug("parseVideoProperty: video_bitrate set to %1",
-			   md->video_bitrate);
+                        md->video_bitrate);
 		return true;
 	}
 	if (name == "FORMAT") {
 		md->video_format = value;
-        logger()->debug("parseVideoProperty: video_format set to "
-                      + md->video_format);
+        logger()->debug("parseVideoProperty: video_format set to '%1'",
+                        md->video_format);
 		return true;
 	}
 	if (name == "CODEC") {
 		md->video_codec = value;
-        logger()->debug("parseVideoProperty: video_codec set to "
-                      + md->video_codec);
+        logger()->debug("parseVideoProperty: video_codec set to '%1'",
+                        md->video_codec);
 		return true;
 	}
 
@@ -434,8 +432,8 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 	}
 	if (name == "FORMAT") {
 		md->audio_format = value;
-        logger()->debug("parseAudioProperty: audio_format set to "
-                      + md->audio_format);
+        logger()->debug("parseAudioProperty: audio_format set to '%1'",
+                        md->audio_format);
 		return true;
 	}
 	if (name == "RATE") {
@@ -452,8 +450,8 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 	}
 	if (name == "CODEC") {
 		md->audio_codec = value;
-        logger()->debug("parseAudioProperty: audio_codec set to "
-                        + md->audio_codec);
+        logger()->debug("parseAudioProperty: audio_codec set to '%1'",
+                        md->audio_codec);
 		return true;
 	}
 
@@ -494,7 +492,7 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 			md->start_sec_set = true;
 			md->start_sec = value.toDouble();
             logger()->debug("parseProperty: start time set to %1",
-				   md->start_sec);
+                            QString::number(md->start_sec));
 		}
 		return true;
 	}
@@ -504,7 +502,7 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	}
 	if (name == "DEMUXER") {
 		md->demuxer = value;
-        logger()->debug("parseProperty: demuxer set to " + md->demuxer);
+        logger()->debug("parseProperty: demuxer set to '%1'", md->demuxer);
 		// TODO: mpeg TS detection
 		if (md->demuxer == "mpegts") {
 			md->mpegts = true;
@@ -524,8 +522,7 @@ bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
 	name = name.trimmed();
 	value = value.trimmed();
 	md->meta_data[name] = value;
-    logger()->debug("parseMetaDataProperty: '" + name + "' set to '"
-                    + value + "'");
+    logger()->debug("parseMetaDataProperty: '%1' set to '%2'", name, value);
 	return true;
 }
 
