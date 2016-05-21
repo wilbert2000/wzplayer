@@ -571,7 +571,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// AO
 	if (rx_ao.indexIn(line) >= 0) {
 		md->ao = rx_ao.cap(1);
-        logger()->debug("parseLine: audio driver " + md->ao);
+        logger()->debug("parseLine: audio driver '%1'", md->ao);
 		return true;
 	}
 
@@ -579,7 +579,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Fall back to generic VIDEO_CODEC if match fails.
 	if (rx_video_codec.indexIn(line) >= 0) {
 		md->video_codec = rx_video_codec.cap(2);
-        logger()->debug("parseLine: video_codec set to " + md->video_codec);
+        logger()->debug("parseLine: video_codec set to '%1'", md->video_codec);
 		return true;
 	}
 
@@ -593,7 +593,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	// Fall back to generic AUDIO_CODEC if match fails.
 	if (rx_audio_codec.indexIn(line) >= 0) {
 		md->audio_codec = rx_audio_codec.cap(2);
-        logger()->debug("parseLine: audio_codec set to " + md->audio_codec);
+        logger()->debug("parseLine: audio_codec set to '%1'", md->audio_codec);
 		return true;
 	}
 
