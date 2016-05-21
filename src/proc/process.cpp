@@ -23,95 +23,106 @@
 
 namespace Proc {
 
+TProcess::TProcess(QObject* parent) :
+    QProcess(parent),
+    debug(logger()),
+    line_count(0) {
 
-TProcess::TProcess(QObject* parent)
-    : QProcess(parent),
-      debug(logger()) {
+    setProcessChannelMode(QProcess::MergedChannels);
 
-	setProcessChannelMode(QProcess::MergedChannels);
-	
-	connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(readStdOut()));
-	connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), 
-			this, SLOT(procFinished()));
+    connect(this, SIGNAL(readyReadStandardOutput()),
+            this, SLOT(readStdOut()));
+    connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
+            this, SLOT(procFinished()));
+
+    line_time.start();
+}
+
+TProcess::~TProcess() {
 }
 
 void TProcess::clearArguments() {
-	program = "";
-	arg.clear();
+
+    program = "";
+    arg.clear();
 }
 
 bool TProcess::isRunning() const {
-	return state() == QProcess::Running;
+    return state() == QProcess::Running;
 }
 
 void TProcess::addArgument(const QString& a) {
-	if (program.isEmpty()) {
-		program = a;
-	} else {
-		arg.append(a);
-	}
+
+    if (program.isEmpty()) {
+        program = a;
+    } else {
+        arg.append(a);
+    }
 }
 
 QStringList TProcess::arguments() {
-	QStringList l = arg;
-	l.prepend(program);
-	return l;
+
+    QStringList l = arg;
+    l.prepend(program);
+    return l;
 }
 
 void TProcess::start() {
-
-	remaining_output.clear();
     debug << "start: program:" << program << "args:" << arg;
     debug << debug;
-	QProcess::start(program, arg);
+
+    remaining_output.clear();
+
+    QProcess::start(program, arg, QIODevice::ReadWrite | QIODevice::Text);
 }
 
-void TProcess::readStdOut() {
-	genericRead(readAllStandardOutput());
+void TProcess::handleLine(QString& line) {
+
+    if (!parseLine(line)) {
+        logger()->debug("handleLine: ignored");
+    }
+
+    line_count++;
+    if (line_count % 10000 == 0) {
+        logger()->debug("handleLine: parsed %1 lines at %2 lines per second",
+                        QString::number(line_count),
+                        QString::number((line_count * 1000.0)
+                                        / line_time.elapsed()));
+    }
+}
+
+QString TProcess::bytesToString(const char* bytes, int size) {
+// memo: ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
+
+#ifdef Q_OS_WIN
+    return QString::fromUtf8(bytes, size);
+#else
+    return QString::fromLocal8Bit(bytes, size);
+#endif
 }
 
 void TProcess::genericRead(QByteArray buffer) {
-	QByteArray ba = remaining_output + buffer;
-	int start = 0;
-	int from_pos = 0;
-	int pos = canReadLine(ba, from_pos);
 
-	while (pos > -1) {
-		QByteArray line = ba.mid(start, pos-start);
-		from_pos = pos + 1;
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-		if ((from_pos < ba.size()) && (ba.at(from_pos)=='\n')) from_pos++;
-#endif
-		start = from_pos;
+    remaining_output += buffer;
+    int start = 0;
+    int pos = remaining_output.indexOf('\n');
 
-		emit lineAvailable(line);
+    while (pos >= 0) {
+        // Skip empty lines
+        if (pos > start) {
+            QString line = bytesToString(remaining_output.constData() + start,
+                                         pos - start);
+            handleLine(line);
+        }
+        start = pos + 1;
+        pos = remaining_output.indexOf('\n', start);
+    }
 
-		pos = canReadLine(ba, from_pos);
-	}
-
-	remaining_output = ba.mid(from_pos);
+    remaining_output = remaining_output.mid(start);
 }
 
-int TProcess::canReadLine(const QByteArray & ba, int from) {
-	int pos1 = ba.indexOf('\n', from);
-	int pos2 = ba.indexOf('\r', from);
-
-	if ((pos1 == -1) && (pos2 == -1)) return -1;
-
-	int pos = pos1;
-	if ((pos1 != -1) && (pos2 != -1)) {
-		/*
-		if (pos2 == (pos1+1)) pos = pos2; // \r\n
-		else
-		*/
-		if (pos1 < pos2) pos = pos1; else pos = pos2;
-	} else {
-		if (pos1 == -1) pos = pos2;
-		else
-		if (pos2 == -1) pos = pos1;
-	}
-
-	return pos;
+void TProcess::readStdOut() {
+    genericRead(readAllStandardOutput());
 }
 
 /*!
@@ -127,24 +138,23 @@ void TProcess::procFinished() {
 
 QStringList TProcess::splitArguments(const QString& args) {
 
-	QStringList l;
+    QStringList l;
 
-	bool opened_quote = false;
-	int init_pos = 0;
-	for (int n = 0; n < args.length(); n++) {
-		if ((args[n] == QChar(' ')) && (!opened_quote)) {
-			l.append(args.mid(init_pos, n - init_pos));
-			init_pos = n+1;
-		}
-		else
-		if (args[n] == QChar('\"')) opened_quote = !opened_quote;
+    bool opened_quote = false;
+    int init_pos = 0;
+    for (int n = 0; n < args.length(); n++) {
+        if (args[n] == QChar(' ') && !opened_quote) {
+            l.append(args.mid(init_pos, n - init_pos));
+            init_pos = n + 1;
+        } else if (args[n] == QChar('\"'))
+            opened_quote = !opened_quote;
 
-		if (n == args.length()-1) {
-			l.append(args.mid(init_pos, (n - init_pos)+1));
-		}
-	}
+        if (n == args.length() - 1) {
+            l.append(args.mid(init_pos, n - init_pos + 1));
+        }
+    }
 
-	return l;
+    return l;
 }
 
 } // namespace Proc

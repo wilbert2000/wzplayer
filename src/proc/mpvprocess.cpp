@@ -29,6 +29,7 @@
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "inforeader.h"
+#include "mediadata.h"
 
 
 namespace Proc {

@@ -16,17 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _PROC_PLAYERPROCESS_H
-#define _PROC_PLAYERPROCESS_H
+#ifndef PROC_PLAYERPROCESS_H
+#define PROC_PLAYERPROCESS_H
 
 #include <QObject>
 #include <QVariant>
-#include <QRegExp>
 
 #include "wzdebug.h"
-#include "mediadata.h"
 #include "proc/process.h"
+#include "settings/assstyles.h"
+#include "subtracks.h"
 
+
+class QRegExp;
+class TMediaData;
 
 namespace Proc {
 
@@ -42,7 +45,9 @@ public:
     explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
-    bool isFullyStarted() const { return isRunning() && notified_player_is_running; }
+    bool isFullyStarted() const {
+        return isRunning() && notified_player_is_running;
+    }
 
 	virtual bool startPlayer();
 
@@ -52,12 +57,16 @@ public:
     virtual void setMedia(const QString& media) = 0;
 	virtual void setFixedOptions() = 0;
 	virtual void disableInput() = 0;
-	virtual void setOption(const QString& option_name, const QVariant& value = QVariant()) = 0;
+    virtual void setOption(const QString& option_name,
+                           const QVariant& value = QVariant()) = 0;
 	virtual void addUserOption(const QString& option) = 0;
-	virtual void addVF(const QString& filter_name, const QVariant& value = QVariant()) = 0;
-	virtual void addAF(const QString& filter_name, const QVariant& value = QVariant()) = 0;
+    virtual void addVF(const QString& filter_name,
+                       const QVariant& value = QVariant()) = 0;
+    virtual void addAF(const QString& filter_name,
+                       const QVariant& value = QVariant()) = 0;
 	virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;
-	virtual void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null) = 0;
+    virtual void setSubStyles(const Settings::TAssStyles& styles,
+                              const QString& assStylesFile = QString::null) = 0;
 
 	// Slave commands
 	void quit(int exit_code);
@@ -70,8 +79,10 @@ public:
 	virtual void setSecondarySubtitle(SubData::Type type, int ID) = 0;
 	virtual void disableSecondarySubtitles() = 0;
 	virtual void setSubtitlesVisibility(bool b) = 0;
-	virtual void seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) = 0;
-	virtual void seek(double secs, int mode, bool precise, bool currently_paused);
+    virtual void seekPlayerTime(double secs, int mode, bool precise,
+                                bool currently_paused) = 0;
+    virtual void seek(double secs, int mode, bool precise,
+                      bool currently_paused);
 	virtual void mute(bool b) = 0;
 	virtual void setPause(bool b) = 0;
 	virtual void frameStep() = 0;
@@ -102,17 +113,21 @@ public:
 	virtual void setAudioDelay(double delay) = 0;
 	virtual void setSubDelay(double delay) = 0;
 	virtual void setLoop(int v) = 0;
-	virtual void takeScreenshot(ScreenshotType t, bool include_subtitles = false) = 0;
+    virtual void takeScreenshot(ScreenshotType t,
+                                bool include_subtitles = false) = 0;
 	virtual void switchCapturing() = 0;
 	virtual void setTitle(int ID) = 0;
-	virtual void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant()) = 0;
-	virtual void changeStereo3DFilter(bool enable, const QString& in, const QString& out) = 0;
+    virtual void changeVF(const QString& filter, bool enable,
+                          const QVariant& option = QVariant()) = 0;
+    virtual void changeStereo3DFilter(bool enable, const QString& in,
+                                      const QString& out) = 0;
 
 	virtual void discSetMousePos(int x, int y) = 0;
 	virtual void discButtonPressed(const QString& button_name) = 0;
 
 	virtual void setAspect(double aspect) = 0;
-	virtual void setZoomAndPan(double zoom, double pan_x, double pan_y, int osd_levl) = 0;
+    virtual void setZoomAndPan(double zoom, double pan_x, double pan_y,
+                               int osd_levl) = 0;
 
 #if PROGRAM_SWITCH
 	virtual void setTSProgram(int ID) = 0;
@@ -170,9 +185,6 @@ signals:
 	void receivedChapters();
 	void receivedAngles();
 
-public slots:
-	void parseBytes(QByteArray ba);
-
 protected:
     TMediaData* md;
 
@@ -198,7 +210,8 @@ protected:
 
 	virtual void playingStarted();
 	virtual bool parseLine(QString& line);
-	virtual bool parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line);
+    virtual bool parseStatusLine(double time_sec, double duration, QRegExp& rx,
+                                 QString& line);
 	virtual bool parseAudioProperty(const QString& name, const QString& value);
 	virtual bool parseVideoProperty(const QString& name, const QString& value);
 	virtual bool parseMetaDataProperty(QString name, QString value);
@@ -218,4 +231,4 @@ private:
 
 } // namespace Proc
 
-#endif // _PROC_PLAYERPROCESS_H
+#endif // PROC_PLAYERPROCESS_H

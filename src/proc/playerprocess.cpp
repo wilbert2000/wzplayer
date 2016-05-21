@@ -50,11 +50,8 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
 	//qRegisterMetaType<Maps::TTracks>("Tracks");
 	//qRegisterMetaType<Chapters>("Chapters");
 
-	connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
+    connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(onFinished(int,QProcess::ExitStatus)));
-
-	connect(this, SIGNAL(lineAvailable(QByteArray)),
-			this, SLOT(parseBytes(QByteArray)));
 }
 
 void TPlayerProcess::writeToStdin(const QString& text, bool log) {
@@ -130,38 +127,6 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 
     emit processFinished(exitCode == 0 && exitStatus == QProcess::NormalExit,
                          exitCode, received_end_of_file);
-}
-
-// Convert line of bytes to QString.
-void TPlayerProcess::parseBytes(QByteArray ba) {
-
-    static QTime line_time;
-    if (line_count == 0) {
-        line_time.start();
-    }
-
-#if COLOR_OUTPUT_SUPPORT
-    QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
-#else
-#ifdef Q_OS_WIN
-    QString line = QString::fromUtf8(ba);
-#else
-    QString line = QString::fromLocal8Bit(ba);
-#endif
-#endif
-
-	// Parse QString
-    if (!parseLine(line)) {
-        logger()->debug("parseBytes: ignored");
-    }
-
-    line_count++;
-    if (line_count % 10000 == 0) {
-        logger()->debug("parseBytes: parsed %1 lines at %2 lines per second",
-                        QString::number(line_count),
-                        QString::number((line_count * 1000.0)
-                                        / line_time.elapsed()));
-    }
 }
 
 void TPlayerProcess::playingStarted() {
@@ -310,19 +275,12 @@ bool TPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
 	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
-	// TODO: remove trim. Be carefull some regexp depend on it...
-	// Trim line
-	line = line.trimmed();
-	if (line.isEmpty())
-		return true;
-
-	// Output line to console++
     logger()->debug("parseLine: '%1'", line);
 
-	if (quit_send) {
+    if (quit_send) {
         logger()->debug("parseLine: ignored, waiting for quit to arrive");
-		return true;
-	}
+        return true;
+    }
 
 	// VO
 	if (rx_vo.indexIn(line) >= 0) {

@@ -20,6 +20,7 @@
 #define PROC_PROCESS_H
 
 #include <QProcess>
+#include <QTime>
 #include "wzdebug.h"
 
 //! TProcess is a specialized QProcess designed to properly work with mplayer.
@@ -36,8 +37,8 @@ class TProcess : public QProcess {
     DECLARE_QCLASS_LOGGER
 
 public:
-	TProcess (QObject* parent = 0);
-	virtual ~TProcess() {}
+    TProcess(QObject* parent);
+    virtual ~TProcess();
 
 	virtual void setExecutable(const QString& p) { program = p; }
 	QString executable() { return program; }
@@ -52,26 +53,26 @@ public:
 
 	static QStringList splitArguments(const QString& args);
 
-signals:
-	//! Emitted when there's a line available
-	void lineAvailable(QByteArray ba);
-
 protected slots:
 	void readStdOut();			//!< Called for reading from standard output
 	void procFinished();		//!< Called when the process has finished
 
 protected:
-	//! Return true if it's possible to read an entire line.
-	/*! @param from specifies the position to begin. */
-	int canReadLine(const QByteArray & ba, int from = 0);
 	//! Called from readStdOut() and readTmpFile() to do all the work
-	void genericRead(QByteArray buffer);
+    void genericRead(QByteArray buffer);
+    virtual bool parseLine(QString& line) = 0;
 
 protected:
 	QString program;
 	QStringList arg;
-
 	QByteArray remaining_output;
+
+private:
+    int line_count;
+    QTime line_time;
+
+    QString bytesToString(const char* bytes, int size);
+    void handleLine(QString& line);
 };
 
 } // namespace Proc
