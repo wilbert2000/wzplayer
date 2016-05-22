@@ -96,8 +96,9 @@ void TEditableToolbar::addMenu(QAction* action) {
     addWidget(button);
 }
 
-void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const TActionList& all_actions) {
-    logger()->debug("setActionsFromStringList: loading toolbar " + objectName());
+void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
+                                                const TActionList& all_actions) {
+    logger()->debug("setActionsFromStringList: updating '%1'", objectName());
 
     clear();
     space_eater = 0;
@@ -120,14 +121,16 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts, const T
                 if (action_name == "separator") {
                     addAction(TToolbarEditor::newSeparator(this));
                 } else {
-                    QAction* action = TToolbarEditor::findAction(action_name, all_actions);
+                    QAction* action = TToolbarEditor::findAction(action_name,
+                                                                 all_actions);
                     if (action) {
                         if (action_name.endsWith("_menu")) {
                             addMenu(action);
                         } else {
                             addAction(action);
                             if (action_name == "timeslider_action") {
-                                space_eater = qobject_cast<TTimeSlider*>(widgetForAction(action));
+                                space_eater = qobject_cast<TTimeSlider*>(
+                                                  widgetForAction(action));
                             }
                         }
                     } else {

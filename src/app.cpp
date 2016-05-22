@@ -262,7 +262,7 @@ TApp::ExitCode TApp::processArgs() {
         QStringList regExts;
         RegAssoc.GetRegisteredExtensions(extensions.multimedia(), regExts);
 		RegAssoc.RestoreFileAssociations(regExts);
-		printf("TApp::processArgs: restored associations\n");
+        logger()->info("processArgs: restored associations");
 #endif
 		return NoError;
 	}
@@ -277,13 +277,15 @@ TApp::ExitCode TApp::processArgs() {
 			// Delete from list
 			args.removeAt(pos);
 			args.removeAt(pos - 1);
+            logger()->info("processArgs: configuration path set to '%1'",
+                         initial_config_path);
 		} else {
-			printf("TApp::processArgs: error: expected path after --config-path\r\n");
+            logger()->error("processArgs: expected path after --config-path");
 			return TApp::ErrorArgument;
 		}
 	}
 
-    // Load preferences, style and translation
+    // Load preferences, set style and load translation
 	loadConfig();
 
 	if (processArgName("delete-config", args)) {
@@ -308,7 +310,7 @@ TApp::ExitCode TApp::processArgs() {
 				n++;
                 send_action = args[n];
 			} else {
-				printf("Error: expected parameter for --send-action\r\n");
+                logger()->error("expected parameter for --send-action");
 				return ErrorArgument;
 			}
 		} else if (name == "actions") {
@@ -316,7 +318,7 @@ TApp::ExitCode TApp::processArgs() {
 				n++;
                 actions = args[n];
 			} else {
-				printf("Error: expected parameter for --actions\r\n");
+                logger()->error("expected parameter for --actions");
 				return ErrorArgument;
 			}
 		} else if (name == "sub") {
@@ -326,16 +328,18 @@ TApp::ExitCode TApp::processArgs() {
 				if (QFile::exists(file)) {
 					subtitle_file = QFileInfo(file).absoluteFilePath();
 				} else {
-					printf("Error: file '%s' doesn't exists\r\n", file.toUtf8().constData());
+                    logger()->error("file '%s' doesn't exists", file);
 				}
 			} else {
-				printf("Error: expected parameter for --sub\r\n");
+                logger()->error("expected parameter for --sub");
 				return ErrorArgument;
 			}
 		} else if (name == "media-title") {
             if (n + 1 < args.count()) {
 				n++;
-				if (media_title.isEmpty()) media_title = args[n];
+                if (media_title.isEmpty()) {
+                    media_title = args[n];
+                }
 			}
         } else if (name == "close-at-end") {
 			close_at_end = 1;
@@ -355,7 +359,7 @@ TApp::ExitCode TApp::processArgs() {
                     gui_position.setY(args[n].toInt(&ok_y));
                     if (ok_x && ok_y) move_gui = true;
                 } else {
-                    printf("Error: expected parameter for --pos\r\n");
+                    logger()->error("expected parameter for --pos");
                     return ErrorArgument;
                 }
             } else if (name == "size") {
@@ -367,7 +371,7 @@ TApp::ExitCode TApp::processArgs() {
                     gui_size.setHeight(args[n].toInt(&ok_height));
                     if (ok_width && ok_height) resize_gui = true;
                 } else {
-                    printf("Error: expected 2 parameters for --size\r\n");
+                    logger()->error("expected 2 parameters for --size");
                     return ErrorArgument;
                 }
             } else if (name == "fullscreen") {
@@ -375,6 +379,8 @@ TApp::ExitCode TApp::processArgs() {
             } else if (name == "no-fullscreen") {
                 start_in_fullscreen = 0;
             } else {
+                logger()->debug("processArgs: adding '%1' to files to play",
+                                argument);
                 files_to_play.append(argument);
             }
         }
