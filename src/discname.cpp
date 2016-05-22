@@ -20,6 +20,7 @@
 #include <QRegExp>
 #include <QFileInfo>
 #include <QApplication>
+#include "helper.h"
 
 
 TDiscName::TDiscName() :
@@ -105,6 +106,7 @@ QString TDiscName::displayName(bool addDevice) const {
         if (deviceName.isEmpty()) {
             deviceName = device;
         }
+        deviceName = Helper::cleanName(deviceName);
         if (title > 0) {
             if (addDevice) {
                 name = deviceName + " - ";
