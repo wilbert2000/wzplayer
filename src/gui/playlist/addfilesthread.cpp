@@ -119,11 +119,25 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     } else {
         parentPathPlus = parentPath + "/";
     }
+
     // Remove extra slashes and dots from path
     QString path = fi.dir().path();
 
-    if (path == parentPath || !path.startsWith(parentPathPlus)) {
+    if (path == parentPath) {
         QString filename = path + "/" + fi.fileName();
+        logger()->trace("createPath: creating '%1' in '%2'",
+                        filename, parent->filename());
+        TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent,
+            filename, name, duration, false, iconProvider.icon(fi));
+        // Protect name
+        if (protectName) {
+            w->setEdited(true);
+        }
+        return w;
+    }
+
+    if (!path.startsWith(parentPathPlus)) {
+        QString filename = fi.absoluteFilePath();
         logger()->trace("createPath: creating '%1' in '%2'",
                         filename, parent->filename());
         TPlaylistWidgetItem* w = new TPlaylistWidgetItem(parent,
