@@ -256,7 +256,6 @@ void TPreferences::reset() {
 	pause_when_hidden = false;
 	hide_video_window_on_audio_files = true;
 	close_on_finish = false;
-	show_tag_in_window_title = true;
 
 	// Fullscreen
 	fullscreen = false;
@@ -538,7 +537,6 @@ void TPreferences::save() {
     setValue("hide_video_window_on_audio_files", hide_video_window_on_audio_files);
     setValue("pause_when_hidden", pause_when_hidden);
     setValue("close_on_finish", close_on_finish);
-    setValue("show_tag_in_window_title", show_tag_in_window_title);
 
     setValue("stay_on_top", (int) stay_on_top);
     setValue("size_factor", size_factor);
@@ -1042,7 +1040,6 @@ void TPreferences::load() {
     hide_video_window_on_audio_files = value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();
     pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
     close_on_finish = value("close_on_finish", close_on_finish).toBool();
-    show_tag_in_window_title = value("show_tag_in_window_title", show_tag_in_window_title).toBool();
 
     stay_on_top = (TPreferences::TOnTop) value("stay_on_top", (int) stay_on_top).toInt();
     size_factor = value("size_factor", size_factor).toDouble();

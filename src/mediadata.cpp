@@ -127,36 +127,34 @@ QString TMediaData::displayNameAddTitleOrTrack(QString title) const {
 	return title;
 }
 
-QString TMediaData::displayName(bool show_tag) const {
+QString TMediaData::displayName() const {
 
     if (filename.isEmpty())
         return "";
 
-    if (show_tag) {
-        QString title = this->title;
+    QString title = this->title;
+    if (!title.isEmpty()) {
+        title = displayNameAddTitleOrTrack(title);
         if (!title.isEmpty()) {
-            title = displayNameAddTitleOrTrack(title);
-            if (!title.isEmpty()) {
-                return title;
-            }
+            return title;
         }
+    }
 
-        title = meta_data.value("title");
+    title = meta_data.value("title");
+    if (!title.isEmpty()) {
+        title = displayNameAddTitleOrTrack(title);
         if (!title.isEmpty()) {
-            title = displayNameAddTitleOrTrack(title);
-            if (!title.isEmpty()) {
-                return title;
-            }
+            return title;
         }
+    }
 
-        title = meta_data.value("name");
+    title = meta_data.value("name");
+    if (!title.isEmpty()) {
+        title = displayNameAddTitleOrTrack(title);
         if (!title.isEmpty()) {
-            title = displayNameAddTitleOrTrack(title);
-            if (!title.isEmpty()) {
-                return title;
-            }
+            return title;
         }
-	}
+    }
 
     if (disc.valid) {
         return disc.displayName();
@@ -166,9 +164,15 @@ QString TMediaData::displayName(bool show_tag) const {
 	QFileInfo fi(filename);
 	QString fn = fi.fileName();
 	if (fn.isEmpty()) {
-		return filename;
+        fn = filename;
 	}
-	return fn;
+
+    fn = Helper::cleanName(fn);
+    if (fn.isEmpty()) {
+        fn = "nn";
+    }
+
+    return fn;
 }
 
 QString TMediaData::typeToString(Type type) {

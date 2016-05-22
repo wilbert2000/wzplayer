@@ -72,9 +72,6 @@ protected:
 	void setSaveSize(bool b);
 	bool saveSize();
 
-	void setShowTagInTitle(bool b);
-	bool showTagInTitle();
-
 	void setStyle(const QString& style);
 	QString style();
 

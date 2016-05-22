@@ -263,7 +263,6 @@ public:
 	bool pause_when_hidden;
 	//! Close the main window when a file or playlist finish
 	bool close_on_finish;
-	bool show_tag_in_window_title;
 
     TOnTop stay_on_top;
     double size_factor;

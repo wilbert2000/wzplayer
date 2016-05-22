@@ -1175,7 +1175,7 @@ void TBase::onMediaInfoChanged() {
 		setDataToFileProperties();
 	}
 
-	QString title = core->mdat.displayName(pref->show_tag_in_window_title);
+    QString title = core->mdat.displayName();
 	setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
 	emit mediaFileTitleChanged(core->mdat.filename, title);
 }

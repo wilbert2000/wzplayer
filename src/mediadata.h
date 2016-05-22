@@ -149,7 +149,7 @@ public:
 	static QString typeToString(Type type);
 	static Type stringToType(QString type);
 
-	QString displayName(bool show_tag = true) const;
+    QString displayName() const;
 	void list() const;
 
 private:

@@ -207,13 +207,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QCheckBox" name="use_filename_in_title_check">
-              <property name="text">
-               <string>&amp;Always use the file name in window title</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
@@ -654,7 +647,6 @@
   <tabstop>pause_on_minimize_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>hide_video_window_on_audio_check</tabstop>
-  <tabstop>use_filename_in_title_check</tabstop>
   <tabstop>hide_toolbars_spin</tabstop>
   <tabstop>show_toolbars_bottom_only_check</tabstop>
   <tabstop>start_fullscreen_check</tabstop>

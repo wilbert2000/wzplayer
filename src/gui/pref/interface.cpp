@@ -142,7 +142,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setPauseWhenHidden(pref->pause_when_hidden);
 	setCloseOnFinish(pref->close_on_finish);
 	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
-	setShowTagInTitle(pref->show_tag_in_window_title);
 
 	// Fullscreen
 	hide_toolbars_spin->setValue(pref->floating_hide_delay);
@@ -193,7 +192,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	pref->pause_when_hidden = pauseWhenHidden();
 	pref->close_on_finish = closeOnFinish();
 	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
-	pref->show_tag_in_window_title = showTagInTitle();
 
 	// Fullscreen
 	pref->floating_hide_delay = hide_toolbars_spin->value();
@@ -269,14 +267,6 @@ void TInterface::setSaveSize(bool b) {
 
 bool TInterface::saveSize() {
 	return save_size_check->isChecked();
-}
-
-void TInterface::setShowTagInTitle(bool b) {
-	use_filename_in_title_check->setChecked(!b);
-}
-
-bool TInterface::showTagInTitle() {
-	return !use_filename_in_title_check->isChecked();
 }
 
 void TInterface::setStyle(const QString& style) {
@@ -472,11 +462,6 @@ void TInterface::createHelp() {
 
 	setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
         tr("If this option is enabled the video window will be hidden when playing audio files."));
-
-	setWhatsThis(use_filename_in_title_check, tr("Always use file name in window title"),
-		tr("If media provides a title it will be used for the window title, "
-		   "unless this option is checked, then the file name will always be used."));
-
 
 	addSectionTitle(tr("Fullscreen"));
 
