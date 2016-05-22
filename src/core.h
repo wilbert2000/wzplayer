@@ -373,6 +373,9 @@ signals:
 	void osdLevelChanged(int);
 	void videoEqualizerNeedsUpdate();
 
+    void videoBitRateChanged(int bitrate);
+    void audioBitRateChanged(int bitrate);
+
 protected:
 	void initVolume();
 	void initMediaSettings();

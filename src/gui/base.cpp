@@ -728,6 +728,10 @@ void TBase::createFilePropertiesDialog() {
     file_properties_dialog->setModal(false);
     connect(file_properties_dialog, SIGNAL(applied()),
             this, SLOT(applyFileProperties()));
+    connect(core, SIGNAL(videoBitRateChanged(int)),
+            file_properties_dialog, SLOT(showInfo()));
+    connect(core, SIGNAL(audioBitRateChanged(int)),
+            file_properties_dialog, SLOT(showInfo()));
     TAction* action = findChild<TAction*>("show_file_properties");
     if (action) {
         connect(file_properties_dialog, SIGNAL(visibilityChanged(bool)),

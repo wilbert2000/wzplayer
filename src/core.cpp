@@ -144,6 +144,12 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 	connect(proc, SIGNAL(durationChanged(double)),
 			this, SIGNAL(durationChanged(double)));
 
+    connect(proc, SIGNAL(videoBitRateChanged(int)),
+            this, SIGNAL(videoBitRateChanged(int)));
+
+    connect(proc, SIGNAL(audioBitRateChanged(int)),
+            this, SIGNAL(audioBitRateChanged(int)));
+
 	// playerwindow
 	connect(playerwindow, SIGNAL(displayMessage(const QString&)),
 			this, SLOT(displayMessage(const QString&)));

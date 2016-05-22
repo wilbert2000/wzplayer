@@ -59,15 +59,14 @@ public:
 	void setPlayerAdditionalAudioFilters(const QString& s);
 	QString playerAdditionalAudioFilters();
 
-	void showInfo();
-
 public slots:
-	void accept(); // Reimplemented to send a signal
+    void accept(); // Reimplemented to send a signal
     void reject();
-	void apply();
+    void apply();
+    void showInfo();
 
 signals:
-	void applied();
+    void applied();
     void visibilityChanged(bool visible);
 
 protected slots:

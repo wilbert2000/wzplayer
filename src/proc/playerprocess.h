@@ -185,6 +185,9 @@ signals:
 	void receivedChapters();
 	void receivedAngles();
 
+    void videoBitRateChanged(int bitrate);
+    void audioBitRateChanged(int bitrate);
+
 protected:
     TMediaData* md;
 

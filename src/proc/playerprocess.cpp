@@ -350,19 +350,22 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 		md->video_aspect = value;
         logger()->debug("parseVideoProperty: video aspect ratio set to '%1'",
                         md->video_aspect);
-		return true;
-	}
-	if (name == "FPS") {
-		md->video_fps = value.toDouble();
+        return true;
+    }
+    if (name == "FPS") {
+        md->video_fps = value.toDouble();
         logger()->debug("parseVideoProperty: video_fps set to %1",
                         QString::number(md->video_fps));
-		return true;
-	}
-	if (name == "BITRATE") {
-		md->video_bitrate = value.toInt();
+        return true;
+    }
+    if (name == "BITRATE") {
+        md->video_bitrate = value.toInt();
         logger()->debug("parseVideoProperty: video_bitrate set to %1",
                         md->video_bitrate);
-		return true;
+        if (notified_player_is_running) {
+            emit videoBitRateChanged(md->video_bitrate);
+        }
+        return true;
 	}
 	if (name == "FORMAT") {
 		md->video_format = value;
@@ -386,6 +389,9 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 		md->audio_bitrate = value.toInt();
         logger()->debug("parseAudioProperty: audio_bitrate set to %1",
                         md->audio_bitrate);
+        if (notified_player_is_running) {
+            emit audioBitRateChanged(md->audio_bitrate);
+        }
 		return true;
 	}
 	if (name == "FORMAT") {
