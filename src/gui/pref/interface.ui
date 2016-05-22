@@ -324,13 +324,19 @@
      </widget>
      <widget class="QWidget" name="playlist_tab">
       <attribute name="title">
-       <string>&amp;Playlist, log and history</string>
+       <string>&amp;Playlist</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
         <number>16</number>
        </property>
        <item>
@@ -402,6 +408,38 @@
         </widget>
        </item>
        <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="log_tab">
+      <attribute name="title">
+       <string>&amp;Log</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <item>
         <widget class="QGroupBox" name="log_group">
          <property name="title">
           <string>Log</string>
@@ -418,7 +456,7 @@
             <item>
              <widget class="QLabel" name="log_level_label">
               <property name="text">
-               <string>&amp;Log level</string>
+               <string>L&amp;og level</string>
               </property>
               <property name="buddy">
                <cstring>log_level_combo</cstring>
@@ -498,9 +536,41 @@
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="history_tab">
+      <attribute name="title">
+       <string>&amp;History</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="history_group">
          <property name="title">
@@ -606,21 +676,21 @@
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -652,11 +722,6 @@
   <tabstop>start_fullscreen_check</tabstop>
   <tabstop>media_to_add_combo</tabstop>
   <tabstop>recursive_check</tabstop>
-  <tabstop>log_level_combo</tabstop>
-  <tabstop>log_verbose_check</tabstop>
-  <tabstop>recents_max_items_spin</tabstop>
-  <tabstop>url_max_items_spin</tabstop>
-  <tabstop>save_dirs_check</tabstop>
  </tabstops>
  <resources/>
  <connections/>
