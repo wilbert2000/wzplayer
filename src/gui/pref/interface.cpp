@@ -48,12 +48,12 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 
 	// User
 	QDir icon_dir = Settings::TPaths::configPath() + "/themes";
-    logger()->debug("icon_dir: " + icon_dir.absolutePath());
+    logger()->debug("user icon dir: " + icon_dir.absolutePath());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
 	// Global
 	icon_dir = Settings::TPaths::themesPath();
-    logger()->debug("icon_dir: " + icon_dir.absolutePath());
+    logger()->debug("global icon dir: " + icon_dir.absolutePath());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n = 0; n < iconsets.count(); n++) {
 		if (iconset_combo->findText(iconsets[n]) == -1) {

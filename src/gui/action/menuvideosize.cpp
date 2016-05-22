@@ -215,9 +215,9 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	factor = (double) new_w / res.width();
     logger()->debug("optimizeSizeFactor: optimizing width "
                     + QString::number(video_size.width())
-                    + " factor " + QString::number(size_factor)
+                    + ", factor " + QString::number(size_factor)
                     + " to multiple of 16 " + QString::number(new_w)
-                    + " factor " + QString::number(factor));
+                    + ", factor " + QString::number(factor));
     main_window->changeSize(factor);
 }
 

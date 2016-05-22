@@ -66,7 +66,7 @@ void TVideoWindow::paintEvent(QPaintEvent* e) {
 }
 
 void TVideoWindow::setFastBackground() {
-    logger()->debug("TVideoWindow::setFastBackground");
+    logger()->debug("setFastBackground");
 
     normal_background = false;
     // Disable restore background by system
@@ -82,7 +82,7 @@ void TVideoWindow::setFastBackground() {
 }
 
 void TVideoWindow::restoreNormalBackground() {
-    logger()->debug("TVideoWindow::restoreNormalBackground");
+    logger()->debug("restoreNormalBackground");
 
     normal_background = true;
     // Enable restore background by system
