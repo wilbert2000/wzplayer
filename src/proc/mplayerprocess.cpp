@@ -550,7 +550,7 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
 	// DVD title
 	if (name == "DVD_VOLUME_ID") {
-        md->title = Helper::cleanTitle(value);
+        md->title = value;
         logger()->debug("parseProperty: title set to '%1'", md->title);
 		return true;
 	}
@@ -1044,7 +1044,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
         logger()->debug("parseLine: stream title: '%1'", s);
         logger()->debug("parseLine: stream_url: '%1'", url);
 		md->detected_type = TMediaData::TYPE_STREAM;
-        md->title = Helper::cleanTitle(s);
+        md->title = s;
 		md->stream_url = url;
 		emit receivedStreamTitle();
 		return true;
@@ -1054,7 +1054,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		QString s = rx_stream_title.cap(1);
         logger()->debug("parseLine: stream title '%1'", s);
 		md->detected_type = TMediaData::TYPE_STREAM;
-        md->title = Helper::cleanTitle(s);
+        md->title = s;
 		emit receivedStreamTitle();
 		return true;
 	}

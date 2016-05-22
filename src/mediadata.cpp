@@ -20,6 +20,8 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QDebug>
+#include <QUrl>
+
 #include "log4qt/logger.h"
 #include "config.h"
 
@@ -98,8 +100,6 @@ bool TMediaData::selectedDisc() const {
 
 QString TMediaData::displayNameAddTitleOrTrack(QString title) const {
 
-    title = Helper::cleanTitle(title);
-
     if (disc.valid) {
         if (disc.title > 0) {
             if (isCD(detected_type)) {
@@ -116,63 +116,45 @@ QString TMediaData::displayNameAddTitleOrTrack(QString title) const {
         return title + " - " + disc.displayName();
     }
 
-    foreach(QRegExp rx, TConfig::TITLE_BLACKLIST) {
-        if (rx.indexIn(title) >= 0) {
-            logger()->info("displayNameAddTitleOrTrack: blacklisted title '%1'"
-                           " on '%2'", title, rx.pattern());
-            return "";
-        }
-    }
-
 	return title;
 }
 
 QString TMediaData::displayName() const {
 
-    if (filename.isEmpty())
+    if (filename.isEmpty()) {
         return "";
-
-    QString title = this->title;
-    if (!title.isEmpty()) {
-        title = displayNameAddTitleOrTrack(title);
-        if (!title.isEmpty()) {
-            return title;
-        }
     }
 
-    title = meta_data.value("title");
+    QString title = Helper::cleanTitle(this->title);
     if (!title.isEmpty()) {
-        title = displayNameAddTitleOrTrack(title);
-        if (!title.isEmpty()) {
-            return title;
-        }
+        return displayNameAddTitleOrTrack(title);
     }
-
-    title = meta_data.value("name");
+    title = Helper::cleanTitle(meta_data.value("title"));
     if (!title.isEmpty()) {
-        title = displayNameAddTitleOrTrack(title);
-        if (!title.isEmpty()) {
-            return title;
-        }
+        return displayNameAddTitleOrTrack(title);
     }
-
+    title = Helper::cleanTitle(meta_data.value("name"));
+    if (!title.isEmpty()) {
+        return displayNameAddTitleOrTrack(title);
+    }
     if (disc.valid) {
         return disc.displayName();
     }
 
-	// Remove path
-	QFileInfo fi(filename);
-	QString fn = fi.fileName();
-	if (fn.isEmpty()) {
-        fn = filename;
-	}
-
-    fn = Helper::cleanName(fn);
-    if (fn.isEmpty()) {
-        fn = "nn";
+    QString fn = filename;
+    QUrl url(fn);
+    QString path = url.path();
+    if (!path.isEmpty()) {
+        fn = path;
     }
 
-    return fn;
+    // Remove path
+    QFileInfo fi(fn);
+    if (!fi.fileName().isEmpty()) {
+        fn = fi.fileName();
+    }
+
+    return Helper::cleanName(fn);
 }
 
 QString TMediaData::typeToString(Type type) {

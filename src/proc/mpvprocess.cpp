@@ -183,7 +183,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 	}
 
 	if (name == "MEDIA_TITLE") {
-        md->title = Helper::cleanTitle(value.trimmed());
+        md->title = value.simplified();
         logger()->debug("parseProperty: title set to '%1'", md->title);
 		return true;
 	}
@@ -635,7 +635,7 @@ bool TMPVProcess::parseLine(QString& line) {
     if (rx_stream_title.indexIn(line) >= 0) {
         md->detected_type = TMediaData::TYPE_STREAM;
 		QString s = rx_stream_title.cap(1);
-        md->title = Helper::cleanTitle(s);
+        md->title = s;
         logger()->debug("parseLine: title '%1'", md->title);
 		emit receivedStreamTitle();
 		return true;
