@@ -73,7 +73,7 @@ void TProcess::start() {
 
     remaining_output.clear();
 
-    QProcess::start(program, arg, QIODevice::ReadWrite | QIODevice::Text);
+    QProcess::start(program, arg, QIODevice::ReadWrite);
 }
 
 void TProcess::handleLine(QString& line) {
@@ -101,24 +101,35 @@ QString TProcess::bytesToString(const char* bytes, int size) {
 #endif
 }
 
+// Needed because MPlayer uses \r for its status line
+const char* TProcess::EOL(const char* start, const char* end) {
+
+    const char* eol = start;
+    while (eol < end && *eol != '\n' && *eol != '\r') {
+        eol++;
+    }
+    return eol;
+}
+
 void TProcess::genericRead(QByteArray buffer) {
 
     remaining_output += buffer;
-    int start = 0;
-    int pos = remaining_output.indexOf('\n');
 
-    while (pos >= 0) {
-        // Skip empty lines
+    const char* start = remaining_output.constData();
+    const char* end = start + remaining_output.size();
+    const char* pos = EOL(start, end);
+
+    while (pos < end) {
         if (pos > start) {
-            QString line = bytesToString(remaining_output.constData() + start,
-                                         pos - start);
+            QString line = bytesToString(start, pos - start);
             handleLine(line);
         }
         start = pos + 1;
-        pos = remaining_output.indexOf('\n', start);
+        pos = EOL(start, end);
     }
 
-    remaining_output = remaining_output.mid(start);
+    remaining_output = remaining_output.mid(start
+                                            - remaining_output.constData());
 }
 
 void TProcess::readStdOut() {

@@ -73,6 +73,7 @@ private:
 
     QString bytesToString(const char* bytes, int size);
     void handleLine(QString& line);
+    const char* EOL(const char* start, const char* end);
 };
 
 } // namespace Proc
