@@ -418,7 +418,7 @@ TApp::ExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-    logger()->debug("createGUI: creating main window Gui::TDefault");
+    logger()->debug("createGUI: creating main window 'Gui::TDefault'");
 
 	main_window = new Gui::TDefault();
 
@@ -446,7 +446,7 @@ void TApp::createGUI() {
     // before using i18n() in threads, init it from here...
     iconProvider.icon(applicationFilePath());
 
-    logger()->debug("createGUI: created main window Gui::TDefault");
+    logger()->debug("createGUI: created main window");
 } // createGUI()
 
 void TApp::start() {
