@@ -24,13 +24,6 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QStyle>
-#include <QDateTime>
-
-#include "log4qt/logger.h"
-#include "log4qt/logmanager.h"
-#include "log4qt/consoleappender.h"
-#include "log4qt/ttcclayout.h"
-#include "gui/logwindow.h"
 
 #include "config.h"
 #include "settings/paths.h"
@@ -55,74 +48,106 @@
 
 using namespace Settings;
 
+// Statics that need to survive a restart
+bool TApp::restarting = false;
+int TApp::start_in_fullscreen = -1;
+QString TApp::current_file;
+QStringList TApp::files_to_play;
+
 TApp::TApp(int& argc, char** argv) :
     QtSingleApplication(TConfig::PROGRAM_ID, argc, argv),
     main_window(0),
-    requested_restart(false),
-    reset_style(false),
     move_gui(false),
     resize_gui(false),
-    close_at_end(-1),
-    start_in_fullscreen(-1) {
+    close_at_end(-1) {
 
     setOrganizationName(TConfig::PROGRAM_ORG);
     setApplicationName(TConfig::PROGRAM_ID);
-    //setOrganizationDomain("www.xs4all.nl");
+    //setOrganizationDomain();
     //setApplicationVersion(TConfig::PROGRAM_VERSION);
-
-    // Save default style for resetting style
-    default_style = style()->objectName();
 
     // Enable icons in menus
     setAttribute(Qt::AA_DontShowIconsInMenus, false);
-
-    initLog4Qt();
-    logger()->debug("TApp: created application");
 }
 
 TApp::~TApp() {
     delete Settings::pref;
 }
 
-void TApp::initLog4Qt() {
+QString TApp::loadStyleSheet(const QString& filename) {
+    logger()->debug("loadStyleSheet: '" + filename + "'");
 
-    using namespace Log4Qt;
+    QFile file(filename);
+    file.open(QFile::ReadOnly);
+    QString stylesheet = QLatin1String(file.readAll());
 
-    //if (Logger::rootLogger()->appender(NAME_CONSOLE_APPENDER)) {
-    //    logger()->debug("initLogQt: appender A1 already up and running");
-    //} else {
+    QString path;
+    if (Images::has_rcc) {
+        path = ":/" + pref->iconset;
+    } else {
+        QDir current = QDir::current();
+        QString td = Images::themesDirectory();
+        path = current.relativeFilePath(td);
+    }
 
-    // Create layout
-    TTCCLayout* layout = new TTCCLayout();
-    layout->setName("Layout");
-    layout->setDateFormat(TTCCLayout::ABSOLUTE);
-    layout->setThreadPrinting(false);
-    layout->activateOptions();
+    stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)",
+                               Qt::CaseSensitive, QRegExp::RegExp2),
+                        QString("url(%1\\1)").arg(path + "/"));
+    return stylesheet;
+}
 
-    // Create an appender
-    ConsoleAppender* appender = new ConsoleAppender(
-                                    layout, ConsoleAppender::STDOUT_TARGET);
-    appender->setName(NAME_CONSOLE_APPENDER);
-    appender->activateOptions();
+void TApp::changeStyleSheet(const QString& style) {
+    logger()->debug("changeStyleSheet: '" + style + "'");
 
-    // Set appender on root logger
-    Logger::rootLogger()->addAppender(appender);
-    Logger::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+    // Load default stylesheet
+    QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
 
-    // Let Log4Qt handle Debug(), qWarning(), qCritical() and qFatal()
-    LogManager::setHandleQtMessages(true);
-    LogManager::qtLogger()->setLevel(Level::DEBUG_INT);
+    if (!style.isEmpty()) {
+        // Check main.css
+        QString qss_file = TPaths::configPath() + "/themes/" + pref->iconset
+                           + "/main.css";
+        if (!QFile::exists(qss_file)) {
+            qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/main.css";
+        }
 
-    // Create appender log window
-    Gui::TLogWindow::appender = new Gui::TLogWindowAppender(this, layout);
-    Gui::TLogWindow::appender->setName("LogWindowAppender");
-    Gui::TLogWindow::appender->activateOptions();
+        // Check style.qss
+        if (!QFile::exists(qss_file)) {
+            qss_file = TPaths::configPath() + "/themes/" + pref->iconset
+                       + "/style.qss";
+            if (!QFile::exists(qss_file)) {
+                qss_file = TPaths::themesPath() +"/"+ pref->iconset
+                           + "/style.qss";
+            }
+        }
 
-    // Set appender on root logger
-    Log4Qt::Logger::rootLogger()->addAppender(Gui::TLogWindow::appender);
+        // Load style file
+        if (QFile::exists(qss_file)) {
+            stylesheet += loadStyleSheet(qss_file);
+        }
+    }
 
-    logger()->info("initLog4Qt: log initialized on "
-                   + QDateTime::currentDateTime().toString());
+    setStyleSheet(stylesheet);
+}
+
+void TApp::setupStyle() {
+    logger()->debug("setupStyle");
+
+    // Set application style
+    // TODO: from help: Warning: To ensure that the application's style is set
+    // correctly, it is best to call this function before the QApplication
+    // constructor, if possible.
+    if (!pref->style.isEmpty()) {
+        setStyle(pref->style);
+    }
+
+    // Set theme
+    Images::setTheme(pref->iconset);
+
+    // Set stylesheets
+    changeStyleSheet(pref->iconset);
+
+    // Set icon style
+    iconProvider.setStyle(style());
 }
 
 bool TApp::loadCatalog(QTranslator& translator,
@@ -131,15 +156,16 @@ bool TApp::loadCatalog(QTranslator& translator,
                        const QString& dir) {
 
     QString loc = name + "_" + locale;
-	bool r = translator.load(loc, dir);
-	if (r)
+    bool r = translator.load(loc, dir);
+    if (r)
         logger()->info("loadCatalog: loaded " + loc + " from " + dir);
-	else
+    else
         logger()->debug("loadCatalog: failed to load " + loc + " from " + dir);
-	return r;
+    return r;
 }
 
 void TApp::loadTranslation() {
+    logger()->debug("loadTranslations");
 
 	QString locale = pref->language;
 	if (locale.isEmpty()) {
@@ -156,27 +182,24 @@ void TApp::loadTranslation() {
 }
 
 void TApp::loadConfig() {
+    logger()->debug("loadConfig");
 
-	// Setup config directory
-	TPaths::setConfigPath(initial_config_path);
-	// Load new settings
-	Settings::pref = new Settings::TPreferences();
+    // Setup config directory
+    TPaths::setConfigPath(initial_config_path);
+    // Load new settings
+    Settings::pref = new Settings::TPreferences();
 
-	// Reconfig log
-	// --debug from the command line overrides preferences
-    //if (!TLog::log->logDebugMessages()) {
-    //	TLog::log->setLogDebugMessages(pref->log_debug_enabled);
-    //}
-    //TLog::log->setLogFileEnabled(pref->log_file);
+    // Setup style
+    setupStyle();
 
-	// Load translation
-	loadTranslation();
-	installTranslator(&app_trans);
-	installTranslator(&qt_trans);
+    // Load translation
+    loadTranslation();
+    installTranslator(&app_trans);
+    installTranslator(&qt_trans);
 
-	// Fonts
+    // Fonts
 #ifdef Q_OS_WIN
-	TPaths::createFontFile();
+    TPaths::createFontFile();
 #endif
 }
 
@@ -260,7 +283,7 @@ TApp::ExitCode TApp::processArgs() {
 		}
 	}
 
-	// Load preferences, setup logging and translation
+    // Load preferences, style and translation
 	loadConfig();
 
 	if (processArgName("delete-config", args)) {
@@ -270,7 +293,7 @@ TApp::ExitCode TApp::processArgs() {
 
 	showInfo();
 
-	QString action; // Action to be passed to running instance
+    QString send_action; // Action to be passed to running instance
 	bool show_help = false;
 	bool add_to_playlist = false;
 
@@ -281,9 +304,9 @@ TApp::ExitCode TApp::processArgs() {
 		if (name == "debug") {
 
 		} else if (name == "send-action") {
-			if (n+1 < args.count()) {
+            if (n + 1 < args.count()) {
 				n++;
-				action = args[n];
+                send_action = args[n];
 			} else {
 				printf("Error: expected parameter for --send-action\r\n");
 				return ErrorArgument;
@@ -291,13 +314,13 @@ TApp::ExitCode TApp::processArgs() {
 		} else if (name == "actions") {
 			if (n+1 < args.count()) {
 				n++;
-				actions_list = args[n];
+                actions = args[n];
 			} else {
 				printf("Error: expected parameter for --actions\r\n");
 				return ErrorArgument;
 			}
 		} else if (name == "sub") {
-			if (n+1 < args.count()) {
+            if (n + 1 < args.count()) {
 				n++;
 				QString file = args[n];
 				if (QFile::exists(file)) {
@@ -310,57 +333,51 @@ TApp::ExitCode TApp::processArgs() {
 				return ErrorArgument;
 			}
 		} else if (name == "media-title") {
-			if (n+1 < args.count()) {
+            if (n + 1 < args.count()) {
 				n++;
 				if (media_title.isEmpty()) media_title = args[n];
 			}
-		} else if (name == "pos") {
-			if (n + 2 < args.count()) {
-				bool ok_x, ok_y;
-				n++;
-				gui_position.setX(args[n].toInt(&ok_x));
-				n++;
-				gui_position.setY(args[n].toInt(&ok_y));
-				if (ok_x && ok_y) move_gui = true;
-			} else {
-				printf("Error: expected parameter for --pos\r\n");
-				return ErrorArgument;
-			}
-		} else if (name == "size") {
-			if (n+2 < args.count()) {
-				bool ok_width, ok_height;
-				n++;
-				gui_size.setWidth(args[n].toInt(&ok_width));
-				n++;
-				gui_size.setHeight(args[n].toInt(&ok_height));
-				if (ok_width && ok_height) resize_gui = true;
-			} else {
-				printf("Error: expected 2 parameters for --size\r\n");
-				return ErrorArgument;
-			}
-		} else if (name == "help" || name == "h" || name == "?") {
-			show_help = true;
-		} else if (name == "close-at-end") {
+        } else if (name == "close-at-end") {
 			close_at_end = 1;
 		} else if (name == "no-close-at-end") {
 			close_at_end = 0;
-		} else if (name == "fullscreen") {
-			start_in_fullscreen = 1;
-		} else if (name == "no-fullscreen") {
-			start_in_fullscreen = 0;
-		} else if (name == "add-to-playlist") {
-			add_to_playlist = true;
-        } else {
-			// File
-			QUrl fUrl = QUrl::fromUserInput(argument);
-			if (fUrl.isValid() && fUrl.scheme().toLower() == "file") {
-				argument = fUrl.toLocalFile();
-			}
-			if (QFile::exists(argument)) {
-				argument = QFileInfo(argument).absoluteFilePath();
-			}
-			files_to_play.append(argument);
-		}
+        } else if (name == "add-to-playlist") {
+            add_to_playlist = true;
+        } else if (!restarting) {
+            if (name == "help" || name == "h" || name == "?") {
+                show_help = true;
+            } else if (name == "pos") {
+                if (n + 2 < args.count()) {
+                    bool ok_x, ok_y;
+                    n++;
+                    gui_position.setX(args[n].toInt(&ok_x));
+                    n++;
+                    gui_position.setY(args[n].toInt(&ok_y));
+                    if (ok_x && ok_y) move_gui = true;
+                } else {
+                    printf("Error: expected parameter for --pos\r\n");
+                    return ErrorArgument;
+                }
+            } else if (name == "size") {
+                if (n + 2 < args.count()) {
+                    bool ok_width, ok_height;
+                    n++;
+                    gui_size.setWidth(args[n].toInt(&ok_width));
+                    n++;
+                    gui_size.setHeight(args[n].toInt(&ok_height));
+                    if (ok_width && ok_height) resize_gui = true;
+                } else {
+                    printf("Error: expected 2 parameters for --size\r\n");
+                    return ErrorArgument;
+                }
+            } else if (name == "fullscreen") {
+                start_in_fullscreen = 1;
+            } else if (name == "no-fullscreen") {
+                start_in_fullscreen = 0;
+            } else {
+                files_to_play.append(argument);
+            }
+        }
 	}
 
 	if (show_help) {
@@ -373,8 +390,8 @@ TApp::ExitCode TApp::processArgs() {
 		if (isRunning()) {
 			sendMessage("Hello");
 
-			if (!action.isEmpty()) {
-				sendMessage("action " + action);
+            if (!send_action.isEmpty()) {
+                sendMessage("action " + send_action);
 			} else {
 				if (!subtitle_file.isEmpty()) {
 					sendMessage("load_sub " + subtitle_file);
@@ -411,8 +428,8 @@ void TApp::createGUI() {
 	main_window->setForceCloseOnFinish(close_at_end);
 	main_window->setForceStartInFullscreen(start_in_fullscreen);
 
-	connect(main_window, SIGNAL(requestRestart(bool)),
-			this, SLOT(onRequestRestart(bool)));
+    connect(main_window, SIGNAL(requestRestart()),
+            this, SLOT(onRequestRestart()));
 	connect(this, SIGNAL(messageReceived(const QString&)),
 			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
 
@@ -432,167 +449,64 @@ void TApp::createGUI() {
     logger()->debug("createGUI: created main window Gui::TDefault");
 } // createGUI()
 
-QString TApp::loadStyleSheet(const QString& filename) {
-    logger()->debug("loadStyleSheet: '" + filename + "'");
-
-	QFile file(filename);
-	file.open(QFile::ReadOnly);
-	QString stylesheet = QLatin1String(file.readAll());
-
-	QString path;
-	if (Images::has_rcc) {
-		path = ":/" + pref->iconset;
-	} else {
-		QDir current = QDir::current();
-		QString td = Images::themesDirectory();
-		path = current.relativeFilePath(td);
-	}
-
-	stylesheet.replace(QRegExp("url\\s*\\(\\s*([^\\);]+)\\s*\\)",
-							   Qt::CaseSensitive, QRegExp::RegExp2),
-						QString("url(%1\\1)").arg(path + "/"));
-	return stylesheet;
-}
-
-void TApp::changeStyleSheet(const QString& style) {
-    logger()->debug("changeStyleSheet: '" + style + "'");
-
-	// Load default stylesheet
-	QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
-
-	if (!style.isEmpty()) {
-		// Check main.css
-		QString qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/main.css";
-		if (!QFile::exists(qss_file)) {
-			qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/main.css";
-		}
-
-		// Check style.qss
-		if (!QFile::exists(qss_file)) {
-			qss_file = TPaths::configPath() + "/themes/" + pref->iconset + "/style.qss";
-			if (!QFile::exists(qss_file)) {
-				qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/style.qss";
-			}
-		}
-
-		// Load style file
-		if (QFile::exists(qss_file)) {
-			stylesheet += loadStyleSheet(qss_file);
-		}
-	}
-
-    setStyleSheet(stylesheet);
-}
-
-void TApp::changeStyle() {
-    logger()->debug("changeStyle");
-
-	// Set application style
-	// TODO: from help: Warning: To ensure that the application's style is set
-	// correctly, it is best to call this function before the QApplication
-	// constructor, if possible.
-	if (!pref->style.isEmpty()) {
-		// Remove a previous stylesheet to prevent a crash
-		setStyleSheet("");
-		setStyle(pref->style);
-	} else if (reset_style) {
-		setStyleSheet("");
-		setStyle(default_style);
-	}
-
-	// Set theme
-	Images::setTheme(pref->iconset);
-
-	// Set stylesheets
-	changeStyleSheet(pref->iconset);
-
-    // Set icon style
-    iconProvider.setStyle(style());
-}
-
 void TApp::start() {
     logger()->debug("start");
 
-	// Setup style
-	changeStyle();
+    // Create the main window. It will be destoyed when leaving exec().
+    createGUI();
 
-	// Create the main window. It will be destoyed when leaving exec().
-	createGUI();
-
-	if (!main_window->startHidden() || !files_to_play.isEmpty())
-		main_window->show();
+    if (!main_window->startHidden() || !files_to_play.isEmpty()) {
+        main_window->show();
+    }
 
     if (files_to_play.isEmpty()) {
         main_window->getCore()->setState(STATE_STOPPED);
     } else {
-		if (!subtitle_file.isEmpty())
-			main_window->setInitialSubtitle(subtitle_file);
-		if (!media_title.isEmpty())
-			main_window->getCore()->addForcedTitle(files_to_play[0], media_title);
-		main_window->openFiles(files_to_play, current_file);
-	}
+        if (!subtitle_file.isEmpty()) {
+            main_window->setInitialSubtitle(subtitle_file);
+        }
+        if (!media_title.isEmpty()) {
+            main_window->getCore()->addForcedTitle(files_to_play[0],
+                                                   media_title);
+        }
+        main_window->openFiles(files_to_play, current_file);
+    }
 
-	if (!actions_list.isEmpty()) {
-		if (files_to_play.isEmpty()) {
-			main_window->runActions(actions_list);
-		} else {
-			main_window->runActionsLater(actions_list);
-		}
-	}
+    if (!actions.isEmpty()) {
+        main_window->runActionsLater(actions, files_to_play.count() == 0);
+    }
 
-	// Free files_to_play
-	files_to_play.clear();
+    // Free files_to_play
+    files_to_play.clear();
+    // No longer restarting
+    restarting = false;
 }
 
-void TApp::onRequestRestart(bool reset_style) {
+void TApp::onRequestRestart() {
     logger()->debug("onRequestRestart");
 
-	requested_restart = true;
-	start_in_fullscreen = pref->fullscreen;
-	this->reset_style = reset_style;
+    restarting = true;
+    start_in_fullscreen = pref->fullscreen;
 
     Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
-	playlist->getFilesAppend(files_to_play);
+    playlist->appendFiles(files_to_play);
     current_file = playlist->playingFile();
 
-	// Rebuild playlist from scratch when restarting a disc. Playing the whole
-	// disc gives less problems as playing the seperate tracks from the playlist,
-	// especially for DVDNAV.
-	if (files_to_play.count() > 1) {
+    // Rebuild playlist from scratch when restarting a disc. Playing the whole
+    // disc gives less problems as playing the seperate tracks from the playlist,
+    // especially for DVDNAV.
+    if (files_to_play.count() > 1) {
         if (current_file.isEmpty()) {
             current_file = files_to_play[0];
-		}
+        }
         TDiscName disc(current_file);
-		if (disc.valid) {
-			files_to_play.clear();
-			disc.title = 0;
-			files_to_play.append(disc.toString());
+        if (disc.valid) {
+            files_to_play.clear();
+            disc.title = 0;
+            files_to_play.append(disc.toString());
             current_file = "";
-		}
-	}
-}
-
-int TApp::execWithRestart() {
-
-	int exit_code;
-	do {
-		requested_restart = false;
-		start();
-        logger()->debug("execWithRestart: calling exec()");
-		exit_code = exec();
-        logger()->debug("execWithRestart: exec() returned %1", exit_code);
-		if (requested_restart) {
-            logger()->debug("execWithRestart: restarting");
-			// Free current settings
-			delete Settings::pref;
-			// Reload configuration
-			loadConfig();
-		}
-	} while (requested_restart);
-
-    logger()->info("execWithRestart: returning %1 on %2",
-                   exit_code, QDateTime::currentDateTime().toString());
-    return exit_code;
+        }
+    }
 }
 
 void TApp::showInfo() {
@@ -646,7 +560,7 @@ void TApp::showInfo() {
     logger()->debug("shortcuts path: '%1'", TPaths::shortcutsPath());
     logger()->debug("config path: '%1'", TPaths::configPath());
     logger()->debug("file for subtitle styles: '%1'", TPaths::subtitleStyleFile());
-    logger()->debug("current path: '%1'", QDir::currentPath());
+    logger()->debug("current directory: '%1'", QDir::currentPath());
 #ifdef Q_OS_WIN
     logger()->debug("font path: '%1'", TPaths::fontPath());
 #endif

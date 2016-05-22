@@ -79,7 +79,7 @@ public:
                   QTreeWidgetItem* target = 0,
                   const QString& fileToPlay = "",
                   bool searchForItems = false);
-    void getFilesAppend(QStringList& files) const;
+    void appendFiles(QStringList& files) const;
 
     // Preferences
     bool directoryRecursion() const { return recursive_add_directories; }

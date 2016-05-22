@@ -47,7 +47,7 @@ public:
              NoAction = -2,
              NoRunningInstance = -1,
              NoError = 0,
-             NoExit = 1
+             NoExit = 1111
     };
 
 	TApp(int& argc, char** argv);
@@ -56,27 +56,29 @@ public:
 	// Nothing to do, let the application close
 	virtual void commitData(QSessionManager& /*manager*/) {}
 
+    void start();
+
 	//! Process arguments. If ExitCode != NoExit the application must be exited.
 	ExitCode processArgs();
-	int execWithRestart();
 
 #ifdef USE_WINEVENTFILTER
 	virtual bool winEventFilter(MSG* msg, long* result);
 #endif
 
 private:
+    static bool restarting;
+    static int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
+    static QString current_file;
+    static QStringList files_to_play;
+
     QString initial_config_path;
 	QTranslator app_trans;
 	QTranslator qt_trans;
 	Gui::TBase* main_window;
 
-	bool requested_restart;
-	bool reset_style;
-    QString current_file;
 
-	QStringList files_to_play;
 	QString subtitle_file;
-	QString actions_list; //!< Actions to be run on startup
+    QString actions; //!< Actions to be run on startup
 	QString media_title; //!< Force a title for the first file
 
 	// Change position and size
@@ -87,11 +89,7 @@ private:
 
 	// Options to pass to gui
 	int close_at_end; // -1 = not set, 1 = true, 0 false
-	int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
 
-	QString default_style;
-
-    void initLog4Qt();
 	bool loadCatalog(QTranslator& translator,
 					 const QString& name,
 					 const QString& locale,
@@ -100,15 +98,14 @@ private:
     void loadConfig();
 	QString loadStyleSheet(const QString& filename);
 	void changeStyleSheet(const QString& style);
-	void changeStyle();
+    void setupStyle();
 	void createGUI();
 	bool processArgName(const QString& arg, const QStringList& args) const;
 	int processArgPos(const QString& name, const QStringList& args) const;
-	void start();
 	void showInfo();
 
 private slots:
-    void onRequestRestart(bool reset_style);
+    void onRequestRestart();
 };
 
 #endif // APP_H

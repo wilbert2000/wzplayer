@@ -98,7 +98,7 @@ public:
 	void runActions(QString actions);
 
 	//! Execute all the actions after the video has started to play
-	void runActionsLater(QString actions) { pending_actions_to_run = actions; }
+    void runActionsLater(QString actions, bool postCheck);
 
 	TCore* getCore() { return core; }
     Playlist::TPlaylist* getPlaylist() { return playlist; }
@@ -184,7 +184,7 @@ signals:
 
 	//! Sent when another instance requested to play a file
 	void openFileRequested();
-	void requestRestart(bool);
+    void requestRestart();
 
 protected slots:
 	virtual void closeWindow();
@@ -361,18 +361,18 @@ private:
     void sendEnableActions();
 
     void save();
-    void restartWZPlayer(bool reset_style);
+    void restartApplication();
 
 	void setFloatingToolbarsVisible(bool visible);
 	void hidePanel();
 	void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 
 	void enterFullscreenOnPlay();
-	void checkPendingActionsToRun();
 	void retranslateStrings();
 
 private slots:
 	void moveWindowMerged();
+    void checkPendingActionsToRun();
 };
 
 } // namespace Gui

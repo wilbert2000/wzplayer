@@ -18,16 +18,76 @@
 
 #include "app.h"
 
+#include "QDateTime"
+#include "log4qt/logger.h"
+#include "log4qt/logmanager.h"
+#include "log4qt/consoleappender.h"
+#include "log4qt/ttcclayout.h"
+#include "gui/logwindow.h"
+
+using namespace Log4Qt;
+
+class main;
+LOG4QT_DECLARE_STATIC_LOGGER(logger, main)
+
+void initLog4Qt() {
+
+    //if (Logger::rootLogger()->appender(NAME_CONSOLE_APPENDER)) {
+    //    logger()->debug("initLogQt: appender A1 already up and running");
+    //} else {
+
+    // Create layout
+    TTCCLayout* layout = new TTCCLayout();
+    layout->setName("Layout");
+    layout->setDateFormat(TTCCLayout::ABSOLUTE);
+    layout->setThreadPrinting(false);
+    layout->activateOptions();
+
+    // Create an appender
+    ConsoleAppender* appender = new ConsoleAppender(
+                                    layout, ConsoleAppender::STDERR_TARGET);
+    appender->setName("A1");
+    appender->activateOptions();
+
+    // Set appender on root logger
+    Logger::rootLogger()->addAppender(appender);
+    Logger::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+
+    // Let Log4Qt handle qDebug(), qWarning(), qCritical() and qFatal()
+    LogManager::setHandleQtMessages(true);
+    LogManager::qtLogger()->setLevel(Level::DEBUG_INT);
+
+    // Create appender log window
+    Gui::TLogWindow::appender = new Gui::TLogWindowAppender(layout);
+    Gui::TLogWindow::appender->setName("A2");
+    Gui::TLogWindow::appender->activateOptions();
+
+    // Set log window appender on root logger
+    Logger::rootLogger()->addAppender(Gui::TLogWindow::appender);
+
+    logger()->info("initLog4Qt: log initialized on "
+                   + QDateTime::currentDateTime().toString());
+}
+
 int main(int argc, char** argv) {
 
-    // Create and exec app
-    TApp app(argc, argv);
+    initLog4Qt();
 
-    int exit_code = app.processArgs();
-    if (exit_code == TApp::NoExit) {
-        exit_code = app.execWithRestart();
-    }
+    int exitCode;
+    do {
+        logger()->debug("Creating application");
+        TApp app(argc, argv);
+        exitCode = app.processArgs();
+        if (exitCode == TApp::NoExit) {
+            logger()->debug("Starting application");
+            app.start();
+            logger()->debug("Calling exec()");
+            exitCode = app.exec();
+            logger()->debug("exec() returned %1", exitCode);
+        }
+    } while (exitCode == TApp::NoExit);
 
-    return exit_code;
+    logger()->info("Exiting on %1", QDateTime::currentDateTime().toString());
+    return exitCode;
 }
 

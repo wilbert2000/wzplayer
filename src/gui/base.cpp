@@ -98,6 +98,7 @@
 #include "gui/pref/interface.h"
 #include "gui/pref/input.h"
 #include "gui/pref/advanced.h"
+#include "app.h"
 
 #ifdef FIND_SUBTITLES
 #include "findsubtitleswindow.h"
@@ -965,12 +966,19 @@ void TBase::showPreferencesDialog() {
 	pref_dialog->show();
 }
 
-void TBase::restartWZPlayer(bool reset_style) {
-    logger()->debug("restartWZPlayer");
+void TBase::restartApplication() {
+    logger()->debug("restartApplication");
 
-	emit requestRestart(reset_style);
+    emit requestRestart();
+
 	// Close and restart with the new settings
-	close();
+    if (close()) {
+        logger()->debug("restartApplication: closed main window");
+        qApp->exit(TApp::NoExit);
+    } else {
+        // TODO: messagebox...
+        logger()->warn("restartApplication: close canceled...");
+    }
 	return;
 }
 
@@ -996,21 +1004,12 @@ void TBase::applyNewPreferences() {
 	// Commit changes
     pref->save();
 
-	// Style change needs recreation of main window
-    if (mod_interface->styleChanged()) {
-		// Request restart and optional reset style to default
-        logger()->debug("applyNewPreferences: style changed, restarting app");
-		restartWZPlayer(pref->style.isEmpty());
-		return;
-	}
-
-    // Player bin, icon set or language change need restart TApp
+    // Player bin, style, icon set or language change need restart TApp
     if (pref->player_bin != old_player_bin
+        || mod_interface->styleChanged()
         || mod_interface->iconsetChanged()
         || mod_interface->languageChanged()) {
-		// Request restart, don't reset style
-        logger()->debug("applyNewPreferences: playerbin, icon set or language changed, restarting app");
-        restartWZPlayer(false);
+        restartApplication();
 		return;
 	}
 
@@ -1187,7 +1186,7 @@ void TBase::onNewMediaStartedPlaying() {
                                   core->mdat.displayName());
 	fileMenu->updateRecents();
 
-	checkPendingActionsToRun();
+    checkPendingActionsToRun();
 }
 
 void TBase::updateVideoEqualizer() {
@@ -1754,62 +1753,73 @@ void TBase::processFunction(QString function) {
 void TBase::runActions(QString actions) {
     logger()->debug("runActions");
 
-	actions = actions.simplified(); // Remove white space
+    actions = actions.simplified(); // Remove white space
 
-	QAction* action;
-	QStringList actionsList = actions.split(" ");
+    QAction* action;
+    QStringList actionsList = actions.split(" ");
 
-	for (int n = 0; n < actionsList.count(); n++) {
-		QString actionStr = actionsList[n];
-		QString par = ""; //the parameter which the action takes
+    for (int n = 0; n < actionsList.count(); n++) {
+        QString actionStr = actionsList[n];
+        QString par = ""; //the parameter which the action takes
 
-		//set par if the next word is a boolean value
-		if ((n+1) < actionsList.count()) {
-			if ((actionsList[n+1].toLower() == "true") || (actionsList[n+1].toLower() == "false")) {
-				par = actionsList[n+1].toLower();
-				n++;
-			} //end if
-		} //end if
+        //set par if the next word is a boolean value
+        if (n + 1 < actionsList.count()) {
+            if (actionsList[n + 1].toLower() == "true"
+                || actionsList[n + 1].toLower() == "false") {
+                par = actionsList[n + 1].toLower();
+                n++;
+            }
+        }
 
         action = findChild<QAction*>(actionStr);
         if (action) {
-            logger()->debug("runActions: running action: '%1' (par: '%2')",
-                   actionStr, par);
+            logger()->debug("runActions: running action '%1' (par '%2')",
+                            actionStr, par);
 
-			if (action->isCheckable()) {
-				if (par.isEmpty()) {
-					//action->toggle();
-					action->trigger();
-				} else {
-					action->setChecked((par == "true"));
-				} //end if
-			} else {
-				action->trigger();
-			} //end if
-		} else {
-            logger()->warn("runActions: action: '%1' not found", actionStr);
-		} //end if
-	} //end for
+            if (action->isCheckable()) {
+                if (par.isEmpty()) {
+                    action->trigger();
+                } else {
+                    action->setChecked(par == "true");
+                }
+            } else {
+                action->trigger();
+            }
+        } else {
+            logger()->warn("runActions: action '%1' not found", actionStr);
+        }
+    } //end for
 }
 
+// Called by timer and onNewMediaStartedPlaying
 void TBase::checkPendingActionsToRun() {
-    logger()->debug("checkPendingActionsToRun");
 
-	QString actions;
-	if (!pending_actions_to_run.isEmpty()) {
-		actions = pending_actions_to_run;
-		pending_actions_to_run.clear();
-		if (!pref->actions_to_run.isEmpty()) {
-			actions = pref->actions_to_run +" "+ actions;
-		}
-	} else {
-		actions = pref->actions_to_run;
-	}
+    QString actions;
+    if (pending_actions_to_run.isEmpty()) {
+        actions = pref->actions_to_run;
+    } else {
+        actions = pending_actions_to_run;
+        pending_actions_to_run.clear();
+        if (!pref->actions_to_run.isEmpty()) {
+            actions = pref->actions_to_run + " " + actions;
+        }
+    }
 
-	if (!actions.isEmpty()) {
-        logger()->debug("checkPendingActionsToRun: actions: '%1'", actions);
-		runActions(actions);
-	}
+    if (actions.isEmpty()) {
+        logger()->debug("checkPendingActionsToRun: no actions to run");
+    } else {
+        logger()->debug("checkPendingActionsToRun: running actions: '%1'",
+                        actions);
+        runActions(actions);
+    }
+}
+
+void TBase::runActionsLater(QString actions, bool postCheck) {
+
+    pending_actions_to_run = actions;
+    if (postCheck) {
+        QTimer::singleShot(1000, this, SLOT(checkPendingActionsToRun()));
+    }
 }
 
 void TBase::dragEnterEvent(QDragEnterEvent *e) {

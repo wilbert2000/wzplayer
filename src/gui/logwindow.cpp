@@ -43,11 +43,10 @@ const int MAX_LINES = 1000;
 
 TLogWindowAppender* TLogWindow::appender = 0;
 
-TLogWindowAppender::TLogWindowAppender(QObject* pParent,
-                                       Log4Qt::TTCCLayout* alayout) :
-    Log4Qt::ListAppender(pParent),
+TLogWindowAppender::TLogWindowAppender(Log4Qt::TTCCLayout* aLayout) :
+    Log4Qt::ListAppender(),
     textEdit(0),
-    layout(alayout) {
+    layout(aLayout) {
 }
 
 TLogWindowAppender::~TLogWindowAppender() {
@@ -124,8 +123,7 @@ TLogWindow::TLogWindow(QWidget* parent)
 
 TLogWindow::~TLogWindow() {
     logger()->debug("~TLogWindow");
-
-    Log4Qt::Logger::rootLogger()->removeAppender(appender);
+    appender->setEdit(0);
 }
 
 void TLogWindow::retranslateStrings() {

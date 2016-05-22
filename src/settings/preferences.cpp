@@ -46,8 +46,6 @@ static const int CURRENT_CONFIG_VERSION = 17;
 
 TPreferences* pref = 0;
 
-const QString NAME_CONSOLE_APPENDER("A1");
-
 Log4Qt::Logger* TPreferences::logger = Log4Qt::Logger::logger(
     QLatin1String("Settings::TPreferences"));
 
