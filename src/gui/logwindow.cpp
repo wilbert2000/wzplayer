@@ -43,7 +43,7 @@ const int MAX_LINES = 1000;
 
 TLogWindowAppender* TLogWindow::appender = 0;
 
-TLogWindowAppender::TLogWindowAppender(Log4Qt::TTCCLayout* aLayout) :
+TLogWindowAppender::TLogWindowAppender(Log4Qt::Layout* aLayout) :
     Log4Qt::ListAppender(),
     textEdit(0),
     layout(aLayout) {
@@ -70,6 +70,7 @@ void TLogWindowAppender::appendTextToEdit(QString s) {
 void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
 
     QMutexLocker locker(&mObjectGuard);
+
     Log4Qt::ListAppender::append(rEvent);
 
     // Shrink the list to MAX_LINES
@@ -86,6 +87,7 @@ void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
 
     if (edit) {
         QMutexLocker locker(&mObjectGuard);
+
         QString s;
         foreach(const Log4Qt::LoggingEvent& rEvent, list()) {
             s += layout->format(rEvent);

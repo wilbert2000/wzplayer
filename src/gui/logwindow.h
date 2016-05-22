@@ -27,7 +27,7 @@
 class QPlainTextEdit;
 
 namespace Log4Qt {
-class TTCCLayout;
+class Layout;
 class LoggingEvent;
 }
 
@@ -38,7 +38,7 @@ class TLogWindow;
 class TLogWindowAppender : public Log4Qt::ListAppender {
 
 public:
-    TLogWindowAppender(Log4Qt::TTCCLayout* aLayout);
+    TLogWindowAppender(Log4Qt::Layout* aLayout);
     virtual ~TLogWindowAppender();
 
     void setEdit(QPlainTextEdit* edit);
@@ -48,7 +48,7 @@ protected:
 
 private:
     QPlainTextEdit* textEdit;
-    Log4Qt::TTCCLayout* layout;
+    Log4Qt::Layout* layout;
 
     static void removeNewLine(QString& s);
     void appendTextToEdit(QString s);
