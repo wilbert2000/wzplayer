@@ -113,7 +113,7 @@ void TTitleTracks::list() const {
 		TTitleData d = i.value();
         logger->debug("list: ID: " + QString::number(d.getID())
                       + " name: '" + d.getName()
-                      + "'' duration: " + QString::number(d.getDuration())
+                      + "' duration: " + QString::number(d.getDuration())
                       + " chapters: " + QString::number(d.chapters.count()));
 	}
 }
