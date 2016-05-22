@@ -934,11 +934,20 @@ void TPlaylist::onNewMediaStartedPlaying() {
     QString filename = md->filename;
     QString current_filename = playlistWidget->playingFile();
 
-    if (filename == current_filename) {
+    if (md->disc.valid) {
+        if (md->titles.count() == playlistWidget->countItems()) {
+            TDiscName cur_disc(current_filename);
+            if (cur_disc.valid
+                && cur_disc.protocol == md->disc.protocol
+                && cur_disc.device == md->disc.device) {
+                logger()->debug("onNewMediaStartedPlaying: item is from current"
+                                " disc");
+                return;
+            }
+        }
+    } else if (filename == current_filename) {
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
-        if (md->disc.valid) {
-            logger()->debug("onNewMediaStartedPlaying: disc item is uptodate");
-        } else if (item) {
+        if (item) {
             bool modified = false;
             if (!item->edited()) {
                 QString name = md->displayName();
@@ -970,21 +979,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
         return;
     }
 
-    if (md->disc.valid && md->titles.count() == playlistWidget->countItems()) {
-        TDiscName cur_disc(current_filename);
-        if (cur_disc.valid
-            && cur_disc.protocol == md->disc.protocol
-            && cur_disc.device == md->disc.device) {
-            logger()->debug("onNewMediaStartedPlaying: item from current disc");
-            return;
-        }
-    }
-
     // Create new playlist
     clear();
 
     if (md->disc.valid) {
         // Add disc titles
+        playlistWidget->enableSort(false);
         TDiscName disc = md->disc;
         QIcon icon = iconProvider.iconForFile(disc.toString());
         foreach(const Maps::TTitleData title, md->titles) {
