@@ -842,14 +842,22 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_dvdnav_title_is_menu("^DVDNAV_TITLE_IS_MENU");
 	static QRegExp rx_dvdnav_chapters("^TITLE (\\d+), CHAPTERS: (.*)");
 
-	// DVDNAV messages that kill the log
-	static QRegExp rx_dvdnav_kill_line(
-		/* scaling mouse move, because off -msglevel cplayer=6 */
-		"^(rescaled coordinates"
-		/* Emitted on DVDNAV menus when image not mpeg2 compliant */
-		"|\\[mpeg2video .*Invalid horizontal or vertical size value"
-		"|\\[ASPECT\\] Warning: No suitable new res found)"
-	);
+    static QRegExp rx_kill_line(
+
+        /* DVDNAV messages that kill the log */
+        /* scaling mouse move, because off -msglevel cplayer=6 */
+        "^(rescaled coordinates"
+        /* Emitted on DVDNAV menus when image not mpeg2 compliant */
+        "|\\[mpeg2video .*Invalid horizontal or vertical size value"
+        "|\\[ASPECT\\] Warning: No suitable new res found)"
+
+        /* TS Transport stream program ID */
+#ifndef PROGRAM_SWITCH
+        "|PROGRAM_ID="
+#endif
+        ")"
+    );
+
 
 	// Clip info
 	static QRegExp rx_clip_info_name("^ID_CLIP_INFO_NAME(\\d+)=(.+)");
@@ -894,8 +902,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 		return parseStatusLine(rx_av.cap(1).toDouble(), 0, rx_av, line);
 	}
 
-	// DVDNAV messages that kill the log
-	if (rx_dvdnav_kill_line.indexIn(line) >= 0)
+    // Messages that kill the log
+    if (rx_kill_line.indexIn(line) >= 0)
 		return true;
 
 	// First ask mom
