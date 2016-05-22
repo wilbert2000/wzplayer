@@ -34,7 +34,7 @@ public:
 
 protected:
 	QString title(QString text);
-    QString openPar(QString text, int colSpan = 2);
+    QString openPar(QString text);
 	QString closePar();
 
 	QString addItem(QString tag, QString value);
