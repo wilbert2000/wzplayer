@@ -552,17 +552,17 @@ void TApp::showInfo() {
     logger()->info(s);
     logger()->info("Compiled with Qt version %1, running on Qt version %2", QT_VERSION_STR,
                  qVersion());
-    logger()->debug("application path: '%1'", applicationDirPath());
-    logger()->debug("data path: '%1'", TPaths::dataPath());
-    logger()->debug("translation path: '%1'", TPaths::translationPath());
-    logger()->debug("doc path: '%1'", TPaths::docPath());
-    logger()->debug("themes path: '%1'", TPaths::themesPath());
-    logger()->debug("shortcuts path: '%1'", TPaths::shortcutsPath());
-    logger()->debug("config path: '%1'", TPaths::configPath());
-    logger()->debug("file for subtitle styles: '%1'", TPaths::subtitleStyleFile());
-    logger()->debug("current directory: '%1'", QDir::currentPath());
+    logger()->info("application path: '%1'", applicationDirPath());
+    logger()->info("data path: '%1'", TPaths::dataPath());
+    logger()->info("translation path: '%1'", TPaths::translationPath());
+    logger()->info("doc path: '%1'", TPaths::docPath());
+    logger()->info("themes path: '%1'", TPaths::themesPath());
+    logger()->info("shortcuts path: '%1'", TPaths::shortcutsPath());
+    logger()->info("config path: '%1'", TPaths::configPath());
+    logger()->info("file for subtitle styles: '%1'", TPaths::subtitleStyleFile());
+    logger()->info("current directory: '%1'", QDir::currentPath());
 #ifdef Q_OS_WIN
-    logger()->debug("font path: '%1'", TPaths::fontPath());
+    logger()->info("font path: '%1'", TPaths::fontPath());
 #endif
 }
 
