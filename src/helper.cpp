@@ -129,6 +129,7 @@ QString Helper::clean(const QString& name, bool removeOnly) {
         }
         s.replace(QRegExp("[\\._\\s]+"), " ");
         s.replace("-", " - ");
+        s.replace(QRegExp("([a-zA-Z])(\\d+)"), "\\1 \\2 ");
         s = s.simplified();
         if (s.length() > 255) {
             s = s.left(252) + "...";
