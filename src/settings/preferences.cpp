@@ -843,7 +843,6 @@ void TPreferences::setPlayerBin(QString bin,
 
 
 void TPreferences::load() {
-    logger->debug("load");
 
     config_version = value("config_version", 0).toInt();
 

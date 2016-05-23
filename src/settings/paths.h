@@ -27,9 +27,6 @@
 #include <QDesktopServices>
 #endif
 
-namespace Log4Qt {
-class Logger;
-}
 
 namespace Settings {
 
@@ -84,7 +81,6 @@ private:
 	static QString config_path;
     static QStringList fonts(const QString& font_dir);
     static QString fontPathPlayer(const QString& bin);
-    static Log4Qt::Logger* logger;
 };
 
 } // namespace Settings

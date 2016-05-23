@@ -79,6 +79,7 @@ int main(int argc, char** argv) {
     do {
         logger()->debug("Creating application");
         TApp app(argc, argv);
+        logger()->debug("Initialising application");
         exitCode = app.processArgs();
         if (exitCode == TApp::NoExit) {
             logger()->debug("Starting application");
