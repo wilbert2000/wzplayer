@@ -113,8 +113,8 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
         bool ns, fs;
         TToolbarEditor::stringToAction(actions[i], action_name, ns, fs);
         if (action_name.isEmpty()) {
-            logger()->warn("setActionsFromStringList: malformed action '"
-                           + actions[i] + "'' at pos " + QString::number(i));
+            logger()->warn("setActionsFromStringList: malformed action '%1'",
+                           actions[i]);
             actions.removeAt(i);
 		} else {
             if (Settings::pref->fullscreen ? fs : ns) {
@@ -134,8 +134,8 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
                             }
                         }
                     } else {
-                        logger()->warn("setActionsFromStringList: action '"
-                                     + action_name + "'' not found");
+                        logger()->warn("setActionsFromStringList: action '%1'"
+                                       " not found", action_name);
                         actions.removeAt(i);
                         i--;
                     }
