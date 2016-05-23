@@ -22,5 +22,5 @@ const QString TConfig::URL_VERSION_INFO("https://raw.githubusercontent.com/wilbe
 const QString TConfig::URL_SMPLAYER("http://www.smplayer.info");
 
 QList<QRegExp> TConfig::TITLE_BLACKLIST = QList<QRegExp>()
-    << QRegExp("RARBG(.COM)?", Qt::CaseInsensitive);
+    << QRegExp("\\[?RARBG(.COM)?\\]?", Qt::CaseInsensitive);
 
