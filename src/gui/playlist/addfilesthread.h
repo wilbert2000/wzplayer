@@ -47,6 +47,7 @@ private:
 
     QString playlistPath;
     QStringList blacklist;
+    QStringList nameFilterList;
 
     bool blacklisted(QString filename);
     bool blacklisted(const QFileInfo& fi);
@@ -62,6 +63,7 @@ private:
                                          const QString& filename,
                                          QString name,
                                          const QFileInfo& fi,
+                                         bool protectName,
                                          bool wzplaylist);
     TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,
                                     const QFileInfo& fi,

@@ -69,7 +69,8 @@ TPlaylistItem::TPlaylistItem() :
 TPlaylistItem::TPlaylistItem(const QString &filename,
                              const QString &name,
                              double duration,
-                             bool isFolder) :
+                             bool isFolder,
+                             bool protectName) :
     mFilename(filename),
     mName(name),
     mDuration(duration),
@@ -87,7 +88,12 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
             mName = QFileInfo(mName).fileName();
         }
     }
-    mName = Helper::cleanName(mName);
+
+    if (protectName) {
+        mEdited = true;
+    } else {
+        mName = Helper::cleanName(mName);
+    }
 
     mPlaylist = extensions.isPlaylist(mFilename);
 }
@@ -98,8 +104,14 @@ void TPlaylistItem::setFilename(const QString &filename) {
     mPlaylist = extensions.isPlaylist(mFilename);
 }
 
-void TPlaylistItem::setName(const QString& name) {
-    mName = Helper::cleanName(name);
+void TPlaylistItem::setName(const QString& name, bool protectName) {
+
+    if (protectName) {
+        mName = name;
+        mEdited = true;
+    } else {
+        mName = Helper::cleanName(name);
+    }
 }
 
 void TPlaylistItem::setState(TPlaylistItemState state) {
@@ -185,9 +197,11 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& name,
                                          double duration,
                                          bool isDir,
-                                         const QIcon& icon) :
+                                         const QIcon& icon,
+                                         bool protectName) :
     QTreeWidgetItem(parent),
-    playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir),
+    playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir,
+                 protectName),
     itemIcon(icon),
     mModified(false) {
 
@@ -227,13 +241,12 @@ int TPlaylistWidgetItem::getLevel() const {
 }
 
 void TPlaylistWidgetItem::setFilename(const QString& filename) {
-
     playlistItem.setFilename(filename);
 }
 
-void TPlaylistWidgetItem::setName(const QString& name) {
+void TPlaylistWidgetItem::setName(const QString& name, bool protectName) {
 
-    playlistItem.setName(name);
+    playlistItem.setName(name, protectName);
     setText(COL_NAME, playlistItem.name());
     setSzHint(getLevel());
 }

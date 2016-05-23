@@ -25,14 +25,15 @@ public:
     TPlaylistItem(const QString &filename,
                   const QString &name,
                   double duration,
-                  bool isFolder);
+                  bool isFolder,
+                  bool protectName);
     virtual ~TPlaylistItem() {}
 
     QString filename() const { return mFilename; }
     void setFilename(const QString &filename);
 
     QString name() const { return mName; }
-    void setName(const QString &name);
+    void setName(const QString &name, bool protectName = false);
 
     double duration() const { return mDuration; }
     void setDuration(double duration) { mDuration = duration; }
@@ -101,7 +102,8 @@ public:
                         const QString& name,
                         double duration,
                         bool isDir,
-                        const QIcon& icon);
+                        const QIcon& icon,
+                        bool protectName = false);
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
@@ -111,7 +113,7 @@ public:
     QString fname() const;
 
     QString name() const { return playlistItem.name(); }
-    void setName(const QString& name);
+    void setName(const QString& name, bool protectName = false);
 
     double duration() const { return playlistItem.duration(); }
     void setDuration(double d);

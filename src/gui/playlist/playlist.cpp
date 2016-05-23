@@ -1121,9 +1121,6 @@ void TPlaylist:: setWinTitle() {
         title = root->name();
         if (title.isEmpty()) {
             title = root->fname();
-            logger()->debug("setWinTitle: using file name root '%1'", title);
-        } else {
-            logger()->debug("setWinTitle: using name root '%1'", title);
         }
     }
 
@@ -1165,8 +1162,7 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
         tr("Name to display in playlist:"),	QLineEdit::Normal,
 		current_name, &ok);
     if (ok && text != saved_name) {
-        item->setName(text);
-        item->setEdited(true);
+        item->setName(text, true);
         playlistWidget->setModified(item->parent());
 	}
 }
