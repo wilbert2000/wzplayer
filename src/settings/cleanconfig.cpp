@@ -20,13 +20,7 @@ void TCleanConfig::clean(const QString& config_path) {
 	s = config_path + "/wzplayer_files.ini";
 	if (QFile::exists(s)) files_to_delete << s;
 
-	s = config_path + "/ytcode.script";
-	if (QFile::exists(s)) files_to_delete << s;
-
-	s = config_path + "/yt.js";
-	if (QFile::exists(s)) files_to_delete << s;
-	
-	s = config_path + "/player_info.ini";
+    s = config_path + "/player_info_version_3.ini";
 	if (QFile::exists(s)) files_to_delete << s;
 
 	s = config_path + "/file_settings";
