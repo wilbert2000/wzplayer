@@ -65,6 +65,7 @@ void TAddFilesThread::run() {
         root = 0;
     } else {
         root->setFilename("");
+        root->setName("");
     }
 
     logger()->debug("run: exiting");
