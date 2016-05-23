@@ -76,7 +76,7 @@ public:
     }
 
     //! Generic open, with autodetection of type
-    void open(QString file = "", int seek = -1);
+    void open(QString file = "");
 	//! Open disc
 	void openDisc(TDiscName disc, bool fast_open = false);
 
@@ -91,6 +91,10 @@ public:
 	bool getMute() const;
 	Settings::TAudioEqualizerList getAudioEqualizer() const;
 	bool videoFiltersEnabled(bool displayMessage = false);
+
+    void saveRestartTime() {
+        restartTime = mset.current_sec;
+    }
 
 public slots:
 	void loadSub(const QString& sub);
@@ -379,8 +383,8 @@ signals:
 protected:
 	void initVolume();
 	void initMediaSettings();
-	void initPlaying(int seek = -1);
-	void startPlayer(QString file, double seek = -1);
+    void initPlaying();
+    void startPlayer(QString file);
     void stopPlayer();
 	void restartPlay();
 
@@ -419,9 +423,11 @@ protected:
 #endif
 
 private:
-	TCoreState _state;
+    static double restartTime;
+
+    TCoreState _state;
     bool seeking;
-	QTime time;
+    QTime time;
 
 	QString initial_subtitle;
 	QMap<QString,QString> forced_titles;
@@ -430,7 +436,7 @@ private:
 
 	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
 
-	void openFile(const QString& filename, int seek = -1);
+    void openFile(const QString& filename);
 	void openStream(const QString& name);
 	void openTV(QString channel_id);
 

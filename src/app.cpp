@@ -496,7 +496,7 @@ void TApp::onRequestRestart() {
     Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
     playlist->getFilesToPlay(files_to_play);
     current_file = playlist->playingFile();
-    // TODO: time
+    main_window->getCore()->saveRestartTime();
 }
 
 void TApp::showInfo() {

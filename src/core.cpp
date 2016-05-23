@@ -58,6 +58,8 @@
 
 using namespace Settings;
 
+double TCore::restartTime = 0;
+
 TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     QObject(parent),
     debug(logger()),
@@ -381,7 +383,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 } // openDisc
 
 // Generic open, autodetect type
-void TCore::open(QString file, int seek) {
+void TCore::open(QString file) {
     logger()->debug("open: " + file);
 
     if (file.isEmpty()) {
@@ -436,7 +438,7 @@ void TCore::open(QString file, int seek) {
         }
 
         // Local file
-        openFile(file, seek);
+        openFile(file);
         return;
     }
 
@@ -557,7 +559,7 @@ void TCore::openStream(const QString& name) {
 	initPlaying();
 }
 
-void TCore::openFile(const QString& filename, int seek) {
+void TCore::openFile(const QString& filename) {
     logger()->debug("openFile: '" + filename + "'");
 
     close(STATE_LOADING);
@@ -585,7 +587,7 @@ void TCore::openFile(const QString& filename, int seek) {
 		}
 	}
 
-	initPlaying(seek);
+    initPlaying();
 }
 
 void TCore::restartPlay() {
@@ -654,7 +656,7 @@ void TCore::initMediaSettings() {
 	emit mediaSettingsChanged();
 }
 
-void TCore::initPlaying(int seek) {
+void TCore::initPlaying() {
     logger()->debug("initPlaying: starting time");
 
     time.start();
@@ -664,15 +666,7 @@ void TCore::initPlaying(int seek) {
     if (_state != STATE_RESTARTING)
         initMediaSettings();
 
-    int start_sec = (int) mset.current_sec;
-    if (seek >= 0)
-        start_sec = seek;
-
-    // Cannot seek at startup in DVDNAV.
-    if (mdat.selected_type == TMediaData::TYPE_DVDNAV)
-        start_sec = 0;
-
-    startPlayer(mdat.filename, start_sec);
+    startPlayer(mdat.filename);
 }
 
 void TCore::playingStartedNewMedia() {
@@ -868,8 +862,8 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 }
 #endif
 
-void TCore::startPlayer(QString file, double seek) {
-    logger()->debug("startPlayer: " + file + " at " + QString::number(seek));
+void TCore::startPlayer(QString file) {
+    logger()->debug("startPlayer: '%1'", file);
 
 	if (file.isEmpty()) {
         logger()->warn("TCore:startPlayer: file is empty");
@@ -924,18 +918,23 @@ void TCore::startPlayer(QString file, double seek) {
 		proc->setOption("verbose");
 	}
 
-    // Seek to in point or to seek
+    // Seek to in point, mset.current_sec or restartTime
     seeking = false;
-    if (mdat.selected_type != TMediaData::TYPE_TV) {
+    if (mdat.selected_type == TMediaData::TYPE_FILE) {
         double ss = 0;
         if (mset.in_point > 0) {
             ss = mset.in_point;
         }
-        // Seek may override in point, but cannot be beyond out point
-        if (seek > 0 && (mset.out_point <= 0 || seek < mset.out_point)) {
-            ss = seek;
+        // current_sec may override in point, but cannot be beyond out point
+        if (mset.current_sec > 0
+            && (mset.out_point <= 0 || mset.current_sec < mset.out_point)) {
+            ss = mset.current_sec;
         }
-        if (ss > 0) {
+        if (restartTime != 0) {
+            ss = restartTime;
+            restartTime = 0;
+        }
+        if (ss != 0) {
             proc->setOption("ss", ss);
         }
     }

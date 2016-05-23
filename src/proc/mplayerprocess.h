@@ -155,12 +155,13 @@ private:
 	bool want_pause;
 	bool mute_option_set;
 
-	// Restore DVDNAV to pos before restart
-	bool restore_dvdnav;
-	int dvdnav_vts_to_restore;
-	int dvdnav_title_to_restore_vts;
-	int dvdnav_title_to_restore;
-	double dvdnav_time_to_restore;
+    // Restore DVDNAV to pos before restart
+    // need to be static to survive restart
+    static bool restore_dvdnav;
+    static int dvdnav_vts_to_restore;
+    static int dvdnav_title_to_restore_vts;
+    static int dvdnav_title_to_restore;
+    static double dvdnav_time_to_restore;
 
 	void clearSubSources();
 	void getSelectedSubtitles();

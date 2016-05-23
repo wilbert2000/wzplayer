@@ -39,11 +39,17 @@ namespace Proc {
 const double FRAME_BACKSTEP_TIME = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
+bool TMPlayerProcess::restore_dvdnav = false;
+int TMPlayerProcess::dvdnav_vts_to_restore;
+int TMPlayerProcess::dvdnav_title_to_restore_vts;
+int TMPlayerProcess::dvdnav_title_to_restore;
+double TMPlayerProcess::dvdnav_time_to_restore;
+
+
 TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata) :
 	TPlayerProcess(parent, mdata),
     debug(logger()),
-	mute_option_set(false),
-	restore_dvdnav(false) {
+    mute_option_set(false) {
 }
 
 TMPlayerProcess::~TMPlayerProcess() {
