@@ -357,13 +357,13 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
         return w->plChild(c - 1);
     }
 
-    QTreeWidgetItem* parent = w->parent();
+    TPlaylistWidgetItem* parent = w->plParent();
     if(parent) {
        int idx = parent->indexOfChild(w) - 1;
        if (idx >= 0) {
-           return static_cast<TPlaylistWidgetItem*>(parent->child(idx));
+           return parent->plChild(idx);
        }
-       return getPreviousItem(static_cast<TPlaylistWidgetItem*>(parent), false);
+       return getPreviousItem(parent, false);
     }
 
     return lastPlaylistWidgetItem();

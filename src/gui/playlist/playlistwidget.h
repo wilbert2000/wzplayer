@@ -38,6 +38,8 @@ public:
     QString currentFile() const;
     TPlaylistWidgetItem* findFilename(const QString& filename);
 
+    TPlaylistWidgetItem* getNextItem(TPlaylistWidgetItem* w,
+                                     bool allowChild = true) const;
     TPlaylistWidgetItem* getNextPlaylistWidgetItem(TPlaylistWidgetItem* item) const;
     TPlaylistWidgetItem* getNextPlaylistWidgetItem() const;
 
@@ -74,9 +76,6 @@ private:
 
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
-
-    TPlaylistWidgetItem* getNextItem(TPlaylistWidgetItem* w,
-                                     bool allowChild = true) const;
 
     TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
                                          bool allowChild = true) const;
