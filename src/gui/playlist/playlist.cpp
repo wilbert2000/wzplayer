@@ -324,7 +324,18 @@ void TPlaylist::msg(const QString& s) {
     emit displayMessageOnOSD(s, TConfig::MESSAGE_DURATION);
 }
 
-void TPlaylist::appendFiles(QStringList& files) const {
+void TPlaylist::getFilesToPlay(QStringList& files) const {
+
+    TPlaylistWidgetItem* root = playlistWidget->root();
+    if (root == 0) {
+        return;
+    }
+
+    QString fn = root->filename();
+    if (!fn.isEmpty()) {
+        files.append(fn);
+        return;
+    }
 
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {

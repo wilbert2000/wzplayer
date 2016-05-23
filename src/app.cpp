@@ -493,26 +493,10 @@ void TApp::onRequestRestart() {
 
     restarting = true;
     start_in_fullscreen = pref->fullscreen;
-
     Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
-    playlist->appendFiles(files_to_play);
+    playlist->getFilesToPlay(files_to_play);
     current_file = playlist->playingFile();
-
-    // Rebuild playlist from scratch when restarting a disc. Playing the whole
-    // disc gives less problems as playing the seperate tracks from the playlist,
-    // especially for DVDNAV.
-    if (files_to_play.count() > 1) {
-        if (current_file.isEmpty()) {
-            current_file = files_to_play[0];
-        }
-        TDiscName disc(current_file);
-        if (disc.valid) {
-            files_to_play.clear();
-            disc.title = 0;
-            files_to_play.append(disc.toString());
-            current_file = "";
-        }
-    }
+    // TODO: time
 }
 
 void TApp::showInfo() {
