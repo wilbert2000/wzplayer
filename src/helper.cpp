@@ -122,18 +122,32 @@ QString Helper::clean(const QString& name, bool removeOnly) {
         }
     }
 
-    if (!s.isEmpty()) {
-        fi.setFile(s);
-        if (!fi.suffix().isEmpty()) {
-            s = fi.baseName() + " (" + fi.suffix() + ")";
-        }
-        s.replace(QRegExp("[\\._\\s]+"), " ");
-        s.replace("-", " - ");
-        s.replace(QRegExp("([a-zA-Z])(\\d+)"), "\\1 \\2 ");
-        s = s.simplified();
-        if (s.length() > 255) {
-            s = s.left(252) + "...";
-        }
+    if (s.isEmpty()) {
+        logger()->trace("Clean: returning ''");
+        return s;
+    }
+
+    // \w Matches a word character (QChar::isLetterOrNumber(),
+    //    QChar::isMark(), or '_')
+    // \W Matches a non-word character
+
+    s.replace("_", " ");
+
+    static QRegExp rx1("([^\\s])\\.([^\\s])");
+    s.replace(rx1, "\\1 \\2");
+
+    static QRegExp rx2("([^\\s])-([^\\s])");
+    s.replace(rx2, "\\1 - \\2");
+
+    static QRegExp rx3("(\\d)[xX](\\d)");
+    s.replace(rx3, "\\1 x \\2");
+
+    static QRegExp rx4("([^\\d\\s\\WmMpPcCuU])(\\d+)");
+    s.replace(rx4, "\\1 \\2");
+
+    s = s.simplified();
+    if (s.length() > 255) {
+        s = s.left(252) + "...";
     }
 
     logger()->trace("Clean: returning '%1'", s);
