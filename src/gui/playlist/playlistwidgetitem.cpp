@@ -161,6 +161,7 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 LOG4QT_DECLARE_STATIC_LOGGER(widgetLogger, Gui::Playlist::TPlaylistWidgetItem)
 
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
+const int TIME_TEXT_ALIGN = Qt::AlignRight | Qt::AlignVCenter;
 
 // Level of the root node in the tree view, where level means the number of
 // icons indenting the item. With root decoration on, toplevel items appear on
@@ -190,6 +191,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
     setFlags(ROOT_FLAGS);
     setIcon(COL_NAME, itemIcon);
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
+    setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
 }
 
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
@@ -217,11 +219,11 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     }
 
     setIcon(COL_NAME, itemIcon);
-
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
     setText(COL_NAME, playlistItem.name());
     setToolTip(COL_NAME, playlistItem.filename());
 
+    setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
     setDuration(playlistItem.duration());
 }
 

@@ -247,7 +247,7 @@ QWidget* TTimeLabelAction::createWidget (QWidget* parent) {
     time_label->setFrameShape(QFrame::Panel);
     time_label->setFrameShadow(QFrame::Sunken);
     time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    time_label->setText("00:00:00 / 00:00:00");
+    time_label->setText("00:00 / 00:00");
 
     connect(this, SIGNAL(newText(const QString&)),
             time_label, SLOT(setText(const QString&)));

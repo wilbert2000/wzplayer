@@ -40,7 +40,7 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Helper)
 
 QString Helper::formatTime(int secs) {
 
-	bool negative = (secs < 0);
+    bool negative = secs < 0;
 	secs = abs(secs);
 
 	int t = secs;
@@ -50,10 +50,16 @@ QString Helper::formatTime(int secs) {
 	t -= minutes * 60;
 	int seconds = t;
 
-    return QString("%1%2:%3:%4").arg(negative ? "-" : "")
-            .arg(hours, 2, 10, QChar('0'))
-            .arg(minutes, 2, 10, QChar('0'))
-            .arg(seconds, 2, 10, QChar('0'));
+    if (hours == 0) {
+        return QString("%1%2:%3").arg(negative ? "-" : "")
+                .arg(minutes, 2, 10, QChar('0'))
+                .arg(seconds, 2, 10, QChar('0'));
+    } else {
+        return QString("%1%2:%3:%4").arg(negative ? "-" : "")
+                .arg(hours, 2, 10, QChar('0'))
+                .arg(minutes, 2, 10, QChar('0'))
+                .arg(seconds, 2, 10, QChar('0'));
+    }
 }
 
 bool Helper::directoryContainsDVD(QString directory) {
@@ -102,8 +108,7 @@ QString Helper::clean(const QString& name, bool removeOnly) {
                                     | QUrl::RemoveQuery
                                     | QUrl::RemoveFragment
                                     | QUrl::StripTrailingSlash);
-    QFileInfo fi(s);
-    s = fi.fileName();
+    s = QFileInfo(s).fileName();
     if (s.isEmpty()) {
         s = name;
     }

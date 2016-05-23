@@ -125,7 +125,7 @@ void TDefault::createStatusBar() {
     ColorUtils::setForegroundColor(time_label, fgc);
     time_label->setFrameShape(QFrame::NoFrame);
     time_label->setContentsMargins(margins);
-    time_label->setText("00:00:00 / 00:00:00");
+    time_label->setText("00:00 / 00:00");
     statusBar()->addPermanentWidget(time_label, 0);
     connect(this, SIGNAL(timeChanged(QString)),
             this, SLOT(displayTime(QString)));
