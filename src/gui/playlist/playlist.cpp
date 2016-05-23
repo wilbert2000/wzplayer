@@ -753,10 +753,12 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
 
     // Save currently playing item, which might be deleted
     QString playing = playingFile();
+
     // Move current out of selection
-    QTreeWidgetItem* newCurrent = playlistWidget->currentItem();
+    TPlaylistWidgetItem* newCurrent =
+            playlistWidget->currentPlaylistWidgetItem();
     do {
-        newCurrent = newCurrent->parent();
+        newCurrent = playlistWidget->getNextItem(newCurrent, false);
     } while (newCurrent && newCurrent->isSelected());
 
     QTreeWidgetItemIterator it(playlistWidget,
