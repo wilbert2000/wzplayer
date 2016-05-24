@@ -611,11 +611,13 @@ void TPlayerWindow::setFastWindow() {
     video_window->setFastBackground();
 }
 
-void TPlayerWindow::restoreNormalWindow() {
-    logger()->debug("restoreNormalWindow");
+void TPlayerWindow::restoreNormalWindow(bool clrScreen) {
+    logger()->debug("restoreNormalWindow: repaint %1", clrScreen);
 
     video_window->restoreNormalBackground();
-    repaint();
+    if (clrScreen) {
+        repaint();
+    }
     // Clear video size
     video_size = QSize(0, 0);
 }

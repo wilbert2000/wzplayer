@@ -206,7 +206,7 @@ void TCore::onProcessError(QProcess::ProcessError error) {
     logger()->debug("onProcessError: %1", error);
 
 	// First restore normal window background
-	playerwindow->restoreNormalWindow();
+    playerwindow->restoreNormalWindow(false);
     enableScreensaver();
 
     emit playerError(Proc::TExitMsg::processErrorToErrorID(error));
@@ -217,7 +217,7 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
            normal_exit, exit_code, eof);
 
     // Restore normal window background
-    playerwindow->restoreNormalWindow();
+    playerwindow->restoreNormalWindow(false);
     enableScreensaver();
 
     if (_state == STATE_STOPPING) {
@@ -660,11 +660,11 @@ void TCore::initPlaying() {
     logger()->debug("initPlaying: starting time");
 
     time.start();
-    // Clear background
-    playerwindow->repaint();
-
-    if (_state != STATE_RESTARTING)
+    if (_state != STATE_RESTARTING) {
+        // Clear background
+        playerwindow->repaint();
         initMediaSettings();
+    }
 
     startPlayer(mdat.filename);
 }
