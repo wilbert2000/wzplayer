@@ -144,7 +144,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         if (md.video_bitrate == -1) {
             if (Settings::pref->isMPV()) {
                 s += addItem(tr("Bitrate"),
-                             tr("Not received, wait a few seconds..."));
+                             tr("Wait a few seconds..."));
             } else {
                 s += addItem(tr("Bitrate"), tr("Unknown"));
             }
@@ -170,7 +170,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
     if (md.audio_bitrate == -1) {
         if (Settings::pref->isMPV()) {
             s += addItem(tr("Bitrate"),
-                         tr("Not received yet, wait a few seconds..."));
+                         tr("Wait a few seconds..."));
         } else {
             s += addItem(tr("Bitrate"), tr("Unknown"));
         }
