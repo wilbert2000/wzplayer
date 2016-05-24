@@ -552,40 +552,40 @@ void TCore::openStream(const QString& name) {
     logger()->debug("openStream: " + name);
 
     close(STATE_LOADING);
-	mdat.filename = name;
-	mdat.selected_type = TMediaData::TYPE_STREAM;
-	mset.reset();
+    mdat.filename = name;
+    mdat.selected_type = TMediaData::TYPE_STREAM;
+    mset.reset();
 
-	initPlaying();
+    initPlaying();
 }
 
 void TCore::openFile(const QString& filename) {
     logger()->debug("openFile: '" + filename + "'");
 
     close(STATE_LOADING);
-	mdat.filename = QDir::toNativeSeparators(filename);
-	mdat.selected_type = TMediaData::TYPE_FILE;
-	mset.reset();
+    mdat.filename = QDir::toNativeSeparators(filename);
+    mdat.selected_type = TMediaData::TYPE_FILE;
+    mset.reset();
 
-	// Check if we have info about this file
-	if (pref->remember_media_settings) {
-		if (pref->file_settings_method.toLower() == "hash") {
-			Settings::TFileSettingsHash settings(mdat.filename);
-			if (settings.existSettingsFor(mdat.filename)) {
+    // Check if we have info about this file
+    if (pref->remember_media_settings) {
+        if (pref->file_settings_method.toLower() == "hash") {
+            Settings::TFileSettingsHash settings(mdat.filename);
+            if (settings.existSettingsFor(mdat.filename)) {
                 settings.loadSettingsFor(mdat.filename, mset);
-			}
-		} else {
-			Settings::TFileSettings settings;
-			if (settings.existSettingsFor(mdat.filename)) {
+            }
+        } else {
+            Settings::TFileSettings settings;
+            if (settings.existSettingsFor(mdat.filename)) {
                 settings.loadSettingsFor(mdat.filename, mset);
-			}
-		}
+            }
+        }
 
-		if (!pref->remember_time_pos) {
-			mset.current_sec = 0;
+        if (!pref->remember_time_pos) {
+            mset.current_sec = 0;
             logger()->debug("openFile: Time pos reset to 0");
-		}
-	}
+        }
+    }
 
     initPlaying();
 }
