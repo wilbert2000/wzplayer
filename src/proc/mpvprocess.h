@@ -126,7 +126,6 @@ protected:
 
 protected slots:
 	void requestChapterInfo();
-	void requestBitrateInfo();
 
 private:
 	bool received_buffering;
@@ -162,6 +161,7 @@ private:
 	bool parseSubtitleTrack(int id, const QString& lang, QString name, QString type, bool selected);
 	void messageFilterNotSupported(const QString& filter_name);
 	bool parseMetaDataList(QString list);
+    void requestBitrateInfo();
 };
 
 } // namespace Proc
