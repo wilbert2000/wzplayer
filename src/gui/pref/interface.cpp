@@ -156,6 +156,7 @@ void TInterface::setData(Settings::TPreferences* pref) {
     audio_check->setChecked(pref->addAudio);
     playlists_check->setChecked(pref->addPlaylists);
     images_check->setChecked(pref->addImages);
+    image_duration_spinbox->setValue(pref->imageDuration);
 
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
@@ -211,6 +212,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->addAudio = audio_check->isChecked();
     pref->addPlaylists = playlists_check->isChecked();
     pref->addImages = images_check->isChecked();
+    pref->imageDuration = image_duration_spinbox->value();
 
     // Log
     pref->log_level = logLevel();
