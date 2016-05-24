@@ -26,6 +26,7 @@
 #include "wzdebug.h"
 #include "mediadata.h"
 
+
 class QStringList;
 
 namespace Proc {
@@ -152,7 +153,6 @@ private:
 	int clip_info_id;
 	QString clip_info_name;
 
-	bool want_pause;
 	bool mute_option_set;
 
     // Restore DVDNAV to pos before restart

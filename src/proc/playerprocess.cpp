@@ -98,14 +98,12 @@ bool TPlayerProcess::startPlayer() {
 	waiting_for_answers = 0;
 	waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
 
+    paused = false;
+
 	received_end_of_file = false;
 	quit_send = false;
 
 	prev_frame = -11111;
-
-    // TODO: check, also cleared by TCore::close()
-	// Clear media data
-	*md = TMediaData(*md);
 
 	// Start the player process
 	start();
@@ -165,10 +163,11 @@ void TPlayerProcess::notifyDuration(double duration) {
 
 	// Duration changed?
 	if (qAbs(duration - md->duration) > 0.001) {
-        debug << "notifyDuration: duration changed from" << md->duration
-              << "to" << duration << debug;
-		md->duration = duration;
-		emit durationChanged(duration);
+        logger()->debug("notifyDuration: duration changed from %1 to %2",
+                        QString::number(md->duration),
+                        QString::number(duration));
+        md->duration = duration;
+        emit durationChanged(md->duration);
 	}
 }
 
@@ -242,22 +241,24 @@ bool TPlayerProcess::waitForAnswers() {
 	return false;
 }
 
-bool TPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
-	Q_UNUSED(rx)
+bool TPlayerProcess::parseStatusLine(double time_sec, double duration,
+                                     QRegExp& rx, QString& line) {
+    Q_UNUSED(rx)
 
-	// Any pending questions?
-	// Cancel the remainder of this line and get the answers.
-	if (waitForAnswers())
-		return true;
+    // Any pending questions?
+    // Cancel the remainder of this line and get the answers.
+    if (waitForAnswers())
+        return true;
 
-	// For mplayer duration is always 0
-	if (duration > 0)
-		notifyDuration(duration);
+    // For mplayer duration is always 0
+    if (duration > 0) {
+        notifyDuration(duration);
+    }
 
-	notifyTime(time_sec, line);
+    notifyTime(time_sec, line);
 
-	// Parse the line just a litlle bit longer
-	return false;
+    // Parse the line just a litlle bit longer
+    return false;
 }
 
 void TPlayerProcess::quit(int exit_code) {
@@ -267,6 +268,29 @@ void TPlayerProcess::quit(int exit_code) {
         quit_send = true;
         writeToStdin("quit " + QString::number(exit_code));
     }
+}
+
+void TPlayerProcess::setImageInterval(int interval) {
+
+    if (interval < 2) {
+        interval = 2;
+    } else if (interval > 999) {
+        interval = 999;
+    }
+
+    if (temp_file.open()) {
+        temp_file_name = temp_file.fileName();
+        temp_file.resize(0);
+        QTextStream t(&temp_file);
+        for(int i = 0; i < interval; i++) {
+            t << md->filename << "\n";
+        }
+        t.flush();
+        temp_file.flush();
+        temp_file.close();
+    }
+
+    setOption("fps", 1);
 }
 
 bool TPlayerProcess::parseLine(QString& line) {

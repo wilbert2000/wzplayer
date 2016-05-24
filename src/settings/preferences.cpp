@@ -264,23 +264,36 @@ void TPreferences::reset() {
     start_in_fullscreen = false;
 
 
-	// Playlist tab
-	log_verbose = false;
+    // Playlist
+    mediaToAddToPlaylist = NoFiles;
+
+    addDirectories = true;
+    addVideo = true;
+    addAudio = true;
+    addPlaylists = false;
+    addImages = true;
+
+    imageDuration = 10;
+
+
+    // Log
+    log_verbose = false;
     log_level = Log4Qt::Level::DEBUG_INT;
 
-	history_recents.clear();
-	history_urls.clear();
+    // History
+    history_recents.clear();
+    history_urls.clear();
 
-	save_dirs = true;
-	latest_dir = QDir::homePath();
-	last_dvd_directory = "";
+    save_dirs = true;
+    latest_dir = QDir::homePath();
+    last_dvd_directory = "";
 
-	// TV (dvb)
-	last_dvb_channel = "";
-	last_tv_channel = "";
+    // TV (dvb)
+    last_dvb_channel = "";
+    last_tv_channel = "";
 
 
-	// Actions section
+    // Actions section
     // Mouse tab
     mouse_left_click_function = "play_or_pause";
 	delay_left_click = true;
@@ -360,7 +373,7 @@ void TPreferences::reset() {
 
 	use_edl_files = true;
 	change_video_equalizer_on_startup = true;
-    time_to_kill_player = 15000;
+    time_to_kill_player = 10000;
 	balloon_count = 5;
     clean_config = false;
 
@@ -544,6 +557,17 @@ void TPreferences::save() {
     setValue("hide_delay", floating_hide_delay);
     setValue("activation_area", floating_activation_area);
     setValue("start_in_fullscreen", start_in_fullscreen);
+    endGroup();
+
+
+    beginGroup("playlist");
+    setValue("media_to_add_to_playlist", mediaToAddToPlaylist);
+    setValue("add_directories", addDirectories);
+    setValue("add_video", addVideo);
+    setValue("add_audio", addAudio);
+    setValue("add_playlists", addPlaylists);
+    setValue("add_images", addImages);
+    setValue("image_duration", imageDuration);
     endGroup();
 
 
@@ -1049,6 +1073,19 @@ void TPreferences::load() {
 
     endGroup();
 
+    beginGroup("playlist");
+    mediaToAddToPlaylist = (TAddToPlaylist) value("media_to_add_to_playlist",
+                                                  mediaToAddToPlaylist).toInt();
+
+    addDirectories = value("add_directories", addDirectories).toBool();
+    addVideo = value("add_video", addVideo).toBool();
+    addAudio = value("add_audio", addAudio).toBool();
+    addPlaylists = value("add_playlists", addPlaylists).toBool();
+    addImages = value("add_images", addImages).toBool();
+
+    imageDuration = value("image_duration", imageDuration).toInt();
+
+    endGroup();
 
     beginGroup("history");
     history_recents.setMaxItems(value("recents/max_items", history_recents.maxItems()).toInt());

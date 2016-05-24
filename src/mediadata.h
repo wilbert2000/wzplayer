@@ -48,7 +48,6 @@ public:
 	};
 
 	TMediaData();
-	TMediaData(const TMediaData& md);
 	virtual ~TMediaData() {}
 
 	QString filename;
@@ -58,6 +57,8 @@ public:
 	Type detected_type;
 	// Parsed disc data set by TCore::openDisc()
 	TDiscName disc;
+    // Image file
+    bool image;
 	// Streams
 	QString stream_url;
 

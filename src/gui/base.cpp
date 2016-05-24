@@ -954,20 +954,16 @@ void TBase::showPlaylist(bool b) {
 void TBase::showPreferencesDialog() {
     logger()->debug("showPreferencesDialog");
 
-	if (!pref_dialog) {
-		createPreferencesDialog();
-	}
+    if (!pref_dialog) {
+        createPreferencesDialog();
+    }
 
-	pref_dialog->setData(pref);
+    pref_dialog->setData(pref);
 
-	pref_dialog->mod_input()->actions_editor->clear();
-	pref_dialog->mod_input()->actions_editor->addActions(this);
+    pref_dialog->mod_input()->actions_editor->clear();
+    pref_dialog->mod_input()->actions_editor->addActions(this);
 
-	// Set playlist preferences
-	pref_dialog->mod_interface()->setDirectoryRecursion(playlist->directoryRecursion());
-    pref_dialog->mod_interface()->setMediaToAddToPlaylist(playlist->mediaToAddToPlaylist());
-
-	pref_dialog->show();
+    pref_dialog->show();
 }
 
 void TBase::restartApplication() {
@@ -995,10 +991,7 @@ void TBase::applyNewPreferences() {
 	// Update pref from dialog
 	pref_dialog->getData(pref);
 
-    // Update and save playlist preferences
-    Pref::TInterface* mod_interface = pref_dialog->mod_interface();
-    playlist->setDirectoryRecursion(mod_interface->directoryRecursion());
-    playlist->setMediaToAddToPlaylist(mod_interface->mediaToAddToPlaylist());
+    // Save playlist preferences repeat and shuffle
     playlist->saveSettings();
 
     // Update and save actions
@@ -1009,6 +1002,7 @@ void TBase::applyNewPreferences() {
     pref->save();
 
     // Player bin, style, icon set or language change need restart TApp
+    Pref::TInterface* mod_interface = pref_dialog->mod_interface();
     if (pref->player_bin != old_player_bin
         || mod_interface->styleChanged()
         || mod_interface->iconsetChanged()
@@ -1018,11 +1012,6 @@ void TBase::applyNewPreferences() {
 	}
 
 	// Keeping the current main window
-
-	// Update logging
-    //TLog::log->setLogDebugMessages(pref->log_debug_enabled);
-	// Verbose handled by restart core
-    //TLog::log->setLogFileEnabled(pref->log_file);
 
 	// Set color key, depends on VO
 	playerwindow->setColorKey();
@@ -1042,8 +1031,6 @@ void TBase::applyNewPreferences() {
 		resize(width(), height() + 200);
 		panel->show();
 	}
-	// Show tags in window title
-	onMediaInfoChanged();
 	// Hide toolbars delay
 	auto_hide_timer->setInterval(pref->floating_hide_delay);
 	// Recents
@@ -1297,7 +1284,8 @@ void TBase::openFile() {
                     tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
                     + tr("Video") + extensions.video().forFilter() + ";;"
                     + tr("Audio") + extensions.audio().forFilter() + ";;"
-                    + tr("Playlists") + extensions.playlist().forFilter() + ";;"
+                    + tr("Playlists") + extensions.playlists().forFilter() + ";;"
+                    + tr("Images") + extensions.images().forFilter() + ";;"
                     + tr("All files") +" (*.*)");
 
 	if (!s.isEmpty()) {

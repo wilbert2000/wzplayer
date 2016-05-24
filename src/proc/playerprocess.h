@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QTemporaryFile>
 
 #include "wzdebug.h"
 #include "proc/process.h"
@@ -67,6 +68,7 @@ public:
 	virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;
     virtual void setSubStyles(const Settings::TAssStyles& styles,
                               const QString& assStylesFile = QString::null) = 0;
+    void setImageInterval(int interval);
 
 	// Slave commands
 	void quit(int exit_code);
@@ -196,10 +198,13 @@ protected:
 
 	bool notified_player_is_running;
 	int waiting_for_answers;
+    bool paused;
 
 	bool received_end_of_file;
 	bool quit_send;
 	int exit_code_override;
+
+    QString temp_file_name;
 
 	double guiTimeToPlayerTime(double sec);
 	double playerTimeToGuiTime(double sec);
@@ -227,6 +232,8 @@ private:
 	int line_count;
 	int waiting_for_answers_safe_guard;
 	int prev_frame;
+
+    QTemporaryFile temp_file;
 
 	bool parseAngle(const QString& value);
 	bool parseVO(const QString& vo, int sw, int sh, int dw, int dh);

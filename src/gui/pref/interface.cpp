@@ -150,7 +150,12 @@ void TInterface::setData(Settings::TPreferences* pref) {
 	setStartInFullscreen(pref->start_in_fullscreen);
 
 	// Playlist
-    // Playlist set by TBase
+    setMediaToAddToPlaylist(pref->mediaToAddToPlaylist);
+    setDirectoryRecursion(pref->addDirectories);
+    video_check->setChecked(pref->addVideo);
+    audio_check->setChecked(pref->addAudio);
+    playlists_check->setChecked(pref->addPlaylists);
+    images_check->setChecked(pref->addImages);
 
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
@@ -199,8 +204,15 @@ void TInterface::getData(Settings::TPreferences* pref) {
         ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
 
-    // Playlist by TBase
+    // Playlist
+    pref->mediaToAddToPlaylist = mediaToAddToPlaylist();
+    pref->addDirectories = directoryRecursion();
+    pref->addVideo = video_check->isChecked();
+    pref->addAudio = audio_check->isChecked();
+    pref->addPlaylists = playlists_check->isChecked();
+    pref->addImages = images_check->isChecked();
 
+    // Log
     pref->log_level = logLevel();
     Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
     Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);

@@ -565,6 +565,7 @@ void TCore::openFile(const QString& filename) {
     close(STATE_LOADING);
     mdat.filename = QDir::toNativeSeparators(filename);
     mdat.selected_type = TMediaData::TYPE_FILE;
+    mdat.image = extensions.isImage(mdat.filename);
     mset.reset();
 
     // Check if we have info about this file
@@ -919,6 +920,9 @@ void TCore::startPlayer(QString file) {
     // Seek to in point, mset.current_sec or restartTime
     seeking = false;
     if (mdat.selected_type == TMediaData::TYPE_FILE) {
+        if (mdat.image) {
+            proc->setImageInterval(pref->imageDuration);
+        }
         double ss = 0;
         if (mset.in_point > 0) {
             ss = mset.in_point;
@@ -930,12 +934,12 @@ void TCore::startPlayer(QString file) {
         }
         if (restartTime != 0) {
             ss = restartTime;
-            restartTime = 0;
         }
         if (ss != 0) {
             proc->setOption("ss", ss);
         }
     }
+    restartTime = 0;
 
 	// Setup hardware decoding for MPV.
 	// First set mdat.video_hwdec, handle setting hwdec option later
@@ -1275,8 +1279,9 @@ void TCore::startPlayer(QString file) {
 		proc->setOption("idx");
 	}
 
-	if (pref->use_correct_pts != TPreferences::Detect) {
-		proc->setOption("correct-pts", pref->use_correct_pts == TPreferences::Enabled);
+    if (mdat.image || pref->use_correct_pts != TPreferences::Detect) {
+        proc->setOption("correct-pts", !mdat.image
+                        && pref->use_correct_pts == TPreferences::Enabled);
 	}
 
     // Setup screenshot directory.

@@ -54,12 +54,6 @@ public:
 	bool recentsChanged() const { return recents_changed; }
 	bool urlMaxChanged() const { return url_max_changed; }
 
-	void setDirectoryRecursion(bool b);
-	bool directoryRecursion();
-
-    void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type);
-    Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist();
-
 protected:
 	void createLanguageCombo();
 
@@ -81,7 +75,14 @@ protected:
 	void setHideVideoOnAudioFiles(bool b);
 	bool hideVideoOnAudioFiles();
 
-	// History tab
+    // Playlist
+    void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type);
+    Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist();
+
+    void setDirectoryRecursion(bool b);
+    bool directoryRecursion();
+
+    // History tab
 	void setRecentsMaxItems(int n);
 	int recentsMaxItems();
 

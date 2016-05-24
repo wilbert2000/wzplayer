@@ -183,8 +183,11 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 	}
 
 	if (name == "MEDIA_TITLE") {
-        md->title = value.simplified();
-        logger()->debug("parseProperty: title set to '%1'", md->title);
+        // TODO: set if <> filename
+        if (!md->image) {
+            md->title = value.simplified();
+            logger()->debug("parseProperty: title set to '%1'", md->title);
+        }
 		return true;
 	}
 
@@ -423,50 +426,53 @@ void TMPVProcess::requestBitrateInfo() {
 }
 
 bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
-	// Parse custom status line
-	// STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
+    // Parse custom status line
+    // STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
-	if (TPlayerProcess::parseStatusLine(time_sec, duration, rx, line))
-		return true;
+    paused = rx.cap(3) == "yes";
 
-	// Parse status flags
-	bool paused = rx.cap(3) == "yes";
-	bool buffering = rx.cap(4) == "yes";
-	bool idle = rx.cap(5) == "yes";
+    if (TPlayerProcess::parseStatusLine(time_sec, duration, rx, line)) {
+        return true;
+    }
 
-	if (paused) {
-		// Don't emit signal receivedPause(): it is racy and not needed for MPV
-		return true;
-	}
+    // Parse status flags
+    bool buffering = rx.cap(4) == "yes";
+    bool idle = rx.cap(5) == "yes";
 
-	if (buffering or idle) {
+    if (!notified_player_is_running) {
+        // First and only run of state playing or paused
+        // Base class sets notified_player_is_running to true
+        playingStarted();
+
+        if (paused) {
+            emit receivedPause();
+        }
+        return true;
+    }
+
+    if (paused) {
+        // Don't emit signal receivedPause(): it is racy and not needed for MPV
+        return true;
+    }
+
+    if (buffering or idle) {
         //logger()->debug("parseStatusLine: buffering");
-		received_buffering = true;
-		emit receivedBuffering();
-		return true;
-	}
+        received_buffering = true;
+        emit receivedBuffering();
+        return true;
+    }
 
-	// Playing
-	if (notified_player_is_running) {
-		// Normal way to go: playing, except for first frame
-		if (received_buffering) {
-			received_buffering = false;
-			emit receivedBufferingEnded();
-		}
+    if (received_buffering) {
+        received_buffering = false;
+        emit receivedBufferingEnded();
+    }
 
-		if (request_bit_rate_info && time_sec > 11) {
-			request_bit_rate_info = false;
-			requestBitrateInfo();
-		}
+    if (request_bit_rate_info && time_sec > 11) {
+        request_bit_rate_info = false;
+        requestBitrateInfo();
+    }
 
-		return true;
-	}
-
-	// First and only run of state playing
-	// Base class sets notified_player_is_running to true
-	playingStarted();
-
-	return true;
+    return true;
 }
 
 bool TMPVProcess::parseLine(QString& line) {
@@ -717,7 +723,9 @@ void TMPVProcess::setMedia(const QString& media) {
 		if (disc.title > 0)
 			disc.title--;
 		url = disc.toString(true);
-	}
+    } else if (md->image) {
+        url = "mf://@" + temp_file_name;
+    }
 
     arg << url;
 
@@ -801,7 +809,9 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		|| name == "demuxer"
 		|| name == "shuffle"
 		|| name == "frames"
-		|| name == "hwdec-codecs") {
+        || name == "hwdec-codecs"
+        || name == "pause"
+        || name == "fps") {
 
 		QString s = "--" + name;
 		if (!value.isNull())

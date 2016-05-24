@@ -274,7 +274,17 @@ public:
     TToolbarActivation floating_activation_area;
 	bool start_in_fullscreen;
 
-    // Playlist tab
+    // Playlist
+    TAddToPlaylist mediaToAddToPlaylist;
+
+    bool addDirectories;
+    bool addVideo;
+    bool addAudio;
+    bool addPlaylists;
+    bool addImages;
+
+    int imageDuration;
+
 
     // Logging
     bool log_verbose;

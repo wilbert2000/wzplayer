@@ -22,7 +22,11 @@ class TAddFilesThread : public QThread {
 public:
     TAddFilesThread(QObject* parent,
                     const QStringList& aFiles,
-                    bool recurseSubDirs);
+                    bool recurseSubDirs,
+                    bool videoFiles,
+                    bool audioFiles,
+                    bool playlists,
+                    bool images);
     virtual ~TAddFilesThread();
 
     virtual void run();

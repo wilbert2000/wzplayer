@@ -34,15 +34,36 @@ QDir::Filters dirFilter = QDir::Dirs
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
-                                 bool recurseSubDirs) :
+                                 bool recurseSubDirs,
+                                 bool videoFiles,
+                                 bool audioFiles,
+                                 bool playlists,
+                                 bool images) :
     QThread(parent),
     files(aFiles),
     root(0),
     currentItem(0),
     abortRequested(false),
     stopRequested(false),
-    recurse(recurseSubDirs),
-    nameFilterList(extensions.multimedia().forDirFilter() << "*.lnk") {
+    recurse(recurseSubDirs) {
+
+    if (videoFiles && audioFiles) {
+        nameFilterList << extensions.videoAndAudio().forFilter();
+    } else {
+        if (videoFiles) {
+            nameFilterList << extensions.video().forDirFilter();
+        }
+        if (audioFiles) {
+            nameFilterList << extensions.audio().forDirFilter();
+        }
+    }
+    if (playlists) {
+        nameFilterList << extensions.playlists().forDirFilter();
+    }
+    if (images) {
+        nameFilterList << extensions.images().forDirFilter();
+    }
+    nameFilterList << "*.lnk";
 }
 
 TAddFilesThread::~TAddFilesThread() {
@@ -361,6 +382,10 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         if (i >= 0) {
             logger()->debug("addNewItems: '%1' is blacklisted", filename);
             blacklist.removeAt(i);
+            continue;
+        }
+
+        if (filename == TConfig::WZPLAYLIST) {
             continue;
         }
 

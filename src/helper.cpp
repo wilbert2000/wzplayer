@@ -266,7 +266,7 @@ QStringList Helper::filesForPlaylist(const QString & initial_file,
                 exts = extensions.audio().forDirFilter();
                 break;
             case TPreferences::MultimediaFiles:
-                exts = extensions.multimedia().forDirFilter();
+                exts = extensions.videoAndAudio().forDirFilter();
                 break;
 			default: ;
 		}

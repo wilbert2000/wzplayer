@@ -260,7 +260,7 @@ TApp::ExitCode TApp::processArgs() {
 		// Called by uninstaller. Will restore old associations.
 		WinFileAssoc RegAssoc; 
         QStringList regExts;
-        RegAssoc.GetRegisteredExtensions(extensions.multimedia(), regExts);
+        RegAssoc.GetRegisteredExtensions(extensions.allPlayable(), regExts);
 		RegAssoc.RestoreFileAssociations(regExts);
         logger()->info("processArgs: restored associations");
 #endif

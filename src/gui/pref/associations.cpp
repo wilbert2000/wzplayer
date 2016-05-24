@@ -54,16 +54,13 @@ TAssociations::TAssociations(QWidget* parent, Qt::WindowFlags f)
 		//connect(lpbButton, SIGNAL(clicked(bool)), this, SLOT(launchAppDefaults()));
 	}
 
-    for (int n = 0; n < extensions.multimedia().count(); n++) {
-        addItem(extensions.multimedia()[n]);
-	}
-	// Add the playlist extensions
-    for (int n = 0; n < extensions.playlist().count(); n++) {
-        addItem(extensions.playlist()[n]);
-	}
-	retranslateStrings();
+    for (int n = 0; n < extensions.allPlayable().count(); n++) {
+        addItem(extensions.allPlayable()[n]);
+    }
 
-	something_changed = false;
+    retranslateStrings();
+
+    something_changed = false;
 }
 
 TAssociations::~TAssociations()
@@ -127,7 +124,7 @@ void TAssociations::addItem(QString label)
 void TAssociations::refreshList()
 {
 	m_regExtensions.clear(); 
-    WinFileAssoc ().GetRegisteredExtensions(extensions.multimedia(), m_regExtensions);
+    WinFileAssoc ().GetRegisteredExtensions(extensions.allPlayable(), m_regExtensions);
 
 	for (int k = 0; k < listWidget->count(); k++)
 	{

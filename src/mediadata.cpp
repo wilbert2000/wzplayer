@@ -30,48 +30,35 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, TMediaData)
 
 
 TMediaData::TMediaData() :
-	selected_type(TYPE_UNKNOWN),
-	video_aspect_original(-1),
-	video_hwdec(false) {
-	init();
-}
+    selected_type(TYPE_UNKNOWN),
+    detected_type(TYPE_UNKNOWN),
+    image(false),
 
-TMediaData::TMediaData(const TMediaData& md) :
-	filename(md.filename),
-	selected_type(md.selected_type),
-	disc(md.disc),
-	video_aspect_original(md.video_aspect_original),
-	video_hwdec(md.video_hwdec) {
-	init();
-}
+    start_sec(0),
+    start_sec_set(false),
+    time_sec(0),
+    duration(0),
 
-void TMediaData::init() {
+    mpegts(false),
 
-	detected_type = TYPE_UNKNOWN;
+    video_width(0),
+    video_height(0),
+    video_aspect_original(-1),
+    video_fps(0),
 
-	start_sec = 0;
-	start_sec_set = false;
-	time_sec = 0;
-	duration = 0;
+    video_out_width(0),
+    video_out_height(0),
+    video_bitrate(-1),
+    video_hwdec(false),
 
-	mpegts = false;
+    audio_bitrate(-1),
+    audio_rate(0),
+    audio_nch(0),
 
-	video_width = 0;
-	video_height = 0;
-	video_fps = 0;
-	video_out_width = 0;
-	video_out_height = 0;
-	video_bitrate = -1;
-	// video_hwdec set by constructor
+    angle(0),
+    angles(0),
 
-	audio_bitrate = -1;
-	audio_rate = 0;
-	audio_nch = 0;
-
-	angle = 0;
-	angles = 0;
-
-	initialized = false;
+    initialized(false) {
 }
 
 bool TMediaData::isCD(Type type) {

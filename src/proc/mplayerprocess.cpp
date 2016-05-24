@@ -643,18 +643,20 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QStrin
 
 bool TMPlayerProcess::parsePause() {
 
-	if (md->time_sec > frame_backstep_time_start) {
-        debug << "parsePause: retrying frameBackStep at " << md->time_sec
-              << debug;
-		frameBackStep();
-		return true;
-	}
-	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+    if (md->time_sec > frame_backstep_time_start) {
+        logger()->debug("parsePause: retrying frameBackStep at %1",
+                        QString::number(md->time_sec));
+        frameBackStep();
+        return true;
+    }
+    frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+
+    paused = true;
 
     logger()->debug("parsePause: emit receivedPause()");
-	emit receivedPause();
+    emit receivedPause();
 
-	return true;
+    return true;
 }
 
 void TMPlayerProcess::convertTitlesToChapters() {
@@ -730,9 +732,6 @@ void TMPlayerProcess::notifyChanges() {
 
 void TMPlayerProcess::playingStarted() {
     logger()->debug("playingStarted");
-
-	// Not used yet...
-	want_pause = false;
 
 	// Set mute here because mplayer doesn't have an option
 	// to set mute from the command line
@@ -863,7 +862,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 #endif
         ")"
     );
-
 
 	// Clip info
 	static QRegExp rx_clip_info_name("^ID_CLIP_INFO_NAME(\\d+)=(.+)");
@@ -1142,9 +1140,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	return false;
 }
 
-
-// Start of what used to be mplayeroptions.cpp
-
 void TMPlayerProcess::setMedia(const QString& media) {
 
 	// TODO: Add sub_source?
@@ -1152,7 +1147,12 @@ void TMPlayerProcess::setMedia(const QString& media) {
 		<< "ID_VIDEO_TRACK=${switch_video}\n"
 		   "ID_AUDIO_TRACK=${switch_audio}\n"
 		   "ID_ANGLE_EX=${angle}\n";
-    arg << media;
+
+    if (md->image) {
+        arg << "mf://@" + temp_file_name;
+    } else {
+        arg << media;
+    }
 }
 
 void TMPlayerProcess::setFixedOptions() {
@@ -1160,9 +1160,8 @@ void TMPlayerProcess::setFixedOptions() {
 		<< "-slave"
 		<< "-identify"
 		<< "-panscanrange" << QString::number(1 - TConfig::ZOOM_MAX);
-	//	arg << "-msglevel" << "vo=7";
 
-	// Need level 6 to catch DVDNAV, NEW TITLE
+    // Need cplayer msg level 6 to catch DVDNAV, NEW TITLE
 	if (md->selected_type == TMediaData::TYPE_DVDNAV) {
 		arg << "-msglevel" << "cplayer=6";
 	}
@@ -1362,7 +1361,7 @@ void TMPlayerProcess::seekPlayerTime(double secs, int mode, bool precise, bool c
 	// hence the leakage of currently_paused.
 	if (currently_paused)
 		s = "pausing " + s;
-	want_pause = currently_paused;
+    paused = currently_paused;
 
 	writeToStdin(s);
 }
@@ -1373,9 +1372,9 @@ void TMPlayerProcess::mute(bool b) {
 
 void TMPlayerProcess::setPause(bool pause) {
 
-	want_pause = pause;
-	if (pause) writeToStdin("pausing pause"); // pauses
-	else writeToStdin("pause"); // pauses / unpauses
+    paused = pause;
+    if (pause) writeToStdin("pausing pause");
+    else writeToStdin("resume pause");
 }
 
 void TMPlayerProcess::frameStep() {

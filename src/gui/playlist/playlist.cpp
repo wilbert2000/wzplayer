@@ -69,8 +69,6 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     debug(logger()),
     main_window(mw),
     core(c),
-    recursive_add_directories(true),
-    media_to_add_to_playlist(Settings::TPreferences::NoFiles),
     disable_enableActions(false),
     thread(0) {
 
@@ -441,7 +439,11 @@ void TPlaylist::addFilesStartThread() {
 
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
-                                     recursive_add_directories);
+                                     pref->addDirectories,
+                                     pref->addVideo,
+                                     pref->addAudio,
+                                     pref->addPlaylists,
+                                     pref->addImages);
 
         connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
         connect(thread, SIGNAL(displayMessage(QString, int)),
@@ -472,7 +474,7 @@ void TPlaylist::addFiles() {
 
     QStringList files = MyFileDialog::getOpenFileNames(this,
         tr("Select one or more files to add"), pref->latest_dir,
-        tr("Multimedia") + extensions.multimedia().forFilter() + ";;" +
+        tr("Multimedia") + extensions.allPlayable().forFilter() + ";;" +
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
@@ -959,34 +961,36 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
     } else if (filename == current_filename) {
-        TPlaylistWidgetItem* item = playlistWidget->playing_item;
-        if (item) {
-            bool modified = false;
-            if (!item->edited()) {
-                QString name = md->displayName();
-                if (item->name() != name) {
-                    logger()->debug("onNewMediaStartedPlaying: updating name"
-                                    " from '%1' to '%2'",
-                                    item->name(), name);
-                    item->setName(name);
-                    modified = true;
+        if (!md->image) {
+            TPlaylistWidgetItem* item = playlistWidget->playing_item;
+            if (item) {
+                bool modified = false;
+                if (!item->edited()) {
+                    QString name = md->displayName();
+                    if (item->name() != name) {
+                        logger()->debug("onNewMediaStartedPlaying: updating"
+                                        " name from '%1' to '%2'",
+                                        item->name(), name);
+                        item->setName(name);
+                        modified = true;
+                    }
                 }
-            }
-            if (md->duration > 0) {
-                if (!this->filename.isEmpty()
-                    && qAbs(md->duration - item->duration()) > 1) {
-                    modified = true;
+                if (md->duration > 0) {
+                    if (!this->filename.isEmpty()
+                        && qAbs(md->duration - item->duration()) > 1) {
+                        modified = true;
+                    }
+                    logger()->debug("onNewMediaStartedPlaying: updating"
+                                    " duration from %1 to %2",
+                                    QString::number(item->duration()),
+                                    QString::number(md->duration));
+                    item->setDuration(md->duration);
                 }
-                logger()->debug("onNewMediaStartedPlaying: updating duration"
-                                " from %1 to %2",
-                                QString::number(item->duration()),
-                                QString::number(md->duration));
-                item->setDuration(md->duration);
-            }
-            if (modified) {
-                playlistWidget->setModified(item);
-            } else {
-                logger()->debug("onNewMediaStartedPlaying: item is uptodate");
+                if (modified) {
+                    playlistWidget->setModified(item);
+                } else {
+                    logger()->debug("onNewMediaStartedPlaying: item is uptodate");
+                }
             }
         }
         return;
@@ -1020,11 +1024,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
 
         // Add associated files to playlist
         if (md->selected_type == TMediaData::TYPE_FILE
-            && media_to_add_to_playlist != TPreferences::NoFiles) {
+            && pref->mediaToAddToPlaylist != TPreferences::NoFiles) {
+            // TODO: remove from main thread
             logger()->debug("onNewMediaStartedPlaying: searching for files to"
                             " add to playlist for '%1'", filename);
             QStringList files_to_add = Helper::filesForPlaylist(filename,
-                media_to_add_to_playlist);
+                pref->mediaToAddToPlaylist);
             if (files_to_add.isEmpty()) {
                 logger()->debug("onNewMediaStartedPlaying: none found");
             } else {
@@ -1260,7 +1265,7 @@ void TPlaylist::open() {
     if (maybeSave()) {
         QString s = MyFileDialog::getOpenFileName(this, tr("Choose a file"),
             pref->latest_dir,
-            tr("Playlists") + extensions.playlist().forFilter() + ";;"
+            tr("Playlists") + extensions.playlists().forFilter() + ";;"
             + tr("All files") +" (*.*)");
 
 		if (!s.isEmpty()) {
@@ -1484,7 +1489,7 @@ bool TPlaylist::save() {
 bool TPlaylist::saveAs() {
 
     QString s = MyFileDialog::getSaveFileName(this, tr("Choose a filename"),
-        pref->latest_dir, tr("Playlists") + extensions.playlist().forFilter());
+        pref->latest_dir, tr("Playlists") + extensions.playlists().forFilter());
 
     if (s.isEmpty()) {
         return false;
@@ -1551,32 +1556,21 @@ bool TPlaylist::maybeSave() {
 void TPlaylist::saveSettings() {
     logger()->debug("saveSettings");
 
-	QSettings* set = Settings::pref;
-
-	set->beginGroup("playlist");
-    set->setValue("recursive_add_directories", recursive_add_directories);
-	set->setValue("repeat", repeatAct->isChecked());
-	set->setValue("shuffle", shuffleAct->isChecked());
-    set->setValue("media_to_add_to_playlist", media_to_add_to_playlist);
-	set->endGroup();
+    pref->beginGroup("playlist");
+    pref->setValue("repeat", repeatAct->isChecked());
+    pref->setValue("shuffle", shuffleAct->isChecked());
+    pref->endGroup();
 }
 
 void TPlaylist::loadSettings() {
     logger()->debug("loadSettings");
 
-	QSettings* set = Settings::pref;
-
-	set->beginGroup("playlist");
-    recursive_add_directories = set->value("recursive_add_directories",
-                                           recursive_add_directories).toBool();
-    repeatAct->setChecked(set->value("repeat",
-                                     repeatAct->isChecked()).toBool());
-    shuffleAct->setChecked(set->value("shuffle",
-                                      shuffleAct->isChecked()).toBool());
-    media_to_add_to_playlist = (Settings::TPreferences::TAddToPlaylist)
-        set->value("media_to_add_to_playlist", media_to_add_to_playlist).toInt();
-
-	set->endGroup();
+    pref->beginGroup("playlist");
+    repeatAct->setChecked(pref->value("repeat",
+                                      repeatAct->isChecked()).toBool());
+    shuffleAct->setChecked(pref->value("shuffle",
+                                       shuffleAct->isChecked()).toBool());
+    pref->endGroup();
 }
 
 } // namespace Playlist

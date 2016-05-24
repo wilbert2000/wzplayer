@@ -39,9 +39,10 @@ public:
 
     ExtensionList video() const { return _video; }
     ExtensionList audio() const { return _audio; }
-    ExtensionList playlist() const { return _playlist; }
+    ExtensionList playlists() const { return _playlists; }
     ExtensionList subtitles() const { return _subtitles; }
-    ExtensionList multimedia() const { return _multimedia; }
+    ExtensionList images() const { return _images; }
+    ExtensionList videoAndAudio() const { return _videoAndAudio; }
     ExtensionList allPlayable() const { return _all_playable; }
 
     bool isMultiMedia(const QFileInfo& fi) const;
@@ -49,10 +50,12 @@ public:
     bool isPlaylist(const QString& filename) const {
         return isPlaylist(QFileInfo(filename));
     }
+    bool isImage(const QFileInfo& fi) const;
+    bool isImage(const QString& filename) const;
 
 protected:
-	ExtensionList _video, _audio, _playlist, _subtitles;
-	ExtensionList _multimedia; //!< video and audio
+    ExtensionList _video, _audio, _playlists, _subtitles, _images;
+    ExtensionList _videoAndAudio; //!< video and audio
 	ExtensionList _all_playable; //!< video, audio and playlist
 };
 
