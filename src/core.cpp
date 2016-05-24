@@ -865,58 +865,56 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 void TCore::startPlayer(QString file) {
     logger()->debug("startPlayer: '%1'", file);
 
-	if (file.isEmpty()) {
+    if (file.isEmpty()) {
         logger()->warn("TCore:startPlayer: file is empty");
-		return;
-	}
+        return;
+    }
 
-	if (proc->isRunning()) {
+    if (proc->isRunning()) {
         logger()->warn("startPlayer: Player still running");
-		return;
-	}
+        return;
+    }
 
     emit showMessage(tr("Starting player..."), 6000);
 
-	// Check URL playlist
-	if (file.endsWith("|playlist")) {
-		file = file.remove("|playlist");
+    // Check URL playlist
+    if (file.endsWith("|playlist")) {
+        file = file.remove("|playlist");
     }
 
-	// Check if a m4a file exists with the same name of file,
-	// in that cause if will be used as audio
-	if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
-		QFileInfo fi(file);
-		if (fi.exists() && !fi.isDir()) {
-			if (fi.suffix().toLower() == "mp4") {
-				QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
-				if (!QFile::exists(file2)) {
-					// Check for upper case
-					file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
-				}
-				if (QFile::exists(file2)) {
-                    logger()->debug("startPlayer: using external audio file "
-                                  + file2);
-					mset.external_audio = file2;
-				}
-			}
-		}
-	}
+    // Check if a m4a file exists with the same name of file,
+    // in that cause if will be used as audio
+    if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
+        QFileInfo fi(file);
+        if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
+            QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
+            if (!QFile::exists(file2)) {
+                // Check for upper case
+                file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
+            }
+            if (QFile::exists(file2)) {
+                logger()->debug("startPlayer: using external audio file "
+                              + file2);
+                mset.external_audio = file2;
+            }
+        }
+    }
 
-	proc->clearArguments();
-	proc->setExecutable(pref->player_bin);
-	proc->setFixedOptions();
-	proc->disableInput();
+    proc->clearArguments();
+    proc->setExecutable(pref->player_bin);
+    proc->setFixedOptions();
+    proc->disableInput();
 
 #if defined(Q_OS_OS2)
 #define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
-	proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoWindow()->winId())));
+    proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoWindow()->winId())));
 #else
-	proc->setOption("wid", QString::number((qint64) playerwindow->videoWindow()->winId()));
+    proc->setOption("wid", QString::number((qint64) playerwindow->videoWindow()->winId()));
 #endif
 
-	if (pref->log_verbose) {
-		proc->setOption("verbose");
-	}
+    if (pref->log_verbose) {
+        proc->setOption("verbose");
+    }
 
     // Seek to in point, mset.current_sec or restartTime
     seeking = false;
