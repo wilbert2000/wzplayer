@@ -93,8 +93,8 @@ int Helper::qtVersion() {
 	return r;
 }
 
-QString Helper::clean(const QString& name, bool removeOnly) {
-    logger()->trace("clean: '%1' removeOnly %2", name, removeOnly);
+QString Helper::clean(const QString& name) {
+    logger()->trace("clean: '%1'", name);
 
     if (name.isEmpty()) {
         return "";
@@ -111,25 +111,6 @@ QString Helper::clean(const QString& name, bool removeOnly) {
     s = QFileInfo(s).fileName();
     if (s.isEmpty()) {
         s = name;
-    }
-
-    foreach(QRegExp rx, TConfig::TITLE_BLACKLIST) {
-        if (rx.indexIn(name) >= 0) {
-            if (removeOnly) {
-                logger()->info("clean: removing '%1' from '%2'",
-                               rx.pattern(), s);
-                s.replace(rx, "");
-            } else {
-                logger()->info("clean: '%1' blacklisted on '%2'",
-                               s, rx.pattern());
-                return "";
-            }
-        }
-    }
-
-    if (s.isEmpty()) {
-        logger()->trace("Clean: returning ''");
-        return s;
     }
 
     // \w Matches a word character (QChar::isLetterOrNumber(),
@@ -160,11 +141,20 @@ QString Helper::clean(const QString& name, bool removeOnly) {
 }
 
 QString Helper::cleanName(const QString& name) {
-    return clean(name, true);
+    return clean(name);
 }
 
 QString Helper::cleanTitle(const QString& title) {
-    return clean(title, false);
+
+    foreach(QRegExp rx, TConfig::TITLE_BLACKLIST) {
+        if (rx.indexIn(title) >= 0) {
+            logger()->info("cleanTitle: '%1' blacklisted on '%2'",
+                           title, rx.pattern());
+            return "";
+        }
+    }
+
+    return clean(title);
 }
 
 QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
