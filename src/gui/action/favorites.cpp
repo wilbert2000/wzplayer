@@ -88,10 +88,7 @@ TFavorites::TFavorites(TBase* mw,
 }
 
 TFavorites::~TFavorites() {
-    /* logger()->debug("~TFavorites"); */
-
 	save();
-	delete_children();
 }
 
 void TFavorites::delete_children() {
