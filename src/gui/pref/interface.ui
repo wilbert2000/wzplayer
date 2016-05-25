@@ -20,7 +20,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="interface_tab">
       <attribute name="title">
@@ -365,7 +365,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&amp;add files from the same folder:</string>
+               <string>&amp;Add files from the same folder:</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
