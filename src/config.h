@@ -2,8 +2,6 @@
 #define CONFIG_H
 
 #include <QString>
-#include <QList>
-#include <QRegExp>
 
 
 class TConfig {
@@ -28,8 +26,6 @@ public:
 	static const QString URL_OPENSSL;
 	static const QString URL_VERSION_INFO;
 	static const QString URL_SMPLAYER;
-
-    static QList<QRegExp> TITLE_BLACKLIST;
 };
 
 

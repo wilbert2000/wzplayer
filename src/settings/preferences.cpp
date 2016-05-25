@@ -46,8 +46,7 @@ static const int CURRENT_CONFIG_VERSION = 17;
 
 TPreferences* pref = 0;
 
-Log4Qt::Logger* TPreferences::logger = Log4Qt::Logger::logger(
-    QLatin1String("Settings::TPreferences"));
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TPreferences)
 
 
 TPreferences::TPreferences() :
@@ -275,6 +274,8 @@ void TPreferences::reset() {
 
     imageDuration = 10;
 
+    titleBlacklist = QStringList() << "RARBG";
+    setTitleBlackList();
 
     // Log
     log_verbose = false;
@@ -385,7 +386,7 @@ void TPreferences::reset() {
 }
 
 void TPreferences::save() {
-    logger->info("save");
+    logger()->info("save");
 
     setValue("config_version", config_version);
 
@@ -568,6 +569,7 @@ void TPreferences::save() {
     setValue("add_playlists", addPlaylists);
     setValue("add_images", addImages);
     setValue("image_duration", imageDuration);
+    setValue("title_blacklist", titleBlacklist);
     endGroup();
 
 
@@ -770,7 +772,7 @@ QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 	if (!found_player.isEmpty()) {
 		path = found_player;
 	}
-    logger->debug("getAbsolutePathPlayer: '" + path + "'");
+    logger()->debug("getAbsolutePathPlayer: '%1'", path);
 	return path;
 }
 
@@ -828,14 +830,14 @@ void TPreferences::setPlayerBin(QString bin,
 		}
 
 		if (found_bin.isEmpty()) {
-            logger->warn("setPlayerBin: failed to find player '" + bin + "'");
+            logger()->warn("setPlayerBin: failed to find player '%1'", bin);
 		} else if (allow_other_player || found_id == wanted_player) {
-            logger->warn("setPlayerBin: failed to find player '" + bin
-                         + "', selecting '" + found_bin + "' instead");
+            logger()->warn("setPlayerBin: failed to find player '%1',"
+                           " selecting '%2' instead", bin, found_bin);
 			bin = found_bin;
 		} else {
-            logger->warn("setPlayerBin: failed to find player '" + bin
-                         + "'. Maybe you can try '" + found_bin + "' instead.");
+            logger()->warn("setPlayerBin: failed to find player '%1'. Maybe you"
+                           " can try '%2' instead.", bin, found_bin);
 		}
 	} else {
 		bin = found_bin;
@@ -857,12 +859,10 @@ void TPreferences::setPlayerBin(QString bin,
 		}
 	}
 
-    logger->info("setPlayerBin: selected player '" + bin
-                  + "', mplayer vo '" + mplayer_vo
-                  + "', mplayer ao '" + mplayer_ao
-                  + "', mpv vo '" + mpv_vo
-                  + "', mpv ao '" + mpv_ao
-                  + "'");
+    logger()->info("setPlayerBin: selected player '%1'", bin);
+    logger()->debug("setPlayerBin: mplayer vo '%1' ao '%2'",
+                    mplayer_vo, mplayer_ao);
+    logger()->debug("setPlayerBin: mpv vo '%1' ao '%2'", mpv_vo, mpv_ao);
 }
 
 
@@ -882,7 +882,7 @@ void TPreferences::load() {
 
     Log4Qt::Logger::rootLogger()->setLevel(log_level);
     Log4Qt::LogManager::qtLogger()->setLevel(log_level);
-    logger->info("load: log level set to " +log_level.toString());
+    logger()->info("load: log level set to " +log_level.toString());
 
 
     // General tab
@@ -962,7 +962,7 @@ void TPreferences::load() {
     if (ok) {
         color_key = temp_color_key;
     } else {
-        logger->warn("load: failed to parse color key '" + color + "'");
+        logger()->warn("load: failed to parse color key '" + color + "'");
     }
 
     // OSD
@@ -1073,6 +1073,7 @@ void TPreferences::load() {
 
     endGroup();
 
+
     beginGroup("playlist");
     mediaToAddToPlaylist = (TAddToPlaylist) value("media_to_add_to_playlist",
                                                   mediaToAddToPlaylist).toInt();
@@ -1086,7 +1087,10 @@ void TPreferences::load() {
 
     imageDuration = value("image_duration", imageDuration).toInt();
 
+    titleBlacklist = value("title_blacklist", titleBlacklist).toStringList();
     endGroup();
+    setTitleBlackList();
+
 
     beginGroup("history");
     history_recents.setMaxItems(value("recents/max_items", history_recents.maxItems()).toInt());
@@ -1214,14 +1218,14 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    logger->info("load: config version " + QString::number(config_version)
+    logger()->info("load: config version " + QString::number(config_version)
                  + ", CURRENT_CONFIG_VERSION "
                  + QString::number(CURRENT_CONFIG_VERSION));
 
     // Check config version
     if (config_version < CURRENT_CONFIG_VERSION) {
         if (config_version > 0) {
-            logger->warn("load: version configuration is old, updating it from "
+            logger()->warn("load: version configuration is old, updating it from "
                          + QString::number(config_version) + " to "
                          + QString::number(CURRENT_CONFIG_VERSION));
         }
@@ -1254,18 +1258,18 @@ double TPreferences::monitorAspectDouble() {
 	if (exp.indexIn(monitor_aspect) >= 0) {
 		int w = exp.cap(1).toInt();
 		int h = exp.cap(2).toInt();
-        logger->info("monitorAspectDouble: monitor aspect set to %1:%2", w, h);
+        logger()->info("monitorAspectDouble: monitor aspect set to %1:%2", w, h);
 		return h <= 0.01 ? 0 : (double) w / h;
 	}
 
 	bool ok;
 	double res = monitor_aspect.toDouble(&ok);
 	if (ok) {
-        logger->info("monitorAspectDouble: monitor aspect set to %1", res);
+        logger()->info("monitorAspectDouble: monitor aspect set to %1", res);
 		return res;
 	}
 
-    logger->warn("monitorAspectDouble: failed to parse monitor aspect,"
+    logger()->warn("monitorAspectDouble: failed to parse monitor aspect,"
                  " reset to auto detect");
 	return 0;
 }
@@ -1275,15 +1279,15 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		QString pdir = TPaths::location(TPaths::PicturesLocation);
         if (pdir.isEmpty()) {
-            logger->debug("setupScreenshotFolder: no PicturesLocation");
+            logger()->debug("setupScreenshotFolder: no PicturesLocation");
             pdir = TPaths::location(TPaths::DocumentsLocation);
         }
         if (pdir.isEmpty()) {
-            logger->debug("setupScreenshotFolder: no DocumentsLocation");
+            logger()->debug("setupScreenshotFolder: no DocumentsLocation");
             pdir = TPaths::location(TPaths::HomeLocation);
         }
         if (pdir.isEmpty()) {
-            logger->debug("setupScreenshotFolder: no HomeLocation");
+            logger()->debug("setupScreenshotFolder: no HomeLocation");
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
@@ -1294,14 +1298,33 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
-        logger->info("setupScreenshotFolder: using folder '"
+        logger()->info("setupScreenshotFolder: using folder '"
                      + screenshot_directory + "'");
     } else {
-        logger->info("setupScreenshotFolder: folder '" + screenshot_directory
+        logger()->info("setupScreenshotFolder: folder '" + screenshot_directory
                      + "' not found, disabling screenshots");
         use_screenshot = false;
         screenshot_directory = "";
     }
 }
+
+void TPreferences::setTitleBlackList() {
+
+    rxTitleBlacklist.clear();
+    foreach(const QString& s, titleBlacklist) {
+        if (!s.isEmpty()) {
+            QRegExp* rx = new QRegExp(s, Qt::CaseInsensitive);
+            if (rx->isValid()) {
+                logger()->debug("setTitleBlacklist: adding '%1'", rx->pattern());
+                rxTitleBlacklist << rx;
+            } else {
+                delete rx;
+                logger()->error("setTitleBlacklist: failed to parse regular"
+                                " expression '%1'", s);
+            }
+        }
+    }
+}
+
 
 } // namespace Settings

@@ -64,7 +64,7 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 	connect(single_instance_check, SIGNAL(toggled(bool)), 
 			this, SLOT(changeInstanceImages()));
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TInterface::~TInterface() {
@@ -151,12 +151,17 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	// Playlist
     setMediaToAddToPlaylist(pref->mediaToAddToPlaylist);
+
     setDirectoryRecursion(pref->addDirectories);
     video_check->setChecked(pref->addVideo);
     audio_check->setChecked(pref->addAudio);
     playlists_check->setChecked(pref->addPlaylists);
     images_check->setChecked(pref->addImages);
+
     image_duration_spinbox->setValue(pref->imageDuration);
+
+    blacklist_edit->setPlainText(pref->titleBlacklist.join("\n"));
+
 
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
@@ -213,6 +218,11 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->addPlaylists = playlists_check->isChecked();
     pref->addImages = images_check->isChecked();
     pref->imageDuration = image_duration_spinbox->value();
+
+    // Filter empty
+    pref->titleBlacklist = blacklist_edit->toPlainText().split("\n",
+                                          QString::SkipEmptyParts);
+    pref->setTitleBlackList();
 
     // Log
     pref->log_level = logLevel();

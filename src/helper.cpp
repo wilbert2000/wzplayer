@@ -146,10 +146,10 @@ QString Helper::cleanName(const QString& name) {
 
 QString Helper::cleanTitle(const QString& title) {
 
-    foreach(QRegExp rx, TConfig::TITLE_BLACKLIST) {
-        if (rx.indexIn(title) >= 0) {
+    foreach(QRegExp* rx, pref->rxTitleBlacklist) {
+        if (rx->indexIn(title) >= 0) {
             logger()->info("cleanTitle: '%1' blacklisted on '%2'",
-                           title, rx.pattern());
+                           title, rx->pattern());
             return "";
         }
     }

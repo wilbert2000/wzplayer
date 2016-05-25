@@ -32,15 +32,9 @@
 #include "settings/urlhistory.h"
 
 
-namespace Log4Qt {
-class Logger;
-}
-
 namespace Settings {
 
 typedef QList<QVariant> TAudioEqualizerList;
-
-extern const QString NAME_CONSOLE_APPENDER;
 
 
 class TPreferences : public TPlayerSettings {
@@ -285,6 +279,9 @@ public:
 
     int imageDuration;
 
+    QStringList titleBlacklist;
+    QList<QRegExp*> rxTitleBlacklist;
+    void setTitleBlackList();
 
     // Logging
     bool log_verbose;
@@ -407,12 +404,10 @@ public:
 
     bool clean_config;
 
-    static Log4Qt::Logger* logger;
-
 private:
 
-	void setPlayerBin0(QString bin);
-	void setPlayerID();
+    void setPlayerBin0(QString bin);
+    void setPlayerID();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::TWheelFunctions)
