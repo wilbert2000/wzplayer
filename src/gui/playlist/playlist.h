@@ -25,6 +25,7 @@
 
 #include "wzdebug.h"
 #include "gui/playlist/playlistwidget.h"
+#include "config.h"
 
 
 class QToolBar;
@@ -167,7 +168,7 @@ private:
 
     void addFilesStartThread();
 
-    void msg(const QString& s);
+    void msg(const QString& s, int duration = TConfig::MESSAGE_DURATION);
     void setWinTitle();
 
     TPlaylistWidgetItem* getRandomItem() const;

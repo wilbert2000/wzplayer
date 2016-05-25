@@ -318,8 +318,8 @@ void TPlaylist::retranslateStrings() {
     setWinTitle();
 }
 
-void TPlaylist::msg(const QString& s) {
-    emit displayMessageOnOSD(s, TConfig::MESSAGE_DURATION);
+void TPlaylist::msg(const QString& s, int duration) {
+    emit displayMessageOnOSD(s, duration);
 }
 
 void TPlaylist::getFilesToPlay(QStringList& files) const {
@@ -1308,7 +1308,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                     result = false;
                 }
             } else {
-                logger()->info("saveM3uFolder: playlist '%1' is not modified",
+                logger()->info("saveM3uFolder: playlist not modified '%1'",
                                i->filename());
             }
         } else if (i->isFolder()) {
@@ -1320,7 +1320,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                         result = false;
                     }
                 } else {
-                    logger()->info("saveM3uFolder: folder '%1' is not modified",
+                    logger()->info("saveM3uFolder: folder not modified '%1'",
                                    i->filename());
                 }
             } else {
@@ -1461,7 +1461,7 @@ bool TPlaylist::save() {
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
         wzplaylist = true;
     }
-    msg(tr("Saving %1").arg(fi.fileName()));
+    msg(tr("Saving %1").arg(fi.fileName()), 0);
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
@@ -1480,7 +1480,10 @@ bool TPlaylist::save() {
     if (result) {
         playlistWidget->clearModified();
         logger()->info("save: succesfully saved '%1'", fi.absoluteFilePath());
-        msg(tr("Saved %1").arg(fi.fileName()));
+        msg(tr("Saved '%1'").arg(fi.fileName()));
+    } else {
+        // Error box and log already done, but need to remove 0 secs save msg
+        msg(tr("Failed to save '%1'").arg(fi.fileName()));
     }
 
     return result;
