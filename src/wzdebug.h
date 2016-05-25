@@ -2,7 +2,8 @@
 #define WZDEBUG_H
 
 #include <QDebug>
-#include <log4qt/logger.h>
+#include "log4qt/logger.h"
+#include "log4qt/level.h"
 
 
 /*
@@ -33,6 +34,7 @@ private:
 
 class TWZDebug : public QDebug {
 public:
+    Log4Qt::Level level;
     QString msg;
     Log4Qt::Logger* logger;
 

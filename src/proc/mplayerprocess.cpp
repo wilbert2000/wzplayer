@@ -199,11 +199,11 @@ bool TMPlayerProcess::parseSubID(const QString& type, int id) {
 	if (md->subs.find(sub_type, id) < 0) {
 		md->subs.add(sub_type, id);
 		subtitles_changed = true;
-        debug << "parseSubID: created subtitle id" << id << "type" << type
-              << debug;
+        logger()->debug("parseSubID: created subtitle id %1 type '%2'",
+                        QString::number(id), type);
 	} else {
-        debug << "parseSubID: found subtitle id" << id << "type" << type
-              << debug;
+        logger()->debug("parseSubID: found subtitle id %1 type '%2'",
+                      QString::number(id), type);
 		get_selected_subtitle = true;
 	}
 

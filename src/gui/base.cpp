@@ -1937,7 +1937,7 @@ void TBase::gotDuration(double duration) {
 }
 
 void TBase::changeSize(double factor) {
-    debug << "changeSize:" << factor << debug;
+    logger()->debug("changeSize: %1", QString::number(factor));
 
 	if (core->mdat.noVideo())
 		return;

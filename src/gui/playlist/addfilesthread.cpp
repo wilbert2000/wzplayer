@@ -75,7 +75,9 @@ void TAddFilesThread::run() {
     logger()->debug("run: running in '%1'", playlistPath);
     if (logger()->isTraceEnabled()) {
         debug << "Searching for:" << nameFilterList;
+        debug.level = Log4Qt::Level::TRACE_INT;
         debug << debug;
+        debug.level = Log4Qt::Level::DEBUG_INT;
     }
 
     root = new TPlaylistWidgetItem(0, playlistPath, "", 0, true,
@@ -250,7 +252,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
 
     QFileInfo fi(filename);
     if (fi.exists()) {
-        logger()->trace("addItem: found '%1'", fi.fileName());
+        logger()->trace("addItem: found '%1'", fi.absoluteFilePath());
     } else {
         // Try relative path
         fi.setFile(playlistPath, filename);
