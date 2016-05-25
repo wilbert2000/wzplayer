@@ -4,7 +4,9 @@
 #include <QThread>
 #include <QStringList>
 #include <QString>
-#include "log4qt/logger.h"
+
+#include "wzdebug.h"
+
 
 class QDir;
 class QFileInfo;
@@ -17,7 +19,7 @@ class TPlaylistWidgetItem;
 
 class TAddFilesThread : public QThread {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    DECLARE_QCLASS_LOGGER
 
 public:
     TAddFilesThread(QObject* parent,

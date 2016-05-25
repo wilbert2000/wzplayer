@@ -40,6 +40,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
                                  bool playlists,
                                  bool images) :
     QThread(parent),
+    debug(logger()),
     files(aFiles),
     root(0),
     currentItem(0),
@@ -47,22 +48,20 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     stopRequested(false),
     recurse(recurseSubDirs) {
 
-    if (videoFiles && audioFiles) {
-        nameFilterList << extensions.videoAndAudio().forFilter();
-    } else {
-        if (videoFiles) {
-            nameFilterList << extensions.video().forDirFilter();
-        }
-        if (audioFiles) {
-            nameFilterList << extensions.audio().forDirFilter();
-        }
+    ExtensionList exts;
+    if (videoFiles) {
+        exts = extensions.videoAndAudio();
+    }
+    if (audioFiles) {
+        exts.addList(extensions.audio());
     }
     if (playlists) {
-        nameFilterList << extensions.playlists().forDirFilter();
+        exts.addList(extensions.playlists());
     }
     if (images) {
-        nameFilterList << extensions.images().forDirFilter();
+        exts.addList(extensions.images());
     }
+    nameFilterList = exts.forDirFilter();
     nameFilterList << "*.lnk";
 }
 
@@ -74,6 +73,10 @@ void TAddFilesThread::run() {
 
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
     logger()->debug("run: running in '%1'", playlistPath);
+    if (logger()->isTraceEnabled()) {
+        debug << "Searching for:" << nameFilterList;
+        debug << debug;
+    }
 
     root = new TPlaylistWidgetItem(0, playlistPath, "", 0, true,
                                    iconProvider.folderIcon);

@@ -26,6 +26,17 @@ TExtensions extensions;
 ExtensionList::ExtensionList() : QStringList() {
 }
 
+void ExtensionList::addList(const ExtensionList& list) {
+
+    foreach(const QString& ext, list) {
+        if (!contains(ext)) {
+            *this << ext;
+        }
+    }
+
+}
+
+
 QString ExtensionList::forFilter() const {
 
 	QString s;
@@ -87,11 +98,11 @@ TExtensions::TExtensions() {
     _playlists << "m3u8" << "m3u" << "pls";
 
     _videoAndAudio = _video;
-    for (int n = 0; n < _audio.count(); n++) {
-        if (!_videoAndAudio.contains(_audio[n])) _videoAndAudio << _audio[n];
-    }
+    _videoAndAudio.addList(_audio);
 
-    _all_playable << _videoAndAudio << _playlists << _images;
+    _all_playable = _videoAndAudio;
+    _all_playable.addList(_playlists);
+    _all_playable.addList(_images);
 }
 
 TExtensions::~TExtensions() {

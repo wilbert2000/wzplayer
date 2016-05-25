@@ -30,6 +30,8 @@ public:
     QString forFilter() const;
     QStringList forDirFilter() const;
     QString forRegExp() const;
+
+    void addList(const ExtensionList& list);
 };
 
 class TExtensions {
