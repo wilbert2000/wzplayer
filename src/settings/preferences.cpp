@@ -1082,6 +1082,7 @@ void TPreferences::load() {
     addAudio = value("add_audio", addAudio).toBool();
     addPlaylists = value("add_playlists", addPlaylists).toBool();
     addImages = value("add_images", addImages).toBool();
+    imageDuration = value("image_duration", imageDuration).toInt();
 
     imageDuration = value("image_duration", imageDuration).toInt();
 
