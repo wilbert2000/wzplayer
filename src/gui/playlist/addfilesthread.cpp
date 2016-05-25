@@ -536,17 +536,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     if (result) {
         if (playlistItem->childCount())  {
             latestDir = playlistPath;
-            if (playlistItem->childCount() > 1) {
-                parent->addChild(playlistItem);
-            } else {
-                logger()->debug("openPlaylist: collapsing single child '%1'",
-                                playlistItem->filename());
-                TPlaylistWidgetItem* old = playlistItem;
-                playlistItem = static_cast<TPlaylistWidgetItem*>(
-                                   playlistItem->takeChild(0));
-                parent->addChild(playlistItem);
-                delete old;
-            }
+            parent->addChild(playlistItem);
         } else {
             logger()->warn("openPlaylist: found no playable items in playlist"
                            " '%1'", fi.absoluteFilePath());
@@ -629,14 +619,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     if (dirItem->childCount()) {
         latestDir = directory.path();
-        if (dirItem->childCount() > 1) {
-            parent->addChild(dirItem);
-        } else {
-            TPlaylistWidgetItem* old = dirItem;
-            dirItem = static_cast<TPlaylistWidgetItem*>(dirItem->takeChild(0));
-            parent->addChild(dirItem);
-            delete old;
-        }
+        parent->addChild(dirItem);
     } else {
         logger()->debug("addDirectory: found no playable items in '%1'",
                         directory.path());
