@@ -145,6 +145,9 @@ private:
     Action::TAction* copyAct;
     Action::TAction* pasteAct;
     Action::TAction* editAct;
+
+    Action::TAction* refreshAct;
+
     Action::TAction* removeSelectedAct;
     Action::TAction* removeSelectedFromDiskAct;
     Action::TAction* removeAllAct;
@@ -215,6 +218,7 @@ private slots:
     void paste();
     void enablePaste();
     void cut();
+    void refresh();
 
     void enableActions();
 

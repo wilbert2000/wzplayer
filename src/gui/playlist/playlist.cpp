@@ -253,6 +253,11 @@ void TPlaylist::createActions() {
                           Qt::Key_Return);
     connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
+    // Refresh
+    refreshAct = new TAction(this, "pl_refresh", tr("&Refresh"), "",
+                             Qt::Key_F5);
+    connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
+
     // Add actions to main window
     main_window->addActions(actions());
 }
@@ -306,6 +311,8 @@ void TPlaylist::createToolbar() {
     popup->addSeparator();
     popup->addMenu(add_menu);
     popup->addMenu(remove_menu);
+    popup->addSeparator();
+    popup->addAction(refreshAct);
 
     connect(playlistWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
 			this, SLOT(showContextMenu(const QPoint &)));
@@ -832,6 +839,23 @@ void TPlaylist::removeAll() {
 	clear();
 }
 
+void TPlaylist::refresh() {
+
+    if (!filename.isEmpty() && maybeSave()) {
+        QString fn = filename;
+        QString current;
+        if (core->state() == STATE_PLAYING) {
+            current = playingFile();
+            if (!current.isEmpty()) {
+                core->saveRestartTime();
+                core->stop();
+            }
+        }
+        clear();
+        addFiles(QStringList() << fn, !current.isEmpty(), 0, current);
+    }
+}
+
 void TPlaylist::showContextMenu(const QPoint & pos) {
 
 	if (!popup->isVisible()) {
@@ -931,6 +955,8 @@ void TPlaylist::enableActions() {
     cutAct->setEnabled(e);
     copyAct->setEnabled(haveItems || coreHasFilename);
     editAct->setEnabled(e && current_item);
+
+    refreshAct->setEnabled(enable && !filename.isEmpty());
 }
 
 void TPlaylist::onPlayerError() {

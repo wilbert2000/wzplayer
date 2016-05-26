@@ -391,7 +391,8 @@ void TBase::createActions() {
 	editControlBarAct = new TAction(this, "edit_controlbar", tr("Edit control &bar.."));
 
 	// Status bar
-	viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("&Status bar"), "", Qt::Key_F6);
+    viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("&Status bar"),
+                                   "", Qt::Key_F7);
 	viewStatusBarAct->setCheckable(true);
 	viewStatusBarAct->setChecked(true);
 	connect(viewStatusBarAct, SIGNAL(toggled(bool)), statusBar(), SLOT(setVisible(bool)));
@@ -508,7 +509,7 @@ void TBase::createToolbars() {
 
 	QAction* action = controlbar->toggleViewAction();
 	action->setObjectName("toggle_controlbar");
-	action->setShortcut(Qt::Key_F5);
+    action->setShortcut(Qt::Key_F6);
 
 	// Main toolbar
 	toolbar = new TEditableToolbar(this);
