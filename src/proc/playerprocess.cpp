@@ -356,20 +356,6 @@ bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) 
 
 bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
 
-	/* Replaced by parseVO()
-	if (name == "WIDTH") {
-		md->video_width = value.toInt();
-        logger()->debug("parseVideoProperty: video_width set to %1",
-			   md->video_width);
-		return true;
-	}
-	if (name == "HEIGHT") {
-		md->video_height = value.toInt();
-        logger()->debug("parseVideoProperty: video_height set to %1",
-			   md->video_height);
-		return true;
-	}
-	*/
 	if (name == "ASPECT") {
 		md->video_aspect = value;
         logger()->debug("parseVideoProperty: video aspect ratio set to '%1'",
