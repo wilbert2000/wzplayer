@@ -2292,8 +2292,8 @@ bool TBase::winEvent (MSG* m, long* result) {
 
 	if (m->message == WM_SYSCOMMAND) {
 		if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
-            || ((m->wParam & 0xFFF0) == SC_MONIT%1POWER)) {
-            logger()->debug("winEvent: receive%1SC_SCREENSAVE or SC_MONITORPOWER");
+            || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
+            logger()->debug("winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
             logger()->debug("winEvent: playing: %1", core->state() == STATE_PLAYING);
             logger()->debug("winEvent: video: %1", !core->mdat.noVideo());
 			
