@@ -109,9 +109,7 @@ bool TAddFilesThread::blacklisted(QString filename) {
 
     filename = QDir::toNativeSeparators(filename);
 
-    // Note: using case insensitive
-    if (filename.isEmpty()
-        || blacklist.contains(filename, cs)) {
+    if (filename.isEmpty() || blacklist.contains(filename, cs)) {
         logger()->warn("blacklisted: ignoring '%1', it would create an infinite"
                        " playlist", filename);
         return true;
