@@ -110,9 +110,13 @@ namespace Log4Qt
 			case LATIN1:
 				mMessage = QString::fromLatin1(pMessage);
 				break;
-			case CODECFORTR:
-				mMessage = QTextCodec::codecForTr()->toUnicode(pMessage);
-				break;
+            case CODECFORTR:
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                mMessage = QTextCodec::codecForTr()->toUnicode(pMessage);
+#else
+                mMessage = QString::fromUtf8(pMessage);
+#endif
+            //	break;
 			case UNICODEUTF8:
 				mMessage = QString::fromUtf8(pMessage);
 				break;
@@ -129,7 +133,11 @@ namespace Log4Qt
 	
 	QString LogError::translatedMessage() const
 	{
-	    return QCoreApplication::translate(mContext.toLatin1(), mMessage.toUtf8().data(), 0, QCoreApplication::UnicodeUTF8);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+        return QCoreApplication::translate(mContext.toLatin1(), mMessage.toUtf8().data(), 0, QCoreApplication::UnicodeUTF8);
+#else
+        return QCoreApplication::translate(mContext.toLatin1(), mMessage.toUtf8().data(), 0);
+#endif
 	}
 	
 	

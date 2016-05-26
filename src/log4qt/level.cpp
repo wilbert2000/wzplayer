@@ -33,6 +33,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <QtCore/QDataStream>
 #include "log4qt/logger.h"
 
 

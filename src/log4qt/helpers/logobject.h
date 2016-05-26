@@ -44,7 +44,7 @@
 #if QT_VERSION >= QT_VERSION_CHECK(4, 4, 0)
 #	include <QtCore/QAtomicInt>
 #	ifndef Q_ATOMIC_INT_REFERENCE_COUNTING_IS_ALWAYS_NATIVE
-#		warning "QAtomicInt reference counting is not native. The class Log4Qt::LogObject is not thread-safe."
+#		//warning "QAtomicInt reference counting is not native. The class Log4Qt::LogObject is not thread-safe."
 #	endif
 #endif
 
@@ -183,23 +183,19 @@ namespace Log4Qt
 	{}
 
 	inline int LogObject::referenceCount() const
-	{	return mReferenceCount;	}
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        { return mReferenceCount; }
+#else
+        { return mReferenceCount.loadAcquire(); }
+#endif
 
 	inline void LogObject::release()
-#if QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
-	{	if ((q_atomic_decrement(&mReferenceCount) == 0) && !parent())
-				delete(this);	}
-#else
 	{	if (!mReferenceCount.deref())
-			delete(this);	}
-#endif
+            delete(this);
+    }
 
 	inline void LogObject::retain()
-#if QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
-	{	q_atomic_increment(&mReferenceCount);	}
-#else
 	{	mReferenceCount.ref();	}
-#endif
 
     inline Logger *LogObject::logger() const
     {   return mLog4QtClassLogger.logger(this);    }

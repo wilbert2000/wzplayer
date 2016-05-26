@@ -33,7 +33,11 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutex>
 #include <QtCore/QStringList>
+#include <QtCore/QObject>
 
+QT_BEGIN_NAMESPACE
+class QMetaProperty;
+QT_END_NAMESPACE
 
 /******************************************************************************
  * Declarations
@@ -95,9 +99,10 @@ namespace Log4Qt
 		
 	private:
 	    Factory();
-	    Factory(const Factory &rOther); // Not implemented
+        // Factory(const Factory &rOther); // Not implemented
 	    // virtual ~Factory(); // Use compiler default
-	    Factory &operator=(const Factory &rOther); // Not implemented
+        // Factory &operator=(const Factory &rOther); // Not implemented
+        Q_DISABLE_COPY(Factory)
 	
 	public:
 		/*!

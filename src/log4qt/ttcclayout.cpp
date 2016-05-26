@@ -69,7 +69,7 @@ namespace Log4Qt
 	    mThreadPrinting(true),
 	    mpPatternFormatter(0)
 	{
-	    setDateFormat(RELATIVE);
+        setDateFormat(RELATIVEDATE);
 	}
 	
 	
@@ -114,13 +114,13 @@ namespace Log4Qt
 	        case ISO8601:
 	        	setDateFormat(QLatin1String("ISO8601"));
 	            break;
-	        case ABSOLUTE:
+            case ABSOLUTEDATE:
 	        	setDateFormat(QLatin1String("ABSOLUTE"));
 	            break;
 	        case DATE:
 	        	setDateFormat(QLatin1String("DATE"));
 	            break;
-	        case RELATIVE:
+            case RELATIVEDATE:
 	        	setDateFormat(QLatin1String("RELATIVE"));
 	            break;
 	        default:

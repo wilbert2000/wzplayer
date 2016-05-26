@@ -188,13 +188,25 @@ namespace Log4Qt
 	    if (instance()->mHandleQtMessages)
 	    {
 	        static_logger()->trace("Activate Qt message handling");
-	        instance()->mOldQtMsgHandler = qInstallMsgHandler(qtMessageHandler);
-	    }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            instance()->mOldQtMsgHandler = qInstallMessageHandler(qtMessageHandler);
+#else
+            instance()->mOldQtMsgHandler = qInstallMsgHandler(qtMessageHandler);
+#endif
+
+        }
 	    else
 	    {
 	        static_logger()->trace("Deactivate Qt message handling");
-	        qInstallMsgHandler(instance()->mOldQtMsgHandler);
-	    }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            qInstallMessageHandler(instance()->mOldQtMsgHandler);
+#else
+            qInstallMsgHandler(instance()->mOldQtMsgHandler);
+#endif
+
+        }
 	}
 	
 	
@@ -363,9 +375,15 @@ namespace Log4Qt
         }
     }
     
-    
-	void LogManager::qtMessageHandler(QtMsgType type, const char *pMessage)
-	{
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    void LogManager::qtMessageHandler(QtMsgType type, const QMessageLogContext&,
+                                      const QString& rMessage) {
+        const char* pMessage = rMessage.toUtf8().constData();
+#else
+    void LogManager::qtMessageHandler(QtMsgType type, const char *pMessage) {
+#endif
+
 	    Level level;
 	    switch (type)
 	    {

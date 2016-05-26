@@ -36,7 +36,7 @@
 #include "log4qt/layout.h"
 #include "log4qt/loggingevent.h"
 
-#if defined(Q_WS_WIN)
+#if defined(Q_WS_WIN) || defined(Q_OS_WIN32)
 #include <Windows.h>
 #endif
 
@@ -82,17 +82,21 @@ namespace Log4Qt
 	    Q_ASSERT_X(layout(), "DebugAppender::append()", "Layout must not be null");
 	    
 	    QString message(layout()->format(rEvent));    
-#if defined(Q_WS_WIN)
-	    QT_WA({
-	        OutputDebugStringW(reinterpret_cast<const WCHAR*>(message.utf16()));
-	    }, {
-	        OutputDebugStringA(message.toLocal8Bit().data());
-	    });
+#if defined(Q_OS_WIN32) || defined(Q_WS_WIN)
+#if (QT_VERSION < 0x050000)
+        QT_WA({
+                  OutputDebugStringW(reinterpret_cast<const WCHAR*>(message.utf16()));
+              }, {
+                  OutputDebugStringA(message.toLocal8Bit().data());
+              });
 #else
-	    fprintf(stderr, message.toLocal8Bit().data());
-	    fflush(stderr);
+        OutputDebugStringW(reinterpret_cast<const WCHAR*>(message.utf16()));
 #endif
-	}
+#else
+        fprintf(stderr, message.toLocal8Bit().data());
+        fflush(stderr);
+#endif
+    }
 	
 	
 	

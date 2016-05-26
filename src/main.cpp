@@ -39,7 +39,7 @@ void initLog4Qt() {
         // Create layout
         TTCCLayout* layout = new TTCCLayout();
         layout->setName("Layout");
-        layout->setDateFormat(TTCCLayout::ABSOLUTE);
+        layout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
         layout->setThreadPrinting(false);
         layout->activateOptions();
 
