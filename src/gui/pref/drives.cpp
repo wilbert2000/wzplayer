@@ -31,10 +31,9 @@ namespace Gui { namespace Pref {
 #include <windows.h>
 
 bool isCDDevice(QString drive) {
-		unsigned int r =  GetDriveTypeW((LPCWSTR) drive.utf16());
-        logger()->debug("isCDDevice: '%1' r: %2", drive, r);
-		return (r == DRIVE_CDROM);
-	}
+    unsigned int r =  GetDriveTypeW((LPCWSTR) drive.utf16());
+    return (r == DRIVE_CDROM);
+}
 
 #endif
 
