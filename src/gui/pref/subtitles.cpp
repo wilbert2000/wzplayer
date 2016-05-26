@@ -181,47 +181,85 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
 	requires_restart = false;
 
 	// Subtitles tab
-	restartIfIntChanged(pref->subtitle_fuzziness, fuzziness());
+    restartIfIntChanged(pref->subtitle_fuzziness, fuzziness(),
+                        "subtitle_fuzziness");
 	pref->subtitle_language = subtitleLanguage();
-	restartIfBoolChanged(pref->select_first_subtitle, selectFirstSubtitle());
+    restartIfBoolChanged(pref->select_first_subtitle, selectFirstSubtitle(),
+                         "select_first_subtitle");
 
-	restartIfStringChanged(pref->subtitle_enca_language, encaLang());
-	restartIfStringChanged(pref->subtitle_encoding_fallback, encodingFallback());
+    restartIfStringChanged(pref->subtitle_enca_language, encaLang(),
+                           "subtitle_enca_language");
+    restartIfStringChanged(pref->subtitle_encoding_fallback, encodingFallback(),
+                           "subtitle_encoding_fallback");
 
 #ifdef Q_OS_WIN
 	pref->use_windowsfontdir = windowsfontdir_check->isChecked();
 #endif
 
 	// Library tab
-	restartIfBoolChanged(pref->freetype_support, freetype_group->isChecked());
-	restartIfBoolChanged(pref->use_ass_subtitles, pref->freetype_support && ass_group->isChecked());
+    restartIfBoolChanged(pref->freetype_support, freetype_group->isChecked(),
+                         "freetype_support");
+    restartIfBoolChanged(pref->use_ass_subtitles,
+                         pref->freetype_support && ass_group->isChecked(),
+                         "use_ass_subtitles");
 
 	pref->initial_sub_scale_ass = assFontScale();
-	restartIfIntChanged(pref->ass_line_spacing, assLineSpacing());
+    restartIfIntChanged(pref->ass_line_spacing, assLineSpacing(),
+                        "ass_line_spacing");
 
 	// Custom style
-	restartIfBoolChanged(pref->use_custom_ass_style, custom_style_group->isChecked());
+    restartIfBoolChanged(pref->use_custom_ass_style,
+                         custom_style_group->isChecked(),
+                         "use_custom_ass_style");
 
-	restartIfStringChanged(pref->ass_styles.fontname, style_font_combo->currentText());
-	restartIfIntChanged(pref->ass_styles.fontsize, style_size_spin->value());
-	restartIfUIntChanged(pref->ass_styles.primarycolor, style_text_color_button->color().rgb());
-	restartIfUIntChanged(pref->ass_styles.outlinecolor, style_border_color_button->color().rgb());
-	restartIfUIntChanged(pref->ass_styles.backcolor, style_shadow_color_button->color().rgb());
-	restartIfBoolChanged(pref->ass_styles.bold, style_bold_check->isChecked());
-	restartIfBoolChanged(pref->ass_styles.italic, style_italic_check->isChecked());
-	restartIfIntChanged(pref->ass_styles.halignment, style_alignment_combo->itemData(style_alignment_combo->currentIndex()).toInt());
-	restartIfIntChanged(pref->ass_styles.valignment, style_valignment_combo->currentIndex());
-	restartIfIntChanged(pref->ass_styles.borderstyle, style_border_style_combo->itemData(style_border_style_combo->currentIndex()).toInt());
-	restartIfDoubleChanged(pref->ass_styles.outline, style_outline_spin->value());
-	restartIfDoubleChanged(pref->ass_styles.shadow, style_shadow_spin->value());
-	restartIfIntChanged(pref->ass_styles.marginl, style_marginl_spin->value());
-	restartIfIntChanged(pref->ass_styles.marginr, style_marginr_spin->value());
-	restartIfIntChanged(pref->ass_styles.marginv, style_marginv_spin->value());
+    restartIfStringChanged(pref->ass_styles.fontname,
+                           style_font_combo->currentText(),
+                           "ass_styles.fontname");
+    restartIfIntChanged(pref->ass_styles.fontsize, style_size_spin->value(),
+                        "ass_styles.fontsize");
+    restartIfUIntChanged(pref->ass_styles.primarycolor,
+                         style_text_color_button->color().rgb(),
+                         "ass_styles.primarycolor");
+    restartIfUIntChanged(pref->ass_styles.outlinecolor,
+                         style_border_color_button->color().rgb(),
+                         "ass_styles.outlinecolor");
+    restartIfUIntChanged(pref->ass_styles.backcolor,
+                         style_shadow_color_button->color().rgb(),
+                         "ass_styles.backcolor");
+    restartIfBoolChanged(pref->ass_styles.bold, style_bold_check->isChecked(),
+                         "ass_styles.bold");
+    restartIfBoolChanged(pref->ass_styles.italic,
+                         style_italic_check->isChecked(),
+                         "ass_styles.italic");
+    restartIfIntChanged(pref->ass_styles.halignment,
+                        style_alignment_combo->itemData(
+                            style_alignment_combo->currentIndex()).toInt(),
+                        "ass_styles.halignment");
+    restartIfIntChanged(pref->ass_styles.valignment,
+                        style_valignment_combo->currentIndex(),
+                        "ass_styles.valignment");
+    restartIfIntChanged(pref->ass_styles.borderstyle,
+                        style_border_style_combo->itemData(
+                            style_border_style_combo->currentIndex()).toInt(),
+                        "ass_styles.borderstyle");
+    restartIfDoubleChanged(pref->ass_styles.outline,
+                           style_outline_spin->value(),
+                           "ass_styles.outline");
+    restartIfDoubleChanged(pref->ass_styles.shadow, style_shadow_spin->value(),
+                           "ass_styles.shadow");
+    restartIfIntChanged(pref->ass_styles.marginl, style_marginl_spin->value(),
+                        "ass_styles.marginl");
+    restartIfIntChanged(pref->ass_styles.marginr, style_marginr_spin->value(),
+                        "ass_styles.marginr");
+    restartIfIntChanged(pref->ass_styles.marginv, style_marginv_spin->value(),
+                        "ass_styles.marginv");
 
 	pref->ass_styles.exportStyles(Settings::TPaths::subtitleStyleFile());
 
-	restartIfBoolChanged(pref->force_ass_styles, forceAssStyles());
-	restartIfStringChanged(pref->user_forced_ass_style, customizedAssStyle());
+    restartIfBoolChanged(pref->force_ass_styles, forceAssStyles(),
+                         "force_ass_styles");
+    restartIfStringChanged(pref->user_forced_ass_style, customizedAssStyle(),
+                           "user_forced_ass_style");
 }
 
 void TSubtitles::onBorderStyleCurrentIndexChanged(int index) {

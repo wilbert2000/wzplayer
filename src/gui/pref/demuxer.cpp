@@ -49,8 +49,10 @@ void TDemuxer::getData(Settings::TPreferences* pref) {
 
 	requires_restart = false;
 
-	restartIfBoolChanged(pref->use_lavf_demuxer, lavf_demuxer_check->isChecked());
-	restartIfBoolChanged(pref->use_idx, idx_check->isChecked());
+    restartIfBoolChanged(pref->use_lavf_demuxer,
+                         lavf_demuxer_check->isChecked(),
+                         "use_lavf_demuxer");
+    restartIfBoolChanged(pref->use_idx, idx_check->isChecked(), "use_idx");
 }
 
 void TDemuxer::createHelp() {

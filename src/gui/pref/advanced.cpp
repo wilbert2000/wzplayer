@@ -66,9 +66,15 @@ void TAdvanced::getData(TPreferences* pref) {
 	requires_restart = false;
 	pref->actions_to_run = actionsToRun();
 
-	restartIfStringChanged(pref->player_additional_options, playerAdditionalArguments());
-	restartIfStringChanged(pref->player_additional_video_filters, playerAdditionalVideoFilters());
-	restartIfStringChanged(pref->player_additional_audio_filters, playerAdditionalAudioFilters());
+    restartIfStringChanged(pref->player_additional_options,
+                           playerAdditionalArguments(),
+                           "player_additional_options");
+    restartIfStringChanged(pref->player_additional_video_filters,
+                           playerAdditionalVideoFilters(),
+                           "player_additional_video_filters");
+    restartIfStringChanged(pref->player_additional_audio_filters,
+                           playerAdditionalAudioFilters(),
+                           "player_additional_audio_filters");
 }
 
 void TAdvanced::setPlayerAdditionalArguments(QString args) {

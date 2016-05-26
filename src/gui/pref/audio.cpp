@@ -119,7 +119,7 @@ void TAudio::getData(TPreferences* pref) {
 
 	requires_restart = false;
 
-	restartIfStringChanged(pref->ao, AO());
+    restartIfStringChanged(pref->ao, AO(), "ao");
 	if (pref->isMPlayer()) {
 		pref->mplayer_ao = pref->ao;
 		pref->mpv_ao = mpv_ao;
@@ -128,24 +128,29 @@ void TAudio::getData(TPreferences* pref) {
 		pref->mpv_ao = pref->ao;
 	}
 
-	restartIfBoolChanged(pref->use_audio_equalizer, useAudioEqualizer());
-	restartIfBoolChanged(pref->use_hwac3, Ac3DTSPassthrough());
+    restartIfBoolChanged(pref->use_audio_equalizer, useAudioEqualizer(),
+                         "use_audio_equalizer");
+    restartIfBoolChanged(pref->use_hwac3, Ac3DTSPassthrough(), "use_hwac3");
 	pref->initial_audio_channels = audioChannels();
 	TPreferences::TOptionState scale = scaleTempoFilter();
 	if (scale != pref->use_scaletempo) {
-		pref->use_scaletempo = scale;
+        logger()->debug("getData: need restart, use_scaletemp changed from %1"
+                        " to %2", QString::number(scale),
+                        QString::number(pref->use_scaletempo));
+        pref->use_scaletempo = scale;
 		requires_restart = true;
 	}
 
-	restartIfBoolChanged(pref->use_soft_vol, softVol());
+    restartIfBoolChanged(pref->use_soft_vol, softVol(), "use_soft_vol");
 	pref->initial_volnorm = initialVolNorm();
-	restartIfIntChanged(pref->softvol_max, amplification());
+    restartIfIntChanged(pref->softvol_max, amplification(), "softvol_max");
 
-	restartIfBoolChanged(pref->autosync, autoSyncActivated());
-	restartIfIntChanged(pref->autosync_factor, autoSyncFactor());
+    restartIfBoolChanged(pref->autosync, autoSyncActivated(), "autosync");
+    restartIfIntChanged(pref->autosync_factor, autoSyncFactor(),
+                        "autosync_factor");
 
-	restartIfBoolChanged(pref->use_mc, mcActivated());
-	restartIfDoubleChanged(pref->mc_value, mc());
+    restartIfBoolChanged(pref->use_mc, mcActivated(), "use_mc");
+    restartIfDoubleChanged(pref->mc_value, mc(), "mc_value");
 
 	pref->audio_lang = audioLang();
 }

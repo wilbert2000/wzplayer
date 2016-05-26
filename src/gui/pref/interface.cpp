@@ -229,18 +229,21 @@ void TInterface::getData(Settings::TPreferences* pref) {
     Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
     Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
     restartIfBoolChanged(pref->log_verbose,
-        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose());
+        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose(),
+        "log_verbose");
 
 	// History
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
 		pref->history_recents.setMaxItems(recentsMaxItems());
 		recents_changed = true;
+        logger()->debug("getData: need restart, history max items changed");
 	}
 
 	if (pref->history_urls.maxItems() != urlMaxItems()) {
 		pref->history_urls.setMaxItems(urlMaxItems());
 		url_max_changed = true;
-	}
+        logger()->debug("getData: need restart, urls max items changed");
+    }
 
 	pref->save_dirs = rememberDirs();
 }

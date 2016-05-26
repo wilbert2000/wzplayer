@@ -22,6 +22,7 @@
 #include <QWidget>
 #include <QString>
 #include <QPixmap>
+#include "log4qt/logger.h"
 
 
 class QEvent;
@@ -30,6 +31,7 @@ namespace Gui {
 namespace Pref {
 
 class TWidget : public QWidget {
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	TWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -54,11 +56,14 @@ protected:
 	virtual void changeEvent (QEvent* event) ;
 
 	// Request restart if changed
-	void restartIfBoolChanged(bool& old_value, bool new_value);
-	void restartIfIntChanged(int& old_value, int new_value);
-	void restartIfUIntChanged(unsigned int& old_value, unsigned int new_value);
-	void restartIfDoubleChanged(double& old_value, const double& new_value);
-	void restartIfStringChanged(QString& old_value, const QString& new_value);
+    void restartIfBoolChanged(bool& old_value, bool new_value,
+                              const QString& name);
+    void restartIfIntChanged(int& old_value, int new_value, const QString& name);
+    void restartIfUIntChanged(unsigned int& old_value, unsigned int new_value,
+                              const QString& name);
+    void restartIfDoubleChanged(double& old_value, const double& new_value,
+                                const QString& name);
+    void restartIfStringChanged(QString& old_value, const QString& new_value, const QString& name);
 
 	// Help
 	void addSectionTitle(const QString& title);

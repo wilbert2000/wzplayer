@@ -48,42 +48,62 @@ void TWidget::addSectionGroup(const QString& title) {
 	help_message += "<h3>" + title + "</h3>";
 }
 
-void TWidget::restartIfBoolChanged(bool& old_value, bool new_value) {
+void TWidget::restartIfBoolChanged(bool& old_value, bool new_value,
+                                   const QString& name) {
 
 	if (old_value != new_value) {
+        logger()->debug("restartIfBoolChanged: need restart, %1 changed from %2"
+                        " to %3", name, QString::number(old_value),
+                        QString::number(new_value));
 		old_value = new_value;
 		requires_restart = true;
 	}
 }
 
-void TWidget::restartIfIntChanged(int& old_value, int new_value) {
+void TWidget::restartIfIntChanged(int& old_value, int new_value, const QString& name) {
 
 	if (old_value != new_value) {
-		old_value = new_value;
+        logger()->debug("restartIfIntChanged: need restart, %1 changed from %2"
+                        " to %3", name, QString::number(old_value),
+                        QString::number(new_value));
+        old_value = new_value;
 		requires_restart = true;
 	}
 }
 
-void TWidget::restartIfUIntChanged(unsigned int& old_value, unsigned int new_value) {
+void TWidget::restartIfUIntChanged(unsigned int& old_value,
+                                   unsigned int new_value,
+                                   const QString& name) {
 
 	if (old_value != new_value) {
-		old_value = new_value;
+        logger()->debug("restartIfUIntChanged: need restart, %1 changed from %2"
+                        " to %3", name, QString::number(old_value),
+                        QString::number(new_value));
+        old_value = new_value;
 		requires_restart = true;
 	}
 }
 
-void TWidget::restartIfDoubleChanged(double& old_value, const double& new_value) {
+void TWidget::restartIfDoubleChanged(double& old_value, const double& new_value,
+                                     const QString& name) {
 
 	if (old_value != new_value) {
-		old_value = new_value;
+        logger()->debug("restartIfDoubleChanged: need restart, %1 changed from"
+                        " %2 to %3", name, QString::number(old_value),
+                        QString::number(new_value));
+        old_value = new_value;
 		requires_restart = true;
 	}
 }
 
-void TWidget::restartIfStringChanged(QString& old_value, const QString& new_value) {
+void TWidget::restartIfStringChanged(QString& old_value,
+                                     const QString& new_value,
+                                     const QString& name) {
 
 	if (old_value != new_value) {
-		old_value = new_value;
+        logger()->debug("restartIfStringChanged: need restart, %1 changed from"
+                        " %2 to %3", name, old_value, new_value);
+        old_value = new_value;
 		requires_restart = true;
 	}
 }

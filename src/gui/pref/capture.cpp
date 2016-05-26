@@ -85,13 +85,18 @@ void TCapture::getData(Settings::TPreferences* pref) {
         dir = "";
     }
 
-	restartIfBoolChanged(pref->use_screenshot, enable);
-	restartIfStringChanged(pref->screenshot_directory, dir);
+    restartIfBoolChanged(pref->use_screenshot, enable, "use_screenshot");
+    restartIfStringChanged(pref->screenshot_directory, dir,
+                           "screenshot_directory");
 
-	restartIfStringChanged(pref->screenshot_template, screenshot_template_edit->text());
-	restartIfStringChanged(pref->screenshot_format, screenshotFormat());
+    restartIfStringChanged(pref->screenshot_template,
+                           screenshot_template_edit->text(),
+                           "screenshot_template");
+    restartIfStringChanged(pref->screenshot_format, screenshotFormat(),
+                           "screenshot_format");
 
-	restartIfBoolChanged(pref->subtitles_on_screenshots, subtitlesOnScreenshots());
+    restartIfBoolChanged(pref->subtitles_on_screenshots,
+                         subtitlesOnScreenshots(), "subtitles_on_screenshots");
 }
 
 void TCapture::setUseScreenshots(bool b) {

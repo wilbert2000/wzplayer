@@ -164,7 +164,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 
 void TVideo::getData(Settings::TPreferences* pref) {
 
-	restartIfStringChanged(pref->vo, VO());
+    restartIfStringChanged(pref->vo, VO(), "vo");
 	if (pref->isMPlayer()) {
 		pref->mplayer_vo = pref->vo;
 		pref->mpv_vo = mpv_vo;
@@ -177,25 +177,30 @@ void TVideo::getData(Settings::TPreferences* pref) {
 	pref->vdpau = vdpau;
 #endif
 
-	restartIfStringChanged(pref->hwdec, hwdec());
-	restartIfBoolChanged(pref->use_soft_video_eq, softwareVideoEqualizer());
+    restartIfStringChanged(pref->hwdec, hwdec(), "hwdec");
+    restartIfBoolChanged(pref->use_soft_video_eq, softwareVideoEqualizer(),
+                         "use_soft_video_eq");
 
-	restartIfBoolChanged(pref->frame_drop, frameDrop());
-	restartIfBoolChanged(pref->hard_frame_drop, hardFrameDrop());
+    restartIfBoolChanged(pref->frame_drop, frameDrop(), "frame_drop");
+    restartIfBoolChanged(pref->hard_frame_drop, hardFrameDrop(),
+                         "hard_frame_drop");
 	TPreferences::TOptionState pts = correct_pts_combo->state();
 	if (pts != pref->use_correct_pts) {
 		pref->use_correct_pts = pts;
 		requires_restart = true;
+        logger()->debug("getData: restart needed, use_correct_pts changed");
 	}
 
 	pref->initial_postprocessing = initialPostprocessing();
-	restartIfIntChanged(pref->postprocessing_quality, postprocessingQuality());
+    restartIfIntChanged(pref->postprocessing_quality, postprocessingQuality(),
+                        "postprocessing_quality");
 	pref->initial_deinterlace = initialDeinterlace();
 	pref->initial_tv_deinterlace = initialDeinterlaceTV();
 	pref->initial_zoom_factor = initialZoom();
 
 	// Monitor
-	restartIfStringChanged(pref->monitor_aspect, monitorAspect());
+    restartIfStringChanged(pref->monitor_aspect, monitorAspect(),
+                           "monitor_aspect");
 }
 
 void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
@@ -444,13 +449,18 @@ void TVideo::on_vdpau_button_clicked() {
 	d.setDisableFilters(vdpau.disable_video_filters);
 
 	if (d.exec() == QDialog::Accepted) {
-		restartIfBoolChanged(vdpau.ffh264vdpau, d.ffh264vdpau());
-		restartIfBoolChanged(vdpau.ffmpeg12vdpau, d.ffmpeg12vdpau());
-		restartIfBoolChanged(vdpau.ffwmv3vdpau, d.ffwmv3vdpau());
-		restartIfBoolChanged(vdpau.ffvc1vdpau, d.ffvc1vdpau());
-		restartIfBoolChanged(vdpau.ffodivxvdpau, d.ffodivxvdpau());
+        restartIfBoolChanged(vdpau.ffh264vdpau, d.ffh264vdpau(),
+                             "vdpau.ffh264vdpau");
+        restartIfBoolChanged(vdpau.ffmpeg12vdpau, d.ffmpeg12vdpau(),
+                             "vdpau.ffmpeg12vdpau");
+        restartIfBoolChanged(vdpau.ffwmv3vdpau, d.ffwmv3vdpau(),
+                             "vdpau.ffwmv3vdpau");
+        restartIfBoolChanged(vdpau.ffvc1vdpau, d.ffvc1vdpau(), "ffvc1vdpau");
+        restartIfBoolChanged(vdpau.ffodivxvdpau, d.ffodivxvdpau(),
+                             "vdpau.ffodivxvdpau");
 
-		restartIfBoolChanged(vdpau.disable_video_filters, d.disableFilters());
+        restartIfBoolChanged(vdpau.disable_video_filters, d.disableFilters(),
+                             "vdpau.disable_video_filters");
 	}
 }
 #endif
