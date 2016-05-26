@@ -18,10 +18,14 @@
 
 #include <Qt>
 #include "screensaver.h"
+#include "log4qt/logger.h"
 
 #ifndef Q_OS_OS2
 #include <windows.h>
 #endif
+
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, WinScreenSaver)
 
 WinScreenSaver::WinScreenSaver() {
 #ifndef Q_OS_OS2
