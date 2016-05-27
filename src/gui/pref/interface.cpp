@@ -114,16 +114,6 @@ void TInterface::retranslateStrings() {
 
 	style_combo->setItemText(0, tr("Default"));
 
-	// Playlist
-	int index = media_to_add_combo->currentIndex();
-	media_to_add_combo->clear();
-	media_to_add_combo->addItem(tr("None"), Settings::TPreferences::NoFiles);
-	media_to_add_combo->addItem(tr("Video files"), Settings::TPreferences::VideoFiles);
-	media_to_add_combo->addItem(tr("Audio files"), Settings::TPreferences::AudioFiles);
-	media_to_add_combo->addItem(tr("Video and audio files"), Settings::TPreferences::MultimediaFiles);
-	media_to_add_combo->addItem(tr("Consecutive files"), Settings::TPreferences::ConsecutiveFiles);
-	media_to_add_combo->setCurrentIndex(index);
-
 	createHelp();
 }
 
@@ -148,20 +138,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
     show_toolbars_bottom_only_check->setChecked(
         pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	setStartInFullscreen(pref->start_in_fullscreen);
-
-	// Playlist
-    setMediaToAddToPlaylist(pref->mediaToAddToPlaylist);
-
-    setDirectoryRecursion(pref->addDirectories);
-    video_check->setChecked(pref->addVideo);
-    audio_check->setChecked(pref->addAudio);
-    playlists_check->setChecked(pref->addPlaylists);
-    images_check->setChecked(pref->addImages);
-
-    image_duration_spinbox->setValue(pref->imageDuration);
-
-    blacklist_edit->setPlainText(pref->titleBlacklist.join("\n"));
-
 
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
@@ -209,20 +185,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked()
         ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
-
-    // Playlist
-    pref->mediaToAddToPlaylist = mediaToAddToPlaylist();
-    pref->addDirectories = directoryRecursion();
-    pref->addVideo = video_check->isChecked();
-    pref->addAudio = audio_check->isChecked();
-    pref->addPlaylists = playlists_check->isChecked();
-    pref->addImages = images_check->isChecked();
-    pref->imageDuration = image_duration_spinbox->value();
-
-    // Filter empty
-    pref->titleBlacklist = blacklist_edit->toPlainText().split("\n",
-                                          QString::SkipEmptyParts);
-    pref->setTitleBlackList();
 
     // Log
     pref->log_level = logLevel();
@@ -357,26 +319,6 @@ void TInterface::setHideVideoOnAudioFiles(bool b) {
 bool TInterface::hideVideoOnAudioFiles() {
 	return hide_video_window_on_audio_check->isChecked();
 }
-void TInterface::setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type) {
-
-    int i = media_to_add_combo->findData(type);
-    if (i < 0)
-        i = 0;
-	media_to_add_combo->setCurrentIndex(i);
-}
-
-Settings::TPreferences::TAddToPlaylist TInterface::mediaToAddToPlaylist() {
-    return (Settings::TPreferences::TAddToPlaylist)
-        media_to_add_combo->itemData(media_to_add_combo->currentIndex()).toInt();
-}
-
-void TInterface::setDirectoryRecursion(bool b) {
-	recursive_check->setChecked(b);
-}
-
-bool TInterface::directoryRecursion() {
-	return recursive_check->isChecked();
-}
 
 void TInterface::setLogLevel(Log4Qt::Level level) {
 
@@ -506,20 +448,6 @@ void TInterface::createHelp() {
 		tr("If this option is checked, all videos will start to play in "
 		   "fullscreen mode."));
 
-	addSectionTitle(tr("Playlist"));
-
-	setWhatsThis(media_to_add_combo, tr("Add files from folder"),
-		tr("This option allows to add files automatically to the playlist:") +"<br>"+
-		tr("<b>None</b>: no files will be added") +"<br>"+
-		tr("<b>Video files</b>: all video files found in the folder will be added") +"<br>"+
-		tr("<b>Audio files</b>: all audio files found in the folder will be added") +"<br>"+
-		tr("<b>Video and audio files</b>: all video and audio files found in the folder will be added") +"<br>"+
-		tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added"));
-
-	setWhatsThis(recursive_check, tr("Add files in directories recursively"),
-		tr("Check this option if you want that adding a directory will also "
-		"add the files in subdirectories recursively. Otherwise only the "
-		"files in the selected directory will be added."));
 
 	addSectionTitle(tr("Logs"));
 

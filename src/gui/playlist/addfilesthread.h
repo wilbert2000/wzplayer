@@ -24,6 +24,7 @@ class TAddFilesThread : public QThread {
 public:
     TAddFilesThread(QObject* parent,
                     const QStringList& aFiles,
+                    const QStringList& nameBlacklist,
                     bool recurseSubDirs,
                     bool videoFiles,
                     bool audioFiles,
@@ -50,15 +51,19 @@ private:
     bool abortRequested;
     bool stopRequested;
     bool recurse;
+    Qt::CaseSensitivity caseSensitiveNames;
 
     QString playlistPath;
     QStringList blacklist;
     QStringList nameFilterList;
+    QList<QRegExp*> rxNameBlacklist;
 
     bool blacklisted(QString filename);
     bool blacklisted(const QFileInfo& fi);
     bool blacklisted(const QDir& dir);
     void whitelist();
+
+    bool nameBlackListed(const QString& name);
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,

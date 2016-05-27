@@ -38,6 +38,7 @@ class TVideo;
 class TAudio;
 class TSubtitles;
 class TInterface;
+class TPlaylistSection;
 class TInput;
 class TDrives;
 class TCapture;
@@ -64,7 +65,8 @@ public:
 		SECTION_AUDIO,
 		SECTION_SUBTITLES,
 		SECTION_GUI,
-		SECTION_INPUT,
+        SECTION_PLAYLIST,
+        SECTION_INPUT,
 		SECTION_DRIVES,
 		SECTION_CAPTURE,
 		SECTION_PERFORMANCE,
@@ -111,7 +113,8 @@ private:
 	TAudio* page_audio;
 	TSubtitles* page_subtitles;
 	TInterface* page_interface;
-	TInput* page_input;
+    TPlaylistSection* page_playlist;
+    TInput* page_input;
 	TDrives* page_drives;
 	TCapture* page_capture;
 	TPerformance* page_performance;

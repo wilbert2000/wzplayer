@@ -446,6 +446,7 @@ void TPlaylist::addFilesStartThread() {
 
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
+                                     pref->nameBlacklist,
                                      pref->addDirectories,
                                      pref->addVideo,
                                      pref->addAudio,
@@ -1559,8 +1560,18 @@ bool TPlaylist::maybeSave() {
     }
 
     if (QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
-        logger()->debug("maybeSave: auto save");
+        logger()->debug("maybeSave: auto saving wzplaylist.m3u8");
         return save();
+    }
+
+    if (!playlistWidget->root()->isPlaylist()) {
+        // Directorie
+        if (pref->useDirectoriePlaylists) {
+            logger()->debug("maybeSave: auto saving directorie");
+            return save();
+        }
+        logger()->debug("maybeSave: discarding changes to directorie playlist");
+        return true;
     }
 
     int res = QMessageBox::question(this, tr("Playlist modified"),

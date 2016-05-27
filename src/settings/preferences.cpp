@@ -274,6 +274,9 @@ void TPreferences::reset() {
 
     imageDuration = 10;
 
+    useDirectoriePlaylists = false;
+
+    nameBlacklist.clear();
     titleBlacklist = QStringList() << "RARBG";
     setTitleBlackList();
 
@@ -561,18 +564,6 @@ void TPreferences::save() {
     endGroup();
 
 
-    beginGroup("playlist");
-    setValue("media_to_add_to_playlist", mediaToAddToPlaylist);
-    setValue("add_directories", addDirectories);
-    setValue("add_video", addVideo);
-    setValue("add_audio", addAudio);
-    setValue("add_playlists", addPlaylists);
-    setValue("add_images", addImages);
-    setValue("image_duration", imageDuration);
-    setValue("title_blacklist", titleBlacklist);
-    endGroup();
-
-
     beginGroup("log");
     setValue("log_verbose", log_verbose);
     setValue("log_level", log_level.toString());
@@ -628,6 +619,20 @@ void TPreferences::save() {
     setValue("last_dvb_channel", last_dvb_channel);
     setValue("last_tv_channel", last_tv_channel);
     endGroup(); // history
+
+
+    beginGroup("playlist");
+    setValue("media_to_add_to_playlist", mediaToAddToPlaylist);
+    setValue("add_directories", addDirectories);
+    setValue("add_video", addVideo);
+    setValue("add_audio", addAudio);
+    setValue("add_playlists", addPlaylists);
+    setValue("add_images", addImages);
+    setValue("image_duration", imageDuration);
+    setValue("use_directorie_playlists", useDirectoriePlaylists);
+    setValue("name_blacklist", nameBlacklist);
+    setValue("title_blacklist", titleBlacklist);
+    endGroup();
 
 
     beginGroup("mouse");
@@ -1074,24 +1079,6 @@ void TPreferences::load() {
     endGroup();
 
 
-    beginGroup("playlist");
-    mediaToAddToPlaylist = (TAddToPlaylist) value("media_to_add_to_playlist",
-                                                  mediaToAddToPlaylist).toInt();
-
-    addDirectories = value("add_directories", addDirectories).toBool();
-    addVideo = value("add_video", addVideo).toBool();
-    addAudio = value("add_audio", addAudio).toBool();
-    addPlaylists = value("add_playlists", addPlaylists).toBool();
-    addImages = value("add_images", addImages).toBool();
-    imageDuration = value("image_duration", imageDuration).toInt();
-
-    imageDuration = value("image_duration", imageDuration).toInt();
-
-    titleBlacklist = value("title_blacklist", titleBlacklist).toStringList();
-    endGroup();
-    setTitleBlackList();
-
-
     beginGroup("history");
     history_recents.setMaxItems(value("recents/max_items", history_recents.maxItems()).toInt());
     history_recents.fromStringList(value("recents", history_recents).toStringList());
@@ -1108,6 +1095,27 @@ void TPreferences::load() {
     last_dvb_channel = value("last_dvb_channel", last_dvb_channel).toString();
     last_tv_channel = value("last_tv_channel", last_tv_channel).toString();
     endGroup(); // history
+
+
+    beginGroup("playlist");
+    mediaToAddToPlaylist = (TAddToPlaylist) value("media_to_add_to_playlist",
+                                                  mediaToAddToPlaylist).toInt();
+
+    addDirectories = value("add_directories", addDirectories).toBool();
+    addVideo = value("add_video", addVideo).toBool();
+    addAudio = value("add_audio", addAudio).toBool();
+    addPlaylists = value("add_playlists", addPlaylists).toBool();
+    addImages = value("add_images", addImages).toBool();
+
+    imageDuration = value("image_duration", imageDuration).toInt();
+
+    useDirectoriePlaylists = value("use_directorie_playlists",
+                                   useDirectoriePlaylists).toBool();
+
+    nameBlacklist = value("name_blacklist", nameBlacklist).toStringList();
+    titleBlacklist = value("title_blacklist", titleBlacklist).toStringList();
+    endGroup();
+    setTitleBlackList();
 
 
     beginGroup("mouse");

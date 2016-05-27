@@ -31,6 +31,7 @@
 #include "gui/pref/audio.h"
 #include "gui/pref/subtitles.h"
 #include "gui/pref/interface.h"
+#include "gui/pref/playlistsection.h"
 #include "gui/pref/input.h"
 #include "gui/pref/drives.h"
 #include "gui/pref/capture.h"
@@ -68,51 +69,53 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	InfoReader* i = InfoReader::obj();
 	i->getInfo();
 
-	// TODO: parent
-	page_general = new TGeneral(0);
+    page_general = new TGeneral(this);
 	addSection(page_general);
 	connect(page_general, SIGNAL(binChanged(Settings::TPreferences::TPlayerID, bool, const QString&)),
 			this, SLOT(onBinChanged(Settings::TPreferences::TPlayerID, bool, const QString&)));
 
-	page_demuxer = new TDemuxer(0);
+    page_demuxer = new TDemuxer(this);
 	addSection(page_demuxer);
 
-	page_video = new TVideo(0, i->voList());
+    page_video = new TVideo(this, i->voList());
 	addSection(page_video);
 
-	page_audio = new TAudio(0, i->aoList());
+    page_audio = new TAudio(this, i->aoList());
 	addSection(page_audio);
 
-	page_subtitles = new TSubtitles;
+    page_subtitles = new TSubtitles(this);
 	addSection(page_subtitles);
 
-	page_interface = new TInterface;
+    page_interface = new TInterface(this);
 	addSection(page_interface);
 
-	page_input = new TInput;
+    page_playlist = new TPlaylistSection(this);
+    addSection(page_playlist);
+
+    page_input = new TInput(this);
 	addSection(page_input);
 
-	page_drives = new TDrives;
+    page_drives = new TDrives(this);
 	addSection(page_drives);
 
-	page_capture = new TCapture(0);
+    page_capture = new TCapture(this);
 	addSection(page_capture);
 
-	page_performance = new TPerformance;
+    page_performance = new TPerformance(this);
 	addSection(page_performance);
 
-	page_network = new TNetwork;
+    page_network = new TNetwork(this);
 	addSection(page_network);
 
-	page_updates = new TUpdates;
+    page_updates = new TUpdates(this);
 	addSection(page_updates);
 
 #if USE_ASSOCIATIONS
-	page_associations = new TAssociations;
+    page_associations = new TAssociations(this);
 	addSection(page_associations);
 #endif
 
-	page_advanced = new TAdvanced;
+    page_advanced = new TAdvanced(this);
 	addSection(page_advanced);
 
 	sections->setCurrentRow(SECTION_GENERAL);
@@ -191,7 +194,8 @@ void TDialog::setData(Settings::TPreferences* pref) {
 	page_audio->setData(pref);
 	page_subtitles->setData(pref);
 	page_interface->setData(pref);
-	page_input->setData(pref);
+    page_playlist->setData(pref);
+    page_input->setData(pref);
 	page_drives->setData(pref);
 	page_capture->setData(pref);
 	page_performance->setData(pref);
@@ -213,7 +217,8 @@ void TDialog::getData(Settings::TPreferences* pref) {
 	page_audio->getData(pref);
 	page_subtitles->getData(pref);
 	page_interface->getData(pref);
-	page_input->getData(pref);
+    page_playlist->getData(pref);
+    page_input->getData(pref);
 	page_drives->getData(pref);
 	page_capture->getData(pref);
 	page_performance->getData(pref);
@@ -229,19 +234,20 @@ void TDialog::getData(Settings::TPreferences* pref) {
 
 bool TDialog::requiresRestart() {
 
-	bool need_restart = page_general->requiresRestart();
-	if (!need_restart) need_restart = page_demuxer->requiresRestart();
-	if (!need_restart) need_restart = page_video->requiresRestart();
-	if (!need_restart) need_restart = page_audio->requiresRestart();
-	if (!need_restart) need_restart = page_subtitles->requiresRestart();
-	if (!need_restart) need_restart = page_interface->requiresRestart();
-	if (!need_restart) need_restart = page_input->requiresRestart();
-	if (!need_restart) need_restart = page_drives->requiresRestart();
-	if (!need_restart) need_restart = page_capture->requiresRestart();
-	if (!need_restart) need_restart = page_performance->requiresRestart();
-	if (!need_restart) need_restart = page_network->requiresRestart();
-	if (!need_restart) need_restart = page_updates->requiresRestart();
-	if (!need_restart) need_restart = page_advanced->requiresRestart();
+    bool need_restart = page_general->requiresRestart()
+                        || page_demuxer->requiresRestart()
+                        || page_video->requiresRestart()
+                        || page_audio->requiresRestart()
+                        || page_subtitles->requiresRestart()
+                        || page_interface->requiresRestart()
+                        || page_playlist->requiresRestart()
+                        || page_input->requiresRestart()
+                        || page_drives->requiresRestart()
+                        || page_capture->requiresRestart()
+                        || page_performance->requiresRestart()
+                        || page_network->requiresRestart()
+                        || page_updates->requiresRestart()
+                        || page_advanced->requiresRestart();
 
 	return need_restart;
 }

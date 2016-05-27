@@ -279,6 +279,9 @@ public:
 
     int imageDuration;
 
+    bool useDirectoriePlaylists;
+
+    QStringList nameBlacklist;
     QStringList titleBlacklist;
     QList<QRegExp*> rxTitleBlacklist;
     void setTitleBlackList();

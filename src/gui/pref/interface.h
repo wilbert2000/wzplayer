@@ -21,11 +21,9 @@
 
 #include "ui_interface.h"
 #include "gui/pref/widget.h"
-#include "settings/preferences.h"
 #include "wzdebug.h"
 
-
-namespace Settings{
+namespace Settings {
 class TPreferences;
 }
 
@@ -74,13 +72,6 @@ protected:
 
 	void setHideVideoOnAudioFiles(bool b);
 	bool hideVideoOnAudioFiles();
-
-    // Playlist
-    void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type);
-    Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist();
-
-    void setDirectoryRecursion(bool b);
-    bool directoryRecursion();
 
     // History tab
 	void setRecentsMaxItems(int n);

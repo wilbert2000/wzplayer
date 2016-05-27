@@ -34,6 +34,7 @@ QDir::Filters dirFilter = QDir::Dirs
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
+                                 const QStringList& nameBlacklist,
                                  bool recurseSubDirs,
                                  bool videoFiles,
                                  bool audioFiles,
@@ -47,6 +48,29 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     abortRequested(false),
     stopRequested(false),
     recurse(recurseSubDirs) {
+
+    // TODO: find the file sys func reporting case
+    caseSensitiveNames =
+#ifdef Q_OS_WIN
+            Qt::CaseInsensitive;
+#else
+            Qt::CaseSensitive;
+#endif
+
+    foreach(const QString& name, nameBlacklist) {
+        if (!name.isEmpty()) {
+            QRegExp* rx = new QRegExp(name, Qt::CaseInsensitive);
+            if (rx->isValid()) {
+                logger()->debug("TAddFilesThread: adding '%1' to blacklist",
+                                rx->pattern());
+                rxNameBlacklist << rx;
+            } else {
+                delete rx;
+                logger()->error("TAddFilesThread: failed to parse regular"
+                                " expression '%1'", name);
+            }
+        }
+    }
 
     ExtensionList exts;
     if (videoFiles) {
@@ -73,16 +97,20 @@ void TAddFilesThread::run() {
 
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
     logger()->debug("run: running in '%1'", playlistPath);
-    if (logger()->isTraceEnabled()) {
-        debug << "Searching for:" << nameFilterList;
-        debug.level = Log4Qt::Level::TRACE_INT;
-        debug << debug;
-        debug.level = Log4Qt::Level::DEBUG_INT;
-    }
 
     root = new TPlaylistWidgetItem(0, playlistPath, "", 0, true,
                                    iconProvider.folderIcon);
     root->setFlags(ROOT_FLAGS);
+
+    if (logger()->isDebugEnabled()) {
+        debug << "run: searching for:" << nameFilterList;
+        debug << debug;
+        debug << "run: global blacklist:";
+        foreach(const QRegExp* rx, rxNameBlacklist) {
+            debug << rx->pattern();
+        }
+        debug << debug;
+    }
 
     addFiles();
 
@@ -99,17 +127,14 @@ void TAddFilesThread::run() {
 
 bool TAddFilesThread::blacklisted(QString filename) {
 
-    // TODO: find the file sys func reporting case
-    Qt::CaseSensitivity cs =
-            #ifdef Q_OS_WIN
-                        Qt::CaseInsensitive;
-            #else
-                        Qt::CaseSensitive;
-            #endif
+    if (filename.isEmpty()) {
+        logger()->error("blacklisted: ignoring empty filename");
+        return true;
+    }
 
     filename = QDir::toNativeSeparators(filename);
 
-    if (filename.isEmpty() || blacklist.contains(filename, cs)) {
+    if (blacklist.contains(filename, caseSensitiveNames)) {
         logger()->warn("blacklisted: ignoring '%1', it would create an infinite"
                        " playlist", filename);
         return true;
@@ -129,6 +154,19 @@ bool TAddFilesThread::blacklisted(const QDir& dir) {
 
 void TAddFilesThread::whitelist() {
     blacklist.removeLast();
+}
+
+bool TAddFilesThread::nameBlackListed(const QString& name) {
+
+    foreach(QRegExp* rx, rxNameBlacklist) {
+        if (rx->indexIn(name) >= 0) {
+            logger()->debug("nameBlackListed: blacklisted '%1' on '%2'",
+                            name, rx->pattern());
+            return true;
+        }
+    }
+
+    return false;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
@@ -344,12 +382,6 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
     }
 
     QStringList blacklist = playlistItem->getBlacklist();
-    static Qt::CaseSensitivity cs =
-#ifdef Q_OS_WIN
-            Qt::CaseInsensitive;
-#else
-            Qt::CaseSensitive;
-#endif
 
     QDir directory(playlistInfo.dir().path());
     directory.setFilter(dirFilter);
@@ -381,7 +413,8 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         }
 #endif
 
-        i = blacklist.indexOf(QRegExp(filename, cs, QRegExp::FixedString));
+        i = blacklist.indexOf(QRegExp(filename, caseSensitiveNames,
+                                      QRegExp::FixedString));
         if (i >= 0) {
             logger()->debug("addNewItems: '%1' is blacklisted", filename);
             blacklist.removeAt(i);
@@ -389,6 +422,10 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         }
 
         if (filename == TConfig::WZPLAYLIST) {
+            continue;
+        }
+
+        if (nameBlackListed(path + filename)) {
             continue;
         }
 
@@ -408,6 +445,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
     if (!stopRequested) {
         foreach(const QString& filename, blacklist) {
             playlistItem->whitelist(filename);
+            playlistItem->setModified();
         }
     }
 }
@@ -594,19 +632,32 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
         fi.setFile(directory.path(), TConfig::WZPLAYLIST);
         return openPlaylist(parent, fi);
     }
+
     directory.setFilter(dirFilter);
     directory.setNameFilters(nameFilterList);
 
     // TODO: check sort order tree view
     // directory.setSorting(QDir::Name);
 
-    TPlaylistWidgetItem* dirItem = new TPlaylistWidgetItem(0, directory.path(),
+    QString path = QDir::toNativeSeparators(directory.path());
+
+    TPlaylistWidgetItem* dirItem = new TPlaylistWidgetItem(0, path,
         directory.dirName(), 0, true, iconProvider.folderIcon);
+
+    if (!path.endsWith(QDir::separator())) {
+        path += QDir::separator();
+    }
 
     foreach(const QString& filename, directory.entryList()) {
         if (stopRequested) {
             break;
         }
+
+        // Use full name for name blacklist
+        if (nameBlackListed(path + filename)) {
+            continue;
+        }
+
         fi.setFile(directory.path(), filename);
         if (fi.isDir()) {
             if (recurse) {
