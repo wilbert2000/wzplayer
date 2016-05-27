@@ -38,6 +38,8 @@
 #include <QMimeData>
 #include <QClipboard>
 #include <QtAlgorithms>
+#include <QProcess>
+#include <QApplication>
 
 #include "gui/base.h"
 #include "gui/playlist/playlistwidget.h"
@@ -146,10 +148,15 @@ void TPlaylist::createActions() {
     connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
 
     // Play
-    playAct = new TAction(this, "play", tr("P&lay"), "play",
+    playAct = new TAction(this, "play", tr("P&lay selected"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
     connect(playAct, SIGNAL(triggered()), this, SLOT(play()));
+
+    // Play in new window
+    playNewAct = new TAction(this, "play_new", tr("Pl&ay in new window"),
+                             "play", Qt::CTRL | Qt::Key_Space);
+    connect(playNewAct, SIGNAL(triggered()), this, SLOT(openInNewWindow()));
 
     // Pause
     pauseAct = new TAction(this, "pause", tr("Pause"), "",
@@ -231,8 +238,13 @@ void TPlaylist::createActions() {
 
     addActions(remove_menu->actions());
 
+    // Edit
+    editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "",
+                          Qt::Key_Return);
+    connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
+
     // Cut
-    cutAct = new TAction(this, "pl_cut", tr("&Cut"), "",
+    cutAct = new TAction(this, "pl_cut", tr("&Cut file name(s)"), "",
                           QKeySequence("Ctrl+X"));
     connect(cutAct, SIGNAL(triggered()), this, SLOT(cut()));
 
@@ -247,11 +259,6 @@ void TPlaylist::createActions() {
     connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
     connect(QApplication::clipboard(), SIGNAL(dataChanged()),
             this, SLOT(enablePaste()));
-
-    // Edit
-    editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "",
-                          Qt::Key_Return);
-    connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
     // Refresh
     refreshAct = new TAction(this, "pl_refresh", tr("&Refresh"), "",
@@ -305,6 +312,7 @@ void TPlaylist::createToolbar() {
     popup->addSeparator();
     popup->addAction(stopAct);
     popup->addAction(playAct);
+    popup->addAction(playNewAct);
     popup->addAction(playOrPauseAct);
     popup->addSeparator();
     popup->addMenu(inOutMenu);
@@ -854,6 +862,31 @@ void TPlaylist::refresh() {
         }
         clear();
         addFiles(QStringList() << fn, !current.isEmpty(), 0, current);
+    }
+}
+
+void TPlaylist::openInNewWindow() {
+    logger()->debug("openInNewWindow: '%1'", qApp->applicationFilePath());
+
+    QStringList files;
+    QTreeWidgetItemIterator it(playlistWidget,
+                               QTreeWidgetItemIterator::Selected);
+    while (*it) {
+        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        files << i->filename();
+        ++it;
+    }
+
+    QProcess p;
+    if (p.startDetached(qApp->applicationFilePath(), files)) {
+        logger()->info("openInNewWindow: started new instance");
+    } else {
+        logger()->error("openInNewWindow: failed to start '%1'",
+                        qApp->applicationFilePath());
+        QMessageBox::warning(this, tr("Start failed"),
+                             tr("Failed to start '%1'")
+                             .arg(qApp->applicationFilePath()),
+                             QMessageBox::Ok);
     }
 }
 
@@ -1468,7 +1501,7 @@ bool TPlaylist::savePls(const QString& filename) {
 
     logger()->error("savePls: failed to save '%1'", filename);
     QMessageBox::warning(this, tr("Save failed"),
-                         tr("Failed to save %1").arg(filename),
+                         tr("Failed to save '%1'").arg(filename),
                          QMessageBox::Ok);
     return false;
 }

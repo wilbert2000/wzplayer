@@ -128,6 +128,7 @@ private:
     Action::TAction* saveAct;
     Action::TAction* saveAsAct;
     Action::TAction* playAct;
+    Action::TAction* playNewAct;
     Action::TAction* pauseAct;
     Action::TAction* playOrPauseAct;
     Action::TAction* stopAct;
@@ -219,6 +220,7 @@ private slots:
     void enablePaste();
     void cut();
     void refresh();
+    void openInNewWindow();
 
     void enableActions();
 
