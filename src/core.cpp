@@ -1098,9 +1098,6 @@ void TCore::startPlayer(QString file) {
 		proc->setOption("embeddedfonts");
 		proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
 		proc->setOption("ass-line-spacing", QString::number(pref->ass_line_spacing));
-		// When using -ass, -no-flip-hebrew seems to be necessary to display
-		// arabic subtitles correctly
-		proc->setOption("flip-hebrew", false);
 
 		// Custom ASS style
 		if (pref->use_custom_ass_style) {
