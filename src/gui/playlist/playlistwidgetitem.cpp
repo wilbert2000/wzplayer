@@ -249,7 +249,11 @@ void TPlaylistWidgetItem::setFilename(const QString& filename) {
 void TPlaylistWidgetItem::setName(const QString& name, bool protectName) {
 
     playlistItem.setName(name, protectName);
-    setText(COL_NAME, playlistItem.name());
+    if (mModified) {
+        setText(COL_NAME, playlistItem.name() + "*");
+    } else {
+        setText(COL_NAME, playlistItem.name());
+    }
     setSzHint(getLevel());
 }
 
@@ -306,6 +310,11 @@ void TPlaylistWidgetItem::setModified(bool modified,
                                       bool markParents) {
 
     mModified = modified;
+    if (mModified) {
+        setText(COL_NAME, playlistItem.name() + "*");
+    } else {
+        setText(COL_NAME, playlistItem.name());
+    }
 
     if (recurse) {
         for(int c = 0; c < childCount(); c++) {
@@ -350,6 +359,7 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
                                     const QSize& iconSize,
                                     int level) {
 
+    // TODO: get from where?
     const int hm = 4;
     const int vm = 1;
 
@@ -374,7 +384,7 @@ void TPlaylistWidgetItem::setSzHint(int level) {
 
     if (parent()) {
         //QSize iconSize = icon(COL_NAME).actualSize(QSize(22, 22));
-        setSizeHint(COL_NAME, itemSize(playlistItem.name(), gNameColumnWidth,
+        setSizeHint(COL_NAME, itemSize(text(COL_NAME), gNameColumnWidth,
                                        gNameFontMetrics, gIconSize, level));
     }
 }
