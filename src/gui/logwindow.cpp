@@ -27,6 +27,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 
+#include "log4qt/logger.h"
 #include "log4qt/ttcclayout.h"
 #include "config.h"
 #include "desktop.h"
@@ -103,6 +104,8 @@ void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
             textEdit = 0;
         }
         edit->clear();
+        Log4Qt::Logger::logger("Gui::TLogWindowAppender")->debug(
+                    "disconnected from window");
     }
 }
 

@@ -414,8 +414,9 @@ void TBasePlus::restoreVideoSize() {
             resizeWindowToVideo();
             reposition(oldWinSize);
         } else {
-            logger()->debug("restoreVideoSize: file name mismatch canceling"
-                            " resize");
+            logger()->debug("restoreVideoSize: file name save size '%1'"
+                            " mismatches '%2', canceling resize",
+                            saveSizeFileName, core->mdat.filename);
         }
     }
 

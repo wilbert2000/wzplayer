@@ -18,11 +18,11 @@
 
 #include "app.h"
 
-#include "QDateTime"
 #include "log4qt/logger.h"
 #include "log4qt/logmanager.h"
 #include "log4qt/consoleappender.h"
 #include "log4qt/ttcclayout.h"
+#include "log4qt/level.h"
 #include "gui/logwindow.h"
 
 using namespace Log4Qt;
@@ -36,14 +36,16 @@ void initLog4Qt() {
     if (appender) {
         logger()->debug("initLogQt: appender A1 already up and running");
     } else {
+        Logger::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+
         // Create layout
         TTCCLayout* layout = new TTCCLayout();
         layout->setName("Layout");
-        layout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
+        //layout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
         layout->setThreadPrinting(false);
         layout->activateOptions();
 
-        // Create an appender
+        // Create appender
         ConsoleAppender* a = new ConsoleAppender(layout,
             ConsoleAppender::STDERR_TARGET);
         a->setName("A1");
@@ -51,7 +53,6 @@ void initLog4Qt() {
 
         // Set appender on root logger
         Logger::rootLogger()->addAppender(a);
-        Logger::rootLogger()->setLevel(Level(Level::DEBUG_INT));
         appender = a;
     }
 
@@ -67,8 +68,8 @@ void initLog4Qt() {
     // Set log window appender on root logger
     Logger::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
-    logger()->info("initLog4Qt: log initialized on "
-                   + QDateTime::currentDateTime().toString());
+    logger()->info("initLog4Qt: logging on level %1",
+                   Logger::rootLogger()->level().toString());
 }
 
 int main(int argc, char** argv) {
@@ -90,7 +91,7 @@ int main(int argc, char** argv) {
         }
     } while (exitCode == TApp::NoExit);
 
-    logger()->info("Exiting on %1", QDateTime::currentDateTime().toString());
+    logger()->debug("returning %1", exitCode);
     return exitCode;
 }
 
