@@ -25,31 +25,32 @@
 namespace Gui { namespace Pref {
 
 TNetwork::TNetwork(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f) {
+    : TWidget(parent, f) {
 
-	setupUi(this);
+    setupUi(this);
 
-	proxy_type_combo->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
-	proxy_type_combo->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
+    proxy_type_combo->addItem(tr("HTTP"), QNetworkProxy::HttpProxy);
+    proxy_type_combo->addItem(tr("SOCKS5"), QNetworkProxy::Socks5Proxy);
 
-	createHelp();
+    retranslateStrings();
 }
 
 TNetwork::~TNetwork() {
 }
 
 QString TNetwork::sectionName() {
-	return tr("Network");
+    return tr("Network");
 }
 
 QPixmap TNetwork::sectionIcon() {
-	return Images::icon("pref_network", icon_size);
+    return Images::icon("pref_network", icon_size);
 }
 
 void TNetwork::retranslateStrings() {
 
-	retranslateUi(this);
-	createHelp();
+    retranslateUi(this);
+    icon_label->setPixmap(Images::icon("pref_network"));
+    createHelp();
 }
 
 void TNetwork::setData(Settings::TPreferences* pref) {
