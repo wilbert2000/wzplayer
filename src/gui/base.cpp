@@ -774,7 +774,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		}
 		else
 		if (command == "action") {
-			processFunction(arg);
+            processAction(arg);
 		}
 		else
 		if (command == "load_sub") {
@@ -1650,7 +1650,7 @@ void TBase::leftClickFunction() {
 		&& playerwindow->videoWindow()->underMouse()) {
 		core->dvdnavMouse();
 	} else if (!pref->mouse_left_click_function.isEmpty()) {
-		processFunction(pref->mouse_left_click_function);
+        processAction(pref->mouse_left_click_function);
 	}
 }
 
@@ -1658,7 +1658,7 @@ void TBase::rightClickFunction() {
     logger()->debug("rightClickFunction");
 
 	if (!pref->mouse_right_click_function.isEmpty()) {
-		processFunction(pref->mouse_right_click_function);
+        processAction(pref->mouse_right_click_function);
 	}
 }
 
@@ -1666,7 +1666,7 @@ void TBase::doubleClickFunction() {
     logger()->debug("doubleClickFunction");
 
 	if (!pref->mouse_double_click_function.isEmpty()) {
-		processFunction(pref->mouse_double_click_function);
+        processAction(pref->mouse_double_click_function);
 	}
 }
 
@@ -1674,7 +1674,7 @@ void TBase::middleClickFunction() {
     logger()->debug("middleClickFunction");
 
 	if (!pref->mouse_middle_click_function.isEmpty()) {
-		processFunction(pref->mouse_middle_click_function);
+        processAction(pref->mouse_middle_click_function);
 	}
 }
 
@@ -1682,7 +1682,7 @@ void TBase::xbutton1ClickFunction() {
     logger()->debug("xbutton1ClickFunction");
 
 	if (!pref->mouse_xbutton1_click_function.isEmpty()) {
-		processFunction(pref->mouse_xbutton1_click_function);
+        processAction(pref->mouse_xbutton1_click_function);
 	}
 }
 
@@ -1690,7 +1690,7 @@ void TBase::xbutton2ClickFunction() {
     logger()->debug("xbutton2ClickFunction");
 
 	if (!pref->mouse_xbutton2_click_function.isEmpty()) {
-		processFunction(pref->mouse_xbutton2_click_function);
+        processAction(pref->mouse_xbutton2_click_function);
 	}
 }
 
@@ -1709,37 +1709,37 @@ void TBase::moveWindow(QPoint diff) {
 	move_window_timer.start();
 }
 
-void TBase::processFunction(QString function) {
+void TBase::processAction(QString action_name) {
 
-	// Check function for checkable actions
+    // Check name for checkable actions
 	static QRegExp func_rx("(.*) (true|false)");
 	bool value = false;
 	bool checkableFunction = false;
 
-	if (func_rx.indexIn(function) >= 0) {
-		function = func_rx.cap(1);
+    if (func_rx.indexIn(action_name) >= 0) {
+        action_name = func_rx.cap(1);
 		value = func_rx.cap(2) == "true";
 		checkableFunction = true;
 	}
 
-    QAction* action = findChild<QAction*>(function);
+    QAction* action = findChild<QAction*>(action_name);
 	if (action) {
 		if (action->isEnabled()) {
 			if (action->isCheckable() && checkableFunction) {
-                logger()->debug("processFunction: setting checked action "
-                              + function + " " + value);
+                logger()->debug("processAction: setting checked action '%1'"
+                                " to %2", action_name, QString::number(value));
 				action->setChecked(value);
 			} else {
-                logger()->debug("processFunction: triggering action "
-                                 + function);
+                logger()->debug("processAction: triggering action '%1'",
+                                action_name);
 				action->trigger();
 			}
 		} else {
-            logger()->warn("processFunction: canceling disabled action "
-                         + function);
+            logger()->warn("processAction: canceling disabled action '%1'",
+                           action_name);
 		}
 	} else {
-        logger()->warn("processFunction: action " + function + " not found");
+        logger()->warn("processAction: action '%1' not found", action_name);
 	}
 }
 

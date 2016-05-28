@@ -229,7 +229,7 @@ protected slots:
 	virtual void xbutton1ClickFunction();
 	virtual void xbutton2ClickFunction();
 	virtual void moveWindow(QPoint diff);
-	virtual void processFunction(QString function);
+    virtual void processAction(QString action_name);
 
 	virtual void dragEnterEvent(QDragEnterEvent*);
 	virtual void dropEvent(QDropEvent*);
