@@ -351,13 +351,14 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 
 	// Test access, correct missing /
 	if (!QFileInfo(disc.device).exists()) {
-        logger()->warn("openDisc: could not access '" + disc.device + "'");
+        logger()->warn("openDisc: could not access '%1'", disc.device);
 		// Forgot a /?
 		if (QFileInfo("/" + disc.device).exists()) {
-            logger()->warn("openDisc: added missing /");
+            logger()->warn("openDisc: adding missing /");
 			disc.device = "/" + disc.device;
 		} else {
-			emit showMessage(tr("Device or file not found: %1").arg(disc.device), 0);
+            emit showMessage(tr("Device or file not found: '%1'")
+                             .arg(disc.device), 0);
 			return;
 		}
 	}
@@ -383,31 +384,32 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 } // openDisc
 
 // Generic open, autodetect type
-void TCore::open(QString file) {
-    logger()->debug("open: " + file);
+void TCore::open(QString filename) {
+    logger()->debug("open: " + filename);
 
-    if (file.isEmpty()) {
-        file = mdat.filename;
-        if (file.isEmpty()) {
+    if (filename.isEmpty()) {
+        filename = mdat.filename;
+        if (filename.isEmpty()) {
             emit showMessage(tr("No file to play"));
             return;
         }
     }
 
-    if (file.startsWith("file:")) {
-        file = QUrl(file).toLocalFile();
+    QUrl url(filename);
+    QString scheme = url.scheme().toLower();
+    if (scheme == "file") {
+        filename = url.toLocalFile();
+        scheme = "";
     }
 
-    QFileInfo fi(file);
+    QFileInfo fi(filename);
 
-#ifdef Q_OS_WIN
-    // Check for Windows shortcuts
-    if (fi.isSymLink()) {
-        file = fi.symLinkTarget();
+    // Check for Windows .lnk shortcuts
+    if (fi.isSymLink() && fi.suffix().toLower() == ".lnk") {
+        filename = fi.symLinkTarget();
     }
-#endif
 
-    TDiscName disc(file);
+    TDiscName disc(filename);
     if (disc.valid) {
         openDisc(disc, true);
         return;
@@ -415,40 +417,40 @@ void TCore::open(QString file) {
     // Forget a previous disc
     mdat.disc.valid = false;
 
-    emit showMessage(tr("Opening %1").arg(file), 0);
+    emit showMessage(tr("Opening %1").arg(filename), 0);
 
     if (fi.exists()) {
-        file = fi.absoluteFilePath();
+        filename = fi.absoluteFilePath();
 
+        // Subtitle file?
         QRegExp ext_sub(extensions.subtitles().forRegExp(), Qt::CaseInsensitive);
         if (ext_sub.indexIn(fi.suffix()) >= 0) {
-            loadSub(file);
+            loadSub(filename);
             return;
         }
 
         if (fi.isDir()) {
-            if (Helper::directoryContainsDVD(file)) {
+            if (Helper::directoryContainsDVD(filename)) {
                 logger()->debug("open: directory contains a dvd");
-                disc = TDiscName(file, pref->useDVDNAV());
+                disc = TDiscName(filename, pref->useDVDNAV());
                 openDisc(disc);
                 return;
             }
-            logger()->debug("open: directory doesn't contain a dvd, doing nothing");
+            logger()->error("open: file is a directory, use playlist to open it");
             return;
         }
 
         // Local file
-        openFile(file);
+        openFile(filename);
         return;
     }
 
     // File does not exist
-    if (file.toLower().startsWith("tv:") || file.toLower().startsWith("dvb:")) {
-        openTV(file);
-        return;
+    if (scheme == "tv" || scheme == "dvb") {
+        openTV(filename);
+    } else {
+        openStream(filename);
     }
-
-    openStream(file);
 }
 
 void TCore::setExternalSubs(const QString &filename) {
@@ -1523,17 +1525,24 @@ end_video_filters:
 
 #ifndef Q_OS_WIN
     if (pref->isMPV() && file.startsWith("dvb:")) {
-		QString channels_file = Gui::Action::TTVList::findChannelsFile();
+        QString channels_file = Gui::Action::TTVList::findChannelsFile();
         logger()->debug("startPlayer: channels_file: " + channels_file);
-		if (!channels_file.isEmpty())
-			proc->setChannelsFile(channels_file);
-	}
+        if (!channels_file.isEmpty())
+            proc->setChannelsFile(channels_file);
+    }
 #endif
 
-	// Set the capture directory
-	proc->setCaptureDirectory(pref->screenshot_directory);
+    // Set the capture directory
+    proc->setCaptureDirectory(pref->screenshot_directory);
 
-	// Load edl file
+    // Set preferred ip version
+    if (pref->ipPrefer == Settings::TPreferences::IP_PREFER_4) {
+        proc->setOption("prefer-ipv4");
+    } else if (pref->ipPrefer == Settings::TPreferences::IP_PREFER_6) {
+        proc->setOption("prefer-ipv6");
+    }
+
+    // Load edl file
 	if (pref->use_edl_files) {
 		QString edl_f;
 		QFileInfo f(file);

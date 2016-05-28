@@ -76,7 +76,7 @@ public:
     }
 
     //! Generic open, with autodetection of type
-    void open(QString file = "");
+    void open(QString filename = "");
 	//! Open disc
 	void openDisc(TDiscName disc, bool fast_open = false);
 
