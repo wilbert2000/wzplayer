@@ -365,6 +365,7 @@ private:
 
 	void setFloatingToolbarsVisible(bool visible);
 	void hidePanel();
+    void getNewGeometry(int w, int h);
 	void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 
 	void enterFullscreenOnPlay();

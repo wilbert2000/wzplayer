@@ -2072,6 +2072,43 @@ double TBase::getNewSizeFactor() {
 	return size_factor;
 }
 
+void TBase::getNewGeometry(int w, int h) {
+
+    // Get new size factor, trying 1.0
+    pref->size_factor = getNewSizeFactor();
+
+    QSize desktop = TDesktop::availableSize(this);
+    bool stickx = !pref->fullscreen
+                  && pos().x() + frameGeometry().size().width()
+                  >= desktop.width();
+    bool sticky = !pref->fullscreen
+                  && pos().y() + frameGeometry().size().height()
+                  >= desktop.height();
+
+    resizeWindow(w, h);
+
+    QPoint p = pos();
+    if (stickx) {
+        int x = desktop.width() - frameGeometry().size().width();
+        if (x < 0) {
+            stickx = false;
+        } else {
+            p.rx() = x;
+        }
+    }
+    if (sticky) {
+        int y = desktop.height() - frameGeometry().size().height();
+        if (y < 0) {
+            sticky = false;
+        } else {
+            p.ry() = y;
+        }
+    }
+    if (stickx || sticky) {
+        move(p);
+    }
+}
+
 void TBase::onVideoOutResolutionChanged(int w, int h) {
     logger()->debug("onVideoOutResolutionChanged: %1, %2", w, h);
 
@@ -2092,9 +2129,7 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
         }
 		// Leave maximized window as is.
 		if (!isMaximized() && (pref->resize_on_load || force_resize)) {
-            // Get new size factor, trying 1.0
-			pref->size_factor = getNewSizeFactor();
-			resizeWindow(w, h);
+            getNewGeometry(w, h);
 		} else {
 			// Adjust the size factor to the current window size
 			playerwindow->updateSizeFactor();
