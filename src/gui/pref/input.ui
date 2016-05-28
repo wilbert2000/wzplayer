@@ -279,9 +279,6 @@
             </item>
             <item row="4" column="1" colspan="3">
              <layout class="QHBoxLayout" name="wait_for_double_click_layout">
-              <property name="bottomMargin">
-               <number>16</number>
-              </property>
               <item>
                <widget class="QCheckBox" name="wait_for_double_click_check">
                 <property name="text">
@@ -354,7 +351,7 @@
           <item>
            <widget class="QGroupBox" name="wheel_actions_list_group">
             <property name="title">
-             <string>Actions list to cycle through by the next wheel action</string>
+             <string>Actions to cycle through with the next wheel action</string>
             </property>
             <property name="flat">
              <bool>true</bool>
