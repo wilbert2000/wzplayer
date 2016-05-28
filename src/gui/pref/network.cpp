@@ -55,6 +55,14 @@ void TNetwork::retranslateStrings() {
 
 void TNetwork::setData(Settings::TPreferences* pref) {
 
+    if (pref->ipPrefer == Settings::TPreferences::IP_PREFER_4) {
+        ip_prefer_4_radiobutton->setChecked(true);
+    } else if (pref->ipPrefer == Settings::TPreferences::IP_PREFER_6) {
+        ip_prefer_6_radiobutton->setChecked(true);
+    } else {
+        ip_prefer_auto_radiobutton->setChecked(true);
+    }
+
 	proxy_group->setChecked(pref->use_proxy);
 	proxy_hostname_edit->setText(pref->proxy_host);
 	proxy_port_spin->setValue(pref->proxy_port);
@@ -67,6 +75,14 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 void TNetwork::getData(Settings::TPreferences* pref) {
 
 	requires_restart = false;
+
+    if (ip_prefer_4_radiobutton->isChecked()) {
+        pref->ipPrefer = Settings::TPreferences::IP_PREFER_4;
+    } else if (ip_prefer_6_radiobutton->isChecked()) {
+        pref->ipPrefer = Settings::TPreferences::IP_PREFER_6;
+    } else {
+        pref->ipPrefer = Settings::TPreferences::IP_PREFER_AUTO;
+    }
 
 	pref->use_proxy = proxy_group->isChecked();
 	pref->proxy_host = proxy_hostname_edit->text();

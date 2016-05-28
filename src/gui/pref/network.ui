@@ -24,6 +24,9 @@
        <string>Network</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>16</number>
+       </property>
        <property name="margin">
         <number>16</number>
        </property>
@@ -37,126 +40,182 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="proxy_group">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>32</height>
-            </size>
-           </property>
+          <widget class="QGroupBox" name="ip_prefer_group">
            <property name="title">
-            <string>&amp;Enable proxy</string>
+            <string>Prefer IP version (MPlayer only)</string>
            </property>
            <property name="flat">
             <bool>true</bool>
            </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="proxy_hostname_edit"/>
-            </item>
-            <item row="0" column="3">
-             <widget class="QSpinBox" name="proxy_port_spin">
-              <property name="maximum">
-               <number>65535</number>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <property name="topMargin">
+               <number>0</number>
               </property>
-             </widget>
+              <item>
+               <widget class="QRadioButton" name="ip_prefer_auto_radiobutton">
+                <property name="text">
+                 <string>&amp;Automatic, let MPlayer decide</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_3">
+            <item>
+             <widget class="QRadioButton" name="ip_prefer_4_radiobutton">
               <property name="text">
-               <string>&amp;Port:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-              <property name="buddy">
-               <cstring>proxy_port_spin</cstring>
+               <string>Prefer IPv&amp;4, fallback to IPv6</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
+            <item>
+             <widget class="QRadioButton" name="ip_prefer_6_radiobutton">
               <property name="text">
-               <string>&amp;Username:</string>
-              </property>
-              <property name="buddy">
-               <cstring>proxy_username_edit</cstring>
+               <string>Prefer IPv&amp;6, fallback to IPv4</string>
               </property>
              </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QComboBox" name="proxy_type_combo"/>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>&amp;Type:</string>
-              </property>
-              <property name="buddy">
-               <cstring>proxy_type_combo</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="proxy_password_edit">
-              <property name="echoMode">
-               <enum>QLineEdit::Password</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>&amp;Host:</string>
-              </property>
-              <property name="buddy">
-               <cstring>proxy_hostname_edit</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="proxy_username_edit"/>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Pa&amp;ssword:</string>
-              </property>
-              <property name="buddy">
-               <cstring>proxy_password_edit</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
-           <zorder>label_2</zorder>
-           <zorder>proxy_hostname_edit</zorder>
-           <zorder>label_3</zorder>
-           <zorder>proxy_port_spin</zorder>
-           <zorder>label_4</zorder>
-           <zorder>proxy_username_edit</zorder>
-           <zorder>label_5</zorder>
-           <zorder>proxy_password_edit</zorder>
-           <zorder>label_6</zorder>
-           <zorder>proxy_type_combo</zorder>
           </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="proxy_group">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>&amp;Enable proxy</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="proxy_hostname_edit"/>
+          </item>
+          <item row="0" column="3">
+           <widget class="QSpinBox" name="proxy_port_spin">
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>&amp;Port:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_port_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>&amp;Username:</string>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_username_edit</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="proxy_type_combo"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>&amp;Type:</string>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_type_combo</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="proxy_password_edit">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>&amp;Host:</string>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_hostname_edit</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="proxy_username_edit"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Pa&amp;ssword:</string>
+            </property>
+            <property name="buddy">
+             <cstring>proxy_password_edit</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+         <zorder>label_2</zorder>
+         <zorder>proxy_hostname_edit</zorder>
+         <zorder>label_3</zorder>
+         <zorder>proxy_port_spin</zorder>
+         <zorder>label_4</zorder>
+         <zorder>proxy_username_edit</zorder>
+         <zorder>label_5</zorder>
+         <zorder>proxy_password_edit</zorder>
+         <zorder>label_6</zorder>
+         <zorder>proxy_type_combo</zorder>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -179,6 +238,9 @@
  </widget>
  <tabstops>
   <tabstop>tab_widget</tabstop>
+  <tabstop>ip_prefer_auto_radiobutton</tabstop>
+  <tabstop>ip_prefer_4_radiobutton</tabstop>
+  <tabstop>ip_prefer_6_radiobutton</tabstop>
   <tabstop>proxy_group</tabstop>
   <tabstop>proxy_hostname_edit</tabstop>
   <tabstop>proxy_port_spin</tabstop>

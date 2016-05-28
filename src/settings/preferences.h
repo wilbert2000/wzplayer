@@ -62,6 +62,12 @@ public:
 	};
 	enum TToolbarActivation { Anywhere = 1, NearToolbar = 2 };
 
+    enum TIPPrefer {
+        IP_PREFER_AUTO,
+        IP_PREFER_4,
+        IP_PREFER_6
+    };
+
 
 	TPreferences();
 	virtual ~TPreferences();
@@ -367,6 +373,7 @@ public:
 
 
     // Network section
+    TIPPrefer ipPrefer;
     bool use_proxy;
     int proxy_type;
     QString proxy_host;

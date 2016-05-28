@@ -355,7 +355,10 @@ void TPreferences::reset() {
 	cache_for_tv = 3000;
 
 
-	// Network proxy
+    // Network
+    ipPrefer = IP_PREFER_AUTO;
+
+    // proxy
 	use_proxy = false;
 	proxy_type = QNetworkProxy::HttpProxy;
 	proxy_host = "";
@@ -697,6 +700,8 @@ void TPreferences::save() {
 
     // Network
     beginGroup("network");
+    setValue("ip_prefer", ipPrefer);
+
     beginGroup("proxy");
     setValue("use_proxy", use_proxy);
     setValue("type", proxy_type);
@@ -1184,6 +1189,14 @@ void TPreferences::load() {
 
     // Network
     beginGroup("network");
+
+    int i = value("ip_prefer", ipPrefer).toInt();
+    if (i == IP_PREFER_4 || i == IP_PREFER_6) {
+        ipPrefer = static_cast<TIPPrefer>(i);
+    } else {
+        ipPrefer = IP_PREFER_AUTO;
+    }
+
     beginGroup("proxy");
     use_proxy = value("use_proxy", use_proxy).toBool();
     proxy_type = value("type", proxy_type).toInt();
