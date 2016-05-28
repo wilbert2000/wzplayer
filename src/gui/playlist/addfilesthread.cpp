@@ -135,7 +135,7 @@ bool TAddFilesThread::blacklisted(QString filename) {
     filename = QDir::toNativeSeparators(filename);
 
     if (blacklist.contains(filename, caseSensitiveNames)) {
-        logger()->warn("blacklisted: ignoring '%1', it would create an infinite"
+        logger()->warn("blacklisted: skipping '%1', creating an infinite"
                        " playlist", filename);
         return true;
     }
@@ -160,7 +160,7 @@ bool TAddFilesThread::nameBlackListed(const QString& name) {
 
     foreach(QRegExp* rx, rxNameBlacklist) {
         if (rx->indexIn(name) >= 0) {
-            logger()->debug("nameBlackListed: blacklisted '%1' on '%2'",
+            logger()->debug("nameBlackListed: skipping '%1' on '%2'",
                             name, rx->pattern());
             return true;
         }
