@@ -934,8 +934,8 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		if (!value.isNull())
 			arg << "--af-add=" + value.toString();
 	} else {
-        logger()->debug("setOption: ignored option " + name
-                        + " " + value.toString());
+        logger()->debug("setOption: ignoring option name '%1' value '%2'",
+                        name, value.toString());
 	}
 }
 
