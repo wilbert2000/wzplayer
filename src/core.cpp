@@ -3129,7 +3129,7 @@ void TCore::resetZoomAndPan() {
 }
 
 void TCore::pan(int dx, int dy) {
-    logger()->debug("pan: dx %1, dy %1", dx, dy);
+    logger()->debug("pan: dx %1, dy %2", dx, dy);
 
 	if (mdat.hasVideo()) {
 		playerwindow->moveVideo(dx, dy);
@@ -3137,34 +3137,28 @@ void TCore::pan(int dx, int dy) {
 	}
 }
 
-
-const int PAN_STEP = 8;
-
 void TCore::panLeft() {
-	pan(PAN_STEP, 0);
+    pan(TConfig::PAN_STEP, 0);
 }
 
 void TCore::panRight() {
-	pan(-PAN_STEP, 0);
+    pan(-TConfig::PAN_STEP, 0);
 }
 
 void TCore::panUp() {
-	pan(0, PAN_STEP);
+    pan(0, TConfig::PAN_STEP);
 }
 
 void TCore::panDown() {
-	pan(0, -PAN_STEP);
+    pan(0, -TConfig::PAN_STEP);
 }
 
-
-const double ZOOM_STEP = 0.05;
-
 void TCore::incZoom() {
-	setZoom(playerwindow->zoom() + ZOOM_STEP);
+    setZoom(playerwindow->zoom() + TConfig::ZOOM_STEP);
 }
 
 void TCore::decZoom() {
-	setZoom(playerwindow->zoom() - ZOOM_STEP);
+    setZoom(playerwindow->zoom() - TConfig::ZOOM_STEP);
 }
 
 void TCore::showFilenameOnOSD() {

@@ -7,6 +7,9 @@ const int TConfig::ERROR_MESSAGE_DURATION = 6000;
 
 const double TConfig::ZOOM_MIN = 0.05;
 const double TConfig::ZOOM_MAX = 8.0;
+const double TConfig::ZOOM_STEP = 0.05;
+
+const int TConfig::PAN_STEP = 8;
 
 const QString TConfig::PROGRAM_ORG("WH");
 const QString TConfig::PROGRAM_ID("wzplayer");
