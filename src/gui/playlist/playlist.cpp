@@ -297,8 +297,8 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
 
     toolbar->addSeparator();
-    toolbar->addAction(playAct);
     toolbar->addAction(playOrPauseAct);
+    toolbar->addAction(playAct);
     toolbar->addAction(prevAct);
 	toolbar->addAction(nextAct);
 
@@ -310,10 +310,10 @@ void TPlaylist::createToolbar() {
     popup->addAction(copyAct);
     popup->addAction(pasteAct);
     popup->addSeparator();
+    popup->addAction(playOrPauseAct);
     popup->addAction(stopAct);
     popup->addAction(playAct);
     popup->addAction(playNewAct);
-    popup->addAction(playOrPauseAct);
     popup->addSeparator();
     popup->addMenu(inOutMenu);
     popup->addSeparator();
