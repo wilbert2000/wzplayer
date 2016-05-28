@@ -247,6 +247,10 @@ QString TPlaylistWidget::currentFile() const {
 
 TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
 
+    if (filename.isEmpty()) {
+        return 0;
+    }
+
     QTreeWidgetItemIterator it(this);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
@@ -506,6 +510,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     // Save current sort settings
     int sort = header()->sortIndicatorSection();
     Qt::SortOrder sortorder = header()->sortIndicatorOrder();
+    // Disable sort
     if (isSortingEnabled()) {
         enableSort(false);
     }
@@ -548,11 +553,6 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         item->setFlags(ROOT_FLAGS);
         addTopLevelItem(item);
         setRootIndex(model()->index(0, 0));
-
-        // Sort items
-        if (!item->isPlaylist()) {
-            enableSort(true);
-        }
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));

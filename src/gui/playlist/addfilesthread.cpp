@@ -636,8 +636,12 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     directory.setFilter(dirFilter);
     directory.setNameFilters(nameFilterList);
 
-    // TODO: check sort order tree view
-    // directory.setSorting(QDir::Name);
+    // Note: QDir::LocaleAware
+    QDir::SortFlags sortFlags = QDir::Name;
+    if (!caseSensitiveNames) {
+        sortFlags |= QDir::IgnoreCase;
+    }
+    directory.setSorting(sortFlags);
 
     QString path = QDir::toNativeSeparators(directory.path());
 
