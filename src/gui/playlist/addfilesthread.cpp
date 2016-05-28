@@ -231,7 +231,8 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     return folder;
 }
 
-TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(TPlaylistWidgetItem* parent,
+TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
+        TPlaylistWidgetItem* parent,
         const QString& filename,
         QString name,
         const QFileInfo& fi,
@@ -433,17 +434,19 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         fi.setFile(directory.path(), filename);
         if (fi.isDir()) {
             if (recurse) {
-                addDirectory(playlistItem, fi);
-                playlistItem->setModified();
+                if (addDirectory(playlistItem, fi)) {
+                    playlistItem->setModified();
+                }
             }
-        } else {
-            addFile(playlistItem, fi);
+        } else if (addFile(playlistItem, fi)) {
             playlistItem->setModified();
         }
     }
 
     if (!stopRequested) {
         foreach(const QString& filename, blacklist) {
+            logger()->info("addNewItems: '%1' not found, removing it from"
+                           " blacklist", filename);
             playlistItem->whitelist(filename);
             playlistItem->setModified();
         }
