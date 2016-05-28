@@ -62,17 +62,13 @@
                <string>&amp;Add files from the same folder:</string>
               </property>
               <property name="wordWrap">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="buddy">
                <cstring>media_to_add_combo</cstring>
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout">
             <item>
              <widget class="QComboBox" name="media_to_add_combo"/>
             </item>
@@ -283,7 +279,7 @@
           <item>
            <widget class="QLabel" name="name_blacklist_label">
             <property name="text">
-             <string>&amp;Don't add files or directories matching the following regular expressions. The expressions are matched against the full filename including path.</string>
+             <string>&amp;Don't add files or directories matching the following expressions. They are matched against the full filename including its path.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -318,7 +314,7 @@
           <item>
            <widget class="QLabel" name="title_blacklist_label">
             <property name="text">
-             <string>Drop &amp;titles matching the following regular expressions:</string>
+             <string>Drop &amp;titles matching the following expressions: The file name will be used as title instead.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
