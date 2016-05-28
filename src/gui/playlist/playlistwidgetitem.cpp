@@ -1,5 +1,6 @@
 #include "gui/playlist/playlistwidgetitem.h"
 
+#include <QApplication>
 #include <QDir>
 #include <QTime>
 #include <QString>
@@ -81,11 +82,18 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mPlayedTime(0) {
 
     if (!mFilename.isEmpty() && mName.isEmpty()) {
-        mName = QUrl(mFilename).path();
+        mName = QUrl(mFilename).toString(QUrl::RemoveScheme
+                                         | QUrl::RemoveAuthority
+                                         | QUrl::RemoveQuery
+                                         | QUrl::RemoveFragment
+                                         | QUrl::StripTrailingSlash);
         if (mName.isEmpty()) {
             mName = mFilename;
         } else {
-            mName = QFileInfo(mName).fileName();
+            QString s = QFileInfo(mName).fileName();
+            if (!s.isEmpty()) {
+                mName = s;
+            }
         }
     }
 
@@ -93,6 +101,9 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
         mEdited = true;
     } else {
         mName = Helper::cleanName(mName);
+        if (mName.isEmpty()) {
+            mName = qApp->translate("Gui::Playlist::TPlaylistItem", "No name");
+        }
     }
 
     mPlaylist = extensions.isPlaylist(mFilename);
