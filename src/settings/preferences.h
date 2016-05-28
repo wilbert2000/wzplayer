@@ -274,24 +274,6 @@ public:
     TToolbarActivation floating_activation_area;
 	bool start_in_fullscreen;
 
-    // Playlist
-    TAddToPlaylist mediaToAddToPlaylist;
-
-    bool addDirectories;
-    bool addVideo;
-    bool addAudio;
-    bool addPlaylists;
-    bool addImages;
-
-    int imageDuration;
-
-    bool useDirectoriePlaylists;
-
-    QStringList nameBlacklist;
-    QStringList titleBlacklist;
-    QList<QRegExp*> rxTitleBlacklist;
-    void setTitleBlackList();
-
     // Logging
     bool log_verbose;
     Log4Qt::Level log_level;
@@ -309,7 +291,26 @@ public:
     QString last_tv_channel;
 
 
-	// Actions section
+    // Playlist section
+    TAddToPlaylist mediaToAddToPlaylist;
+
+    bool addDirectories;
+    bool addVideo;
+    bool addAudio;
+    bool addPlaylists;
+    bool addImages;
+
+    int imageDuration;
+
+    bool useDirectoriePlaylists;
+
+    QStringList nameBlacklist;
+    QStringList titleBlacklist;
+    QList<QRegExp*> rxTitleBlacklist;
+    void setTitleBlackList();
+
+
+    // Actions section
 	// Function of mouse buttons:
 	QString mouse_left_click_function;
 	//! If true, the left click in the video is delayed some ms
