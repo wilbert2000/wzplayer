@@ -120,10 +120,6 @@ TLogWindow::TLogWindow(QWidget* parent)
     edit->setFont(QFont("fixed"));
     edit->setMaximumBlockCount(pref->log_window_max_events);
 
-    // To handle queued signals from append by thread
-    qRegisterMetaType<QTextBlock>("QTextBlock");
-    qRegisterMetaType<QTextCursor>("QTextCursor");
-
     retranslateStrings();
 }
 
