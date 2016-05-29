@@ -65,7 +65,8 @@ void TLogWindowAppender::appendTextToEdit(QString s) {
     //textEdit->setTextCursor(prevCursor);
 
     removeNewLine(s);
-    textEdit->appendPlainText(s);
+    QMetaObject::invokeMethod(textEdit, "appendPlainText", Qt::AutoConnection,
+                              Q_ARG(QString, s));
 }
 
 void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
