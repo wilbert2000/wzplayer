@@ -32,34 +32,33 @@ class TPreferences;
 namespace Gui { namespace Pref {
 
 class TPlaylistSection : public TWidget, public Ui::TPlaylistSection {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
     TPlaylistSection(QWidget* parent = 0, Qt::WindowFlags f = 0);
     virtual ~TPlaylistSection();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
 protected:
-    // Playlist
+    virtual void retranslateStrings();
+
+private:
+    void createHelp();
+
     void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type);
     Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist();
 
     void setDirectoryRecursion(bool b);
     bool directoryRecursion();
-
-	virtual void retranslateStrings();
-
-private:
-	void createHelp();
 };
 
 }} // namespace Gui::Pref
