@@ -40,8 +40,6 @@ using namespace Settings;
 
 namespace Gui {
 
-const int MAX_LINES = 1000;
-
 TLogWindowAppender* TLogWindow::appender = 0;
 
 TLogWindowAppender::TLogWindowAppender(Log4Qt::Layout* aLayout) :
@@ -120,7 +118,7 @@ TLogWindow::TLogWindow(QWidget* parent)
     setObjectName("logwindow");
 
     edit->setFont(QFont("fixed"));
-    edit->setMaximumBlockCount(MAX_LINES);
+    edit->setMaximumBlockCount(pref->log_window_max_events);
 
     // To handle queued signals from append by thread
     qRegisterMetaType<QTextBlock>("QTextBlock");

@@ -1045,6 +1045,9 @@ void TBase::applyNewPreferences() {
 	// Network
 	setupNetworkProxy();
 
+    // Update log window edit control
+    log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
+
 	// Reenable actions to reflect changes
     sendEnableActions();
 
