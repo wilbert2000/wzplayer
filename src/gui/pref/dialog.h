@@ -71,7 +71,6 @@ public:
 		SECTION_CAPTURE,
 		SECTION_PERFORMANCE,
 		SECTION_NETWORK,
-		SECTION_UPDATES,
 #if USE_ASSOCIATIONS
 		SECTION_ASSOCIATIONS,
 #endif
@@ -119,7 +118,6 @@ private:
 	TCapture* page_capture;
 	TPerformance* page_performance;
 	TNetwork* page_network;
-	TUpdates* page_updates;
 
 #if USE_ASSOCIATIONS
 	TAssociations* page_associations;

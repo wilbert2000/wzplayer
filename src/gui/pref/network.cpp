@@ -70,6 +70,9 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 	proxy_password_edit->setText(pref->proxy_password);
 
 	setProxyType(pref->proxy_type);
+
+    update_group->setChecked(pref->update_checker_data.enabled);
+    days_spin->setValue(pref->update_checker_data.days_to_check);
 }
 
 void TNetwork::getData(Settings::TPreferences* pref) {
@@ -91,6 +94,9 @@ void TNetwork::getData(Settings::TPreferences* pref) {
 	pref->proxy_password = proxy_password_edit->text();
 
 	pref->proxy_type = proxyType();
+
+    pref->update_checker_data.enabled = update_group->isChecked();
+    pref->update_checker_data.days_to_check = days_spin->value();
 }
 
 void TNetwork::setProxyType(int type) {
@@ -130,6 +136,15 @@ void TNetwork::createHelp() {
 
 	setWhatsThis(proxy_type_combo, tr("Type"),
 		tr("Select the proxy type to be used."));
+
+    addSectionTitle(tr("Proxy"));
+
+    setWhatsThis(update_group, tr("Check for updates"),
+        tr("If this option is enabled, WZPlayer will check for updates "
+           "and display a notification if a new version is available."));
+
+    setWhatsThis(days_spin, tr("Check interval"),
+        tr("Enter the number of days between update checks."));
 }
 
 }} // namespace Gui::Pref

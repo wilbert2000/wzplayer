@@ -37,7 +37,6 @@
 #include "gui/pref/capture.h"
 #include "gui/pref/performance.h"
 #include "gui/pref/network.h"
-#include "gui/pref/updates.h"
 #include "gui/pref/advanced.h"
 
 #if USE_ASSOCIATIONS
@@ -105,22 +104,19 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	addSection(page_performance);
 
     page_network = new TNetwork(this);
-	addSection(page_network);
-
-    page_updates = new TUpdates(this);
-	addSection(page_updates);
+    addSection(page_network);
 
 #if USE_ASSOCIATIONS
     page_associations = new TAssociations(this);
-	addSection(page_associations);
+    addSection(page_associations);
 #endif
 
     page_advanced = new TAdvanced(this);
-	addSection(page_advanced);
+    addSection(page_advanced);
 
-	sections->setCurrentRow(SECTION_GENERAL);
+    sections->setCurrentRow(SECTION_GENERAL);
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TDialog::~TDialog() {
@@ -200,7 +196,6 @@ void TDialog::setData(Settings::TPreferences* pref) {
 	page_capture->setData(pref);
 	page_performance->setData(pref);
 	page_network->setData(pref);
-	page_updates->setData(pref);
 
 #if USE_ASSOCIATIONS
 	page_associations->setData(pref);
@@ -223,7 +218,6 @@ void TDialog::getData(Settings::TPreferences* pref) {
 	page_capture->getData(pref);
 	page_performance->getData(pref);
 	page_network->getData(pref);
-	page_updates->getData(pref);
 
 #if USE_ASSOCIATIONS
 	page_associations->getData(pref);
@@ -246,7 +240,6 @@ bool TDialog::requiresRestart() {
                         || page_capture->requiresRestart()
                         || page_performance->requiresRestart()
                         || page_network->requiresRestart()
-                        || page_updates->requiresRestart()
                         || page_advanced->requiresRestart();
 
 	return need_restart;
