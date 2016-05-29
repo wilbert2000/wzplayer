@@ -2062,9 +2062,10 @@ double TBase::getNewSizeFactor() {
 		// Make width multiple of 16
 		int new_w = ((video_size.width() + 8) / 16) * 16;
 		if (new_w != video_size.width()) {
-			size_factor = qRound((double) new_w / res.width());
+            size_factor = (double) new_w / res.width();
             debug << "getNewSizeFactor: optimizing size factor to"
-                  << size_factor << "for width" << new_w << debug;
+                  << size_factor << "for multiple of 16 width" << new_w
+                  << debug;
 		}
 	}
 
