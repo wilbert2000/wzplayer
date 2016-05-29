@@ -478,7 +478,7 @@ bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx,
 bool TMPVProcess::parseLine(QString& line) {
 
 	// Custom status line. Make sure it matches!
-	static QRegExp rx_status("^STATUS: ([0-9\\.-]+) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
+    static QRegExp rx_status("^STATUS: ([0-9\\.-]*) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
 
 	// Tracks:
 	static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(.*)");
