@@ -555,7 +555,7 @@ bool TMPVProcess::parseLine(QString& line) {
 	if (rx_video_track.indexIn(line) >= 0) {
 		return parseVideoTrack(rx_video_track.cap(2).toInt(),
 							   rx_video_track.cap(3).trimmed(),
-							   rx_video_track.cap(1) != "");
+                               !rx_video_track.cap(1).trimmed().isEmpty());
 	}
 
 	// Audio id, lang, codec, name and selected
@@ -563,7 +563,7 @@ bool TMPVProcess::parseLine(QString& line) {
 		return parseAudioTrack(rx_audio_track.cap(2).toInt(),
 							   rx_audio_track.cap(4),
 							   rx_audio_track.cap(5).trimmed(),
-							   rx_audio_track.cap(1) != "");
+                               !rx_audio_track.cap(1).trimmed().isEmpty());
 	}
 
 	// Subtitles id, lang, name, type and selected
@@ -572,7 +572,7 @@ bool TMPVProcess::parseLine(QString& line) {
 								  rx_subtitle_track.cap(4),
 								  rx_subtitle_track.cap(6).trimmed(),
 								  rx_subtitle_track.cap(8),
-								  rx_subtitle_track.cap(1) != "");
+                                  !rx_subtitle_track.cap(1).trimmed().isEmpty());
 	}
 
 	// AO
