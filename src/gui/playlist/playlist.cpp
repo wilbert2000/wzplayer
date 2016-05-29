@@ -395,7 +395,7 @@ void TPlaylist::onThreadFinished() {
         // Thread aborted
         if (addFilesFiles.count()) {
             logger()->debug("onThreadFinished: thread aborted,"
-                            " restarting with new request");
+                            " starting new request");
             addFilesStartThread();
         } else {
             logger()->debug("onThreadFinished: thread aborted");

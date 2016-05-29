@@ -105,11 +105,6 @@ void TAddFilesThread::run() {
     if (logger()->isDebugEnabled()) {
         debug << "run: searching for:" << nameFilterList;
         debug << debug;
-        debug << "run: global blacklist:";
-        foreach(const QRegExp* rx, rxNameBlacklist) {
-            debug << rx->pattern();
-        }
-        debug << debug;
     }
 
     addFiles();
