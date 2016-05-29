@@ -283,6 +283,7 @@ void TPreferences::reset() {
     // Log
     log_verbose = false;
     log_level = Log4Qt::Level::DEBUG_INT;
+    log_window_max_events = 1000;
 
     // History
     history_recents.clear();
@@ -570,6 +571,7 @@ void TPreferences::save() {
     beginGroup("log");
     setValue("log_verbose", log_verbose);
     setValue("log_level", log_level.toString());
+    setValue("log_window_max_events", log_window_max_events);
     endGroup();
 
 /*
@@ -887,6 +889,13 @@ void TPreferences::load() {
                     value("log_level", log_level.toString()).toString());
     if (log_level < Log4Qt::Level::TRACE_INT) {
         log_level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
+    }
+    log_window_max_events = value("log_window_max_events",
+                                  log_window_max_events).toInt();
+    if (log_window_max_events < 10) {
+        log_window_max_events = 10;
+    } else if (log_window_max_events > 100000) {
+        log_window_max_events = 100000;
     }
     endGroup();
 

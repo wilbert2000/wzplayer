@@ -64,6 +64,7 @@ void TAdvanced::setData(TPreferences* pref) {
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
     setLogVerbose(pref->log_verbose);
+    log_window_max_events_spinbox->setValue(pref->log_window_max_events);
 }
 
 void TAdvanced::getData(TPreferences* pref) {
@@ -88,6 +89,7 @@ void TAdvanced::getData(TPreferences* pref) {
     restartIfBoolChanged(pref->log_verbose,
         pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose(),
         "log_verbose");
+    pref->log_window_max_events = log_window_max_events_spinbox->value();
 }
 
 void TAdvanced::setLogLevel(Log4Qt::Level level) {

@@ -277,6 +277,7 @@ public:
     // Logging
     bool log_verbose;
     Log4Qt::Level log_level;
+    int log_window_max_events;
 
     // History
     TRecents history_recents;

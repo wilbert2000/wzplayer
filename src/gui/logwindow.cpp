@@ -74,9 +74,11 @@ void TLogWindowAppender::append(const Log4Qt::LoggingEvent& rEvent) {
 
     Log4Qt::ListAppender::append(rEvent);
 
-    // Shrink the list to MAX_LINES
-    setMaxCount(MAX_LINES);
-    setMaxCount(0);
+    // Shrink the list to log_window_max_events
+    if (pref) {
+        setMaxCount(pref->log_window_max_events);
+        setMaxCount(0);
+    }
 
     // Append text to edit
     if (textEdit) {
