@@ -54,87 +54,87 @@ class TAdvanced;
 
 
 class TDialog : public QDialog, public Ui::TDialog {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	enum TSection {
-		SECTION_GENERAL = 0,
-		SECTION_DEMUXER,
-		SECTION_VIDEO,
-		SECTION_AUDIO,
-		SECTION_SUBTITLES,
-		SECTION_GUI,
+    enum TSection {
+        SECTION_GENERAL = 0,
+        SECTION_DEMUXER,
+        SECTION_VIDEO,
+        SECTION_AUDIO,
+        SECTION_SUBTITLES,
+        SECTION_GUI,
         SECTION_PLAYLIST,
         SECTION_INPUT,
-		SECTION_DRIVES,
-		SECTION_CAPTURE,
-		SECTION_PERFORMANCE,
-		SECTION_NETWORK,
+        SECTION_DRIVES,
+        SECTION_CAPTURE,
+        SECTION_PERFORMANCE,
+        SECTION_NETWORK,
 #if USE_ASSOCIATIONS
-		SECTION_ASSOCIATIONS,
+        SECTION_ASSOCIATIONS,
 #endif
-		SECTION_ADVANCED
-	};
+        SECTION_ADVANCED
+    };
 
-	TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TDialog();
+    TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TDialog();
 
-	TInterface* mod_interface() const { return page_interface; }
-	TInput* mod_input() const { return page_input; }
+    TInterface* mod_interface() const { return page_interface; }
+    TInput* mod_input() const { return page_input; }
 
-	// Pass data to the standard dialogs
-	void setData(Settings::TPreferences* pref);
+    // Pass data to the standard dialogs
+    void setData(Settings::TPreferences* pref);
 
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
-	// Return true if the mplayer process should be restarted.
-	bool requiresRestart();
+    // Return true if the mplayer process should be restarted.
+    bool requiresRestart();
 
-	void showSection(TSection section);
+    void showSection(TSection section);
 
 public slots:
-	virtual void accept(); // Reimplemented to send a signal
-	virtual void reject();
+    virtual void accept(); // Reimplemented to send a signal
+    virtual void reject();
 
 signals:
-	void applied();
+    void applied();
 
 protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent (QEvent* event);
+    virtual void retranslateStrings();
+    virtual void changeEvent (QEvent* event);
 
 private:
-	TGeneral* page_general;
-	TDemuxer* page_demuxer;
-	TVideo* page_video;
-	TAudio* page_audio;
-	TSubtitles* page_subtitles;
-	TInterface* page_interface;
+    TGeneral* page_general;
+    TDemuxer* page_demuxer;
+    TVideo* page_video;
+    TAudio* page_audio;
+    TSubtitles* page_subtitles;
+    TInterface* page_interface;
     TPlaylistSection* page_playlist;
     TInput* page_input;
-	TDrives* page_drives;
-	TCapture* page_capture;
-	TPerformance* page_performance;
-	TNetwork* page_network;
+    TDrives* page_drives;
+    TCapture* page_capture;
+    TPerformance* page_performance;
+    TNetwork* page_network;
 
 #if USE_ASSOCIATIONS
-	TAssociations* page_associations;
+    TAssociations* page_associations;
 #endif
 
-	TAdvanced* page_advanced;
+    TAdvanced* page_advanced;
 
-	QTextBrowser* help_window;
+    QTextBrowser* help_window;
 
-	QPushButton* helpButton;
+    QPushButton* helpButton;
 
-	void addSection(TWidget* w);
+    void addSection(TWidget* w);
 
 private slots:
-	void showHelp();
-	void onBinChanged(Settings::TPreferences::TPlayerID player_id,
-					  bool keep_current_drivers, const QString &path);
+    void showHelp();
+    void onBinChanged(Settings::TPreferences::TPlayerID player_id,
+                      bool keep_current_drivers, const QString &path);
 };
 
 } // namespace Pref
