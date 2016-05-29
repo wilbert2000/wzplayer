@@ -112,10 +112,6 @@ protected:
     virtual void closeEvent(QCloseEvent* e);
 
 private:
-    TBase* main_window;
-    TCore* core;
-    TPlaylistWidget* playlistWidget;
-
     Action::TMenu* add_menu;
     Action::TMenu* remove_menu;
     QMenu* popup;
@@ -155,7 +151,9 @@ private:
 
     Action::TMenuInOut* inOutMenu;
 
-    bool disable_enableActions;
+    TBase* main_window;
+    TCore* core;
+    TPlaylistWidget* playlistWidget;
 
     QString filename;
 
@@ -165,6 +163,9 @@ private:
     QString addFilesFileToPlay;
     bool addFilesStartPlay;
     bool addFilesSearchItems;
+
+    bool disable_enableActions;
+
 
     void createTree();
     void createActions();

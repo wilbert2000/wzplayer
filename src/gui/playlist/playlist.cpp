@@ -71,8 +71,8 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     debug(logger()),
     main_window(mw),
     core(c),
-    disable_enableActions(false),
-    thread(0) {
+    thread(0),
+    disable_enableActions(false) {
 
     createTree();
     createActions();
@@ -421,6 +421,7 @@ void TPlaylist::onThreadFinished() {
         return;
     }
 
+    // Returns a newly created root
     root = playlistWidget->add(root, addFilesTarget, current);
     if (root) {
         filename = root->filename();
@@ -437,9 +438,10 @@ void TPlaylist::onThreadFinished() {
             }
         }
         startPlay();
-    } else {
-        enableActions();
+        return;
     }
+
+    enableActions();
 }
 
 void TPlaylist::addFilesStartThread() {
@@ -461,7 +463,9 @@ void TPlaylist::addFilesStartThread() {
                                      pref->addPlaylists,
                                      pref->addImages);
 
-        connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
+        connect(thread, SIGNAL(finished()),
+                this, SLOT(onThreadFinished()),
+                Qt::QueuedConnection);
         connect(thread, SIGNAL(displayMessage(QString, int)),
                 this, SIGNAL(displayMessage(QString, int)));
 
@@ -948,13 +952,16 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setTextAndTip(text + "...");
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == STATE_PLAYING) {
+        disable_enableActions = true;
+        if (playing_item == 0) {
+            playing_item = findFilename(core->mdat.filename);
+        }
         if (playing_item && playing_item->state() != PSTATE_PLAYING) {
-            disable_enableActions = true;
             playlistWidget->setPlayingItem(playing_item, PSTATE_PLAYING);
-            disable_enableActions = false;
         }
         playOrPauseAct->setTextAndTip(tr("&Pause"));
         playOrPauseAct->setIcon(Images::icon("pause"));
+        disable_enableActions = false;
     } else {
         playOrPauseAct->setTextAndTip(tr("&Play"));
         playOrPauseAct->setIcon(Images::icon("play"));
@@ -1004,6 +1011,7 @@ void TPlaylist::onPlayerError() {
 }
 
 void TPlaylist::onNewMediaStartedPlaying() {
+    logger()->debug("onNewMediaStartedPlaying");
 
     const TMediaData* md = &core->mdat;
     QString filename = md->filename;
@@ -1021,37 +1029,42 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
     } else if (filename == current_filename) {
-        if (!md->image) {
-            TPlaylistWidgetItem* item = playlistWidget->playing_item;
-            if (item) {
-                bool modified = false;
-                if (!item->edited()) {
-                    QString name = md->displayName();
-                    if (item->name() != name) {
-                        logger()->debug("onNewMediaStartedPlaying: updating"
-                                        " name from '%1' to '%2'",
-                                        item->name(), name);
-                        item->setName(name);
-                        modified = true;
-                    }
-                }
-                if (md->duration > 0) {
-                    if (!this->filename.isEmpty()
-                        && qAbs(md->duration - item->duration()) > 1) {
-                        modified = true;
-                    }
-                    logger()->debug("onNewMediaStartedPlaying: updating"
-                                    " duration from %1 to %2",
-                                    QString::number(item->duration()),
-                                    QString::number(md->duration));
-                    item->setDuration(md->duration);
-                }
-                if (modified) {
-                    playlistWidget->setModified(item);
-                } else {
-                    logger()->debug("onNewMediaStartedPlaying: item is uptodate");
-                }
+        if (md->image) {
+            return;
+        }
+        TPlaylistWidgetItem* item = playlistWidget->playing_item;
+        if (item == 0) {
+            return;
+        }
+        bool modified = false;
+
+        if (!item->edited()) {
+            QString name = md->displayName();
+            if (item->name() != name) {
+                logger()->debug("onNewMediaStartedPlaying: updating"
+                                " name from '%1' to '%2'",
+                                item->name(), name);
+                item->setName(name);
+                modified = true;
             }
+        }
+
+        if (md->duration > 0) {
+            if (!this->filename.isEmpty()
+                && qAbs(md->duration - item->duration()) > 1) {
+                modified = true;
+            }
+            logger()->debug("onNewMediaStartedPlaying: updating"
+                            " duration from %1 to %2",
+                            QString::number(item->duration()),
+                            QString::number(md->duration));
+            item->setDuration(md->duration);
+        }
+
+        if (modified) {
+            playlistWidget->setModified(item);
+        } else {
+            logger()->debug("onNewMediaStartedPlaying: item is uptodate");
         }
         return;
     }
