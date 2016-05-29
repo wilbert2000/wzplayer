@@ -18,6 +18,7 @@
 
 
 #include "gui/pref/advanced.h"
+#include "log4qt/logmanager.h"
 #include "images.h"
 #include "settings/preferences.h"
 
@@ -26,39 +27,43 @@ using namespace Settings;
 
 namespace Gui { namespace Pref {
 
-TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f)
-	: TWidget(parent, f) {
+TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f) :
+    TWidget(parent, f) {
 
-	setupUi(this);
-
-	retranslateStrings();
+    setupUi(this);
+    retranslateStrings();
 }
 
 TAdvanced::~TAdvanced() {
 }
 
 QString TAdvanced::sectionName() {
-	return tr("Advanced");
+    return tr("Advanced");
 }
 
 QPixmap TAdvanced::sectionIcon() {
-	return Images::icon("pref_advanced", icon_size);
+    return Images::icon("pref_advanced", icon_size);
 }
 
 void TAdvanced::retranslateStrings() {
 
-	retranslateUi(this);
-	icon_label->setPixmap(Images::icon("pref_advanced"));
-	createHelp();
+    retranslateUi(this);
+    icon_label->setPixmap(Images::icon("pref_advanced"));
+    createHelp();
 }
 
 void TAdvanced::setData(TPreferences* pref) {
 
-	setActionsToRun(pref->actions_to_run);
 
-	setPlayerAdditionalArguments(pref->player_additional_options);
-	setPlayerAdditionalVideoFilters(pref->player_additional_video_filters);
-	setPlayerAdditionalAudioFilters(pref->player_additional_audio_filters);
+    setActionsToRun(pref->actions_to_run);
+
+    setPlayerAdditionalArguments(pref->player_additional_options);
+    setPlayerAdditionalVideoFilters(pref->player_additional_video_filters);
+    setPlayerAdditionalAudioFilters(pref->player_additional_audio_filters);
+
+    // Log
+    setLogLevel(Log4Qt::LogManager::rootLogger()->level());
+    setLogVerbose(pref->log_verbose);
 }
 
 void TAdvanced::getData(TPreferences* pref) {
@@ -75,6 +80,58 @@ void TAdvanced::getData(TPreferences* pref) {
     restartIfStringChanged(pref->player_additional_audio_filters,
                            playerAdditionalAudioFilters(),
                            "player_additional_audio_filters");
+
+    // Log
+    pref->log_level = logLevel();
+    Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
+    Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
+    restartIfBoolChanged(pref->log_verbose,
+        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose(),
+        "log_verbose");
+}
+
+void TAdvanced::setLogLevel(Log4Qt::Level level) {
+
+    int idx;
+    switch (level.toInt()) {
+        case Log4Qt::Level::NULL_INT:
+        case Log4Qt::Level::ALL_INT:
+        case Log4Qt::Level::TRACE_INT: idx = 0; break;
+        case Log4Qt::Level::DEBUG_INT: idx = 1; break;
+        case Log4Qt::Level::INFO_INT: idx = 2; break;
+        case Log4Qt::Level::WARN_INT: idx = 3; break;
+        case Log4Qt::Level::ERROR_INT: idx = 4; break;
+        case Log4Qt::Level::FATAL_INT: idx = 5; break;
+        case Log4Qt::Level::OFF_INT: idx = 6; break;
+        default: idx = 1;
+    }
+
+    log_level_combo->setCurrentIndex(idx);
+}
+
+Log4Qt::Level TAdvanced::logLevel() {
+
+    Log4Qt::Level level;
+    switch (log_level_combo->currentIndex()) {
+        case 0: level = Log4Qt::Level::TRACE_INT; break;
+        case 1: level = Log4Qt::Level::DEBUG_INT; break;
+        case 2: level = Log4Qt::Level::INFO_INT; break;
+        case 3: level = Log4Qt::Level::WARN_INT;break;
+        case 4: level = Log4Qt::Level::ERROR_INT; break;
+        case 5: level = Log4Qt::Level::FATAL_INT; break;
+        case 6: level = Log4Qt::Level::OFF_INT; break;
+        default: level =Log4Qt::Level:: DEBUG_INT;
+    }
+
+    return level;
+}
+
+void TAdvanced::setLogVerbose(bool b) {
+    log_verbose_check->setChecked(b);
+}
+
+bool TAdvanced::logVerbose() {
+    return log_verbose_check->isChecked();
 }
 
 void TAdvanced::setPlayerAdditionalArguments(QString args) {
@@ -110,32 +167,51 @@ QString TAdvanced::actionsToRun() {
 }
 
 void TAdvanced::createHelp() {
-	clearHelp();
 
-	addSectionTitle(tr("Advanced"));
+    clearHelp();
 
-	setWhatsThis(actions_to_run_edit, tr("Actions list"),
-		tr("Here you can specify a list of <i>actions</i> which will be "
-           "run every time a file is opened. You'll find all available "
-		   "actions in the shortcut editor in the <b>Actions</b> "
-           "section. The actions must be separated by spaces. Checkable "
-           "actions can be followed by <i>true</i> or <i>false</i> to "
-           "enable or disable the action.") +"<br>"+
-		tr("Example:") +" <i>auto_zoom fullscreen true</i><br>" +
-		tr("Limitation: the actions are run only when a file is opened and "
-           "not when the mplayer process is restarted (e.g. you select an "
-           "audio or video filter)."));
+    addSectionTitle(tr("Logs"));
 
-	addSectionTitle(tr("Options for player"));
+    setWhatsThis(log_level_combo, tr("Log level"),
+        tr("Select which messages will be written to the log. You can view the"
+           " log with menu <b><i>Window - View log</i></b>."));
 
-	setWhatsThis(player_args_edit, tr("Options"),
-		tr("Here you can pass extra options to the player. Write them separated by spaces."));
+    setWhatsThis(log_verbose_check, tr("Verbose"),
+        tr("Request verbose messages from the player for troubleshooting."));
 
-	setWhatsThis(player_vfilters_edit, tr("Video filters"),
-		tr("Here you can add extra video filters. Write them separated by commas. Don't use spaces!"));
+    setWhatsThis(log_window_max_events_spinbox, tr("Log window events"),
+        tr("Specify the number of log events to remember for the log window."));
 
-	setWhatsThis(player_afilters_edit, tr("Audio filters"),
-		tr("Here you can add extra audio filters. Write them separated by commas. Don't use spaces!"));
+    addSectionTitle(tr("Actions to run"));
+
+    setWhatsThis(actions_to_run_edit, tr("Actions list"),
+        tr("Here you can specify a list of <i>actions</i> which will be"
+           " run every time a file is opened. You'll find all available"
+           " actions in the shortcut editor in the <b>Actions</b>"
+           " section. The actions must be separated by spaces. Checkable"
+           " actions can be followed by <i>true</i> or <i>false</i> to"
+           " enable or disable the action.") + "<br>"
+        + tr("Example:") + " <i>auto_zoom fullscreen true</i><br>"
+        + tr("Limitation: the actions are run only when a file is opened and"
+             " not when the mplayer process is restarted (e.g. you select an"
+             " audio or video filter)."));
+
+    addSectionTitle(tr("Options for player"));
+
+    setWhatsThis(player_args_edit, tr("Options"),
+        tr("Here you can pass extra options to the player. Write them separated"
+           " by spaces."));
+
+
+    addSectionTitle(tr("Filters"));
+
+    setWhatsThis(player_vfilters_edit, tr("Video filters"),
+        tr("Here you can add extra video filters. Write them separated by"
+           " commas. Don't use spaces!"));
+
+    setWhatsThis(player_afilters_edit, tr("Audio filters"),
+        tr("Here you can add extra audio filters. Write them separated by"
+           " commas. Don't use spaces!"));
 }
 
 }} // namespace Gui::Pref

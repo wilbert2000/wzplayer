@@ -21,7 +21,6 @@
 #include <QDir>
 #include <QStyleFactory>
 
-#include "log4qt/logmanager.h"
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
@@ -139,10 +138,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
         pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	setStartInFullscreen(pref->start_in_fullscreen);
 
-    // Log
-    setLogLevel(Log4Qt::LogManager::rootLogger()->level());
-	setLogVerbose(pref->log_verbose);
-
 	// History
 	setRecentsMaxItems(pref->history_recents.maxItems());
 	setURLMaxItems(pref->history_urls.maxItems());
@@ -185,14 +180,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked()
         ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
-
-    // Log
-    pref->log_level = logLevel();
-    Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
-    Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
-    restartIfBoolChanged(pref->log_verbose,
-        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose(),
-        "log_verbose");
 
 	// History
 	if (pref->history_recents.maxItems() != recentsMaxItems()) {
@@ -320,50 +307,6 @@ bool TInterface::hideVideoOnAudioFiles() {
 	return hide_video_window_on_audio_check->isChecked();
 }
 
-void TInterface::setLogLevel(Log4Qt::Level level) {
-
-    int idx;
-    switch (level.toInt()) {
-        case Log4Qt::Level::NULL_INT:
-        case Log4Qt::Level::ALL_INT:
-        case Log4Qt::Level::TRACE_INT: idx = 0; break;
-        case Log4Qt::Level::DEBUG_INT: idx = 1; break;
-        case Log4Qt::Level::INFO_INT: idx = 2; break;
-        case Log4Qt::Level::WARN_INT: idx = 3; break;
-        case Log4Qt::Level::ERROR_INT: idx = 4; break;
-        case Log4Qt::Level::FATAL_INT: idx = 5; break;
-        case Log4Qt::Level::OFF_INT: idx = 6; break;
-        default: idx = 1;
-    }
-
-    log_level_combo->setCurrentIndex(idx);
-}
-
-Log4Qt::Level TInterface::logLevel() {
-
-    Log4Qt::Level level;
-    switch (log_level_combo->currentIndex()) {
-        case 0: level = Log4Qt::Level::TRACE_INT; break;
-        case 1: level = Log4Qt::Level::DEBUG_INT; break;
-        case 2: level = Log4Qt::Level::INFO_INT; break;
-        case 3: level = Log4Qt::Level::WARN_INT;break;
-        case 4: level = Log4Qt::Level::ERROR_INT; break;
-        case 5: level = Log4Qt::Level::FATAL_INT; break;
-        case 6: level = Log4Qt::Level::OFF_INT; break;
-        default: level =Log4Qt::Level:: DEBUG_INT;
-    }
-
-    return level;
-}
-
-void TInterface::setLogVerbose(bool b) {
-	log_verbose_check->setChecked(b);
-}
-
-bool TInterface::logVerbose() {
-	return log_verbose_check->isChecked();
-}
-
 void TInterface::setRecentsMaxItems(int n) {
 	recents_max_items_spin->setValue(n);
 }
@@ -447,16 +390,6 @@ void TInterface::createHelp() {
 	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
 		tr("If this option is checked, all videos will start to play in "
 		   "fullscreen mode."));
-
-
-	addSectionTitle(tr("Logs"));
-
-    setWhatsThis(log_level_combo, tr("Log level"),
-        tr("Select which messages will be written to the log. You can view the"
-           " log with menu <b><i>Window - View log</i></b>."));
-
-	setWhatsThis(log_verbose_check, tr("Verbose"),
-		tr("Request verbose messages from the player for troubleshooting."));
 
 	addSectionTitle(tr("History"));
 

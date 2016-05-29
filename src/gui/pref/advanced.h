@@ -53,7 +53,13 @@ protected:
 private:
 	void createHelp();
 
-	void setActionsToRun(QString actions);
+    void setLogLevel(Log4Qt::Level level);
+    Log4Qt::Level logLevel();
+
+    void setLogVerbose(bool b);
+    bool logVerbose();
+
+    void setActionsToRun(QString actions);
 	QString actionsToRun();
 
 	void setPlayerAdditionalArguments(QString args);

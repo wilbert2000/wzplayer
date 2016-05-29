@@ -105,13 +105,6 @@ private:
 
 	void setStartInFullscreen(bool b);
 	bool startInFullscreen();
-
-	// Log options
-    void setLogLevel(Log4Qt::Level level);
-    Log4Qt::Level logLevel();
-
-	void setLogVerbose(bool b);
-	bool logVerbose();
 };
 
 }} // namespace Gui::Pref
