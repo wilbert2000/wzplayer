@@ -319,6 +319,8 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
 void TPlaylistWidgetItem::setModified(bool modified,
                                       bool recurse,
                                       bool markParents) {
+    widgetLogger()->debug("setModified: modified set to %1 for '%2'",
+                          modified, filename());
 
     mModified = modified;
     if (mModified) {
@@ -336,7 +338,7 @@ void TPlaylistWidgetItem::setModified(bool modified,
         }
     }
 
-    if (mModified && markParents && plParent()) {
+    if (mModified && markParents && plParent() && !plParent()->modified()) {
         plParent()->setModified(true, false, true);
     }
 }

@@ -158,8 +158,6 @@ void TPlaylistWidget::setModified(QTreeWidgetItem* item,
     }
     if (i) {
         i->setModified(modified, recurse);
-        logger()->info("setModified: modified set to %1 for '%2'",
-                       modified, i->filename());
         if (mModified != modified) {
             mModified = modified;
             emit modifiedChanged();
