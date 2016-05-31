@@ -155,7 +155,7 @@ bool TAddFilesThread::nameBlackListed(const QString& name) {
 
     foreach(QRegExp* rx, rxNameBlacklist) {
         if (rx->indexIn(name) >= 0) {
-            logger()->debug("nameBlackListed: skipping '%1' on '%2'",
+            logger()->info("nameBlackListed: skipping '%1' on '%2'",
                             name, rx->pattern());
             return true;
         }
@@ -412,7 +412,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         i = blacklist.indexOf(QRegExp(filename, caseSensitiveNames,
                                       QRegExp::FixedString));
         if (i >= 0) {
-            logger()->debug("addNewItems: '%1' is blacklisted", filename);
+            logger()->info("addNewItems: '%1' is blacklisted", filename);
             blacklist.removeAt(i);
             continue;
         }
@@ -618,9 +618,9 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi) {
-    logger()->debug("addDirectory: '%1'", fi.filePath());
+    logger()->debug("addDirectory: '%1'", fi.absoluteFilePath());
 
-    emit displayMessage(fi.filePath(), 0);
+    emit displayMessage(fi.absoluteFilePath(), 0);
 
     QDir directory(fi.absoluteFilePath());
     if (blacklisted(directory)) {
