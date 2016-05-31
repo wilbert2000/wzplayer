@@ -163,6 +163,7 @@ private:
     QString addFilesFileToPlay;
     bool addFilesStartPlay;
     bool addFilesSearchItems;
+    bool restartThread;
 
     bool disable_enableActions;
 
@@ -171,6 +172,7 @@ private:
     void createActions();
     void createToolbar();
 
+    void abortThread();
     void addFilesStartThread();
 
     void msg(const QString& s, int duration = TConfig::MESSAGE_DURATION);

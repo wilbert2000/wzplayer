@@ -72,6 +72,7 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     main_window(mw),
     core(c),
     thread(0),
+    restartThread(false),
     disable_enableActions(false) {
 
     createTree();
@@ -362,8 +363,7 @@ void TPlaylist::clear() {
 
     if (thread) {
         logger()->info("clear: add files thread still running, aborting it");
-        thread->abort();
-        addFilesFiles.clear();
+        abortThread();
     }
     playlistWidget->clr();
     filename = "";
@@ -393,12 +393,13 @@ void TPlaylist::onThreadFinished() {
 
     if (root == 0) {
         // Thread aborted
-        if (addFilesFiles.count()) {
+        if (restartThread) {
             logger()->debug("onThreadFinished: thread aborted,"
                             " starting new request");
             addFilesStartThread();
         } else {
             logger()->debug("onThreadFinished: thread aborted");
+            addFilesFiles.clear();
             enableActions();
         }
         return;
@@ -444,16 +445,24 @@ void TPlaylist::onThreadFinished() {
     enableActions();
 }
 
+void TPlaylist::abortThread() {
+
+    addFilesStartPlay = false;
+    restartThread = false;
+    thread->abort();
+}
+
 void TPlaylist::addFilesStartThread() {
 
     if (thread) {
         // Thread still running, abort it and restart it in onThreadFinished()
         logger()->debug("addFilesStartThread: add files thread still running."
                         " Aborting it...");
+        restartThread = true;
         thread->abort();
     } else {
         logger()->debug("addFilesStartThread: starting add files thread");
-
+        restartThread = false;
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
                                      pref->nameBlacklist,
@@ -463,9 +472,7 @@ void TPlaylist::addFilesStartThread() {
                                      pref->addPlaylists,
                                      pref->addImages);
 
-        connect(thread, SIGNAL(finished()),
-                this, SLOT(onThreadFinished()),
-                Qt::QueuedConnection);
+        connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
         connect(thread, SIGNAL(displayMessage(QString, int)),
                 this, SIGNAL(displayMessage(QString, int)));
 
@@ -584,12 +591,11 @@ void TPlaylist::playOrPause() {
 void TPlaylist::stop() {
     logger()->debug("stop: state " + core->stateToString());
 
-    core->stop();
     if (thread) {
-        logger()->debug("stop: stopping add files thread");
-        addFilesStartPlay = false;
-        thread->stop();
+        logger()->debug("stop: aborting add files thread");
+        abortThread();
     }
+    core->stop();
 }
 
 TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
