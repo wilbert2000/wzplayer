@@ -903,8 +903,14 @@ void TPlaylist::openFolder() {
         }
 
         if (!folder.isEmpty()) {
-            logger()->debug("openFolder: opening '%1'", folder);
-            QDesktopServices::openUrl(QUrl(folder));
+            QUrl url(folder);
+            if (url.scheme().isEmpty()) {
+                url = QUrl::fromLocalFile(folder);
+            }
+
+            debug << "openFolder: opening" << url;
+            debug << debug;
+            QDesktopServices::openUrl(url);
         }
     }
 }
