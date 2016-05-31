@@ -314,39 +314,31 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
     }
 
     if (fi.isSymLink()) {
-        logger()->debug("addItem: following '%1' to '%2'",
-                        fi.fileName(), fi.symLinkTarget());
         if (name.isEmpty()) {
             name = fi.fileName();
         }
-        fi.setFile(fi.symLinkTarget());
-        if (!fi.exists()) {
-            logger()->warn("addItem: ignoring link '%1' pointing to non"
-                           " existing target '%2'", filename, fi.filePath());
-            return 0;
+        // For Windows shortcuts, follow the link
+        if (fi.suffix().toLower() == "lnk") {
+            fi.setFile(fi.symLinkTarget());
         }
     }
 
     QString savedPlaylistPath = playlistPath;
     TPlaylistWidgetItem* item;
     if (fi.isDir()) {
-        item = addDirectory(parent, fi);
+        item = addDirectory(parent, fi, name);
     } else {
         if (extensions.isPlaylist(fi)) {
             item = openPlaylist(parent, fi);
+            if (protectName && item) {
+                item->setName(name, true);
+            }
         } else {
             if (name.isEmpty()) {
                 name = fi.fileName();
             }
             item = createPath(parent, fi, name, duration, protectName);
-            protectName = false;
         }
-    }
-
-    if (protectName && item) {
-        logger()->debug("addItem: replacing name '%1' with '%2'",
-                        item->name(), name);
-        item->setName(name, true);
     }
 
     playlistPath = savedPlaylistPath;
@@ -429,11 +421,17 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
             continue;
         }
 
-        logger()->info("addNewItems: adding new item '%1'", filename);
         fi.setFile(directory.path(), filename);
+
+        if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
+            // TODO:
+            continue;
+        }
+
+        logger()->info("addNewItems: adding new item '%1'", filename);
         if (fi.isDir()) {
             if (recurse) {
-                if (addDirectory(playlistItem, fi)) {
+                if (addDirectory(playlistItem, fi, filename)) {
                     playlistItem->setModified();
                 }
             }
@@ -600,28 +598,28 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
 TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
                                               QFileInfo& fi) {
 
-    TPlaylistWidgetItem* item;
+    QString name = fi.fileName();
     if (fi.isSymLink()) {
-        // TODO: preserve link, for now still need switch to target
         fi.setFile(fi.symLinkTarget());
         if (!extensions.isMultiMedia(fi) && !extensions.isPlaylist(fi)) {
             return 0;
         }
     }
 
+    TPlaylistWidgetItem* item;
     if (extensions.isPlaylist(fi)) {
         item = openPlaylist(parent, fi);
     } else {
         item = new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
-                                       fi.fileName(), 0, false,
-                                       iconProvider.icon(fi));
+                                       name, 0, false, iconProvider.icon(fi));
     }
 
     return item;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
-                                                   QFileInfo& fi) {
+                                                   QFileInfo& fi,
+                                                   const QString& name) {
     logger()->debug("addDirectory: '%1'", fi.absoluteFilePath());
 
     emit displayMessage(fi.absoluteFilePath(), 0);
@@ -648,7 +646,8 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     QString path = QDir::toNativeSeparators(directory.path());
 
     TPlaylistWidgetItem* dirItem = new TPlaylistWidgetItem(0, path,
-        directory.dirName(), 0, true, iconProvider.folderIcon);
+        name.isEmpty() ? directory.dirName() : name,
+        0, true, iconProvider.folderIcon);
 
     if (!path.endsWith(QDir::separator())) {
         path += QDir::separator();
@@ -667,7 +666,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
         fi.setFile(directory.path(), filename);
         if (fi.isDir()) {
             if (recurse) {
-                addDirectory(dirItem, fi);
+                addDirectory(dirItem, fi, filename);
             }
         } else {
             addFile(dirItem, fi);

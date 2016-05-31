@@ -67,7 +67,8 @@ private:
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
-                                      QFileInfo& fi);
+                                      QFileInfo& fi,
+                                      const QString& name);
     void addFiles();
 
     TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
