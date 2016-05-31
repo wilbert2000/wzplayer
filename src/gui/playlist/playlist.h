@@ -138,10 +138,11 @@ private:
     Action::TAction* addDirectoryAct;
     Action::TAction* addUrlsAct;
 
+    Action::TAction* editAct;
+    Action::TAction* findPlayingAct;
     Action::TAction* cutAct;
     Action::TAction* copyAct;
     Action::TAction* pasteAct;
-    Action::TAction* editAct;
 
     Action::TAction* refreshAct;
     Action::TAction* openDirectoryAct;
@@ -217,6 +218,8 @@ private slots:
     void editCurrentItem();
     void editItem(TPlaylistWidgetItem* item);
     void onModifiedChanged();
+
+    void findPlayingItem();
 
     // TODO: Copied needs translation
     void copySelected(const QString& actionName = "Copied");

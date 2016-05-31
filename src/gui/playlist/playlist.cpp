@@ -245,6 +245,11 @@ void TPlaylist::createActions() {
                           Qt::Key_Return);
     connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
 
+    // Find playing
+    findPlayingAct = new TAction(this, "pl_find_playing",
+                                 tr("&Find playing item"));
+    connect(findPlayingAct, SIGNAL(triggered()), this, SLOT(findPlayingItem()));
+
     // Cut
     cutAct = new TAction(this, "pl_cut", tr("&Cut file name(s)"), "",
                           QKeySequence("Ctrl+X"));
@@ -312,6 +317,7 @@ void TPlaylist::createToolbar() {
 	// Popup menu
     popup = new QMenu(this);
     popup->addAction(editAct);
+    popup->addAction(findPlayingAct);
     popup->addSeparator();
     popup->addAction(cutAct);
     popup->addAction(copyAct);
@@ -1039,9 +1045,10 @@ void TPlaylist::enableActions() {
                                           && !current_item->isFolder());
     removeAllAct->setEnabled(e);
 
+    editAct->setEnabled(e && current_item);
+    findPlayingAct->setEnabled(playing_item);
     cutAct->setEnabled(e);
     copyAct->setEnabled(haveItems || coreHasFilename);
-    editAct->setEnabled(e && current_item);
 
     openDirectoryAct->setEnabled(current_item);
     refreshAct->setEnabled(enable && !filename.isEmpty());
@@ -1282,6 +1289,13 @@ void TPlaylist::editCurrentItem() {
     TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
     if (current) {
         editItem(current);
+    }
+}
+
+void TPlaylist::findPlayingItem() {
+
+    if (playlistWidget->playing_item) {
+        playlistWidget->setCurrentItem(playlistWidget->playing_item);
     }
 }
 
