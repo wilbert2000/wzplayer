@@ -144,6 +144,7 @@ private:
     Action::TAction* editAct;
 
     Action::TAction* refreshAct;
+    Action::TAction* openDirectoryAct;
 
     Action::TAction* removeSelectedAct;
     Action::TAction* removeSelectedFromDiskAct;
@@ -222,6 +223,7 @@ private slots:
     void paste();
     void enablePaste();
     void cut();
+    void openFolder();
     void refresh();
     void openInNewWindow();
 

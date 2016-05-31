@@ -18,6 +18,7 @@
 
 #include "gui/playlist/playlist.h"
 
+#include <QDesktopServices>
 #include <QToolBar>
 #include <QFile>
 #include <QTextStream>
@@ -261,8 +262,13 @@ void TPlaylist::createActions() {
     connect(QApplication::clipboard(), SIGNAL(dataChanged()),
             this, SLOT(enablePaste()));
 
+    // Open directorie
+    openDirectoryAct = new TAction(this, "pl_open_directory",
+                                   tr("&Open directorie"));
+    connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openFolder()));
+
     // Refresh
-    refreshAct = new TAction(this, "pl_refresh", tr("&Refresh"), "",
+    refreshAct = new TAction(this, "pl_refresh", tr("R&efresh"), "",
                              Qt::Key_F5);
     connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
 
@@ -321,6 +327,7 @@ void TPlaylist::createToolbar() {
     popup->addMenu(add_menu);
     popup->addMenu(remove_menu);
     popup->addSeparator();
+    popup->addAction(openDirectoryAct);
     popup->addAction(refreshAct);
 
     connect(playlistWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
@@ -875,6 +882,27 @@ void TPlaylist::refresh() {
     }
 }
 
+void TPlaylist::openFolder() {
+
+    TPlaylistWidgetItem* i = playlistWidget->currentPlaylistWidgetItem();
+    if (i) {
+        QString folder;
+        QFileInfo fi(i->filename());
+        if (i->isPlaylist()
+            || !i->isFolder()
+            || fi.fileName() == TConfig::WZPLAYLIST) {
+            folder = fi.absolutePath();
+        } else {
+            folder = i->filename();
+        }
+
+        if (!folder.isEmpty()) {
+            logger()->debug("openFolder: opening '%1'", folder);
+            QDesktopServices::openUrl(QUrl(folder));
+        }
+    }
+}
+
 void TPlaylist::openInNewWindow() {
     logger()->debug("openInNewWindow: '%1'", qApp->applicationFilePath());
 
@@ -1003,6 +1031,7 @@ void TPlaylist::enableActions() {
     copyAct->setEnabled(haveItems || coreHasFilename);
     editAct->setEnabled(e && current_item);
 
+    openDirectoryAct->setEnabled(current_item);
     refreshAct->setEnabled(enable && !filename.isEmpty());
 }
 
