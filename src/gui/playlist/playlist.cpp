@@ -435,6 +435,12 @@ void TPlaylist::onThreadFinished() {
         filename = root->filename();
         logger()->debug("onThreadFinished: filename set to '%1'", filename);
         setWinTitle();
+
+        // Let the player have a go at a failed file name
+        if (root->childCount() == 1
+            && root->plChild(0)->state() == PSTATE_FAILED) {
+            root->plChild(0)->setState(PSTATE_LOADING);
+        }
     }
 
     if (addFilesStartPlay) {
