@@ -374,13 +374,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
     QDir directory(playlistInfo.dir().path());
     directory.setFilter(dirFilter);
     directory.setNameFilters(nameFilterList);
-
-    // Note: QDir::LocaleAware
-    QDir::SortFlags sortFlags = QDir::Name;
-    if (!caseSensitiveNames) {
-        sortFlags |= QDir::IgnoreCase;
-    }
-    directory.setSorting(sortFlags);
+    directory.setSorting(getSortFlags());
 
     QFileInfo fi;
 
@@ -617,6 +611,16 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
     return item;
 }
 
+QDir::SortFlags TAddFilesThread::getSortFlags() {
+
+    // Note: QDir::LocaleAware
+    QDir::SortFlags flags = QDir::Name | QDir::DirsFirst;
+    if (!caseSensitiveNames) {
+        flags |= QDir::IgnoreCase;
+    }
+    return flags;
+}
+
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi,
                                                    const QString& name) {
@@ -635,13 +639,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     directory.setFilter(dirFilter);
     directory.setNameFilters(nameFilterList);
-
-    // Note: QDir::LocaleAware
-    QDir::SortFlags sortFlags = QDir::Name;
-    if (!caseSensitiveNames) {
-        sortFlags |= QDir::IgnoreCase;
-    }
-    directory.setSorting(sortFlags);
+    directory.setSorting(getSortFlags());
 
     QString path = QDir::toNativeSeparators(directory.path());
 

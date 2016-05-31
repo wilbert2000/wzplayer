@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QStringList>
 #include <QString>
+#include <QDir>
 
 #include "wzdebug.h"
 
@@ -64,6 +65,8 @@ private:
     void whitelist();
 
     bool nameBlackListed(const QString& name);
+
+    QDir::SortFlags getSortFlags();
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
