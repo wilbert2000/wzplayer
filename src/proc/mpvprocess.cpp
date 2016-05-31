@@ -51,7 +51,7 @@ bool TMPVProcess::startPlayer() {
 	title_swictched = false;
 	quit_at_end_of_title = false;
 
-	request_bit_rate_info = true;
+    request_bit_rate_info = !md->image;
 
 	zoom = 1;
 	pan_x = 0;

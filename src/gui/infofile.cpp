@@ -142,9 +142,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
             Settings::TAspectRatio::doubleToString((double) md.video_out_width / md.video_out_height));
         s += addItem(tr("Format"), md.video_format);
         if (md.video_bitrate == -1) {
-            if (Settings::pref->isMPV()) {
-                s += addItem(tr("Bitrate"),
-                             tr("Wait a few seconds..."));
+            if (Settings::pref->isMPV() && !md.image) {
+                s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
             } else {
                 s += addItem(tr("Bitrate"), tr("Unknown"));
             }
@@ -168,15 +167,13 @@ QString TInfoFile::getInfo(const TMediaData& md) {
     s += addItem(tr("Audio out driver"), md.ao);
     s += addItem(tr("Format"), md.audio_format);
     if (md.audio_bitrate == -1) {
-        if (Settings::pref->isMPV()) {
-            s += addItem(tr("Bitrate"),
-                         tr("Wait a few seconds..."));
+        if (Settings::pref->isMPV() && !md.image) {
+            s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
         } else {
             s += addItem(tr("Bitrate"), tr("Unknown"));
         }
     } else {
-        s += addItem(tr("Bitrate"),
-                     tr("%1 kbps").arg(md.video_bitrate / 1000));
+        s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
     }
     s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
     s += addItem(tr("Channels"), QString::number(md.audio_nch));
