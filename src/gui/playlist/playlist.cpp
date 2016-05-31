@@ -262,9 +262,9 @@ void TPlaylist::createActions() {
     connect(QApplication::clipboard(), SIGNAL(dataChanged()),
             this, SLOT(enablePaste()));
 
-    // Open directorie
+    // Open directory
     openDirectoryAct = new TAction(this, "pl_open_directory",
-                                   tr("&Open directorie"));
+                                   tr("&Open directory"));
     connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openFolder()));
 
     // Refresh
