@@ -843,6 +843,18 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
                 if (gp) {
                     gp->blacklist(parent->fname());
                 }
+
+                if (parent->isWZPlaylist()) {
+                    if (QFile::remove(parent->filename())) {
+                        logger()->info("removeSelected: removed '%1' from disk",
+                                       parent->filename());
+                    } else {
+                        logger()->error("removeSelected: failed to remove '%1'"
+                                        " from disk",
+                                        parent->filename());
+                    }
+                }
+
                 delete parent;
                 parent = gp;
             }
