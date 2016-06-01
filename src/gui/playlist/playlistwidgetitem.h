@@ -135,6 +135,7 @@ public:
     bool isRoot() const;
     bool isFolder() const { return playlistItem.folder(); }
     bool isPlaylist() const { return playlistItem.playlist(); }
+    bool isWZPlaylist() const;
 
     int playedTime() const { return playlistItem.playedTime(); }
 
@@ -163,6 +164,9 @@ public:
     TPlaylistWidgetItem* plChild(int idx) const {
         return static_cast<TPlaylistWidgetItem*>(child(idx));
     }
+
+    virtual bool operator<(const QTreeWidgetItem& other) const;
+    // TODO: override clone?
 
 private:
     TPlaylistItem playlistItem;

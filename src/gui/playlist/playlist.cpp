@@ -1308,8 +1308,13 @@ void TPlaylist::editCurrentItem() {
 
 void TPlaylist::findPlayingItem() {
 
-    if (playlistWidget->playing_item) {
-        playlistWidget->setCurrentItem(playlistWidget->playing_item);
+    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    if (i) {
+        if (i == playlistWidget->currentItem()) {
+            playlistWidget->scrollToItem(i);
+        } else {
+            playlistWidget->setCurrentItem(i);
+        }
     }
 }
 

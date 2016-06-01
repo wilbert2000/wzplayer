@@ -55,14 +55,14 @@ private:
     Qt::CaseSensitivity caseSensitiveNames;
 
     QString playlistPath;
-    QStringList blacklist;
+    QStringList lockedFiles;
     QStringList nameFilterList;
     QList<QRegExp*> rxNameBlacklist;
 
-    bool blacklisted(QString filename);
-    bool blacklisted(const QFileInfo& fi);
-    bool blacklisted(const QDir& dir);
-    void whitelist();
+    bool lockFile(QString filename);
+    bool lockFile(const QFileInfo& fi);
+    bool lockFile(const QDir& dir);
+    void unlockFile();
 
     bool nameBlackListed(const QString& name);
 
@@ -71,7 +71,8 @@ private:
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       QFileInfo& fi,
-                                      const QString& name);
+                                      const QString& name,
+                                      bool append = true);
     void addFiles();
 
     TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,

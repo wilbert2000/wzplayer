@@ -365,6 +365,10 @@ QString TPlaylistWidgetItem::fname() const {
     return fn;
 }
 
+bool TPlaylistWidgetItem::isWZPlaylist() const {
+    return QFileInfo(filename()).fileName() == TConfig::WZPLAYLIST;
+}
+
 // static
 QSize TPlaylistWidgetItem::itemSize(const QString& text,
                                     int width,
@@ -401,6 +405,29 @@ void TPlaylistWidgetItem::setSzHint(int level) {
                                        gNameFontMetrics, gIconSize, level));
     }
 }
+
+bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
+
+    const TPlaylistWidgetItem* o = static_cast<const TPlaylistWidgetItem*>(&other);
+
+    if (o == 0) {
+        return false;
+    }
+
+    if (isFolder()) {
+        if (o->isFolder()) {
+            return QString::localeAwareCompare(filename(), o->filename()) < 0;
+        }
+        return true;
+    }
+
+    if (o->isFolder()) {
+        return false;
+    }
+
+    return QString::localeAwareCompare(filename(), o->filename()) < 0;
+}
+
 
 } // namespace Playlist
 } // namespace Gui
