@@ -89,18 +89,32 @@ TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
 	setupUi(this);
 
 	add_button->setIcon(Images::icon("bookmark_add"));
-	add_submenu_button->setIcon(Images::icon("bookmark_folder"));
-	delete_button->setIcon(Images::icon("delete"));
-	delete_all_button->setIcon(Images::icon("trash"));
-	up_button->setIcon(Images::icon("up"));
-	down_button->setIcon(Images::icon("down"));
+    connect(add_button, SIGNAL(clicked()),
+            this, SLOT(on_add_button_clicked()));
+    add_submenu_button->setIcon(Images::icon("bookmark_folder"));
+    connect(add_submenu_button, SIGNAL(clicked()),
+            this, SLOT(onAddSubmenuButtonClicked()));
+    delete_button->setIcon(Images::icon("delete"));
+    connect(delete_button, SIGNAL(clicked()),
+            this, SLOT(on_delete_button_clicked()));
+    delete_all_button->setIcon(Images::icon("trash"));
+    connect(delete_all_button, SIGNAL(clicked()),
+            this, SLOT(on_delete_all_button_clicked()));
+    up_button->setIcon(Images::icon("up"));
+    connect(up_button, SIGNAL(clicked()),
+            this, SLOT(onUpButtonClicked()));
+    down_button->setIcon(Images::icon("down"));
+    connect(down_button, SIGNAL(clicked()),
+            this, SLOT(onDownButtonClicked()));
 
 	table->setColumnCount(3);
-	table->setHorizontalHeaderLabels(QStringList() << tr("Icon") << tr("Name") << tr("Media"));
+    table->setHorizontalHeaderLabels(QStringList() << tr("Icon") << tr("Name")
+                                     << tr("Media"));
 
 	table->setAlternatingRowColors(true);
 #if QT_VERSION >= 0x050000
-	table->horizontalHeader()->setSectionResizeMode(COL_FILE, QHeaderView::Stretch);
+    table->horizontalHeader()->setSectionResizeMode(COL_FILE,
+                                                    QHeaderView::Stretch);
 #else
 	table->horizontalHeader()->setResizeMode(COL_FILE, QHeaderView::Stretch);
 #endif
@@ -111,7 +125,8 @@ TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
 	table->setItemDelegateForColumn(COL_NAME, new FEDelegate(table));
 	table->setItemDelegateForColumn(COL_FILE, new FEDelegate(table));
 
-	connect(table, SIGNAL(cellActivated(int,int)), this, SLOT(edit_icon(int,int)));
+    connect(table, SIGNAL(cellActivated(int,int)),
+            this, SLOT(edit_icon(int,int)));
 
 	setWindowTitle(tr("Favorite editor"));
 
@@ -199,7 +214,8 @@ TFavoriteList TFavoriteEditor::data() {
 		f.setIcon(table->item(n, COL_ICON)->data(Qt::UserRole).toString());
 		f.setSubentry(table->item(n, COL_FILE)->data(Qt::UserRole).toBool());
 		if (f.isSubentry()) {
-			f.setFile(table->item(n, COL_FILE)->data(Qt::UserRole + 1).toString());
+            f.setFile(table->item(n, COL_FILE)->data(Qt::UserRole + 1)
+                      .toString());
 		} else {
 			f.setFile(table->item(n, COL_FILE)->text());
 		}
@@ -211,24 +227,22 @@ TFavoriteList TFavoriteEditor::data() {
 }
 
 void TFavoriteEditor::on_delete_button_clicked() {
-	int row = table->currentRow();
-    logger()->debug("Gui::Action::TFavoriteEditor::on_delete_button_clicked: current_ro%1 %1", row);
 
-	if (row > -1) table->removeRow(row);
+    int row = table->currentRow();
+    if (row > -1) table->removeRow(row);
 
 	if (row >= table->rowCount()) row--;
 	table->setCurrentCell(row, table->currentColumn());
 }
 
 void TFavoriteEditor::on_delete_all_button_clicked() {
-	logger()->debug("Gui::Action::TFavoriteEditor::on_delete_all_button_clicked");
 	table->setRowCount(0);
 }
 
 void TFavoriteEditor::on_add_button_clicked() {
-	int row = table->currentRow();
-    logger()->debug("Gui::Action::TFavoriteEditor::on_add_button_clicked: current_ro%1 %1", row);
-	row++;
+
+    int row = table->currentRow();
+    row++;
 	table->insertRow(row);
 
 	QTableWidgetItem* icon_item = new QTableWidgetItem;
@@ -242,8 +256,7 @@ void TFavoriteEditor::on_add_button_clicked() {
 }
 
 void TFavoriteEditor::onAddSubmenuButtonClicked() {
-    logger()->debug("onAddSubmenuButtonClicked: store_path: '" + store_path
-                    + "'");
+    logger()->debug("onAddSubmenuButtonClicked: store_path: '%1'", store_path);
 
 	QString filename;
 	//QString s;
@@ -254,8 +267,8 @@ void TFavoriteEditor::onAddSubmenuButtonClicked() {
 		n++;
 	} while (QFile::exists(filename));
 
-    logger()->debug("onAddSubmenuButtonClicked: choosen filename: '"
-                    + filename + "'");
+    logger()->debug("onAddSubmenuButtonClicked: choosen filename: '%1'",
+                    filename);
 
 
 	int row = table->currentRow();
@@ -343,8 +356,7 @@ void TFavoriteEditor::edit_icon(int row, int column) {
 	if (dir.isEmpty()) dir = last_dir;
 
 	QString res = QFileDialog::getOpenFileName(this, tr("Select an icon file"),
-                                               dir,
-                                               tr("Images") + " (*.png *.xpm *.jpg)");
+        dir, tr("Images") + " (*.png *.xpm *.jpg)");
 	if (!res.isEmpty()) {
 		i->setIcon(QIcon(res));
 		i->setData(Qt::UserRole, res);
