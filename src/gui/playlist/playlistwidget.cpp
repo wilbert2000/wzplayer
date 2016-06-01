@@ -448,6 +448,7 @@ void TPlaylistWidget::enableSort(bool enable) {
 #else
         header()->setClickable(true);
 #endif
+
     }
 }
 
