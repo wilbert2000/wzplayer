@@ -1068,11 +1068,13 @@ void TPlaylist::enableActions() {
 
 void TPlaylist::onPlayerError() {
 
-    TPlaylistWidgetItem* item = playlistWidget->playing_item;
-    if (item) {
-        item->setState(PSTATE_FAILED);
-        playlistWidget->scrollToItem(item);
-        playlistWidget->setPlayingItem(0);
+    if (core->state() != STATE_STOPPING) {
+        TPlaylistWidgetItem* item = playlistWidget->playing_item;
+        if (item) {
+            item->setState(PSTATE_FAILED);
+            playlistWidget->scrollToItem(item);
+            playlistWidget->setPlayingItem(0);
+        }
     }
 }
 

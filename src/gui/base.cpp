@@ -2293,7 +2293,9 @@ void TBase::onPlayerError(int exit_code) {
 	displayMessage(msg, 0);
 
 	static bool busy = false;
-	if (pref->report_player_crashes && !busy) {
+    if (pref->report_player_crashes
+        && !busy
+        && core->state() != STATE_STOPPING) {
 		busy = true;
 		QMessageBox::warning(this, tr("%1 process error").arg(pref->playerName()),
 							 msg + " \n" + tr("See menu Window -> View log for additional details."),
