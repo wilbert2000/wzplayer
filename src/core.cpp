@@ -205,7 +205,7 @@ void TCore::disableScreensaver() {
 void TCore::onProcessError(QProcess::ProcessError error) {
     logger()->debug("onProcessError: %1", error);
 
-	// First restore normal window background
+    // First restore normal window background
     playerwindow->restoreNormalWindow(false);
     enableScreensaver();
 
