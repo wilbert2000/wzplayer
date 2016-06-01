@@ -137,7 +137,7 @@ void TDefault::createStatusBar() {
     frame_label->setFrameShape(QFrame::NoFrame);
     margins.setLeft(0);
     frame_label->setContentsMargins(margins);
-    frame_label->setText("0");
+    frame_label->setText("00");
     frame_label->hide();
     statusBar()->addPermanentWidget(frame_label, 0);
 	connect(this, SIGNAL(frameChanged(int)),
@@ -151,7 +151,15 @@ void TDefault::displayTime(QString text) {
 void TDefault::displayFrame(int frame) {
 
     if (frame_label->isVisible()) {
-        frame_label->setNum(frame);
+        if (core->mdat.video_fps > 0) {
+            QString s = QString::number(frame % qRound(core->mdat.video_fps));
+            if (s.length() < 2) {
+                s = "0" + s;
+            }
+            frame_label->setText(s);
+        } else {
+            frame_label->setNum(frame);
+        }
 	}
 }
 
