@@ -34,9 +34,9 @@ void initLog4Qt() {
 
     Appender* appender = Logger::rootLogger()->appender("A1");
     if (appender) {
-        logger()->debug("initLogQt: appender A1 already up and running");
+        logger()->debug("initLogQt: appender A1 already running");
     } else {
-        Logger::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+        Logger::rootLogger()->setLevel(Level(Level::INFO_INT));
 
         // Create layout
         TTCCLayout* layout = new TTCCLayout();
@@ -68,7 +68,7 @@ void initLog4Qt() {
     // Set log window appender on root logger
     Logger::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
-    logger()->info("initLog4Qt: logging on level %1",
+    logger()->info("initLog4Qt: log initialized on level %1",
                    Logger::rootLogger()->level().toString());
 }
 
