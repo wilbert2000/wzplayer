@@ -61,8 +61,8 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
         if (!name.isEmpty()) {
             QRegExp* rx = new QRegExp(name, Qt::CaseInsensitive);
             if (rx->isValid()) {
-                logger()->debug("TAddFilesThread: adding '%1' to blacklist",
-                                rx->pattern());
+                logger()->info("TAddFilesThread: precompiled '%1' for"
+                               " blacklist", rx->pattern());
                 rxNameBlacklist << rx;
             } else {
                 delete rx;
@@ -87,6 +87,11 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     }
     nameFilterList = exts.forDirFilter();
     nameFilterList << "*.lnk";
+
+    if (logger()->isDebugEnabled()) {
+        debug << "TAddFilesThread: searching for:" << nameFilterList;
+        debug << debug;
+    }
 }
 
 TAddFilesThread::~TAddFilesThread() {
@@ -102,11 +107,6 @@ void TAddFilesThread::run() {
                                    iconProvider.folderIcon);
     root->setFlags(ROOT_FLAGS);
 
-    if (logger()->isDebugEnabled()) {
-        debug << "run: searching for:" << nameFilterList;
-        debug << debug;
-    }
-
     addFiles();
 
     if (abortRequested) {
@@ -117,7 +117,8 @@ void TAddFilesThread::run() {
         root->setName("");
     }
 
-    logger()->debug("run: exiting");
+    logger()->debug("run: exiting. stopped %1 aborted %2",
+                    stopRequested, abortRequested);
 }
 
 bool TAddFilesThread::blacklisted(QString filename) {
