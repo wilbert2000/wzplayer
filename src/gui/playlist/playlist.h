@@ -25,6 +25,7 @@
 
 #include "wzdebug.h"
 #include "gui/playlist/playlistwidget.h"
+#include "gui/action/menu.h"
 #include "config.h"
 
 
@@ -43,13 +44,36 @@ class TBase;
 
 namespace Action {
 class TAction;
-class TMenu;
 class TMenuInOut;
 }
 
 namespace Playlist {
 
 class TAddFilesThread;
+
+class TAddRemovedMenu : public Gui::Action::TMenu {
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
+
+public:
+    explicit TAddRemovedMenu(QWidget* parent,
+                             TBase* w,
+                             TPlaylistWidget* plWidget);
+    virtual ~TAddRemovedMenu();
+
+signals:
+    void addRemovedItem(QString s);
+
+protected:
+    virtual void onAboutToShow();
+
+private:
+    TPlaylistWidget* playlistWidget;
+    TPlaylistWidgetItem* item;
+
+private slots:
+    void onTriggered(QAction* action);
+};
 
 
 class TPlaylist : public QWidget {
@@ -113,6 +137,7 @@ protected:
 
 private:
     Action::TMenu* add_menu;
+    TAddRemovedMenu* add_removed_menu;
     Action::TMenu* remove_menu;
     QMenu* popup;
 
@@ -210,6 +235,7 @@ private slots:
     void addFiles();
     void addDirectory();
     void addUrls();
+    void addRemovedItem(QString s);
 
     void removeSelected(bool deleteFromDisk = false);
     void removeSelectedFromDisk();

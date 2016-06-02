@@ -148,16 +148,18 @@ bool TPlaylistItem::blacklisted(const QString& filename) const {
     return mBlacklist.contains(filename, blacklistCaseSensitivity);
 }
 
-void TPlaylistItem::whitelist(const QString& filename) {
+bool TPlaylistItem::whitelist(const QString& filename) {
 
     int i = mBlacklist.indexOf(QRegExp(filename, blacklistCaseSensitivity,
                                        QRegExp::FixedString));
     if (i >= 0) {
         itemLogger()->debug("whitelist: removed '%1' from blacklist", filename);
         mBlacklist.removeAt(i);
-    } else {
-        itemLogger()->warn("whitelist: '%1' not found in blacklist", filename);
+        return true;
     }
+
+    itemLogger()->warn("whitelist: '%1' not found in blacklist", filename);
+    return false;
 }
 
 bool TPlaylistItem::operator == (const TPlaylistItem& item) {
@@ -367,6 +369,10 @@ QString TPlaylistWidgetItem::fname() const {
 
 bool TPlaylistWidgetItem::isWZPlaylist() const {
     return QFileInfo(filename()).fileName() == TConfig::WZPLAYLIST;
+}
+
+bool TPlaylistWidgetItem::whitelist(const QString& filename) {
+    return playlistItem.whitelist(filename);
 }
 
 // static

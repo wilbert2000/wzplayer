@@ -59,7 +59,7 @@ public:
     }
     bool blacklisted(const QString& filename) const;
     QStringList getBlacklist() const { return mBlacklist; }
-    void whitelist(const QString& filename);
+    bool whitelist(const QString& filename);
 
     bool operator == (const TPlaylistItem& item);
 
@@ -146,9 +146,7 @@ public:
         return playlistItem.blacklisted(filename);
     }
     QStringList getBlacklist() const { return playlistItem.getBlacklist(); }
-    void whitelist(const QString& filename) {
-        playlistItem.whitelist(filename);
-    }
+    bool whitelist(const QString& filename);
 
     static QSize itemSize(const QString& text,
                           int width,

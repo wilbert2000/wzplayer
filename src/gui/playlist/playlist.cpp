@@ -67,6 +67,70 @@ using namespace Action;
 namespace Playlist {
 
 
+TAddRemovedMenu::TAddRemovedMenu(QWidget* parent,
+                                 TBase* w,
+                                 TPlaylistWidget* plWidget) :
+    TMenu(parent, w, "pl_add_removed_menu", tr("Add &removed item")),
+    debug(logger()),
+    playlistWidget(plWidget) {
+
+    connect(this, SIGNAL(triggered(QAction*)),
+            this, SLOT(onTriggered(QAction*)));
+
+}
+
+TAddRemovedMenu::~TAddRemovedMenu() {
+}
+
+void TAddRemovedMenu::onAboutToShow() {
+
+    clear();
+    int c = 0;
+    item = playlistWidget->currentPlaylistWidgetItem();
+    if (item) {
+        if (!item->isFolder()) {
+            item = item->plParent();
+        }
+        if (item) {
+            logger()->debug("onAboutToShow: '%1'", item->filename());
+
+            foreach(const QString& s, item->getBlacklist()) {
+                QAction* action = new QAction(s, this);
+                action->setData(s);
+                addAction(action);
+                c++;
+            }
+        }
+    }
+
+    if (c == 0) {
+        QAction* action = new QAction(tr("No removed items"), this);
+        action->setEnabled(false);
+        addAction(action);
+    }
+}
+
+void TAddRemovedMenu::onTriggered(QAction* action) {
+
+    QString s = action->data().toString();
+    if (!s.isEmpty()) {
+        // Check item still valid
+        item = playlistWidget->validateItem(item);
+        if (item) {
+            if (item->whitelist(s)) {
+                logger()->debug("onTriggered: whitelisted '%1'", s);
+                playlistWidget->setModified(item);
+                emit addRemovedItem(s);
+            } else {
+                logger()->warn("onTriggered: '%1' not blacklisted", s);
+            }
+        } else {
+            logger()->warn("onTriggered: item no longer existing");
+        }
+    }
+}
+
+
 TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     QWidget(mw),
     debug(logger()),
@@ -215,6 +279,13 @@ void TPlaylist::createActions() {
 
     addUrlsAct = new TAction(add_menu, "pl_add_urls", tr("Add &URL(s)..."));
 	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
+
+    // Add removed sub menu
+    add_removed_menu = new TAddRemovedMenu(add_menu, main_window,
+                                               playlistWidget);
+    add_menu->addMenu(add_removed_menu);
+    connect(add_removed_menu, SIGNAL(addRemovedItem(QString)),
+            this, SLOT(addRemovedItem(QString)));
 
     addActions(add_menu->actions());
 
@@ -561,6 +632,14 @@ void TPlaylist::addUrls() {
     if (d.exec() == QDialog::Accepted && d.lines().count() > 0) {
         playlistWidget->setModified(playlistWidget->currentItem());
         addFiles(d.lines(), false, playlistWidget->currentItem());
+    }
+}
+
+void TPlaylist::addRemovedItem(QString item) {
+    logger()->debug("addRemovedItem: '%1'", item);
+
+    if (!filename.isEmpty() || saveAs()) {
+        refresh();
     }
 }
 
@@ -1306,18 +1385,6 @@ void TPlaylist::editCurrentItem() {
     }
 }
 
-void TPlaylist::findPlayingItem() {
-
-    TPlaylistWidgetItem* i = playlistWidget->playing_item;
-    if (i) {
-        if (i == playlistWidget->currentItem()) {
-            playlistWidget->scrollToItem(i);
-        } else {
-            playlistWidget->setCurrentItem(i);
-        }
-    }
-}
-
 void TPlaylist::editItem(TPlaylistWidgetItem* item) {
 
     QString current_name = item->name();
@@ -1334,6 +1401,18 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
         item->setName(text, true);
         playlistWidget->setModified(item->parent());
 	}
+}
+
+void TPlaylist::findPlayingItem() {
+
+    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    if (i) {
+        if (i == playlistWidget->currentItem()) {
+            playlistWidget->scrollToItem(i);
+        } else {
+            playlistWidget->setCurrentItem(i);
+        }
+    }
 }
 
 // Drag&drop
