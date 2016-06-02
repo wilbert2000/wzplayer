@@ -91,23 +91,33 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw) :
     TMenu(mw, mw, "videosize_menu", tr("&Size"), "video_size"),
     playerWindow(pw) {
 
-	group = new TVideoSizeGroup(this, pw);
-	addActions(group->actions());
+    group = new TVideoSizeGroup(this, pw);
+    addActions(group->actions());
     connect(group, SIGNAL(activated(int)), main_window, SLOT(changeSize(int)));
 
-	addSeparator();
-    doubleSizeAct = new TAction(this, "toggle_double_size", tr("&Toggle double size"), "", Qt::Key_D);
-    connect(doubleSizeAct, SIGNAL(triggered()), main_window, SLOT(toggleDoubleSize()));
+    addSeparator();
+    doubleSizeAct = new TAction(this, "toggle_double_size",
+                                tr("&Toggle double size"), "", Qt::Key_D);
+    connect(doubleSizeAct, SIGNAL(triggered()),
+            main_window, SLOT(toggleDoubleSize()));
 
     currentSizeAct = new TAction(this, "video_size", "", "", QKeySequence("`"));
-	connect(currentSizeAct, SIGNAL(triggered()), this, SLOT(optimizeSizeFactor()));
+    connect(currentSizeAct, SIGNAL(triggered()),
+            this, SLOT(optimizeSizeFactor()));
     //setDefaultAction(currentSizeAct);
-
     connect(playerWindow, SIGNAL(videoSizeFactorChanged(double, double)),
-			this, SLOT(onVideoSizeFactorChanged()), Qt::QueuedConnection);
+            this, SLOT(onVideoSizeFactorChanged()), Qt::QueuedConnection);
+
+
+    resizeOnLoadAct = new TAction(this, "resize_on_load",
+                                  tr("&Resize on load"), "",
+                                  Qt::ALT | Qt::Key_R);
+    resizeOnLoadAct->setCheckable(true);
+    connect(resizeOnLoadAct, SIGNAL(triggered(bool)),
+            this, SLOT(onResizeOnLoadTriggered(bool)));
 
     addActionsTo(main_window);
-	upd();
+    upd();
 }
 
 void TMenuVideoSize::enableActions() {
@@ -117,12 +127,14 @@ void TMenuVideoSize::enableActions() {
 	group->setEnabled(enable);
 	doubleSizeAct->setEnabled(enable);
 	currentSizeAct->setEnabled(enable);
+    // Resize on load always enabled
 }
 
 void TMenuVideoSize::upd() {
 
 	group->updateVideoSizeGroup();
 	doubleSizeAct->setEnabled(group->isEnabled());
+    resizeOnLoadAct->setChecked(pref->resize_on_load);
 	currentSizeAct->setEnabled(group->isEnabled());
 
 	// Update text and tips
@@ -146,19 +158,25 @@ void TMenuVideoSize::onVideoSizeFactorChanged() {
 	upd();
 }
 
+void TMenuVideoSize::onResizeOnLoadTriggered(bool b) {
+    logger()->info("onResizeOnLoadTriggered: setting resize on load to %1", b);
+
+    pref->resize_on_load = b;
+}
+
 bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
 
-	int d = predef_factor / 10;
-	if (d < 10)
-		d = 10;
-	if (qAbs(factor - predef_factor) < d) {
-        logger()->debug("optimizeSizeFactorPreDef:"
-               " optimizing size from %1 to predefined value %2",
-			   factor, predef_factor);
+    int d = predef_factor / 10;
+    if (d < 10) {
+        d = 10;
+    }
+    if (qAbs(factor - predef_factor) < d) {
+        logger()->debug("optimizeSizeFactorPreDef: optimizing size from %1 to"
+                        " predefined value %2", factor, predef_factor);
         main_window->changeSize(predef_factor);
-		return true;
-	}
-	return false;
+        return true;
+    }
+    return false;
 }
 
 void TMenuVideoSize::optimizeSizeFactor() {

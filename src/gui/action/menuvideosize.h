@@ -47,6 +47,7 @@ private:
     TPlayerWindow* playerWindow;
     TVideoSizeGroup* group;
     TAction* doubleSizeAct;
+    TAction* resizeOnLoadAct;
     TAction* currentSizeAct;
 
     bool optimizeSizeFactorPreDef(int factor, int predef_factor);
@@ -55,6 +56,7 @@ private:
 private slots:
     void onVideoSizeFactorChanged();
     void optimizeSizeFactor();
+    void onResizeOnLoadTriggered(bool);
 }; // class TMenuVideoSize
 
 } // namespace Action
