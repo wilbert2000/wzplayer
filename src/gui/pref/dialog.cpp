@@ -25,7 +25,7 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
-#include "gui/pref/general.h"
+#include "gui/pref/player.h"
 #include "gui/pref/demuxer.h"
 #include "gui/pref/video.h"
 #include "gui/pref/audio.h"
@@ -68,10 +68,12 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	InfoReader* i = InfoReader::obj();
 	i->getInfo();
 
-    page_general = new TGeneral(this);
-	addSection(page_general);
-	connect(page_general, SIGNAL(binChanged(Settings::TPreferences::TPlayerID, bool, const QString&)),
-			this, SLOT(onBinChanged(Settings::TPreferences::TPlayerID, bool, const QString&)));
+    page_player = new TPlayer(this);
+    addSection(page_player);
+    connect(page_player, SIGNAL(binChanged(Settings::TPreferences::TPlayerID,
+                                           bool, const QString&)),
+            this, SLOT(onBinChanged(Settings::TPreferences::TPlayerID,
+                                    bool, const QString&)));
 
     page_demuxer = new TDemuxer(this);
 	addSection(page_demuxer);
@@ -114,7 +116,7 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
     page_advanced = new TAdvanced(this);
     addSection(page_advanced);
 
-    sections->setCurrentRow(SECTION_GENERAL);
+    sections->setCurrentRow(SECTION_PLAYER);
 
     retranslateStrings();
 }
@@ -184,7 +186,7 @@ void TDialog::addSection(TWidget *w) {
 
 void TDialog::setData(Settings::TPreferences* pref) {
 
-	page_general->setData(pref);
+    page_player->setData(pref);
 	page_demuxer->setData(pref);
 	page_video->setData(pref);
 	page_audio->setData(pref);
@@ -206,7 +208,7 @@ void TDialog::setData(Settings::TPreferences* pref) {
 
 void TDialog::getData(Settings::TPreferences* pref) {
 
-	page_general->getData(pref);
+    page_player->getData(pref);
 	page_demuxer->getData(pref);
 	page_video->getData(pref);
 	page_audio->getData(pref);
@@ -228,7 +230,7 @@ void TDialog::getData(Settings::TPreferences* pref) {
 
 bool TDialog::requiresRestart() {
 
-    bool need_restart = page_general->requiresRestart()
+    bool need_restart = page_player->requiresRestart()
                         || page_demuxer->requiresRestart()
                         || page_video->requiresRestart()
                         || page_audio->requiresRestart()

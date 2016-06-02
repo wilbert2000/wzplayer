@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Gui::Pref::TGeneral</class>
- <widget class="QWidget" name="Gui::Pref::TGeneral">
+ <class>Gui::Pref::TPlayer</class>
+ <widget class="QWidget" name="Gui::Pref::TPlayer">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,41 +14,23 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
-    <widget class="QTabWidget" name="general_tab_widget">
+    <widget class="QTabWidget" name="player_tab_widget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="general_tab">
+     <widget class="QWidget" name="player_tab">
       <attribute name="title">
-       <string>General</string>
+       <string>Player</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>16</number>
        </property>
        <item>
@@ -114,7 +96,7 @@
           <bool>true</bool>
          </property>
          <property name="title">
-          <string>&amp;Remember settings for every file</string>
+          <string>&amp;Remember player settings for every file</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -265,7 +247,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>general_tab_widget</tabstop>
+  <tabstop>player_tab_widget</tabstop>
   <tabstop>mplayer_radio</tabstop>
   <tabstop>mplayer_edit</tabstop>
   <tabstop>mpv_radio</tabstop>

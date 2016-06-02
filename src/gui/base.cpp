@@ -94,7 +94,7 @@
 #include "gui/updatechecker.h"
 
 #include "gui/pref/dialog.h"
-#include "gui/pref/general.h"
+#include "gui/pref/player.h"
 #include "gui/pref/interface.h"
 #include "gui/pref/input.h"
 #include "gui/pref/advanced.h"

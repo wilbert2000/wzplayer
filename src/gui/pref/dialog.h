@@ -32,7 +32,7 @@ namespace Gui {
 namespace Pref {
 
 class TWidget;
-class TGeneral;
+class TPlayer;
 class TDemuxer;
 class TVideo;
 class TAudio;
@@ -59,7 +59,7 @@ class TDialog : public QDialog, public Ui::TDialog {
 
 public:
     enum TSection {
-        SECTION_GENERAL = 0,
+        SECTION_PLAYER = 0,
         SECTION_DEMUXER,
         SECTION_VIDEO,
         SECTION_AUDIO,
@@ -106,7 +106,7 @@ protected:
     virtual void changeEvent (QEvent* event);
 
 private:
-    TGeneral* page_general;
+    TPlayer* page_player;
     TDemuxer* page_demuxer;
     TVideo* page_video;
     TAudio* page_audio;
