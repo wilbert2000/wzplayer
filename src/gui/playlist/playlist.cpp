@@ -142,34 +142,34 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
 
     createTree();
     createActions();
-	createToolbar();
+    createToolbar();
 
     connect(core, SIGNAL(newMediaStartedPlaying()),
             this, SLOT(onNewMediaStartedPlaying()));
     connect(core, SIGNAL(playerError(int)),
             this, SLOT(onPlayerError()));
     connect(core, SIGNAL(titleTrackChanged(int)),
-			this, SLOT(onTitleTrackChanged(int)));
-	connect(core, SIGNAL(mediaEOF()),
-			this, SLOT(onMediaEOF()), Qt::QueuedConnection);
-	connect(core, SIGNAL(noFileToPlay()),
+            this, SLOT(onTitleTrackChanged(int)));
+    connect(core, SIGNAL(mediaEOF()),
+            this, SLOT(onMediaEOF()), Qt::QueuedConnection);
+    connect(core, SIGNAL(noFileToPlay()),
             this, SLOT(resumePlay()), Qt::QueuedConnection);
 
     connect(main_window, SIGNAL(enableActions()),
             this, SLOT(enableActions()));
 
-	QVBoxLayout *layout = new QVBoxLayout;
+    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(playlistWidget);
-	layout->addWidget(toolbar);
-	setLayout(layout);
+    layout->addWidget(toolbar);
+    setLayout(layout);
 
-	setAcceptDrops(true);
-	setAttribute(Qt::WA_NoMousePropagation);
+    setAcceptDrops(true);
+    setAttribute(Qt::WA_NoMousePropagation);
 
-	// Random seed
-	QTime t;
-	t.start();
-	qsrand(t.hour() * 3600 + t.minute() * 60 + t.second());
+    // Random seed
+    QTime t;
+    t.start();
+    qsrand(t.hour() * 3600 + t.minute() * 60 + t.second());
 }
 
 TPlaylist::~TPlaylist() {
@@ -202,7 +202,7 @@ void TPlaylist::createActions() {
     // Save
     saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save",
                           QKeySequence("Ctrl+S"));
-	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+    connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
     // SaveAs
     saveAsAct = new TAction(this, "pl_saveas", tr("S&ave playlist as..."),
@@ -240,7 +240,7 @@ void TPlaylist::createActions() {
     nextAct = new TAction(this, "pl_next", tr("Play &next"), "next",
                           QKeySequence(">"));
     nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
-	connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
+    connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
     // Prev
     prevAct = new TAction(this, "pl_prev", tr("Play pre&vious"), "previous",
@@ -271,14 +271,14 @@ void TPlaylist::createActions() {
     connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
 
     addFilesAct = new TAction(add_menu, "pl_add_files", tr("Add &file(s)..."));
-	connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
+    connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
 
     addDirectoryAct = new TAction(add_menu, "pl_add_directory",
                                   tr("Add &directory..."));
-	connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
+    connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
 
     addUrlsAct = new TAction(add_menu, "pl_add_urls", tr("Add &URL(s)..."));
-	connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
+    connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
 
     // Add removed sub menu
     add_removed_menu = new TAddRemovedMenu(add_menu, main_window,
@@ -307,7 +307,7 @@ void TPlaylist::createActions() {
     removeAllAct = new TAction(remove_menu, "pl_remove_all",
                                tr("&Clear playlist"), "",
                                Qt::CTRL | Qt::Key_Delete);
-	connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
+    connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
 
     addActions(remove_menu->actions());
 
@@ -329,7 +329,7 @@ void TPlaylist::createActions() {
     // Copy
     copyAct = new TAction(this, "pl_copy", tr("&Copy file name(s)"), "",
                           QKeySequence("Ctrl+C"));
-	connect(copyAct, SIGNAL(triggered()), this, SLOT(copySelected()));
+    connect(copyAct, SIGNAL(triggered()), this, SLOT(copySelected()));
 
     // Paste
     pasteAct = new TAction(this, "pl_paste", tr("&Paste file name(s)"), "",
@@ -354,10 +354,10 @@ void TPlaylist::createActions() {
 
 void TPlaylist::createToolbar() {
 
-	toolbar = new QToolBar(this);
+    toolbar = new QToolBar(this);
 
-	toolbar->addAction(openAct);
-	toolbar->addAction(saveAct);;
+    toolbar->addAction(openAct);
+    toolbar->addAction(saveAct);;
     toolbar->addAction(saveAsAct);;
 
     toolbar->addSeparator();
@@ -368,11 +368,11 @@ void TPlaylist::createToolbar() {
     add_button->setDefaultAction(add_menu->menuAction());
     toolbar->addWidget(add_button);
 
-	remove_button = new QToolButton(this);
+    remove_button = new QToolButton(this);
     remove_button->setMenu(remove_menu);
     remove_button->setPopupMode(QToolButton::InstantPopup);
     remove_button->setDefaultAction(remove_menu->menuAction());
-	toolbar->addWidget(remove_button);
+    toolbar->addWidget(remove_button);
 
     toolbar->addSeparator();
     toolbar->addAction(shuffleAct);
@@ -383,9 +383,9 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(playOrPauseAct);
     toolbar->addAction(playAct);
     toolbar->addAction(prevAct);
-	toolbar->addAction(nextAct);
+    toolbar->addAction(nextAct);
 
-	// Popup menu
+    // Popup menu
     popup = new QMenu(this);
     popup->addAction(editAct);
     popup->addAction(findPlayingAct);
@@ -408,13 +408,13 @@ void TPlaylist::createToolbar() {
     popup->addAction(refreshAct);
 
     connect(playlistWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
-			this, SLOT(showContextMenu(const QPoint &)));
+            this, SLOT(showContextMenu(const QPoint &)));
 }
 
 void TPlaylist::retranslateStrings() {
 
-	// Icon
-	setWindowIcon(Images::icon("logo", 64));
+    // Icon
+    setWindowIcon(Images::icon("logo", 64));
     setWinTitle();
 }
 
@@ -675,7 +675,7 @@ void TPlaylist::playOrPause() {
 
     if (core->state() == STATE_PLAYING) {
         core->pause();
-    } else 	if (core->state() == STATE_PAUSED) {
+    } else if (core->state() == STATE_PAUSED) {
         core->play();
     } else if (playlistWidget->playing_item) {
         playItem(playlistWidget->playing_item);
@@ -773,27 +773,27 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
         core->open(item->filename());
     } else {
         logger()->debug("playItem: end of playlist");
-		emit playlistEnded();
-	}
+        emit playlistEnded();
+    }
 }
 
 void TPlaylist::playNext(bool allow_reshuffle) {
     logger()->debug("playNext");
 
     TPlaylistWidgetItem* item = 0;
-	if (shuffleAct->isChecked()) {
+    if (shuffleAct->isChecked()) {
         item = getRandomItem();
         if (item == 0 && (repeatAct->isChecked() || allow_reshuffle)) {
             playlistWidget->clearPlayed();
             item = getRandomItem();
-		}
+        }
     } else {
         item = playlistWidget->getNextPlaylistWidgetItem();
         if (item == 0) {
             item = playlistWidget->firstPlaylistWidgetItem();
         }
-	}
-	playItem(item);
+    }
+    playItem(item);
 }
 
 void TPlaylist::playPrev() {
@@ -810,7 +810,7 @@ void TPlaylist::playPrev() {
     }
     if (i) {
         playItem(i);
-	}
+    }
 }
 
 void TPlaylist::playDirectory(const QString &dir) {
@@ -820,10 +820,10 @@ void TPlaylist::playDirectory(const QString &dir) {
         // onNewMediaStartedPlaying() will pickup the playlist
         playlistWidget->enableSort(false);
         core->open(dir);
-	} else {
+    } else {
         clear();
         addFiles(QStringList() << dir, true);
-	}
+    }
 }
 
 void TPlaylist::resumePlay() {
@@ -831,7 +831,7 @@ void TPlaylist::resumePlay() {
     TPlaylistWidgetItem* item = playlistWidget->firstPlaylistWidgetItem();
     if (item) {
         playItem(item);
-	}
+    }
 }
 
 bool TPlaylist::deleteFileFromDisk(const QString& filename,
@@ -961,11 +961,11 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
 }
 
 void TPlaylist::removeSelectedFromDisk() {
-	removeSelected(true);
+    removeSelected(true);
 }
 
 void TPlaylist::removeAll() {
-	clear();
+    clear();
 }
 
 void TPlaylist::refresh() {
@@ -1039,10 +1039,10 @@ void TPlaylist::openInNewWindow() {
 
 void TPlaylist::showContextMenu(const QPoint & pos) {
 
-	if (!popup->isVisible()) {
+    if (!popup->isVisible()) {
         Action::execPopup(this, popup,
                           playlistWidget->viewport()->mapToGlobal(pos));
-	}
+    }
 }
 
 void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
@@ -1271,15 +1271,15 @@ void TPlaylist::onMediaEOF() {
 void TPlaylist::onTitleTrackChanged(int id) {
     logger()->debug("onTitleTrackChanged: %1", id);
 
-	if (id < 0) {
+    if (id < 0) {
         playlistWidget->setPlayingItem(0);
-		return;
-	}
+        return;
+    }
 
     // Search for id
     TDiscName disc = core->mdat.disc;
-	disc.title = id;
-	QString filename = disc.toString();
+    disc.title = id;
+    QString filename = disc.toString();
 
     TPlaylistWidgetItem* i = playlistWidget->findFilename(filename);
     if (i) {
@@ -1293,8 +1293,8 @@ void TPlaylist::onTitleTrackChanged(int id) {
 
 void TPlaylist::copySelected(const QString& actionName) {
 
-	QString text;
-	int copied = 0;
+    QString text;
+    int copied = 0;
 
     QTreeWidgetItemIterator it(playlistWidget,
                                QTreeWidgetItemIterator::Selected);
@@ -1307,21 +1307,21 @@ void TPlaylist::copySelected(const QString& actionName) {
 
     if (copied == 0 && core->mdat.filename.count()) {
         text = core->mdat.filename + "\n";
-		copied = 1;
-	}
+        copied = 1;
+    }
 
-	if (copied > 0) {
-		if (copied == 1) {
-			// Remove trailing new line
-			text = text.left(text.length() - 1);
+    if (copied > 0) {
+        if (copied == 1) {
+            // Remove trailing new line
+            text = text.left(text.length() - 1);
             msg(actionName + " " + text);
-		} else {
+        } else {
             msg(tr("%1 %2 file names",
                    "1 action Copied or Cut, 2 number of file names")
                 .arg(actionName).arg(copied));
-		}
-		QApplication::clipboard()->setText(text);
-	}
+        }
+        QApplication::clipboard()->setText(text);
+    }
 }
 
 void TPlaylist::paste() {
@@ -1393,14 +1393,14 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
     }
     QString saved_name = current_name;
 
-	bool ok;
+    bool ok;
     QString text = QInputDialog::getText(this, tr("Edit name"),
-        tr("Name to display in playlist:"),	QLineEdit::Normal,
-		current_name, &ok);
+        tr("Name to display in playlist:"), QLineEdit::Normal,
+        current_name, &ok);
     if (ok && text != saved_name) {
         item->setName(text, true);
         playlistWidget->setModified(item->parent());
-	}
+    }
 }
 
 void TPlaylist::findPlayingItem() {
@@ -1420,7 +1420,7 @@ void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
     debug << "dragEnterEvent" << e->mimeData()->formats();
     debug << debug;
 
-	if (e->mimeData()->hasUrls()) {
+    if (e->mimeData()->hasUrls()) {
         if (e->proposedAction() & Qt::CopyAction) {
             e->acceptProposedAction();
             return;
@@ -1469,11 +1469,11 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 }
 
 void TPlaylist::hideEvent(QHideEvent*) {
-	emit visibilityChanged(false);
+    emit visibilityChanged(false);
 }
 
 void TPlaylist::showEvent(QShowEvent*) {
-	emit visibilityChanged(true);
+    emit visibilityChanged(true);
 }
 
 void TPlaylist::closeEvent(QCloseEvent* e)  {
@@ -1500,10 +1500,10 @@ void TPlaylist::open() {
             tr("Playlists") + extensions.playlists().forFilter() + ";;"
             + tr("All files") +" (*.*)");
 
-		if (!s.isEmpty()) {
+        if (!s.isEmpty()) {
             openPlaylist(s);
-		}
-	}
+        }
+    }
 }
 
 bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
