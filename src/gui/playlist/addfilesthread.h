@@ -69,6 +69,11 @@ private:
     QDir::SortFlags getSortFlags();
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
+    void addFolder(const QString& path,
+                   TPlaylistWidgetItem* parent,
+                   TPlaylistWidgetItem* item,
+                   bool append);
+
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       QFileInfo& fi,
                                       const QString& name,
@@ -99,7 +104,8 @@ private:
     bool openPls(TPlaylistWidgetItem* playlistItem,
                  const QString& playlistFileName);
     TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
-                                      QFileInfo& fi);
+                                      QFileInfo& fi,
+                                      bool append);
 };
 
 } // namespace Playlist

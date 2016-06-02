@@ -331,7 +331,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
         item = addDirectory(parent, fi, name);
     } else {
         if (extensions.isPlaylist(fi)) {
-            item = openPlaylist(parent, fi);
+            item = openPlaylist(parent, fi, true);
             if (protectName && item) {
                 item->setName(name, true);
             }
@@ -553,7 +553,8 @@ bool TAddFilesThread::openPls(TPlaylistWidgetItem* playlistItem,
 }
 
 TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
-                                                   QFileInfo& fi) {
+                                                   QFileInfo& fi,
+                                                   bool append) {
     logger()->info("openPlaylist: '%1'", fi.filePath());
 
     emit displayMessage(fi.filePath(), 0);
@@ -580,13 +581,8 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
 
     // Handle result
     if (result) {
-        if (playlistItem->childCount())  {
-            latestDir = playlistPath;
-            parent->addChild(playlistItem);
-            // Propagate modified
-            if (playlistItem->modified()) {
-                parent->setModified(true, false, true);
-            }
+        if (playlistItem->childCount()) {
+            addFolder(playlistPath, parent, playlistItem, append);
         } else {
             logger()->warn("openPlaylist: found no playable items in playlist"
                            " '%1'", fi.absoluteFilePath());
@@ -620,7 +616,7 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
     TPlaylistWidgetItem* item;
     if (extensions.isPlaylist(fi)) {
-        item = openPlaylist(parent, fi);
+        item = openPlaylist(parent, fi, true);
     } else {
         item = new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
                                        name, 0, false, iconProvider.icon(fi));
@@ -640,6 +636,29 @@ QDir::SortFlags TAddFilesThread::getSortFlags() {
     return flags;
 }
 
+void TAddFilesThread::addFolder(const QString& path,
+                                TPlaylistWidgetItem* parent,
+                                TPlaylistWidgetItem* item,
+                                bool append) {
+
+    latestDir = path;
+    if (append) {
+        parent->addChild(item);
+    } else {
+        // Sort folder into place
+        int i = parent->childCount();
+        while (i > 0 && *item < *(parent->plChild(i - 1))) {
+            i--;
+        }
+        parent->insertChild(i, item);
+    }
+
+    // Propagate modified
+    if (item->modified()) {
+        parent->setModified(true, false, true);
+    }
+}
+
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi,
                                                    const QString& name,
@@ -655,7 +674,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     if (directory.exists(TConfig::WZPLAYLIST)) {
         fi.setFile(directory.path(), TConfig::WZPLAYLIST);
-        return openPlaylist(parent, fi);
+        return openPlaylist(parent, fi, append);
     }
 
     directory.setFilter(dirFilter);
@@ -693,31 +712,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     }
 
     if (dirItem->childCount()) {
-        latestDir = directory.path();
-
-        // Append or insert
-        if (append) {
-            logger()->debug("addDirectory: append requested for '%1'",
-                            dirItem->filename());
-            parent->addChild(dirItem);
-        } else {
-            // Sort dir into place
-            int i = parent->childCount();
-            while (i > 0 && *dirItem < *(parent->plChild(i - 1))) {
-                i--;
-            }
-            // TODO: test not needed
-            if (i == parent->childCount()) {
-                parent->addChild(dirItem);
-            } else {
-                parent->insertChild(i, dirItem);
-            }
-        }
-
-        // Propagate modified
-        if (dirItem->modified()) {
-            parent->setModified(true, false, true);
-        }
+        addFolder(directory.path(), parent, dirItem, append);
     } else {
         logger()->debug("addDirectory: found no playable items in '%1'",
                         directory.path());
