@@ -17,6 +17,7 @@
 */
 
 #include "gui/filepropertiesdialog.h"
+
 #include <QDebug>
 #include <QListWidget>
 #include <QLineEdit>
@@ -31,20 +32,20 @@
 namespace Gui {
 
 TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, TMediaData* md)
-	: QDialog(parent),
-	  media_data(md) {
+    : QDialog(parent),
+      media_data(md) {
 
-	setupUi(this);
+    setupUi(this);
 
-	// Setup buttons
-	okButton = buttonBox->button(QDialogButtonBox::Ok);
-	cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
-	applyButton = buttonBox->button(QDialogButtonBox::Apply);
-	connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+    // Setup buttons
+    okButton = buttonBox->button(QDialogButtonBox::Ok);
+    cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
+    applyButton = buttonBox->button(QDialogButtonBox::Apply);
+    connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
 
-	codecs_set = false;
+    codecs_set = false;
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TFilePropertiesDialog::~TFilePropertiesDialog() {
@@ -59,14 +60,14 @@ void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {
 
 void TFilePropertiesDialog::showInfo() {
 
-	TInfoFile info;
-	info_edit->setText(info.getInfo(*media_data));
+    TInfoFile info;
+    info_edit->setText(info.getInfo(*media_data));
 }
 
 void TFilePropertiesDialog::retranslateStrings() {
 
-	retranslateUi(this);
-	setWindowIcon(Images::icon("logo"));
+    retranslateUi(this);
+    setWindowIcon(Images::icon("logo"));
 }
 
 void TFilePropertiesDialog::accept() {
@@ -75,7 +76,7 @@ void TFilePropertiesDialog::accept() {
     setResult(QDialog::Accepted);
     hide();
     emit visibilityChanged(false);
-	emit applied();
+    emit applied();
 }
 
 void TFilePropertiesDialog::reject() {
@@ -89,179 +90,182 @@ void TFilePropertiesDialog::reject() {
 void TFilePropertiesDialog::apply() {
     logger()->debug("apply");
 
-	setResult(QDialog::Accepted);
-	emit applied();
+    setResult(QDialog::Accepted);
+    emit applied();
 }
 
 void TFilePropertiesDialog::setCodecs(const InfoList& vc,
-									  const InfoList& ac,
-									  const InfoList& demuxer) {
+                                      const InfoList& ac,
+                                      const InfoList& demuxer) {
 
-	vclist = vc;
-	aclist = ac;
-	demuxerlist = demuxer;
+    vclist = vc;
+    aclist = ac;
+    demuxerlist = demuxer;
 
-	qSort(vclist);
-	qSort(aclist);
-	qSort(demuxerlist);
+    qSort(vclist);
+    qSort(aclist);
+    qSort(demuxerlist);
 
-	vc_listbox->clear();
-	ac_listbox->clear();
-	demuxer_listbox->clear();
+    vc_listbox->clear();
+    ac_listbox->clear();
+    demuxer_listbox->clear();
 
-	InfoList::iterator it;
+    InfoList::iterator it;
 
-	for (it = vclist.begin(); it != vclist.end(); ++it) {
-		vc_listbox->addItem((*it).name() + " - " + (*it).desc());
-	}
+    for (it = vclist.begin(); it != vclist.end(); ++it) {
+        vc_listbox->addItem((*it).name() + " - " + (*it).desc());
+    }
 
-	for (it = aclist.begin(); it != aclist.end(); ++it) {
-		ac_listbox->addItem((*it).name() + " - " + (*it).desc());
-	}
+    for (it = aclist.begin(); it != aclist.end(); ++it) {
+        ac_listbox->addItem((*it).name() + " - " + (*it).desc());
+    }
 
-	for (it = demuxerlist.begin(); it != demuxerlist.end(); ++it) {
-		demuxer_listbox->addItem((*it).name() + " - " + (*it).desc());
-	}
+    for (it = demuxerlist.begin(); it != demuxerlist.end(); ++it) {
+        demuxer_listbox->addItem((*it).name() + " - " + (*it).desc());
+    }
 
-	codecs_set = true;
+    codecs_set = true;
 }
 
 void TFilePropertiesDialog::setDemuxer(const QString& demuxer, const QString& original_demuxer) {
-    logger()->debug("setDemuxer");
 
-	if (!original_demuxer.isEmpty()) {
-		orig_demuxer = original_demuxer;
-		int pos = find(orig_demuxer, demuxerlist);
-		if (pos >= 0) {
-			media_data->demuxer_description = demuxerlist[pos].desc();
-		}
-	}
+    if (!original_demuxer.isEmpty()) {
+        orig_demuxer = original_demuxer;
+        int pos = find(orig_demuxer, demuxerlist);
+        if (pos >= 0) {
+            media_data->demuxer_description = demuxerlist[pos].desc();
+        }
+    }
 
-	int pos = find(demuxer, demuxerlist);
-	if (pos >= 0) {
-		demuxer_listbox->setCurrentRow(pos);
-	}
+    int pos = find(demuxer, demuxerlist);
+    if (pos >= 0) {
+        demuxer_listbox->setCurrentRow(pos);
+    }
 
-    logger()->debug(" * demuxer: '" + demuxer + "', pos: "
-                    + QString::number(pos));
+    logger()->debug("setDemuxer: '%1'", demuxer);
 }
 
 QString TFilePropertiesDialog::demuxer() {
 
-	int pos = demuxer_listbox->currentRow();
-	if (pos < 0)
-		return "";
-	return demuxerlist[pos].name();
+    int pos = demuxer_listbox->currentRow();
+    if (pos < 0) {
+        return "";
+    }
+    return demuxerlist[pos].name();
 }
 
 void TFilePropertiesDialog::setVideoCodec(const QString& vc, const QString& original_vc) {
-    logger()->debug("setVideoCodec");
 
-	if (!original_vc.isEmpty()) {
-		orig_vc = original_vc;
-		int pos = find(orig_vc, vclist);
-		if (pos >= 0) {
-			media_data->video_codec_description = vclist[pos].desc();
-		}
-	}
-	int pos = find(vc, vclist);
-	if (pos >= 0) {
-		vc_listbox->setCurrentRow(pos);
-	}
+    if (!original_vc.isEmpty()) {
+        orig_vc = original_vc;
+        int pos = find(orig_vc, vclist);
+        if (pos >= 0) {
+            media_data->video_codec_description = vclist[pos].desc();
+        }
+    }
 
-    logger()->debug(" * ac: '" + vc + "', pos: " + QString::number(pos));
+    int pos = find(vc, vclist);
+    if (pos >= 0) {
+        vc_listbox->setCurrentRow(pos);
+    }
+
+    logger()->debug("setVideoCodec: '%1'", vc);
 }
 
 QString TFilePropertiesDialog::videoCodec() {
 
-	int pos = vc_listbox->currentRow();
-	if (pos < 0)
-		return "";
-	return vclist[pos].name();
+    int pos = vc_listbox->currentRow();
+    if (pos < 0) {
+        return "";
+    }
+    return vclist[pos].name();
 }
 
 void TFilePropertiesDialog::setAudioCodec(const QString& ac, const QString& original_ac) {
-    logger()->debug("setAudioCodec");
 
-	if (!original_ac.isEmpty()) {
-		orig_ac = original_ac;
-		int pos = find(orig_ac, aclist);
-		if (pos >= 0) {
-			media_data->audio_codec_description = aclist[pos].desc();
-		}
-	}
-	int pos = find(ac, aclist);
-	if (pos >= 0) {
-		ac_listbox->setCurrentRow(pos);
-	}
+    if (!original_ac.isEmpty()) {
+        orig_ac = original_ac;
+        int pos = find(orig_ac, aclist);
+        if (pos >= 0) {
+            media_data->audio_codec_description = aclist[pos].desc();
+        }
+    }
+    int pos = find(ac, aclist);
+    if (pos >= 0) {
+        ac_listbox->setCurrentRow(pos);
+    }
 
-    logger()->debug(" * ac: '" + ac + "', pos: " + QString::number(pos));
+    logger()->debug("setAudioCodec: '%1'", ac);
 }
 
 QString TFilePropertiesDialog::audioCodec() {
 
-	int pos = ac_listbox->currentRow();
-	if (pos < 0)
-		return "";
-	return aclist[pos].name();
+    int pos = ac_listbox->currentRow();
+    if (pos < 0) {
+        return "";
+    }
+    return aclist[pos].name();
 }
 
 void TFilePropertiesDialog::on_resetDemuxerButton_clicked() {
-	setDemuxer(orig_demuxer);
+    setDemuxer(orig_demuxer);
 }
 
 void TFilePropertiesDialog::on_resetACButton_clicked() {
-	setAudioCodec(orig_ac);
+    setAudioCodec(orig_ac);
 }
 
 void TFilePropertiesDialog::on_resetVCButton_clicked() {
-	setVideoCodec(orig_vc);
+    setVideoCodec(orig_vc);
 }
 
-int TFilePropertiesDialog::find(const QString s, InfoList &list) {
-    logger()->debug("find: '" + s + "'");
+int TFilePropertiesDialog::find(const QString& s, InfoList &list) {
 
-	int n = 0;
-	InfoList::iterator it;
+    int n = 0;
+    InfoList::iterator it;
 
-	for (it = list.begin(); it != list.end(); ++it) {
-		if ((*it).name() == s) return n;
-		n++;
-	}
-	return -1;
+    for (it = list.begin(); it != list.end(); ++it) {
+        if ((*it).name() == s) {
+            return n;
+        }
+        n++;
+    }
+
+    return -1;
 }
 
 void TFilePropertiesDialog::setPlayerAdditionalArguments(const QString& args) {
-	player_args_edit->setText(args);
+    player_args_edit->setText(args);
 }
 
 QString TFilePropertiesDialog::playerAdditionalArguments() {
-	return player_args_edit->text();
+    return player_args_edit->text();
 }
 
 void TFilePropertiesDialog::setPlayerAdditionalVideoFilters(const QString& s) {
-	player_vfilters_edit->setText(s);
+    player_vfilters_edit->setText(s);
 }
 
 QString TFilePropertiesDialog::playerAdditionalVideoFilters() {
-	return player_vfilters_edit->text();
+    return player_vfilters_edit->text();
 }
 
 void TFilePropertiesDialog::setPlayerAdditionalAudioFilters(const QString& s) {
-	player_afilters_edit->setText(s);
+    player_afilters_edit->setText(s);
 }
 
 QString TFilePropertiesDialog::playerAdditionalAudioFilters() {
-	return player_afilters_edit->text();
+    return player_afilters_edit->text();
 }
 
 // Language change stuff
 void TFilePropertiesDialog::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QDialog::changeEvent(e);
-	}
+
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
+    } else {
+        QDialog::changeEvent(e);
+    }
 }
 
 } // namespace Gui

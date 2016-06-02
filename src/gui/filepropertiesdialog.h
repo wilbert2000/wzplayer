@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_FILEPROPERTIESDIALOG_H_
-#define _GUI_FILEPROPERTIESDIALOG_H_
+#ifndef GUI_FILEPROPERTIESDIALOG_H
+#define GUI_FILEPROPERTIESDIALOG_H
 
 #include "ui_filepropertiesdialog.h"
 #include "log4qt/logger.h"
@@ -29,9 +29,8 @@ class QPushButton;
 
 namespace Gui {
 
-class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog
-{
-	Q_OBJECT
+class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
@@ -39,15 +38,18 @@ public:
 	virtual ~TFilePropertiesDialog();
 
 	// Call it as soon as possible
-	void setCodecs(const InfoList& vc, const InfoList& ac, const InfoList& demuxer);
+    void setCodecs(const InfoList& vc,
+                   const InfoList& ac,
+                   const InfoList& demuxer);
 
-	void setDemuxer(const QString& demuxer, const QString& original_demuxer="");
+    void setDemuxer(const QString& demuxer,
+                    const QString& original_demuxer = "");
 	QString demuxer();
 
 	void setVideoCodec(const QString& vc, const QString& original_vc = "");
 	QString videoCodec();
 
-	void setAudioCodec(const QString& ac, const QString& original_ac="");
+    void setAudioCodec(const QString& ac, const QString& original_ac = "");
 	QString audioCodec();
 
 	void setPlayerAdditionalArguments(const QString& args);
@@ -78,7 +80,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event);
 
 	bool hasCodecsList() { return codecs_set; }
-	int find(const QString s, InfoList &list);
+    int find(const QString& s, InfoList &list);
 
 protected:
 	virtual void retranslateStrings();

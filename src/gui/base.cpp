@@ -1101,8 +1101,8 @@ void TBase::setDataToFileProperties() {
 		ac = core->mdat.audio_codec;
 
 	file_properties_dialog->setDemuxer(demuxer, core->mset.original_demuxer);
-	file_properties_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
-	file_properties_dialog->setVideoCodec(vc, core->mset.original_video_codec);
+    file_properties_dialog->setVideoCodec(vc, core->mset.original_video_codec);
+    file_properties_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
 
 	file_properties_dialog->setPlayerAdditionalArguments(core->mset.player_additional_options);
 	file_properties_dialog->setPlayerAdditionalVideoFilters(core->mset.player_additional_video_filters);
