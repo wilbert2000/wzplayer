@@ -60,6 +60,8 @@ public:
         setModified(root(), false, true);
     }
 
+    TPlaylistWidgetItem* validateItem(TPlaylistWidgetItem* item);
+
     TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
                              TPlaylistWidgetItem* target,
                              TPlaylistWidgetItem* current);

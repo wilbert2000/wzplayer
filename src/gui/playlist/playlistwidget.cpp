@@ -501,6 +501,21 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
     }
 }
 
+TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
+
+    if (item) {
+        QTreeWidgetItemIterator it(this);
+        while (*it) {
+            if (*it == item) {
+                return item;
+            }
+            ++it;
+        }
+    }
+
+    return 0;
+}
+
 TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
                                           TPlaylistWidgetItem* target,
                                           TPlaylistWidgetItem* current) {
@@ -518,7 +533,9 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     TPlaylistWidgetItem* parent;
     int idx = 0;
 
-    // TODO: validate target still valid, maybe search for it?
+    // Validate target is still valid
+    target = validateItem(target);
+
     if (target) {
         if (target->childCount()) {
             parent = target;
