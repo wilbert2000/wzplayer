@@ -46,8 +46,8 @@ public:
 
 	// Clear the actionlist
 	void clear();
-
 	void addActions(QWidget* widget);
+    QString findShortcutsAction(const QString& shortcuts);
 
 	// Static functions
 	static QString actionTextToDescription(const QString& text, const QString& action_name);
@@ -70,7 +70,7 @@ protected:
 
 	// Find in table, not in actionslist
 	int findActionName(const QString& name);
-	int findActionAccel(const QString& accel, int ignoreRow = -1);
+    int findShortcuts(const QString& accel, int ignoreRow = -1);
 	bool hasConflicts();
 	static bool containsShortcut(const QString& accel, const QString& shortcut);
 

@@ -59,30 +59,33 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 
+#include "gui/action/actionseditor.h"
+
+
 namespace Gui {
 namespace Action {
 
 
-TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
-{
-	setWindowTitle(tr("Modify shortcut"));
+TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
+    QDialog(parent),
+    editor(parent) {
+
+    setWindowTitle(tr("Modify shortcuts"));
 
 	QVBoxLayout *vbox = new QVBoxLayout(this);
-	vbox->setMargin(2);
-	vbox->setSpacing(4);
+    vbox->setSpacing(10);
 
-	// List and buttons added by rvm
 	list = new QListWidget(this);
 	connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(rowChanged(int)));
 	vbox->addWidget(list);
 
 	QHBoxLayout *hbox = new QHBoxLayout;
 	addItem = new QPushButton(Images::icon("plus"), "", this);
-	addItem->setToolTip(tr("Add shortcut"));
+    addItem->setToolTip(tr("Add shortcut to list"));
 	connect(addItem, SIGNAL(clicked()), this, SLOT(addItemClicked()));
 
 	removeItem = new QPushButton(Images::icon("minus"), "", this);
-	removeItem->setToolTip(tr("Remove shortcut"));
+    removeItem->setToolTip(tr("Remove shortcut from list"));
 	connect(removeItem, SIGNAL(clicked()), this, SLOT(removeItemClicked()));
 
 	hbox->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
@@ -96,17 +99,20 @@ TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
 	vbox->addWidget(l);
 
 	leKey = new QLineEdit(this);
-	connect(leKey, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-
-	leKey->installEventFilter(this);
 	vbox->addWidget(leKey);
 
-	// Change by rvm: use a QDialogButtonBox instead of QPushButtons
-	// and add a clear button
-	setCaptureKeyboard(true);
-	QDialogButtonBox* buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok |
-                                                     QDialogButtonBox::Cancel | 
-                                                     QDialogButtonBox::Reset);
+    assignedToLabel = new QLabel(this);
+    assignedToLabel->setText(parent->findShortcutsAction(""));
+    vbox->addWidget(assignedToLabel);
+
+    leKey->installEventFilter(this);
+    connect(leKey, SIGNAL(textChanged(const QString &)),
+            this, SLOT(textChanged(const QString &)));
+
+    setCaptureKeyboard(true);
+
+    QDialogButtonBox* buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok
+        | QDialogButtonBox::Cancel | QDialogButtonBox::Reset);
 	QPushButton* clearbutton = buttonbox->button(QDialogButtonBox::Reset);
 	clearbutton->setText(tr("Clear"));
 
@@ -117,7 +123,6 @@ TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
 	connect(captureButton, SIGNAL(toggled(bool)), 
             this, SLOT(setCaptureKeyboard(bool)));
 
-
 	buttonbox->addButton(captureButton, QDialogButtonBox::ActionRole);
 
 	connect(buttonbox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -127,37 +132,37 @@ TShortcutGetter::TShortcutGetter(QWidget *parent) : QDialog(parent)
 }
 
 void TShortcutGetter::setCaptureKeyboard(bool b) { 
-	capture = b; 
-	leKey->setReadOnly(b);
-	leKey->setFocus();
+
+    capture = b;
+    leKey->setReadOnly(b);
+    leKey->setFocus();
 }
 
-// Added by rvm
 void TShortcutGetter::rowChanged(int row) {
-	QString s = list->item(row)->text();
-	leKey->setText(s);
-	leKey->setFocus();
+    logger()->debug("rowChanged: %1", row);
+
+    QString s = list->item(row)->text();
+    leKey->setText(s);
+    leKey->setFocus();
 }
 
-// Added by rvm
-void TShortcutGetter::textChanged(const QString & text) {
-	list->item(list->currentRow())->setText(text);
+void TShortcutGetter::textChanged(const QString& text) {
+    logger()->debug("textChanged: '%1'", text);
+
+    list->item(list->currentRow())->setText(text);
+    assignedToLabel->setText(editor->findShortcutsAction(text));
 }
 
-// Added by rvm
 void TShortcutGetter::addItemClicked() {
-	logger()->debug("Gui::Action::TShortcutGetter::addItemClicked");
-	list->addItem("");
-	list->setCurrentRow(list->count()-1); // Select last item
+
+    list->addItem("");
+    list->setCurrentRow(list->count() - 1); // Select last item
 }
 
-// Added by rvm
 void TShortcutGetter::removeItemClicked() {
-	logger()->debug("Gui::Action::TShortcutGetter::removeItemClicked");
 
 	if (list->count() > 1) {
-		QListWidgetItem* i = list->takeItem(list->currentRow());
-		if (i) delete i;
+        delete list->takeItem(list->currentRow());
 	} else {
 		list->setCurrentRow(0);
 		leKey->setText("");
@@ -308,7 +313,7 @@ void TShortcutGetter::setText() {
     }
     */
 
-    foreach (const QString s, lKeys) {
+    foreach (const QString& s, lKeys) {
         seq << s;
     }
 

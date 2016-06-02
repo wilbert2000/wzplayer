@@ -33,46 +33,51 @@
 #include "log4qt/logger.h"
 
 class QLineEdit;
+class QLabel;
 
 namespace Gui {
 namespace Action {
 
+class TActionsEditor;
 
 class TShortcutGetter : public QDialog {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TShortcutGetter(QWidget *parent = 0);
-	virtual ~TShortcutGetter() {}
+    TShortcutGetter(TActionsEditor* parent);
+    virtual ~TShortcutGetter() {}
 
-	QString exec(const QString& s);
+    QString exec(const QString& s);
 
 protected slots:
-	void setCaptureKeyboard(bool b);
-	void rowChanged(int row);
-	void textChanged(const QString & text);
+    void setCaptureKeyboard(bool b);
+    void rowChanged(int row);
+    void textChanged(const QString& text);
 
-	void addItemClicked();
-	void removeItemClicked();
+    void addItemClicked();
+    void removeItemClicked();
 
 protected:
-	bool captureKeyboard() { return capture; }
+    bool captureKeyboard() { return capture; }
 
-	bool event(QEvent *e);
-	bool eventFilter(QObject *o, QEvent *e);
-	void setText();
+    bool event(QEvent* e);
+    bool eventFilter(QObject* o, QEvent* e);
+    void setText();
 
 private:
-	bool bStop;
+    bool bStop;
     bool capture;
     Qt::KeyboardModifiers modifiers;
-	QStringList lKeys;
+    QStringList lKeys;
 
-    QLineEdit *leKey;
+    QLineEdit* leKey;
     QListWidget* list;
-	QPushButton* addItem;
-	QPushButton* removeItem;
+    QLabel* assignedToLabel;
+    QPushButton* addItem;
+    QPushButton* removeItem;
+
+    TActionsEditor* editor;
 
     void captureEvent(QEvent* e);
 }; // class TShortcutGetter

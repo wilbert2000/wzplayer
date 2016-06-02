@@ -266,7 +266,8 @@ void TActionsEditor::applyChanges() {
 
 void TActionsEditor::editShortcut() {
 
-	QTableWidgetItem* i = actionsTable->item(actionsTable->currentRow(), COL_SHORTCUT);
+    QTableWidgetItem* i = actionsTable->item(actionsTable->currentRow(),
+                                             COL_SHORTCUT);
 	if (i) {
 		TShortcutGetter d(this);
 		QString result = d.exec(i->text());
@@ -302,56 +303,64 @@ bool TActionsEditor::containsShortcut(const QString& accel, const QString& short
 	return false;
 }
 
-int TActionsEditor::findActionAccel(const QString& accel, int ignoreRow) {
+int TActionsEditor::findShortcuts(const QString& accel, int ignoreRow) {
 
-	QStringList shortcuts = accel.split(", ");
-	QString shortcut;
+    QStringList shortcutList = accel.split(", ");
+    for(int i = 0; i < shortcutList.count(); i++) {
+        shortcutList[i] = shortcutList[i].trimmed();
+    }
 
-	for (int row = 0; row < actionsTable->rowCount(); row++) {
-		QTableWidgetItem* i = actionsTable->item(row, COL_SHORTCUT);
-		if (i && row != ignoreRow) {
-			if (!i->text().isEmpty()) {
-				foreach(shortcut, shortcuts) {
-					if (containsShortcut(i->text(), shortcut.trimmed())) {
-						return row;
-					}
-				}
-			}
-		}
-	}
-	return -1;
+    for (int row = 0; row < actionsTable->rowCount(); row++) {
+        if (row != ignoreRow) {
+            QTableWidgetItem* i = actionsTable->item(row, COL_SHORTCUT);
+            if (i && !i->text().isEmpty()) {
+                foreach(const QString& shortcut, shortcutList) {
+                    if (containsShortcut(i->text(), shortcut)) {
+                        return row;
+                    }
+                }
+            }
+        }
+    }
+
+    return -1;
+}
+
+QString TActionsEditor::findShortcutsAction(const QString& shortcuts) {
+
+    if (shortcuts.isEmpty()) {
+        return "\n";
+    }
+
+    int row = findShortcuts(shortcuts, -1);
+    if (row >= 0) {
+        return tr("Shortcut currently assigned to:\n%1 (%2)")
+                .arg(actionsTable->item(row, COL_DESC)->text())
+                .arg(actionsTable->item(row, COL_ACTION)->text());
+    }
+
+    return tr("Shortcut not assigned\n");
 }
 
 bool TActionsEditor::hasConflicts() {
 
-	int found;
-	bool conflict = false;
+    bool conflict = false;
 
-	QString accelText;
-	QTableWidgetItem *i;
-
-	for (int n = 0; n < actionsTable->rowCount(); n++) {
-		i = actionsTable->item(n, COL_CONFLICTS);
-        if (i) {
-			i->setIcon(QPixmap());
+    for (int n = 0; n < actionsTable->rowCount(); n++) {
+        actionsTable->item(n, COL_CONFLICTS)->setIcon(QPixmap());
+        QString shortcuts = actionsTable->item(n, COL_SHORTCUT)->text();
+        if (!shortcuts.isEmpty() && findShortcuts(shortcuts, n) >= 0) {
+            conflict = true;
+            actionsTable->item(n, COL_CONFLICTS)->setIcon(
+                Images::icon("conflict"));
         }
-		i = actionsTable->item(n, COL_SHORTCUT);
-		if (i) {
-			accelText = i->text();
-			if (!accelText.isEmpty()) {
-				found = findActionAccel(accelText, n);
-                if (found >= 0) {
-					conflict = true;
-					actionsTable->item(n, COL_CONFLICTS)->setIcon(Images::icon("conflict"));
-				}
-			}
-		}
-	}
+    }
 
-	return conflict;
+    return conflict;
 }
 
 void TActionsEditor::saveActionsTable() {
+
 	QString s = MyFileDialog::getSaveFileName(
 					this, tr("Choose a filename"),
 					latest_dir,
@@ -499,7 +508,7 @@ TShortCutList TActionsEditor::stringToShortcuts(const QString& shortcuts) {
 QString TActionsEditor::actionTextToDescription(const QString& text,
                                                 const QString& action_name) {
 
-    // Actions modifying text property themselves
+    // Actions modifying the text property themselves
     if (action_name == "display_time") {
 		return tr("Display time");
 	}
@@ -556,13 +565,16 @@ Log4Qt::Logger::logger("Gui::Action::TActionsEditor")->debug("saveToConfig");
 	set->endGroup();
 }
 
-void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action) {
+void TActionsEditor::removeShortcuts(const TActionList& actions,
+                                     const TShortCutList& shortcuts,
+                                     QAction* skip_action) {
 
 	if (shortcuts.isEmpty()) {
 		TShortCutList remove = skip_action->shortcuts();
 		if (!remove.isEmpty()) {
-			qDebug() << "Gui::Action::TActionsEditor::removeShortcuts: removing shortcuts"
-					 << remove << "from" << skip_action->objectName();
+            qDebug() << "Gui::Action::TActionsEditor::removeShortcuts: removing"
+                        " shortcuts" << remove << "from"
+                     << skip_action->objectName();
 		}
 		return;
 	}
@@ -574,9 +586,10 @@ void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCut
 			bool removed = false;
 			for(int n = 0; n < shortcuts.size(); n++) {
 				if (l.removeOne(shortcuts[n])) {
-					qDebug() << "Gui::Action::TActionsEditor::removeShortcuts: removing shortcut"
-							 << shortcuts[n] << "from" << action->objectName()
-							 << "to assign it to" << skip_action->objectName();
+                    qDebug() << "Gui::Action::TActionsEditor::removeShortcuts:"
+                                " removing shortcut" << shortcuts[n]
+                             << "from" << action->objectName()
+                             << "to assign it to" << skip_action->objectName();
 					removed = true;
 				}
 			}
@@ -587,7 +600,9 @@ void TActionsEditor::removeShortcuts(const TActionList& actions, const TShortCut
 	}
 }
 
-void TActionsEditor::setActionFromString(QAction* action, const QString& s, const TActionList& actions) {
+void TActionsEditor::setActionFromString(QAction* action,
+                                         const QString& s,
+                                         const TActionList& actions) {
 
     static QRegExp rx("^([^\\t]*)(\\t(.*))?");
 
@@ -609,7 +624,8 @@ void TActionsEditor::setActionFromString(QAction* action, const QString& s, cons
     }
 }
 
-QAction* TActionsEditor::findAction(const TActionList& actions, const QString& name) {
+QAction* TActionsEditor::findAction(const TActionList& actions,
+                                    const QString& name) {
 
     for (int n = 0; n < actions.count(); n++) {
         QAction* action = actions[n];
@@ -620,7 +636,8 @@ QAction* TActionsEditor::findAction(const TActionList& actions, const QString& n
     return 0;
 }
 
-void TActionsEditor::loadFromConfig(QSettings* set, const TActionList& all_actions) {
+void TActionsEditor::loadFromConfig(QSettings* set,
+                                    const TActionList& all_actions) {
 
     Log4Qt::Logger* l = Log4Qt::Logger::logger("Gui::Action::TActionsEditor");
     l->debug("loadFromConfig");
