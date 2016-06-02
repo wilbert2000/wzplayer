@@ -34,7 +34,7 @@ void initLog4Qt() {
 
     Appender* appender = Logger::rootLogger()->appender("A1");
     if (appender) {
-        logger()->debug("initLogQt: appender A1 already running");
+        logger()->debug("initLogQt: appender A1 already created");
     } else {
         Logger::rootLogger()->setLevel(Level(Level::INFO_INT));
 
