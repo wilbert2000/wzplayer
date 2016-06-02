@@ -1590,6 +1590,14 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
 
     QFile f(filename);
     if (!f.open(QIODevice::WriteOnly)) {
+        // Ok to fail on wzplaylist
+        if (wzplaylist) {
+            logger()->info("saveM3u: ignoring failed save '%1'", filename);
+            return true;
+        }
+
+        logger()->error("saveM3u: failed to save '%1'", filename);
+
         // TODO: skip remaining  msgs...
         logger()->error("saveM3u: failed to save '%1'", filename);
         QMessageBox::warning(this, tr("Save failed"),
