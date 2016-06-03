@@ -10,7 +10,11 @@ class TIconProvider: public QFileIconProvider {
 public:
     TIconProvider();
 
+    QIcon fileIcon;
+    QIcon fileLinkIcon;
     QIcon folderIcon;
+    QIcon driveCDIcon;
+    QIcon driveDVDIcon;
 
     virtual QIcon icon(IconType type) const;
     virtual QIcon icon(const QFileInfo& info) const;

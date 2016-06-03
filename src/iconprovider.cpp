@@ -11,12 +11,17 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     style = aStyle;
 
-    // Need to reset in case restarting
+    fileIcon = QIcon(style->standardPixmap(QStyle::SP_FileIcon));
+    fileLinkIcon = QIcon(style->standardPixmap(QStyle::SP_FileLinkIcon));
+
     folderIcon = QIcon();
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirClosedIcon),
                          QIcon::Normal, QIcon::Off);
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
+
+    driveCDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveCDIcon));
+    driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
 }
 
 QIcon TIconProvider::icon(IconType type) const {
@@ -24,31 +29,38 @@ QIcon TIconProvider::icon(IconType type) const {
     if (type == QFileIconProvider::Folder) {
         return folderIcon;
     }
+    if (type == QFileIconProvider::File) {
+        return fileIcon;
+    }
     return QFileIconProvider::icon(type);
 }
 
 QIcon TIconProvider::icon(const QFileInfo& fi) const {
 
-    // TODO: handle the different kind of folders.
-    // For now need icon with open and close pixmap.
     if (fi.isDir()) {
         return folderIcon;
     }
 
-    QIcon i;
+    if (fi.isSymLink()) {
+        return fileLinkIcon;
+    }
+
     if (fi.filePath().startsWith("dvd://")
         || fi.filePath().startsWith("dvdnav://")
         || fi.filePath().startsWith("br://")) {
-        i.addPixmap(style->standardPixmap(QStyle::SP_DriveDVDIcon));
-    } else if (fi.filePath().startsWith("vcd://")
-               || fi.filePath().startsWith("cdda://")) {
-        i.addPixmap(style->standardPixmap(QStyle::SP_DriveCDIcon));
-    } else {
-        i = QFileIconProvider::icon(fi);
-        if (i.isNull()) {
-            i = icon(QFileIconProvider::File);
-        }
+        return driveDVDIcon;
     }
+
+    if (fi.filePath().startsWith("vcd://")
+        || fi.filePath().startsWith("cdda://")) {
+        return driveCDIcon;
+    }
+
+    QIcon i = QFileIconProvider::icon(fi);
+    if (i.isNull()) {
+        return fileIcon;
+    }
+
     return i;
 }
 
