@@ -341,11 +341,11 @@ void TMenuVideo::enableActions() {
 
     bool enableScreenShots = enable
                              && pref->use_screenshot
-                             && pref->screenshot_directory.count();
+                             && !pref->screenshot_directory.isEmpty();
     screenshotAct->setEnabled(enableScreenShots);
     screenshotsAct->setEnabled(enableScreenShots);
 
-    capturingAct->setEnabled(enable && pref->screenshot_directory.count());
+    capturingAct->setEnabled(enable && !pref->screenshot_directory.isEmpty());
 }
 
 void TMenuVideo::onFullscreenChanged() {
