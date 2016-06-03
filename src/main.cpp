@@ -30,13 +30,17 @@ using namespace Log4Qt;
 class main;
 LOG4QT_DECLARE_STATIC_LOGGER(logger, main)
 
-void initLog4Qt() {
+void initLog4Qt(bool debug) {
 
-    Appender* appender = Logger::rootLogger()->appender("A1");
+    Appender* appender = LogManager::rootLogger()->appender("A1");
     if (appender) {
         logger()->debug("initLogQt: appender A1 already created");
+        if (debug) {
+            LogManager::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+        }
     } else {
-        Logger::rootLogger()->setLevel(Level(Level::INFO_INT));
+        LogManager::rootLogger()->setLevel(Level(debug ? Level::DEBUG_INT
+                                                       : Level::INFO_INT));
 
         // Create layout
         TTCCLayout* layout = new TTCCLayout();
@@ -52,7 +56,7 @@ void initLog4Qt() {
         a->activateOptions();
 
         // Set appender on root logger
-        Logger::rootLogger()->addAppender(a);
+        LogManager::rootLogger()->addAppender(a);
         appender = a;
     }
 
@@ -60,21 +64,40 @@ void initLog4Qt() {
     LogManager::setHandleQtMessages(true);
     LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
 
-    // Create appender for log window
+    // Create an appender for log window
     Gui::TLogWindow::appender = new Gui::TLogWindowAppender(appender->layout());
     Gui::TLogWindow::appender->setName("A2");
     Gui::TLogWindow::appender->activateOptions();
 
     // Set log window appender on root logger
-    Logger::rootLogger()->addAppender(Gui::TLogWindow::appender);
+    LogManager::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
     logger()->info("initLog4Qt: log initialized on level %1",
-                   Logger::rootLogger()->level().toString());
+                   LogManager::rootLogger()->level().toString());
+}
+
+bool isDebug(const char* arg) {
+
+    QString s(arg);
+    return s == "--debug" || s == "-debug"
+
+#ifdef Q_OS_WIN
+            || s == "/debug"
+#endif
+    ;
 }
 
 int main(int argc, char** argv) {
 
-    initLog4Qt();
+    bool debug = false;
+    for(int i = 0; i < argc; i++) {
+        if (isDebug(argv[i])) {
+            debug = true;
+            break;
+        }
+    }
+
+    initLog4Qt(debug);
 
     int exitCode;
     do {
