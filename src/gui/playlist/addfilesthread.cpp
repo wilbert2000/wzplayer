@@ -367,8 +367,8 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
             if (i >= 0) {
                 fn = fn.left(i);
             }
-            files << fn;
         }
+        files << fn;
     }
 
     QStringList blacklist = playlistItem->getBlacklist();
@@ -419,8 +419,8 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
 
         fi.setFile(directory.path(), filename);
 
-        if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
-            // TODO:
+        if (fi.isSymLink()
+            && files.contains(fi.symLinkTarget(), caseSensitiveNames)) {
             continue;
         }
 
@@ -611,12 +611,10 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
         QFileInfo target(fi.symLinkTarget());
 
         if (extensions.isPlaylist(target)) {
-            // TODO: don't store target name...
             return openPlaylist(parent, target, true);
         }
 
         if (fi.suffix().toLower() == "lnk") {
-            // TODO: don't store target name
             return new TPlaylistWidgetItem(parent,
                 target.absoluteFilePath(), name, 0, false,
                 iconProvider.icon(fi));
