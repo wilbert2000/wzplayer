@@ -148,6 +148,7 @@ HEADERS += wzdebug.h \
     gui/inputurl.h \
     gui/infoprovider.h \
     gui/playlist/addfilesthread.h \
+    gui/playlist/playlistitem.h \
     gui/playlist/playlistwidgetitem.h \
     gui/playlist/playlistwidget.h \
     gui/playlist/playlist.h \
@@ -273,6 +274,7 @@ SOURCES	+= wzdebug.cpp \
     gui/inputurl.cpp \
     gui/infoprovider.cpp \
     gui/playlist/addfilesthread.cpp \
+    gui/playlist/playlistitem.cpp \
     gui/playlist/playlistwidgetitem.cpp \
     gui/playlist/playlistwidget.cpp \
     gui/playlist/playlist.cpp \
