@@ -195,8 +195,7 @@
           <item>
            <widget class="QLabel" name="actions_to_run_label">
             <property name="text">
-             <string>&amp;Run the following actions every time a file is opened.
-The actions must be separated by spaces:</string>
+             <string>&amp;Run these actions when a file is opened. Separate them with spaces.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -221,7 +220,7 @@ The actions must be separated by spaces:</string>
           </size>
          </property>
          <property name="title">
-          <string>Player options</string>
+          <string>Extra player options</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -248,8 +247,9 @@ The actions must be separated by spaces:</string>
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Here you can pass extra command line options to the player. Write them separated by spaces.
-Example: -flip -nosound -fps 25</string>
+               <string>Pass these extra command line options to the player. Separate them with spaces. They are stored per player.
+Example for MPlayer: -flip -nosound -fps 25
+Example for MPV: --vf=flip --no-sound --fps=25</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignVCenter</set>
@@ -270,7 +270,7 @@ Example: -flip -nosound -fps 25</string>
        <item>
         <widget class="QGroupBox" name="filters_group">
          <property name="title">
-          <string>Filters</string>
+          <string>Extra filters</string>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -279,7 +279,7 @@ Example: -flip -nosound -fps 25</string>
           <item>
            <widget class="QLabel" name="textLabel4_2">
             <property name="text">
-             <string>You can also pass additional video and audio filters. Separate them with a komma. Do not use spaces!
+             <string>Pass these additional video and audio filters to the player. Separate them with a komma. Do not use spaces!
 Video example: scale=512:-2,mirror
 Audio example: extrastereo,karaoke</string>
             </property>

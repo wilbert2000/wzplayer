@@ -175,8 +175,8 @@ void TAdvanced::createHelp() {
     addSectionTitle(tr("Logs"));
 
     setWhatsThis(log_level_combo, tr("Log level"),
-        tr("Select which messages will be written to the log. You can view the"
-           " log with menu <b><i>Window - View log</i></b>."));
+        tr("Select the level a message must have to be written to the log."
+           " You can view the log with menu <b><i>Window - View log</i></b>."));
 
     setWhatsThis(log_verbose_check, tr("Verbose"),
         tr("Request verbose messages from the player for troubleshooting."));
@@ -189,23 +189,22 @@ void TAdvanced::createHelp() {
     setWhatsThis(actions_to_run_edit, tr("Actions list"),
         tr("Here you can specify a list of <i>actions</i> which will be"
            " run every time a file is opened. You'll find all available"
-           " actions in the shortcut editor in the <b>Actions</b>"
-           " section. The actions must be separated by spaces. Checkable"
-           " actions can be followed by <i>true</i> or <i>false</i> to"
-           " enable or disable the action.") + "<br>"
-        + tr("Example:") + " <i>auto_zoom fullscreen true</i><br>"
+           " actions in the <b>Actions</b> section. The actions must be"
+           " separated by spaces. Checkable actions can be followed by"
+           " <i>true</i> or <i>false</i> to enable or disable the action.")
+        + "<br>" + tr("Example:") + " <i>auto_zoom fullscreen true</i><br>"
         + tr("Limitation: the actions are run only when a file is opened and"
-             " not when the mplayer process is restarted (e.g. you select an"
-             " audio or video filter)."));
+             " not when the player process is restarted (e.g. you select an"
+             " audio or video filter needing a  player restart)."));
 
-    addSectionTitle(tr("Options for player"));
+    addSectionTitle(tr("Extra player options"));
 
     setWhatsThis(player_args_edit, tr("Options"),
-        tr("Here you can pass extra options to the player. Write them separated"
-           " by spaces."));
+        tr("Here you can pass extra command line options to the player."
+           " Write them separated by spaces. They are stored per player."));
 
 
-    addSectionTitle(tr("Filters"));
+    addSectionTitle(tr("Extra filters"));
 
     setWhatsThis(player_vfilters_edit, tr("Video filters"),
         tr("Here you can add extra video filters. Write them separated by"
