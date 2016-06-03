@@ -206,7 +206,7 @@ void TPlaylist::createActions() {
 
     // SaveAs
     saveAsAct = new TAction(this, "pl_saveas", tr("S&ave playlist as..."),
-                            "save");
+                            "saveas");
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
     // Stop
@@ -344,7 +344,7 @@ void TPlaylist::createActions() {
     connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openFolder()));
 
     // Refresh
-    refreshAct = new TAction(this, "pl_refresh", tr("R&efresh"), "",
+    refreshAct = new TAction(this, "pl_refresh", tr("R&efresh playlist"), "",
                              Qt::Key_F5);
     connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
 
