@@ -450,7 +450,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
 
     if (!stopRequested) {
         foreach(const QString& filename, blacklist) {
-            logger()->info("addNewItems: '%1' not found, removing it from"
+            logger()->info("addNewItems: '%1' not matched, removing it from"
                            " blacklist", filename);
             playlistItem->whitelist(filename);
             playlistItem->setModified();
