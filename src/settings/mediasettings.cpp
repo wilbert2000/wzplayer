@@ -381,9 +381,9 @@ void TMediaSettings::save(QSettings* set) {
 	set->setValue("in_point", in_point);
 	set->setValue("out_point", out_point);
 
-	set->setValue("mplayer_additional_options", player_additional_options);
-	set->setValue("mplayer_additional_video_filters", player_additional_video_filters);
-	set->setValue("mplayer_additional_audio_filters", player_additional_audio_filters);
+    set->setValue("player_additional_options", player_additional_options);
+    set->setValue("player_additional_video_filters", player_additional_video_filters);
+    set->setValue("player_additional_audio_filters", player_additional_audio_filters);
 }
 
 void TMediaSettings::convertOldSelectedTrack(int &id) {
@@ -512,7 +512,8 @@ void TMediaSettings::load(QSettings* set) {
 	if (zoom_factor_fullscreen < TConfig::ZOOM_MIN || zoom_factor_fullscreen > TConfig::ZOOM_MAX)
 		zoom_factor_fullscreen = 1;
 	pan_offset = set->value("pan_offset", pan_offset).toPoint();
-	pan_offset_fullscreen = set->value("pan_offset_fullscreen", pan_offset_fullscreen).toPoint();
+    pan_offset_fullscreen = set->value("pan_offset_fullscreen",
+                                       pan_offset_fullscreen).toPoint();
 
 	rotate = set->value("rotate", rotate).toInt();
 	flip = set->value("flip", flip).toBool();
@@ -523,9 +524,14 @@ void TMediaSettings::load(QSettings* set) {
     if (in_point < 0) in_point = 0;
 	out_point = set->value("out_point", out_point).toInt();
 
-	player_additional_options = set->value("mplayer_additional_options", player_additional_options).toString();
-	player_additional_video_filters = set->value("mplayer_additional_video_filters", player_additional_video_filters).toString();
-	player_additional_audio_filters = set->value("mplayer_additional_audio_filters", player_additional_audio_filters).toString();
+    player_additional_options = set->value("player_additional_options",
+        player_additional_options).toString();
+    player_additional_video_filters = set->value(
+        "player_additional_video_filters",
+        player_additional_video_filters).toString();
+    player_additional_audio_filters = set->value(
+        "player_additional_audio_filters",
+        player_additional_audio_filters).toString();
 
 	// ChDefault not used anymore
 	if (audio_use_channels == ChDefault) audio_use_channels = ChStereo;
