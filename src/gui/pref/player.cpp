@@ -122,27 +122,29 @@ void TPlayer::setData(TPreferences* pref) {
 
 void TPlayer::getData(TPreferences* pref) {
 
-	// Update player
-	pref->mplayer_bin = mplayer_edit->text();
-	pref->mpv_bin = mpv_edit->text();
-	QString bin = mplayer_radio->isChecked() ? pref->mplayer_bin : pref->mpv_bin;
-	if (pref->player_bin != bin) {
-		requires_restart = true;
-		pref->setPlayerBin(bin, false, mplayer_radio->isChecked() ?
-							TPreferences::ID_MPLAYER : TPreferences::ID_MPV);
-	}
-	pref->report_player_crashes = report_player_crashes_check->isChecked();
+    // Update player
+    pref->mplayer_bin = mplayer_edit->text();
+    pref->mpv_bin = mpv_edit->text();
+    QString bin = mplayer_radio->isChecked() ? pref->mplayer_bin : pref->mpv_bin;
+    if (bin != pref->player_bin) {
+        requires_restart = true;
+        pref->setPlayerBin(bin, false,
+            mplayer_radio->isChecked() ? TPreferences::ID_MPLAYER
+                                       : TPreferences::ID_MPV);
+    }
 
-	// Media settings
-	pref->remember_media_settings = rememberSettings();
-	pref->remember_time_pos = rememberTimePos();
-	pref->global_volume = !pref->remember_media_settings || globalVolume();
-	pref->global_audio_equalizer = !pref->remember_media_settings
-								   || !remember_audio_eq_check->isChecked();
-	pref->file_settings_method = fileSettingsMethod();
+    pref->report_player_crashes = report_player_crashes_check->isChecked();
 
-	// Radio and TV
-	pref->check_channels_conf_on_startup = radio_tv_rescan_check->isChecked();
+    // Media settings
+    pref->remember_media_settings = rememberSettings();
+    pref->remember_time_pos = rememberTimePos();
+    pref->global_volume = !pref->remember_media_settings || globalVolume();
+    pref->global_audio_equalizer = !pref->remember_media_settings
+                                   || !remember_audio_eq_check->isChecked();
+    pref->file_settings_method = fileSettingsMethod();
+
+    // Radio and TV
+    pref->check_channels_conf_on_startup = radio_tv_rescan_check->isChecked();
 }
 
 void TPlayer::setPlayerID(Settings::TPreferences::TPlayerID id) {
@@ -238,22 +240,26 @@ void TPlayer::createHelp() {
 
 	clearHelp();
 
+    addSectionTitle(tr("Media player"));
+
 	setWhatsThis(mplayer_radio, tr("MPlayer"),
-		tr("Selects MPlayer as the media player to use by WZPlayer."));
+        tr("Select MPlayer as the media player to use by WZPlayer."));
 
 	setWhatsThis(mplayer_edit, tr("MPlayer executable"),
 		tr("The path to the MPlayer executable file.")
 		+ "<br><b>"
-		+ tr("If this setting is wrong, WZPlayer won't be able to play anything!")
+        + tr("If this setting is wrong, WZPlayer won't be able to play"
+             " anything!")
 		+ "</b>");
 
 	setWhatsThis(mpv_radio, tr("MPV"),
-		tr("Selects MPV as the media player to use by WZPlayer."));
+        tr("Select MPV as the media player to use by WZPlayer."));
 
 	setWhatsThis(mpv_edit, tr("MPV executable"),
 		tr("The path to the MPV executable file.")
 		+ "<br><b>"
-		+ tr("If this setting is wrong, WZPlayer won't be able to play anything!")
+        + tr("If this setting is wrong, WZPlayer won't be able to play"
+             " anything!")
 		+ "</b>");
 
 	setWhatsThis(report_player_crashes_check,
@@ -261,27 +267,32 @@ void TPlayer::createHelp() {
 		tr("Shows a messagebox when the player reports errors or crashes."
 		   " Errors will always be shown in the statusbar."));
 
-	setWhatsThis(settings_group, tr("Remember settings for every file"),
-		tr("If checked WZPlayer will remember the settings you make for every file"
-		   " and reload them when you play the file again."));
+
+    addSectionTitle(tr("Remember player settings for every file"));
+
+    setWhatsThis(settings_group, tr("Remember settings for every file"),
+        tr("If checked WZPlayer will remember the settings you make for every"
+           " file and reload them when you play the file again."));
 
 	setWhatsThis(remember_time_check, tr("Remember time position"),
-		tr("If checked, WZPlayer will remember the last position "
+        tr("If checked, WZPlayer will remember the last position "
            "of the file when you open it again. This option works only with "
            "regular files (not with DVDs, CDs, URLs...)."));
 
-	setWhatsThis(remember_volume_check, tr("Remember volume"),
-		tr("If checked, each file uses and remembers its own volume."
-		   "If not checked, the volume is left unchanged when loading a new file.")
-		+ "<br>"
-		+ tr("This option also applies to the mute state."));
+    setWhatsThis(remember_volume_check, tr("Remember volume"),
+        tr("If checked, each file uses and remembers its own volume. If not"
+           " checked, the volume is left unchanged when loading a new file.")
+        + "<br>"
+        + tr("This option also applies to the mute state."));
 
 	setWhatsThis(remember_audio_eq_check, tr("Remember audio equalizer"),
-		tr("If this option is not checked, all media files share the same audio equalizer.") +" "+
-		tr("If it is checked, the audio equalizer values are saved along each file "
-		   "and loaded back when the file is played later."));
+        tr("If this option is not checked, all media files share the same audio"
+           " equalizer.") + " " +
+        tr("If it is checked, the audio equalizer values are saved along each"
+           " file and restored when the file is played later."));
 
-	setWhatsThis(filesettings_method_combo, tr("Method to store the file settings"),
+    setWhatsThis(filesettings_method_combo,
+                 tr("Method to store the file settings"),
 		tr("This option allows to change the way the file settings will be "
 		   "stored. The following options are available:")
 		+ "<ul><li>"
@@ -289,16 +300,20 @@ void TPlayer::createHelp() {
 			 "saved in a single ini file (%1)")
 			.arg(QString("<i>" + TPaths::configPath() + "/file_settings.ini</i>"))
 		+ "</li><li>"
-		+ tr("<b>multiple ini files</b>: one ini file will be used for each played file. "
-			 "Those ini files will be saved in the folder %1")
-			.arg(QString("<i>"+TPaths::configPath()+"/file_settings</i>")) + "</li></ul>" +
-		tr("The latter method could be faster if there is info for a lot of files."));
+        + tr("<b>multiple ini files</b>: one ini file will be used for each"
+             " played file. Those ini files will be saved in the folder %1")
+            .arg(QString("<i>"+TPaths::configPath()+"/file_settings</i>"))
+                 + "</li></ul>" +
+        tr("The latter will be faster when handling a lot of files."));
 
 #ifndef Q_OS_WIN
-	setWhatsThis(radio_tv_rescan_check, tr("Check for new radio and TV channels on startup"),
-		tr("If this option is checked, WZPlayer will look for new TV and radio"
+    addSectionTitle(tr("Radio and TV"));
+
+    setWhatsThis(radio_tv_rescan_check,
+                 tr("Check for new radio and TV channels on startup"),
+        tr("If this option is checked, WZPlayer will look for new radio and TV"
 		   " channels in ~/.mplayer/channels.conf.ter "
-		   " or ~/.mplayer/channels.conf."));
+           " and ~/.mplayer/channels.conf."));
 #endif
 
 }

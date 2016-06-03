@@ -323,7 +323,6 @@ QString TAudio::audioLang() {
 
 
 void TAudio::onAOComboChanged(int idx) {
-	logger()->debug("Gui::Pref::TAudio::onAOComboChanged: %1", idx);
 
 	// Update VOs
 	if (idx >= 0) {

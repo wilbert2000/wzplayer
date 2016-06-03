@@ -414,10 +414,11 @@ void TVideo::onVOComboChanged(int idx) {
 	if (idx >= 0) {
 		if (player_id == TPreferences::ID_MPLAYER) {
 			mplayer_vo = VO();
-            logger()->debug("onVOComboChanged: mplayer vo set to " + mplayer_vo);
+            logger()->debug("onVOComboChanged: mplayer vo set to '%1'",
+                            mplayer_vo);
 		} else {
 			mpv_vo = VO();
-            logger()->debug("onVOComboChanged: mpv vo set to " + mpv_vo);
+            logger()->debug("onVOComboChanged: mpv vo set to '%1'", mpv_vo);
 		}
 	}
 

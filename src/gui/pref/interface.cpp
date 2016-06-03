@@ -47,12 +47,12 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 
 	// User
 	QDir icon_dir = Settings::TPaths::configPath() + "/themes";
-    logger()->debug("user icon dir: " + icon_dir.absolutePath());
+    logger()->debug("TInterface: user icon dir: " + icon_dir.absolutePath());
 	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
 	// Global
 	icon_dir = Settings::TPaths::themesPath();
-    logger()->debug("global icon dir: " + icon_dir.absolutePath());
+    logger()->debug("TInterface: global icon dir: " + icon_dir.absolutePath());
 	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 	for (int n = 0; n < iconsets.count(); n++) {
 		if (iconset_combo->findText(iconsets[n]) == -1) {
@@ -155,7 +155,7 @@ void TInterface::getData(Settings::TPreferences* pref) {
 	if (pref->language != language()) {
 		pref->language = language();
 		language_changed = true;
-        logger()->debug("getData: chosen language " + pref->language);
+        logger()->debug("getData: chosen language '%1'", pref->language);
 	}
 	if (pref->iconset != iconSet()) {
 		pref->iconset = iconSet();
@@ -212,129 +212,130 @@ void TInterface::setLanguage(const QString& lang) {
 
 QString TInterface::language() {
 
-	if (language_combo->currentIndex() <= 0)
-		return "";
-	else 
-		return language_combo->itemData(language_combo->currentIndex()).toString();
+    if (language_combo->currentIndex() <= 0)
+        return "";
+    else
+        return language_combo->itemData(language_combo->currentIndex())
+                .toString();
 }
 
 void TInterface::setIconSet(const QString& set) {
 
-	iconset_combo->setCurrentIndex(0);
-	for (int n = 0; n < iconset_combo->count(); n++) {
-		if (iconset_combo->itemText(n) == set) {
-			iconset_combo->setCurrentIndex(n);
-			break;
-		}
-	}
+    iconset_combo->setCurrentIndex(0);
+    for (int n = 0; n < iconset_combo->count(); n++) {
+        if (iconset_combo->itemText(n) == set) {
+            iconset_combo->setCurrentIndex(n);
+            break;
+        }
+    }
 }
 
 QString TInterface::iconSet() {
 
-	if (iconset_combo->currentIndex() <= 0)
-		return "";
-	else
-		return iconset_combo->currentText();
+    if (iconset_combo->currentIndex() <= 0)
+        return "";
+    else
+        return iconset_combo->currentText();
 }
 
 void TInterface::setSaveSize(bool b) {
-	save_size_check->setChecked(b);
+    save_size_check->setChecked(b);
 }
 
 bool TInterface::saveSize() {
-	return save_size_check->isChecked();
+    return save_size_check->isChecked();
 }
 
 void TInterface::setStyle(const QString& style) {
-	if (style.isEmpty()) 
-		style_combo->setCurrentIndex(0);
-	else
-		style_combo->setCurrentText(style);
+    if (style.isEmpty())
+        style_combo->setCurrentIndex(0);
+    else
+        style_combo->setCurrentText(style);
 }
 
 QString TInterface::style() {
-	if (style_combo->currentIndex()==0)
-		return "";
-	else 
-		return style_combo->currentText();
+    if (style_combo->currentIndex()==0)
+        return "";
+    else
+        return style_combo->currentText();
 }
 
 void TInterface::setStartInFullscreen(bool b) {
-	start_fullscreen_check->setChecked(b);
+    start_fullscreen_check->setChecked(b);
 }
 
 bool TInterface::startInFullscreen() {
-	return start_fullscreen_check->isChecked();
+    return start_fullscreen_check->isChecked();
 }
 
 void TInterface::setUseSingleInstance(bool b) {
-	single_instance_check->setChecked(b);
+    single_instance_check->setChecked(b);
 }
 
 bool TInterface::useSingleInstance() {
-	return single_instance_check->isChecked();
+    return single_instance_check->isChecked();
 }
 
 void TInterface::changeInstanceImages() {
 
-	if (single_instance_check->isChecked())
-		instances_icon->setPixmap(Images::icon("instance1"));
-	else
-		instances_icon->setPixmap(Images::icon("instance2"));
+    if (single_instance_check->isChecked())
+        instances_icon->setPixmap(Images::icon("instance1"));
+    else
+        instances_icon->setPixmap(Images::icon("instance2"));
 }
 
 void TInterface::setCloseOnFinish(bool b) {
-	close_on_finish_check->setChecked(b);
+    close_on_finish_check->setChecked(b);
 }
 
 bool TInterface::closeOnFinish() {
-	return close_on_finish_check->isChecked();
+    return close_on_finish_check->isChecked();
 }
 
 void TInterface::setPauseWhenHidden(bool b) {
-	pause_on_minimize_check->setChecked(b);
+    pause_on_minimize_check->setChecked(b);
 }
 
 bool TInterface::pauseWhenHidden() {
-	return pause_on_minimize_check->isChecked();
+    return pause_on_minimize_check->isChecked();
 }
 
 void TInterface::setHideVideoOnAudioFiles(bool b) {
-	hide_video_window_on_audio_check->setChecked(b);
+    hide_video_window_on_audio_check->setChecked(b);
 }
 
 bool TInterface::hideVideoOnAudioFiles() {
-	return hide_video_window_on_audio_check->isChecked();
+    return hide_video_window_on_audio_check->isChecked();
 }
 
 void TInterface::setRecentsMaxItems(int n) {
-	recents_max_items_spin->setValue(n);
+    recents_max_items_spin->setValue(n);
 }
 
 int TInterface::recentsMaxItems() {
-	return recents_max_items_spin->value();
+    return recents_max_items_spin->value();
 }
 
 void TInterface::setURLMaxItems(int n) {
-	url_max_items_spin->setValue(n);
+    url_max_items_spin->setValue(n);
 }
 
 int TInterface::urlMaxItems() {
-	return url_max_items_spin->value();
+    return url_max_items_spin->value();
 }
 
 void TInterface::setRememberDirs(bool b) {
-	save_dirs_check->setChecked(b);
+    save_dirs_check->setChecked(b);
 }
 
 bool TInterface::rememberDirs() {
-	return save_dirs_check->isChecked();
+    return save_dirs_check->isChecked();
 }
 
 void TInterface::createHelp() {
-	clearHelp();
+    clearHelp();
 
-	addSectionTitle(tr("Interface"));
+    addSectionTitle(tr("Interface"));
 
 	setWhatsThis(language_combo, tr("Language"),
 		tr("Here you can change the language of the application."));
