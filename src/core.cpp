@@ -1450,12 +1450,12 @@ end_video_filters:
 		}
 	}
 
-	// Volume
-	if (pref->player_additional_options.contains("-volume")) {
+    // Volume
+    if (pref->player_additional_options.contains("-volume")) {
         logger()->debug("startPlayer: don't set volume since -volume is used");
-	} else {
-		proc->setOption("volume", QString::number(getVolumeForPlayer()));
-	}
+    } else {
+        proc->setOption("volume", QString::number(getVolumeForPlayer()));
+    }
 
 	if (getMute()) {
 		proc->setOption("mute");
@@ -1559,57 +1559,63 @@ end_video_filters:
 		}
 	}
 
-	// Additional options supplied by the user
-	// File
-	if (!mset.player_additional_options.isEmpty()) {
-		QStringList args = Proc::TProcess::splitArguments(mset.player_additional_options);
-		for (int n = 0; n < args.count(); n++) {
-			QString arg = args[n].simplified();
-			if (!arg.isEmpty()) {
-				proc->addUserOption(arg);
-			}
-		}
-	}
+    // Per file additional options
+    if (!mset.player_additional_options.isEmpty()) {
+        QStringList args = Proc::TProcess::splitArguments(
+                               mset.player_additional_options);
+        for (int n = 0; n < args.count(); n++) {
+            QString arg = args[n].trimmed();
+            if (!arg.isEmpty()) {
+                logger()->debug("startPlayer: adding file specific argument"
+                                " '%1'", arg);
+                proc->addUserOption(arg);
+            }
+        }
+    }
 
-	// Global
-	if (!pref->player_additional_options.isEmpty()) {
-		QStringList args = Proc::TProcess::splitArguments(pref->player_additional_options);
-		for (int n = 0; n < args.count(); n++) {
-			QString arg = args[n].simplified();
-			if (!arg.isEmpty()) {
-                logger()->debug("arg %1 %2", n, arg);
-				proc->addUserOption(arg);
-			}
-		}
+    // Global additional options
+    if (!pref->player_additional_options.isEmpty()) {
+        QStringList args = Proc::TProcess::splitArguments(
+                               pref->player_additional_options);
+        for (int n = 0; n < args.count(); n++) {
+            QString arg = args[n].trimmed();
+            if (!arg.isEmpty()) {
+                logger()->debug("startPlayer: adding argument '%1'", arg);
+                proc->addUserOption(arg);
+            }
+        }
+    }
 
-	}
-
-	// Set file and playing msg
+    // Set file and playing msg
     proc->setMedia(file);
 
     disableScreensaver();
 
-	// Setup environment
-	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-	if (pref->use_proxy
-		&& pref->proxy_type == QNetworkProxy::HttpProxy
-		&& !pref->proxy_host.isEmpty()) {
-		QString proxy = QString("http://%1:%2@%3:%4").arg(pref->proxy_username).arg(pref->proxy_password).arg(pref->proxy_host).arg(pref->proxy_port);
-		env.insert("http_proxy", proxy);
-	}
+    // Setup environment
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    if (pref->use_proxy
+        && pref->proxy_type == QNetworkProxy::HttpProxy
+        && !pref->proxy_host.isEmpty()) {
+        QString proxy = QString("http://%1:%2@%3:%4")
+                        .arg(pref->proxy_username)
+                        .arg(pref->proxy_password)
+                        .arg(pref->proxy_host)
+                        .arg(pref->proxy_port);
+        env.insert("http_proxy", proxy);
+    }
 
 #ifdef Q_OS_WIN
-	if (!pref->use_windowsfontdir) {
+    if (!pref->use_windowsfontdir) {
         env.insert("FONTCONFIG_FILE", TPaths::fontConfigFilename());
-	}
+    }
 #endif
 
-	proc->setProcessEnvironment(env);
+    proc->setProcessEnvironment(env);
 
-	if (!proc->startPlayer()) {
+    if (!proc->startPlayer()) {
         // Error reported by onProcessError()
         logger()->warn("startPlayer: player process didn't start");
-	}
+    }
 } //startPlayer()
 
 void TCore::stopPlayer() {
