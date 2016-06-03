@@ -2098,6 +2098,7 @@ void TBase::getNewGeometry(int w, int h) {
             stickx = false;
         } else {
             p.rx() = x;
+            logger()->debug("getNewGeometry: sticking to right side");
         }
     }
     if (sticky) {
@@ -2106,6 +2107,7 @@ void TBase::getNewGeometry(int w, int h) {
             sticky = false;
         } else {
             p.ry() = y;
+            logger()->debug("getNewGeometry: sticking to bottom");
         }
     }
     if (stickx || sticky) {
@@ -2114,7 +2116,7 @@ void TBase::getNewGeometry(int w, int h) {
 }
 
 void TBase::onVideoOutResolutionChanged(int w, int h) {
-    logger()->debug("onVideoOutResolutionChanged: %1, %2", w, h);
+    logger()->debug("onVideoOutResolutionChanged: %1 x %2", w, h);
 
 	if (w <= 0 || h <= 0) {
 		// No video
