@@ -2062,18 +2062,20 @@ double TBase::getNewSizeFactor() {
 			}
 		}
 
-		// Make width multiple of 16
-		int new_w = ((video_size.width() + 8) / 16) * 16;
-		if (new_w != video_size.width()) {
-            size_factor = (double) new_w / res.width();
-            debug << "getNewSizeFactor: optimizing size factor to"
-                  << size_factor << "for multiple of 16 width" << new_w
-                  << debug;
-		}
-	}
+        // Make width multiple of 16
+        if (!core->mdat.image) {
+            int new_w = ((video_size.width() + 8) / 16) * 16;
+            if (new_w != video_size.width()) {
+                size_factor = (double) new_w / res.width();
+                debug << "getNewSizeFactor: optimizing size factor to"
+                      << size_factor << "for multiple of 16 width" << new_w
+                      << debug;
+            }
+        }
+    }
 
     debug << "getNewSizeFactor: selected size factor" << size_factor << debug;
-	return size_factor;
+    return size_factor;
 }
 
 void TBase::getNewGeometry(int w, int h) {
