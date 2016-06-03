@@ -1176,9 +1176,6 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
     } else if (filename == current_filename) {
-        if (md->image) {
-            return;
-        }
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item == 0) {
             return;
@@ -1196,13 +1193,13 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
 
-        if (md->duration > 0) {
+        if (!md->image && md->duration > 0) {
             if (!this->filename.isEmpty()
                 && qAbs(md->duration - item->duration()) > 1) {
                 modified = true;
             }
-            logger()->debug("onNewMediaStartedPlaying: updating"
-                            " duration from %1 to %2",
+            logger()->debug("onNewMediaStartedPlaying: updating duration from"
+                            " %1 to %2",
                             QString::number(item->duration()),
                             QString::number(md->duration));
             item->setDuration(md->duration);
@@ -1211,12 +1208,14 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (modified) {
             playlistWidget->setModified(item);
         } else {
-            logger()->debug("onNewMediaStartedPlaying: item is uptodate");
+            logger()->debug("onNewMediaStartedPlaying: item considered uptodate");
         }
         return;
     }
 
     // Create new playlist
+    logger()->debug("onNewMediaStartedPlaying: creating new playlist for '%1'",
+                    filename);
     clear();
 
     if (md->disc.valid) {
@@ -1242,10 +1241,10 @@ void TPlaylist::onNewMediaStartedPlaying() {
             md->duration, false, iconProvider.iconForFile(filename));
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 
+        // TODO: remove from main thread
         // Add associated files to playlist
         if (md->selected_type == TMediaData::TYPE_FILE
             && pref->mediaToAddToPlaylist != TPreferences::NoFiles) {
-            // TODO: remove from main thread
             logger()->debug("onNewMediaStartedPlaying: searching for files to"
                             " add to playlist for '%1'", filename);
             QStringList files_to_add = Helper::filesForPlaylist(filename,
