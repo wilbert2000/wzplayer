@@ -2007,60 +2007,60 @@ void TBase::hidePanel() {
 
 double TBase::getNewSizeFactor() {
 
-	double size_factor = 1.0;
-	QSize available_size = TDesktop::availableSize(playerwindow);
-	QSize res = playerwindow->resolution();
-	QSize video_size = res;
+    double size_factor = 1.0;
+    QSize available_size = TDesktop::availableSize(playerwindow);
+    QSize res = playerwindow->resolution();
+    QSize video_size = res;
 
-	if (pref->fullscreen) {
-		size_factor = (double) available_size.width() / video_size.width();
+    if (pref->fullscreen) {
+        size_factor = (double) available_size.width() / video_size.width();
         double size_factor_y = (double) available_size.height()
                                / video_size.height();
-		if (size_factor_y < size_factor) {
-			return size_factor_y;
-		}
-		return size_factor;
-	}
+        if (size_factor_y < size_factor) {
+            return size_factor_y;
+        }
+        return size_factor;
+    }
 
-	// Limit size to 0.6 of available desktop
-	const double f = 0.6;
-	double factor;
-	double max = f * available_size.height();
-	// Adjust height first
-	if (video_size.height() > max) {
-		factor = max / res.height();
+    // Limit size to 0.6 of available desktop
+    const double f = 0.6;
+    double factor;
+    double max = f * available_size.height();
+    // Adjust height first
+    if (video_size.height() > max) {
+        factor = max / res.height();
         debug << "getNewSizeFactor: height larger as" << f
               << "desktop, reducing size factor from" << size_factor
               << "to" << factor << debug;
-		size_factor = factor;
-		video_size = res * size_factor;
-	}
-	// Adjust width
-	max = f * available_size.width();
-	if (video_size.width() > max) {
-		factor = max / res.width();
+        size_factor = factor;
+        video_size = res * size_factor;
+    }
+    // Adjust width
+    max = f * available_size.width();
+    if (video_size.width() > max) {
+        factor = max / res.width();
         debug << "getNewSizeFactor: width larger as" << f
               << "desktop, reducing size factor from" << size_factor
               << " to " << factor << debug;
-		size_factor = factor;
-		video_size = res * size_factor;
-	}
+        size_factor = factor;
+        video_size = res * size_factor;
+    }
 
-	if (size_factor != 1.0) {
-		// Round to predefined values
-		int factor_int = qRound(size_factor * 100);
-		const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400 };
-		for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
-			int predef = factors[i];
-			int d = predef / 10;
-			if (d < 10) d = 10;
-			if (qAbs(factor_int - predef) < d) {
-				factor = (double) predef / 100;
+    if (size_factor != 1.0) {
+        // Round to predefined values
+        int factor_int = qRound(size_factor * 100);
+        const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400 };
+        for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
+            int predef = factors[i];
+            int d = predef / 10;
+            if (d < 10) d = 10;
+            if (qAbs(factor_int - predef) < d) {
+                factor = (double) predef / 100;
                 debug << "getNewSizeFactor: rounding size factor from"
                       << size_factor << "to" << factor << debug;
-				return factor;
-			}
-		}
+                return factor;
+            }
+        }
 
         // Make width multiple of 16
         if (!core->mdat.image) {
