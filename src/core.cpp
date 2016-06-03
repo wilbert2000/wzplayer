@@ -878,7 +878,7 @@ void TCore::startPlayer(QString file) {
         return;
     }
 
-    emit showMessage(tr("Starting player..."), 6000);
+    emit showMessage(tr("Starting player..."), 0);
 
     // Check URL playlist
     if (file.endsWith("|playlist")) {
