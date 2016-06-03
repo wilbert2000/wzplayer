@@ -608,21 +608,38 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
     QString name = fi.fileName();
     if (fi.isSymLink()) {
-        fi.setFile(fi.symLinkTarget());
-        if (!extensions.isMultiMedia(fi) && !extensions.isPlaylist(fi)) {
-            return 0;
+        QFileInfo target(fi.symLinkTarget());
+
+        if (extensions.isPlaylist(target)) {
+            // TODO: don't store target name...
+            return openPlaylist(parent, target, true);
         }
+
+        if (fi.suffix().toLower() == "lnk") {
+            // TODO: don't store target name
+            return new TPlaylistWidgetItem(parent,
+                target.absoluteFilePath(), name, 0, false,
+                iconProvider.icon(fi));
+        }
+
+        if (extensions.isMultiMedia(target)) {
+            return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
+                name, 0, false, iconProvider.icon(fi));
+        }
+
+        return 0;
     }
 
-    TPlaylistWidgetItem* item;
+    if (fi.suffix().toLower() == "lnk") {
+        return 0;
+    }
+
     if (extensions.isPlaylist(fi)) {
-        item = openPlaylist(parent, fi, true);
-    } else {
-        item = new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
-                                       name, 0, false, iconProvider.icon(fi));
+        return openPlaylist(parent, fi, true);
     }
 
-    return item;
+    return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
+                                   name, 0, false, iconProvider.icon(fi));
 }
 
 QDir::SortFlags TAddFilesThread::getSortFlags() {
