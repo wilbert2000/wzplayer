@@ -75,6 +75,11 @@ void TAdvanced::getData(TPreferences* pref) {
     restartIfStringChanged(pref->player_additional_options,
                            playerAdditionalArguments(),
                            "player_additional_options");
+    if (pref->isMPlayer()) {
+        pref->mplayer_additional_options = pref->player_additional_options;
+    } else {
+        pref->mpv_additional_options = pref->player_additional_options;
+    }
     restartIfStringChanged(pref->player_additional_video_filters,
                            playerAdditionalVideoFilters(),
                            "player_additional_video_filters");

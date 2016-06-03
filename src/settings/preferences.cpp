@@ -42,7 +42,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 17;
+static const int CURRENT_CONFIG_VERSION = 18;
 
 TPreferences* pref = 0;
 
@@ -340,7 +340,7 @@ void TPreferences::reset() {
 	// Capture section
 	screenshot_directory = "";
 
-	use_screenshot = true;
+    use_screenshot = false;
 	screenshot_template = "cap_%F_%p_%02n";
 	screenshot_format = "jpg";
 	subtitles_on_screenshots = false;
@@ -399,20 +399,36 @@ void TPreferences::save() {
 
     // General
     beginGroup("General");
+    setValue("modified", QTime::currentTime());
+    endGroup();
+
+
+    // Players
+    beginGroup("players");
+
+    if (isMPlayer()) {
+        mplayer_additional_options = player_additional_options;
+    } else {
+        mpv_additional_options = player_additional_options;
+    }
 
     beginGroup("mplayer");
     setValue("bin", mplayer_bin);
     setValue("vo", mplayer_vo);
     setValue("ao", mplayer_ao);
+    setValue("options", mplayer_additional_options);
     endGroup();
 
     beginGroup("mpv");
     setValue("bin", mpv_bin);
     setValue("vo", mpv_vo);
     setValue("ao", mpv_ao);
+
     setValue("hwdec", hwdec);
     setValue("screenshot_template", screenshot_template);
     setValue("screenshot_format", screenshot_format);
+
+    setValue("options", mpv_additional_options);
     endGroup();
 
     setValue("player_bin", player_bin);
@@ -434,7 +450,7 @@ void TPreferences::save() {
     endGroup();
 
 
-    // Video tab
+    // Video
     beginGroup("video");
 
 #ifndef Q_OS_WIN
@@ -722,9 +738,8 @@ void TPreferences::save() {
     beginGroup("advanced");
     setValue("actions_to_run", actions_to_run);
 
-    setValue("mplayer_additional_options", player_additional_options);
-    setValue("mplayer_additional_video_filters", player_additional_video_filters);
-    setValue("mplayer_additional_audio_filters", player_additional_audio_filters);
+    setValue("player_additional_video_filters", player_additional_video_filters);
+    setValue("player_additional_audio_filters", player_additional_audio_filters);
 
     setValue("use_edl_files", use_edl_files);
     setValue("time_to_kill_player", time_to_kill_player);
@@ -856,25 +871,28 @@ void TPreferences::setPlayerBin(QString bin,
 	}
 
     player_bin = bin;
-	setPlayerID();
+    setPlayerID();
 
-	// Store player and set drivers for player
-	if (!found_bin.isEmpty()) {
-		if (player_id == ID_MPLAYER) {
-			mplayer_bin = player_bin;
-			vo = mplayer_vo;
-			ao = mplayer_ao;
-		} else {
-			mpv_bin = player_bin;
-			vo = mpv_vo;
-			ao = mpv_ao;
-		}
-	}
+    // Store player and set drivers for player
+    if (!found_bin.isEmpty()) {
+        if (player_id == ID_MPLAYER) {
+            mplayer_bin = player_bin;
+            vo = mplayer_vo;
+            ao = mplayer_ao;
+            player_additional_options = mplayer_additional_options;
+        } else {
+            mpv_bin = player_bin;
+            vo = mpv_vo;
+            ao = mpv_ao;
+            player_additional_options = mpv_additional_options;
+        }
+    }
 
     logger()->info("setPlayerBin: selected player '%1'", bin);
-    logger()->debug("setPlayerBin: mplayer vo '%1' ao '%2'",
-                    mplayer_vo, mplayer_ao);
-    logger()->debug("setPlayerBin: mpv vo '%1' ao '%2'", mpv_vo, mpv_ao);
+    logger()->debug("setPlayerBin: mplayer vo '%1' ao '%2' options '%3'",
+                    mplayer_vo, mplayer_ao, mplayer_additional_options);
+    logger()->debug("setPlayerBin: mpv vo '%1' ao '%2' options '%3'",
+                    mpv_vo, mpv_ao, mpv_additional_options);
 }
 
 
@@ -897,20 +915,28 @@ void TPreferences::load() {
     } else if (log_window_max_events > 100000) {
         log_window_max_events = 100000;
     }
-    endGroup();
+    endGroup(); // Log
 
-    Log4Qt::Logger::rootLogger()->setLevel(log_level);
-    Log4Qt::LogManager::qtLogger()->setLevel(log_level);
-    logger()->info("load: log level set to " +log_level.toString());
+    // Update Log4Qt
+    // Command line option --debug overrides log level
+    if (Log4Qt::LogManager::rootLogger()->level() != Log4Qt::Level::DEBUG_INT) {
+        Log4Qt::LogManager::rootLogger()->setLevel(log_level);
+        Log4Qt::LogManager::qtLogger()->setLevel(log_level);
+        logger()->info("load: log level set to " + log_level.toString());
+    } else {
+        logger()->info("load: log level overriden by --debug command line option");
+    }
 
 
-    // General tab
-    beginGroup("General");
+    // Players
+    beginGroup("players");
 
     beginGroup("mplayer");
     mplayer_bin = value("bin", mplayer_bin).toString();
     mplayer_vo  = value("vo", mplayer_vo).toString();
     mplayer_ao = value("ao", mplayer_ao).toString();
+    mplayer_additional_options = value("options",
+                                       mplayer_additional_options).toString();
     endGroup();
 
     beginGroup("mpv");
@@ -922,6 +948,8 @@ void TPreferences::load() {
                           .toString();
     screenshot_format = value("screenshot_format", screenshot_format)
                         .toString();
+    mpv_additional_options = value("options", mpv_additional_options)
+                             .toString();
     endGroup();
 
     setPlayerBin(value("player_bin", player_bin).toString(), true, player_id);
@@ -935,7 +963,8 @@ void TPreferences::load() {
 
     check_channels_conf_on_startup = value("check_channels_conf_on_startup", check_channels_conf_on_startup).toBool();
 
-    endGroup();
+    endGroup(); // players
+
 
     // Demuxer
     beginGroup("demuxer");
@@ -943,7 +972,8 @@ void TPreferences::load() {
     use_idx = value("use_idx", use_idx).toBool();
     endGroup();
 
-    // Video tab
+
+    // Video
     beginGroup("video");
 
 #ifndef Q_OS_WIN
@@ -1196,6 +1226,7 @@ void TPreferences::load() {
     cache_for_tv = value("cache_for_tv", cache_for_tv).toInt();
     endGroup(); // performance
 
+
     // Network
     beginGroup("network");
 
@@ -1224,9 +1255,11 @@ void TPreferences::load() {
     // Advanced
     beginGroup("advanced");
     actions_to_run = value("actions_to_run", actions_to_run).toString();
-    player_additional_options = value("mplayer_additional_options", player_additional_options).toString();
-    player_additional_video_filters = value("mplayer_additional_video_filters", player_additional_video_filters).toString();
-    player_additional_audio_filters = value("mplayer_additional_audio_filters", player_additional_audio_filters).toString();
+    // player_additional_options already done
+    player_additional_video_filters = value("player_additional_video_filters",
+        player_additional_video_filters).toString();
+    player_additional_audio_filters = value("player_additional_audio_filters",
+        player_additional_audio_filters).toString();
 
     use_edl_files = value("use_edl_files", use_edl_files).toBool();
     time_to_kill_player = value("time_to_kill_player", time_to_kill_player).toInt();
@@ -1237,7 +1270,7 @@ void TPreferences::load() {
     balloon_count = value("balloon_count", balloon_count).toInt();
 
     change_video_equalizer_on_startup = value("change_video_equalizer_on_startup",
-                                              change_video_equalizer_on_startup).toBool();
+        change_video_equalizer_on_startup).toBool();
 
 #ifdef MPRIS2
     use_mpris2 = value("use_mpris2", use_mpris2).toBool();
@@ -1248,16 +1281,14 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    logger()->info("load: config version " + QString::number(config_version)
-                 + ", CURRENT_CONFIG_VERSION "
-                 + QString::number(CURRENT_CONFIG_VERSION));
+    logger()->info("load: loaded config version %1, CURRENT_CONFIG_VERSION %2",
+                   config_version, CURRENT_CONFIG_VERSION);
 
     // Check config version
     if (config_version < CURRENT_CONFIG_VERSION) {
         if (config_version > 0) {
-            logger()->warn("load: version configuration is old, updating it from "
-                         + QString::number(config_version) + " to "
-                         + QString::number(CURRENT_CONFIG_VERSION));
+            logger()->info("load: config is old, updating it from %1 to %2",
+                           config_version, CURRENT_CONFIG_VERSION);
         }
         clean_config = true;
         config_version = CURRENT_CONFIG_VERSION;
@@ -1328,11 +1359,11 @@ void TPreferences::setupScreenshotFolder() {
 	if (screenshot_directory.isEmpty()) {
 		use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
-        logger()->info("setupScreenshotFolder: using folder '"
-                     + screenshot_directory + "'");
+        logger()->info("setupScreenshotFolder: using folder '%1'",
+                       screenshot_directory);
     } else {
-        logger()->info("setupScreenshotFolder: folder '" + screenshot_directory
-                     + "' not found, disabling screenshots");
+        logger()->info("setupScreenshotFolder: folder '%1' not found, disabling"
+                       " screenshots", screenshot_directory);
         use_screenshot = false;
         screenshot_directory = "";
     }

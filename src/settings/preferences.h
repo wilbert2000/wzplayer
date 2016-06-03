@@ -80,8 +80,7 @@ public:
     // Version config file
     int config_version;
 
-	// General tab
-	// Media players
+    // Player tab
 	TPlayerID player_id;
 	QString player_bin;
 
@@ -391,7 +390,9 @@ public:
     // Advanced section
     QString actions_to_run; //!< List of actions to run every time a video loads.
     QString player_additional_options;
-	QString player_additional_video_filters;
+    QString mplayer_additional_options;
+    QString mpv_additional_options;
+    QString player_additional_video_filters;
 	QString player_additional_audio_filters;
 
 	//! If true it will autoload edl files with the same name of the file
