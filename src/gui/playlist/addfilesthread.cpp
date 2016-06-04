@@ -86,7 +86,10 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
         exts.addList(extensions.images());
     }
     nameFilterList = exts.forDirFilter();
+
+#ifdef Q_OS_WIN
     nameFilterList << "*.lnk";
+#endif
 
     if (logger()->isDebugEnabled()) {
         debug << "TAddFilesThread: searching for:" << nameFilterList;
