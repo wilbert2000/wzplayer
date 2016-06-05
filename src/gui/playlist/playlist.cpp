@@ -381,12 +381,6 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(repeatAct);
     toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
 
-    toolbar->addSeparator();
-    toolbar->addAction(playOrPauseAct);
-    toolbar->addAction(playAct);
-    toolbar->addAction(prevAct);
-    toolbar->addAction(nextAct);
-
     // Popup menu
     popup = new QMenu(this);
     popup->addAction(editAct);
