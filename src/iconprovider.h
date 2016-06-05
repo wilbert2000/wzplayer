@@ -3,6 +3,8 @@
 
 #include <QFileIconProvider>
 #include <QFileInfo>
+#include <QSize>
+
 
 class QStyle;
 
@@ -17,7 +19,13 @@ public:
     QIcon driveCDIcon;
     QIcon driveDVDIcon;
 
-    virtual QIcon icon(IconType type) const;
+    QIcon okIcon;
+    QIcon loadingIcon;
+    QIcon playIcon;
+    QIcon failedIcon;
+
+    QSize iconSize;
+
     virtual QIcon icon(const QFileInfo& info) const;
 
     QIcon iconForFile(const QString& filename) const;

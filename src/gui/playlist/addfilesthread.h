@@ -83,7 +83,6 @@ private:
     TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
                                          const QString& filename,
                                          QString name,
-                                         const QFileInfo& fi,
                                          bool protectName,
                                          bool wzplaylist);
     TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,

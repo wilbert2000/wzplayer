@@ -25,25 +25,15 @@ int gRootNodeLevel = 1;
 int gNameColumnWidth = 0;
 // Set by TPlaylistWidget constructor
 QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
-// Set by TPlaylistWidget constructor
-QSize gIconSize(16, 16);
-
-// Set by TPlaylistWidget constructor
-QIcon okIcon;
-QIcon loadingIcon;
-QIcon playIcon;
-QIcon failedIcon;
 
 
 // Used as root
 TPlaylistWidgetItem::TPlaylistWidgetItem() :
     QTreeWidgetItem(),
-    itemIcon(iconProvider.folderIcon),
     mModified(false) {
 
     playlistItem.setFolder(true);
     setFlags(ROOT_FLAGS);
-    setIcon(COL_NAME, itemIcon);
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
     setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
 }
@@ -53,12 +43,10 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& name,
                                          double duration,
                                          bool isDir,
-                                         const QIcon& icon,
                                          bool protectName) :
     QTreeWidgetItem(parent),
     playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir,
                  protectName),
-    itemIcon(icon),
     mModified(false) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
@@ -72,7 +60,6 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
         setFlags(flags);
     }
 
-    setIcon(COL_NAME, itemIcon);
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
     setText(COL_NAME, playlistItem.name());
     setToolTip(COL_NAME, playlistItem.filename());
@@ -111,30 +98,49 @@ void TPlaylistWidgetItem::setName(const QString& name, bool protectName) {
     setSzHint(getLevel());
 }
 
+QIcon TPlaylistWidgetItem::getIcon() {
+
+    if (itemIcon.isNull()) {
+        itemIcon = iconProvider.icon(filename());
+    }
+    return itemIcon;
+}
+
+void TPlaylistWidgetItem::loadIcon() {
+
+    if (icon(COL_NAME).isNull()) {
+        setStateIcon();
+    }
+}
+
+void TPlaylistWidgetItem::setStateIcon() {
+
+    switch (state()) {
+        case PSTATE_STOPPED:
+            if (playlistItem.played()) {
+                setIcon(COL_NAME, iconProvider.okIcon);
+            } else {
+                setIcon(COL_NAME, getIcon());
+            }
+            break;
+        case PSTATE_LOADING:
+            setIcon(COL_NAME, iconProvider.loadingIcon);
+            break;
+        case PSTATE_PLAYING:
+            setIcon(COL_NAME, iconProvider.playIcon);
+            break;
+        case PSTATE_FAILED:
+            setIcon(COL_NAME, iconProvider.failedIcon);
+            break;
+    }
+}
+
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
     logger()->debug("setState: '%1' to %2", filename(),
                     TPlaylistItem::playlistItemState(state));
 
     playlistItem.setState(state);
-
-    switch (state) {
-        case PSTATE_STOPPED:
-            if (playlistItem.played()) {
-                setIcon(COL_NAME, okIcon);
-            } else {
-                setIcon(COL_NAME, itemIcon);
-            }
-            break;
-        case PSTATE_LOADING:
-            setIcon(COL_NAME, loadingIcon);
-            break;
-        case PSTATE_PLAYING:
-            setIcon(COL_NAME, playIcon);
-            break;
-        case PSTATE_FAILED:
-            setIcon(COL_NAME, failedIcon);
-            break;
-    }
+    setStateIcon();
 }
 
 void TPlaylistWidgetItem::setDuration(double d) {
@@ -152,9 +158,9 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
     playlistItem.setPlayed(played);
     if (playlistItem.state() == PSTATE_STOPPED) {
         if (played) {
-            setIcon(COL_NAME, okIcon);
+            setIcon(COL_NAME, iconProvider.okIcon);
         } else {
-            setIcon(COL_NAME, itemIcon);
+            setIcon(COL_NAME, getIcon());
         }
     }
 }
@@ -248,8 +254,11 @@ void TPlaylistWidgetItem::setSzHint(int level) {
 
     if (parent()) {
         //QSize iconSize = icon(COL_NAME).actualSize(QSize(22, 22));
-        setSizeHint(COL_NAME, itemSize(text(COL_NAME), gNameColumnWidth,
-                                       gNameFontMetrics, gIconSize, level));
+        setSizeHint(COL_NAME, itemSize(text(COL_NAME),
+                                       gNameColumnWidth,
+                                       gNameFontMetrics,
+                                       iconProvider.iconSize,
+                                       level));
     }
 }
 

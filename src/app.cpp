@@ -448,10 +448,6 @@ void TApp::createGUI() {
         main_window->resize(gui_size);
 	}
 
-    // To prevent: Fatal KGlobal::locale() must be called from the main thread
-    // before using i18n() in threads, init it from here...
-    iconProvider.icon(applicationFilePath());
-
     logger()->debug("createGUI: created main window");
 } // createGUI()
 

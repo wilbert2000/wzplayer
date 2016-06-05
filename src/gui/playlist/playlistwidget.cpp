@@ -86,13 +86,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 #endif
 
     // Icons
-    gIconSize = iconProvider.folderIcon.actualSize(QSize(22, 22));
-    setIconSize(gIconSize);
-
-    okIcon = Images::icon("ok", gIconSize.width());
-    loadingIcon = Images::icon("loading", gIconSize.width());
-    playIcon = Images::icon("play", gIconSize.width());
-    failedIcon = Images::icon("failed", gIconSize.width());
+    setIconSize(iconProvider.iconSize);
 
     // Create a TPlaylistWidgetItem root
     addTopLevelItem(new TPlaylistWidgetItem());
@@ -492,9 +486,19 @@ void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 }
 
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
-    logger()->debug("onItemExpanded: '" + w->text(0) + "'");
+    logger()->debug("onItemExpanded: '%1'",
+                    w->text(TPlaylistWidgetItem::COL_NAME));
 
     TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
+    if (i == 0) {
+        return;
+    }
+
+    // Load icons
+    for(int c = 0; c < i->childCount(); c++) {
+        i->plChild(c)->loadIcon();
+    }
+
     if (i && !wordWrapTimer->isActive()) {
         gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
         resizeRows(i, i->getLevel());

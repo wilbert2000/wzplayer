@@ -51,7 +51,6 @@
 #include "gui/action/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "images.h"
-#include "iconprovider.h"
 #include "helper.h"
 #include "filedialog.h"
 #include "extensions.h"
@@ -603,14 +602,13 @@ void TPlaylist::addFiles() {
 void TPlaylist::addCurrentFile() {
    logger()->debug("addCurrentFile");
 
-    if (core->mdat.filename.count()) {
+    if (!core->mdat.filename.isEmpty()) {
         TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
             playlistWidget->root(),
             core->mdat.filename,
             core->mdat.displayName(),
             core->mdat.duration,
-            false,
-            iconProvider.iconForFile(core->mdat.filename));
+            false);
         i->setPlayed(true);
         i->setModified();
     }
@@ -1222,12 +1220,14 @@ void TPlaylist::onNewMediaStartedPlaying() {
         // Add disc titles
         playlistWidget->enableSort(false);
         TDiscName disc = md->disc;
-        QIcon icon = iconProvider.iconForFile(disc.toString());
         foreach(const Maps::TTitleData title, md->titles) {
             disc.title = title.getID();
             TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-                playlistWidget->root(), disc.toString(),
-                title.getDisplayName(false), title.getDuration(), false, icon);
+                playlistWidget->root(),
+                disc.toString(),
+                title.getDisplayName(false),
+                title.getDuration(),
+                false);
             if (title.getID() == md->titles.getSelectedID()) {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
             }
@@ -1237,8 +1237,11 @@ void TPlaylist::onNewMediaStartedPlaying() {
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
-            playlistWidget->root(), filename, md->displayName(),
-            md->duration, false, iconProvider.iconForFile(filename));
+            playlistWidget->root(),
+            filename,
+            md->displayName(),
+            md->duration,
+            false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 
         // TODO: remove from main thread

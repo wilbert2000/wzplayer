@@ -1,6 +1,7 @@
 #include "iconprovider.h"
 #include <QStyle>
 #include "extensions.h"
+#include "images.h"
 
 
 TIconProvider iconProvider;
@@ -25,17 +26,12 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     folderLinkIcon = QIcon(style->standardPixmap(QStyle::SP_DirLinkIcon));
     driveCDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveCDIcon));
     driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
-}
 
-QIcon TIconProvider::icon(IconType type) const {
-
-    if (type == QFileIconProvider::Folder) {
-        return folderIcon;
-    }
-    if (type == QFileIconProvider::File) {
-        return fileIcon;
-    }
-    return QFileIconProvider::icon(type);
+    iconSize = folderIcon.actualSize(QSize(22, 22));
+    okIcon = Images::icon("ok", iconSize.width());
+    loadingIcon = Images::icon("loading", iconSize.width());
+    playIcon = Images::icon("play", iconSize.width());
+    failedIcon = Images::icon("failed", iconSize.width());
 }
 
 QIcon TIconProvider::icon(const QFileInfo& fi) const {

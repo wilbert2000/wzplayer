@@ -13,12 +13,7 @@ namespace Playlist {
 extern int gRootNodeLevel;
 extern int gNameColumnWidth;
 extern QFontMetrics gNameFontMetrics;
-extern QSize gIconSize;
 
-extern QIcon okIcon;
-extern QIcon loadingIcon;
-extern QIcon playIcon;
-extern QIcon failedIcon;
 
 // TODO: root selectable or not...
 const Qt::ItemFlags ROOT_FLAGS = Qt::ItemIsSelectable
@@ -39,7 +34,6 @@ public:
                         const QString& name,
                         double duration,
                         bool isDir,
-                        const QIcon& icon,
                         bool protectName = false);
     virtual ~TPlaylistWidgetItem();
 
@@ -100,6 +94,8 @@ public:
         return static_cast<TPlaylistWidgetItem*>(child(idx));
     }
 
+    void loadIcon();
+
     virtual bool operator<(const QTreeWidgetItem& other) const;
     // TODO: override clone?
 
@@ -107,6 +103,9 @@ private:
     TPlaylistItem playlistItem;
     QIcon itemIcon;
     bool mModified;
+
+    QIcon getIcon();
+    void setStateIcon();
 };
 
 } // namespace Playlist

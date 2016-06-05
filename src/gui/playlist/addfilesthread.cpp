@@ -12,7 +12,6 @@
 #include "discname.h"
 #include "extensions.h"
 #include "config.h"
-#include "iconprovider.h"
 #include "helper.h"
 
 
@@ -106,8 +105,7 @@ void TAddFilesThread::run() {
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
     logger()->debug("run: running in '%1'", playlistPath);
 
-    root = new TPlaylistWidgetItem(0, playlistPath, "", 0, true,
-                                   iconProvider.folderIcon);
+    root = new TPlaylistWidgetItem(0, playlistPath, "", 0, true);
     root->setFlags(ROOT_FLAGS);
 
     addFiles();
@@ -190,16 +188,24 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
         QString filename = path + "/" + fi.fileName();
         logger()->trace("createPath: creating '%1' in '%2'",
                         filename, parent->filename());
-        return new TPlaylistWidgetItem(parent, filename, name, duration, false,
-                                       iconProvider.icon(fi), protectName);
+        return new TPlaylistWidgetItem(parent,
+                                       filename,
+                                       name,
+                                       duration,
+                                       false,
+                                       protectName);
     }
 
     if (!path.startsWith(parentPathPlus)) {
         QString filename = fi.absoluteFilePath();
         logger()->trace("createPath: creating '%1' in '%2'",
                         filename, parent->filename());
-        return new TPlaylistWidgetItem(parent, filename, name, duration, false,
-                                       iconProvider.icon(fi), protectName);
+        return new TPlaylistWidgetItem(parent,
+                                       filename,
+                                       name,
+                                       duration,
+                                       false,
+                                       protectName);
     }
 
     QString dir = path.mid(parentPathPlus.length());
@@ -224,8 +230,11 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
 
     logger()->debug("createPath: creating '%1'", path);
     emit displayMessage(path, 0);
-    TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent, path, dir,
-        0, true, iconProvider.icon(path));
+    TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent,
+                                                          path,
+                                                          dir,
+                                                          0,
+                                                          true);
 
     createPath(folder, fi, name, duration, protectName);
     return folder;
@@ -235,7 +244,6 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
         TPlaylistWidgetItem* parent,
         const QString& filename,
         QString name,
-        const QFileInfo& fi,
         bool protectName,
         bool wzplaylist) {
 
@@ -257,9 +265,11 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
         setFailed = true;
     }
 
-    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(parent, filename, name,
-                                                        0, false,
-                                                        iconProvider.icon(fi),
+    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(parent,
+                                                        filename,
+                                                        name,
+                                                        0,
+                                                        false,
                                                         protectName);
     if (setFailed) {
         item->setState(PSTATE_FAILED);
@@ -313,7 +323,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
                 return 0;
             }
         } else {
-            return addItemNotFound(parent, filename, name, fi, protectName,
+            return addItemNotFound(parent, filename, name, protectName,
                                    wzplaylist);
         }
     }
@@ -572,7 +582,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
         playlistPath + QDir::separator() + fi.fileName(), fi.fileName(), 0,
-        true, iconProvider.icon(fi));
+        true);
 
     bool result;
     QString ext = fi.suffix().toLower();
@@ -618,14 +628,13 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
         }
 
         if (fi.suffix().toLower() == "lnk") {
-            return new TPlaylistWidgetItem(parent,
-                target.absoluteFilePath(), name, 0, false,
-                iconProvider.icon(fi));
+            return new TPlaylistWidgetItem(parent, target.absoluteFilePath(),
+                                           name, 0, false);
         }
 
         if (extensions.isMultiMedia(target)) {
             return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
-                name, 0, false, iconProvider.icon(fi));
+                                           name, 0, false);
         }
 
         return 0;
@@ -639,8 +648,8 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
         return openPlaylist(parent, fi, true);
     }
 
-    return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
-                                   name, 0, false, iconProvider.icon(fi));
+    return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(), name, 0,
+                                   false);
 }
 
 QDir::SortFlags TAddFilesThread::getSortFlags() {
@@ -703,7 +712,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     TPlaylistWidgetItem* dirItem = new TPlaylistWidgetItem(0, path,
         name.isEmpty() ? directory.dirName() : name,
-        0, true, iconProvider.icon(fi));
+        0, true);
 
     if (!path.endsWith(QDir::separator())) {
         path += QDir::separator();
