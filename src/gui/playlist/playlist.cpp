@@ -208,6 +208,17 @@ void TPlaylist::createActions() {
                             "saveas");
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
+    // Open directory
+    openDirectoryAct = new TAction(this, "pl_open_directory",
+                                   tr("&Open directory"));
+    openDirectoryAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
+    connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openFolder()));
+
+    // Refresh
+    refreshAct = new TAction(this, "pl_refresh", tr("R&efresh playlist"), "",
+                             Qt::Key_F5);
+    connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
+
     // Stop
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
     connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
@@ -337,15 +348,6 @@ void TPlaylist::createActions() {
     connect(QApplication::clipboard(), SIGNAL(dataChanged()),
             this, SLOT(enablePaste()));
 
-    // Open directory
-    openDirectoryAct = new TAction(this, "pl_open_directory",
-                                   tr("&Open directory"));
-    connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openFolder()));
-
-    // Refresh
-    refreshAct = new TAction(this, "pl_refresh", tr("R&efresh playlist"), "",
-                             Qt::Key_F5);
-    connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
 
     // Add actions to main window
     main_window->addActions(actions());
@@ -357,7 +359,8 @@ void TPlaylist::createToolbar() {
 
     toolbar->addAction(openAct);
     toolbar->addAction(saveAct);;
-    toolbar->addAction(saveAsAct);;
+    toolbar->addAction(saveAsAct);
+    toolbar->addAction(openDirectoryAct);
 
     toolbar->addSeparator();
 

@@ -148,6 +148,9 @@ private:
     Action::TAction* openAct;
     Action::TAction* saveAct;
     Action::TAction* saveAsAct;
+    Action::TAction* openDirectoryAct;
+    Action::TAction* refreshAct;
+
     Action::TAction* playAct;
     Action::TAction* playNewAct;
     Action::TAction* pauseAct;
@@ -168,9 +171,6 @@ private:
     Action::TAction* cutAct;
     Action::TAction* copyAct;
     Action::TAction* pasteAct;
-
-    Action::TAction* refreshAct;
-    Action::TAction* openDirectoryAct;
 
     Action::TAction* removeSelectedAct;
     Action::TAction* removeSelectedFromDiskAct;
@@ -227,6 +227,9 @@ private slots:
 
     void onPlayerError();
 
+    void openFolder();
+    void refresh();
+
     void play();
     void playOrPause();
     void stop();
@@ -252,8 +255,6 @@ private slots:
     void paste();
     void enablePaste();
     void cut();
-    void openFolder();
-    void refresh();
     void openInNewWindow();
 
     void enableActions();
