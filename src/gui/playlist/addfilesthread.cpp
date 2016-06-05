@@ -225,7 +225,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     logger()->debug("createPath: creating '%1'", path);
     emit displayMessage(path, 0);
     TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent, path, dir,
-        0, true, iconProvider.folderIcon);
+        0, true, iconProvider.icon(path));
 
     createPath(folder, fi, name, duration, protectName);
     return folder;
@@ -572,7 +572,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
         playlistPath + QDir::separator() + fi.fileName(), fi.fileName(), 0,
-        true, iconProvider.folderIcon);
+        true, iconProvider.icon(fi));
 
     bool result;
     QString ext = fi.suffix().toLower();
@@ -703,7 +703,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     TPlaylistWidgetItem* dirItem = new TPlaylistWidgetItem(0, path,
         name.isEmpty() ? directory.dirName() : name,
-        0, true, iconProvider.folderIcon);
+        0, true, iconProvider.icon(fi));
 
     if (!path.endsWith(QDir::separator())) {
         path += QDir::separator();

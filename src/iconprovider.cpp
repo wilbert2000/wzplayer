@@ -1,5 +1,7 @@
 #include "iconprovider.h"
 #include <QStyle>
+#include "extensions.h"
+
 
 TIconProvider iconProvider;
 
@@ -20,6 +22,7 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
 
+    folderLinkIcon = QIcon(style->standardPixmap(QStyle::SP_DirLinkIcon));
     driveCDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveCDIcon));
     driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
 }
@@ -37,12 +40,15 @@ QIcon TIconProvider::icon(IconType type) const {
 
 QIcon TIconProvider::icon(const QFileInfo& fi) const {
 
-    if (fi.isDir()) {
-        return folderIcon;
+    if (fi.isSymLink()) {
+        if (fi.isDir() || extensions.isPlaylist(fi)) {
+            return folderLinkIcon;
+        }
+        return fileLinkIcon;
     }
 
-    if (fi.isSymLink()) {
-        return fileLinkIcon;
+    if (fi.isDir() || extensions.isPlaylist(fi)) {
+        return folderIcon;
     }
 
     if (fi.filePath().startsWith("dvd://")
