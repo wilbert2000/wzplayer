@@ -1943,36 +1943,37 @@ void TBase::gotDuration(double duration) {
 void TBase::changeSize(double factor) {
     logger()->debug("changeSize: %1", QString::number(factor));
 
-	if (core->mdat.noVideo())
-		return;
+    if (core->mdat.noVideo()) {
+        return;
+    }
 
-	if (pref->fullscreen) {
-		// Adjust zoom to match the requested size factor
-		QSize video_size = QSize(core->mdat.video_out_width,
-								 core->mdat.video_out_height) * factor;
-		QSize desktop_size = TDesktop::size(this);
-		double zoom = (double) video_size.width() / desktop_size.width();
-		double zoomY = (double) video_size.height() / desktop_size.height();
-		if (zoomY > zoom) {
-			zoom = zoomY;
-		}
-		core->setZoom(zoom);
-	} else {
-		// Normal screen
-		pref->size_factor = factor;
-		bool center = false;
-		if (isMaximized()) {
-			showNormal();
-			// Need center, on X windows the original pos is not restored
-			center = true;
-		}
+    if (pref->fullscreen) {
+        // Adjust zoom to match the requested size factor
+        QSize video_size = QSize(core->mdat.video_out_width,
+                                 core->mdat.video_out_height) * factor;
+        QSize desktop_size = TDesktop::size(this);
+        double zoom = (double) video_size.width() / desktop_size.width();
+        double zoomY = (double) video_size.height() / desktop_size.height();
+        if (zoomY > zoom) {
+            zoom = zoomY;
+        }
+        core->setZoom(zoom);
+    } else {
+        // Normal screen
+        pref->size_factor = factor;
+        bool center = false;
+        if (isMaximized()) {
+            showNormal();
+            // Need center, on X windows the original pos is not restored
+            center = true;
+        }
         resizeWindowToVideo();
-		if (center) {
+        if (center) {
             TDesktop::centerWindow(this);
-		}
-	}
+        }
+    }
 
-	core->displayMessage(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
+    core->displayMessage(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
 }
 
 void TBase::changeSize(int percentage) {
