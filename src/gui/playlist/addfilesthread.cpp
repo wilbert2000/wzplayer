@@ -654,7 +654,7 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 
 QDir::SortFlags TAddFilesThread::getSortFlags() {
 
-    QDir::SortFlags flags = QDir::Name | QDir::DirsFirst | QDir::LocaleAware;
+    QDir::SortFlags flags = QDir::Name | QDir::DirsLast | QDir::LocaleAware;
     // Note: QString::localeAwareCompare in TPlaylistWidgetItem::operator <
     // has no IgnoreCase...
     // if (!caseSensitiveNames) {

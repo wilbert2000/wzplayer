@@ -274,11 +274,11 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
         if (o->isFolder()) {
             return QString::localeAwareCompare(filename(), o->filename()) < 0;
         }
-        return true;
+        return false;
     }
 
     if (o->isFolder()) {
-        return false;
+        return true;
     }
 
     return QString::localeAwareCompare(filename(), o->filename()) < 0;
