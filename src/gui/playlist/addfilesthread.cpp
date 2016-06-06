@@ -18,6 +18,66 @@
 namespace Gui {
 namespace Playlist {
 
+// TODO: find the file sys func reporting case
+Qt::CaseSensitivity caseSensitiveNames =
+#ifdef Q_OS_WIN
+        Qt::CaseInsensitive;
+#else
+        Qt::CaseSensitive;
+#endif
+
+
+class TFileLock {
+public:
+    bool locked;
+
+    TFileLock(const QFileInfo& fi, QStringList& lfiles);
+    TFileLock(const QDir& dir, QStringList& lfiles);
+    virtual ~TFileLock();
+
+private:
+    QStringList& lockedFiles;
+
+    bool acquire(QString filename);
+};
+
+bool TFileLock::acquire(QString filename) {
+
+    if (filename.isEmpty()) {
+        Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->error(
+            "acquire: ignoring empty filename");
+        return false;
+    }
+
+    filename = QDir::toNativeSeparators(filename);
+
+    if (lockedFiles.contains(filename, caseSensitiveNames)) {
+        Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->warn(
+            "acquire: skipping '%1', creating an infinite playlist", filename);
+        return false;
+    }
+
+    lockedFiles.append(filename);
+    return true;
+}
+
+TFileLock::TFileLock(const QFileInfo& fi, QStringList& lfiles) :
+    lockedFiles(lfiles) {
+    locked = acquire(fi.canonicalFilePath());
+}
+
+TFileLock::TFileLock(const QDir& dir, QStringList& lfiles) :
+    lockedFiles(lfiles) {
+    locked = acquire(dir.canonicalPath());
+}
+
+TFileLock::~TFileLock() {
+    if (locked) {
+        lockedFiles.removeLast();
+    }
+}
+
+
 // for Windows ".lnk" files QDir::System is needed
 QDir::Filters dirFilter = QDir::Dirs
                           | QDir::AllDirs
@@ -29,7 +89,6 @@ QDir::Filters dirFilter = QDir::Dirs
                           | QDir::System
 #endif
                           ;
-
 
 TAddFilesThread::TAddFilesThread(QObject *parent,
                                  const QStringList& aFiles,
@@ -47,14 +106,6 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     abortRequested(false),
     stopRequested(false),
     recurse(recurseSubDirs) {
-
-    // TODO: find the file sys func reporting case
-    caseSensitiveNames =
-#ifdef Q_OS_WIN
-            Qt::CaseInsensitive;
-#else
-            Qt::CaseSensitive;
-#endif
 
     foreach(const QString& name, nameBlacklist) {
         if (!name.isEmpty()) {
@@ -120,38 +171,6 @@ void TAddFilesThread::run() {
 
     logger()->debug("run: exiting. stopped %1 aborted %2",
                     stopRequested, abortRequested);
-}
-
-// TODO: prevent loops
-bool TAddFilesThread::lockFile(QString filename) {
-
-    if (filename.isEmpty()) {
-        logger()->error("lockFile: ignoring empty filename");
-        return false;
-    }
-
-    filename = QDir::toNativeSeparators(filename);
-
-    if (lockedFiles.contains(filename, caseSensitiveNames)) {
-        logger()->warn("lockFile: skipping '%1', creating an infinite playlist",
-                       filename);
-        return false;
-    }
-
-    lockedFiles.append(filename);
-    return true;
-}
-
-bool TAddFilesThread::lockFile(const QFileInfo& fi) {
-    return lockFile(fi.canonicalFilePath());
-}
-
-bool TAddFilesThread::lockFile(const QDir& dir) {
-    return lockFile(dir.canonicalPath());
-}
-
-void TAddFilesThread::unlockFile() {
-    lockedFiles.removeLast();
 }
 
 bool TAddFilesThread::nameBlackListed(const QString& name) {
@@ -328,34 +347,24 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
         }
     }
 
-    if (fi.isSymLink()) {
-        if (name.isEmpty()) {
-            name = fi.fileName();
-        }
-        // For Windows shortcuts, follow the link
-        if (fi.suffix().toLower() == "lnk") {
-            fi.setFile(fi.symLinkTarget());
-        }
+    if (name.isEmpty()) {
+        name = fi.fileName();
+    }
+
+    // For Windows shortcuts, follow the link
+    if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
+        fi.setFile(fi.symLinkTarget());
     }
 
     QString savedPlaylistPath = playlistPath;
     TPlaylistWidgetItem* item;
     if (fi.isDir()) {
-        item = addDirectory(parent, fi, name);
+        item = addDirectory(parent, fi, name, protectName);
+    } else if (extensions.isPlaylist(fi)) {
+        item = openPlaylist(parent, fi, name, protectName, true);
     } else {
-        if (extensions.isPlaylist(fi)) {
-            item = openPlaylist(parent, fi, true);
-            if (protectName && item) {
-                item->setName(name, true);
-            }
-        } else {
-            if (name.isEmpty()) {
-                name = fi.fileName();
-            }
-            item = createPath(parent, fi, name, duration, protectName);
-        }
+        item = createPath(parent, fi, name, duration, protectName);
     }
-
     playlistPath = savedPlaylistPath;
     return item;
 }
@@ -391,31 +400,19 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
     directory.setNameFilters(nameFilterList);
     directory.setSorting(getSortFlags());
 
-    QFileInfo fi;
-
-    foreach(const QString& filename, directory.entryList()) {
+    foreach(QFileInfo fi, directory.entryInfoList()) {
         if (stopRequested) {
             break;
         }
-        if (files.contains(filename)) {
+
+        QString filename = fi.fileName();
+
+        if (files.contains(filename, caseSensitiveNames)) {
             continue;
         }
 
-        int i;
-
-#ifdef Q_OS_WIN
-        i = files.indexOf(QRegExp(filename, Qt::CaseInsensitive,
-                                  QRegExp::FixedString));
-        if (i >= 0) {
-            TPlaylistWidgetItem* child = playlistItem->plChild(i);
-            child->setFilename(playlistPath + QDir::separator() + filename);
-            child->setModified();
-            continue;
-        }
-#endif
-
-        i = blacklist.indexOf(QRegExp(filename, caseSensitiveNames,
-                                      QRegExp::FixedString));
+        int i = blacklist.indexOf(QRegExp(filename, caseSensitiveNames,
+                                          QRegExp::FixedString));
         if (i >= 0) {
             logger()->info("addNewItems: '%1' is blacklisted", filename);
             blacklist.removeAt(i);
@@ -430,8 +427,6 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
             continue;
         }
 
-        fi.setFile(directory.path(), filename);
-
         if (fi.isSymLink()
             && files.contains(fi.symLinkTarget(), caseSensitiveNames)) {
             continue;
@@ -441,7 +436,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         if (fi.isDir()) {
             if (recurse) {
                 logger()->info("addNewItems: adding folder '%1'", filename);
-                w = addDirectory(playlistItem, fi, filename, false);
+                w = addDirectory(playlistItem, fi, filename, false, false);
             }
         } else {
             logger()->info("addNewItems: adding file '%1'", filename);
@@ -567,12 +562,19 @@ bool TAddFilesThread::openPls(TPlaylistWidgetItem* playlistItem,
 
 TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
                                                    QFileInfo& fi,
+                                                   const QString& name,
+                                                   bool protectName,
                                                    bool append) {
     logger()->info("openPlaylist: '%1'", fi.filePath());
 
+    if (fi.isSymLink()) {
+        fi.setFile(fi.symLinkTarget());
+    }
+
     emit displayMessage(fi.filePath(), 0);
 
-    if (!lockFile(fi)) {
+    TFileLock lock(fi, lockedFiles);
+    if (!lock.locked) {
         return 0;
     }
 
@@ -581,8 +583,8 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
 
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(0,
-        playlistPath + QDir::separator() + fi.fileName(), fi.fileName(), 0,
-        true);
+        playlistPath + QDir::separator() + fi.fileName(),
+        name, 0, true, protectName);
 
     bool result;
     QString ext = fi.suffix().toLower();
@@ -611,8 +613,6 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
         playlistItem = 0;
     }
 
-    unlockFile();
-
     return playlistItem;
 }
 
@@ -620,12 +620,13 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
                                               QFileInfo& fi) {
 
     QString name = fi.fileName();
+
+    if (extensions.isPlaylist(fi)) {
+        return openPlaylist(parent, fi, name, false, true);
+    }
+
     if (fi.isSymLink()) {
         QFileInfo target(fi.symLinkTarget());
-
-        if (extensions.isPlaylist(target)) {
-            return openPlaylist(parent, target, true);
-        }
 
         if (fi.suffix().toLower() == "lnk") {
             return new TPlaylistWidgetItem(parent, target.absoluteFilePath(),
@@ -638,14 +639,6 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
         }
 
         return 0;
-    }
-
-    if (fi.suffix().toLower() == "lnk") {
-        return 0;
-    }
-
-    if (extensions.isPlaylist(fi)) {
-        return openPlaylist(parent, fi, true);
     }
 
     return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(), name, 0,
@@ -689,19 +682,21 @@ void TAddFilesThread::addFolder(const QString& path,
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi,
                                                    const QString& name,
+                                                   bool protectName,
                                                    bool append) {
     logger()->debug("addDirectory: '%1'", fi.absoluteFilePath());
 
     emit displayMessage(fi.absoluteFilePath(), 0);
 
     QDir directory(fi.absoluteFilePath());
-    if (!lockFile(directory)) {
+    TFileLock lock(directory, lockedFiles);
+    if (!lock.locked) {
         return 0;
     }
 
     if (directory.exists(TConfig::WZPLAYLIST)) {
         fi.setFile(directory.path(), TConfig::WZPLAYLIST);
-        return openPlaylist(parent, fi, append);
+        return openPlaylist(parent, fi, name, protectName, append);
     }
 
     directory.setFilter(dirFilter);
@@ -718,20 +713,19 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
         path += QDir::separator();
     }
 
-    foreach(const QString& filename, directory.entryList()) {
+    foreach(fi, directory.entryInfoList()) {
         if (stopRequested) {
             break;
         }
 
         // Use full name for name blacklist
-        if (nameBlackListed(path + filename)) {
+        if (nameBlackListed(path + fi.fileName())) {
             continue;
         }
 
-        fi.setFile(directory.path(), filename);
         if (fi.isDir()) {
             if (recurse) {
-                addDirectory(dirItem, fi, filename);
+                addDirectory(dirItem, fi, fi.fileName(), false, true);
             }
         } else {
             addFile(dirItem, fi);
@@ -746,8 +740,6 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
         delete dirItem;
         dirItem = 0;
     }
-
-    unlockFile();
 
     return dirItem;
 }

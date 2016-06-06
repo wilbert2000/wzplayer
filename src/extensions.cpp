@@ -113,7 +113,16 @@ bool TExtensions::isMultiMedia(const QFileInfo &fi) const {
 }
 
 bool TExtensions::isPlaylist(const QFileInfo &fi) const {
+
+    if (fi.isSymLink()) {
+        return _playlists.contains(QFileInfo(fi.symLinkTarget())
+                                   .suffix().toLower());
+    }
     return _playlists.contains(fi.suffix().toLower());
+}
+
+bool TExtensions::isPlaylist(const QString& filename) const {
+    return isPlaylist(QFileInfo(filename));
 }
 
 bool TExtensions::isImage(const QFileInfo &fi) const {

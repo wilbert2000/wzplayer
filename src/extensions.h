@@ -49,9 +49,7 @@ public:
 
     bool isMultiMedia(const QFileInfo& fi) const;
     bool isPlaylist(const QFileInfo& fi) const;
-    bool isPlaylist(const QString& filename) const {
-        return isPlaylist(QFileInfo(filename));
-    }
+    bool isPlaylist(const QString& filename) const;
     bool isImage(const QFileInfo& fi) const;
     bool isImage(const QString& filename) const;
 
