@@ -32,7 +32,6 @@ public:
     bool locked;
 
     TFileLock(const QFileInfo& fi, QStringList& lfiles);
-    TFileLock(const QDir& dir, QStringList& lfiles);
     virtual ~TFileLock();
 
 private:
@@ -53,7 +52,7 @@ bool TFileLock::acquire(QString filename) {
 
     if (lockedFiles.contains(filename, caseSensitiveNames)) {
         Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->warn(
-            "acquire: skipping '%1', creating an infinite playlist", filename);
+            "acquire: skipping '%1', creating an infinite list", filename);
         return false;
     }
 
@@ -64,11 +63,6 @@ bool TFileLock::acquire(QString filename) {
 TFileLock::TFileLock(const QFileInfo& fi, QStringList& lfiles) :
     lockedFiles(lfiles) {
     locked = acquire(fi.canonicalFilePath());
-}
-
-TFileLock::TFileLock(const QDir& dir, QStringList& lfiles) :
-    lockedFiles(lfiles) {
-    locked = acquire(dir.canonicalPath());
 }
 
 TFileLock::~TFileLock() {
@@ -569,12 +563,12 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
         fi.setFile(fi.symLinkTarget());
     }
 
-    emit displayMessage(fi.filePath(), 0);
-
     TFileLock lock(fi, lockedFiles);
     if (!lock.locked) {
         return 0;
     }
+
+    emit displayMessage(fi.filePath(), 0);
 
     // Path to use for relative filenames in playlist
     playlistPath = QDir::toNativeSeparators(fi.dir().path());
@@ -730,13 +724,14 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    bool append) {
     logger()->debug("addDirectory: '%1'", fi.absoluteFilePath());
 
-    emit displayMessage(fi.absoluteFilePath(), 0);
-
-    QDir directory(fi.absoluteFilePath());
-    TFileLock lock(directory, lockedFiles);
+    TFileLock lock(fi, lockedFiles);
     if (!lock.locked) {
         return 0;
     }
+
+    emit displayMessage(fi.absoluteFilePath(), 0);
+
+    QDir directory(fi.absoluteFilePath());
 
     if (name.isEmpty()) {
         name = directory.dirName();
