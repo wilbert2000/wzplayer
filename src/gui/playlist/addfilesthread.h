@@ -42,7 +42,6 @@ public:
 
     // Outputs
     TPlaylistWidgetItem* root;
-    TPlaylistWidgetItem* currentItem;
     QString latestDir;
 
 signals:
@@ -54,6 +53,9 @@ private:
     bool recurse;
 
     QString playlistPath;
+    QStringList loadedDirectoryLinks;
+    QList<TPlaylistWidgetItem*> loadedDirectoryItems;
+
     QStringList lockedFiles;
     QStringList nameFilterList;
     QList<QRegExp*> rxNameBlacklist;
@@ -63,14 +65,17 @@ private:
     QDir::SortFlags getSortFlags();
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
-    void addFolder(const QString& path,
-                   TPlaylistWidgetItem* parent,
-                   TPlaylistWidgetItem* item,
-                   bool append);
+
+    TPlaylistWidgetItem* copyDirectory(TPlaylistWidgetItem* parent,
+                                       TPlaylistWidgetItem* item,
+                                       const QDir& dir,
+                                       const QString& name,
+                                       bool protectName,
+                                       bool append);
 
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       QFileInfo& fi,
-                                      const QString& name,
+                                      QString name,
                                       bool protectName,
                                       bool append = true);
     void addFiles();
@@ -93,8 +98,10 @@ private:
 
     void addNewItems(TPlaylistWidgetItem* playlistItem,
                      const QFileInfo& playlistInfo);
-    bool openM3u(TPlaylistWidgetItem* playlistItem, const QFileInfo& fi,
-                 bool utf8);
+    bool openM3u(TPlaylistWidgetItem* playlistItem,
+                 const QFileInfo& fi,
+                 bool utf8,
+                 bool wzplaylist);
     bool openPls(TPlaylistWidgetItem* playlistItem,
                  const QString& playlistFileName);
     TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,

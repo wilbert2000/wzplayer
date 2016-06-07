@@ -63,8 +63,7 @@ public:
     TPlaylistWidgetItem* validateItem(TPlaylistWidgetItem* item);
 
     TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
-                             TPlaylistWidgetItem* target,
-                             TPlaylistWidgetItem* current);
+                             TPlaylistWidgetItem* target);
 
 signals:
     void modifiedChanged();

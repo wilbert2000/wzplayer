@@ -35,16 +35,23 @@ public:
                         double duration,
                         bool isDir,
                         bool protectName = false);
+    TPlaylistWidgetItem(TPlaylistWidgetItem* parent,
+                        const TPlaylistWidgetItem& item,
+                        const QString& from,
+                        QString to);
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
     void setFilename(const QString& filename);
 
     QString path() const;
+    QString pathPlusSep() const;
     QString fname() const;
 
     QString name() const { return playlistItem.name(); }
-    void setName(const QString& name, bool protectName = false);
+    void setName(const QString& name,
+                 bool protectName = false,
+                 bool setSizeHint = true);
 
     double duration() const { return playlistItem.duration(); }
     void setDuration(double d);
@@ -66,7 +73,9 @@ public:
     bool isRoot() const;
     bool isFolder() const { return playlistItem.folder(); }
     bool isPlaylist() const { return playlistItem.playlist(); }
-    bool isWZPlaylist() const;
+    bool isWZPlaylist() const { return playlistItem.wzPlaylist(); }
+    bool isSymLink() const { return playlistItem.symLink(); }
+    QString target() const { return playlistItem.target(); }
 
     int playedTime() const { return playlistItem.playedTime(); }
 
@@ -96,6 +105,8 @@ public:
 
     void loadIcon();
 
+    TPlaylistWidgetItem* ff(const QString& fname) const;
+
     virtual bool operator<(const QTreeWidgetItem& other) const;
     // TODO: override clone?
 
@@ -104,8 +115,11 @@ private:
     QIcon itemIcon;
     bool mModified;
 
+    void init();
     QIcon getIcon();
     void setStateIcon();
+    void setDurationText();
+    TPlaylistWidgetItem* f(const QString& fname) const;
 };
 
 } // namespace Playlist

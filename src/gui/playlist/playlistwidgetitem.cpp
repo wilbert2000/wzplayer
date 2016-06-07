@@ -1,5 +1,6 @@
 #include "gui/playlist/playlistwidgetitem.h"
 
+#include <QApplication>
 #include <QDir>
 
 #include "log4qt/logger.h"
@@ -38,22 +39,13 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
     setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
 }
 
-TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
-                                         const QString& filename,
-                                         const QString& name,
-                                         double duration,
-                                         bool isDir,
-                                         bool protectName) :
-    QTreeWidgetItem(parent),
-    playlistItem(QDir::toNativeSeparators(filename), name, duration, isDir,
-                 protectName),
-    mModified(false) {
+void TPlaylistWidgetItem::init() {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsEnabled
                           | Qt::ItemIsDragEnabled;
 
-    if (playlistItem.folder()) {
+    if (isFolder()) {
         setFlags(flags | Qt::ItemIsDropEnabled);
     } else {
         // TODO: setFlags(flags | Qt::ItemIsEditable);
@@ -61,11 +53,67 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     }
 
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
-    setText(COL_NAME, playlistItem.name());
-    setToolTip(COL_NAME, playlistItem.filename());
+    setText(COL_NAME, name());
+    if (isSymLink()) {
+        setToolTip(COL_NAME, qApp->translate(
+            "Gui::Playlist::TPlaylistWidgetItem", "Links to %1").arg(target()));
+    } else {
+        setToolTip(COL_NAME, filename());
+    }
 
     setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
-    setDuration(playlistItem.duration());
+    setDurationText();
+}
+
+TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
+                                         const QString& filename,
+                                         const QString& name,
+                                         double duration,
+                                         bool isDir,
+                                         bool protectName) :
+    QTreeWidgetItem(parent),
+    playlistItem(QDir::toNativeSeparators(filename),
+                 name,
+                 duration,
+                 isDir,
+                 protectName),
+    mModified(false) {
+    init();
+}
+
+TPlaylistWidgetItem::TPlaylistWidgetItem(TPlaylistWidgetItem* parent,
+                                         const TPlaylistWidgetItem& item,
+                                         const QString& from,
+                                         QString to) :
+    QTreeWidgetItem(parent),
+    playlistItem(item.playlistItem),
+    mModified(item.modified()) {
+
+    if (parent == 0) {
+        if (isWZPlaylist()) {
+            if (!to.endsWith(QDir::separator())) {
+                to += QDir::separator();
+            }
+            setFilename(to + TConfig::WZPLAYLIST);
+        } else {
+            setFilename(to);
+            if (!to.endsWith(QDir::separator())) {
+                to += QDir::separator();
+            }
+        }
+    } else {
+        QString fn = filename();
+        if (fn.startsWith(from, caseSensitiveFileNames)) {
+            setFilename(to + fn.mid(from.length()));
+        }
+    }
+
+    init();
+
+    // Copy kids
+    for(int c = 0; c < item.childCount(); c++) {
+        addChild(new TPlaylistWidgetItem(this, *(item.plChild(c)), from, to));
+    }
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
@@ -87,7 +135,9 @@ void TPlaylistWidgetItem::setFilename(const QString& filename) {
     playlistItem.setFilename(filename);
 }
 
-void TPlaylistWidgetItem::setName(const QString& name, bool protectName) {
+void TPlaylistWidgetItem::setName(const QString& name,
+                                  bool protectName,
+                                  bool setSizeHint) {
 
     playlistItem.setName(name, protectName);
     if (mModified) {
@@ -95,7 +145,9 @@ void TPlaylistWidgetItem::setName(const QString& name, bool protectName) {
     } else {
         setText(COL_NAME, playlistItem.name());
     }
-    setSzHint(getLevel());
+    if (setSizeHint) {
+        setSzHint(getLevel());
+    }
 }
 
 QIcon TPlaylistWidgetItem::getIcon() {
@@ -143,14 +195,20 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
     setStateIcon();
 }
 
-void TPlaylistWidgetItem::setDuration(double d) {
+void TPlaylistWidgetItem::setDurationText() {
 
-    playlistItem.setDuration(d);
+    double d = playlistItem.duration();
     if (d > 0) {
         setText(COL_TIME, Helper::formatTime(qRound(d)));
     } else {
         setText(COL_TIME, "");
     }
+}
+
+void TPlaylistWidgetItem::setDuration(double d) {
+
+    playlistItem.setDuration(d);
+    setDurationText();
 }
 
 void TPlaylistWidgetItem::setPlayed(bool played) {
@@ -201,21 +259,27 @@ QString TPlaylistWidgetItem::path() const {
     return fi.absoluteFilePath();
 }
 
+QString TPlaylistWidgetItem::pathPlusSep() const {
+
+    QString p = path();
+    if (p.endsWith(QDir::separator())) {
+        return p;
+    }
+    return p + QDir::separator();
+}
+
 QString TPlaylistWidgetItem::fname() const {
 
     QString fn = filename();
     if (!fn.isEmpty()) {
         QFileInfo fi(fn);
-        fn = fi.fileName();
-        if (fn == TConfig::WZPLAYLIST) {
+        if (isWZPlaylist()) {
             fn = fi.dir().dirName();
+        } else {
+            fn = fi.fileName();
         }
     }
     return fn;
-}
-
-bool TPlaylistWidgetItem::isWZPlaylist() const {
-    return QFileInfo(filename()).fileName() == TConfig::WZPLAYLIST;
 }
 
 bool TPlaylistWidgetItem::whitelist(const QString& filename) {
@@ -260,6 +324,43 @@ void TPlaylistWidgetItem::setSzHint(int level) {
                                        iconProvider.iconSize,
                                        level));
     }
+}
+
+TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) const {
+
+    for(int c = 0; c < childCount(); c++) {
+        TPlaylistWidgetItem* i = plChild(c);
+        QString path = i->filename();
+        if (i->isWZPlaylist()) {
+            path.chop(TConfig::WZPLAYLIST.length() + 1);
+        }
+        if (path.compare(fname, caseSensitiveFileNames) == 0) {
+            logger()->debug("f: found '%1'", fname);
+            return i;
+        }
+        if (i->isFolder()) {
+            if (!path.endsWith(QDir::separator())) {
+                path += QDir::separator();
+            }
+            if (fname.startsWith(path, caseSensitiveFileNames)) {
+                i = i->f(fname);
+                if (i) {
+                    return i;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+TPlaylistWidgetItem* TPlaylistWidgetItem::ff(const QString &fname) const {
+
+    TPlaylistWidgetItem* item = f(QDir::toNativeSeparators(fname));
+    if (item == 0) {
+        logger()->debug("ff: '%1' not loaded", fname);
+    }
+    return item;
 }
 
 bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {

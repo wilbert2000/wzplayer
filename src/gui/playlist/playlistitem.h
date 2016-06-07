@@ -15,6 +15,8 @@ enum TPlaylistItemState {
     PSTATE_FAILED
 };
 
+extern Qt::CaseSensitivity caseSensitiveFileNames;
+
 
 class TPlaylistItem {
 
@@ -25,6 +27,7 @@ public:
                   double duration,
                   bool isFolder,
                   bool protectName);
+    TPlaylistItem(const TPlaylistItem& item);
     virtual ~TPlaylistItem() {}
 
     static QString playlistItemState(TPlaylistItemState state);
@@ -51,6 +54,9 @@ public:
     void setFolder(bool b) { mFolder = b; }
 
     bool playlist() const { return mPlaylist; }
+    bool wzPlaylist() const { return mWZPlaylist; }
+    bool symLink() const { return mSymLink; }
+    QString target() const { return mTarget; }
 
     int playedTime() const { return mPlayedTime; }
 
@@ -67,9 +73,12 @@ private:
     QString mFilename, mName;
     double mDuration;
     TPlaylistItemState mState;
-    bool mPlayed, mEdited, mFolder, mPlaylist;
+    bool mPlayed, mEdited, mFolder, mPlaylist, mWZPlaylist, mSymLink;
+    QString mTarget;
     int mPlayedTime;
     QStringList mBlacklist;
+
+    void setFileInfo();
 };
 
 } // namespace Playlist

@@ -9,12 +9,22 @@
 
 #include "helper.h"
 #include "extensions.h"
+#include "config.h"
 
 
 namespace Gui {
 namespace Playlist {
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistItem)
+
+
+// TODO: find the file sys func reporting case
+Qt::CaseSensitivity caseSensitiveFileNames =
+        #ifdef Q_OS_WIN
+                    Qt::CaseInsensitive;
+        #else
+                    Qt::CaseSensitive;
+        #endif
 
 
 class TTimeStamp : public QTime {
@@ -50,6 +60,8 @@ TPlaylistItem::TPlaylistItem() :
     mEdited(false),
     mFolder(false),
     mPlaylist(false),
+    mWZPlaylist(false),
+    mSymLink(false),
     mPlayedTime(0) {
 }
 
@@ -92,7 +104,23 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
         }
     }
 
-    mPlaylist = extensions.isPlaylist(mFilename);
+    setFileInfo();
+}
+
+TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
+    mFilename(item.filename()),
+    mName(item.name()),
+    mDuration(item.duration()),
+    mState(item.state()),
+    mPlayed(item.played()),
+    mEdited(item.edited()),
+    mFolder(item.folder()),
+    mPlaylist(item.playlist()),
+    mWZPlaylist(item.wzPlaylist()),
+    mSymLink(item.symLink()),
+    mTarget(item.target()),
+    mPlayedTime(item.playedTime()),
+    mBlacklist(item.getBlacklist()) {
 }
 
 // static
@@ -107,10 +135,19 @@ QString TPlaylistItem::playlistItemState(TPlaylistItemState state) {
     return "failed";
 }
 
+void TPlaylistItem::setFileInfo() {
+
+    QFileInfo fi(mFilename);
+    mPlaylist = extensions.isPlaylist(fi);
+    mWZPlaylist = fi.fileName() == TConfig::WZPLAYLIST;
+    mSymLink = fi.isSymLink();
+    mTarget = fi.symLinkTarget();
+}
+
 void TPlaylistItem::setFilename(const QString &filename) {
 
     mFilename = filename;
-    mPlaylist = extensions.isPlaylist(mFilename);
+    setFileInfo();
 }
 
 void TPlaylistItem::setName(const QString& name, bool protectName) {
@@ -133,24 +170,16 @@ void TPlaylistItem::setState(TPlaylistItemState state) {
     mState = state;
 }
 
-// TODO: find the file sys func reporting case
-Qt::CaseSensitivity blacklistCaseSensitivity =
-        #ifdef Q_OS_WIN
-                    Qt::CaseInsensitive;
-        #else
-                    Qt::CaseSensitive;
-        #endif
-
 bool TPlaylistItem::blacklisted(const QString& filename) const {
-    return mBlacklist.contains(filename, blacklistCaseSensitivity);
+    return mBlacklist.contains(filename, caseSensitiveFileNames);
 }
 
 bool TPlaylistItem::whitelist(const QString& filename) {
 
-    int i = mBlacklist.indexOf(QRegExp(filename, blacklistCaseSensitivity,
+    int i = mBlacklist.indexOf(QRegExp(filename, caseSensitiveFileNames,
                                        QRegExp::FixedString));
     if (i >= 0) {
-        logger()->debug("whitelist: removed '%1' from blacklist", filename);
+        logger()->debug("whitelist: removing '%1' from blacklist", filename);
         mBlacklist.removeAt(i);
         return true;
     }

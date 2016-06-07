@@ -462,7 +462,6 @@ void TPlaylist::onThreadFinished() {
     // Get data from thread
     TPlaylistWidgetItem* root = thread->root;
     thread->root = 0;
-    TPlaylistWidgetItem* current = thread->currentItem;
     if (!thread->latestDir.isEmpty()) {
         pref->latest_dir = thread->latestDir;
     }
@@ -503,7 +502,7 @@ void TPlaylist::onThreadFinished() {
     }
 
     // Returns a newly created root
-    root = playlistWidget->add(root, addFilesTarget, current);
+    root = playlistWidget->add(root, addFilesTarget);
     if (root) {
         filename = root->filename();
         logger()->debug("onThreadFinished: filename set to '%1'", filename);

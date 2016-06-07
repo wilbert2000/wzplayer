@@ -521,8 +521,7 @@ TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
 }
 
 TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
-                                          TPlaylistWidgetItem* target,
-                                          TPlaylistWidgetItem* current) {
+                                          TPlaylistWidgetItem* target) {
     logger()->debug("add");
 
     // Save current sort settings
@@ -594,13 +593,13 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         clearSelection();
         parent->insertChildren(idx, children);
 
+        setCurrentItem(parent->child(idx));
+
         // Restore sort order
         if (sort >= 0) {
             setSortingEnabled(true);
             header()->setSortIndicator(sort, sortorder);
         }
-
-        setCurrentItem(current);
 
         if (modified) {
             parent->setModified();
