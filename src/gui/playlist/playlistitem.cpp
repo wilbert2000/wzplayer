@@ -17,7 +17,6 @@ namespace Playlist {
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistItem)
 
-
 // TODO: find the file sys func reporting case
 Qt::CaseSensitivity caseSensitiveFileNames =
         #ifdef Q_OS_WIN
@@ -193,7 +192,7 @@ bool TPlaylistItem::operator == (const TPlaylistItem& item) {
     if (&item == 0) {
         return false;
     }
-    return item.filename() == mFilename;
+    return item.filename().compare(mFilename, caseSensitiveFileNames) == 0;
 }
 
 } // namespace Playlist
