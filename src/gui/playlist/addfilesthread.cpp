@@ -252,116 +252,6 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     return folder;
 }
 
-TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
-        TPlaylistWidgetItem* parent,
-        const QString& filename,
-        QString name,
-        bool protectName,
-        bool wzplaylist) {
-
-    bool setFailed = false;
-
-    TDiscName disc(filename);
-    if (disc.valid) {
-        if (name.isEmpty()) {
-            name = disc.displayName();
-        }
-    } else if (QUrl(filename).scheme().isEmpty()) {
-        if (wzplaylist) {
-            logger()->info("addItemNotFound: ignoring no longer existing "
-                               " item '%1'", filename);
-            parent->setModified();
-            return 0;
-        }
-        logger()->error("addItemNotFound: '%1' not found", filename);
-        setFailed = true;
-    }
-
-    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(parent,
-                                                        filename,
-                                                        name,
-                                                        0,
-                                                        false,
-                                                        protectName);
-    if (setFailed) {
-        item->setState(PSTATE_FAILED);
-    }
-    return item;
-}
-
-TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
-                                              QString filename,
-                                              QString name,
-                                              double duration,
-                                              bool wzplaylist) {
-
-    bool protectName = !name.isEmpty();
-
-    if (filename.startsWith("file:")) {
-        filename = QUrl(filename).toLocalFile();
-    }
-
-    QFileInfo fi(filename);
-    if (fi.exists()) {
-        logger()->trace("addItem: found '%1'", fi.absoluteFilePath());
-    } else {
-        // Try relative path
-        fi.setFile(playlistPath, filename);
-        if (fi.exists()) {
-            logger()->trace("addItem: found relative path to '%1'",
-                            fi.fileName());
-        } else if (fi.fileName() == TConfig::WZPLAYLIST) {
-            parent->setModified();
-            // Try the directory
-            QString path = fi.dir().path();
-            if (path.isEmpty()) {
-                logger()->error("addItem: self referencing playlist in '%1'",
-                                filename);
-                return 0;
-            }
-
-            fi.setFile(path);
-            if (fi.isRelative()) {
-                fi.setFile(playlistPath, path);
-            }
-
-            if (fi.exists()) {
-                logger()->info("addItem: '%1' no longer exists. Trying"
-                               " to link to directory '%2' instead",
-                               filename, fi.absoluteFilePath());
-            } else {
-                logger()->info("addItem: ignoring no longer existing"
-                               " playlist '%1'", filename);
-                return 0;
-            }
-        } else {
-            return addItemNotFound(parent, filename, name, protectName,
-                                   wzplaylist);
-        }
-    }
-
-    if (name.isEmpty()) {
-        name = fi.fileName();
-    }
-
-    // For Windows shortcuts, follow the link
-    if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
-        fi.setFile(fi.symLinkTarget());
-    }
-
-    QString savedPlaylistPath = playlistPath;
-    TPlaylistWidgetItem* item;
-    if (fi.isDir()) {
-        item = addDirectory(parent, fi, name, protectName);
-    } else if (extensions.isPlaylist(fi)) {
-        item = openPlaylist(parent, fi, name, protectName, true);
-    } else {
-        item = createPath(parent, fi, name, duration, protectName);
-    }
-    playlistPath = savedPlaylistPath;
-    return item;
-}
-
 void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
                                   const QFileInfo& playlistInfo) {
     logger()->debug("addNewItems: '%1'", playlistInfo.filePath());
@@ -648,7 +538,7 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
     QString name = fi.fileName();
 
     if (extensions.isPlaylist(fi)) {
-        return openPlaylist(parent, fi, name, false, true);
+        return openPlaylist(parent, fi, name, false);
     }
 
     if (fi.isSymLink()) {
@@ -816,6 +706,117 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     }
 
     return dirItem;
+}
+
+TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
+        TPlaylistWidgetItem* parent,
+        const QString& filename,
+        QString name,
+        bool protectName,
+        bool wzplaylist) {
+
+    bool setFailed = false;
+
+    TDiscName disc(filename);
+    if (disc.valid) {
+        if (name.isEmpty()) {
+            name = disc.displayName();
+        }
+    } else if (QUrl(filename).scheme().isEmpty()) {
+        if (wzplaylist) {
+            logger()->info("addItemNotFound: ignoring no longer existing "
+                               " item '%1'", filename);
+            parent->setModified();
+            return 0;
+        }
+        logger()->error("addItemNotFound: '%1' not found", filename);
+        setFailed = true;
+    }
+
+    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(parent,
+                                                        filename,
+                                                        name,
+                                                        0,
+                                                        false,
+                                                        protectName);
+    if (setFailed) {
+        item->setState(PSTATE_FAILED);
+    }
+    return item;
+}
+
+TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
+                                              QString filename,
+                                              QString name,
+                                              double duration,
+                                              bool wzplaylist) {
+
+    bool protectName = !name.isEmpty();
+
+    if (filename.startsWith("file:")) {
+        filename = QUrl(filename).toLocalFile();
+    }
+
+    QFileInfo fi(filename);
+    if (fi.exists()) {
+        logger()->trace("addItem: found '%1'", fi.absoluteFilePath());
+    } else {
+        // Try relative path
+        fi.setFile(playlistPath, filename);
+        if (fi.exists()) {
+            logger()->trace("addItem: found relative path to '%1'",
+                            fi.fileName());
+        } else if (fi.fileName() == TConfig::WZPLAYLIST) {
+            parent->setModified();
+            // Try the directory
+            QString path = fi.dir().path();
+            if (path.isEmpty()) {
+                logger()->error("addItem: self referencing playlist in '%1'",
+                                filename);
+                return 0;
+            }
+
+            fi.setFile(path);
+            if (fi.isRelative()) {
+                fi.setFile(playlistPath, path);
+            }
+
+            if (fi.exists()) {
+                logger()->info("addItem: '%1' no longer exists. Linking"
+                               " to directory '%2' instead",
+                               filename, fi.absoluteFilePath());
+            } else {
+                logger()->info("addItem: ignoring no longer existing"
+                               " playlist '%1'", filename);
+                return 0;
+            }
+        } else {
+            return addItemNotFound(parent, filename, name, protectName,
+                                   wzplaylist);
+        }
+    }
+
+    if (name.isEmpty()) {
+        name = fi.fileName();
+    }
+
+    QString savedPlaylistPath = playlistPath;
+
+    TPlaylistWidgetItem* item;
+    if (fi.isDir()) {
+        item = addDirectory(parent, fi, name, protectName);
+    } else if (extensions.isPlaylist(fi)) {
+        item = openPlaylist(parent, fi, name, protectName);
+    } else {
+        // For Windows shortcuts, follow the link...
+        if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
+            fi.setFile(fi.symLinkTarget());
+        }
+        item = createPath(parent, fi, name, duration, protectName);
+    }
+
+    playlistPath = savedPlaylistPath;
+    return item;
 }
 
 void TAddFilesThread::addFiles() {

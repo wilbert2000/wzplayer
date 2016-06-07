@@ -78,26 +78,16 @@ private:
                                       QString name,
                                       bool protectName,
                                       bool append = true);
-    void addFiles();
 
-    TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
-                                         const QString& filename,
-                                         QString name,
-                                         bool protectName,
-                                         bool wzplaylist);
     TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,
                                     const QFileInfo& fi,
                                     const QString& name,
                                     double duration,
                                     bool protectName);
-    TPlaylistWidgetItem* addItem(TPlaylistWidgetItem* parent,
-                                 QString filename,
-                                 QString name = "",
-                                 double duration = 0,
-                                 bool wzplaylist = false);
 
     void addNewItems(TPlaylistWidgetItem* playlistItem,
                      const QFileInfo& playlistInfo);
+
     bool openM3u(TPlaylistWidgetItem* playlistItem,
                  const QFileInfo& fi,
                  bool utf8,
@@ -108,7 +98,21 @@ private:
                                       QFileInfo& fi,
                                       const QString& name,
                                       bool protectName,
-                                      bool append);
+                                      bool append = true);
+
+    TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
+                                         const QString& filename,
+                                         QString name,
+                                         bool protectName,
+                                         bool wzplaylist);
+
+    TPlaylistWidgetItem* addItem(TPlaylistWidgetItem* parent,
+                                 QString filename,
+                                 QString name = "",
+                                 double duration = 0,
+                                 bool wzplaylist = false);
+
+    void addFiles();
 };
 
 } // namespace Playlist
