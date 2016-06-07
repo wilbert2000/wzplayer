@@ -329,24 +329,25 @@ void TPlaylistWidgetItem::setSzHint(int level) {
 TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) const {
 
     for(int c = 0; c < childCount(); c++) {
-        TPlaylistWidgetItem* i = plChild(c);
-        QString path = i->filename();
-        if (i->isWZPlaylist()) {
+        TPlaylistWidgetItem* item = plChild(c);
+        QString path = item->filename();
+        if (item->isWZPlaylist()) {
             path.chop(TConfig::WZPLAYLIST.length() + 1);
         }
         if (path.compare(fname, caseSensitiveFileNames) == 0) {
             logger()->debug("f: found '%1'", fname);
-            return i;
+            return item;
         }
-        if (i->isFolder()) {
+        if (item->isFolder()) {
             if (!path.endsWith(QDir::separator())) {
                 path += QDir::separator();
             }
             if (fname.startsWith(path, caseSensitiveFileNames)) {
-                i = i->f(fname);
-                if (i) {
-                    return i;
+                item = item->f(fname);
+                if (item) {
+                    return item;
                 }
+                // Double entries allowed, so need to search further
             }
         }
     }
