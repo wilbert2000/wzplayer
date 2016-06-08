@@ -53,7 +53,7 @@ void TPlaylistWidgetItem::init() {
     }
 
     setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
-    setText(COL_NAME, name());
+    setNameText(false);
     if (isSymLink()) {
         setToolTip(COL_NAME, qApp->translate(
             "Gui::Playlist::TPlaylistWidgetItem", "Links to %1").arg(target()));
@@ -135,19 +135,38 @@ void TPlaylistWidgetItem::setFilename(const QString& filename) {
     playlistItem.setFilename(filename);
 }
 
+void TPlaylistWidgetItem::setNameText(bool setSizeHint) {
+
+    QString n = name();
+
+    if (!edited()) {
+        n = Helper::cleanName(n);
+    }
+
+    if (duration() != 0) {
+        QString ext = extension();
+        if (!ext.isEmpty()) {
+            n += " (" + ext + ")";
+        }
+    }
+
+    if (mModified) {
+        n += "*";
+    }
+
+    setText(COL_NAME, n);
+
+    if (setSizeHint) {
+        setSzHint(getLevel());
+    }
+}
+
 void TPlaylistWidgetItem::setName(const QString& name,
                                   bool protectName,
                                   bool setSizeHint) {
 
     playlistItem.setName(name, protectName);
-    if (mModified) {
-        setText(COL_NAME, playlistItem.name() + "*");
-    } else {
-        setText(COL_NAME, playlistItem.name());
-    }
-    if (setSizeHint) {
-        setSzHint(getLevel());
-    }
+    setNameText(setSizeHint);
 }
 
 QIcon TPlaylistWidgetItem::getIcon() {
@@ -197,17 +216,20 @@ void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
 
 void TPlaylistWidgetItem::setDurationText() {
 
+    QString s;
     double d = playlistItem.duration();
-    if (d > 0) {
-        setText(COL_TIME, Helper::formatTime(qRound(d)));
+    if (d == 0) {
+        s = extension();
     } else {
-        setText(COL_TIME, "");
+        s = Helper::formatTime(qRound(d));
     }
+    setText(COL_TIME, s);
 }
 
 void TPlaylistWidgetItem::setDuration(double d) {
 
     playlistItem.setDuration(d);
+    setNameText(true);
     setDurationText();
 }
 
@@ -230,11 +252,7 @@ void TPlaylistWidgetItem::setModified(bool modified,
                     modified, filename());
 
     mModified = modified;
-    if (mModified) {
-        setText(COL_NAME, playlistItem.name() + "*");
-    } else {
-        setText(COL_NAME, playlistItem.name());
-    }
+    setNameText(true);
 
     if (recurse) {
         for(int c = 0; c < childCount(); c++) {
@@ -326,36 +344,41 @@ void TPlaylistWidgetItem::setSzHint(int level) {
     }
 }
 
-TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) const {
+TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) {
+
+    QString path = filename();
+
+    if (isWZPlaylist()) {
+        path.chop(TConfig::WZPLAYLIST.length() + 1);
+    }
+
+    if (path.compare(fname, caseSensitiveFileNames) == 0) {
+        logger()->debug("f: found '%1'", fname);
+        return this;
+    }
+
+    // Ignore root
+    if (isFolder() && parent()) {
+        if (!path.endsWith(QDir::separator())) {
+            path += QDir::separator();
+        }
+        if (!fname.startsWith(path, caseSensitiveFileNames)) {
+            logger()->trace("f: skipping '%1'", path);
+            return 0;
+        }
+    }
 
     for(int c = 0; c < childCount(); c++) {
-        TPlaylistWidgetItem* item = plChild(c);
-        QString path = item->filename();
-        if (item->isWZPlaylist()) {
-            path.chop(TConfig::WZPLAYLIST.length() + 1);
-        }
-        if (path.compare(fname, caseSensitiveFileNames) == 0) {
-            logger()->debug("f: found '%1'", fname);
+        TPlaylistWidgetItem* item = plChild(c)->f(fname);
+        if (item) {
             return item;
-        }
-        if (item->isFolder()) {
-            if (!path.endsWith(QDir::separator())) {
-                path += QDir::separator();
-            }
-            if (fname.startsWith(path, caseSensitiveFileNames)) {
-                item = item->f(fname);
-                if (item) {
-                    return item;
-                }
-                // Double entries allowed, so need to search further
-            }
         }
     }
 
     return 0;
 }
 
-TPlaylistWidgetItem* TPlaylistWidgetItem::ff(const QString &fname) const {
+TPlaylistWidgetItem* TPlaylistWidgetItem::ff(const QString &fname) {
 
     TPlaylistWidgetItem* item = f(QDir::toNativeSeparators(fname));
     if (item == 0) {

@@ -74,32 +74,33 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mDuration(duration),
     mState(PSTATE_STOPPED),
     mPlayed(false),
-    mEdited(false),
+    mEdited(protectName),
     mFolder(isFolder),
     mPlayedTime(0) {
 
     if (!mFilename.isEmpty() && mName.isEmpty()) {
-        mName = QUrl(mFilename).toString(QUrl::RemoveScheme
-                                         | QUrl::RemoveAuthority
-                                         | QUrl::RemoveQuery
-                                         | QUrl::RemoveFragment
-                                         | QUrl::StripTrailingSlash);
-        if (mName.isEmpty()) {
-            mName = mFilename;
+        QUrl url(mFilename);
+        QFileInfo fi;
+        if (url.scheme().isEmpty()) {
+            fi.setFile(mFilename);
+            mName = fi.fileName();
+        } else if (url.scheme().toLower() == "file"){
+            fi.setFile(url.toLocalFile());
+            mName = fi.fileName();
         } else {
-            QString s = QFileInfo(mName).fileName();
-            if (!s.isEmpty()) {
-                mName = s;
+            mName = url.toString(QUrl::RemoveScheme
+                                 | QUrl::RemoveAuthority
+                                 | QUrl::RemoveQuery
+                                 | QUrl::RemoveFragment
+                                 | QUrl::StripTrailingSlash);
+            if (!mName.isEmpty()) {
+                fi.setFile(mName);
+                mName = fi.fileName();
             }
         }
-    }
 
-    if (protectName) {
-        mEdited = true;
-    } else {
-        mName = Helper::cleanName(mName);
         if (mName.isEmpty()) {
-            mName = qApp->translate("Gui::Playlist::TPlaylistItem", "No name");
+            mName = mFilename;
         }
     }
 
@@ -118,6 +119,7 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     mWZPlaylist(item.wzPlaylist()),
     mSymLink(item.symLink()),
     mTarget(item.target()),
+    mExt(item.extension()),
     mPlayedTime(item.playedTime()),
     mBlacklist(item.getBlacklist()) {
 }
@@ -141,6 +143,17 @@ void TPlaylistItem::setFileInfo() {
     mWZPlaylist = fi.fileName() == TConfig::WZPLAYLIST;
     mSymLink = fi.isSymLink();
     mTarget = fi.symLinkTarget();
+    if (mSymLink) {
+        fi.setFile(fi.symLinkTarget());
+    }
+    if (fi.isDir()) {
+        mExt = "";
+    } else {
+        mExt = fi.suffix().toLower();
+        if (!mExt.isEmpty() && mName.endsWith(mExt, Qt::CaseInsensitive)) {
+            mName = mName.left(mName.length() - mExt.length() - 1);
+        }
+    }
 }
 
 void TPlaylistItem::setFilename(const QString &filename) {
@@ -151,11 +164,9 @@ void TPlaylistItem::setFilename(const QString &filename) {
 
 void TPlaylistItem::setName(const QString& name, bool protectName) {
 
+    mName = name;
     if (protectName) {
-        mName = name;
         mEdited = true;
-    } else {
-        mName = Helper::cleanName(name);
     }
 }
 

@@ -57,6 +57,7 @@ public:
     bool wzPlaylist() const { return mWZPlaylist; }
     bool symLink() const { return mSymLink; }
     QString target() const { return mTarget; }
+    QString extension() const { return mExt; }
 
     int playedTime() const { return mPlayedTime; }
 
@@ -70,11 +71,18 @@ public:
     bool operator == (const TPlaylistItem& item);
 
 private:
-    QString mFilename, mName;
+    QString mFilename;
+    QString mName;
     double mDuration;
     TPlaylistItemState mState;
-    bool mPlayed, mEdited, mFolder, mPlaylist, mWZPlaylist, mSymLink;
+    bool mPlayed;
+    bool mEdited;
+    bool mFolder;
+    bool mPlaylist;
+    bool mWZPlaylist;
+    bool mSymLink;
     QString mTarget;
+    QString mExt;
     int mPlayedTime;
     QStringList mBlacklist;
 

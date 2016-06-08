@@ -76,6 +76,7 @@ public:
     bool isWZPlaylist() const { return playlistItem.wzPlaylist(); }
     bool isSymLink() const { return playlistItem.symLink(); }
     QString target() const { return playlistItem.target(); }
+    QString extension() const { return playlistItem.extension(); }
 
     int playedTime() const { return playlistItem.playedTime(); }
 
@@ -105,7 +106,7 @@ public:
 
     void loadIcon();
 
-    TPlaylistWidgetItem* ff(const QString& fname) const;
+    TPlaylistWidgetItem* ff(const QString& fname);
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
     // TODO: override clone?
@@ -118,8 +119,9 @@ private:
     void init();
     QIcon getIcon();
     void setStateIcon();
+    void setNameText(bool setSizeHint);
     void setDurationText();
-    TPlaylistWidgetItem* f(const QString& fname) const;
+    TPlaylistWidgetItem* f(const QString& fname);
 };
 
 } // namespace Playlist
