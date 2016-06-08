@@ -153,16 +153,11 @@ TMenuWindow::TMenuWindow(TBase* mw,
 
 	addSeparator();
     // Show properties
-    TAction* a = new TAction(this, "show_file_properties",
-        tr("&View properties..."), "info", Qt::SHIFT | Qt::Key_P);
-    a->setCheckable(true);
-    main_window->addAction(a);
-    connect(a, SIGNAL(triggered(bool)),
-            main_window, SLOT(showFilePropertiesDialog(bool)));
+    addAction(main_window->findChild<TAction*>("view_properties"));
 
     // Show playlist
-    a = new TAction(this, "show_playlist", tr("View &playlist..."), "playlist",
-                    Qt::Key_P);
+    TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."),
+                             "playlist", Qt::Key_P);
 	a->setCheckable(true);
     main_window->addAction(a);
     connect(a, SIGNAL(triggered(bool)),

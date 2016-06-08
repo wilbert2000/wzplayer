@@ -208,6 +208,13 @@ void TPlaylist::createActions() {
                             "saveas");
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
+    // Properties
+    propertiesAct = new TAction(this, "view_properties",
+        tr("&View properties..."), "info", Qt::SHIFT | Qt::Key_P);
+    propertiesAct->setCheckable(true);
+    connect(propertiesAct, SIGNAL(triggered(bool)),
+            main_window, SLOT(showFilePropertiesDialog(bool)));
+
     // Open directory
     openDirectoryAct = new TAction(this, "pl_open_directory",
                                    tr("&Open directory"));
@@ -400,6 +407,7 @@ void TPlaylist::createToolbar() {
     popup->addMenu(add_menu);
     popup->addMenu(remove_menu);
     popup->addSeparator();
+    popup->addAction(propertiesAct);
     popup->addAction(openDirectoryAct);
     popup->addAction(refreshAct);
 

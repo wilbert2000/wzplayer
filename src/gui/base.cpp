@@ -498,7 +498,7 @@ void TBase::createToolbars() {
 			<< "volumeslider_action"
             << "separator|0|1"
             << "osd_menu|0|1"
-            << "show_file_properties|0|1"
+            << "view_properties|0|1"
             << "show_playlist|0|1"
             << "separator|0|1"
             << "fullscreen";
@@ -530,7 +530,7 @@ void TBase::createToolbars() {
 	toolbar2->setObjectName("toolbar2");
 	actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
-            << "separator" << "show_file_properties" << "show_playlist"
+            << "separator" << "view_properties" << "show_playlist"
             << "show_log" << "separator" << "show_preferences";
     toolbar2->setDefaultActions(actions);
 	addToolBar(Qt::TopToolBarArea, toolbar2);
@@ -733,7 +733,7 @@ void TBase::createFilePropertiesDialog() {
             file_properties_dialog, SLOT(showInfo()));
     connect(core, SIGNAL(audioBitRateChanged(int)),
             file_properties_dialog, SLOT(showInfo()));
-    TAction* action = findChild<TAction*>("show_file_properties");
+    TAction* action = findChild<TAction*>("view_properties");
     if (action) {
         connect(file_properties_dialog, SIGNAL(visibilityChanged(bool)),
                 action, SLOT(setChecked(bool)));
