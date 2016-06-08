@@ -114,11 +114,17 @@ bool TExtensions::isMultiMedia(const QFileInfo &fi) const {
 
 bool TExtensions::isPlaylist(const QFileInfo &fi) const {
 
-    if (fi.isSymLink()) {
-        return _playlists.contains(QFileInfo(fi.symLinkTarget())
-                                   .suffix().toLower());
+    if (fi.isDir()) {
+        return false;
     }
-    return _playlists.contains(fi.suffix().toLower());
+
+    QString ext;
+    if (fi.isSymLink()) {
+        ext = QFileInfo(fi.symLinkTarget()).suffix();
+    } else {
+        ext = fi.suffix();
+    }
+    return _playlists.contains(ext.toLower());
 }
 
 bool TExtensions::isPlaylist(const QString& filename) const {
@@ -126,7 +132,18 @@ bool TExtensions::isPlaylist(const QString& filename) const {
 }
 
 bool TExtensions::isImage(const QFileInfo &fi) const {
-    return _images.contains(fi.suffix().toLower());
+
+    if (fi.isDir()) {
+        return false;
+    }
+
+    QString ext;
+    if (fi.isSymLink()) {
+        ext = QFileInfo(fi.symLinkTarget()).suffix();
+    } else {
+        ext = fi.suffix();
+    }
+    return _images.contains(ext.toLower());
 }
 
 bool TExtensions::isImage(const QString& filename) const {
