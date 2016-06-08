@@ -16,35 +16,39 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_INFOFILE_H_
-#define _GUI_INFOFILE_H_
+#ifndef GUI_INFOFILE_H
+#define GUI_INFOFILE_H
+
+#include <QObject>
+#include <QString>
 
 #include "mediadata.h"
-#include <QString>
+#include "wzdebug.h"
+
 
 namespace Gui {
 
-class TInfoFile {
+class TInfoFile : public QObject {
+    Q_OBJECT
+    DECLARE_QCLASS_LOGGER
 
 public:
-	TInfoFile();
-	virtual ~TInfoFile();
+    TInfoFile();
+    virtual ~TInfoFile();
 
-	QString getInfo(const TMediaData& md);
-
-protected:
-	QString title(QString text);
-    QString openPar(QString text);
-	QString closePar();
-
-	QString addItem(QString tag, QString value);
-
-	int row;
+    QString getInfo(const TMediaData& md);
 
 private:
-	inline QString tr(const char* sourceText, const char* comment = 0, int n = -1);
-	QString formatSize(qint64 size);
-	void addTracks(QString& s, const Maps::TTracks& tracks, const QString& name);
+    QString openPar(QString text);
+    QString closePar();
+
+    QString addItem(QString tag, QString value);
+
+    QString formatSize(qint64 size);
+    void addTracks(QString& s,
+                   const Maps::TTracks& tracks,
+                   const QString& name);
+
 };
 
 } // namespace Gui

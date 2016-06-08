@@ -18,7 +18,6 @@
 
 #include "gui/infofile.h"
 
-#include <QDebug>
 #include <QFileInfo>
 #include <QCoreApplication>
 
@@ -31,7 +30,7 @@
 namespace Gui {
 
 TInfoFile::TInfoFile() :
-    row(0) {
+    debug(logger()) {
 }
 
 TInfoFile::~TInfoFile() {
@@ -60,7 +59,6 @@ void TInfoFile::addTracks(QString& s,
     if (tracks.count() > 0) {
         s += "<tr><td>&nbsp;</td></tr>"
              "<tr><td colspan=\"5\"><h3>" + name + "</h3></td></tr>";
-        row++;
         s += "<tr><th align=\"left\">" + tr("#") + "</th>"
              "<th align=\"left\">" + tr("ID") + "</th>"
              "<th align=\"left\" colspan=\"2\">" + tr("Name") +"</th>"
@@ -71,7 +69,6 @@ void TInfoFile::addTracks(QString& s,
         do {
             i.next();
             Maps::TTrackData track = i.value();
-            row++;
             n++;
             s += "<tr><th align=\"left\">" + QString::number(n) + "</th>"
                  "<td>" + QString::number(track.getID()) + "</td>"
@@ -115,80 +112,105 @@ QString TInfoFile::getInfo(const TMediaData& md) {
 
     s += "<table width=\"100%\">";
 
-    s += openPar(tr("General"));
+    s += openPar(tr("File"));
     if (fi.exists()) {
-        s += addItem(tr("File name"), fi.absoluteFilePath());
+        s += addItem(tr("Name"), fi.absoluteFilePath());
         s += addItem(tr("Size"), formatSize(fi.size()));
     } else {
         s += addItem(tr("URL"), md.filename);
     }
-    if (!md.stream_url.isEmpty())
+    if (!md.stream_url.isEmpty()) {
         s += addItem(tr("Stream URL"), md.stream_url);
+    }
     s += addItem(tr("Duration"), Helper::formatTime(qRound(md.duration)));
     s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
     s += closePar();
 
+    // Meta data
+    QString c;
+    QMapIterator<QString, QString> i(md.meta_data);
+    while (i.hasNext()) {
+        i.next();
+        c += addItem(i.key(), i.value());
+     }
+
+    if (!c.isEmpty()) {
+        s += openPar(tr("Meta data"));
+        s += c;
+        s += closePar();
+    }
+
     // Video
     if (md.hasVideo()) {
         s += openPar(tr("Video"));
-        s += addItem(tr("Video out driver"), md.vo);
-        s += addItem(tr("Resolution source"), QString("%1 x %2").arg(md.video_width).arg(md.video_height));
-        s += addItem(tr("Resolution video out"), QString("%1 x %2").arg(md.video_out_width).arg(md.video_out_height));
-        s += addItem(tr("Aspect reported by player"), md.video_aspect);
-        s += addItem(tr("Original aspect ratio"), md.video_aspect_original == -1
-            ? tr("Play with aspect ratio set to auto to detect")
-            : Settings::TAspectRatio::doubleToString(md.video_aspect_original));
-        s += addItem(tr("Current aspect ratio"),
-            Settings::TAspectRatio::doubleToString((double) md.video_out_width / md.video_out_height));
+        s += addItem(tr("Driver"), md.vo);
         s += addItem(tr("Format"), md.video_format);
+        s += addItem(tr("Codec"), tr("%1 - %2")
+                     .arg(md.video_codec).arg(md.video_codec_description));
+        s += addItem(tr("Resolution"), QString("%1 x %2")
+                     .arg(md.video_width).arg(md.video_height));
+        s += addItem(tr("Video out"), QString("%1 x %2")
+                     .arg(md.video_out_width).arg(md.video_out_height));
+        s += addItem(tr("Aspect ratio"), md.video_aspect);
+        s += addItem(tr("Original aspect"),
+                     md.video_aspect_original == -1
+                     ? tr("Play with aspect auto to detect")
+                     : Settings::TAspectRatio::doubleToString(
+                           md.video_aspect_original));
+        s += addItem(tr("Current aspect"),
+                     Settings::TAspectRatio::doubleToString(
+                         (double) md.video_out_width / md.video_out_height));
         if (md.video_bitrate == -1) {
             if (Settings::pref->isMPV() && !md.image) {
                 s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
             } else {
-                s += addItem(tr("Bitrate"), tr("Unknown"));
+                s += addItem(tr("Bitrate"), tr("Not set"));
             }
         } else {
             s += addItem(tr("Bitrate"),
                          tr("%1 kbps").arg(md.video_bitrate / 1000));
         }
         s += addItem(tr("Frames per second"), QString::number(md.video_fps));
-        s += addItem(tr("Selected codec"), md.video_codec + " - " + md.video_codec_description);
-        s += addItem(tr("Number of tracks"), QString::number(md.videos.count()));
-        s += addItem(tr("Current angle"), QString::number(md.angle));
-        s += addItem(tr("Number of angles"), QString::number(md.angles));
+        s += addItem(tr("Angle"), tr("%1/%2").arg(md.angle).arg(md.angles));
+        s += addItem(tr("Number of tracks"),
+                     QString::number(md.videos.count()));
         s += closePar();
-    }
 
-    // Video tracks
-    addTracks(s, md.videos, tr("Video tracks"));
+        // Video tracks
+        addTracks(s, md.videos, tr("Video tracks"));
+    }
 
     // Audio
-    s += openPar(tr("Audio"));
-    s += addItem(tr("Audio out driver"), md.ao);
-    s += addItem(tr("Format"), md.audio_format);
-    if (md.audio_bitrate == -1) {
-        if (Settings::pref->isMPV() && !md.image) {
-            s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
+    if (md.hasAudio()) {
+        s += openPar(tr("Audio"));
+        s += addItem(tr("Driver"), md.ao);
+        s += addItem(tr("Format"), md.audio_format);
+        s += addItem(tr("Codec"),
+            tr("%1 - %2").arg(md.audio_codec).arg(md.audio_codec_description));
+        s += addItem(tr("Channels"), QString::number(md.audio_nch));
+        s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
+        if (md.audio_bitrate == -1) {
+            if (Settings::pref->isMPV() && !md.image) {
+                s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
+            } else {
+                s += addItem(tr("Bitrate"), tr("Not set"));
+            }
         } else {
-            s += addItem(tr("Bitrate"), tr("Unknown"));
+            s += addItem(tr("Bitrate"),
+                         tr("%1 kbps").arg(md.audio_bitrate / 1000));
         }
-    } else {
-        s += addItem(tr("Bitrate"), tr("%1 kbps").arg(md.video_bitrate / 1000));
-    }
-    s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
-    s += addItem(tr("Channels"), QString::number(md.audio_nch));
-    s += addItem(tr("Selected codec"), md.audio_codec + " - " + md.audio_codec_description);
-    s += addItem(tr("Number of tracks"), QString::number(md.audios.count()));
-    s += closePar();
+        s += addItem(tr("Number of tracks"),
+                     QString::number(md.audios.count()));
+        s += closePar();
 
-    // Audio tracks
-    addTracks(s, md.audios, tr("Audio tracks"));
+        // Audio tracks
+        addTracks(s, md.audios, tr("Audio tracks"));
+    }
 
     // Subtitles
     if (md.subs.count() > 0) {
         s += openPar(tr("Subtitles"));
 
-        row++;
         s += "<tr><th align=\"left\">" + tr("#") + "</th>";
         if (Settings::pref->isMPlayer()) {
              s += "<th align=\"left\">" +  tr("Source") + "</th>";
@@ -201,7 +223,6 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         }
         s += "<th align=\"left\">" + tr("Language") + "</th></tr>";
         for (int n = 0; n < md.subs.count(); n++) {
-            row++;
             QString t;
             switch (md.subs.itemAt(n).type()) {
                 case SubData::File: t = tr("file"); break;
@@ -223,26 +244,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         s += closePar();
     }
 
-    // Meta data
-    QString c;
-    QMapIterator<QString, QString> i(md.meta_data);
-    while (i.hasNext()) {
-        i.next();
-        c += addItem(i.key(), i.value());
-     }
-
-    if (!c.isEmpty()) {
-        s += openPar(tr("Meta data"));
-        s += c;
-        s += closePar();
-    }
-
     s += "</table></font></body></html>";
     return s;
-}
-
-QString TInfoFile::title(QString text) {
-    return "<h1>" + text + "</h1>";
 }
 
 QString TInfoFile::openPar(QString text) {
@@ -251,28 +254,12 @@ QString TInfoFile::openPar(QString text) {
 }
 
 QString TInfoFile::closePar() {
-
-    row = 0;
     return "\n";
 }
 
 QString TInfoFile::addItem(QString tag, QString value) {
-	row++;
     return "<tr><th align=\"left\" colspan=\"2\">" + tag+ "</th>"
             "<td align=\"left\" colspan=\"3\">" + value + "</td></tr>";
-}
-
-
-inline QString TInfoFile::tr(const char* sourceText,
-                             const char* comment,
-                             int n)  {
-
-#if QT_VERSION >= 0x050000
-	return QCoreApplication::translate("TInfoFile", sourceText, comment, n);
-#else
-    return QCoreApplication::translate("TInfoFile", sourceText, comment,
-                                       QCoreApplication::CodecForTr, n);
-#endif
 }
 
 } // namespace Gui
