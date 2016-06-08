@@ -1143,35 +1143,35 @@ bool TMPlayerProcess::parseLine(QString& line) {
 void TMPlayerProcess::setMedia(const QString& media) {
 
 	// TODO: Add sub_source?
-	arg << "-playing-msg"
+    args << "-playing-msg"
 		<< "ID_VIDEO_TRACK=${switch_video}\n"
 		   "ID_AUDIO_TRACK=${switch_audio}\n"
 		   "ID_ANGLE_EX=${angle}\n";
 
     if (md->image) {
-        arg << "mf://@" + temp_file_name;
+        args << "mf://@" + temp_file_name;
     } else {
-        arg << media;
+        args << media;
     }
 }
 
 void TMPlayerProcess::setFixedOptions() {
-	arg << "-noquiet"
+    args << "-noquiet"
 		<< "-slave"
 		<< "-identify"
 		<< "-panscanrange" << QString::number(1 - TConfig::ZOOM_MAX);
 
     // Need cplayer msg level 6 to catch DVDNAV, NEW TITLE
 	if (md->selected_type == TMediaData::TYPE_DVDNAV) {
-		arg << "-msglevel" << "cplayer=6";
+        args << "-msglevel" << "cplayer=6";
 	}
 }
 
 void TMPlayerProcess::disableInput() {
-	arg << "-nomouseinput";
+    args << "-nomouseinput";
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-	arg << "-input" << "nodefault-bindings:conf=/dev/null";
+    args << "-input" << "nodefault-bindings:conf=/dev/null";
 #endif
 }
 
@@ -1179,7 +1179,7 @@ void TMPlayerProcess::setCaptureDirectory(const QString& dir) {
 
 	TPlayerProcess::setCaptureDirectory(dir);
 	if (!capture_filename.isEmpty()) {
-		arg << "-capture" << "-dumpfile" << capture_filename;
+        args << "-capture" << "-dumpfile" << capture_filename;
 	}
 }
 
@@ -1188,23 +1188,23 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 	if (name == "cache") {
 		int cache = value.toInt();
 		if (cache > 31) {
-			arg << "-cache" << value.toString();
+            args << "-cache" << value.toString();
 		} else {
-			arg << "-nocache";
+            args << "-nocache";
 		}
 	} else if (name == "framedrop") {
 		QString o = value.toString();
 		if (o.contains("vo"))
-			arg << "-framedrop";
+            args << "-framedrop";
 		if (o.contains("decoder"))
-			arg << "-hardframedrop";
+            args << "-hardframedrop";
 	} else if (name == "osd-scale") {
 		QString scale = value.toString();
 		if (scale != "6") {
-			arg << "-subfont-osd-scale" << scale;
+            args << "-subfont-osd-scale" << scale;
 		}
 	} else if (name == "verbose") {
-		arg << "-v";
+        args << "-v";
 	} else if (name == "mute") {
 		// Emulate mute, executed by playingStarted()
 		mute_option_set = true;
@@ -1215,30 +1215,30 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
 			   || name == "fontconfig") {
 		bool b = value.toBool();
 		if (b) {
-			arg << "-" + name;
+            args << "-" + name;
 		} else {
-			arg << "-no" + name;
+            args << "-no" + name;
 		}
 	} else if (name == "aspect") {
 		QString s = value.toString();
 		if (!s.isEmpty()) {
 			if (s == "0") {
-				arg << "-noaspect";
+                args << "-noaspect";
 			} else {
-				arg << "-aspect";
-				arg << s;
+                args << "-aspect";
+                args << s;
 			}
 		}
 	} else {
-		arg << "-" + name;
+        args << "-" + name;
 		if (!value.isNull()) {
-			arg << value.toString();
+            args << value.toString();
 		}
 	}
 }
 
 void TMPlayerProcess::addUserOption(const QString& option) {
-	arg << option;
+    args << option;
 }
 
 void TMPlayerProcess::addVF(const QString& filter_name, const QVariant& value) {
@@ -1246,33 +1246,33 @@ void TMPlayerProcess::addVF(const QString& filter_name, const QVariant& value) {
 	QString option = value.toString();
 
 	if (filter_name == "blur" || filter_name == "sharpen") {
-		arg << "-vf-add" << "unsharp=" + option;
+        args << "-vf-add" << "unsharp=" + option;
 	} else if (filter_name == "deblock") {
-		arg << "-vf-add" << "pp=" + option;
+        args << "-vf-add" << "pp=" + option;
 	} else if (filter_name == "dering") {
-		arg << "-vf-add" << "pp=dr";
+        args << "-vf-add" << "pp=dr";
 	} else if (filter_name == "postprocessing") {
-		arg << "-vf-add" << "pp";
+        args << "-vf-add" << "pp";
 	} else if (filter_name == "lb" || filter_name == "l5") {
-		arg << "-vf-add" << "pp=" + filter_name;
+        args << "-vf-add" << "pp=" + filter_name;
 	} else if (filter_name == "subs_on_screenshots") {
 		if (option == "ass") {
-			arg << "-vf-add" << "ass";
+            args << "-vf-add" << "ass";
 		} else {
-			arg << "-vf-add" << "expand=osd=1";
+            args << "-vf-add" << "expand=osd=1";
 		}
 	} else if (filter_name == "screenshot") {
 		QString f = "screenshot";
 		if (!screenshot_dir.isEmpty()) {
 			f += "="+ QDir::toNativeSeparators(screenshot_dir + "/shot");
 		}
-		arg << "-vf-add" << f;
+        args << "-vf-add" << f;
 	} else if (filter_name == "flip") {
 		// expand + flip doesn't work well, a workaround is to add another
 		// filter between them, so that's why harddup is here
-		arg << "-vf-add" << "harddup,flip";
+        args << "-vf-add" << "harddup,flip";
 	} else if (filter_name == "expand") {
-		arg << "-vf-add" << "expand=" + option + ",harddup";
+        args << "-vf-add" << "expand=" + option + ",harddup";
 		// Note: on some videos (h264 for instance) the subtitles doesn't disappear,
 		// appearing the new ones on top of the old ones. It seems adding another
 		// filter after expand fixes the problem. I chose harddup 'cos I think
@@ -1281,20 +1281,20 @@ void TMPlayerProcess::addVF(const QString& filter_name, const QVariant& value) {
 		QString s = filter_name;
 		if (!option.isEmpty())
 			s += "=" + option;
-		arg << "-vf-add" << s;
+        args << "-vf-add" << s;
 	}
 }
 
 void TMPlayerProcess::addStereo3DFilter(const QString& in, const QString& out) {
 	QString filter = "stereo3d=" + in + ":" + out;
 	filter += ",scale"; // In my PC it doesn't work without scale :?
-	arg << "-vf-add" << filter;
+    args << "-vf-add" << filter;
 }
 
 void TMPlayerProcess::addAF(const QString& filter_name, const QVariant& value) {
 	QString s = filter_name;
 	if (!value.isNull()) s += "=" + value.toString();
-	arg << "-af-add" << s;
+    args << "-af-add" << s;
 }
 
 void TMPlayerProcess::setVolume(int v) {

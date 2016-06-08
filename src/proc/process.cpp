@@ -44,7 +44,7 @@ TProcess::~TProcess() {
 void TProcess::clearArguments() {
 
     program = "";
-    arg.clear();
+    args.clear();
 }
 
 bool TProcess::isRunning() const {
@@ -56,24 +56,24 @@ void TProcess::addArgument(const QString& a) {
     if (program.isEmpty()) {
         program = a;
     } else {
-        arg.append(a);
+        args.append(a);
     }
 }
 
 QStringList TProcess::arguments() {
 
-    QStringList l = arg;
+    QStringList l = args;
     l.prepend(program);
     return l;
 }
 
 void TProcess::start() {
-    debug << "start: program:" << program << "args:" << arg;
+    debug << "start: program:" << program << "args:" << args;
     debug << debug;
 
     remaining_output.clear();
 
-    QProcess::start(program, arg, QIODevice::ReadWrite);
+    QProcess::start(program, args, QIODevice::ReadWrite);
 }
 
 void TProcess::handleLine(QString& line) {

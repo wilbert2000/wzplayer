@@ -159,7 +159,6 @@ private:
 	bool parseVideoTrack(int id, QString name, bool selected);
 	bool parseAudioTrack(int id, const QString& lang, QString name, bool selected);
 	bool parseSubtitleTrack(int id, const QString& lang, QString name, QString type, bool selected);
-	void messageFilterNotSupported(const QString& filter_name);
 	bool parseMetaDataList(QString list);
     void requestBitrateInfo();
 };

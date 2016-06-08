@@ -64,7 +64,7 @@ protected:
 
 protected:
 	QString program;
-	QStringList arg;
+    QStringList args;
 	QByteArray remaining_output;
 
 private:
