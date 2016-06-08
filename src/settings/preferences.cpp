@@ -277,7 +277,7 @@ void TPreferences::reset() {
     useDirectoriePlaylists = false;
 
     nameBlacklist.clear();
-    titleBlacklist = QStringList() << "RARBG";
+    titleBlacklist = QStringList() << "RARBG" << "pussyrage\\.com";
     setTitleBlackList();
 
     // Log
