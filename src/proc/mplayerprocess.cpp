@@ -1430,7 +1430,9 @@ void TMPlayerProcess::frameBackStep() {
 	}
 }
 
-void TMPlayerProcess::showOSDText(const QString& text, int duration, int level) {
+void TMPlayerProcess::showOSDText(const QString& text,
+                                  int duration,
+                                  int level) {
 
 	QString s = "pausing_keep_force osd_show_text \"" + text + "\" "
 			+ QString::number(duration) + " " + QString::number(level);
@@ -1439,11 +1441,16 @@ void TMPlayerProcess::showOSDText(const QString& text, int duration, int level) 
 }
 
 void TMPlayerProcess::showFilenameOnOSD() {
-	writeToStdin("osd_show_property_text \"${filename}\" 2000 0");
+    writeToStdin("pausing_keep osd_show_property_text \"${filename}\" "
+                 + QString::number(TConfig::MESSAGE_DURATION)
+                 + " 0");
 }
 
 void TMPlayerProcess::showTimeOnOSD() {
-	writeToStdin("osd_show_property_text \"${time_pos} / ${length} (${percent_pos}%)\" 2000 0");
+    writeToStdin("pausing_keep osd_show_property_text \"${time_pos} / ${length}"
+                 " (${percent_pos}%)\" "
+                 + QString::number(TConfig::MESSAGE_DURATION)
+                 + " 0");
 }
 
 void TMPlayerProcess::setContrast(int value) {
