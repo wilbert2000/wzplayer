@@ -24,23 +24,25 @@
 #include <QStringList>
 #include "settings/preferences.h"
 
+
 class Helper {
 public:
-	// Format a time (hh:mm:ss)
-	static QString formatTime(int secs);
+    // Format time as hh:mm:ss
+    static QString formatTime(int secs);
 
-	static bool directoryContainsDVD(QString directory);
+    static bool directoryContainsDVD(QString directory);
 
 	//! Returns an int with the version number of Qt at run-time.
     //! If version is 4.3.2 it returns 40302.
-	static int qtVersion();
+    static int qtVersion();
 
-	static QStringList filesForPlaylist(const QString& initial_file,
-										Settings::TPreferences::TAddToPlaylist filter);
+    static QStringList filesForPlaylist(
+            const QString& initial_file,
+            Settings::TPreferences::TAddToPlaylist filter);
 
-	//! Tries to find the executable in the path.
-	//! Returns the path if found or empty string if not.
-	static QString findExecutable(const QString& name);
+    //! Tries to find the executable in the path.
+    //! Returns the path if found or empty string if not.
+    static QString findExecutable(const QString& name);
 
     static QString clean(const QString& name);
     static QString cleanName(const QString& name);
@@ -48,8 +50,9 @@ public:
 
 
 private:
-	static QStringList searchForConsecutiveFiles(const QString& initial_file);
-	static QStringList filesInDirectory(const QString& initial_file, const QStringList& filter);
+    static QStringList searchForConsecutiveFiles(const QString& initial_file);
+    static QStringList filesInDirectory(const QString& initial_file,
+                                        const QStringList& filter);
 };
 
 #endif // HELPER_H
