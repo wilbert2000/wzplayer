@@ -280,11 +280,6 @@ void TPreferences::reset() {
     titleBlacklist = QStringList() << "RARBG" << "pussyrage\\.com";
     setTitleBlackList();
 
-    // Log
-    log_verbose = false;
-    log_level = Log4Qt::Level::DEBUG_INT;
-    log_window_max_events = 1000;
-
     // History
     history_recents.clear();
     history_urls.clear();
@@ -369,7 +364,12 @@ void TPreferences::reset() {
 
 
 	// Advanced section
-	actions_to_run = "";
+    // Log
+    log_verbose = false;
+    log_level = Log4Qt::Level::DEBUG_INT;
+    log_window_max_events = 1000;
+
+    actions_to_run = "";
 	player_additional_options = "";
 
 #ifdef PORTABLE_APP

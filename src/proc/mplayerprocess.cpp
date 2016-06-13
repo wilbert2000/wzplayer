@@ -111,7 +111,8 @@ void TMPlayerProcess::getSelectedAngle() {
 	}
 }
 
-bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
+bool TMPlayerProcess::parseVideoProperty(const QString& name,
+                                         const QString& value) {
 
 	if (name == "ID") {
 		int id = value.toInt();
@@ -143,7 +144,8 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name, const QString& val
 	return TPlayerProcess::parseVideoProperty(name, value);
 }
 
-bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& value) {
+bool TMPlayerProcess::parseAudioProperty(const QString& name,
+                                         const QString& value) {
 
 	// Audio ID
 	if (name == "ID") {
@@ -169,8 +171,8 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name, const QString& val
 			return true;
 		}
 		if (!value.startsWith("$")) {
-            logger()->warn("parseAudioProperty: failed to parse audio track ID '"
-                           + value + "'");
+            logger()->warn("parseAudioProperty: failed to parse audio track ID"
+                           " '%1'", value);
 		}
 		return false;
 	}
@@ -210,7 +212,10 @@ bool TMPlayerProcess::parseSubID(const QString& type, int id) {
 	return true;
 }
 
-bool TMPlayerProcess::parseSubTrack(const QString& type, int id, const QString& name, const QString& value) {
+bool TMPlayerProcess::parseSubTrack(const QString& type,
+                                    int id,
+                                    const QString& name,
+                                    const QString& value) {
 
 	SubData::Type sub_type;
 	if (type == "VSID")	{
@@ -289,18 +294,20 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
 	if (name == "SUB_DEMUX") {
 		if (sub_source == SubData::Sub) {
-            logger()->debug("parseAnswer: selected subtitle track id %1 from demuxer", i);
+            logger()->debug("parseAnswer: selected subtitle track id %1 from"
+                            " demuxer", i);
 			md->subs.setSelected(SubData::Sub, i);
 			emit receivedSubtitleTrackChanged();
 		} else {
-            logger()->debug("parseAnswer: did not select subtitles from demuxer");
+            logger()->debug("parseAnswer: did not select subs from demuxer");
 		}
 		return true;
 	}
 
 	if (name == "SUB_VOB") {
 		if (sub_source == SubData::Vob) {
-            logger()->debug("parseAnswer: selected VOB subtitle track id %1", i);
+            logger()->debug("parseAnswer: selected VOB subtitle track id %1",
+                            i);
 			md->subs.setSelected(SubData::Vob, i);
 			emit receivedSubtitleTrackChanged();
 		} else {
@@ -311,7 +318,8 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
 	if (name == "SUB_FILE") {
 		if (sub_source == SubData::File) {
-            logger()->debug("parseAnswer: selected subtitle track id %1 from external file", i);
+            logger()->debug("parseAnswer: selected subtitle track id %1 from"
+                            " external file", i);
 			md->subs.setSelected(SubData::File, i);
 			emit receivedSubtitleTrackChanged();
 		} else {
@@ -341,7 +349,8 @@ bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
 	if (id == clip_info_id) {
 		result = parseMetaDataProperty(clip_info_name, value);
 	} else {
-        logger()->warn("TMPlayerProcess::parseClipInfoValue: unexpected val%1 id %1", id);
+        logger()->warn("TMPlayerProcess::parseClipInfoValue: unexpected value"
+                       " id %1", id);
 		result = false;
 	}
 	clip_info_id = -1;
@@ -465,7 +474,8 @@ void TMPlayerProcess::save() {
 }
 
 void TMPlayerProcess::dvdnavRestoreTime() {
-    logger()->debug("dvdNavRestoreTime: restoring time %1", dvdnav_time_to_restore);
+    logger()->debug("dvdNavRestoreTime: restoring time %1",
+                    dvdnav_time_to_restore);
 	// seek time, abs, exact, currently paused
 	seekPlayerTime(dvdnav_time_to_restore - 5, 2, true, false);
 }
@@ -488,7 +498,8 @@ void TMPlayerProcess::dvdnavRestore() {
 				restore_title = false;
 			}
 		} else {
-            logger()->debug("dvdnavRestore: don't have a title to restore VTS %1, canceling restore",
+            logger()->debug("dvdnavRestore: don't have a title to restore VTS"
+                            " %1, canceling restore",
 				   dvdnav_vts_to_restore);
 			return;
 		}
@@ -502,8 +513,10 @@ void TMPlayerProcess::dvdnavRestore() {
 		}
 	} else {
 		// Title
-		if (restore_title && dvdnav_title_to_restore != md->titles.getSelectedID()) {
-            logger()->debug("dvdnavRestore: restoring title %1", dvdnav_title_to_restore);
+        if (restore_title
+            && dvdnav_title_to_restore != md->titles.getSelectedID()) {
+            logger()->debug("dvdnavRestore: restoring title %1",
+                            dvdnav_title_to_restore);
 			setTitle(dvdnav_title_to_restore);
 		}
 		if (dvdnav_time_to_restore > 20) {
@@ -571,7 +584,8 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 	return TPlayerProcess::parseProperty(name, value);
 }
 
-bool TMPlayerProcess::parseChapter(int id, const QString& type, const QString& value) {
+bool TMPlayerProcess::parseChapter(int id, const QString& type,
+                                   const QString& value) {
 
 	if(type == "START") {
 		double time = value.toDouble()/1000;
@@ -583,13 +597,16 @@ bool TMPlayerProcess::parseChapter(int id, const QString& type, const QString& v
         logger()->debug("parseChapter: Chapter ID %1 ends at: %2", id, time);
 	} else {
 		md->chapters.addName(id, value);
-        logger()->debug("parseChapter: Chapter ID %1 name: '%2'", id, value.toUtf8().data());
+        logger()->debug("parseChapter: Chapter ID %1 name: '%2'",
+                        id, value.toUtf8().data());
 	}
 
 	return true;
 }
 
-bool TMPlayerProcess::parseCDTrack(const QString& type, int id, const QString& length) {
+bool TMPlayerProcess::parseCDTrack(const QString& type,
+                                   int id,
+                                   const QString& length) {
 
 	static QRegExp rx_length("(\\d+):(\\d+):(\\d+)");
 
@@ -617,7 +634,8 @@ bool TMPlayerProcess::parseTitleLength(int id, const QString& value) {
 	return true;
 }
 
-bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QString& chaps) {
+bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters,
+                                         const QString& chaps) {
 
 	static QRegExp rx_time("(\\d\\d):(\\d\\d):(\\d\\d)(.(\\d\\d\\d))?");
 
@@ -644,8 +662,10 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters, const QStrin
 bool TMPlayerProcess::parsePause() {
 
     if (md->time_sec > frame_backstep_time_start) {
-        logger()->debug("parsePause: retrying frameBackStep at %1",
-                        QString::number(md->time_sec));
+        logger()->debug("parsePause: retrying frameBackStep at %1 looking for"
+                        " %2",
+                        QString::number(md->time_sec),
+                        QString::number(frame_backstep_time_start));
         frameBackStep();
         return true;
     }
@@ -670,7 +690,8 @@ void TMPlayerProcess::convertTitlesToChapters() {
 	Maps::TTitleTracks::TTitleTrackIterator i = md->titles.getIterator();
 	double start = 0;
     foreach(const Maps::TTitleData title, md->titles) {
-		md->chapters.addChapter(title.getID() - first_title_id, title.getName(), start);
+        md->chapters.addChapter(title.getID() - first_title_id, title.getName(),
+                                start);
 		start += title.getDuration();
 	}
 
@@ -1273,10 +1294,10 @@ void TMPlayerProcess::addVF(const QString& filter_name, const QVariant& value) {
         args << "-vf-add" << "harddup,flip";
 	} else if (filter_name == "expand") {
         args << "-vf-add" << "expand=" + option + ",harddup";
-		// Note: on some videos (h264 for instance) the subtitles doesn't disappear,
-		// appearing the new ones on top of the old ones. It seems adding another
-		// filter after expand fixes the problem. I chose harddup 'cos I think
-		// it will be harmless in mplayer.
+        // Note: on some videos (h264 for instance) the subtitles doesn't
+        // disappear, appearing the new ones on top of the old ones. It seems
+        // adding another filter after expand fixes the problem. I chose harddup
+        // 'cos I think it will be harmless in mplayer.
 	} else {
 		QString s = filter_name;
 		if (!option.isEmpty())
@@ -1347,7 +1368,10 @@ void TMPlayerProcess::setSubtitlesVisibility(bool b) {
 	writeToStdin(QString("sub_visibility %1").arg(b ? 1 : 0));
 }
 
-void TMPlayerProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
+void TMPlayerProcess::seekPlayerTime(double secs,
+                                     int mode,
+                                     bool precise,
+                                     bool currently_paused) {
 	// seek <value> [type]
 	// Seek to some place in the movie.
 	// 0 is a relative seek of +/- <value> seconds (default).
@@ -1357,8 +1381,8 @@ void TMPlayerProcess::seekPlayerTime(double secs, int mode, bool precise, bool c
 	QString s = QString("seek %1 %2").arg(secs).arg(mode);
 	if (precise) s += " 1"; else s += " -1";
 
-	// pausing_keep does strange things with seek, so need to use pausing instead,
-	// hence the leakage of currently_paused.
+    // pausing_keep does strange things with seek, so need to use pausing
+    // instead, hence the leakage of currently_paused.
 	if (currently_paused)
 		s = "pausing " + s;
     paused = currently_paused;
@@ -1484,7 +1508,8 @@ void TMPlayerProcess::setSubStep(int value) {
 
 void TMPlayerProcess::seekSub(int) {
 	/* Not supported */
-	showOSDText(tr("This option is not supported by MPlayer"), TConfig::MESSAGE_DURATION, 1);
+    showOSDText(tr("seekSub is not supported by MPlayer"),
+                TConfig::MESSAGE_DURATION, 1);
 }
 
 void TMPlayerProcess::setSubForcedOnly(bool b) {
@@ -1500,11 +1525,15 @@ void TMPlayerProcess::enableKaraoke(bool b) {
 }
 
 void TMPlayerProcess::enableExtrastereo(bool b) {
-	if (b) writeToStdin("af_add extrastereo"); else writeToStdin("af_del extrastereo");
+
+    if (b) writeToStdin("af_add extrastereo");
+    else writeToStdin("af_del extrastereo");
 }
 
 void TMPlayerProcess::enableVolnorm(bool b, const QString& option) {
-	if (b) writeToStdin("af_add volnorm=" + option); else writeToStdin("af_del volnorm");
+
+    if (b) writeToStdin("af_add volnorm=" + option);
+    else writeToStdin("af_del volnorm");
 }
 
 void TMPlayerProcess::setAudioEqualizer(const QString& values) {
@@ -1512,11 +1541,13 @@ void TMPlayerProcess::setAudioEqualizer(const QString& values) {
 }
 
 void TMPlayerProcess::setAudioDelay(double delay) {
-	writeToStdin("pausing_keep_force audio_delay " + QString::number(delay) +" 1");
+    writeToStdin("pausing_keep_force audio_delay "
+                 + QString::number(delay) +" 1");
 }
 
 void TMPlayerProcess::setSubDelay(double delay) {
-	writeToStdin("pausing_keep_force sub_delay " + QString::number(delay) +" 1");
+    writeToStdin("pausing_keep_force sub_delay "
+                 + QString::number(delay) +" 1");
 }
 
 void TMPlayerProcess::setLoop(int v) {
@@ -1579,7 +1610,8 @@ void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
 			this->zoom = zoom;
 			// Map 1 - ZOOM_MAX to 0 - 1
 			zoom = (zoom - 1) / (TConfig::ZOOM_MAX - 1);
-			writeToStdin("pausing_keep_force panscan " + QString::number(zoom) + " 1");
+            writeToStdin("pausing_keep_force panscan "
+                         + QString::number(zoom) + " 1");
 		}
 	}
 }
@@ -1605,11 +1637,14 @@ void TMPlayerProcess::changeVF(const QString&, bool, const QVariant&) {
 	// not supported
 }
 
-void TMPlayerProcess::changeStereo3DFilter(bool, const QString&, const QString&) {
+void TMPlayerProcess::changeStereo3DFilter(bool,
+                                           const QString&,
+                                           const QString&) {
 	// not supported
 }
 
-void TMPlayerProcess::setSubStyles(const TAssStyles & styles, const QString& assStylesFile) {
+void TMPlayerProcess::setSubStyles(const TAssStyles& styles,
+                                   const QString& assStylesFile) {
 	if (assStylesFile.isEmpty()) {
         logger()->warn("setSubStyles: assStylesFile is invalid");
 		return;
