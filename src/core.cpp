@@ -238,13 +238,12 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
 
 void TCore::setState(TCoreState s) {
 
-	if (s != _state) {
-		_state = s;
-        logger()->debug("setState: state set to " + stateToString()
-                      + " at " + QString::number(mset.current_sec));
-        logger()->debug("setState: emit stateChanged()");
-		emit stateChanged(_state);
-	}
+    if (s != _state) {
+        _state = s;
+        logger()->debug("setState: state set to %1 at %2",
+                        stateToString(), QString::number(mset.current_sec));
+        emit stateChanged(_state);
+    }
 }
 
 QString TCore::stateToString(TCoreState state) {
@@ -705,11 +704,11 @@ void TCore::playingStarted() {
     logger()->debug("playingStarted: emit mediaInfoChanged()");
     emit mediaInfoChanged();
 
-    logger()->debug("playingStarted: done in %1ms", time.elapsed());
+    logger()->debug("playingStarted: done in %1 ms", time.elapsed());
 }
 
 void TCore::stop() {
-    logger()->debug("stop: current state: " + stateToString());
+    logger()->debug("stop: current state: %1", stateToString());
 
     stopPlayer();
     logger()->debug("stop: entering the stopped state");
@@ -718,7 +717,7 @@ void TCore::stop() {
 }
 
 void TCore::play() {
-    logger()->debug("play: current state: " + stateToString());
+    logger()->debug("play: current state: %1", stateToString());
 
     switch (proc->state()) {
         case QProcess::Running:
@@ -742,7 +741,7 @@ void TCore::play() {
 }
 
 void TCore::pause() {
-    logger()->debug("pause: current state: " + stateToString());
+    logger()->debug("pause: current state: %1", stateToString());
 
     if (proc->isRunning() && _state != STATE_PAUSED) {
         proc->setPause(true);
@@ -751,7 +750,7 @@ void TCore::pause() {
 }
 
 void TCore::playOrPause() {
-    logger()->debug("playOrPause: current state:" + stateToString());
+    logger()->debug("playOrPause: current state: %1", stateToString());
 
     if (_state == STATE_PLAYING) {
         pause();
@@ -761,7 +760,7 @@ void TCore::playOrPause() {
 }
 
 void TCore::frameStep() {
-    logger()->debug("frameStep at " + QString::number(mset.current_sec));
+    logger()->debug("frameStep at %1", QString::number(mset.current_sec));
 
 	if (proc->isRunning()) {
 		if (_state == STATE_PAUSED) {
@@ -773,7 +772,7 @@ void TCore::frameStep() {
 }
 
 void TCore::frameBackStep() {
-    logger()->debug("frameBackStep at " + QString::number(mset.current_sec));
+    logger()->debug("frameBackStep at %1", QString::number(mset.current_sec));
 
 	if (proc->isRunning()) {
 		if (_state == STATE_PAUSED) {
@@ -1802,7 +1801,8 @@ void TCore::setInPoint(double sec) {
     if (mset.in_point < 0) {
         mset.in_point = 0;
     }
-    QString msg = tr("In point set to %1").arg(Helper::formatTime(mset.in_point));
+    QString msg = tr("In point set to %1")
+                  .arg(Helper::formatTime(qRound(mset.in_point)));
 
     if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
         mset.out_point = -1;
@@ -1818,7 +1818,8 @@ void TCore::setInPoint(double sec) {
 void TCore::seekInPoint() {
 
     seekTime(mset.in_point);
-    displayMessage(tr("Seeking to %1").arg(Helper::formatTime(mset.in_point)));
+    displayMessage(tr("Seeking to %1")
+                   .arg(Helper::formatTime(qRound(mset.in_point))));
 }
 
 void TCore::clearInPoint() {
@@ -1846,7 +1847,7 @@ void TCore::setOutPoint(double sec) {
 
     QString msg;
     msg = tr("Out point set to %1, repeat set")
-          .arg(Helper::formatTime(mset.out_point));
+          .arg(Helper::formatTime(qRound(mset.out_point)));
     if (mset.in_point >= mset.out_point) {
         mset.in_point = 0;
         msg += tr(" and cleared in point");
@@ -1869,7 +1870,7 @@ void TCore::seekOutPoint() {
         seek = mdat.duration;
     }
     seekTime(seek);
-    displayMessage(tr("Seeking to %1").arg(Helper::formatTime(seek)));
+    displayMessage(tr("Seeking to %1").arg(Helper::formatTime(qRound(seek))));
 }
 
 void TCore::clearOutPoint() {
@@ -2765,7 +2766,8 @@ void TCore::onReceivedPosition(double sec) {
 
 // MPlayer only
 void TCore::onReceivedPause() {
-    logger()->debug("onReceivedPause");
+    logger()->debug("onReceivedPause: at %1",
+                    QString::number(mset.current_sec));
 
 	setState(STATE_PAUSED);
 }
@@ -3324,7 +3326,8 @@ void TCore::displayBuffering() {
 }
 
 void TCore::displayBufferingEnded() {
-	emit showMessage(tr("Playing from %1").arg(Helper::formatTime(mset.current_sec)));
+    emit showMessage(tr("Playing from %1")
+                     .arg(Helper::formatTime(qRound(mset.current_sec))));
 }
 
 void TCore::onReceivedVideoOut() {
