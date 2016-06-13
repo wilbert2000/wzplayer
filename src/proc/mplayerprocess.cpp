@@ -1456,7 +1456,9 @@ void TMPlayerProcess::setPause(bool pause) {
 
     paused = pause;
     if (pause) writeToStdin("pausing pause");
-    else writeToStdin("resume pause");
+    // else writeToStdin("resume pause"); is buggy
+    // maybe use "pausing xxx\npause"
+    else writeToStdin("pause");
 }
 
 void TMPlayerProcess::frameStep() {
