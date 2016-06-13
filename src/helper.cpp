@@ -37,29 +37,34 @@ using namespace Settings;
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Helper)
 
-
 QString Helper::formatTime(int secs) {
 
-    bool negative = secs < 0;
-	secs = abs(secs);
+    QString negative;
+    if (secs < 0) {
+        secs = -secs;
+        negative = "-";
+    }
 
-	int t = secs;
-	int hours = (int) t / 3600;
-	t -= hours * 3600;
-	int minutes = (int) t / 60;
-	t -= minutes * 60;
-	int seconds = t;
+    int hours = 0;
+    if (secs >= 3600) {
+        hours = (int) secs / 3600;
+        secs -= hours * 3600;
+    }
+    int minutes = (int) secs / 60;
+    secs -= minutes * 60;
 
     if (hours == 0) {
-        return QString("%1%2:%3").arg(negative ? "-" : "")
+        return QString("%1%2:%3")
+                .arg(negative)
                 .arg(minutes, 2, 10, QChar('0'))
-                .arg(seconds, 2, 10, QChar('0'));
-    } else {
-        return QString("%1%2:%3:%4").arg(negative ? "-" : "")
-                .arg(hours, 2, 10, QChar('0'))
-                .arg(minutes, 2, 10, QChar('0'))
-                .arg(seconds, 2, 10, QChar('0'));
+                .arg(secs, 2, 10, QChar('0'));
     }
+
+    return QString("%1%2:%3:%4")
+            .arg(negative)
+            .arg(hours, 2, 10, QChar('0'))
+            .arg(minutes, 2, 10, QChar('0'))
+            .arg(secs, 2, 10, QChar('0'));
 }
 
 bool Helper::directoryContainsDVD(QString directory) {
