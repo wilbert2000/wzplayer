@@ -50,23 +50,19 @@ protected slots:
 	virtual void onMediaInfoChanged();
     virtual void onMediaSettingsChanged();
 
-	void displayTime(QString text);
-	void displayFrame(int frame);
 	void displayInOutPoints();
 	void displayVideoInfo();
+    void displayFrames(bool);
 
 private:
     QLabel* video_info_label;
     QLabel* in_out_points_label;
     QLabel* time_label;
-    QLabel* frame_label;
 
     Action::TAction* viewVideoInfoAct;
     Action::TAction* viewInOutPointsAct;
     Action::TAction* viewVideoTimeAct;
-    Action::TAction* viewFrameCounterAct;
-
-	int last_second;
+    Action::TAction* viewFramesAct;
 
 	void createStatusBar();
 	void createActions();

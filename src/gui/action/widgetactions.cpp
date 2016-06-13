@@ -77,15 +77,18 @@ void TTimeSliderAction::setPos() {
 
 void TTimeSliderAction::setPosition(double sec) {
 
-    pos = 0;
+    int p = 0;
     if (sec > 0 && duration > 0.1) {
-        pos = qRound((sec * max_pos) / duration);
-        if (pos > max_pos) {
-            pos = max_pos;
+        p = qRound((sec * max_pos) / duration);
+        if (p > max_pos) {
+            p = max_pos;
         }
     }
 
-    setPos();
+    if (p != pos) {
+        pos = p;
+        setPos();
+    }
 }
 
 void TTimeSliderAction::setDuration(double t) {
@@ -220,39 +223,6 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
 
 	return slider;
-}
-
-
-TTimeLabelAction::TTimeLabelAction(QWidget* parent)
-	: TWidgetAction(parent) {
-}
-
-TTimeLabelAction::~TTimeLabelAction() {
-}
-
-void TTimeLabelAction::setText(const QString& s) {
-
-	_text = s;
-	emit newText(s);
-}
-
-QWidget* TTimeLabelAction::createWidget (QWidget* parent) {
-
-    // TODO: margins and loses color when loaded into toolbar
-    QLabel* time_label = new QLabel(parent);
-    time_label->setObjectName("display_time_label");
-    time_label->setAutoFillBackground(true);
-    ColorUtils::setBackgroundColor(time_label, QColor(0,0,0));
-    ColorUtils::setForegroundColor(time_label, QColor(255,255,255));
-    time_label->setFrameShape(QFrame::Panel);
-    time_label->setFrameShadow(QFrame::Sunken);
-    time_label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    time_label->setText("00:00 / 00:00");
-
-    connect(this, SIGNAL(newText(const QString&)),
-            time_label, SLOT(setText(const QString&)));
-
-	return time_label;
 }
 
 } // namespace Action

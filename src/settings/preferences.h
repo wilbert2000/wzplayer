@@ -399,6 +399,7 @@ public:
     //! to play
 	bool use_edl_files;
     int time_to_kill_player;
+    bool show_frames;
 
     //! Number of times to show the balloon remembering that the program
     //! is still running in the system tray.

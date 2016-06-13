@@ -85,6 +85,7 @@ private:
     double duration;
 
     void setPos();
+
 private slots:
     void onPosChanged(int value);
     void onDraggingPosChanged(int value);
@@ -123,29 +124,6 @@ private:
 
 private slots:
 	void valueSliderChanged(int value);
-};
-
-
-class TTimeLabelAction : public TWidgetAction {
-	Q_OBJECT
-
-public:
-	TTimeLabelAction(QWidget* parent);
-    virtual ~TTimeLabelAction();
-
-	virtual QString text() const { return _text; }
-
-public slots:
-    virtual void setText(const QString& s);
-
-signals:
-    void newText(const QString& s);
-
-protected:
-	virtual QWidget* createWidget(QWidget* parent);
-
-private:
-	QString _text;
 };
 
 } // namespace Action

@@ -351,7 +351,6 @@ signals:
 
     void positionChanged(double sec);
     void durationChanged(double);
-	void showFrame(int frame);
 
 	void showMessage(const QString& text);
 	void showMessage(const QString& text, int time);

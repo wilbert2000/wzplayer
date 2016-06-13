@@ -35,6 +35,7 @@ TMediaData::TMediaData() :
     image(false),
 
     start_sec(0),
+    start_sec_player(0),
     start_sec_set(false),
     time_sec(0),
     duration(0),
@@ -196,8 +197,10 @@ void TMediaData::list() const {
     logger()->debug("valid disc URL: %1", disc.valid);
     logger()->debug("stream_url: '%1'", stream_url);
 
-    logger()->debug("start: %1", QString::number(start_sec));
+    logger()->debug("start sec: %1", QString::number(start_sec));
+    logger()->debug("start sec player: %1", QString::number(start_sec_player));
     logger()->debug("start sec set: %1", start_sec_set);
+    logger()->debug("fuzzy time: %1", fuzzy_time);
     logger()->debug("time_sec: %1", QString::number(time_sec));
     logger()->debug("duration: %1", QString::number(duration));
 

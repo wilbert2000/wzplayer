@@ -155,7 +155,6 @@ signals:
 	void receivedVideoOut();
 	void durationChanged(double);
 	void receivedPosition(double sec);
-	void receivedFrame(int frame);
 	void receivedPause();
 
 	void receivedMessage(const QString&);
@@ -209,17 +208,14 @@ protected:
 	double guiTimeToPlayerTime(double sec);
 	double playerTimeToGuiTime(double sec);
 
-	virtual int getFrame(double time_sec, const QString& line) = 0;
 	void notifyTitleTrackChanged(int new_title);
 	void notifyDuration(double duration);
 	virtual void checkTime(double sec);
-	void notifyTime(double time_sec, const QString& line);
+    void notifyTime(double time_sec);
 	bool waitForAnswers();
 
 	virtual void playingStarted();
 	virtual bool parseLine(QString& line);
-    virtual bool parseStatusLine(double time_sec, double duration, QRegExp& rx,
-                                 QString& line);
 	virtual bool parseAudioProperty(const QString& name, const QString& value);
 	virtual bool parseVideoProperty(const QString& name, const QString& value);
 	virtual bool parseMetaDataProperty(QString name, QString value);
@@ -231,7 +227,6 @@ protected slots:
 private:
 	int line_count;
 	int waiting_for_answers_safe_guard;
-	int prev_frame;
 
     QTemporaryFile temp_file;
 

@@ -117,16 +117,17 @@ public:
 	virtual void save();
 
 protected:
-	virtual int getFrame(double sec, const QString& line);
-
 	virtual void playingStarted();
 	virtual bool parseLine(QString& line);
-	virtual bool parseStatusLine(double seconds, double duration, QRegExp& rx, QString& line);
 	virtual bool parseAudioProperty(const QString& name, const QString& value);
 	virtual bool parseVideoProperty(const QString& name, const QString& value);
 	virtual bool parseProperty(const QString& name, const QString& value);
 
 private:
+    bool start_frame_set;
+    int start_frame;
+    double frame_off_by_one;
+
 	double zoom;
 	double pan_x;
 	double pan_y;
@@ -180,7 +181,9 @@ private:
 	void dvdnavSave();
 	void dvdnavRestore();
 
-	bool parseSubID(const QString& type, int id);
+    bool parseStatusLine(double secs, const QString& line);
+    void parseFrame(double& s, const QString& line);
+    bool parseSubID(const QString& type, int id);
 	bool parseSubTrack(const QString& type, int id, const QString& name, const QString& value);
 	bool parseChapter(int id, const QString& type, const QString& value);
 	bool parseClipInfoName(int id, const QString& name);

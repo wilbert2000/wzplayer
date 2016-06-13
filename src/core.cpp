@@ -90,9 +90,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
     connect(proc, SIGNAL(receivedPosition(double)),
             this, SLOT(onReceivedPosition(double)));
 
-    connect(proc, SIGNAL(receivedFrame(int)),
-			this, SIGNAL(showFrame(int)));
-
 	connect(proc, SIGNAL(receivedPause()),
 			this, SLOT(onReceivedPause()));
 
@@ -2716,23 +2713,17 @@ void TCore::handleOutPoint() {
 
 void TCore::onReceivedPosition(double sec) {
 
-	mset.current_sec = sec;
+    mset.current_sec = sec;
 
     handleOutPoint();
 
-	// Update GUI once per second
-	static int last_second = -11;
-    int sec_int = (int) sec;
-    if (sec_int == last_second)
-		return;
-    last_second = sec_int;
-
     emit positionChanged(sec);
 
-	// Check chapter
-	if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
-		return;
-	}
+    // Check chapter
+    if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
+        return;
+    }
+
 	int chapter_id = mdat.chapters.getSelectedID();
 	if (chapter_id >= 0) {
 		Maps::TChapterData& chapter = mdat.chapters[chapter_id];

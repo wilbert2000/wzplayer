@@ -66,6 +66,9 @@ void TMPlayerProcess::clearSubSources() {
 
 bool TMPlayerProcess::startPlayer() {
 
+    start_frame_set = false;
+    start_frame = 0;
+
 	zoom = 1;
 	pan_x = 0;
 	pan_y = 0;
@@ -390,8 +393,9 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
 
 	// Reset start time and time
 	md->start_sec = 0;
-	md->start_sec_set = false;
-	notifyTime(0, "");
+    md->start_sec_player = 0;
+    md->start_sec_set = false;
+    notifyTime(0);
 
 	if (title <= 0) {
 		// Menu: clear selected title, duration and chapters
@@ -429,7 +433,7 @@ bool TMPlayerProcess::dvdnavTitleIsMenu() {
     logger()->debug("dvdnavTitleIsMenu");
 
 	if (notified_player_is_running) {
-		notifyTime(0, "");
+        notifyTime(0);
 		notifyDuration(0);
 		// Menus can have a length...
 		writeToStdin("get_property length");
@@ -703,20 +707,6 @@ void TMPlayerProcess::convertTitlesToChapters() {
 		   md->chapters.count());
 }
 
-int TMPlayerProcess::getFrame(double sec, const QString& line) {
-	Q_UNUSED(sec)
-
-	// Check for frame in status line
-	static QRegExp rx_frame("^[AV]:.* (\\d+)\\/.\\d+");
-	if (rx_frame.indexIn(line) >= 0) {
-		return rx_frame.cap(1).toInt();
-	}
-
-	// Status line timestamp resolution is only 0.1, so can be off by 10%
-	// return qRound(sec * fps);
-	return 0;
-}
-
 void TMPlayerProcess::notifyChanges() {
 
 	if (video_tracks_changed) {
@@ -800,10 +790,69 @@ void TMPlayerProcess::playingStarted() {
 	TPlayerProcess::playingStarted();
 }
 
-bool TMPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
+void TMPlayerProcess::parseFrame(double& s, const QString& line) {
 
-	if (TPlayerProcess::parseStatusLine(time_sec, duration, rx, line))
-		return true;
+    static QRegExp rx_frame("(\\d+)\\/");
+
+    // Check for frame in status line. Available types:
+    // 1 - no frames
+    // 2 - exact frames, determining the time stamp
+    // 3 - played frames, always incrementing
+
+    md->fuzzy_time = "";
+    if (md->video_fps > 0 && rx_frame.indexIn(line) >= 0) {
+        int f = rx_frame.cap(1).toInt();
+        if (f > 0) {
+            if (!start_frame_set) {
+                start_frame_set = true;
+                start_frame = f;
+                logger()->debug("parseFrame: start frame set to %1. l: %2",
+                                start_frame, line);
+                frame_off_by_one = 0.05 + 1 / md->video_fps;
+            }
+
+            double sf = (f - start_frame) / md->video_fps;
+            double d = sf - s;
+            double da = qAbs(d);
+
+            if (da <= 0.05) {
+                s = sf;
+                md->fuzzy_time = "=";
+            } else if (da <= frame_off_by_one) {
+                if (logger()->isTraceEnabled()) {
+                    logger()->trace(QString("parseFrame: frame %1, start frame"
+                        " %2, off by one. d: %3, l: %4")
+                        .arg(f).arg(start_frame).arg(d).arg(line));
+                }
+                if (d < 0) {
+                    start_frame--;
+                    md->fuzzy_time = ">";
+                } else {
+                    start_frame++;
+                    md->fuzzy_time = "<";
+                }
+            } else {
+                // Resync start frame
+                int nsf = f - qRound(s * md->video_fps) + 1;
+                if (logger()->isTraceEnabled()) {
+                    logger()->trace(QString("parseFrame: frame %1 is out of"
+                        " sync, updating start frame from %2 to %3."
+                        " s frame: %4, s: %5, d: %6, l: %7")
+                       .arg(f).arg(start_frame).arg(nsf)
+                       .arg(sf).arg(s).arg(d).arg(line));
+                }
+                start_frame = nsf;
+                md->fuzzy_time = QString::fromUtf8("\u00B1"); // +/- char
+            }
+        }
+    }
+}
+
+bool TMPlayerProcess::parseStatusLine(double secs, const QString& line) {
+
+    parseFrame(secs, line);
+
+    notifyTime(secs);
 
 	if (notified_player_is_running) {
 		// Normal way to go, playing, except for the first frame
@@ -811,16 +860,18 @@ bool TMPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp&
 
 		// Check for changes in duration once in a while.
 		// Abs, to protect against time wrappers like TS.
-		if (qAbs(time_sec - check_duration_time) > check_duration_time_diff) {
+        if (!paused && qAbs(secs - check_duration_time)
+            > check_duration_time_diff) {
 			// Ask for length
 			writeToStdin("get_property length");
 			// Wait another while
-			check_duration_time = time_sec;
+            check_duration_time = secs;
 			// Just a little longer
 			check_duration_time_diff *= 4;
 		}
 	} else {
-		// First and only run of state playing. Base sets notified_player_is_running.
+        // First and only run of state playing.
+        // Base sets notified_player_is_running.
 		playingStarted();
 	}
 
@@ -830,7 +881,8 @@ bool TMPlayerProcess::parseStatusLine(double time_sec, double duration, QRegExp&
 bool TMPlayerProcess::parseLine(QString& line) {
 
 	// Status line
-	static QRegExp rx_av("^[AV]: *([0-9,:.-]+)");
+    static QRegExp rx_av("^A: .* V: +([0-9.\\-,:]*) A");
+    static QRegExp rx_a_or_v("^[AV]: *([0-9.\\-,:]+)");
 
 	// Answers to queries
 	static QRegExp rx_answer("^ANS_(.+)=(.*)");
@@ -840,7 +892,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	// Video and audio tracks
 	static QRegExp rx_video_track("^ID_VID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_track("^ID_AID_(\\d+)_(LANG|NAME)\\s*=\\s*(.*)");
-	static QRegExp rx_audio_track_alt("^audio stream: \\d+ format: (.*) language: (.*) aid: (\\d+)");
+    static QRegExp rx_audio_track_alt("^audio stream: \\d+ format: (.*)"
+                                      " language: (.*) aid: (\\d+)");
 	// Video and audio properties
 	static QRegExp rx_video_prop("^ID_VIDEO_([A-Z_]+)\\s*=\\s*(.*)");
 	static QRegExp rx_audio_prop("^ID_AUDIO_([A-Z_]+)\\s*=\\s*(.*)");
@@ -890,7 +943,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	// Stream title and url
 	static QRegExp rx_stream_title("StreamTitle='(.*)';");
-	static QRegExp rx_stream_title_and_url("StreamTitle='(.*)';StreamUrl='(.*)';");
+    static QRegExp rx_stream_title_and_url("StreamTitle='(.*)';"
+                                           "StreamUrl='(.*)';");
 
 	// Screen shot
 	static QRegExp rx_screenshot("^\\*\\*\\* screenshot '(.*)'");
@@ -910,7 +964,8 @@ bool TMPlayerProcess::parseLine(QString& line) {
 	static QRegExp rx_error_no_stream_found("^No stream found to handle url ");
 
 	// Font cache
-	static QRegExp rx_fontcache("^\\[ass\\] Updating font cache|^\\[ass\\] Init");
+    static QRegExp rx_fontcache("^\\[ass\\] Updating font"
+                                " cache|^\\[ass\\] Init");
 
 	// General messages to pass on to core
 	static QRegExp rx_message("^(Playing "
@@ -922,10 +977,13 @@ bool TMPlayerProcess::parseLine(QString& line) {
 							  "|libdvdread: Get key )");
 
 
-	// Parse A: V: status line
-	if (rx_av.indexIn(line) >= 0) {
-		return parseStatusLine(rx_av.cap(1).toDouble(), 0, rx_av, line);
-	}
+    // Parse A: V: status line
+    if (rx_av.indexIn(line) >= 0) {
+        return parseStatusLine(rx_av.cap(1).toDouble(), line);
+    }
+    if (rx_a_or_v.indexIn(line) >= 0) {
+        return parseStatusLine(rx_a_or_v.cap(1).toDouble(), line);
+    }
 
     // Messages that kill the log
     if (rx_kill_line.indexIn(line) >= 0)

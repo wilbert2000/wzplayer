@@ -52,7 +52,7 @@ void TDefault::createActions() {
 
 	// Statusbar
     viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
-        tr("&Video info"), "view_video_info");
+                                           tr("&Video info"));
 	viewVideoInfoAct->setCheckable(true);
     viewVideoInfoAct->setChecked(true);
     statusbar_menu->addAction(viewVideoInfoAct);
@@ -60,7 +60,7 @@ void TDefault::createActions() {
             video_info_label, SLOT(setVisible(bool)));
 
     viewInOutPointsAct = new Action::TAction(this, "toggle_in_out_points",
-        tr("&In-out points"), "view_in_out_points");
+                                             tr("&In-out points"));
     viewInOutPointsAct->setCheckable(true);
     viewInOutPointsAct->setChecked(true);
     statusbar_menu->addAction(viewInOutPointsAct);
@@ -68,20 +68,19 @@ void TDefault::createActions() {
             in_out_points_label, SLOT(setVisible(bool)));
 
     viewVideoTimeAct = new Action::TAction(this, "toggle_video_time",
-        tr("&Video time"), "view_video_time");
+                                           tr("&Video time"));
     viewVideoTimeAct->setCheckable(true);
     viewVideoTimeAct->setChecked(true);
     statusbar_menu->addAction(viewVideoTimeAct);
     connect(viewVideoTimeAct, SIGNAL(toggled(bool)),
             time_label, SLOT(setVisible(bool)));
 
-    viewFrameCounterAct = new Action::TAction(this, "toggle_frame_counter",
-        tr("&Frame counter"), "frame_counter");
-	viewFrameCounterAct->setCheckable(true);
-    viewFrameCounterAct->setChecked(false);
-    statusbar_menu->addAction(viewFrameCounterAct);
-    connect(viewFrameCounterAct, SIGNAL(toggled(bool)),
-            frame_label, SLOT(setVisible(bool)));
+    viewFramesAct = new Action::TAction(this, "toggle_frames", tr("&Frames"));
+    viewFramesAct->setCheckable(true);
+    viewFramesAct->setChecked(false);
+    statusbar_menu->addAction(viewFramesAct);
+    connect(viewFramesAct, SIGNAL(toggled(bool)),
+            this, SLOT(displayFrames(bool)));
 }
 
 void TDefault::createStatusBar() {
@@ -128,49 +127,23 @@ void TDefault::createStatusBar() {
     time_label->setText("00:00 / 00:00");
     statusBar()->addPermanentWidget(time_label, 0);
     connect(this, SIGNAL(timeChanged(QString)),
-            this, SLOT(displayTime(QString)));
-
-    frame_label = new QLabel(statusBar());
-    frame_label->setObjectName("frame_label");
-    ColorUtils::setBackgroundColor(frame_label, bgc);
-    ColorUtils::setForegroundColor(frame_label, fgc);
-    frame_label->setFrameShape(QFrame::NoFrame);
-    margins.setLeft(0);
-    frame_label->setContentsMargins(margins);
-    frame_label->setText("00");
-    frame_label->hide();
-    statusBar()->addPermanentWidget(frame_label, 0);
-	connect(this, SIGNAL(frameChanged(int)),
-			this, SLOT(displayFrame(int)));
+            time_label, SLOT(setText(QString)));
 }
 
-void TDefault::displayTime(QString text) {
-    time_label->setText(text);
-}
+void TDefault::displayFrames(bool b) {
 
-void TDefault::displayFrame(int frame) {
-
-    if (frame_label->isVisible()) {
-        if (core->mdat.video_fps > 0) {
-            QString s = QString::number(frame % qRound(core->mdat.video_fps));
-            if (s.length() < 2) {
-                s = "0" + s;
-            }
-            frame_label->setText(s);
-        } else {
-            frame_label->setNum(frame);
-        }
-	}
+    pref->show_frames = b;
+    onDurationChanged(core->mdat.duration);
 }
 
 void TDefault::displayInOutPoints() {
 
 	QString s;
-	int secs = core->mset.in_point;
+    int secs = qRound(core->mset.in_point);
     if (secs > 0)
         s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
 
-	secs = core->mset.out_point;
+    secs = qRound(core->mset.out_point);
     if (secs > 0) {
 		if (!s.isEmpty()) s += " ";
         s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
@@ -225,7 +198,6 @@ void TDefault::saveConfig() {
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
     pref->setValue("in_out_points", viewInOutPointsAct->isChecked());
     pref->setValue("video_time", viewVideoTimeAct->isChecked());
-    pref->setValue("frame_counter", viewFrameCounterAct->isChecked());
 	pref->endGroup();
 }
 
@@ -238,7 +210,7 @@ void TDefault::loadConfig() {
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
     viewInOutPointsAct->setChecked(pref->value("in_out_points", true).toBool());
     viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
-    viewFrameCounterAct->setChecked(pref->value("frame_counter", false).toBool());
+    viewFramesAct->setChecked(pref->show_frames);
 	pref->endGroup();
 }
 

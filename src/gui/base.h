@@ -169,7 +169,6 @@ signals:
     void enableActions();
 
 	void timeChanged(QString time_ready_to_print);
-	void frameChanged(int);
 
     void preferencesChanged();
 	void mediaSettingsChanged(Settings::TMediaSettings* mset);
@@ -187,18 +186,21 @@ signals:
     void requestRestart();
 
 protected slots:
-	virtual void closeWindow();
-	// Replace for setCaption (in Qt 4 it's not virtual)
-	virtual void setWindowCaption(const QString& title);
+    virtual void closeWindow();
 
-	virtual void onStateChanged(TCoreState state);
+    // Replace for setCaption (in Qt 4 it's not virtual)
+    virtual void setWindowCaption(const QString& title);
 
-	virtual void onMediaSettingsChanged();
-	virtual void onVideoOutResolutionChanged(int w, int h);
-    virtual void onPositionChanged(double);
-	virtual void gotDuration(double);
-	virtual void onNewMediaStartedPlaying();
-	virtual void onMediaInfoChanged();
+    virtual void onStateChanged(TCoreState state);
+
+    virtual void onPositionChanged(double, bool changed = false);
+    virtual void onDurationChanged(double duration);
+
+    virtual void onMediaSettingsChanged();
+    virtual void onVideoOutResolutionChanged(int w, int h);
+
+    virtual void onNewMediaStartedPlaying();
+    virtual void onMediaInfoChanged();
 
 	virtual void updateVideoEqualizer();
 	virtual void updateAudioEqualizer();
@@ -311,7 +313,6 @@ protected:
 
 	Action::TTimeSliderAction* timeslider_action;
 	Action::TVolumeSliderAction* volumeslider_action;
-	Action::TTimeLabelAction* time_label_action;
 
     Playlist::TPlaylist* playlist;
 	TLogWindow* log_window;
@@ -332,6 +333,9 @@ protected:
     bool switching_to_fullscreen;
 
 private:
+    QString positionText;
+    QString durationText;
+
 	bool menubar_visible;
 	bool statusbar_visible;
 	bool fullscreen_menubar_visible;

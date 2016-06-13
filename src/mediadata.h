@@ -62,9 +62,12 @@ public:
 	// Streams
 	QString stream_url;
 
-	// Start time reported by player
-	double start_sec;
-	bool start_sec_set;
+    // Start time currently in use
+    double start_sec;
+    // Start time reported by player
+    double start_sec_player;
+    bool start_sec_set;
+    QString fuzzy_time;
 	// Current time video, without start time substracted
 	// See TMediaSettings for time with start time substracted
 	double time_sec;

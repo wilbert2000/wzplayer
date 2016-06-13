@@ -115,11 +115,9 @@ public:
 
 protected:
 	virtual void playingStarted();
-	virtual int getFrame(double time_sec, const QString& line);
 	virtual void checkTime(double sec);
 
 	virtual bool parseLine(QString& line);
-	virtual bool parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line);
 	virtual bool parseProperty(const QString& name, const QString& value);
 	bool isOptionAvailable(const QString& option);
 	void addVFIfAvailable(const QString& vf, const QString& value = QString::null);
@@ -152,8 +150,8 @@ private:
 
 	void convertChaptersToTitles();
 	void fixTitle();
-	void parseStatusLine(QRegExp& rx);
-	bool parseChapter(int id, double start, QString title);
+    bool parseStatusLine(const QRegExp& rx);
+    bool parseChapter(int id, double start, QString title);
 	bool parseTitleSwitched(QString disc_type, int title);
 	bool parseTitleNotFound(const QString& disc_type);
 	bool parseVideoTrack(int id, QString name, bool selected);

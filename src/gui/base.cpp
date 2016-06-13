@@ -232,14 +232,12 @@ void TBase::createPlayerWindow() {
 
 void TBase::createCore() {
 
-	core = new TCore(this, playerwindow);
+    core = new TCore(this, playerwindow);
 
     connect(core, SIGNAL(positionChanged(double)),
             this, SLOT(onPositionChanged(double)));
-	connect(core, SIGNAL(showFrame(int)),
-			this, SIGNAL(frameChanged(int)));
-	connect(core, SIGNAL(durationChanged(double)),
-			this, SLOT(gotDuration(double)));
+    connect(core, SIGNAL(durationChanged(double)),
+            this, SLOT(onDurationChanged(double)));
 
 	connect(core, SIGNAL(stateChanged(TCoreState)),
 			this, SLOT(onStateChanged(TCoreState)));
@@ -372,10 +370,6 @@ void TBase::createActions() {
 	volumeslider_action->setObjectName("volumeslider_action");
 	connect(volumeslider_action, SIGNAL(valueChanged(int)), core, SLOT(setVolume(int)));
 	connect(core, SIGNAL(volumeChanged(int)), volumeslider_action, SLOT(setValue(int)));
-
-	// Time label actions
-	time_label_action = new TTimeLabelAction(this);
-    time_label_action->setObjectName("display_time");
 
 	// Menu bar
 	viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"), "", Qt::Key_F2);
@@ -1922,22 +1916,64 @@ void TBase::displayMessage(const QString& message, int time) {
 	statusBar()->showMessage(message, time);
 }
 
-void TBase::onPositionChanged(double sec) {
-    //logger()->debug("onPositionChanged: %1", sec);
+void TBase::onPositionChanged(double sec, bool changed) {
 
-	QString time =
-		Helper::formatTime((int) sec) + " / " +
-		Helper::formatTime(qRound(core->mdat.duration));
-	time_label_action->setText(time);
+    static int lastSec = -1111;
 
-	emit timeChanged(time);
+    // TODO: <-1..0> looses sign
+    int s = sec;
+
+    if (s != lastSec) {
+        lastSec = s;
+        positionText = Helper::formatTime(s);
+        changed = true;
+    }
+
+    QString frames;
+    if (pref->show_frames) {
+        double fps = core->mdat.video_fps;
+        if (fps > 0) {
+            sec -= s;
+            if (sec < 0) {
+                sec = -sec;
+            }
+            sec *= fps;
+            // Fix floats. Example 0.84 * 25 = 20 if floored instead of 21
+            sec += 0.0001;
+            s = sec;
+            if (s < 10) {
+                frames = ".0" + QString::number(s);
+            } else {
+                frames = "."  + QString::number(s);
+            }
+            frames += core->mdat.fuzzy_time;
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        QString time = positionText + frames + durationText;
+        emit timeChanged(time);
+    }
 }
 
-void TBase::gotDuration(double duration) {
-	Q_UNUSED(duration)
+void TBase::onDurationChanged(double duration) {
 
-	// Uses duration in text
-    onPositionChanged(core->mset.current_sec);
+    durationText = " / " + Helper::formatTime(qRound(duration));
+
+    if (pref->show_frames) {
+        double fps = core->mdat.video_fps;
+        if (fps > 0) {
+            duration -= (int) duration;
+            QString frames = QString::number(qRound(duration * fps));
+            if (frames.length() < 2) {
+                frames = "0" + frames;
+            }
+            durationText += "." + frames;
+        }
+    }
+
+    onPositionChanged(core->mset.current_sec, true);
 }
 
 void TBase::changeSize(double factor) {
@@ -2213,7 +2249,7 @@ void TBase::onMediaSettingsChanged() {
 
 void TBase::onDragPositionChanged(double t) {
 
-    QString s = tr("Jump to %1").arg(Helper::formatTime(t));
+    QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
 	statusBar()->showMessage(s, 1000);
 
 	if (pref->fullscreen) {

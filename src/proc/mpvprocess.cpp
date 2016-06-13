@@ -349,13 +349,6 @@ bool TMPVProcess::parseTitleNotFound(const QString&) {
 void TMPVProcess::save() {
 }
 
-int TMPVProcess::getFrame(double time_sec, const QString& line) {
-	Q_UNUSED(line)
-
-	// Emulate frames.
-	return qRound(time_sec * md->video_fps);
-}
-
 void TMPVProcess::convertChaptersToTitles() {
 
 	// Just for safety...
@@ -406,7 +399,7 @@ void TMPVProcess::playingStarted() {
 		md->start_sec = md->time_sec;
 		// No longer need rollover protection (though not set for MPV anyway).
 		md->mpegts = false;
-		notifyTime(md->time_sec, "");
+        notifyTime(md->time_sec);
 	}
 
 	if (TMediaData::isCD(md->detected_type)) {
@@ -425,19 +418,19 @@ void TMPVProcess::requestBitrateInfo() {
 	writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
 }
 
-bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx, QString& line) {
+bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     // Parse custom status line
     // STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
 
     paused = rx.cap(3) == "yes";
 
-    if (TPlayerProcess::parseStatusLine(time_sec, duration, rx, line)) {
+    notifyDuration(rx.cap(2).toDouble());
+    notifyTime(rx.cap(1).toDouble());
+
+    // Any pending questions?
+    if (waitForAnswers()) {
         return true;
     }
-
-    // Parse status flags
-    bool buffering = rx.cap(4) == "yes";
-    bool idle = rx.cap(5) == "yes";
 
     if (!notified_player_is_running) {
         // First and only run of state playing or paused
@@ -455,6 +448,10 @@ bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx,
         return true;
     }
 
+    // Parse status flags
+    bool buffering = rx.cap(4) == "yes";
+    bool idle = rx.cap(5) == "yes";
+
     if (buffering or idle) {
         //logger()->debug("parseStatusLine: buffering");
         received_buffering = true;
@@ -467,7 +464,7 @@ bool TMPVProcess::parseStatusLine(double time_sec, double duration, QRegExp& rx,
         emit receivedBufferingEnded();
     }
 
-    if (request_bit_rate_info && time_sec > 11) {
+    if (request_bit_rate_info && md->time_sec > 11) {
         request_bit_rate_info = false;
         requestBitrateInfo();
     }
@@ -536,9 +533,7 @@ bool TMPVProcess::parseLine(QString& line) {
 
 	// Parse custom status line
 	if (rx_status.indexIn(line) >= 0) {
-		return parseStatusLine(rx_status.cap(1).toDouble(),
-							   rx_status.cap(2).toDouble(),
-							   rx_status, line);
+        return parseStatusLine(rx_status);
 	}
 
 	// Let parent have a look at it

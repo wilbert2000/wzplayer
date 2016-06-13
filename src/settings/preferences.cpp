@@ -379,10 +379,12 @@ void TPreferences::reset() {
 	player_additional_video_filters = "";
 	player_additional_audio_filters = "";
 
-	use_edl_files = true;
-	change_video_equalizer_on_startup = true;
+    use_edl_files = true;
     time_to_kill_player = 7000;
-	balloon_count = 5;
+    show_frames = false;
+
+    balloon_count = 5;
+    change_video_equalizer_on_startup = true;
     clean_config = false;
 
 #ifdef MPRIS2
@@ -743,6 +745,7 @@ void TPreferences::save() {
 
     setValue("use_edl_files", use_edl_files);
     setValue("time_to_kill_player", time_to_kill_player);
+    setValue("show_frames", show_frames);
 
     setValue("balloon_count", balloon_count);
 
@@ -1266,6 +1269,7 @@ void TPreferences::load() {
     if (time_to_kill_player < 5000) {
         time_to_kill_player = 5000;
     }
+    show_frames = value("show_frames", show_frames).toBool();
 
     balloon_count = value("balloon_count", balloon_count).toInt();
 

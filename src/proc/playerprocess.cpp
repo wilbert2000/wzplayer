@@ -103,8 +103,6 @@ bool TPlayerProcess::startPlayer() {
 	received_end_of_file = false;
 	quit_send = false;
 
-	prev_frame = -11111;
-
 	// Start the player process
 	start();
 	// and wait for it to come up
@@ -144,25 +142,26 @@ void TPlayerProcess::playingStarted() {
 
 void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
 
-	int selected = md->titles.getSelectedID();
-	if (new_title != selected) {
+    int selected = md->titles.getSelectedID();
+    if (new_title != selected) {
         logger()->debug("notifyTitleTrackChanged: title changed from %1 to %2",
-			   selected, new_title);
-		md->titles.setSelectedID(new_title);
-		if (notified_player_is_running) {
-            logger()->debug("notifyTitleTrackChanged: emit receivedTitleTrackChanged()");
-			emit receivedTitleTrackChanged(new_title);
-		}
-	} else {
-        logger()->debug("notifyTitleTrackChanged: current title already set to %1",
-			   new_title);
-	}
+                        selected, new_title);
+        md->titles.setSelectedID(new_title);
+        if (notified_player_is_running) {
+            logger()->debug("notifyTitleTrackChanged: emit"
+                            " receivedTitleTrackChanged()");
+            emit receivedTitleTrackChanged(new_title);
+        }
+    } else {
+        logger()->debug("notifyTitleTrackChanged: current title already set to"
+                        " %1", new_title);
+    }
 }
 
 void TPlayerProcess::notifyDuration(double duration) {
 
-	// Duration changed?
-	if (qAbs(duration - md->duration) > 0.001) {
+    // Duration changed?
+    if (qAbs(duration - md->duration) > 0.001) {
         logger()->debug("notifyDuration: duration changed from %1 to %2",
                         QString::number(md->duration),
                         QString::number(duration));
@@ -203,29 +202,21 @@ double TPlayerProcess::playerTimeToGuiTime(double sec) {
 	return sec;
 }
 
-void TPlayerProcess::notifyTime(double time_sec, const QString& line) {
+void TPlayerProcess::notifyTime(double time_sec) {
 
-	// Store video timestamp
-	md->time_sec = time_sec;
+    // Store video timestamp
+    md->time_sec = time_sec;
 
-	time_sec = playerTimeToGuiTime(time_sec);
+    time_sec = playerTimeToGuiTime(time_sec);
 
-	// Give descendants a look at the time
-	checkTime(time_sec);
+    // Give descendants a look at the time
+    checkTime(time_sec);
 
-	// Pass timestamp to GUI
+    // Pass timestamp to GUI
     emit receivedPosition(time_sec);
-
-	// Ask children for frame
-	int frame = getFrame(time_sec, line);
-
-	// Pass frame to GUI
-	if (frame != prev_frame) {
-		prev_frame = frame;
-        emit receivedFrame(frame);
-	}
 }
 
+// TODO: move to TMPVProcess
 bool TPlayerProcess::waitForAnswers() {
 
 	if (waiting_for_answers > 0) {
@@ -239,26 +230,6 @@ bool TPlayerProcess::waitForAnswers() {
 	}
 
 	return false;
-}
-
-bool TPlayerProcess::parseStatusLine(double time_sec, double duration,
-                                     QRegExp& rx, QString& line) {
-    Q_UNUSED(rx)
-
-    // Any pending questions?
-    // Cancel the remainder of this line and get the answers.
-    if (waitForAnswers())
-        return true;
-
-    // For mplayer duration is always 0
-    if (duration > 0) {
-        notifyDuration(duration);
-    }
-
-    notifyTime(time_sec, line);
-
-    // Parse the line just a litlle bit longer
-    return false;
 }
 
 void TPlayerProcess::quit(int exit_code) {
@@ -459,17 +430,20 @@ bool TPlayerProcess::parseAngle(const QString& value) {
 
 bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
-	if (name == "START_TIME") {
-		if (value.isEmpty() || value == "unknown") {
-            logger()->debug("parseProperty: start time unknown");
-		} else {
-			md->start_sec_set = true;
-			md->start_sec = value.toDouble();
+    if (name == "START_TIME") {
+        if (value.isEmpty() || value == "unknown") {
+            logger()->debug("parseProperty: start time not set");
+        } else {
+            md->start_sec_player = value.toDouble();
+            if (Settings::pref->isMPV()) {
+                md->start_sec_set = true;
+                md->start_sec = md->start_sec_player;
+            }
             logger()->debug("parseProperty: start time set to %1",
-                            QString::number(md->start_sec));
-		}
-		return true;
-	}
+                            QString::number(md->start_sec_player));
+        }
+        return true;
+    }
 	if (name == "LENGTH") {
 		notifyDuration(value.toDouble());
 		return true;

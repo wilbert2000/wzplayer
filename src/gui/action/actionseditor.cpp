@@ -509,9 +509,6 @@ QString TActionsEditor::actionTextToDescription(const QString& text,
                                                 const QString& action_name) {
 
     // Actions modifying the text property themselves
-    if (action_name == "display_time") {
-		return tr("Display time");
-	}
     if (action_name == "play_or_pause") {
         return tr("Play or pause");
     }

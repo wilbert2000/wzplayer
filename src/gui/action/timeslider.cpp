@@ -187,8 +187,9 @@ bool TTimeSlider::event(QEvent* event) {
 		const QPoint center = sliderRect.center() - sliderRect.topLeft();
 
 		int val = pixelPosToRangeValue(pick(help_event->pos() - center));
-		int time = val * _duration / maximum();
-		QToolTip::showText(help_event->globalPos(), Helper::formatTime(time), this);
+        int time = qRound(val * _duration / maximum());
+        QToolTip::showText(help_event->globalPos(), Helper::formatTime(time),
+                           this);
 		event->accept();
 		return true;
 	}
