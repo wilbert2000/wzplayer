@@ -123,6 +123,10 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         s += addItem(tr("Stream URL"), md.stream_url);
     }
     s += addItem(tr("Duration"), Helper::formatTime(qRound(md.duration)));
+    s += addItem(tr("Start time"),
+                 Helper::formatTime(qRound(md.start_sec_player))
+                 + tr(" (%1 seconds)")
+                 .arg(QString::number(md.start_sec_player)));
     s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
     s += closePar();
 
