@@ -105,7 +105,7 @@ QString TProcess::bytesToString(const char* bytes, int size) {
 const char* TProcess::EOL(const char* start, const char* end) {
 
     const char* eol = start;
-    while (eol < end && *eol != '\n' && *eol != '\r') {
+    while (eol < end && *eol != (char) 13 && *eol != (char) 10) {
         eol++;
     }
     return eol;
