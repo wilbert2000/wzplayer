@@ -36,7 +36,7 @@ using namespace Settings;
 
 namespace Proc {
 
-const double FRAME_BACKSTEP_TIME = 0.1;
+const double FRAME_BACKSTEP_DEFAULT_STEP = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
 
 bool TMPlayerProcess::restore_dvdnav = false;
@@ -1468,15 +1468,27 @@ void TMPlayerProcess::frameStep() {
 void TMPlayerProcess::frameBackStep() {
 
 	if (frame_backstep_time_start == FRAME_BACKSTEP_DISABLED) {
-		frame_backstep_time_start = md->time_sec - FRAME_BACKSTEP_TIME;
+        if (md->video_fps <= 0 || md->video_fps > 70) {
+            frame_backstep_step = FRAME_BACKSTEP_DEFAULT_STEP;
+        } else {
+            frame_backstep_step = 1 / md->video_fps;
+        }
+        frame_backstep_time_start = md->time_sec - frame_backstep_step;
 		frame_backstep_time_requested = frame_backstep_time_start;
 	} else {
-		// Retry call from parsePause()
-		frame_backstep_time_requested -= FRAME_BACKSTEP_TIME;
+        // Retry call from parsePause()
+        if (md->video_fps <= 0 || md->video_fps > 70) {
+            frame_backstep_step += FRAME_BACKSTEP_DEFAULT_STEP;
+        } else {
+            frame_backstep_step += 1 / md->video_fps;
+        }
+        frame_backstep_time_requested -= frame_backstep_step;
 	}
-	if (frame_backstep_time_requested < 0) frame_backstep_time_requested = 0;
-    logger()->debug("frameBackStep: emulating unsupported function. Trying %1",
-		   frame_backstep_time_requested);
+    if (frame_backstep_time_requested < 0) {
+        frame_backstep_time_requested = 0;
+    }
+    logger()->debug("frameBackStep: emulating frame back step. Trying %1",
+                    QString::number(frame_backstep_time_requested));
 
 	seekPlayerTime(frame_backstep_time_requested, // time to seek
 				   2,		// seek absolute

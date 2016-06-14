@@ -143,6 +143,7 @@ private:
 
 	double frame_backstep_time_start;
 	double frame_backstep_time_requested;
+    double frame_backstep_step;
 
 	bool video_tracks_changed;
 	bool get_selected_video_track;
