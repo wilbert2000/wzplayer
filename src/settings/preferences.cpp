@@ -380,7 +380,7 @@ void TPreferences::reset() {
 	player_additional_audio_filters = "";
 
     use_edl_files = true;
-    time_to_kill_player = 7000;
+    time_to_kill_player = 6000;
     show_frames = false;
 
     balloon_count = 5;
@@ -1266,8 +1266,8 @@ void TPreferences::load() {
 
     use_edl_files = value("use_edl_files", use_edl_files).toBool();
     time_to_kill_player = value("time_to_kill_player", time_to_kill_player).toInt();
-    if (time_to_kill_player < 5000) {
-        time_to_kill_player = 5000;
+    if (time_to_kill_player < 2500) {
+        time_to_kill_player = 2500;
     }
     show_frames = value("show_frames", show_frames).toBool();
 
