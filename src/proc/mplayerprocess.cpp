@@ -826,10 +826,10 @@ void TMPlayerProcess::parseFrame(double& s, const QString& line) {
                 }
                 if (d < 0) {
                     start_frame--;
-                    md->fuzzy_time = ">";
+                    md->fuzzy_time = "<";
                 } else {
                     start_frame++;
-                    md->fuzzy_time = "<";
+                    md->fuzzy_time = ">";
                 }
             } else {
                 // Resync start frame
