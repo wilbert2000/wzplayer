@@ -98,6 +98,48 @@ int Helper::qtVersion() {
 	return r;
 }
 
+QString Helper::nameForFile(QString filename) {
+
+    if (filename.isEmpty()) {
+        return "";
+    }
+
+    QString name;
+    QUrl url(filename);
+    QString scheme = url.scheme().toLower();
+    if (scheme == "file" ) {
+        filename = url.toLocalFile();
+        scheme = "";
+    }
+
+    if (scheme.isEmpty()) {
+        QFileInfo fi(filename);
+        if (fi.isDir()) {
+            name = fi.fileName();
+            if (name.isEmpty()) {
+                name = fi.dir().dirName();
+            }
+        } else {
+            name = fi.baseName();
+        }
+    } else {
+        name = url.toString(QUrl::RemoveScheme
+                            | QUrl::RemoveAuthority
+                            | QUrl::RemoveQuery
+                            | QUrl::RemoveFragment
+                            | QUrl::StripTrailingSlash);
+        if (!name.isEmpty()) {
+            name = QFileInfo(name).baseName();
+        }
+    }
+
+    if (name.isEmpty()) {
+        name = filename;
+    }
+
+    return name;
+}
+
 QString Helper::clean(const QString& name) {
     logger()->trace("clean: '%1'", name);
 

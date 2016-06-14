@@ -610,7 +610,7 @@ void TPlaylist::addCurrentFile() {
         TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
             playlistWidget->root(),
             core->mdat.filename,
-            core->mdat.displayName(),
+            core->mdat.name(),
             core->mdat.duration,
             false);
         i->setPlayed(true);
@@ -1185,7 +1185,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         bool modified = false;
 
         if (!item->edited()) {
-            QString name = md->displayName();
+            QString name = md->name();
             if (item->name() != name) {
                 logger()->debug("onNewMediaStartedPlaying: updating"
                                 " name from '%1' to '%2'",
@@ -1237,13 +1237,13 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
         playlistWidget->root()->setFilename(filename);
-        playlistWidget->root()->setName(md->displayName());
+        playlistWidget->root()->setName(md->name());
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
             playlistWidget->root(),
             filename,
-            md->displayName(),
+            md->name(),
             md->duration,
             false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);

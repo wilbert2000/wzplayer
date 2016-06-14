@@ -86,7 +86,7 @@ bool TMediaData::selectedDisc() const {
 	return isDisc(selected_type);
 }
 
-QString TMediaData::displayNameAddTitleOrTrack(QString title) const {
+QString TMediaData::addTitleOrTrack(const QString& title) const {
 
     if (disc.valid) {
         if (disc.title > 0) {
@@ -107,7 +107,7 @@ QString TMediaData::displayNameAddTitleOrTrack(QString title) const {
 	return title;
 }
 
-QString TMediaData::displayName() const {
+QString TMediaData::getTitle() const {
 
     if (filename.isEmpty()) {
         return "";
@@ -115,34 +115,54 @@ QString TMediaData::displayName() const {
 
     QString title = Helper::cleanTitle(this->title);
     if (!title.isEmpty()) {
-        return displayNameAddTitleOrTrack(title);
+        return addTitleOrTrack(title);
     }
     title = Helper::cleanTitle(meta_data.value("title"));
     if (!title.isEmpty()) {
-        return displayNameAddTitleOrTrack(title);
+        return addTitleOrTrack(title);
     }
     title = Helper::cleanTitle(meta_data.value("name"));
     if (!title.isEmpty()) {
-        return displayNameAddTitleOrTrack(title);
+        return addTitleOrTrack(title);
     }
+
+    return title;
+}
+
+QString TMediaData::name() const {
+
+    if (filename.isEmpty()) {
+        return "";
+    }
+
+    QString title = getTitle();
+    if (!title.isEmpty()) {
+        return title;
+    }
+
     if (disc.valid) {
         return disc.displayName();
     }
 
-    QString fn = filename;
-    QUrl url(fn);
-    QString path = url.path();
-    if (!path.isEmpty()) {
-        fn = path;
+    return Helper::nameForFile(filename);
+}
+
+QString TMediaData::displayName() const {
+
+    if (filename.isEmpty()) {
+        return "";
     }
 
-    // Remove path
-    QFileInfo fi(fn);
-    if (!fi.fileName().isEmpty()) {
-        fn = fi.fileName();
+    QString title = getTitle();
+    if (!title.isEmpty()) {
+        return title;
     }
 
-    return Helper::cleanName(fn);
+    if (disc.valid) {
+        return disc.displayName();
+    }
+
+    return Helper::cleanName(Helper::nameForFile(filename));
 }
 
 QString TMediaData::typeToString(Type type) {

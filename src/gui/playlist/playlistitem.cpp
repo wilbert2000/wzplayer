@@ -78,30 +78,8 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mFolder(isFolder),
     mPlayedTime(0) {
 
-    if (!mFilename.isEmpty() && mName.isEmpty()) {
-        QUrl url(mFilename);
-        QFileInfo fi;
-        if (url.scheme().isEmpty()) {
-            fi.setFile(mFilename);
-            mName = fi.fileName();
-        } else if (url.scheme().toLower() == "file"){
-            fi.setFile(url.toLocalFile());
-            mName = fi.fileName();
-        } else {
-            mName = url.toString(QUrl::RemoveScheme
-                                 | QUrl::RemoveAuthority
-                                 | QUrl::RemoveQuery
-                                 | QUrl::RemoveFragment
-                                 | QUrl::StripTrailingSlash);
-            if (!mName.isEmpty()) {
-                fi.setFile(mName);
-                mName = fi.fileName();
-            }
-        }
-
-        if (mName.isEmpty()) {
-            mName = mFilename;
-        }
+    if (mName.isEmpty()) {
+        mName = Helper::nameForFile(mFilename);
     }
 
     setFileInfo();

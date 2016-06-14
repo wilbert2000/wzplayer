@@ -153,12 +153,14 @@ public:
 	static QString typeToString(Type type);
 	static Type stringToType(QString type);
 
+    QString name() const;
     QString displayName() const;
 	void list() const;
 
 private:
 	void init();
-    QString displayNameAddTitleOrTrack(QString title) const;
+    QString addTitleOrTrack(const QString& title) const;
+    QString getTitle() const;
 };
 
 #endif

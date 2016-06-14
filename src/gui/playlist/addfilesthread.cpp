@@ -535,7 +535,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
 TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
                                               QFileInfo& fi) {
 
-    QString name = fi.fileName();
+    QString name = fi.baseName();
 
     if (extensions.isPlaylist(fi)) {
         return openPlaylist(parent, fi, name, false);
@@ -584,7 +584,9 @@ TPlaylistWidgetItem* TAddFilesThread::copyDirectory(TPlaylistWidgetItem* parent,
         QString to = QDir::toNativeSeparators(dir.path());
         logger()->debug("copyDirectory: copy '%1' to '%2'", from, to);
         item = new TPlaylistWidgetItem(0, *item, from, to);
-        if (name.isEmpty() || name == TConfig::WZPLAYLIST) {
+        if (name.isEmpty()
+            || name == TConfig::PROGRAM_ID
+            || name == TConfig::WZPLAYLIST) {
             item->setName(dir.dirName(), false, false);
         } else {
             item->setName(name, protectName, false);
@@ -797,7 +799,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
     }
 
     if (name.isEmpty()) {
-        name = fi.fileName();
+        name = fi.baseName();
     }
 
     QString savedPlaylistPath = playlistPath;
