@@ -32,32 +32,37 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, main)
 
 void initLog4Qt(bool debug) {
 
+    Log4Qt::Layout* layout;
     Appender* appender = LogManager::rootLogger()->appender("A1");
     if (appender) {
         logger()->debug("initLogQt: appender A1 already created");
         if (debug) {
             LogManager::rootLogger()->setLevel(Level(Level::DEBUG_INT));
         }
+        layout = appender->layout();
     } else {
         LogManager::rootLogger()->setLevel(Level(debug ? Level::DEBUG_INT
                                                        : Level::INFO_INT));
 
         // Create layout
-        TTCCLayout* layout = new TTCCLayout();
-        layout->setName("Layout");
-        //layout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
-        layout->setThreadPrinting(false);
-        layout->activateOptions();
+        TTCCLayout* tccLayout = new TTCCLayout();
+        tccLayout->setName("Layout");
+        //tccLayout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
+        tccLayout->setThreadPrinting(false);
+        tccLayout->activateOptions();
 
-        // Create appender
-        ConsoleAppender* a = new ConsoleAppender(layout,
-            ConsoleAppender::STDERR_TARGET);
-        a->setName("A1");
-        a->activateOptions();
+        // Create appender for console
+        if (debug) {
+            ConsoleAppender* a = new ConsoleAppender(tccLayout,
+                ConsoleAppender::STDERR_TARGET);
+            a->setName("A1");
+            a->activateOptions();
 
-        // Set appender on root logger
-        LogManager::rootLogger()->addAppender(a);
-        appender = a;
+            // Set appender on root logger
+            LogManager::rootLogger()->addAppender(a);
+        }
+
+        layout = tccLayout;
     }
 
     // Let Log4Qt handle qDebug(), qWarning(), qCritical() and qFatal()
@@ -65,7 +70,7 @@ void initLog4Qt(bool debug) {
     LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
 
     // Create an appender for log window
-    Gui::TLogWindow::appender = new Gui::TLogWindowAppender(appender->layout());
+    Gui::TLogWindow::appender = new Gui::TLogWindowAppender(layout);
     Gui::TLogWindow::appender->setName("A2");
     Gui::TLogWindow::appender->activateOptions();
 
