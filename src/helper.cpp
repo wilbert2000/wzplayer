@@ -120,7 +120,7 @@ QString Helper::nameForFile(QString filename) {
                 name = fi.dir().dirName();
             }
         } else {
-            name = fi.baseName();
+            name = fi.completeBaseName();
         }
     } else {
         name = url.toString(QUrl::RemoveScheme
@@ -129,7 +129,7 @@ QString Helper::nameForFile(QString filename) {
                             | QUrl::RemoveFragment
                             | QUrl::StripTrailingSlash);
         if (!name.isEmpty()) {
-            name = QFileInfo(name).baseName();
+            name = QFileInfo(name).completeBaseName();
         }
     }
 

@@ -535,7 +535,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
 TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
                                               QFileInfo& fi) {
 
-    QString name = fi.baseName();
+    QString name = fi.completeBaseName();
 
     if (extensions.isPlaylist(fi)) {
         return openPlaylist(parent, fi, name, false);
@@ -799,7 +799,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
     }
 
     if (name.isEmpty()) {
-        name = fi.baseName();
+        name = fi.completeBaseName();
     }
 
     QString savedPlaylistPath = playlistPath;
