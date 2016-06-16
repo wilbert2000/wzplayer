@@ -24,11 +24,6 @@ DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tag
 
 # Support for program switch in TS files
 #DEFINES += PROGRAM_SWITCH
-#DEFINES += SIMPLE_BUILD
-
-contains(DEFINES, SIMPLE_BUILD) {
-	DEFINES -= MPRIS2
-}
 
 isEqual(QT_MAJOR_VERSION, 5) {
 	QT += widgets gui
