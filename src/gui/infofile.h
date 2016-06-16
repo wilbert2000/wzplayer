@@ -49,6 +49,7 @@ private:
                    const Maps::TTracks& tracks,
                    const QString& name);
 
+    void setMetaData(const QString& filename);
 };
 
 } // namespace Gui
