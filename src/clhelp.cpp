@@ -81,22 +81,25 @@ QString CLHelp::formatHelp(QString parameter, QString help, bool html) {
 
 
 QString CLHelp::help(bool html) {
-	QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
 
-	QString options = QString("%1 [--debug] [--config-path %2] "
-						"[--send-action %3] [--actions %4] "
-						"[--close-at-end] [--no-close-at-end] [--fullscreen] [--no-fullscreen] "
-						"[--ontop] [--no-ontop] "
-						"[--sub %5] [--pos x y] [--size %6 %7] "
-						"[--add-to-playlist] [--help|-help|-h|-?] "
-                        "[%8] [%8]...")
-                        .arg(app_name)
-                        .arg(QObject::tr("directory"))
-                        .arg(QObject::tr("action_name"))
-                        .arg(QObject::tr("action_list"))
-                        .arg(QObject::tr("subtitle_file"))
-                        .arg(QObject::tr("width")).arg(QObject::tr("height"))
-                        .arg(QObject::tr("media"));
+    QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
+
+    QString options = QString("%1 [--debug] [--trace]"
+                              " [--config-path %2]"
+                              " [--send-action %3] [--actions %4]"
+                              " [--close-at-end] [--no-close-at-end]"
+                              " [--fullscreen] [--no-fullscreen]"
+                              " [--ontop] [--no-ontop]"
+                              " [--sub %5] [--pos x y] [--size %6 %7]"
+                              " [--add-to-playlist] [--help]"
+                              " [%8] [%8]...")
+                      .arg(app_name)
+                      .arg(QObject::tr("directory"))
+                      .arg(QObject::tr("action_name"))
+                      .arg(QObject::tr("action_list"))
+                      .arg(QObject::tr("subtitle_file"))
+                      .arg(QObject::tr("width")).arg(QObject::tr("height"))
+                      .arg(QObject::tr("media"));
 
 	QString s;
 
@@ -111,21 +114,24 @@ QString CLHelp::help(bool html) {
 	s += formatHelp("--debug", QObject::tr(
 		"Logs debug message to the console."), html);
 
+    s += formatHelp("--trace", QObject::tr(
+        "Logs trace message to the console."), html);
+
+
 #ifdef Q_OS_WIN	
 	s += formatHelp("--uninstall", QObject::tr(
 		"Restores the old associations and cleans up the registry."), html);
 #endif
 
-	s += formatHelp("--config-path", QObject::tr(
-		"specifies the directory where wzplayer will store its configuration "
-		"files (wzplayer.ini, wzplayer_files.ini...)"), html);
+    s += formatHelp("--config-path", QObject::tr(
+        "Specify the directory for the wzplayer configuration files."
+        " (wzplayer.ini, wzplayer_files.ini, etc.)"), html);
 
-	s += formatHelp("--send-action", QObject::tr(
-		"tries to make a connection to another running instance "
-		"and send it the specified action. Example: --send-action pause "
-        "The rest of options (if any) will be ignored and the "
-        "application will exit. It will return 0 on success or -1 "
-        "on failure."), html);
+    s += formatHelp("--send-action", QObject::tr(
+        "Send actions to an already running instance of WZPlayer."
+        " Example: --send-action pause"
+        " The application will exit and return 0 on success or -1 on failure."),
+        html);
 
 	s += formatHelp("--actions", QObject::tr(
 		"action_list is a list of actions separated by spaces. "
@@ -136,40 +142,40 @@ QString CLHelp::help(bool html) {
 		"case you pass more than one action."), html);
 
 	s += formatHelp("--close-at-end", QObject::tr(
-		"the main window will be closed when the file/playlist finishes."), html);
+        "The main window will be closed when the playlist finishes."), html);
 
 	s += formatHelp("--no-close-at-end", QObject::tr(
-		"the main window won't be closed when the file/playlist finishes."), html);
+        "The main window won't be closed when the playlist finishes."), html);
 
 	s += formatHelp("--fullscreen", QObject::tr(
-		"the video will be played in fullscreen mode."), html);
+        "Play the video in fullscreen mode."), html);
 
 	s += formatHelp("--no-fullscreen", QObject::tr(
-		"the video will be played in window mode."), html);
+        "Play the video in window mode."), html);
 
 	s += formatHelp("--sub", QObject::tr(
-		"specifies the subtitle file to be loaded for the first video."), html);
+        "Specifies the subtitle file to be loaded for the first video."), html);
 
 	s += formatHelp("--media-title", QObject::tr(
-		"sets the media title for the first video."), html);
+        "Sets the title for the first video."), html);
 
 	s += formatHelp("--pos", QObject::tr(
-		"specifies the coordinates where the main window will be displayed."), html);
+        "Specifies the coordinates where the main window will be displayed."),
+                    html);
 
 	s += formatHelp("--size", QObject::tr(
-		"specifies the size of the main window."), html);
+        "Specifies the size of the main window."), html);
 
 	s += formatHelp("--help", QObject::tr(
-		"will show this message and then will exit."), html);
+        "Show this message and exit."), html);
 
 	s += formatHelp("--add-to-playlist", QObject::tr(
-		"if there's another instance running, the media will be added "
+        "If there's another instance running, the media will be added "
         "to that instance's playlist. If there's no other instance, "
-        "this option will be ignored and the "
-        "files will be opened in a new instance."), html);
+        "the files will be opened in a new instance."), html);
 
 	s += formatHelp(QObject::tr("media"), QObject::tr(
-		"'media' is any kind of file that WZPlayer can open. It can "
+        "'Media' is any kind of file that WZPlayer can open. It can "
 		"be a local file, a DVD (e.g. dvd:// or dvdnav://), an Internet stream "
         "(e.g. mms://....) or a local playlist in format m3u or pls."), html);
 
