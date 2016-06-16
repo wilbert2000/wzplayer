@@ -338,11 +338,15 @@ void TBase::createAudioEqualizer() {
 void TBase::createActions() {
     logger()->debug("createActions");
 
-	showContextMenuAct = new Action::TAction(this, "show_context_menu", tr("Show context menu"));
-	connect(showContextMenuAct, SIGNAL(triggered()), this, SLOT(showContextMenu()));
+    showContextMenuAct = new Action::TAction(this, "show_context_menu",
+                                             tr("Show context menu"));
+    connect(showContextMenuAct, SIGNAL(triggered()),
+            this, SLOT(showContextMenu()));
 
-    nextWheelFunctionAct = new TAction(this, "next_wheel_function", tr("Next wheel function"), 0, Qt::Key_W);
-	connect(nextWheelFunctionAct, SIGNAL(triggered()), core, SLOT(nextWheelFunction()));
+    nextWheelFunctionAct = new TAction(this, "next_wheel_function",
+                                       tr("Next wheel function"), 0, Qt::Key_W);
+    connect(nextWheelFunctionAct, SIGNAL(triggered()),
+            core, SLOT(nextWheelFunction()));
 
 	// Time slider
     timeslider_action = new TTimeSliderAction(this);
@@ -368,28 +372,36 @@ void TBase::createActions() {
 	// Volume slider action
 	volumeslider_action = new TVolumeSliderAction(this, core->getVolume());
 	volumeslider_action->setObjectName("volumeslider_action");
-	connect(volumeslider_action, SIGNAL(valueChanged(int)), core, SLOT(setVolume(int)));
-	connect(core, SIGNAL(volumeChanged(int)), volumeslider_action, SLOT(setValue(int)));
+    connect(volumeslider_action, SIGNAL(valueChanged(int)),
+            core, SLOT(setVolume(int)));
+    connect(core, SIGNAL(volumeChanged(int)),
+            volumeslider_action, SLOT(setValue(int)));
 
 	// Menu bar
-	viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"), "", Qt::Key_F2);
+    viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"),
+                                 "", Qt::Key_F2);
 	viewMenuBarAct->setCheckable(true);
 	viewMenuBarAct->setChecked(true);
-	connect(viewMenuBarAct, SIGNAL(toggled(bool)), menuBar(), SLOT(setVisible(bool)));
+    connect(viewMenuBarAct, SIGNAL(toggled(bool)),
+            menuBar(), SLOT(setVisible(bool)));
 
 	// Toolbars
-	editToolbarAct = new TAction(this, "edit_toolbar1", tr("Edit main &toolbar..."));
-	editToolbar2Act = new TAction(this, "edit_toolbar2", tr("Edit extra t&oolbar..."));
+    editToolbarAct = new TAction(this, "edit_toolbar1",
+                                 tr("Edit main &toolbar..."));
+    editToolbar2Act = new TAction(this, "edit_toolbar2",
+                                  tr("Edit extra t&oolbar..."));
 
 	// Control bar
-	editControlBarAct = new TAction(this, "edit_controlbar", tr("Edit control &bar.."));
+    editControlBarAct = new TAction(this, "edit_controlbar",
+                                    tr("Edit control &bar.."));
 
 	// Status bar
     viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("&Status bar"),
                                    "", Qt::Key_F7);
 	viewStatusBarAct->setCheckable(true);
 	viewStatusBarAct->setChecked(true);
-	connect(viewStatusBarAct, SIGNAL(toggled(bool)), statusBar(), SLOT(setVisible(bool)));
+    connect(viewStatusBarAct, SIGNAL(toggled(bool)),
+            statusBar(), SLOT(setVisible(bool)));
 } // createActions
 
 void TBase::createMenus() {
@@ -562,7 +574,8 @@ void TBase::setupNetworkProxy() {
 		proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
 		proxy.setHostName(pref->proxy_host);
 		proxy.setPort(pref->proxy_port);
-		if ((!pref->proxy_username.isEmpty()) && (!pref->proxy_password.isEmpty())) {
+        if (!pref->proxy_username.isEmpty()
+            && !pref->proxy_password.isEmpty()) {
 			proxy.setUser(pref->proxy_username);
 			proxy.setPassword(pref->proxy_password);
 		}
@@ -653,7 +666,8 @@ void TBase::showEvent(QShowEvent* event) {
 		QMainWindow::showEvent(event);
 	}
 
-	if (pref->pause_when_hidden && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
+    if (pref->pause_when_hidden
+        && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
         logger()->debug("showEvent: unpausing");
 		core->play();
 	}
@@ -668,7 +682,8 @@ void TBase::hideEvent(QHideEvent* event) {
 		QMainWindow::hideEvent(event);
 	}
 
-	if (pref->pause_when_hidden && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
+    if (pref->pause_when_hidden
+        && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
         logger()->debug("hideEvent: pausing");
 		core->pause();
 	}
@@ -1276,15 +1291,15 @@ void TBase::openFile() {
     logger()->debug("openFile");
 
     QString s = MyFileDialog::getOpenFileName(
-                    this,
-                    tr("Choose a file"),
-                    pref->latest_dir,
-                    tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
-                    + tr("Video") + extensions.video().forFilter() + ";;"
-                    + tr("Audio") + extensions.audio().forFilter() + ";;"
-                    + tr("Playlists") + extensions.playlists().forFilter() + ";;"
-                    + tr("Images") + extensions.images().forFilter() + ";;"
-                    + tr("All files") +" (*.*)");
+        this,
+        tr("Choose a file"),
+        pref->latest_dir,
+        tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
+        + tr("Video") + extensions.video().forFilter() + ";;"
+        + tr("Audio") + extensions.audio().forFilter() + ";;"
+        + tr("Playlists") + extensions.playlists().forFilter() + ";;"
+        + tr("Images") + extensions.images().forFilter() + ";;"
+        + tr("All files") +" (*.*)");
 
 	if (!s.isEmpty()) {
 		open(s);
@@ -1349,7 +1364,8 @@ void TBase::openVCD() {
 	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
-		core->openDisc(TDiscName("vcd", pref->vcd_initial_title, pref->cdrom_device));
+        core->openDisc(TDiscName("vcd", pref->vcd_initial_title,
+                                 pref->cdrom_device));
 	}
 }
 
@@ -1408,8 +1424,10 @@ void TBase::openBluRayFromFolder() {
     logger()->debug("openBluRayFromFolder");
 
 	if (playlist->maybeSave()) {
-		QString dir = QFileDialog::getExistingDirectory(this, tr("Select the Blu-ray folder"),
-			pref->last_dvd_directory, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        QString dir = QFileDialog::getExistingDirectory(this,
+            tr("Select the Blu-ray folder"),
+            pref->last_dvd_directory, QFileDialog::ShowDirsOnly
+                                      | QFileDialog::DontResolveSymlinks);
 		if (!dir.isEmpty()) {
 			pref->last_dvd_directory = dir;
 			core->openDisc(TDiscName("br", 0, dir));
@@ -1453,7 +1471,8 @@ void TBase::helpCLOptions() {
 
 	if (help_window == 0) {
 		help_window = new THelpWindow(this, "helpwindow");
-		help_window->setWindowTitle(tr("%1 command line options").arg(TConfig::PROGRAM_NAME));
+        help_window->setWindowTitle(tr("%1 command line options")
+                                    .arg(TConfig::PROGRAM_NAME));
 		help_window->loadConfig();
 	}
 
@@ -1489,11 +1508,13 @@ void TBase::showSeekToDialog() {
 void TBase::showAudioDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
-	int delay = QInputDialog::getInt(this, tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
+    int delay = QInputDialog::getInt(this,
+        tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
 		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
 		-3600000, 3600000, 1, &ok);
 	#else
-	int delay = QInputDialog::getInteger(this, tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
+    int delay = QInputDialog::getInteger(this,
+        tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
 		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
 		-3600000, 3600000, 1, &ok);
 	#endif
@@ -1505,11 +1526,13 @@ void TBase::showAudioDelayDialog() {
 void TBase::showSubDelayDialog() {
 	bool ok;
 	#if QT_VERSION >= 0x050000
-	int delay = QInputDialog::getInt(this, tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
+    int delay = QInputDialog::getInt(this,
+        tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
 		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
 		-3600000, 3600000, 1, &ok);
 	#else
-	int delay = QInputDialog::getInteger(this, tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
+    int delay = QInputDialog::getInteger(this,
+        tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
 		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
 		-3600000, 3600000, 1, &ok);
 	#endif
@@ -1593,7 +1616,8 @@ void TBase::didEnterFullscreen() {
                                   .toByteArray(), Helper::qtVersion());
     if (!state_restored) {
 		// First time there is no fullscreen toolbar state
-        logger()->debug("didEnterFullscreen: failed to restore fullscreen toolbar state");
+        logger()->debug("didEnterFullscreen: failed to restore fullscreen"
+                        " toolbar state");
 		toolbar->hide();
 		toolbar2->hide();
 	}
@@ -2009,7 +2033,8 @@ void TBase::changeSize(double factor) {
         }
     }
 
-    core->displayMessage(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
+    core->displayMessage(tr("Size %1%")
+                         .arg(QString::number(qRound(factor * 100))));
 }
 
 void TBase::changeSize(int percentage) {
@@ -2263,7 +2288,7 @@ void TBase::setStayOnTop(bool b) {
 	bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
 	if (b == stay_on_top) {
 		// identical do nothing
-        logger()->debug("setStayOnTop: WindowStaysOnTopHint flag already up2date");
+        logger()->debug("setStayOnTop: WindowStaysOnTopHint already up2date");
 		return;
 	}
 
@@ -2290,11 +2315,13 @@ void TBase::changeStayOnTop(int stay_on_top) {
     switch (stay_on_top) {
         case TPreferences::AlwaysOnTop : setStayOnTop(true); break;
         case TPreferences::NeverOnTop  : setStayOnTop(false); break;
-        case TPreferences::WhilePlayingOnTop : setStayOnTop((core->state() == STATE_PLAYING)); break;
-	}
+        case TPreferences::WhilePlayingOnTop :
+            setStayOnTop(core->state() == STATE_PLAYING);
+            break;
+    }
 
     pref->stay_on_top = (TPreferences::TOnTop) stay_on_top;
-	emit stayOnTopChanged(stay_on_top);
+    emit stayOnTopChanged(stay_on_top);
 }
 
 void TBase::checkStayOnTop(TCoreState) {
@@ -2330,19 +2357,22 @@ void TBase::toggleStayOnTop() {
 void TBase::onPlayerError(int exit_code) {
     logger()->debug("onPlayerError: %1", exit_code);
 
-	QString msg = Proc::TExitMsg::message(exit_code) + " (" + core->mdat.filename + ")";
-	displayMessage(msg, 0);
+    QString msg = Proc::TExitMsg::message(exit_code)
+                  + " (" + core->mdat.filename + ")";
+    displayMessage(msg, 0);
 
-	static bool busy = false;
+    static bool busy = false;
     if (pref->report_player_crashes
         && !busy
         && core->state() != STATE_STOPPING) {
-		busy = true;
-		QMessageBox::warning(this, tr("%1 process error").arg(pref->playerName()),
-							 msg + " \n" + tr("See menu Window -> View log for additional details."),
-							 QMessageBox::Ok);
-		busy = false;
-	}
+        busy = true;
+        QMessageBox::warning(this,
+            tr("%1 process error").arg(pref->playerName()),
+            msg + " \n"
+            + tr("See menu Window -> View log for additional details."),
+            QMessageBox::Ok);
+        busy = false;
+    }
 }
 
 #ifdef FIND_SUBTITLES
