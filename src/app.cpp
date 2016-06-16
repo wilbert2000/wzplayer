@@ -303,7 +303,7 @@ TApp::ExitCode TApp::processArgs() {
 		QString argument = args[n];
 		QString name = getArgName(argument);
 
-		if (name == "debug") {
+        if (name == "debug" || name == "trace") {
 
 		} else if (name == "send-action") {
             if (n + 1 < args.count()) {

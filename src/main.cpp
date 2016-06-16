@@ -17,7 +17,6 @@
 */
 
 #include "app.h"
-
 #include "log4qt/logger.h"
 #include "log4qt/logmanager.h"
 #include "log4qt/consoleappender.h"
@@ -30,29 +29,28 @@ using namespace Log4Qt;
 class main;
 LOG4QT_DECLARE_STATIC_LOGGER(logger, main)
 
-void initLog4Qt(bool debug) {
+void initLog4Qt(Level level) {
 
     Log4Qt::Layout* layout;
     Appender* appender = LogManager::rootLogger()->appender("A1");
     if (appender) {
-        logger()->debug("initLogQt: appender A1 already created");
-        if (debug) {
-            LogManager::rootLogger()->setLevel(Level(Level::DEBUG_INT));
+        logger()->debug("initLogQt: using existing appender A1");
+        if (level != Level::INFO_INT) {
+            LogManager::rootLogger()->setLevel(level);
         }
         layout = appender->layout();
     } else {
-        LogManager::rootLogger()->setLevel(Level(debug ? Level::DEBUG_INT
-                                                       : Level::INFO_INT));
+        LogManager::rootLogger()->setLevel(level);
 
-        // Create layout
+        // Create console layout
         TTCCLayout* tccLayout = new TTCCLayout();
         tccLayout->setName("Layout");
         //tccLayout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
         tccLayout->setThreadPrinting(false);
         tccLayout->activateOptions();
 
-        // Create appender for console
-        if (debug) {
+        // Create appender A1 for console
+        if (level != Level::INFO_INT) {
             ConsoleAppender* a = new ConsoleAppender(tccLayout,
                 ConsoleAppender::STDERR_TARGET);
             a->setName("A1");
@@ -69,7 +67,7 @@ void initLog4Qt(bool debug) {
     LogManager::setHandleQtMessages(true);
     LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
 
-    // Create an appender for log window
+    // Create appender A2 for log window
     Gui::TLogWindow::appender = new Gui::TLogWindowAppender(layout);
     Gui::TLogWindow::appender->setName("A2");
     Gui::TLogWindow::appender->activateOptions();
@@ -81,28 +79,39 @@ void initLog4Qt(bool debug) {
                    LogManager::rootLogger()->level().toString());
 }
 
-bool isDebug(const char* arg) {
+bool isOption(const QString& arg, const QString& name) {
 
-    QString s(arg);
-    return s == "--debug" || s == "-debug"
+    return arg == "--" + name || arg == "-" + name
 
 #ifdef Q_OS_WIN
-            || s == "/debug"
+            || arg  == "/" + name
 #endif
     ;
 }
 
-int main(int argc, char** argv) {
+void getLevelFromOption(const char* arg, Level& level) {
 
-    bool debug = false;
+    QString s(arg);
+    if (isOption(s, "debug")) {
+        level = Level(Level::DEBUG_INT);
+    } else if (isOption(s, "trace")) {
+        level = Level(Level::TRACE_INT);
+    }
+}
+
+Level getLevel(int argc, char** argv) {
+
+    Level level(Level::INFO_INT);
     for(int i = 0; i < argc; i++) {
-        if (isDebug(argv[i])) {
-            debug = true;
-            break;
-        }
+        getLevelFromOption(argv[i], level);
     }
 
-    initLog4Qt(debug);
+    return level;
+}
+
+int main(int argc, char** argv) {
+
+    initLog4Qt(getLevel(argc, argv));
 
     int exitCode;
     do {
