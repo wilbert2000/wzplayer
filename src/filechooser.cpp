@@ -20,14 +20,8 @@
 #include <QToolButton>
 #include <QStyle>
 
-//#define NO_SMPLAYER_SUPPORT
-
-#ifndef NO_SMPLAYER_SUPPORT
 #include "filedialog.h"
 #include "images.h"
-#else
-#include <QFileDialog>
-#endif
 
 QString FileChooser::last_dir;
 
@@ -49,11 +43,7 @@ FileChooser::~FileChooser() {
 
 void FileChooser::setupButton() {
 
-#ifdef NO_SMPLAYER_SUPPORT
-	setIcon(QPixmap(":/folder_open"));
-#else
 	setIcon(Images::icon("folder_open"));
-#endif
 	button->setToolTip(tr("Click to select a file or folder"));
 }
 
@@ -73,11 +63,7 @@ void FileChooser::openFileDialog() {
 		if (dir.isEmpty())
 			dir = QDir::homePath();
 
-#ifndef NO_SMPLAYER_SUPPORT
 		result = MyFileDialog::getOpenFileName(
-#else
-		result = QFileDialog::getOpenFileName(
-#endif
 					 this,
 					 _caption,
 					 dir,
@@ -98,11 +84,7 @@ void FileChooser::openFileDialog() {
 		if (dir.isEmpty())
 			dir = QDir::homePath();
 
-#ifndef NO_SMPLAYER_SUPPORT
 		result = MyFileDialog::getExistingDirectory(
-#else
-		result = QFileDialog::getExistingDirectory(
-#endif
 					 this,
 					 _caption,
 					 dir,
