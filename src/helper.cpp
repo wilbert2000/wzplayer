@@ -141,14 +141,12 @@ QString Helper::nameForFile(QString filename) {
 }
 
 QString Helper::clean(const QString& name) {
-    logger()->trace("clean: '%1'", name);
 
     if (name.isEmpty()) {
         return "";
     }
-    if (name == TConfig::WZPLAYLIST) {
-        return name;
-    }
+
+    logger()->trace("clean: '%1'", name);
 
     QString s = QUrl(name).toString(QUrl::RemoveScheme
                                     | QUrl::RemoveAuthority
