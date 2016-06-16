@@ -176,19 +176,6 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
     connect(useCustomSubStyleAct, SIGNAL(triggered(bool)),
             core, SLOT(changeUseCustomSubStyle(bool)));
 
-#ifdef FIND_SUBTITLES
-	addSeparator();
-    showFindSubtitlesDialogAct = new TAction(this, "show_find_sub_dialog",
-         tr("Find subtitles at &OpenSubtitles.org..."), "download_subs");
-    connect(showFindSubtitlesDialogAct, SIGNAL(triggered()),
-            main_window, SLOT(showFindSubtitlesDialog()));
-
-    openUploadSubtitlesPageAct = new TAction(this, "upload_subtitles",
-        tr("Upload su&btitles to OpenSubtitles.org..."), "upload_subs");
-    connect(openUploadSubtitlesPageAct, SIGNAL(triggered()),
-            main_window, SLOT(openUploadSubtitlesPage()));
-#endif
-
     addActionsTo(main_window);
 }
 
@@ -220,10 +207,6 @@ void TMenuSubtitle::enableActions() {
 	unloadSubsAct->setEnabled(e && core->haveExternalSubs());
 
 	// useCustomSubStyleAct always enabled
-
-	// Depends on mset
-    showFindSubtitlesDialogAct->setEnabled(pop);
-	// openUploadSubtitlesPageAct always enabled
 }
 
 void TMenuSubtitle::onMediaSettingsChanged(Settings::TMediaSettings*) {

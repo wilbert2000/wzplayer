@@ -15,11 +15,10 @@ OBJECTS_DIR = .obj
 
 include(log4qt/log4qt.pri)
 
-QT += network xml
+QT += network
 
 RESOURCES = icons.qrc
 
-DEFINES += FIND_SUBTITLES
 DEFINES += MPRIS2
 DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tags)\\\"
 
@@ -28,7 +27,6 @@ DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tag
 #DEFINES += SIMPLE_BUILD
 
 contains(DEFINES, SIMPLE_BUILD) {
-	DEFINES -= FIND_SUBTITLES
 	DEFINES -= MPRIS2
 }
 
@@ -326,66 +324,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/network.ui \
     gui/pref/advanced.ui
 
-
-# Find subtitles dialog
-contains(DEFINES, FIND_SUBTITLES) {
-	DEFINES += DOWNLOAD_SUBS
-	DEFINES += OS_SEARCH_WORKAROUND
-	#DEFINES += USE_QUAZIP
-
-	INCLUDEPATH += findsubtitles
-	DEPENDPATH += findsubtitles
-
-	INCLUDEPATH += findsubtitles/maia
-	DEPENDPATH += findsubtitles/maia
-
-	HEADERS += findsubtitles/findsubtitlesconfigdialog.h findsubtitles/findsubtitleswindow.h
-	SOURCES += findsubtitles/findsubtitlesconfigdialog.cpp findsubtitles/findsubtitleswindow.cpp
-	FORMS += findsubtitles/findsubtitleswindow.ui findsubtitles/findsubtitlesconfigdialog.ui
-
-	# xmlrpc client code to connect to opensubtitles.org
-	HEADERS += findsubtitles/maia/maiaObject.h findsubtitles/maia/maiaFault.h findsubtitles/maia/maiaXmlRpcClient.h findsubtitles/osclient.h
-	SOURCES += findsubtitles/maia/maiaObject.cpp findsubtitles/maia/maiaFault.cpp findsubtitles/maia/maiaXmlRpcClient.cpp findsubtitles/osclient.cpp
-}
-
-# Download subtitles
-contains(DEFINES, DOWNLOAD_SUBS) {
-	INCLUDEPATH += findsubtitles/filedownloader
-	DEPENDPATH += findsubtitles/filedownloader
-
-	HEADERS += findsubtitles/filedownloader/filedownloader.h findsubtitles/subchooserdialog.h findsubtitles/fixsubs.h
-	SOURCES += findsubtitles/filedownloader/filedownloader.cpp findsubtitles/subchooserdialog.cpp findsubtitles/fixsubs.cpp
-
-	FORMS += findsubtitles/subchooserdialog.ui
-
-	contains(DEFINES, USE_QUAZIP) {
-		INCLUDEPATH += findsubtitles/quazip
-		DEPENDPATH += findsubtitles/quazip
-
-		HEADERS += crypt.h \
-                   ioapi.h \
-                   quazip.h \
-                   quazipfile.h \
-                   quazipfileinfo.h \
-                   quazipnewinfo.h \
-                   unzip.h \
-                   zip.h
-
-		SOURCES += ioapi.c \
-                   quazip.cpp \
-                   quazipfile.cpp \
-                   quazipnewinfo.cpp \
-                   unzip.c \
-                   zip.c
-}
-
-	LIBS += -lz
-	
-	win32 {
-		INCLUDEPATH += ..\\zlib
-		LIBS += -L..\\zlib
-	}
-}
 
 contains(DEFINES, MPRIS2) {
 	INCLUDEPATH += mpris2

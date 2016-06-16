@@ -100,10 +100,6 @@
 #include "gui/pref/advanced.h"
 #include "app.h"
 
-#ifdef FIND_SUBTITLES
-#include "findsubtitleswindow.h"
-#endif
-
 #ifdef MPRIS2
 #include "mpris2/mpris2.h"
 #endif
@@ -127,9 +123,6 @@ TBase::TBase() :
 	help_window(0),
 	pref_dialog(0),
 	file_properties_dialog(0),
-#ifdef FIND_SUBTITLES
-	find_subs_dialog(0),
-#endif
     switching_to_fullscreen(false),
 	menubar_visible(true),
 	statusbar_visible(true),
@@ -2374,29 +2367,6 @@ void TBase::onPlayerError(int exit_code) {
         busy = false;
     }
 }
-
-#ifdef FIND_SUBTITLES
-void TBase::showFindSubtitlesDialog() {
-    logger()->debug("showFindSubtitlesDialog");
-
-	if (!find_subs_dialog) {
-		find_subs_dialog = new FindSubtitlesWindow(this, Qt::Window | Qt::WindowMinMaxButtonsHint);
-		find_subs_dialog->setSettings(Settings::pref);
-		find_subs_dialog->setWindowIcon(windowIcon());
-#if DOWNLOAD_SUBS
-		connect(find_subs_dialog, SIGNAL(subtitleDownloaded(const QString &)),
-				core, SLOT(loadSub(const QString &)));
-#endif
-	}
-
-	find_subs_dialog->show();
-	find_subs_dialog->setMovie(core->mdat.filename);
-}
-
-void TBase::openUploadSubtitlesPage() {	
-	QDesktopServices::openUrl(QUrl("http://www.opensubtitles.org/upload"));
-}
-#endif
 
 #if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
 bool TBase::winEvent (MSG* m, long* result) {

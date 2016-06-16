@@ -39,10 +39,6 @@ class QMenu;
 class TCore;
 class TPlayerWindow;
 
-#ifdef FIND_SUBTITLES
-class FindSubtitlesWindow;
-#endif
-
 namespace Settings {
 class TMediaSettings;
 }
@@ -132,11 +128,6 @@ public slots:
 	virtual void loadAudioFile(); // Load external audio file
 
 	void setInitialSubtitle(const QString& subtitle_file);
-
-#ifdef FIND_SUBTITLES
-	virtual void showFindSubtitlesDialog();
-	virtual void openUploadSubtitlesPage(); //turbos
-#endif
 
     virtual void showPlaylist(bool b);
     virtual void showPreferencesDialog();
@@ -322,10 +313,6 @@ protected:
 	TFilePropertiesDialog* file_properties_dialog;
 	TVideoEqualizer* video_equalizer;
 	TAudioEqualizer* audio_equalizer;
-
-#ifdef FIND_SUBTITLES
-	FindSubtitlesWindow* find_subs_dialog;
-#endif
 
 	QString pending_actions_to_run;
 

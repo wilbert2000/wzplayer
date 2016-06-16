@@ -71,11 +71,6 @@ private:
     TAction* unloadSubsAct;
     TMenuSubFPS* subFPSMenu;
 
-#ifdef FIND_SUBTITLES
-    TAction* showFindSubtitlesDialogAct;
-    TAction* openUploadSubtitlesPageAct;
-#endif
-
 private slots:
     void updateSubtitles();
 };
