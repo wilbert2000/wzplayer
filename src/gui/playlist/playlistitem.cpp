@@ -118,7 +118,6 @@ void TPlaylistItem::setFileInfo() {
 
     QFileInfo fi(mFilename);
     mPlaylist = extensions.isPlaylist(fi);
-    mWZPlaylist = fi.fileName() == TConfig::WZPLAYLIST;
     mSymLink = fi.isSymLink();
     mTarget = fi.symLinkTarget();
     if (mSymLink) {
@@ -126,11 +125,13 @@ void TPlaylistItem::setFileInfo() {
     }
     if (fi.isDir()) {
         mExt = "";
+        mWZPlaylist = false;
     } else {
         mExt = fi.suffix().toLower();
         if (!mExt.isEmpty() && mName.endsWith(mExt, Qt::CaseInsensitive)) {
             mName = mName.left(mName.length() - mExt.length() - 1);
         }
+        mWZPlaylist = fi.fileName() == TConfig::WZPLAYLIST;
     }
 }
 
