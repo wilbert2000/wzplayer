@@ -210,7 +210,7 @@ private:
     bool haveUnplayedItems() const;
 
     void swapItems(int item1, int item2);
-
+    void copySelection(const QString& actionName);
     bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
@@ -251,8 +251,7 @@ private slots:
 
     void findPlayingItem();
 
-    // TODO: Copied needs translation
-    void copySelected(const QString& actionName = "Copied");
+    void copySelected();
     void paste();
     void enablePaste();
     void cut();

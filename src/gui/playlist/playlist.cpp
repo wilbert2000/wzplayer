@@ -1297,7 +1297,7 @@ void TPlaylist::onTitleTrackChanged(int id) {
     }
 }
 
-void TPlaylist::copySelected(const QString& actionName) {
+void TPlaylist::copySelection(const QString& actionName) {
 
     QString text;
     int copied = 0;
@@ -1323,11 +1323,15 @@ void TPlaylist::copySelected(const QString& actionName) {
             msg(actionName + " " + text);
         } else {
             msg(tr("%1 %2 file names",
-                   "1 action Copied or Cut, 2 number of file names")
+                   "Action 'Copied'' or 'Cut'', number of file names")
                 .arg(actionName).arg(copied));
         }
         QApplication::clipboard()->setText(text);
     }
+}
+
+void TPlaylist::copySelected() {
+    copySelection(tr("Copied"));
 }
 
 void TPlaylist::paste() {
@@ -1350,7 +1354,7 @@ void TPlaylist::enablePaste() {
 
 void TPlaylist::cut() {
 
-    copySelected("Cut");
+    copySelection(tr("Cut"));
     removeSelected();
 }
 
@@ -1605,7 +1609,6 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
         logger()->error("saveM3u: failed to save '%1'", filename);
 
         // TODO: skip remaining  msgs...
-        logger()->error("saveM3u: failed to save '%1'", filename);
         QMessageBox::warning(this, tr("Save failed"),
                              tr("Failed to open \"%1\" for writing.")
                              .arg(filename), QMessageBox::Ok);
