@@ -68,7 +68,7 @@ public:
 	virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;
     virtual void setSubStyles(const Settings::TAssStyles& styles,
                               const QString& assStylesFile = QString::null) = 0;
-    void setImageInterval(int interval);
+    virtual void setImageDuration(int duration);
 
 	// Slave commands
 	void quit(int exit_code);

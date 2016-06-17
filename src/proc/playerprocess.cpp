@@ -241,27 +241,42 @@ void TPlayerProcess::quit(int exit_code) {
     }
 }
 
-void TPlayerProcess::setImageInterval(int interval) {
+void TPlayerProcess::setImageDuration(int duration) {
 
-    if (interval < 2) {
-        interval = 2;
-    } else if (interval > 999) {
-        interval = 999;
+    if (duration < 2) {
+        // MPlayer cannot handle a single frame image, MPV can
+        duration = 2;
+    } else if (duration > 999) {
+        duration = 999;
     }
+
+    int fps = 1;
+
+    // When MPlayer runs on 1 fps it will only respond to events once a second,
+    // so increase the framerate for MPlayer
+    if (Settings::pref->isMPlayer()) {
+        if (duration < 10) {
+            fps = 5;
+        } else if (duration < 100) {
+            fps = 2;
+        }
+    }
+
+    duration = duration * fps;
 
     if (temp_file.open()) {
         temp_file_name = temp_file.fileName();
         temp_file.resize(0);
-        QTextStream t(&temp_file);
-        for(int i = 0; i < interval; i++) {
-            t << md->filename << "\n";
+        QTextStream text(&temp_file);
+        for(int i = 0; i < duration; i++) {
+            text << md->filename << "\n";
         }
-        t.flush();
+        text.flush();
         temp_file.flush();
         temp_file.close();
     }
 
-    setOption("fps", 1);
+    setOption("fps", fps);
 }
 
 bool TPlayerProcess::parseLine(QString& line) {

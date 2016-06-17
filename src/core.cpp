@@ -919,8 +919,9 @@ void TCore::startPlayer(QString file) {
     seeking = false;
     if (mdat.selected_type == TMediaData::TYPE_FILE) {
         if (mdat.image) {
-            proc->setImageInterval(pref->imageDuration);
+            proc->setImageDuration(pref->imageDuration);
         }
+
         double ss = 0;
         if (mset.in_point > 0) {
             ss = mset.in_point;
