@@ -536,8 +536,8 @@ void TApp::showInfo() {
 #endif
 
     logger()->info(s);
-    logger()->info("Compiled with Qt version %1, running on Qt version %2", QT_VERSION_STR,
-                 qVersion());
+    logger()->info("Compiled with Qt version %1, running on Qt version %2",
+                   QT_VERSION_STR, qVersion());
     logger()->info("application path: '%1'", applicationDirPath());
     logger()->info("data path: '%1'", TPaths::dataPath());
     logger()->info("translation path: '%1'", TPaths::translationPath());

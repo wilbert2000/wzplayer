@@ -1625,13 +1625,15 @@ void TCore::stopPlayer() {
     logger()->debug("stopPlayer: entering the stopping state");
     setState(STATE_STOPPING);
 
-    // If set high enough the OS will detect the "not responding state" and popup a dialog
+    // If set high enough the OS will detect the "not responding state" and
+    // popup a dialog
     int timeout = pref->time_to_kill_player;
 
 #ifdef Q_OS_OS2
     QEventLoop eventLoop;
 
-    connect(proc, SIGNAL(processFinished(bool, int, bool)), &eventLoop, SLOT(quit()));
+    connect(proc, SIGNAL(processFinished(bool, int, bool)),
+            &eventLoop, SLOT(quit()));
 
     proc->quit(0);
 
@@ -1645,10 +1647,11 @@ void TCore::stopPlayer() {
 #else
     proc->quit(0);
 
-    logger()->debug("stopPlayer: Waiting %1 ms for player to finish...", timeout);
+    logger()->debug("stopPlayer: Waiting %1 ms for player to finish...",
+                    timeout);
     if (!proc->waitForFinished(timeout)) {
-        logger()->warn("stopPlayer: player process did not finish in %1 ms. Killing it...",
-                       timeout);
+        logger()->warn("stopPlayer: player process did not finish in %1 ms."
+                       " Killing it...", timeout);
         proc->kill();
     }
 #endif
@@ -1657,6 +1660,9 @@ void TCore::stopPlayer() {
 }
 
 void TCore::seekCmd(double secs, int mode) {
+    logger()->debug("seekCmd: %1 secs, mode %2, at %3",
+                    QString::number(secs), mode,
+                    QString::number(mset.current_sec));
 
 	// seek <value> [type]
 	// Seek to some place in the movie.
@@ -1676,9 +1682,9 @@ void TCore::seekCmd(double secs, int mode) {
                            + " beyond end of video "
                            + QString::number(mdat.duration));
 			// TODO: limit only when mdat.duration is proven reliable...
-			//if (mdat.video_fps > 0)
+            // if (mdat.video_fps > 0)
 			//	secs = mdat.duration - (1.0 / mdat.video_fps);
-			//else secs = mdat.duration - 0.1;
+            // else secs = mdat.duration - 0.1;
 		}
 	}
 
