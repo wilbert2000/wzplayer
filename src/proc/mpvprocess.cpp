@@ -829,8 +829,9 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
         args << "--length=" + value.toString();
 	} else if (name == "loop") {
 		QString o = value.toString();
-		if (o == "0")
+        if (o == "0") {
 			o = "inf";
+        }
         args << "--loop=" + o;
 	} else if (name == "ass") {
         args << "--sub-ass";
