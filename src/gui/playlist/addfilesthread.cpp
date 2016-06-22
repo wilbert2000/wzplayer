@@ -18,15 +18,6 @@
 namespace Gui {
 namespace Playlist {
 
-// TODO: find the file sys func reporting case
-Qt::CaseSensitivity caseSensitiveNames =
-#ifdef Q_OS_WIN
-        Qt::CaseInsensitive;
-#else
-        Qt::CaseSensitive;
-#endif
-
-
 class TFileLock {
 public:
     bool locked;
@@ -50,7 +41,7 @@ bool TFileLock::acquire(QString filename) {
 
     filename = QDir::toNativeSeparators(filename);
 
-    if (lockedFiles.contains(filename, caseSensitiveNames)) {
+    if (lockedFiles.contains(filename, caseSensitiveFileNames)) {
         Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->warn(
             "acquire: skipping '%1', creating an infinite list", filename);
         return false;
@@ -290,11 +281,11 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
 
         QString filename = fi.fileName();
 
-        if (files.contains(filename, caseSensitiveNames)) {
+        if (files.contains(filename, caseSensitiveFileNames)) {
             continue;
         }
 
-        int i = blacklist.indexOf(QRegExp(filename, caseSensitiveNames,
+        int i = blacklist.indexOf(QRegExp(filename, caseSensitiveFileNames,
                                           QRegExp::FixedString));
         if (i >= 0) {
             logger()->info("addNewItems: '%1' is blacklisted", filename);
@@ -311,7 +302,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         }
 
         if (fi.isSymLink()
-            && files.contains(fi.symLinkTarget(), caseSensitiveNames)) {
+            && files.contains(fi.symLinkTarget(), caseSensitiveFileNames)) {
             continue;
         }
 
