@@ -440,6 +440,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
                                                    bool append) {
     logger()->info("openPlaylist: '%1'", fi.filePath());
 
+    // TODO: still needed for test type
     if (fi.isSymLink()) {
         fi.setFile(fi.symLinkTarget());
     }
