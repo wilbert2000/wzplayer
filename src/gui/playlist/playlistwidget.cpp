@@ -579,6 +579,10 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         addTopLevelItem(item);
         setRootIndex(model()->index(0, 0));
 
+        if (item->isWZPlaylist() || !item->isPlaylist()) {
+            enableSort(true);
+        }
+
         if (item->childCount()) {
             setCurrentItem(item->child(0));
         }
