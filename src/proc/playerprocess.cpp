@@ -243,32 +243,39 @@ void TPlayerProcess::quit(int exit_code) {
 
 void TPlayerProcess::setImageDuration(int duration) {
 
+    // Need at least 2 frames
     if (duration < 2) {
-        // MPlayer cannot handle a single frame image, MPV can
         duration = 2;
     } else if (duration > 999) {
         duration = 999;
     }
 
-    int fps = 1;
-
-    // When MPlayer runs on 1 fps it will only respond to events once a second,
-    // so increase the framerate for MPlayer
+    int fps;
     if (Settings::pref->isMPlayer()) {
-        if (duration < 10) {
+        // When MPlayer runs on 1 fps it will only respond to events once a
+        // second, so increase the framerate for MPlayer...
+        if (duration <= 20) {
             fps = 5;
-        } else if (duration < 100) {
+        } else if (duration <= 60) {
             fps = 2;
+        } else {
+            fps = 1;
         }
+    } else {
+        // Select 1 frame per second for MPV
+        // With fps < 1 the displayed time is off
+        fps = 1;
     }
 
-    duration = duration * fps;
+    int frames = duration * fps;
 
+    logger()->debug("setImageDuration: duration %1, frames %2, fps %3",
+                    duration, frames, fps);
     if (temp_file.open()) {
         temp_file_name = temp_file.fileName();
         temp_file.resize(0);
         QTextStream text(&temp_file);
-        for(int i = 0; i < duration; i++) {
+        for(int i = 0; i < frames; i++) {
             text << md->filename << "\n";
         }
         text.flush();

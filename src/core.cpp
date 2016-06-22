@@ -380,7 +380,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 } // openDisc
 
 // Generic open, autodetect type
-void TCore::open(QString filename) {
+void TCore::open(QString filename, bool loopImage) {
     logger()->debug("open: " + filename);
 
     if (filename.isEmpty()) {
@@ -437,7 +437,7 @@ void TCore::open(QString filename) {
         }
 
         // Local file
-        openFile(filename);
+        openFile(filename, loopImage);
         return;
     }
 
@@ -557,7 +557,7 @@ void TCore::openStream(const QString& name) {
     initPlaying();
 }
 
-void TCore::openFile(const QString& filename) {
+void TCore::openFile(const QString& filename, bool loopImage) {
     logger()->debug("openFile: '" + filename + "'");
 
     close(STATE_LOADING);
@@ -586,7 +586,7 @@ void TCore::openFile(const QString& filename) {
         }
     }
 
-    initPlaying();
+    initPlaying(loopImage);
 }
 
 void TCore::restartPlay() {
@@ -655,17 +655,18 @@ void TCore::initMediaSettings() {
 	emit mediaSettingsChanged();
 }
 
-void TCore::initPlaying() {
+void TCore::initPlaying(bool loopImages) {
     logger()->debug("initPlaying: starting time");
 
     time.start();
+
     if (_state != STATE_RESTARTING) {
         // Clear background
         playerwindow->repaint();
         initMediaSettings();
     }
 
-    startPlayer(mdat.filename);
+    startPlayer(mdat.filename, loopImages);
 }
 
 void TCore::playingStartedNewMedia() {
@@ -861,7 +862,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 }
 #endif
 
-void TCore::startPlayer(QString file) {
+void TCore::startPlayer(QString file, bool loopImage) {
     logger()->debug("startPlayer: '%1'", file);
 
     if (file.isEmpty()) {
@@ -881,8 +882,7 @@ void TCore::startPlayer(QString file) {
         file = file.remove("|playlist");
     }
 
-    // Check if a m4a file exists with the same name of file,
-    // in that cause if will be used as audio
+    // Load m4a audio file with the same name as file
     if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
         QFileInfo fi(file);
         if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
@@ -892,8 +892,8 @@ void TCore::startPlayer(QString file) {
                 file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
             }
             if (QFile::exists(file2)) {
-                logger()->debug("startPlayer: using external audio file "
-                              + file2);
+                logger()->debug("startPlayer: using external audio file '%1'",
+                                file2);
                 mset.external_audio = file2;
             }
         }
@@ -920,6 +920,9 @@ void TCore::startPlayer(QString file) {
     if (mdat.selected_type == TMediaData::TYPE_FILE) {
         if (mdat.image) {
             proc->setImageDuration(pref->imageDuration);
+            if (loopImage) {
+                proc->setOption("loop", 0 /* loop forever */);
+            }
         }
 
         double ss = 0;

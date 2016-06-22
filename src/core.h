@@ -76,7 +76,7 @@ public:
     }
 
     //! Generic open, with autodetection of type
-    void open(QString filename = "");
+    void open(QString filename = "", bool loopImage = false);
 	//! Open disc
 	void openDisc(TDiscName disc, bool fast_open = false);
 
@@ -382,8 +382,8 @@ signals:
 protected:
 	void initVolume();
 	void initMediaSettings();
-    void initPlaying();
-    void startPlayer(QString file);
+    void initPlaying(bool loopImages = false);
+    void startPlayer(QString file, bool loopImage);
     void stopPlayer();
 	void restartPlay();
 
@@ -435,7 +435,7 @@ private:
 
 	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
 
-    void openFile(const QString& filename);
+    void openFile(const QString& filename, bool loopImage);
 	void openStream(const QString& name);
 	void openTV(QString channel_id);
 

@@ -202,6 +202,12 @@ bool TPlaylistWidget::hasItems() const {
     return r && r->childCount();
 }
 
+bool TPlaylistWidget::hasSingleItem() const {
+
+    TPlaylistWidgetItem* r = root();
+    return r && r->childCount() == 1 && r->child(0)->childCount() == 0;
+}
+
 TPlaylistWidgetItem* TPlaylistWidget::currentPlaylistWidgetItem() const {
     return static_cast<TPlaylistWidgetItem*>(currentItem());
 }

@@ -29,6 +29,7 @@ public:
     int countItems() const;
     int countChildren() const;
     bool hasItems() const;
+    bool hasSingleItem() const;
 
     TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
     TPlaylistWidgetItem* firstPlaylistWidgetItem() const;
