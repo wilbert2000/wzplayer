@@ -799,7 +799,7 @@ void TMPlayerProcess::parseFrame(double& s, const QString& line) {
     // 2 - exact frames, determining the time stamp
     // 3 - played frames, always incrementing
 
-    md->fuzzy_time = "";
+    md->fuzzy_time = QString::fromUtf8("\u00B1"); // +/- char;
     if (md->video_fps > 0 && rx_frame.indexIn(line) >= 0) {
         int f = rx_frame.cap(1).toInt();
         if (f > 0) {
@@ -842,7 +842,6 @@ void TMPlayerProcess::parseFrame(double& s, const QString& line) {
                        .arg(sf).arg(s).arg(d).arg(line));
                 }
                 start_frame = nsf;
-                md->fuzzy_time = QString::fromUtf8("\u00B1"); // +/- char
             }
         }
     }
