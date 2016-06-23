@@ -463,7 +463,7 @@ void TPlayerProcess::setImageDuration(int duration) {
     int fps;
     if (Settings::pref->isMPlayer()) {
         // When MPlayer runs on 1 fps it will only respond to events once a
-        // second, so increase the framerate for MPlayer...
+        // second. So increasing the framerate...
         if (duration <= 20) {
             fps = 5;
         } else if (duration <= 60) {
