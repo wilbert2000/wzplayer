@@ -153,9 +153,6 @@ public slots:
 	void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
 	int forceCloseOnFinish() { return arg_close_on_finish; }
 
-	void setForceStartInFullscreen(int n) { arg_start_in_fullscreen = n; }
-	int forceStartInFullscreen() { return arg_start_in_fullscreen; }
-
 signals:
     void enableActions();
 
@@ -330,13 +327,13 @@ private:
 
 	// Force settings from command line
 	int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
-	int arg_start_in_fullscreen; // -1 = not set, 1 = true, 0 = false
 
 	bool was_maximized;
 
 	bool ignore_show_hide_events;
 
-	bool force_resize;
+    bool save_size;
+    bool force_resize;
 	bool center_window;
     QPoint center_window_pos;
 

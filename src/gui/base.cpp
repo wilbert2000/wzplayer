@@ -117,71 +117,71 @@ using namespace Action;
 
 
 TBase::TBase() :
-	QMainWindow(),
+    QMainWindow(),
     debug(logger()),
-	toolbar_menu(0),
-	help_window(0),
-	pref_dialog(0),
-	file_properties_dialog(0),
+    toolbar_menu(0),
+    help_window(0),
+    pref_dialog(0),
+    file_properties_dialog(0),
     switching_to_fullscreen(false),
-	menubar_visible(true),
-	statusbar_visible(true),
-	fullscreen_menubar_visible(false),
-	fullscreen_statusbar_visible(true),
-	arg_close_on_finish(-1),
-	arg_start_in_fullscreen(-1),
-	ignore_show_hide_events(false),
-	center_window(false),
-	update_checker(0) {
+    menubar_visible(true),
+    statusbar_visible(true),
+    fullscreen_menubar_visible(false),
+    fullscreen_statusbar_visible(true),
+    arg_close_on_finish(-1),
+    ignore_show_hide_events(false),
+    save_size(true),
+    center_window(false),
+    update_checker(0) {
 
-	setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle(TConfig::PROGRAM_NAME);
-	setAcceptDrops(true);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowTitle(TConfig::PROGRAM_NAME);
+    setAcceptDrops(true);
 
-	// Reset size factor
-	if (pref->save_window_size_on_exit) {
-		force_resize = false;
-	} else {
-		force_resize = true;
-		pref->size_factor = 1.0;
-	}
+    // Reset size factor
+    if (pref->save_window_size_on_exit) {
+        force_resize = false;
+    } else {
+        force_resize = true;
+        pref->size_factor = 1.0;
+    }
 
-	// Resize window to default size
-	resize(pref->default_size);
+    // Resize window to default size
+    resize(pref->default_size);
 
-	// Setup move window timer merging multiple move requests into one
-	move_window_timer.setSingleShot(true);
-	move_window_timer.setInterval(0);
-	connect(&move_window_timer, SIGNAL(timeout()),
-			this, SLOT(moveWindowMerged()));
+    // Setup move window timer merging multiple move requests into one
+    move_window_timer.setSingleShot(true);
+    move_window_timer.setInterval(0);
+    connect(&move_window_timer, SIGNAL(timeout()),
+            this, SLOT(moveWindowMerged()));
 
-	// Create objects:
+    // Create objects:
     log_window = new TLogWindow(this);
 
     createPanel();
-	setCentralWidget(panel);
+    setCentralWidget(panel);
 
-	createPlayerWindow();
-	createCore();
-	createPlaylist();
-	createVideoEqualizer();
-	createAudioEqualizer();
+    createPlayerWindow();
+    createCore();
+    createPlaylist();
+    createVideoEqualizer();
+    createAudioEqualizer();
 
-	createActions();
-	createToolbars();
-	createMenus();
+    createActions();
+    createToolbars();
+    createMenus();
 
-	setupNetworkProxy();
-	changeStayOnTop(pref->stay_on_top);
+    setupNetworkProxy();
+    changeStayOnTop(pref->stay_on_top);
 
-	update_checker = new TUpdateChecker(this, &pref->update_checker_data);
+    update_checker = new TUpdateChecker(this, &pref->update_checker_data);
 
 #ifdef MPRIS2
-	if (pref->use_mpris2)
-		new Mpris2(this, this);
+    if (pref->use_mpris2)
+        new Mpris2(this, this);
 #endif
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TBase::~TBase() {
@@ -465,7 +465,6 @@ QMenu* TBase::createToolbarMenu() {
 // Called by main window to show context popup.
 // Main window takes ownership of menu.
 QMenu* TBase::createPopupMenu() {
-    //logger()->debug("createPopupMenu");
 	return createToolbarMenu();
 }
 
@@ -826,6 +825,7 @@ void TBase::loadConfig() {
         move(p);
         resize(s);
         setWindowState((Qt::WindowStates) state);
+
         if (p.isNull()) {
             TDesktop::centerWindow(this);
         }
@@ -882,7 +882,7 @@ void TBase::saveConfig() {
 
 	pref->beginGroup(settingsGroupName());
 
-	if (pref->save_window_size_on_exit) {
+    if (pref->save_window_size_on_exit && save_size) {
 		pref->setValue("pos", pos());
 		pref->setValue("size", size());
 		pref->setValue("state", (int) windowState());
@@ -976,7 +976,12 @@ void TBase::restartApplication() {
 
     emit requestRestart();
 
-	// Close and restart with the new settings
+    // TODO:
+    // When fullscreen the window size will not yet be updated by the time it is
+    // saved by saveConfig. Block saving...
+    save_size = !pref->fullscreen;
+
+    // Close and restart with the new settings
     if (close()) {
         logger()->debug("restartApplication: closed main window");
         qApp->exit(TApp::NoExit);
@@ -1547,9 +1552,10 @@ void TBase::showStereo3dDialog() {
 }
 
 void TBase::exitFullscreen() {
-	if (pref->fullscreen) {
-		toggleFullscreen(false);
-	}
+
+    if (pref->fullscreen) {
+        toggleFullscreen(false);
+    }
 }
 
 void TBase::toggleFullscreen() {
@@ -1874,13 +1880,21 @@ void TBase::showContextMenu(QPoint p) {
 
 // Called when a video has started to play
 void TBase::enterFullscreenOnPlay() {
+    logger()->debug("enterFullscreenOnPlay: app start fs %1"
+                    ", pref start fs %2, fs %3",
+                    TApp::start_in_fullscreen,
+                    pref->start_in_fullscreen,
+                    pref->fullscreen);
 
-    if (arg_start_in_fullscreen != 0) {
-        if (arg_start_in_fullscreen == 1 || pref->start_in_fullscreen) {
+    if (TApp::start_in_fullscreen != TApp::FS_FALSE) {
+        if (pref->start_in_fullscreen || TApp::start_in_fullscreen > 0) {
             if (!pref->fullscreen) {
-                logger()->debug("enterFullscreenOnPlay: switching to"
-                                " fullscreen");
                 toggleFullscreen(true);
+            }
+
+            // Clear TApp::start_in_fullscreen
+            if (TApp::start_in_fullscreen == TApp::FS_RESTART) {
+                TApp::start_in_fullscreen = TApp::FS_NOT_SET;
             }
         }
     }

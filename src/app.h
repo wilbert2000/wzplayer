@@ -50,6 +50,15 @@ public:
              NoExit = 1111
     };
 
+    enum TStartFS {
+        FS_NOT_SET = -1,
+        FS_FALSE = 0,
+        FS_TRUE = 1,
+        FS_RESTART = 2
+    };
+
+    static TStartFS start_in_fullscreen;
+
 	TApp(int& argc, char** argv);
 	virtual ~TApp();
 
@@ -67,7 +76,6 @@ public:
 
 private:
     static bool restarting;
-    static int start_in_fullscreen; // -1 = not set, 1 = true, 0 false
     static QString current_file;
     static QStringList files_to_play;
 

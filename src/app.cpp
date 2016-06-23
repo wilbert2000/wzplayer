@@ -50,9 +50,10 @@ using namespace Settings;
 
 // Statics that need to survive a restart
 bool TApp::restarting = false;
-int TApp::start_in_fullscreen = -1;
+TApp::TStartFS TApp::start_in_fullscreen = TApp::FS_NOT_SET;
 QString TApp::current_file;
 QStringList TApp::files_to_play;
+
 
 TApp::TApp(int& argc, char** argv) :
     QtSingleApplication(TConfig::PROGRAM_ID, argc, argv),
@@ -375,9 +376,9 @@ TApp::ExitCode TApp::processArgs() {
                     return ErrorArgument;
                 }
             } else if (name == "fullscreen") {
-                start_in_fullscreen = 1;
+                start_in_fullscreen = FS_TRUE;
             } else if (name == "no-fullscreen") {
-                start_in_fullscreen = 0;
+                start_in_fullscreen = FS_FALSE;
             } else {
                 logger()->debug("processArgs: adding '%1' to files to play",
                                 argument);
@@ -426,27 +427,26 @@ TApp::ExitCode TApp::processArgs() {
 void TApp::createGUI() {
     logger()->debug("createGUI: creating main window 'Gui::TDefault'");
 
-	main_window = new Gui::TDefault();
+    main_window = new Gui::TDefault();
 
     logger()->debug("createGUI: loading window config");
-	main_window->loadConfig();
+    main_window->loadConfig();
 
-	main_window->setForceCloseOnFinish(close_at_end);
-	main_window->setForceStartInFullscreen(start_in_fullscreen);
+    main_window->setForceCloseOnFinish(close_at_end);
 
     connect(main_window, SIGNAL(requestRestart()),
             this, SLOT(onRequestRestart()));
-	connect(this, SIGNAL(messageReceived(const QString&)),
-			main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
+    connect(this, SIGNAL(messageReceived(const QString&)),
+            main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
 
     setActivationWindow(main_window);
 
-	if (move_gui) {
+    if (move_gui) {
         main_window->move(gui_position);
-	}
-	if (resize_gui) {
+    }
+    if (resize_gui) {
         main_window->resize(gui_size);
-	}
+    }
 
     logger()->debug("createGUI: created main window");
 } // createGUI()
@@ -488,7 +488,10 @@ void TApp::onRequestRestart() {
     logger()->debug("onRequestRestart");
 
     restarting = true;
-    start_in_fullscreen = pref->fullscreen;
+    if (pref->fullscreen && start_in_fullscreen != FS_TRUE) {
+        start_in_fullscreen = FS_RESTART;
+    }
+
     Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
     playlist->getFilesToPlay(files_to_play);
     current_file = playlist->playingFile();
