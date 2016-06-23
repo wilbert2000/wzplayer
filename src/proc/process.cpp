@@ -68,8 +68,10 @@ QStringList TProcess::arguments() {
 }
 
 void TProcess::start() {
+    debug.level = Log4Qt::Level::INFO_INT;
     debug << "start: program:" << program << "args:" << args;
     debug << debug;
+    debug.level = Log4Qt::Level::DEBUG_INT;
 
     remaining_output.clear();
 

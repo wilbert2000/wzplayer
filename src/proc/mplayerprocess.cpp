@@ -1211,6 +1211,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
 	// Messages to display
 	if (rx_message.indexIn(line) >= 0) {
+        logger()->info("parseLine: '%1'", line);
 		emit receivedMessage(line);
 		return true;
 	}

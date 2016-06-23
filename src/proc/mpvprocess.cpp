@@ -541,6 +541,7 @@ bool TMPVProcess::parseLine(QString& line) {
 		return true;
 
 	if (rx_message.indexIn(line) >= 0) {
+        logger()->info("parseLine: '%1'", line);
 		emit receivedMessage(line);
 		return true;
 	}

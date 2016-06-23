@@ -808,72 +808,73 @@ void TBase::loadConfig() {
     // Disable actions
     sendEnableActions();
     // Get all actions with a name
-	TActionList all_actions = getAllNamedActions();
-	// Load actions from outside group derived class
+    TActionList all_actions = getAllNamedActions();
+    // Load actions from outside group derived class
     Action::TActionsEditor::loadFromConfig(pref, all_actions);
 
-	// Load from inside group derived class for backwards compatibility
-	pref->beginGroup(settingsGroupName());
+    // Load from inside group derived class for backwards compatibility
+    pref->beginGroup(settingsGroupName());
 
-	if (pref->save_window_size_on_exit) {
-		QPoint p = pref->value("pos", pos()).toPoint();
-		QSize s = pref->value("size", size()).toSize();
-		int state = pref->value("state", 0).toInt();
-		if (s.width() < 200 || s.height() < 200) {
-			s = pref->default_size;
-		}
+    if (pref->save_window_size_on_exit) {
+        QPoint p = pref->value("pos", pos()).toPoint();
+        QSize s = pref->value("size", size()).toSize();
+        int state = pref->value("state", 0).toInt();
+        if (s.width() < 200 || s.height() < 200) {
+            s = pref->default_size;
+        }
 
-		move(p);
-		resize(s);
-		setWindowState((Qt::WindowStates) state);
-		if (p.isNull()) {
+        move(p);
+        resize(s);
+        setWindowState((Qt::WindowStates) state);
+        if (p.isNull()) {
             TDesktop::centerWindow(this);
-		}
-		TDesktop::keepInsideDesktop(this);
-	} else {
+        }
+        TDesktop::keepInsideDesktop(this);
+    } else {
         TDesktop::centerWindow(this);
-		// Need to center again after video loaded
-		center_window = true;
+        // Need to center again after video loaded
+        center_window = true;
         center_window_pos = pos();
-	}
+    }
 
-	pref->beginGroup("actions");
-	toolbar->setActionsFromStringList(pref->value("toolbar1",
-		toolbar->defaultActions()).toStringList(), all_actions);
-	toolbar2->setActionsFromStringList(pref->value("toolbar2",
-		toolbar2->defaultActions()).toStringList(), all_actions);
-	// Using old name "controlwidget" to pick up old toolbars
-	controlbar->setActionsFromStringList(pref->value("controlwidget",
-		controlbar->defaultActions()).toStringList(), all_actions);
-	pref->endGroup();
+    pref->beginGroup("actions");
+    toolbar->setActionsFromStringList(pref->value("toolbar1",
+        toolbar->defaultActions()).toStringList(), all_actions);
+    toolbar2->setActionsFromStringList(pref->value("toolbar2",
+        toolbar2->defaultActions()).toStringList(), all_actions);
+    // Using old name "controlwidget" to pick up old toolbars
+    controlbar->setActionsFromStringList(pref->value("controlwidget",
+        controlbar->defaultActions()).toStringList(), all_actions);
+    pref->endGroup();
 
-	pref->beginGroup("toolbars_icon_size");
-	toolbar->setIconSize(pref->value("toolbar1",
-		toolbar->iconSize()).toSize());
-	toolbar2->setIconSize(pref->value("toolbar2",
-		toolbar2->iconSize()).toSize());
-	// Using old name "controlwidget" to pick up old toolbars
-	controlbar->setIconSize(pref->value("controlwidget",
-		controlbar->iconSize()).toSize());
-	pref->endGroup();
+    pref->beginGroup("toolbars_icon_size");
+    toolbar->setIconSize(pref->value("toolbar1",
+        toolbar->iconSize()).toSize());
+    toolbar2->setIconSize(pref->value("toolbar2",
+        toolbar2->iconSize()).toSize());
+    // Using old name "controlwidget" to pick up old toolbars
+    controlbar->setIconSize(pref->value("controlwidget",
+        controlbar->iconSize()).toSize());
+    pref->endGroup();
 
-	menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
-	viewMenuBarAct->setChecked(menubar_visible);
+    menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
+    viewMenuBarAct->setChecked(menubar_visible);
     fullscreen_menubar_visible = pref->value("fullscreen_menubar_visible",
         fullscreen_menubar_visible).toBool();
 
-	statusbar_visible = pref->value("statusbar_visible", statusbar_visible).toBool();
-	viewStatusBarAct->setChecked(statusbar_visible);
+    statusbar_visible = pref->value("statusbar_visible", statusbar_visible)
+                        .toBool();
+    viewStatusBarAct->setChecked(statusbar_visible);
     fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible",
         fullscreen_statusbar_visible).toBool();
 
     state_restored = restoreState(pref->value("toolbars_state").toByteArray(),
                                   Helper::qtVersion());
 
-	pref->endGroup();
+    pref->endGroup();
 
-	playlist->loadSettings();
-	log_window->loadConfig();
+    playlist->loadSettings();
+    log_window->loadConfig();
 }
 
 void TBase::saveConfig() {
@@ -905,7 +906,8 @@ void TBase::saveConfig() {
 	pref->setValue("menubar_visible", !menuBar()->isHidden());
 	pref->setValue("fullscreen_menubar_visible", fullscreen_menubar_visible);
 	pref->setValue("statusbar_visible", !statusBar()->isHidden());
-	pref->setValue("fullscreen_statusbar_visible", fullscreen_statusbar_visible);
+    pref->setValue("fullscreen_statusbar_visible",
+                   fullscreen_statusbar_visible);
 
 	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
@@ -1873,12 +1875,15 @@ void TBase::showContextMenu(QPoint p) {
 // Called when a video has started to play
 void TBase::enterFullscreenOnPlay() {
 
-	if (arg_start_in_fullscreen != 0) {
-		if ((arg_start_in_fullscreen == 1) || (pref->start_in_fullscreen)) {
-			if (!pref->fullscreen)
-				toggleFullscreen(true);
-		}
-	}
+    if (arg_start_in_fullscreen != 0) {
+        if (arg_start_in_fullscreen == 1 || pref->start_in_fullscreen) {
+            if (!pref->fullscreen) {
+                logger()->debug("enterFullscreenOnPlay: switching to"
+                                " fullscreen");
+                toggleFullscreen(true);
+            }
+        }
+    }
 }
 
 // Called when the playlist has stopped
@@ -2072,8 +2077,10 @@ double TBase::getNewSizeFactor() {
         double size_factor_y = (double) available_size.height()
                                / video_size.height();
         if (size_factor_y < size_factor) {
-            return size_factor_y;
+            size_factor = size_factor_y;
         }
+        logger()->debug("getNewSizeFactor: returning %1 for full screen",
+                        QString::number(size_factor));
         return size_factor;
     }
 
@@ -2190,14 +2197,17 @@ void TBase::onVideoOutResolutionChanged(int w, int h) {
         if (panel->width() < 64 || panel->height() < 48) {
             force_resize = true;
         }
-		// Leave maximized window as is.
-		if (!isMaximized() && (pref->resize_on_load || force_resize)) {
+        // Leave maximized window as is.
+        if (!isMaximized() && (pref->resize_on_load || force_resize)) {
             getNewGeometry(w, h);
-		} else {
-			// Adjust the size factor to the current window size
-			playerwindow->updateSizeFactor();
-		}
-	}
+        } else {
+            // Adjust the size factor to the current window size
+            playerwindow->updateSizeFactor();
+            logger()->debug("onVideoOutResolutionChanged: adjusted size factor"
+                            " to %1 to match current window size",
+                            QString::number(pref->size_factor));
+        }
+    }
 
     // Center window only set for the first video
     // when pref->save_window_size_on_exit not set.
