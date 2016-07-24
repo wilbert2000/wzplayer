@@ -113,7 +113,7 @@ public:
     Action::TMenuInOut* getInOutMenu() const { return inOutMenu; }
 
 public slots:
-    void playNext(bool allow_reshuffle = true);
+    void playNext(bool loop_playlist = true);
     void playPrev();
 
     void open();

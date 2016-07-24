@@ -776,19 +776,19 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
     }
 }
 
-void TPlaylist::playNext(bool allow_reshuffle) {
+void TPlaylist::playNext(bool loop_playlist) {
     logger()->debug("playNext");
 
     TPlaylistWidgetItem* item = 0;
     if (shuffleAct->isChecked()) {
         item = getRandomItem();
-        if (item == 0 && (repeatAct->isChecked() || allow_reshuffle)) {
+        if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
             playlistWidget->clearPlayed();
             item = getRandomItem();
         }
     } else {
         item = playlistWidget->getNextPlaylistWidgetItem();
-        if (item == 0) {
+        if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
             item = playlistWidget->firstPlaylistWidgetItem();
         }
     }
