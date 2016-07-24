@@ -888,7 +888,7 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
 		int v = value.toInt();
 		if (v < 100)
 			v = 100;
-        args << "--softvol-max=" + QString::number(v);
+        args << "--volume-max=" + QString::number(v);
 	} else if (name == "subfps") {
         args << "--sub-fps=" + value.toString();
 	} else if (name == "forcedsubsonly") {
