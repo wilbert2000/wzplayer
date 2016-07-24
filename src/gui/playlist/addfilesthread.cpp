@@ -42,8 +42,8 @@ bool TFileLock::acquire(QString filename) {
     filename = QDir::toNativeSeparators(filename);
 
     if (lockedFiles.contains(filename, caseSensitiveFileNames)) {
-        Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->warn(
-            "acquire: skipping '%1', creating an infinite list", filename);
+        Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->info(
+            "acquire: skipping '%1', would create an infinite list", filename);
         return false;
     }
 
