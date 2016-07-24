@@ -50,6 +50,7 @@
 #include "gui/multilineinputdialog.h"
 #include "gui/action/menuinoutpoints.h"
 #include "gui/action/action.h"
+#include "gui/msg.h"
 #include "images.h"
 #include "helper.h"
 #include "filedialog.h"
@@ -422,10 +423,6 @@ void TPlaylist::retranslateStrings() {
     setWinTitle();
 }
 
-void TPlaylist::msg(const QString& s, int duration) {
-    emit displayMessageOnOSD(s, duration);
-}
-
 void TPlaylist::getFilesToPlay(QStringList& files) const {
 
     TPlaylistWidgetItem* root = playlistWidget->root();
@@ -567,7 +564,7 @@ void TPlaylist::addFilesStartThread() {
 
         connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
         connect(thread, SIGNAL(displayMessage(QString, int)),
-                this, SIGNAL(displayMessage(QString, int)));
+                msgSlot, SLOT(msg(QString, int)));
 
         thread->start();
         enableActions();
@@ -648,17 +645,17 @@ void TPlaylist::addRemovedItem(QString item) {
 void TPlaylist::onRepeatToggled(bool toggled) {
 
     if (toggled)
-        msg(tr("Repeat playlist set"));
+        msgOSD(tr("Repeat playlist set"));
     else
-        msg(tr("Repeat playlist cleared"));
+        msgOSD(tr("Repeat playlist cleared"));
 }
 
 void TPlaylist::onShuffleToggled(bool toggled) {
 
     if (toggled)
-        msg(tr("Shuffle playlist set"));
+        msgOSD(tr("Shuffle playlist set"));
     else
-        msg(tr("Shuffle playlist cleared"));
+        msgOSD(tr("Shuffle playlist cleared"));
 }
 
 void TPlaylist::play() {
@@ -1320,9 +1317,9 @@ void TPlaylist::copySelection(const QString& actionName) {
         if (copied == 1) {
             // Remove trailing new line
             text = text.left(text.length() - 1);
-            msg(actionName + " " + text);
+            msgOSD(actionName + " " + text);
         } else {
-            msg(tr("%1 %2 file names",
+            msgOSD(tr("%1 %2 file names",
                    "Action 'Copied'' or 'Cut'', number of file names")
                 .arg(actionName).arg(copied));
         }
@@ -1710,7 +1707,7 @@ bool TPlaylist::save() {
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
         wzplaylist = true;
     }
-    msg(tr("Saving %1").arg(fi.fileName()), 0);
+    msgOSD(tr("Saving %1").arg(fi.fileName()), 0);
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
@@ -1729,10 +1726,10 @@ bool TPlaylist::save() {
     if (result) {
         playlistWidget->clearModified();
         logger()->info("save: succesfully saved '%1'", fi.absoluteFilePath());
-        msg(tr("Saved '%1'").arg(fi.fileName()));
+        msgOSD(tr("Saved '%1'").arg(fi.fileName()));
     } else {
         // Error box and log already done, but need to remove 0 secs save msg
-        msg(tr("Failed to save '%1'").arg(fi.fileName()));
+        msgOSD(tr("Failed to save '%1'").arg(fi.fileName()));
     }
 
     return result;

@@ -118,8 +118,6 @@ public slots:
 	void screenshots();	//!< Start/stop taking screenshot of each frame
 	void switchCapturing();
 
-	void displayMessage(const QString& text, int duration = TConfig::MESSAGE_DURATION, int osd_level = 1);
-
 	//! Public restart, for the GUI.
 	void restart();
 
@@ -351,9 +349,6 @@ signals:
 
     void positionChanged(double sec);
     void durationChanged(double);
-
-	void showMessage(const QString& text);
-	void showMessage(const QString& text, int time);
 
 	void aspectRatioChanged(int);
 

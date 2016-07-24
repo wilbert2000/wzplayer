@@ -125,7 +125,6 @@ signals:
 	void setZoomAndPan(double, double, double);
 	void videoOutChanged(const QSize& size);
     void videoSizeFactorChanged(double, double);
-	void displayMessage(const QString&);
 
 protected:
 	virtual void resizeEvent(QResizeEvent*);

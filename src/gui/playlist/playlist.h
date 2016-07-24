@@ -124,8 +124,6 @@ signals:
     void playlistEnded();
     void enablePrevNextChanged();
     void visibilityChanged(bool visible);
-    void displayMessage(const QString&, int);
-    void displayMessageOnOSD(const QString&, int);
     void windowTitleChanged();
 
 protected:
@@ -203,7 +201,6 @@ private:
     void abortThread();
     void addFilesStartThread();
 
-    void msg(const QString& s, int duration = TConfig::MESSAGE_DURATION);
     void setWinTitle();
 
     TPlaylistWidgetItem* getRandomItem() const;
@@ -211,7 +208,9 @@ private:
 
     void swapItems(int item1, int item2);
     void copySelection(const QString& actionName);
-    bool deleteFileFromDisk(const QString& filename, const QString& playingFile);
+    bool deleteFileFromDisk(const QString& filename,
+                            const QString& playingFile);
+
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
                        const QString& path,

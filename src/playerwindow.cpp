@@ -33,6 +33,7 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "proc/playerprocess.h"
+#include "gui/msg.h"
 
 
 using namespace Settings;
@@ -575,9 +576,7 @@ void TPlayerWindow::moveVideo(QPoint delta) {
     }
     updateVideoWindow();
     QPoint p = pan();
-    emit displayMessage(tr("Pan (%1, %2)")
-                        .arg(QString::number(p.x()))
-                        .arg(QString::number(p.y())));
+    Gui::msgOSD(tr("Pan (%1, %2)").arg(p.x()).arg(p.y()));
 }
 
 void TPlayerWindow::moveVideo(int dx, int dy) {

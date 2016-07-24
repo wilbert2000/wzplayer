@@ -126,6 +126,7 @@ HEADERS += wzdebug.h \
     gui/pref/performance.h \
     gui/pref/network.h \
     gui/pref/advanced.h \
+    gui/msg.h \
     gui/multilineinputdialog.h \
     gui/infofile.h \
     gui/filepropertiesdialog.h \
@@ -252,6 +253,7 @@ SOURCES	+= wzdebug.cpp \
     gui/pref/performance.cpp \
     gui/pref/network.cpp \
     gui/pref/advanced.cpp \
+    gui/msg.cpp \
     gui/multilineinputdialog.cpp \
     gui/infofile.cpp \
     gui/filepropertiesdialog.cpp \

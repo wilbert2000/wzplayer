@@ -11,6 +11,8 @@
 #include "gui/playlist/playlistwidgetitem.h"
 #include "images.h"
 #include "iconprovider.h"
+#include "gui/msg.h"
+
 
 namespace Gui {
 namespace Playlist {
@@ -584,6 +586,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
 
         if (item->childCount()) {
+            msg(tr("Sorting '%1'").arg(item->name()));
             setCurrentItem(item->child(0));
         }
 

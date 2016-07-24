@@ -48,6 +48,7 @@
 #include "proc/playerprocess.h"
 #include "playerwindow.h"
 #include "gui/action/tvlist.h"
+#include "gui/msg.h"
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER
@@ -70,6 +71,8 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
     //qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
     qRegisterMetaType<TCoreState>("TCoreState");
+
+    Gui::setOSDMessageHandler(this);
 
     proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
 
@@ -100,7 +103,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 			this, SLOT(displayBufferingEnded()));
 
 	connect(proc, SIGNAL(receivedMessage(const QString&)),
-			this, SLOT(displayMessage(const QString&)));
+            Gui::msgSlot, SLOT(msgOSD(const QString&)));
 
 	connect(proc, SIGNAL(receivedScreenshot(const QString&)),
 			this, SLOT(displayScreenshotName(const QString&)));
@@ -150,8 +153,6 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
             this, SIGNAL(audioBitRateChanged(int)));
 
 	// playerwindow
-	connect(playerwindow, SIGNAL(displayMessage(const QString&)),
-			this, SLOT(displayMessage(const QString&)));
 	connect(playerwindow, SIGNAL(setZoomAndPan(double, double, double)),
 			this, SLOT(setZoomAndPan(double, double, double)));
 
@@ -176,9 +177,11 @@ TCore::~TCore() {
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 #ifdef DISABLE_SCREENSAVER
-	delete win_screensaver;
+    delete win_screensaver;
 #endif
 #endif
+
+    Gui::setOSDMessageHandler(0);
 }
 
 void TCore::enableScreensaver() {
@@ -271,7 +274,7 @@ void TCore::saveMediaSettings() {
 		return;
 	}
     logger()->info("saveMediaSettings: saving settings for " + mdat.filename);
-	emit showMessage(tr("Saving settings for %1").arg(mdat.filename), 0);
+    Gui::msg(tr("Saving settings for %1").arg(mdat.filename), 0);
 
 	if (mdat.selected_type == TMediaData::TYPE_FILE) {
 		if (pref->file_settings_method.toLower() == "hash") {
@@ -286,7 +289,7 @@ void TCore::saveMediaSettings() {
         settings.saveSettingsFor(mdat.filename, mset);
 	}
 
-	emit showMessage(tr("Saved settings for %1").arg(mdat.filename));
+    Gui::msg(tr("Saved settings for %1").arg(mdat.filename));
 } // saveMediaSettings
 
 void TCore::clearOSD() {
@@ -295,11 +298,11 @@ void TCore::clearOSD() {
 
 void TCore::displayTextOnOSD(const QString& text, int duration, int level) {
 
-	if (proc->isFullyStarted()
-		&& level <= pref->osd_level
-		&& mdat.hasVideo()) {
-		proc->showOSDText(text, duration, level);
-	}
+    if (proc->isFullyStarted()
+        && level <= pref->osd_level
+        && mdat.hasVideo()) {
+        proc->showOSDText(text, duration, level);
+    }
 }
 
 void TCore::close(TCoreState next_state) {
@@ -332,7 +335,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
 		return;
 	}
 
-	emit showMessage(tr("Opening %1").arg(disc.toString()), 0);
+    Gui::msg(tr("Opening %1").arg(disc.toString()), 0);
 
 	// Add device from pref if none specified
 	if (disc.device.isEmpty()) {
@@ -353,8 +356,7 @@ void TCore::openDisc(TDiscName disc, bool fast_open) {
             logger()->warn("openDisc: adding missing /");
 			disc.device = "/" + disc.device;
 		} else {
-            emit showMessage(tr("Device or file not found: '%1'")
-                             .arg(disc.device), 0);
+            Gui::msg(tr("Device or file not found: '%1'").arg(disc.device), 0);
 			return;
 		}
 	}
@@ -386,7 +388,7 @@ void TCore::open(QString filename, bool loopImage) {
     if (filename.isEmpty()) {
         filename = mdat.filename;
         if (filename.isEmpty()) {
-            emit showMessage(tr("No file to play"));
+            Gui::msg(tr("No file to play"));
             return;
         }
     }
@@ -413,7 +415,7 @@ void TCore::open(QString filename, bool loopImage) {
     // Forget a previous disc
     mdat.disc.valid = false;
 
-    emit showMessage(tr("Opening %1").arg(filename), 0);
+    Gui::msg(tr("Opening %1").arg(filename), 0);
 
     if (fi.exists()) {
         filename = fi.absoluteFilePath();
@@ -790,7 +792,7 @@ void TCore::screenshot() {
         logger()->debug("screenshot: took screenshot");
 	} else {
         logger()->warn("screenshot: directory for screenshots not valid or enabled");
-		emit showMessage(tr("Screenshot NOT taken, folder not configured or enabled"));
+        Gui::msg(tr("Screenshot NOT taken, folder not configured or enabled"));
 	}
 }
 
@@ -801,7 +803,7 @@ void TCore::screenshots() {
 		proc->takeScreenshot(Proc::TPlayerProcess::Multiple, pref->subtitles_on_screenshots);
 	} else {
         logger()->warn("screenshots: directory for screenshots not valid or enabled");
-		emit showMessage(tr("Screenshots NOT taken, folder not configured or enabled"));
+        Gui::msg(tr("Screenshots NOT taken, folder not configured or enabled"));
 	}
 }
 
@@ -854,7 +856,7 @@ bool TCore::videoFiltersEnabled(bool displayMessage) {
 
 		if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
             logger()->debug("videoFiltersEnabled: " + msg);
-			emit showMessage(msg, 0);
+            Gui::msg(msg, 0);
 		}
 	}
 
@@ -875,7 +877,7 @@ void TCore::startPlayer(QString file, bool loopImage) {
         return;
     }
 
-    emit showMessage(tr("Starting player..."), 0);
+    Gui::msg(tr("Starting player..."), 0);
 
     // Check URL playlist
     if (file.endsWith("|playlist")) {
@@ -952,7 +954,7 @@ void TCore::startPlayer(QString file, bool loopImage) {
 			hwdec = "no";
 			QString msg = tr("Disabled hardware decoding for video filters");
             logger()->debug("startPlayer: " + msg);
-			emit showMessage(msg, 0);
+            Gui::msg(msg, 0);
 		}
 		mdat.video_hwdec = hwdec != "no";
 	} else {
@@ -1819,14 +1821,14 @@ void TCore::setInPoint(double sec) {
     }
 
     emit InOutPointsChanged();
-    displayMessage(msg);
+    Gui::msgOSD(msg);
 }
 
 void TCore::seekInPoint() {
 
     seekTime(mset.in_point);
-    displayMessage(tr("Seeking to %1")
-                   .arg(Helper::formatTime(qRound(mset.in_point))));
+    Gui::msgOSD(tr("Seeking to %1")
+                .arg(Helper::formatTime(qRound(mset.in_point))));
 }
 
 void TCore::clearInPoint() {
@@ -1834,7 +1836,7 @@ void TCore::clearInPoint() {
 
     mset.in_point = 0;
     emit InOutPointsChanged();
-    displayMessage(tr("Cleared in point"));
+    Gui::msgOSD(tr("Cleared in point"));
 }
 
 void TCore::setOutPoint() {
@@ -1863,7 +1865,7 @@ void TCore::setOutPoint(double sec) {
     updateLoop();
 
     emit InOutPointsChanged();
-    displayMessage(msg);
+    Gui::msgOSD(msg);
 }
 
 void TCore::seekOutPoint() {
@@ -1877,7 +1879,7 @@ void TCore::seekOutPoint() {
         seek = mdat.duration;
     }
     seekTime(seek);
-    displayMessage(tr("Seeking to %1").arg(Helper::formatTime(qRound(seek))));
+    Gui::msgOSD(tr("Seeking to %1").arg(Helper::formatTime(qRound(seek))));
 }
 
 void TCore::clearOutPoint() {
@@ -1888,7 +1890,7 @@ void TCore::clearOutPoint() {
     updateLoop();
 
     emit InOutPointsChanged();
-    displayMessage(tr("Cleared out point and repeat"));
+    Gui::msgOSD(tr("Cleared out point and repeat"));
 }
 
 void TCore::clearInOutPoints() {
@@ -1900,7 +1902,7 @@ void TCore::clearInOutPoints() {
     updateLoop();
 
     emit InOutPointsChanged();
-    displayMessage(tr("In-out points and repeat cleared"));
+    Gui::msgOSD(tr("In-out points and repeat cleared"));
 }
 
 void TCore::updateLoop() {
@@ -1920,9 +1922,9 @@ void TCore::toggleRepeat(bool b) {
 
     emit InOutPointsChanged();
     if (mset.loop) {
-        displayMessage(tr("Repeat in-out set"));
+        Gui::msgOSD(tr("Repeat in-out set"));
     } else {
-        displayMessage(tr("Repeat in-out cleared"));
+        Gui::msgOSD(tr("Repeat in-out cleared"));
     }
 }
 
@@ -2197,7 +2199,7 @@ void TCore::setBrightness(int value) {
 	if (value != mset.brightness) {
 		proc->setBrightness(value);
 		mset.brightness = value;
-		displayMessage(tr("Brightness: %1").arg(value));
+        Gui::msgOSD(tr("Brightness: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2211,7 +2213,7 @@ void TCore::setContrast(int value) {
 	if (value != mset.contrast) {
 		proc->setContrast(value);
 		mset.contrast = value;
-		displayMessage(tr("Contrast: %1").arg(value));
+        Gui::msgOSD(tr("Contrast: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2225,7 +2227,7 @@ void TCore::setGamma(int value) {
 	if (value != mset.gamma) {
 		proc->setGamma(value);
 		mset.gamma= value;
-		displayMessage(tr("Gamma: %1").arg(value));
+        Gui::msgOSD(tr("Gamma: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2239,7 +2241,7 @@ void TCore::setHue(int value) {
 	if (value != mset.hue) {
 		proc->setHue(value);
 		mset.hue = value;
-		displayMessage(tr("Hue: %1").arg(value));
+        Gui::msgOSD(tr("Hue: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2253,7 +2255,7 @@ void TCore::setSaturation(int value) {
 	if (value != mset.saturation) {
 		proc->setSaturation(value);
 		mset.saturation = value;
-		displayMessage(tr("Saturation: %1").arg(value));
+        Gui::msgOSD(tr("Saturation: %1").arg(value));
 		emit videoEqualizerNeedsUpdate();
 	}
 }
@@ -2308,7 +2310,7 @@ void TCore::setSpeed(double value) {
 	mset.speed = value;
 	proc->setSpeed(value);
 
-	displayMessage(tr("Speed: %1").arg(value));
+    Gui::msgOSD(tr("Speed: %1").arg(value));
 }
 
 void TCore::incSpeed10() {
@@ -2380,31 +2382,30 @@ int TCore::getVolumeForPlayer() const {
 }
 
 void TCore::setVolume(int volume, bool unmute) {
-    //logger()->debug("setVolume: %1", volume);
 
-	if (volume < 0)
-		volume = 0;
-	if (volume > 100)
-		volume = 100;
+    if (volume < 0)
+        volume = 0;
+    if (volume > 100)
+        volume = 100;
 
-	bool muted;
-	if (pref->global_volume) {
-		pref->volume = volume;
-		muted = pref->mute;
-	} else {
-		mset.volume = volume;
-		muted = mset.mute;
-	}
+    bool muted;
+    if (pref->global_volume) {
+        pref->volume = volume;
+        muted = pref->mute;
+    } else {
+        mset.volume = volume;
+        muted = mset.mute;
+    }
 
-	if (proc->isRunning()) {
-		proc->setVolume(getVolumeForPlayer());
-	}
-	// Unmute audio if it was muted
-	if (muted && unmute)
-		mute(false);
+    if (proc->isRunning()) {
+        proc->setVolume(getVolumeForPlayer());
+    }
+    // Unmute audio if it was muted
+    if (muted && unmute)
+        mute(false);
 
-	displayMessage(tr("Volume: %1").arg(volume));
-	emit volumeChanged(volume);
+    Gui::msgOSD(tr("Volume: %1").arg(volume));
+    emit volumeChanged(volume);
 }
 
 bool TCore::getMute() const {
@@ -2423,7 +2424,7 @@ void TCore::mute(bool b) {
 		proc->mute(b);
 	}
 
-	displayMessage(tr("Mute: %1").arg(b ? tr("yes") : tr("no")));
+    Gui::msgOSD(tr("Mute: %1").arg(b ? tr("yes") : tr("no")));
 	emit muteChanged(b);
 }
 
@@ -2446,7 +2447,7 @@ void TCore::setSubDelay(int delay) {
 
 	mset.sub_delay = delay;
 	proc->setSubDelay((double) mset.sub_delay/1000);
-	displayMessage(tr("Subtitle delay: %1 ms").arg(delay));
+    Gui::msgOSD(tr("Subtitle delay: %1 ms").arg(delay));
 }
 
 void TCore::incSubDelay() {
@@ -2464,7 +2465,7 @@ void TCore::setAudioDelay(int delay) {
 
 	mset.audio_delay = delay;
 	proc->setAudioDelay((double) mset.audio_delay/1000);
-	displayMessage(tr("Audio delay: %1 ms").arg(delay));
+    Gui::msgOSD(tr("Audio delay: %1 ms").arg(delay));
 }
 
 void TCore::incAudioDelay() {
@@ -2513,7 +2514,7 @@ void TCore::changeSubScale(double value) {
 		proc->setSubScale(value);
 	}
 
-	displayMessage(tr("Font scale: %1").arg(value));
+    Gui::msgOSD(tr("Font scale: %1").arg(value));
 }
 
 void TCore::incSubScale() {
@@ -3010,7 +3011,7 @@ void TCore::setAspectRatio(int id) {
 	proc->setAspect(mset.aspect_ratio.toDouble());
 
 	emit aspectRatioChanged(aspect_id);
-	emit showMessage(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
+    Gui::msg(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
 }
 
 void TCore::nextAspectRatio() {
@@ -3049,7 +3050,7 @@ void TCore::nextWheelFunction() {
 		m = tr("Mouse wheel changes speed now");
 		break;
 	}
-	displayMessage(m);
+    Gui::msgOSD(m);
 }
 
 void TCore::changeLetterbox(bool b) {
@@ -3131,7 +3132,7 @@ void TCore::setZoom(double factor) {
 			factor = TConfig::ZOOM_MAX;
 		playerwindow->setZoom(factor);
 		getZoomFromPlayerWindow();
-		displayMessage(tr("Zoom: %1").arg(playerwindow->zoom()));
+        Gui::msgOSD(tr("Zoom: %1").arg(playerwindow->zoom()));
 	}
 }
 
@@ -3143,7 +3144,7 @@ void TCore::resetZoomAndPan() {
 	// Reread modified settings
 	getZoomFromPlayerWindow();
 	getPanFromPlayerWindow();
-	displayMessage(tr("Zoom and pan reset"));
+    Gui::msgOSD(tr("Zoom and pan reset"));
 }
 
 void TCore::pan(int dx, int dy) {
@@ -3302,49 +3303,42 @@ void TCore::dvdnavUpdateMousePos(QPoint pos) {
 	}
 }
 
-void TCore::displayMessage(const QString& text, int duration, int osd_level) {
-    //logger()->debug("displayMessage");
-
-    displayTextOnOSD(text, duration, osd_level);
-    emit showMessage(text, duration);
-}
-
 void TCore::displayScreenshotName(const QString& filename) {
     logger()->debug("displayScreenshotName: " + filename);
 
-	QFileInfo fi(filename);
-	QString text = tr("Screenshot saved as %1").arg(fi.fileName());
-	displayMessage(text);
+    QFileInfo fi(filename);
+    QString text = tr("Screenshot saved as %1").arg(fi.fileName());
+    Gui::msgOSD(text);
 }
 
 void TCore::displayUpdatingFontCache() {
     logger()->debug("displayUpdatingFontCache");
-	emit showMessage(tr("Updating the font cache. This may take some seconds..."));
+    Gui::msg(tr("Updating the font cache. This may take some seconds..."));
 }
 
 void TCore::displayBuffering() {
-	emit showMessage(tr("Buffering..."));
+    Gui::msg(tr("Buffering..."));
 }
 
 void TCore::displayBufferingEnded() {
-    emit showMessage(tr("Playing from %1")
-                     .arg(Helper::formatTime(qRound(mset.current_sec))));
+    Gui::msg(tr("Playing from %1")
+        .arg(Helper::formatTime(qRound(mset.current_sec))));
 }
 
 void TCore::onReceivedVideoOut() {
     logger()->debug("onReceivedVideoOut");
 
-	// w x h is output resolution selected by player with aspect and filters applied
-	playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
+    // w x h is output resolution selected by player with aspect and filters applied
+    playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
 
     // Normally, let the main window know the new video dimension, unless
     // restarting, then need to prevent the main window from resizing itself.
     if (_state != STATE_RESTARTING) {
-		emit videoOutResolutionChanged(mdat.video_out_width, mdat.video_out_height);
+        emit videoOutResolutionChanged(mdat.video_out_width, mdat.video_out_height);
     }
 
     // If resize of main window is canceled adjust new video to the old size
-	playerwindow->updateVideoWindow();
+    playerwindow->updateVideoWindow();
 
     if (_state == STATE_RESTARTING) {
         // Adjust the size factor to the current window size,
@@ -3352,10 +3346,10 @@ void TCore::onReceivedVideoOut() {
         playerwindow->updateSizeFactor();
     }
 
-	// Update original aspect
-	if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
-		mdat.video_aspect_original = playerwindow->aspectRatio();
-	}
+    // Update original aspect
+    if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
+        mdat.video_aspect_original = playerwindow->aspectRatio();
+    }
 }
 
 bool TCore::setPreferredAudio() {

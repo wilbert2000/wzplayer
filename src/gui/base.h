@@ -195,8 +195,6 @@ protected slots:
 	virtual void setDefaultValuesFromVideoEqualizer();
 	virtual void changeVideoEqualizerBySoftware(bool b);
 
-	virtual void displayMessage(const QString& message, int time = TConfig::MESSAGE_DURATION);
-
 	virtual void openRecent();
 	virtual void exitFullscreenOnStop();
 	virtual void playlistHasFinished();

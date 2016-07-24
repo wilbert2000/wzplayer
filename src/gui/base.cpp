@@ -76,6 +76,7 @@
 #include "gui/action/menuwindow.h"
 #include "gui/action/menuhelp.h"
 
+#include "gui/msg.h"
 #include "gui/logwindow.h"
 #include "gui/helpwindow.h"
 #include "gui/playlist/playlist.h"
@@ -138,6 +139,9 @@ TBase::TBase() :
     setWindowTitle(TConfig::PROGRAM_NAME);
     setAcceptDrops(true);
 
+    setMessageHandler(statusBar());
+    msgSlot = new TMsgSlot(this);
+
     // Reset size factor
     if (pref->save_window_size_on_exit) {
         force_resize = false;
@@ -185,6 +189,9 @@ TBase::TBase() :
 }
 
 TBase::~TBase() {
+
+    msgSlot = 0;
+    setMessageHandler(0);
 }
 
 void TBase::createPanel() {
@@ -242,11 +249,6 @@ void TBase::createCore() {
 	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
 			this, SLOT(onVideoOutResolutionChanged(int,int)));
 
-	connect(core, SIGNAL(showMessage(const QString&, int)),
-			this, SLOT(displayMessage(const QString&, int)));
-	connect(core, SIGNAL(showMessage(const QString&)),
-			this, SLOT(displayMessage(const QString&)));
-
     connect(core, SIGNAL(newMediaStartedPlaying()),
             this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
@@ -264,12 +266,8 @@ void TBase::createCore() {
 void TBase::createPlaylist() {
 
     playlist = new Playlist::TPlaylist(this, core);
-	connect(playlist, SIGNAL(playlistEnded()),
-			this, SLOT(playlistHasFinished()));
-	connect(playlist, SIGNAL(displayMessage(const QString&, int)),
-			this, SLOT(displayMessage(const QString&, int)));
-    connect(playlist, SIGNAL(displayMessageOnOSD(const QString&,int)),
-            core, SLOT(displayMessage(const QString&,int)));
+    connect(playlist, SIGNAL(playlistEnded()),
+            this, SLOT(playlistHasFinished()));
 }
 
 void TBase::createVideoEqualizer() {
@@ -922,7 +920,7 @@ void TBase::saveConfig() {
 
 void TBase::save() {
 
-    displayMessage(tr("Saving settings"), 0);
+    msg(tr("Saving settings"), 0);
     if (pref->clean_config) {
         pref->clean_config = false;
         pref->remove("");
@@ -1928,28 +1926,24 @@ void TBase::onStateChanged(TCoreState state) {
     switch (state) {
         case STATE_STOPPED:
             setWindowCaption(TConfig::PROGRAM_NAME);
-            displayMessage(tr("Ready"));
+            msg(tr("Ready"));
             break;
         case STATE_PLAYING:
-            displayMessage(tr("Playing %1").arg(core->mdat.displayName()));
+            msg(tr("Playing %1").arg(core->mdat.displayName()));
             break;
         case STATE_PAUSED:
-            displayMessage(tr("Paused"));
+            msg(tr("Paused"));
             break;
         case STATE_STOPPING:
-            displayMessage(tr("Stopping..."));
+            msg(tr("Stopping..."));
             break;
         case STATE_RESTARTING:
-            displayMessage(tr("Restarting..."));
+            msg(tr("Restarting..."));
             break;
         case STATE_LOADING:
-            displayMessage(tr("Loading..."));
+            msg(tr("Loading..."));
             break;
     }
-}
-
-void TBase::displayMessage(const QString& message, int time) {
-	statusBar()->showMessage(message, time);
 }
 
 void TBase::onPositionChanged(double sec, bool changed) {
@@ -2045,8 +2039,7 @@ void TBase::changeSize(double factor) {
         }
     }
 
-    core->displayMessage(tr("Size %1%")
-                         .arg(QString::number(qRound(factor * 100))));
+    msgOSD(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
 }
 
 void TBase::changeSize(int percentage) {
@@ -2292,11 +2285,11 @@ void TBase::onMediaSettingsChanged() {
 void TBase::onDragPositionChanged(double t) {
 
     QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
-	statusBar()->showMessage(s, 1000);
+    msg(s, 1000);
 
-	if (pref->fullscreen) {
-		core->displayTextOnOSD(s);
-	}
+    if (pref->fullscreen) {
+        core->displayTextOnOSD(s);
+    }
 }
 
 void TBase::setStayOnTop(bool b) {
@@ -2374,9 +2367,9 @@ void TBase::toggleStayOnTop() {
 void TBase::onPlayerError(int exit_code) {
     logger()->debug("onPlayerError: %1", exit_code);
 
-    QString msg = Proc::TExitMsg::message(exit_code)
-                  + " (" + core->mdat.filename + ")";
-    displayMessage(msg, 0);
+    QString s = Proc::TExitMsg::message(exit_code)
+                + " (" + core->mdat.filename + ")";
+    msg(s, 0);
 
     static bool busy = false;
     if (pref->report_player_crashes
@@ -2385,7 +2378,7 @@ void TBase::onPlayerError(int exit_code) {
         busy = true;
         QMessageBox::warning(this,
             tr("%1 process error").arg(pref->playerName()),
-            msg + " \n"
+            s + " \n"
             + tr("See menu Window -> View log for additional details."),
             QMessageBox::Ok);
         busy = false;
