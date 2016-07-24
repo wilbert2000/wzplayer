@@ -57,6 +57,7 @@ TFileLock::TFileLock(const QFileInfo& fi, QStringList& lfiles) :
 }
 
 TFileLock::~TFileLock() {
+
     if (locked) {
         lockedFiles.removeLast();
     }
