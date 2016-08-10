@@ -1909,13 +1909,13 @@ void TBase::exitFullscreenOnStop() {
 void TBase::playlistHasFinished() {
     logger()->debug("playlistHasFinished");
 
-	core->stop();
+    core->stop();
 
-	if (arg_close_on_finish != 0) {
-		if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
-			close();
-		}
-	}
+    if (arg_close_on_finish != 0) {
+        if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
+            close();
+        }
+    }
 }
 
 void TBase::onStateChanged(TCoreState state) {

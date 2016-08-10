@@ -236,7 +236,11 @@ TPlaylistWidgetItem* TPlaylistWidget::lastPlaylistWidgetItem() const {
 }
 
 QString TPlaylistWidget::playingFile() const {
-    return hasItems() && playing_item ? playing_item->filename() : "";
+
+    if (hasItems() && playing_item) {
+        return playing_item->filename();
+    }
+    return "";
 }
 
 QString TPlaylistWidget::currentFile() const {
