@@ -380,7 +380,12 @@ void TPreferences::reset() {
 	player_additional_audio_filters = "";
 
     use_edl_files = true;
+
+    // If set high tenoughthe OS will detect the "not responding state"
+    // and popup a dialog...
     time_to_kill_player = 6000;
+
+    // Display frame counter in status bar timestamp
     show_frames = false;
 
     balloon_count = 5;

@@ -36,50 +36,53 @@ class TTimeSlider;
 
 
 class TEditableToolbar : public QToolBar {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TEditableToolbar(TBase* mainwindow);
-	virtual ~TEditableToolbar();
+    TEditableToolbar(TBase* mainwindow);
+    virtual ~TEditableToolbar();
 
-	void setActionsFromStringList(const QStringList& acts, const TActionList& all_actions);
-	QStringList actionsToStringList(bool remove_size_grip = true);
+    QStringList actionsToStringList(bool remove_size_grip = true);
+    void setActionsFromStringList(const QStringList& acts,
+                                  const TActionList& all_actions);
 
-	void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
-	QStringList defaultActions() const { return default_actions; }
+    QStringList defaultActions() const { return default_actions; }
+    void setDefaultActions(const QStringList& action_names) {
+        default_actions = action_names;
+    }
 
-	virtual void setVisible(bool visible);
+    virtual void setVisible(bool visible);
 
 public slots:
-	void edit();
+    void edit();
 
 protected:
-	TBase* main_window;
+    TBase* main_window;
 
-	virtual void resizeEvent(QResizeEvent* event);
-	virtual void moveEvent(QMoveEvent* event);
-	virtual void enterEvent(QEvent* event);
-	virtual void leaveEvent(QEvent* event);
+    virtual void resizeEvent(QResizeEvent* event);
+    virtual void moveEvent(QMoveEvent* event);
+    virtual void enterEvent(QEvent* event);
+    virtual void leaveEvent(QEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* e);
 
 private:
-	QStringList actions;
-	QStringList default_actions;
+    QStringList actions;
+    QStringList default_actions;
 
     TSizeGrip* size_grip;
-	TTimeSlider* space_eater;
-	bool fixing_size;
-	int fix_size;
+    TTimeSlider* space_eater;
+    bool fixing_size;
+    int fix_size;
 
     void addMenu(QAction* action);
     void addSizeGrip();
-	void removeSizeGrip();
+    void removeSizeGrip();
 
 private slots:
-	void showContextMenu(const QPoint& pos);
+    void showContextMenu(const QPoint& pos);
     void onTopLevelChanged(bool);
-	void reload();
+    void reload();
 }; // class TEditableToolbar
 
 } // namespace Action

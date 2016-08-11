@@ -96,8 +96,8 @@ void TEditableToolbar::addMenu(QAction* action) {
     addWidget(button);
 }
 
-void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
-                                                const TActionList& all_actions) {
+void TEditableToolbar::setActionsFromStringList(
+        const QStringList& acts, const TActionList& all_actions) {
     logger()->debug("setActionsFromStringList: updating '%1'", objectName());
 
     clear();

@@ -707,6 +707,49 @@ void TCore::playingStarted() {
     logger()->debug("playingStarted: done in %1 ms", time.elapsed());
 }
 
+void TCore::stopPlayer() {
+
+    if (proc->state() == QProcess::NotRunning) {
+        logger()->debug("stopPlayer: player not running");
+        return;
+    }
+
+    logger()->debug("stopPlayer: entering the stopping state");
+    setState(STATE_STOPPING);
+
+    // If set high enough the OS will detect the "not responding state" and
+    // popup a dialog
+    int timeout = pref->time_to_kill_player;
+
+#ifdef Q_OS_OS2
+    QEventLoop eventLoop;
+
+    connect(proc, SIGNAL(processFinished(bool, int, bool)),
+            &eventLoop, SLOT(quit()));
+
+    proc->quit(0);
+
+    QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+
+    if (proc->isRunning()) {
+        logger()->warn("stopPlayer: player didn't finish. Killing it...");
+        proc->kill();
+    }
+#else
+    proc->quit(0);
+
+    logger()->debug("stopPlayer: Waiting %1 ms for player to quit...", timeout);
+    if (!proc->waitForFinished(timeout)) {
+        logger()->warn("stopPlayer: player process did not finish in %1 ms."
+                       " Killing it...", timeout);
+        proc->kill();
+    }
+#endif
+
+    logger()->debug("stopPlayer: done");
+}
+
 void TCore::stop() {
     logger()->debug("stop: current state: %1", stateToString());
 
@@ -908,9 +951,11 @@ void TCore::startPlayer(QString file, bool loopImage) {
 
 #if defined(Q_OS_OS2)
 #define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
-    proc->setOption("wid", QString::number(WINIDFROMHWND((int) playerwindow->videoWindow()->winId())));
+    proc->setOption("wid", QString::number(
+        WINIDFROMHWND((int) playerwindow->videoWindow()->winId())));
 #else
-    proc->setOption("wid", QString::number((qint64) playerwindow->videoWindow()->winId()));
+    proc->setOption("wid",
+        QString::number((qint64) playerwindow->videoWindow()->winId()));
 #endif
 
     if (pref->log_verbose) {
@@ -1101,7 +1146,8 @@ void TCore::startPlayer(QString file, bool loopImage) {
 		proc->setOption("ass");
 		proc->setOption("embeddedfonts");
 		proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
-		proc->setOption("ass-line-spacing", QString::number(pref->ass_line_spacing));
+        proc->setOption("ass-line-spacing",
+                        QString::number(pref->ass_line_spacing));
 
 		// Custom ASS style
 		if (pref->use_custom_ass_style) {
@@ -1121,7 +1167,8 @@ void TCore::startPlayer(QString file, bool loopImage) {
 				if (pref->force_ass_styles) {
 					proc->setOption("ass-force-style", ass_force_style);
 				} else {
-					proc->setSubStyles(pref->ass_styles, TPaths::subtitleStyleFile());
+                    proc->setSubStyles(pref->ass_styles,
+                                       TPaths::subtitleStyleFile());
 				}
 			}
 		}
@@ -1132,7 +1179,8 @@ void TCore::startPlayer(QString file, bool loopImage) {
         if (pref->isMPV()) {
 			proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
 		} else {
-			proc->setOption("subfont-text-scale", QString::number(mset.sub_scale));
+            proc->setOption("subfont-text-scale",
+                            QString::number(mset.sub_scale));
 		}
 	}
 
@@ -1144,7 +1192,8 @@ void TCore::startPlayer(QString file, bool loopImage) {
 				proc->setOption("subcp", pref->subtitle_encoding_fallback);
 			} else if (pref->subtitle_encoding_fallback != "UTF-8") {
 				// Use pref->subtitle_encoding_fallback if encoding is not utf8
-				proc->setOption("subcp", "utf8:" + pref->subtitle_encoding_fallback);
+                proc->setOption("subcp",
+                                "utf8:" + pref->subtitle_encoding_fallback);
 			}
 		}
 	} else {
@@ -1223,7 +1272,8 @@ void TCore::startPlayer(QString file, bool loopImage) {
 		proc->setOption("subpos", QString::number(mset.sub_pos));
 
 	if (mset.sub_delay != 0) {
-		proc->setOption("subdelay", QString::number((double) mset.sub_delay/1000));
+        proc->setOption("subdelay",
+                        QString::number((double) mset.sub_delay/1000));
 	}
 
 	// Contrast, brightness...
@@ -1619,50 +1669,6 @@ end_video_filters:
         logger()->warn("startPlayer: player process didn't start");
     }
 } //startPlayer()
-
-void TCore::stopPlayer() {
-
-    if (proc->state() == QProcess::NotRunning) {
-        logger()->debug("stopPlayer: player not running");
-        return;
-    }
-
-    logger()->debug("stopPlayer: entering the stopping state");
-    setState(STATE_STOPPING);
-
-    // If set high enough the OS will detect the "not responding state" and
-    // popup a dialog
-    int timeout = pref->time_to_kill_player;
-
-#ifdef Q_OS_OS2
-    QEventLoop eventLoop;
-
-    connect(proc, SIGNAL(processFinished(bool, int, bool)),
-            &eventLoop, SLOT(quit()));
-
-    proc->quit(0);
-
-    QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
-    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
-
-    if (proc->isRunning()) {
-        logger()->warn("stopPlayer: player didn't finish. Killing it...");
-        proc->kill();
-    }
-#else
-    proc->quit(0);
-
-    logger()->debug("stopPlayer: Waiting %1 ms for player to finish...",
-                    timeout);
-    if (!proc->waitForFinished(timeout)) {
-        logger()->warn("stopPlayer: player process did not finish in %1 ms."
-                       " Killing it...", timeout);
-        proc->kill();
-    }
-#endif
-
-    logger()->debug("stopPlayer: done");
-}
 
 void TCore::seekCmd(double secs, int mode) {
     logger()->debug("seekCmd: %1 secs, mode %2, at %3",
