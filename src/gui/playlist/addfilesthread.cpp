@@ -64,13 +64,13 @@ TFileLock::~TFileLock() {
 }
 
 
-// for Windows ".lnk" files QDir::System is needed
 QDir::Filters dirFilter = QDir::Dirs
                           | QDir::AllDirs
                           | QDir::Files
                           | QDir::Drives
                           | QDir::NoDotAndDotDot
                           | QDir::Readable
+                          // for Windows ".lnk" files QDir::System is needed
 #ifdef Q_OS_WIN
                           | QDir::System
 #endif
@@ -281,12 +281,12 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         }
 
         QString filename = fi.fileName();
-
         if (files.contains(filename, caseSensitiveFileNames)) {
             continue;
         }
 
-        int i = blacklist.indexOf(QRegExp(filename, caseSensitiveFileNames,
+        int i = blacklist.indexOf(QRegExp(filename,
+                                          caseSensitiveFileNames,
                                           QRegExp::FixedString));
         if (i >= 0) {
             logger()->info("addNewItems: '%1' is blacklisted", filename);
@@ -316,6 +316,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
         } else {
             logger()->info("addNewItems: adding file '%1'", filename);
             w = addFile(playlistItem, fi);
+
             // Sort new item into place
             if (w && playlistItem->childCount() > 1) {
                 playlistItem->takeChild(playlistItem->childCount() - 1);
