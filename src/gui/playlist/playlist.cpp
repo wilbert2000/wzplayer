@@ -1150,8 +1150,10 @@ void TPlaylist::onPlayerError() {
     if (core->state() != STATE_STOPPING) {
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item) {
-            item->setState(PSTATE_FAILED);
-            playlistWidget->scrollToItem(item);
+            if (item->filename() == core->mdat.filename) {
+                item->setState(PSTATE_FAILED);
+                playlistWidget->scrollToItem(item);
+            }
             playlistWidget->setPlayingItem(0);
         }
     }
