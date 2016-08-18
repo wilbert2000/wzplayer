@@ -772,6 +772,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
         core->open(item->filename(), playlistWidget->hasSingleItem());
     } else {
         logger()->debug("playItem: end of playlist");
+        msg(tr("End of playlist"), 7000);
         emit playlistEnded();
     }
 }
