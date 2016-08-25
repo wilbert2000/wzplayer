@@ -385,7 +385,8 @@ TPlaylistWidgetItem* TPlaylistWidgetItem::ff(const QString &fname) {
 
 bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
 
-    const TPlaylistWidgetItem* o = static_cast<const TPlaylistWidgetItem*>(&other);
+    const TPlaylistWidgetItem* o = static_cast<const TPlaylistWidgetItem*>
+                                   (&other);
 
     if (o == 0) {
         return false;
