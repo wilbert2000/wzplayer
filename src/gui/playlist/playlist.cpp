@@ -1400,22 +1400,59 @@ void TPlaylist::editCurrentItem() {
     }
 }
 
+bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
+
+    QString nn = QDir::toNativeSeparators(
+                     QFileInfo(item->filename()).absolutePath());
+    if (!nn.endsWith(QDir::separator())) {
+        nn += QDir::separator();
+    }
+    nn += QDir::toNativeSeparators(newName);
+
+    if (QFile::rename(item->filename(), nn)) {
+        logger()->info("rename: renamed file '%1' to '%2'",
+                       item->filename(), nn);
+        item->setFilename(nn);
+    } else {
+        logger()->error("rename: failed to rename '%1' to '%2'",
+                        item->filename(), nn);
+        QMessageBox::warning(this, tr("Error"),
+                             tr("Failed to rename '%1' to '%2'")
+                             .arg(item->filename()).arg(nn));
+        return false;
+    }
+
+    return true;
+}
+
 void TPlaylist::editItem(TPlaylistWidgetItem* item) {
 
-    QString current_name = item->name();
-    if (current_name.isEmpty()) {
-        current_name = item->filename();
+    TPlaylistWidgetItem* p = item->plParent();
+    bool renameFile = (!p->isPlaylist() || p->isWZPlaylist())
+                      && QFileInfo(item->filename()).exists();
+
+    QString name = item->name();
+    if (renameFile && !item->extension().isEmpty()) {
+        name += "." + item->extension();
     }
-    QString saved_name = current_name;
 
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Edit name"),
-        tr("Name to display in playlist:"), QLineEdit::Normal,
-        current_name, &ok);
-    if (ok && text != saved_name) {
-        item->setName(text, true);
-        playlistWidget->setModified(item->parent());
+    QString newName = QInputDialog::getText(this, tr("Edit name"), tr("Name:"),
+                                            QLineEdit::Normal, name, &ok);
+    if (!ok || newName == name) {
+        return;
     }
+
+    if (renameFile && !newName.isEmpty()) {
+        if (!rename(item, newName)) {
+            return;
+        }
+    } else {
+        logger()->info("rename: renaming '%1' to '%2'", item->name(), newName);
+    }
+
+    item->setName(newName, true);
+    playlistWidget->setModified(p);
 }
 
 void TPlaylist::findPlayingItem() {

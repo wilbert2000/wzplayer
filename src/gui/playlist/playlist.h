@@ -210,6 +210,7 @@ private:
     void copySelection(const QString& actionName);
     bool deleteFileFromDisk(const QString& filename,
                             const QString& playingFile);
+    bool rename(TPlaylistWidgetItem* item, const QString& newName);
 
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
