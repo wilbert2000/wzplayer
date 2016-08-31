@@ -32,12 +32,6 @@
 class TMediaData;
 class TPlayerWindow;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-class WinScreenSaver;
-#endif
-#endif
-
 namespace Proc {
 class TPlayerProcess;
 }
@@ -410,12 +404,6 @@ protected:
 	Proc::TPlayerProcess* proc;
 	TPlayerWindow* playerwindow;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-	WinScreenSaver* win_screensaver;
-#endif
-#endif
-
 private:
     static double restartTime;
 
@@ -450,11 +438,7 @@ private:
     void handleOutPoint();
     void updateLoop();
 
-	int getVolumeForPlayer() const;
-
-
-    void enableScreensaver();
-    void disableScreensaver();
+    int getVolumeForPlayer() const;
 };
 
 #endif

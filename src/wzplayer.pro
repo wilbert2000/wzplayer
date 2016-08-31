@@ -343,11 +343,6 @@ unix {
 win32 {
     DEFINES += DISABLE_SCREENSAVER
 
-    contains(DEFINES, DISABLE_SCREENSAVER) {
-		HEADERS += screensaver.h
-		SOURCES += screensaver.cpp
-	}
-
 	!contains(DEFINES, PORTABLE_APP) {
 		DEFINES += USE_ASSOCIATIONS
 	}
@@ -369,11 +364,7 @@ win32 {
 
 os2 {
     DEFINES += DISABLE_SCREENSAVER
-	INCLUDEPATH += .
-    contains(DEFINES, DISABLE_SCREENSAVER) {
-		HEADERS += screensaver.h
-		SOURCES += screensaver.cpp
-	}
+    INCLUDEPATH += .
     RC_FILE = wzplayer_os2.rc
 }
 

@@ -27,11 +27,6 @@
 #include "config.h"
 #include "corestate.h"
 
-#if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
-/* Disable screensaver by event */
-#include <windows.h>
-#endif
-
 
 class QWidget;
 class QMenu;
@@ -236,9 +231,9 @@ protected:
 	virtual void hideEvent(QHideEvent* event);
 	virtual void showEvent(QShowEvent* event);
 
-#if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
-	/* Disable screensaver by event */
-	virtual bool winEvent (MSG* m, long* result);
+#if defined(Q_OS_WIN)
+    // Disable screensaver
+    virtual bool winEvent(MSG* m, long* result);
 #endif
 
 	virtual QMenu* createPopupMenu();

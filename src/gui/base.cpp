@@ -2386,30 +2386,25 @@ void TBase::onPlayerError(int exit_code) {
     }
 }
 
-#if defined(Q_OS_WIN) && defined(DISABLE_SCREENSAVER)
+#if defined(Q_OS_WIN)
 bool TBase::winEvent (MSG* m, long* result) {
-    //logger()->debug("winEvent");
 
-	if (m->message == WM_SYSCOMMAND) {
-		if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
+    if (m->message == WM_SYSCOMMAND) {
+        if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
             || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
-            logger()->debug("winEvent: received SC_SCREENSAVE or SC_MONITORPOWER");
-            logger()->debug("winEvent: playing: %1", core->state() == STATE_PLAYING);
-            logger()->debug("winEvent: video: %1", !core->mdat.noVideo());
-			
             if (core->state() == STATE_PLAYING && core->mdat.hasVideo()) {
                 logger()->debug("winEvent: not allowing screensaver");
-				(*result) = 0;
-				return true;
-			}
+                (*result) = 0;
+                return true;
+            }
 
             logger()->debug("winEvent: allowing screensaver");
-			return false;
-		}
-	}
-	return false;
+            return false;
+        }
+    }
+    return false;
 }
-#endif
+#endif // defined(Q_OS_WIN)
 
 } // namespace Gui
 

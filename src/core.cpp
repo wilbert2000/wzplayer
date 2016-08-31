@@ -50,12 +50,6 @@
 #include "gui/action/tvlist.h"
 #include "gui/msg.h"
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-#include "screensaver.h"
-#endif
-#endif
-
 
 using namespace Settings;
 
@@ -164,51 +158,18 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 	// For DVDNAV subscribe to TPlayerWindow::mouseMoved()
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
-
-#if  defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-	// Windows or OS2 screensaver
-	win_screensaver = new WinScreenSaver();
-#endif
-#endif
 }
 
 TCore::~TCore() {
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-    delete win_screensaver;
-#endif
-#endif
-
     Gui::setOSDMessageHandler(0);
-}
-
-void TCore::enableScreensaver() {
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-    win_screensaver->enable();
-#endif
-#endif
-}
-
-void TCore::disableScreensaver() {
-
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-#ifdef DISABLE_SCREENSAVER
-    win_screensaver->disable();
-#endif
-#endif
 }
 
 void TCore::onProcessError(QProcess::ProcessError error) {
     logger()->debug("onProcessError: %1", error);
 
-    // First restore normal window background
+    // Restore normal window background
     playerwindow->restoreNormalWindow(false);
-    enableScreensaver();
-
     emit playerError(Proc::TExitMsg::processErrorToErrorID(error));
 }
 
@@ -218,7 +179,6 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
 
     // Restore normal window background
     playerwindow->restoreNormalWindow(false);
-    enableScreensaver();
 
     if (_state == STATE_STOPPING) {
         return;
@@ -1640,8 +1600,6 @@ end_video_filters:
 
     // Set file and playing msg
     proc->setMedia(file);
-
-    disableScreensaver();
 
     // Setup environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
