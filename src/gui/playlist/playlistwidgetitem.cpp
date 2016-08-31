@@ -353,13 +353,14 @@ TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) {
         return this;
     }
 
-    // Ignore root
+    // Ignore mismatching folders excluding root
     if (isFolder() && parent()) {
         if (!path.endsWith(QDir::separator())) {
             path += QDir::separator();
         }
         if (!fname.startsWith(path, caseSensitiveFileNames)) {
-            logger()->trace("f: skipping '%1'", path);
+            // Path mismatch
+            logger()->trace("f: path '%1' mismatches '%2'", fname, path);
             return 0;
         }
     }

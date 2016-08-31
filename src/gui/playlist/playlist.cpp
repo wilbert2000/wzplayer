@@ -1160,11 +1160,12 @@ void TPlaylist::onPlayerError() {
 }
 
 void TPlaylist::onNewMediaStartedPlaying() {
-    logger()->debug("onNewMediaStartedPlaying");
 
     const TMediaData* md = &core->mdat;
     QString filename = md->filename;
     QString current_filename = playlistWidget->playingFile();
+    logger()->debug("onNewMediaStartedPlaying: md->filename '%1'"
+                    ", current_filename '%2'", filename, current_filename);
 
     if (md->disc.valid) {
         if (md->titles.count() == playlistWidget->countItems()) {
