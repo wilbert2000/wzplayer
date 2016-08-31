@@ -1111,7 +1111,11 @@ void TPlaylist::enableActions() {
     }
 
     // Stop action
-    stopAct->setEnabled(s == STATE_PLAYING || s == STATE_PAUSED || thread);
+    stopAct->setEnabled(thread
+                        || s == STATE_PLAYING
+                        || s == STATE_PAUSED
+                        || s == STATE_RESTARTING
+                        || s == STATE_LOADING);
 
     // Prev/Next
     bool changed = false;
