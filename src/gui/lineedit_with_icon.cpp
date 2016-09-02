@@ -16,25 +16,30 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "lineedit_with_icon.h"
+#include "gui/lineedit_with_icon.h"
+
 #include <QToolButton>
 #include <QStyle>
 #include <QEvent>
 
-LineEditWithIcon::LineEditWithIcon(QWidget* parent) : QLineEdit(parent) {
+
+namespace Gui {
+
+
+TLineEditWithIcon::TLineEditWithIcon(QWidget* parent) : QLineEdit(parent) {
 
     button = new QToolButton(this);
     button->setCursor(Qt::ArrowCursor);
     setupButton();
 }
 
-LineEditWithIcon::~LineEditWithIcon() {
+TLineEditWithIcon::~TLineEditWithIcon() {
 }
 
-void LineEditWithIcon::setupButton() {
+void TLineEditWithIcon::setupButton() {
 }
 
-void LineEditWithIcon::setIcon(const QPixmap & pixmap) {
+void TLineEditWithIcon::setIcon(const QPixmap& pixmap) {
 
     QPixmap p = pixmap;
     int max_height = 16;
@@ -52,8 +57,8 @@ void LineEditWithIcon::setIcon(const QPixmap & pixmap) {
                   .arg(button->sizeHint().width() + frameWidth + 1));
 }
 
-void LineEditWithIcon::resizeEvent(QResizeEvent *)
-{
+void TLineEditWithIcon::resizeEvent(QResizeEvent*) {
+
     QSize sz = button->sizeHint();
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     button->move(rect().right() - frameWidth - sz.width(),
@@ -61,7 +66,7 @@ void LineEditWithIcon::resizeEvent(QResizeEvent *)
 }
 
 // Language change stuff
-void LineEditWithIcon::changeEvent(QEvent *e) {
+void TLineEditWithIcon::changeEvent(QEvent* e) {
 
     if (e->type() == QEvent::LanguageChange) {
         setupButton();
@@ -69,5 +74,7 @@ void LineEditWithIcon::changeEvent(QEvent *e) {
         QWidget::changeEvent(e);
     }
 }
+
+} // namespace Gui
 
 #include "moc_lineedit_with_icon.cpp"

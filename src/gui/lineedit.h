@@ -25,7 +25,7 @@ class QToolButton;
 
 namespace Gui {
 
-class TLineEdit : public LineEditWithIcon {
+class TLineEdit : public TLineEditWithIcon {
     Q_OBJECT
 
 public:

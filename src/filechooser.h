@@ -19,12 +19,12 @@
 #ifndef _FILECHOOSER_H_
 #define _FILECHOOSER_H_
 
-#include "lineedit_with_icon.h"
+#include "gui/lineedit_with_icon.h"
 #include <QFileDialog>
 
 class QToolButton;
 
-class FileChooser : public LineEditWithIcon
+class FileChooser : public Gui::TLineEditWithIcon
 {
     Q_OBJECT
 	Q_PROPERTY(QString text READ text WRITE setText)

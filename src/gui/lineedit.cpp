@@ -24,7 +24,7 @@
 namespace Gui {
 
 TLineEdit::TLineEdit(QWidget *parent)
-    : LineEditWithIcon(parent)
+    : TLineEditWithIcon(parent)
 {
     setupButton();
     button->hide();

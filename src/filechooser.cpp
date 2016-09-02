@@ -25,7 +25,7 @@
 
 QString FileChooser::last_dir;
 
-FileChooser::FileChooser(QWidget* parent) : LineEditWithIcon(parent) {
+FileChooser::FileChooser(QWidget* parent) : Gui::TLineEditWithIcon(parent) {
 
 	setDialogType(GetFileName);
 	setOptions(0);

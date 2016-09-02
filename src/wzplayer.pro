@@ -73,7 +73,6 @@ HEADERS += wzdebug.h \
     inforeadermplayer.h \
     corestate.h \
 	core.h \
-    lineedit_with_icon.h \
     filedialog.h \
     filechooser.h \
 	languages.h \
@@ -138,6 +137,7 @@ HEADERS += wzdebug.h \
     gui/audioequalizer.h \
     gui/about.h \
     gui/timedialog.h \
+    gui/lineedit_with_icon.h \
     gui/lineedit.h \
     gui/inputurl.h \
     gui/infoprovider.h \
@@ -201,7 +201,6 @@ SOURCES	+= wzdebug.cpp \
     inforeadermpv.cpp \
     inforeadermplayer.cpp \
 	core.cpp \
-    lineedit_with_icon.cpp \
     filedialog.cpp \
     filechooser.cpp \
 	languages.cpp \
@@ -265,6 +264,7 @@ SOURCES	+= wzdebug.cpp \
     gui/audioequalizer.cpp \
     gui/about.cpp \
     gui/timedialog.cpp \
+    gui/lineedit_with_icon.cpp \
     gui/lineedit.cpp \
     gui/inputurl.cpp \
     gui/infoprovider.cpp \

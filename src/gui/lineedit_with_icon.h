@@ -16,19 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef LINEEDIT_WITH_ICON_H
-#define LINEEDIT_WITH_ICON_H
+#ifndef GUI_LINEEDIT_WITH_ICON_H
+#define GUI_LINEEDIT_WITH_ICON_H
 
 #include <QLineEdit>
 
 class QToolButton;
 
-class LineEditWithIcon : public QLineEdit {
+namespace Gui {
+
+class TLineEditWithIcon : public QLineEdit {
     Q_OBJECT
 
 public:
-    LineEditWithIcon(QWidget* parent = 0);
-    virtual ~LineEditWithIcon();
+    TLineEditWithIcon(QWidget* parent = 0);
+    virtual ~TLineEditWithIcon();
 
     void setIcon(const QPixmap& pixmap);
 
@@ -41,5 +43,7 @@ protected:
     QToolButton* button;
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_LINEEDIT_WITH_ICON_H
 
