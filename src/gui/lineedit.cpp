@@ -26,18 +26,19 @@ namespace Gui {
 TLineEdit::TLineEdit(QWidget *parent)
     : LineEditWithIcon(parent)
 {
-	setupButton();
-	button->hide();
-	connect(button, SIGNAL(clicked()), this, SLOT(clear()));
-	connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateCloseButton(const QString&)));
+    setupButton();
+    button->hide();
+    connect(button, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(this, SIGNAL(textChanged(const QString&)),
+            this, SLOT(updateCloseButton(const QString&)));
 }
 
 void TLineEdit::setupButton() {
-	setIcon(Images::icon("clear_left"));
+    setIcon(Images::icon("clear_left"));
 }
 
 void TLineEdit::updateCloseButton(const QString& text) {
-	button->setVisible(!text.isEmpty());
+    button->setVisible(!text.isEmpty());
 }
 
 } // namespace Gui

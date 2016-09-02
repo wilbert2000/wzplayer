@@ -21,11 +21,14 @@
 #include <QStyle>
 #include <QEvent>
 
-LineEditWithIcon::LineEditWithIcon(QWidget *parent) : QLineEdit(parent)
-{
+LineEditWithIcon::LineEditWithIcon(QWidget* parent) : QLineEdit(parent) {
+
     button = new QToolButton(this);
-	button->setCursor(Qt::ArrowCursor);
-	setupButton();
+    button->setCursor(Qt::ArrowCursor);
+    setupButton();
+}
+
+LineEditWithIcon::~LineEditWithIcon() {
 }
 
 void LineEditWithIcon::setupButton() {
@@ -33,15 +36,20 @@ void LineEditWithIcon::setupButton() {
 
 void LineEditWithIcon::setIcon(const QPixmap & pixmap) {
 
-	QPixmap p = pixmap;
-	int max_height = 16;
-	if (max_height > height()) max_height = height() - 4;
-	if (pixmap.height() > max_height) p = pixmap.scaledToHeight(max_height, Qt::SmoothTransformation);
-	button->setIcon(p);
-	button->setStyleSheet("QToolButton { border: none; padding: 0px; }");
+    QPixmap p = pixmap;
+    int max_height = 16;
+    if (max_height > height()) {
+        max_height = height() - 4;
+    }
+    if (pixmap.height() > max_height) {
+        p = pixmap.scaledToHeight(max_height, Qt::SmoothTransformation);
+    }
+    button->setIcon(p);
+    button->setStyleSheet("QToolButton { border: none; padding: 0px; }");
 
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").arg(button->sizeHint().width() + frameWidth + 1));
+    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
+                  .arg(button->sizeHint().width() + frameWidth + 1));
 }
 
 void LineEditWithIcon::resizeEvent(QResizeEvent *)
@@ -54,11 +62,12 @@ void LineEditWithIcon::resizeEvent(QResizeEvent *)
 
 // Language change stuff
 void LineEditWithIcon::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		setupButton();
-	} else {
-		QWidget::changeEvent(e);
-	}
+
+    if (e->type() == QEvent::LanguageChange) {
+        setupButton();
+    } else {
+        QWidget::changeEvent(e);
+    }
 }
 
 #include "moc_lineedit_with_icon.cpp"

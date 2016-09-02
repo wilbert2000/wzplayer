@@ -25,18 +25,17 @@ class QToolButton;
 
 namespace Gui {
 
-class TLineEdit : public LineEditWithIcon
-{
+class TLineEdit : public LineEditWithIcon {
     Q_OBJECT
 
 public:
-	TLineEdit(QWidget *parent = 0);
+    TLineEdit(QWidget* parent = 0);
 
 protected:
-	virtual void setupButton();
+    virtual void setupButton();
 
 private slots:
-    void updateCloseButton(const QString &text);
+    void updateCloseButton(const QString& text);
 };
 
 } // namespace Gui

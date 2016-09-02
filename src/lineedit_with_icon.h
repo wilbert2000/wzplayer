@@ -23,23 +23,22 @@
 
 class QToolButton;
 
-class LineEditWithIcon : public QLineEdit
-{
+class LineEditWithIcon : public QLineEdit {
     Q_OBJECT
 
 public:
-    LineEditWithIcon(QWidget *parent = 0);
-	virtual ~LineEditWithIcon() {}
+    LineEditWithIcon(QWidget* parent = 0);
+    virtual ~LineEditWithIcon();
 
-	void setIcon(const QPixmap & pixmap);
-
-protected:
-    void resizeEvent(QResizeEvent *);
-	virtual void changeEvent(QEvent *);
-	virtual void setupButton();
+    void setIcon(const QPixmap& pixmap);
 
 protected:
-    QToolButton *button;
+    void resizeEvent(QResizeEvent*);
+    virtual void changeEvent(QEvent*);
+    virtual void setupButton();
+
+protected:
+    QToolButton* button;
 };
 
 #endif
