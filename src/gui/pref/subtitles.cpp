@@ -24,7 +24,7 @@
 #include "settings/preferences.h"
 #include "settings/paths.h"
 #include "settings/assstyles.h"
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include "languages.h"
 
 

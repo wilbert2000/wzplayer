@@ -20,7 +20,7 @@
 #include <QToolButton>
 #include <QStyle>
 
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include "images.h"
 
 
@@ -66,7 +66,7 @@ void TFileChooser::openFileDialog() {
 		if (dir.isEmpty())
 			dir = QDir::homePath();
 
-		result = MyFileDialog::getOpenFileName(
+        result = TFileDialog::getOpenFileName(
 					 this,
 					 _caption,
 					 dir,
@@ -87,7 +87,7 @@ void TFileChooser::openFileDialog() {
 		if (dir.isEmpty())
 			dir = QDir::homePath();
 
-		result = MyFileDialog::getExistingDirectory(
+        result = TFileDialog::getExistingDirectory(
 					 this,
 					 _caption,
 					 dir,

@@ -21,7 +21,7 @@
 
 #include <QDebug>
 
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include "images.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"

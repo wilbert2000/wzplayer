@@ -16,10 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include <QWidget>
 
-QString MyFileDialog::getOpenFileName(QWidget* parent, 
+
+namespace Gui {
+
+QString TFileDialog::getOpenFileName(QWidget* parent,
 			const QString & caption, 
 			const QString & dir, const QString & filter, 
 			QString* selectedFilter, QFileDialog::Options options) 
@@ -28,7 +31,7 @@ QString MyFileDialog::getOpenFileName(QWidget* parent,
 										 selectedFilter, options);
 }
 
-QString MyFileDialog::getExistingDirectory (QWidget* parent, 
+QString TFileDialog::getExistingDirectory (QWidget* parent,
 			const QString & caption, 
 			const QString & dir, 
 			QFileDialog::Options options)
@@ -36,7 +39,7 @@ QString MyFileDialog::getExistingDirectory (QWidget* parent,
 	return QFileDialog::getExistingDirectory(parent, caption, dir, options);
 }
 
-QString MyFileDialog::getSaveFileName (QWidget* parent, 
+QString TFileDialog::getSaveFileName (QWidget* parent,
 			const QString & caption, 
 			const QString & dir, 
 			const QString & filter, 
@@ -47,7 +50,7 @@ QString MyFileDialog::getSaveFileName (QWidget* parent,
                                          selectedFilter, options);
 }
 
-QStringList MyFileDialog::getOpenFileNames (QWidget* parent, 
+QStringList TFileDialog::getOpenFileNames (QWidget* parent,
 			const QString & caption, 
 			const QString & dir, 
 			const QString & filter, 
@@ -58,3 +61,4 @@ QStringList MyFileDialog::getOpenFileNames (QWidget* parent,
                                           selectedFilter, options);
 }
 
+} // namespace Gui

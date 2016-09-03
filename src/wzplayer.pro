@@ -73,7 +73,6 @@ HEADERS += wzdebug.h \
     inforeadermplayer.h \
     corestate.h \
 	core.h \
-    filedialog.h \
 	languages.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
@@ -139,6 +138,7 @@ HEADERS += wzdebug.h \
     gui/lineedit_with_icon.h \
     gui/lineedit.h \
     gui/filechooser.h \
+    gui/filedialog.h \
     gui/inputurl.h \
     gui/infoprovider.h \
     gui/playlist/addfilesthread.h \
@@ -201,7 +201,6 @@ SOURCES	+= wzdebug.cpp \
     inforeadermpv.cpp \
     inforeadermplayer.cpp \
 	core.cpp \
-    filedialog.cpp \
 	languages.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \
@@ -266,6 +265,7 @@ SOURCES	+= wzdebug.cpp \
     gui/lineedit_with_icon.cpp \
     gui/lineedit.cpp \
     gui/filechooser.cpp \
+    gui/filedialog.cpp \
     gui/inputurl.cpp \
     gui/infoprovider.cpp \
     gui/playlist/addfilesthread.cpp \

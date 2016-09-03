@@ -42,7 +42,7 @@
 
 #include "log4qt/logger.h"
 #include "images.h"
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include "settings/paths.h"
 
 #include "gui/action/shortcutgetter.h"
@@ -361,7 +361,7 @@ bool TActionsEditor::hasConflicts() {
 
 void TActionsEditor::saveActionsTable() {
 
-	QString s = MyFileDialog::getSaveFileName(
+	QString s = TFileDialog::getSaveFileName(
 					this, tr("Choose a filename"),
 					latest_dir,
 					tr("Key files") +" (*.keys)");
@@ -413,7 +413,7 @@ bool TActionsEditor::saveActionsTable(const QString & filename) {
 }
 
 void TActionsEditor::loadActionsTable() {
-	QString s = MyFileDialog::getOpenFileName(
+	QString s = TFileDialog::getOpenFileName(
 					this, tr("Choose a file"),
 					latest_dir, tr("Key files") +" (*.keys)");
 

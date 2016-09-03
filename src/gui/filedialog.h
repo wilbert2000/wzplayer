@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef FILEDIALOG_H
-#define FILEDIALOG_H
+#ifndef GUI_FILEDIALOG_H
+#define GUI_FILEDIALOG_H
 
 #include <QString>
 #include <QStringList>
@@ -25,7 +25,9 @@
 
 class QWidget;
 
-class MyFileDialog {
+namespace Gui {
+
+class TFileDialog {
 
 public:
 	static QString getOpenFileName(QWidget* parent = 0, 
@@ -57,5 +59,7 @@ public:
 
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_FILEDIALOG_H
 

@@ -32,7 +32,7 @@
 #include "config.h"
 #include "desktop.h"
 #include "images.h"
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include "settings/preferences.h"
 
 
@@ -198,7 +198,7 @@ void TLogWindow::onCopyButtonClicked() {
 
 void TLogWindow::onSaveButtonClicked() {
 
-    QString s = MyFileDialog::getSaveFileName(
+    QString s = TFileDialog::getSaveFileName(
                     this, tr("Choose a filename to save under"), 
                     "", tr("Logs") +" (*.log *.txt)");
 

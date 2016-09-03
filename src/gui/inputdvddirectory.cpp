@@ -19,7 +19,7 @@
 #include "gui/inputdvddirectory.h"
 
 #include <QLineEdit>
-#include "filedialog.h"
+#include "gui/filedialog.h"
 
 namespace Gui {
 
@@ -41,7 +41,7 @@ QString TInputDVDDirectory::folder() {
 }
 
 void TInputDVDDirectory::on_searchButton_clicked() {
-	QString s = MyFileDialog::getExistingDirectory(
+	QString s = TFileDialog::getExistingDirectory(
                     this, tr("Choose a directory"),
                     dvd_directory_edit->text());
 	/*

@@ -53,7 +53,7 @@
 #include "gui/msg.h"
 #include "images.h"
 #include "helper.h"
-#include "filedialog.h"
+#include "gui/filedialog.h"
 #include "extensions.h"
 #include "version.h"
 
@@ -589,7 +589,7 @@ void TPlaylist::addFiles(const QStringList& files,
 
 void TPlaylist::addFiles() {
 
-    QStringList files = MyFileDialog::getOpenFileNames(this,
+    QStringList files = TFileDialog::getOpenFileNames(this,
         tr("Select one or more files to add"), pref->latest_dir,
         tr("Multimedia") + extensions.allPlayable().forFilter() + ";;" +
         tr("All files") +" (*.*)");
@@ -617,7 +617,7 @@ void TPlaylist::addCurrentFile() {
 
 void TPlaylist::addDirectory() {
 
-    QString s = MyFileDialog::getExistingDirectory(this,
+    QString s = TFileDialog::getExistingDirectory(this,
                     tr("Choose a directory"), pref->latest_dir);
 
     if (!s.isEmpty()) {
@@ -1547,7 +1547,7 @@ void TPlaylist::openPlaylist(const QString& filename) {
 void TPlaylist::open() {
 
     if (maybeSave()) {
-        QString s = MyFileDialog::getOpenFileName(this, tr("Choose a file"),
+        QString s = TFileDialog::getOpenFileName(this, tr("Choose a file"),
             pref->latest_dir,
             tr("Playlists") + extensions.playlists().forFilter() + ";;"
             + tr("All files") +" (*.*)");
@@ -1782,7 +1782,7 @@ bool TPlaylist::save() {
 
 bool TPlaylist::saveAs() {
 
-    QString s = MyFileDialog::getSaveFileName(this, tr("Choose a filename"),
+    QString s = TFileDialog::getSaveFileName(this, tr("Choose a filename"),
         pref->latest_dir, tr("Playlists") + extensions.playlists().forFilter());
 
     if (s.isEmpty()) {

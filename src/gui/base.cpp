@@ -53,7 +53,7 @@
 #include "playerwindow.h"
 #include "core.h"
 #include "clhelp.h"
-#include "filedialog.h"
+#include "gui/filedialog.h"
 
 #include "settings/paths.h"
 #include "settings/preferences.h"
@@ -1233,7 +1233,7 @@ void TBase::changeVideoEqualizerBySoftware(bool b) {
 void TBase::openDirectory() {
     logger()->debug("openDirectory");
 
-	QString s = MyFileDialog::getExistingDirectory(
+	QString s = TFileDialog::getExistingDirectory(
 					this, tr("Choose a directory"),
 					pref->latest_dir);
 
@@ -1288,7 +1288,7 @@ void TBase::openFiles(QStringList files, const QString& current) {
 void TBase::openFile() {
     logger()->debug("openFile");
 
-    QString s = MyFileDialog::getOpenFileName(
+    QString s = TFileDialog::getOpenFileName(
         this,
         tr("Choose a file"),
         pref->latest_dir,
@@ -1436,7 +1436,7 @@ void TBase::openBluRayFromFolder() {
 void TBase::loadSub() {
     logger()->debug("loadSub");
 
-    QString s = MyFileDialog::getOpenFileName(
+    QString s = TFileDialog::getOpenFileName(
 		this, tr("Choose a file"),
 		pref->latest_dir,
         tr("Subtitles") + extensions.subtitles().forFilter()+ ";;" +
@@ -1455,7 +1455,7 @@ void TBase::setInitialSubtitle(const QString & subtitle_file) {
 void TBase::loadAudioFile() {
     logger()->debug("loadAudioFile");
 
-    QString s = MyFileDialog::getOpenFileName(
+    QString s = TFileDialog::getOpenFileName(
 		this, tr("Choose a file"),
 		pref->latest_dir,
         tr("Audio") + extensions.audio().forFilter()+";;" +
