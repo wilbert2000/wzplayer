@@ -23,7 +23,7 @@
 #include <QFileDialog>
 #include <QItemDelegate>
 #include "images.h"
-#include "filechooser.h"
+#include "gui/filechooser.h"
 
 #define COL_ICON 0
 #define COL_NAME 1
@@ -49,7 +49,7 @@ QWidget* FEDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & 
 	//logger()->debug("FEDelegate::createEditor");
 
 	if (index.column() == COL_FILE) {
-		FileChooser* fch = new FileChooser(parent);
+        Gui::TFileChooser* fch = new Gui::TFileChooser(parent);
 		fch->setOptions(QFileDialog::DontUseNativeDialog | QFileDialog::DontResolveSymlinks); // Crashes if use the KDE dialog
 		fch->setText(index.model()->data(index, Qt::DisplayRole).toString());
 		return fch;
@@ -67,7 +67,7 @@ QWidget* FEDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & 
 
 void FEDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
 	if (index.column() == COL_FILE) {
-		FileChooser* fch = static_cast<FileChooser*>(editor);
+        Gui::TFileChooser* fch = static_cast<Gui::TFileChooser*>(editor);
 		model->setData(index, fch->text());
 	} 
 	else 

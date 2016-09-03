@@ -33,7 +33,7 @@ TCapture::TCapture(QWidget* parent)
 	: TWidget(parent, 0) {
 
 	setupUi(this);
-	screenshot_edit->setDialogType(FileChooser::GetDirectory);
+	screenshot_edit->setDialogType(TFileChooser::GetDirectory);
 	screenshot_format_combo->addItems(QStringList() << "png" << "ppm" << "pgm" << "pgmyuv" << "tga" << "jpg" << "jpeg");
 	retranslateStrings();
 }

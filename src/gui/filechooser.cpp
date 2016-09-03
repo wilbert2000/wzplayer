@@ -16,16 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filechooser.h"
+#include "gui/filechooser.h"
 #include <QToolButton>
 #include <QStyle>
 
 #include "filedialog.h"
 #include "images.h"
 
-QString FileChooser::last_dir;
 
-FileChooser::FileChooser(QWidget* parent) : Gui::TLineEditWithIcon(parent) {
+namespace Gui {
+
+QString TFileChooser::last_dir;
+
+TFileChooser::TFileChooser(QWidget* parent) : Gui::TLineEditWithIcon(parent) {
 
 	setDialogType(GetFileName);
 	setOptions(0);
@@ -38,16 +41,16 @@ FileChooser::FileChooser(QWidget* parent) : Gui::TLineEditWithIcon(parent) {
 			this, SLOT(onEditingFinished()));
 }
 
-FileChooser::~FileChooser() {
+TFileChooser::~TFileChooser() {
 }
 
-void FileChooser::setupButton() {
+void TFileChooser::setupButton() {
 
 	setIcon(Images::icon("folder_open"));
 	button->setToolTip(tr("Click to select a file or folder"));
 }
 
-void FileChooser::openFileDialog() {
+void TFileChooser::openFileDialog() {
 
 	QString result;
 	QString f;
@@ -102,11 +105,13 @@ void FileChooser::openFileDialog() {
 	}
 }
 
-void FileChooser::onEditingFinished() {
+void TFileChooser::onEditingFinished() {
 
 	if (isModified()) {
 		emit fileChanged(text());
 	}
 }
+
+} // namespace Gui
 
 #include "moc_filechooser.cpp"

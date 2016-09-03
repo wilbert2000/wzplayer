@@ -100,7 +100,7 @@
             </widget>
            </item>
            <item>
-            <widget class="FileChooser" name="screenshot_edit"/>
+            <widget class="Gui::TFileChooser" name="screenshot_edit"/>
            </item>
           </layout>
          </item>
@@ -179,9 +179,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FileChooser</class>
+   <class>Gui::TFileChooser</class>
    <extends>QLineEdit</extends>
-   <header>filechooser.h</header>
+   <header>gui/filechooser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

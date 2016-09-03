@@ -38,8 +38,8 @@ TPlayer::TPlayer(QWidget* parent)
 
 	setupUi(this);
 
-	mplayer_edit->setDialogType(FileChooser::GetFileName);
-	mpv_edit->setDialogType(FileChooser::GetFileName);
+	mplayer_edit->setDialogType(TFileChooser::GetFileName);
+	mpv_edit->setDialogType(TFileChooser::GetFileName);
 
 	connect(mplayer_edit, SIGNAL(fileChanged(QString)),
 			this, SLOT(onMPlayerFileChanged(QString)));

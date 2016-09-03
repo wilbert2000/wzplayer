@@ -52,7 +52,7 @@
              </widget>
             </item>
             <item row="0" column="3">
-             <widget class="FileChooser" name="mplayer_edit"/>
+             <widget class="Gui::TFileChooser" name="mplayer_edit"/>
             </item>
             <item row="0" column="2">
              <widget class="QRadioButton" name="mplayer_radio">
@@ -76,7 +76,7 @@
              </widget>
             </item>
             <item row="1" column="3">
-             <widget class="FileChooser" name="mpv_edit"/>
+             <widget class="Gui::TFileChooser" name="mpv_edit"/>
             </item>
            </layout>
           </item>
@@ -241,9 +241,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FileChooser</class>
+   <class>Gui::TFileChooser</class>
    <extends>QLineEdit</extends>
-   <header>filechooser.h</header>
+   <header>gui/filechooser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

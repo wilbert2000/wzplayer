@@ -16,16 +16,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _FILECHOOSER_H_
-#define _FILECHOOSER_H_
+#ifndef GUI_FILECHOOSER_H
+#define GUI_FILECHOOSER_H
 
 #include "gui/lineedit_with_icon.h"
 #include <QFileDialog>
 
 class QToolButton;
 
-class FileChooser : public Gui::TLineEditWithIcon
-{
+namespace Gui {
+
+class TFileChooser : public TLineEditWithIcon {
     Q_OBJECT
 	Q_PROPERTY(QString text READ text WRITE setText)
 	Q_PROPERTY(QString caption READ caption WRITE setCaption)
@@ -36,8 +37,8 @@ class FileChooser : public Gui::TLineEditWithIcon
 public:
 	enum DialogType { GetFileName = 0, GetDirectory = 1 };
 
-    FileChooser(QWidget* parent = 0);
-	virtual ~FileChooser();
+    TFileChooser(QWidget* parent = 0);
+    virtual ~TFileChooser();
 
 	QString caption() const { return _caption; }
 	QString filter() const { return _filter; }
@@ -69,4 +70,6 @@ protected:
 	static QString last_dir;
 };
 
-#endif
+} // namespace Gui
+
+#endif // GUI_FILECHOOSER_H
