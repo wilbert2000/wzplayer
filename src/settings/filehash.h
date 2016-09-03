@@ -16,17 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef FILEHASH_H
-#define FILEHASH_H
+#ifndef SETTINGS_FILEHASH_H
+#define SETTINGS_FILEHASH_H
 
 #include <QString>
 
-class FileHash
-{
-public:
 
-	static QString calculateHash(const QString& filename);
+namespace Settings {
+
+class TFileHash {
+public:
+    static QString calculateHash(const QString& filename);
 };
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_FILEHASH_H
 

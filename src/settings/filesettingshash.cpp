@@ -30,7 +30,7 @@ namespace Settings {
 
 QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 
-	QString hash = FileHash::calculateHash(filename);
+    QString hash = TFileHash::calculateHash(filename);
 	if (hash.isEmpty()) {
 		return QString();
 	}

@@ -16,18 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "filehash.h"
+#include "settings/filehash.h"
 #include <QFile>
 #include <QDataStream>
 #include "log4qt/logger.h"
 
+
+namespace Settings {
+
 // From the patch by Kamil Dziobek turbos11(at)gmail.com
 // (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
-QString FileHash::calculateHash(const QString& filename) {
+QString TFileHash::calculateHash(const QString& filename) {
 
 	QFile file(filename);
 	if (!file.exists()) {
-        Log4Qt::Logger::logger("FileHash")->warn(
+        Log4Qt::Logger::logger("TFileHash")->warn(
             "OSParser:calculateHash: error hashing file. File doesn't exist.");
 		return QString();
 	}
@@ -50,4 +53,6 @@ QString FileHash::calculateHash(const QString& filename) {
 
 	return hexhash;
 }
+
+} // namespace Settings
 
