@@ -504,14 +504,18 @@ void TApp::showInfo() {
 	switch (QSysInfo::WindowsVersion) {
 		case QSysInfo::WV_2000: win_ver = "Windows 2000"; break;
 		case QSysInfo::WV_XP: win_ver = "Windows XP"; break;
-		case QSysInfo::WV_2003: win_ver = "Windows XP Professional x64/Server 2003"; break;
+        case QSysInfo::WV_2003:
+            win_ver = "Windows XP Professional x64/Server 2003";
+            break;
 		case QSysInfo::WV_VISTA: win_ver = "Windows Vista/Server 2008"; break;
 		case QSysInfo::WV_WINDOWS7: win_ver = "Windows 7/Server 2008 R2"; break;
 #if QT_VERSION >= 0x040803
 		case QSysInfo::WV_WINDOWS8: win_ver = "Windows 8/Server 2012"; break;
 #endif
 #if ((QT_VERSION >= 0x040806 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050200))
-		case QSysInfo::WV_WINDOWS8_1: win_ver = "Windows 8.1/Server 2012 R2"; break;
+        case QSysInfo::WV_WINDOWS8_1:
+            win_ver = "Windows 8.1/Server 2012 R2";
+            break;
 #endif
 #if ((QT_VERSION >= 0x040807 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050500))
 		case QSysInfo::WV_WINDOWS10: win_ver = "Windows 10"; break;
