@@ -16,10 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "updatecheckerdata.h"
+#include "settings/updatecheckerdata.h"
 #include <QSettings>
 #include "version.h"
 
+
+namespace Settings {
 
 TUpdateCheckerData::TUpdateCheckerData() :
 	enabled(false),
@@ -49,3 +51,4 @@ void TUpdateCheckerData::load(QSettings* set) {
 	set->endGroup();
 }
 
+} // namespace Settings

@@ -18,7 +18,7 @@
 
 #include "gui/updatechecker.h"
 #include "config.h"
-#include "updatecheckerdata.h"
+#include "settings/updatecheckerdata.h"
 #include "version.h"
 #include <QUrl>
 #include <QNetworkAccessManager>
@@ -36,7 +36,8 @@
 
 namespace Gui {
 
-TUpdateChecker::TUpdateChecker(QWidget* parent, TUpdateCheckerData* data) :
+TUpdateChecker::TUpdateChecker(QWidget* parent,
+                               Settings::TUpdateCheckerData* data) :
     QObject(parent),
     debug(logger()),
     net_manager(0),

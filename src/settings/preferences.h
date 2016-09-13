@@ -25,7 +25,7 @@
 
 #include "log4qt/level.h"
 #include "filters.h"
-#include "updatecheckerdata.h"
+#include "settings/updatecheckerdata.h"
 #include "settings/playersettings.h"
 #include "settings/assstyles.h"
 #include "settings/recents.h"

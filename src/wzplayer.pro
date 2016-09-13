@@ -65,6 +65,7 @@ HEADERS += wzdebug.h \
     settings/recents.h \
     settings/urlhistory.h \
     settings/cleanconfig.h \
+    settings/updatecheckerdata.h \
     iconprovider.h \
     images.h \
 	inforeader.h \
@@ -153,7 +154,6 @@ HEADERS += wzdebug.h \
     gui/logwindow.h \
     gui/helpwindow.h \
     gui/updatechecker.h \
-    updatecheckerdata.h \
     maps/map.h \
     maps/tracks.h \
     maps/titletracks.h \
@@ -194,6 +194,7 @@ SOURCES	+= wzdebug.cpp \
     settings/recents.cpp \
     settings/urlhistory.cpp \
     settings/cleanconfig.cpp \
+    settings/updatecheckerdata.cpp \
     iconprovider.cpp \
     images.cpp \
 	inforeader.cpp \
@@ -280,7 +281,6 @@ SOURCES	+= wzdebug.cpp \
     gui/logwindow.cpp \
     gui/helpwindow.cpp \
     gui/updatechecker.cpp \
-    updatecheckerdata.cpp \
     maps/map.cpp \
     maps/tracks.cpp \
     maps/titletracks.cpp \

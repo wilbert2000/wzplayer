@@ -23,19 +23,19 @@
 #include <QWidget>
 #include <QUrl>
 #include "wzdebug.h"
+#include "settings/updatecheckerdata.h"
 
 
 class QNetworkAccessManager;
-class TUpdateCheckerData;
 
 namespace Gui {
 
 class TUpdateChecker : public QObject {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TUpdateChecker(QWidget* parent, TUpdateCheckerData* data);
+    TUpdateChecker(QWidget* parent, Settings::TUpdateCheckerData* data);
 	virtual ~TUpdateChecker();
 
 	void check();
@@ -57,7 +57,7 @@ protected:
     QString parseVersion(const QByteArray& data, const QString& name);
 
 	QNetworkAccessManager* net_manager;
-	TUpdateCheckerData* d;
+    Settings::TUpdateCheckerData* d;
 
 	QUrl check_url;
 	QByteArray user_agent;

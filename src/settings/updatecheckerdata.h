@@ -17,13 +17,15 @@
 */
 
 
-#ifndef UPDATE_CHECKER_DATA_H
-#define UPDATE_CHECKER_DATA_H
+#ifndef SETTINGS_UPDATE_CHECKER_DATA_H
+#define SETTINGS_UPDATE_CHECKER_DATA_H
 
 #include <QString>
 #include <QDate>
 
 class QSettings;
+
+namespace Settings {
 
 class TUpdateCheckerData {
 public:
@@ -39,4 +41,6 @@ public:
 	QString last_known_version;
 };
 
-#endif
+} // namespace Settings
+
+#endif // SETTINGS_UPDATE_CHECKER_DATA_H
