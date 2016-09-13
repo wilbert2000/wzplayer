@@ -22,7 +22,7 @@
 #include <QResizeEvent>
 #include <QTimer>
 
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "settings/preferences.h"
 #include "gui/base.h"
 #include "gui/action/actionlist.h"

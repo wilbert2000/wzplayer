@@ -27,7 +27,7 @@
 #include "playerwindow.h"
 #include "config.h"
 #include "images.h"
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "core.h"
 #include "gui/action/action.h"
 #include "gui/action/menufile.h"

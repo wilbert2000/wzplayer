@@ -21,7 +21,7 @@
 #include <QTextEdit>
 
 #include "config.h"
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "images.h"
 #include "settings/preferences.h"
 

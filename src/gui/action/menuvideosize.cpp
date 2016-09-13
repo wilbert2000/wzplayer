@@ -1,5 +1,5 @@
 #include "gui/action/menuvideosize.h"
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "settings/preferences.h"
 #include "playerwindow.h"
 #include "gui/base.h"

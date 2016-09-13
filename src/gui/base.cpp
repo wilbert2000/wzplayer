@@ -43,7 +43,7 @@
 
 #include "proc/exitmsg.h"
 #include "version.h"
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "discname.h"
 #include "extensions.h"
 #include "colorutils.h"

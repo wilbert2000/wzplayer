@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "desktop.h"
+#include "gui/desktop.h"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDebug>

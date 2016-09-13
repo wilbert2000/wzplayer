@@ -30,7 +30,7 @@
 #include "log4qt/logger.h"
 #include "log4qt/ttcclayout.h"
 #include "config.h"
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "images.h"
 #include "gui/filedialog.h"
 #include "settings/preferences.h"

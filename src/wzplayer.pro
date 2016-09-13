@@ -43,7 +43,6 @@ HEADERS += wzdebug.h \
 	subtracks.h \
 	discname.h \
 	extensions.h \
-    desktop.h \
     proc/exitmsg.h \
     proc/process.h \
 	proc/playerprocess.h \
@@ -74,6 +73,7 @@ HEADERS += wzdebug.h \
     corestate.h \
 	core.h \
 	languages.h \
+    gui/desktop.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
     gui/action/actionlist.h \
@@ -172,7 +172,6 @@ SOURCES	+= wzdebug.cpp \
 	subtracks.cpp \
 	discname.cpp \
 	extensions.cpp \
-    desktop.cpp \
     proc/exitmsg.cpp \
     proc/process.cpp \
     proc/playerprocess.cpp \
@@ -202,6 +201,7 @@ SOURCES	+= wzdebug.cpp \
     inforeadermplayer.cpp \
 	core.cpp \
 	languages.cpp \
+    gui/desktop.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \
     gui/action/slider.cpp \

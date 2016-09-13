@@ -1,7 +1,7 @@
 #include "gui/action/menu.h"
 #include <QDebug>
 #include <QEvent>
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "images.h"
 #include "settings/mediasettings.h"
 #include "gui/base.h"

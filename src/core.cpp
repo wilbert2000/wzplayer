@@ -29,7 +29,7 @@
 #include <QEventLoop>
 #endif
 
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "discname.h"
 #include "mediadata.h"
 #include "extensions.h"

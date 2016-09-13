@@ -28,7 +28,7 @@
 #include <QApplication>
 #include <QLabel>
 
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "colorutils.h"
 #include "images.h"
 #include "settings/preferences.h"

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QMouseEvent>
-#include "desktop.h"
+#include "gui/desktop.h"
 #include "settings/preferences.h"
 
 const int MOUSE_MOVED_TRESHOLD = 4;
