@@ -1323,13 +1323,13 @@ void TBase::openURL() {
 
 	// Get url from clipboard
 	QString clipboard_text = QApplication::clipboard()->text();
-	if (!clipboard_text.isEmpty() && (clipboard_text.contains("/")
+    if (clipboard_text.contains("/")
 
 #ifdef Q_OS_WIN
 			|| clipboard_text.contains("\\")
 #endif
 
-		)) {
+        ) {
 		d.setURL(clipboard_text);
 	}
 
@@ -1827,11 +1827,11 @@ void TBase::checkPendingActionsToRun() {
     }
 }
 
-void TBase::runActionsLater(QString actions, bool postCheck) {
+void TBase::runActionsLater(const QString& actions, bool postCheck) {
 
     pending_actions_to_run = actions;
-    if (postCheck) {
-        QTimer::singleShot(1000, this, SLOT(checkPendingActionsToRun()));
+    if (!pending_actions_to_run.isEmpty() && postCheck) {
+        QTimer::singleShot(100, this, SLOT(checkPendingActionsToRun()));
     }
 }
 

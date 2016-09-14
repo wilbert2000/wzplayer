@@ -111,6 +111,7 @@ private:
 	bool processArgName(const QString& arg, const QStringList& args) const;
 	int processArgPos(const QString& name, const QStringList& args) const;
 	void showInfo();
+    bool acceptClipboard() const;
 
 private slots:
     void onRequestRestart();

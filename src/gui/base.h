@@ -89,7 +89,7 @@ public:
 	void runActions(QString actions);
 
 	//! Execute all the actions after the video has started to play
-    void runActionsLater(QString actions, bool postCheck);
+    void runActionsLater(const QString& actions, bool postCheck);
 
 	TCore* getCore() { return core; }
     Playlist::TPlaylist* getPlaylist() { return playlist; }

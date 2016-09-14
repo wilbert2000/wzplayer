@@ -24,6 +24,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QStyle>
+#include <QClipboard>
 
 #include "config.h"
 #include "settings/paths.h"
@@ -451,18 +452,35 @@ void TApp::createGUI() {
     logger()->debug("createGUI: created main window");
 } // createGUI()
 
+bool TApp::acceptClipboard() const {
+
+    const QString txt = QApplication::clipboard()->text();
+    return txt.contains("/")
+#ifdef Q_OS_WIN
+            || txt.contains("\\")
+#endif
+            ;
+}
+
 void TApp::start() {
     logger()->debug("start");
 
     // Create the main window. It will be destoyed when leaving exec().
     createGUI();
 
+    // Show main window
     if (!main_window->startHidden() || !files_to_play.isEmpty()) {
         main_window->show();
     }
 
     if (files_to_play.isEmpty()) {
+        // Nothing to open
         main_window->getCore()->setState(STATE_STOPPED);
+
+        // Check clipboard
+        if (actions.isEmpty() && acceptClipboard()) {
+            actions = "open_url";
+        }
     } else {
         if (!subtitle_file.isEmpty()) {
             main_window->setInitialSubtitle(subtitle_file);
@@ -474,9 +492,7 @@ void TApp::start() {
         main_window->openFiles(files_to_play, current_file);
     }
 
-    if (!actions.isEmpty()) {
-        main_window->runActionsLater(actions, files_to_play.count() == 0);
-    }
+    main_window->runActionsLater(actions, files_to_play.count() == 0);
 
     // Free files_to_play
     files_to_play.clear();
