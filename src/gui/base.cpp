@@ -106,6 +106,7 @@
 #endif
 
 #ifdef Q_OS_WIN
+#include <windows.h>
 #include "gui/deviceinfo.h"
 #endif
 
