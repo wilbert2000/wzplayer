@@ -1322,17 +1322,17 @@ void TBase::openURL() {
 
     TInputURL d(this);
 
-	// Get url from clipboard
-	QString clipboard_text = QApplication::clipboard()->text();
-    if (clipboard_text.contains("/")
-
+    // Get url from clipboard
+    QString txt = QApplication::clipboard()->text();
+    if (!txt.contains("\x0a") && !txt.contains("\x0d")) {
+        if (txt.contains("/")
 #ifdef Q_OS_WIN
-			|| clipboard_text.contains("\\")
+        || txt.contains("\\")
 #endif
-
         ) {
-		d.setURL(clipboard_text);
-	}
+            d.setURL(txt);
+        }
+    }
 
     for (int n = 0; n < pref->history_urls.count(); n++) {
         d.setURL(pref->history_urls.url(n));

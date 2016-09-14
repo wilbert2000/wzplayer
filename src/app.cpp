@@ -455,11 +455,13 @@ void TApp::createGUI() {
 bool TApp::acceptClipboard() const {
 
     const QString txt = QApplication::clipboard()->text();
-    return txt.contains("/")
+    return !txt.contains("\x0a")
+            && !txt.contains("\x0d")
+            && (txt.contains("/")
 #ifdef Q_OS_WIN
             || txt.contains("\\")
 #endif
-            ;
+            );
 }
 
 void TApp::start() {
