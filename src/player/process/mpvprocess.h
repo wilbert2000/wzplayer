@@ -16,19 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROC_MPVPROCESS_H
-#define PROC_MPVPROCESS_H
+#ifndef PLAYER_PROCESS_MPVPROCESS_H
+#define PLAYER_PROCESS_MPVPROCESS_H
 
 #include <QObject>
 #include <QPoint>
 #include <QString>
 #include <QTime>
 
-#include "proc/playerprocess.h"
+#include "player/process/playerprocess.h"
 
 class QStringList;
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 class TMPVProcess : public TPlayerProcess {
     Q_OBJECT
@@ -161,6 +162,7 @@ private:
     void requestBitrateInfo();
 };
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
-#endif // PROC_MPVPROCESS_H
+#endif // PLAYER_PROCESS_MPVPROCESS_H

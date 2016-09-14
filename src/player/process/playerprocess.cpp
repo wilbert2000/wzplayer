@@ -16,23 +16,22 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "proc/playerprocess.h"
+#include "player/process/playerprocess.h"
 
 #include <QPoint>
 #include <QDir>
 #include <QFileInfo>
 #include <QString>
 
-#include "proc/exitmsg.h"
+#include "player/process/exitmsg.h"
+#include "player/process/mpvprocess.h"
+#include "player/process/mplayerprocess.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 
-#include "proc/mpvprocess.h"
-#include "proc/mplayerprocess.h"
 
-
-namespace Proc {
-
+namespace Player {
+namespace Process {
 
 const int waiting_for_answers_safe_guard_init = 100;
 
@@ -524,6 +523,7 @@ void TPlayerProcess::setCaptureDirectory(const QString& dir) {
 	}
 }
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
 #include "moc_playerprocess.cpp"

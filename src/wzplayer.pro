@@ -43,11 +43,11 @@ HEADERS += wzdebug.h \
 	subtracks.h \
 	discname.h \
 	extensions.h \
-    proc/exitmsg.h \
-    proc/process.h \
-	proc/playerprocess.h \
-    proc/mpvprocess.h \
-    proc/mplayerprocess.h \
+    player/process/exitmsg.h \
+    player/process/process.h \
+    player/process/playerprocess.h \
+    player/process/mpvprocess.h \
+    player/process/mplayerprocess.h \
     playerwindow.h \
 	mediadata.h \
     settings/paths.h \
@@ -172,11 +172,11 @@ SOURCES	+= wzdebug.cpp \
 	subtracks.cpp \
 	discname.cpp \
 	extensions.cpp \
-    proc/exitmsg.cpp \
-    proc/process.cpp \
-    proc/playerprocess.cpp \
-    proc/mpvprocess.cpp \
-    proc/mplayerprocess.cpp \
+    player/process/exitmsg.cpp \
+    player/process/process.cpp \
+    player/process/playerprocess.cpp \
+    player/process/mpvprocess.cpp \
+    player/process/mplayerprocess.cpp \
     playerwindow.cpp \
 	mediadata.cpp \
     settings/paths.cpp \

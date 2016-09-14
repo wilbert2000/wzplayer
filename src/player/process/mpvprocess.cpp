@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "proc/mpvprocess.h"
+#include "player/process/mpvprocess.h"
 
 #include <QDir>
 #include <QRegExp>
@@ -24,15 +24,16 @@
 #include <QApplication>
 
 #include "config.h"
-#include "proc/exitmsg.h"
-#include "proc/playerprocess.h"
+#include "player/process/exitmsg.h"
+#include "player/process/playerprocess.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "inforeader.h"
 #include "mediadata.h"
 
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
     TPlayerProcess(parent, mdata),
@@ -1464,7 +1465,8 @@ void TMPVProcess::setChannelsFile(const QString& filename) {
     args << "--dvbin-file=" + filename;
 }
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
 
 #include "moc_mpvprocess.cpp"

@@ -16,12 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "process.h"
+#include "player/process/process.h"
 #include <QDebug>
 #include "log4qt/logger.h"
 
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 TProcess::TProcess(QObject* parent) :
     QProcess(parent),
@@ -170,6 +171,7 @@ QStringList TProcess::splitArguments(const QString& args) {
     return l;
 }
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
 #include "moc_process.cpp"

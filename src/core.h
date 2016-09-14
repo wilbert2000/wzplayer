@@ -32,8 +32,10 @@
 class TMediaData;
 class TPlayerWindow;
 
-namespace Proc {
-class TPlayerProcess;
+namespace Player {
+    namespace Process {
+    class TPlayerProcess;
+    }
 }
 
 
@@ -401,7 +403,7 @@ protected slots:
 	void dvdnavUpdateMousePos(QPoint);
 
 protected:
-	Proc::TPlayerProcess* proc;
+    Player::Process::TPlayerProcess* proc;
 	TPlayerWindow* playerwindow;
 
 private:

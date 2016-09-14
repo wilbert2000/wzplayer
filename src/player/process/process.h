@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROC_PROCESS_H
-#define PROC_PROCESS_H
+#ifndef PLAYER_PROCESS_PROCESS_H
+#define PLAYER_PROCESS_PROCESS_H
 
 #include <QProcess>
 #include <QTime>
@@ -30,7 +30,8 @@
  It also provides some Qt 3 like functions like addArgument().
 */
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 class TProcess : public QProcess {
 	Q_OBJECT
@@ -76,6 +77,7 @@ private:
     const char* EOL(const char* start, const char* end);
 };
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
-#endif // PROC_PROCESS_H
+#endif // PLAYER_PROCESS_PROCESS_H

@@ -44,8 +44,8 @@
 #include "settings/tvsettings.h"
 #include "settings/filters.h"
 
-#include "proc/exitmsg.h"
-#include "proc/playerprocess.h"
+#include "player/process/playerprocess.h"
+#include "player/process/exitmsg.h"
 #include "playerwindow.h"
 #include "gui/action/tvlist.h"
 #include "gui/msg.h"
@@ -68,7 +68,7 @@ TCore::TCore(QWidget* parent, TPlayerWindow *mpw) :
 
     Gui::setOSDMessageHandler(this);
 
-    proc = Proc::TPlayerProcess::createPlayerProcess(this, &mdat);
+    proc = Player::Process::TPlayerProcess::createPlayerProcess(this, &mdat);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)),
@@ -170,7 +170,7 @@ void TCore::onProcessError(QProcess::ProcessError error) {
 
     // Restore normal window background
     playerwindow->restoreNormalWindow(false);
-    emit playerError(Proc::TExitMsg::processErrorToErrorID(error));
+    emit playerError(Player::Process::TExitMsg::processErrorToErrorID(error));
 }
 
 void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
@@ -187,7 +187,7 @@ void TCore::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
     logger()->debug("onProcessFinished: entering the stopped state");
     setState(STATE_STOPPED);
 
-    if (eof || exit_code == Proc::TExitMsg::EXIT_OUT_POINT_REACHED) {
+    if (eof || exit_code == Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED) {
         logger()->debug("onProcessFinished: emit mediaEOF()");
         emit mediaEOF();
     } else if (!normal_exit) {
@@ -790,7 +790,7 @@ void TCore::screenshot() {
     logger()->debug("screenshot");
 
 	if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
-		proc->takeScreenshot(Proc::TPlayerProcess::Single,
+        proc->takeScreenshot(Player::Process::TPlayerProcess::Single,
 							 pref->subtitles_on_screenshots);
         logger()->debug("screenshot: took screenshot");
 	} else {
@@ -803,7 +803,8 @@ void TCore::screenshots() {
     logger()->debug("screenshots");
 
 	if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
-		proc->takeScreenshot(Proc::TPlayerProcess::Multiple, pref->subtitles_on_screenshots);
+        proc->takeScreenshot(Player::Process::TPlayerProcess::Multiple,
+                             pref->subtitles_on_screenshots);
 	} else {
         logger()->warn("screenshots: directory for screenshots not valid or enabled");
         Gui::msg(tr("Screenshots NOT taken, folder not configured or enabled"));
@@ -1573,7 +1574,7 @@ end_video_filters:
 
     // Per file additional options
     if (!mset.player_additional_options.isEmpty()) {
-        QStringList args = Proc::TProcess::splitArguments(
+        QStringList args = Player::Process::TProcess::splitArguments(
                                mset.player_additional_options);
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
@@ -1587,7 +1588,7 @@ end_video_filters:
 
     // Global additional options
     if (!pref->player_additional_options.isEmpty()) {
-        QStringList args = Proc::TProcess::splitArguments(
+        QStringList args = Player::Process::TProcess::splitArguments(
                                pref->player_additional_options);
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
@@ -2676,7 +2677,7 @@ void TCore::handleOutPoint() {
                   << "reached out point" << mset.out_point
                   << ", sending quit" << debug;
 
-            proc->quit(Proc::TExitMsg::EXIT_OUT_POINT_REACHED);
+            proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
         debug << "handleOutPoint: done handling out point, position"

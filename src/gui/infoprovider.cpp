@@ -20,15 +20,15 @@
 #include <QFileInfo>
 #include "log4qt/logger.h"
 #include "settings/preferences.h"
-#include "proc/playerprocess.h"
+#include "player/process/playerprocess.h"
 
 namespace Gui {
 
 void TInfoProvider::getInfo(const QString& filename, TMediaData& md) {
     Log4Qt::Logger::logger("Gui::TInfoProvider")->debug("getInfo:" + filename);
 
-    Proc::TPlayerProcess* proc =
-            Proc::TPlayerProcess::createPlayerProcess(0, &md);
+    Player::Process::TPlayerProcess* proc =
+            Player::Process::TPlayerProcess::createPlayerProcess(0, &md);
 	proc->setExecutable(Settings::pref->player_bin);
 	proc->setFixedOptions();
 	proc->setOption("frames", "1");

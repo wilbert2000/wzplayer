@@ -16,20 +16,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROC_MPLAYERPROCESS_H
-#define PROC_MPLAYERPROCESS_H
+#ifndef PLAYER_PROCESS_MPLAYERPROCESS_H
+#define PLAYER_PROCESS_MPLAYERPROCESS_H
 
 #include <QObject>
 #include <QString>
 
-#include "proc/playerprocess.h"
+#include "player/process/playerprocess.h"
 #include "wzdebug.h"
 #include "mediadata.h"
 
 
 class QStringList;
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 class TMPlayerProcess : public TPlayerProcess {
 	Q_OBJECT
@@ -200,6 +201,7 @@ private slots:
 	void dvdnavRestoreTime();
 };
 
-} // namesapce Proc
+} // namesapce Process
+} // namespace Player
 
-#endif // PROC_MPLAYERPROCESS_H
+#endif // PLAYER_PROCESS_MPLAYERPROCESS_H

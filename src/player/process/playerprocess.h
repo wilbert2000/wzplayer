@@ -16,15 +16,15 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROC_PLAYERPROCESS_H
-#define PROC_PLAYERPROCESS_H
+#ifndef PLAYER_PROCESS_PLAYERPROCESS_H
+#define PLAYER_PROCESS_PLAYERPROCESS_H
 
 #include <QObject>
 #include <QVariant>
 #include <QTemporaryFile>
 
 #include "wzdebug.h"
-#include "proc/process.h"
+#include "player/process/process.h"
 #include "settings/assstyles.h"
 #include "subtracks.h"
 
@@ -32,7 +32,8 @@
 class QRegExp;
 class TMediaData;
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 class TPlayerProcess : public TProcess {
     Q_OBJECT
@@ -234,6 +235,7 @@ private:
 	bool parseVO(const QString& vo, int sw, int sh, int dw, int dh);
 };
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
-#endif // PROC_PLAYERPROCESS_H
+#endif // PLAYER_PROCESS_PLAYERPROCESS_H

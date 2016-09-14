@@ -41,7 +41,7 @@
 #include <QMimeData>
 #include <QNetworkProxy>
 
-#include "proc/exitmsg.h"
+#include "player/process/exitmsg.h"
 #include "version.h"
 #include "gui/desktop.h"
 #include "discname.h"
@@ -2369,7 +2369,7 @@ void TBase::toggleStayOnTop() {
 void TBase::onPlayerError(int exit_code) {
     logger()->debug("onPlayerError: %1", exit_code);
 
-    QString s = Proc::TExitMsg::message(exit_code)
+    QString s = Player::Process::TExitMsg::message(exit_code)
                 + " (" + core->mdat.filename + ")";
     msg(s, 0);
 

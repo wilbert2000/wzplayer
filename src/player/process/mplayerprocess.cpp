@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "proc/mplayerprocess.h"
+#include "player/process/mplayerprocess.h"
 
 #include <QDebug>
 #include <QDir>
@@ -26,7 +26,7 @@
 #include <QTimer>
 
 #include "config.h"
-#include "proc/exitmsg.h"
+#include "player/process/exitmsg.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "subtracks.h"
@@ -34,7 +34,8 @@
 
 using namespace Settings;
 
-namespace Proc {
+namespace Player {
+namespace Process {
 
 const double FRAME_BACKSTEP_DEFAULT_STEP = 0.1;
 const double FRAME_BACKSTEP_DISABLED = 3600000;
@@ -1741,6 +1742,7 @@ void TMPlayerProcess::setSubStyles(const TAssStyles& styles,
 	}
 }
 
-} // namespace Proc
+} // namespace Process
+} // namespace Player
 
 #include "moc_mplayerprocess.cpp"
