@@ -16,27 +16,32 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef LANGUAGES_H
-#define LANGUAGES_H
+#ifndef GUI_PREF_LANGUAGES_H
+#define GUI_PREF_LANGUAGES_H
 
 #include <QObject>
 #include <QMap>
 
-class Languages : public QObject
-{
-	Q_OBJECT
+namespace Gui {
+namespace Pref {
+
+class TLanguages : public QObject {
+    Q_OBJECT
 
 public:
 
-	//! Returns the ISO_639-1 language list
-	static QMap<QString,QString> list();
+    //! Returns the ISO_639-1 language list
+    static QMap<QString,QString> list();
 
-	//! Returns the list of translations available
-	static QMap<QString,QString> translations();
+    //! Returns the list of translations available
+    static QMap<QString,QString> translations();
 
-	//! Returns the list of subtitle encodings
-	static QMap<QString,QString> encodings();
+    //! Returns the list of subtitle encodings
+    static QMap<QString,QString> encodings();
 };
 
-#endif
+} // namespace Pref
+} // namespace Gui
+
+#endif // GUI_PREF_LANGUAGES_H
 

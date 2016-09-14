@@ -25,7 +25,7 @@
 #include "settings/paths.h"
 #include "settings/assstyles.h"
 #include "gui/filedialog.h"
-#include "languages.h"
+#include "gui/pref/languages.h"
 
 
 using namespace Settings;
@@ -71,7 +71,7 @@ void TSubtitles::retranslateStrings() {
 	// Subtitle encoding language
 	QString current = encaLang();
 	enca_lang_combo->clear();
-	QMap<QString,QString> l = Languages::list();
+    QMap<QString,QString> l = TLanguages::list();
 	QMapIterator<QString, QString> i(l);
 	while (i.hasNext()) {
 		i.next();
@@ -84,7 +84,7 @@ void TSubtitles::retranslateStrings() {
 	// Fallback encoding code page
 	current = encodingFallback();
 	encoding_fallback_combo->clear();
-	l = Languages::encodings();
+    l = TLanguages::encodings();
 	i = l;
 	while (i.hasNext()) {
 		i.next();

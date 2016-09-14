@@ -26,7 +26,7 @@
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
 #include "settings/paths.h"
-#include "languages.h"
+#include "gui/pref/languages.h"
 
 
 namespace Gui {
@@ -79,7 +79,7 @@ QPixmap TInterface::sectionIcon() {
 
 void TInterface::createLanguageCombo() {
 
-	QMap <QString,QString> m = Languages::translations();
+	QMap <QString,QString> m = TLanguages::translations();
 
 	// Language combo
 	QDir translation_dir = Settings::TPaths::translationPath();

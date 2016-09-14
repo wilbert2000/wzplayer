@@ -73,7 +73,6 @@ HEADERS += wzdebug.h \
     inforeadermplayer.h \
     corestate.h \
 	core.h \
-	languages.h \
     gui/desktop.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
@@ -105,6 +104,7 @@ HEADERS += wzdebug.h \
     gui/action/favorites.h \
     gui/action/tvlist.h \
     gui/deviceinfo.h \
+    gui/pref/languages.h \
     gui/pref/vdpauproperties.h \
     gui/pref/selectcolorbutton.h \
     gui/pref/tristatecombo.h \
@@ -201,7 +201,6 @@ SOURCES	+= wzdebug.cpp \
     inforeadermpv.cpp \
     inforeadermplayer.cpp \
 	core.cpp \
-	languages.cpp \
     gui/desktop.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \
@@ -232,6 +231,7 @@ SOURCES	+= wzdebug.cpp \
     gui/action/favorites.cpp \
     gui/action/tvlist.cpp \
     gui/deviceinfo.cpp \
+    gui/pref/languages.cpp \
     gui/pref/vdpauproperties.cpp \
     gui/pref/selectcolorbutton.cpp \
     gui/pref/tristatecombo.cpp \

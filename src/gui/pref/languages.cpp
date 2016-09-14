@@ -16,9 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "languages.h"
+#include "gui/pref/languages.h"
 
-QMap<QString,QString> Languages::list() {
+
+namespace Gui {
+namespace Pref {
+
+QMap<QString,QString> TLanguages::list() {
 	QMap<QString,QString> l;
 
 	l["aa"] = tr("Afar");
@@ -211,7 +215,7 @@ QMap<QString,QString> Languages::list() {
 	return l;
 }
 
-QMap<QString,QString> Languages::translations() {
+QMap<QString,QString> TLanguages::translations() {
 	QMap <QString,QString> m;
 	m["ar"] = QString::fromUtf8("العربية"); //tr("Arabic");
 	m["ar_SY"] = tr("Arabic - Syria");
@@ -264,7 +268,7 @@ QMap<QString,QString> Languages::translations() {
 	return m;
 }
 
-QMap<QString,QString> Languages::encodings() {
+QMap<QString,QString> TLanguages::encodings() {
 	QMap<QString,QString> l;
 
 	l["UTF-16"] = tr("UTF-16 Unicode");
@@ -296,5 +300,8 @@ QMap<QString,QString> Languages::encodings() {
 
 	return l;
 }
+
+} // namespace Pref
+} // namespace Gui
 
 #include "moc_languages.cpp"
