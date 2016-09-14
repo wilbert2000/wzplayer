@@ -341,8 +341,6 @@ unix {
 }
 
 win32 {
-    DEFINES += DISABLE_SCREENSAVER
-
 	!contains(DEFINES, PORTABLE_APP) {
 		DEFINES += USE_ASSOCIATIONS
 	}
@@ -363,7 +361,6 @@ win32 {
 }
 
 os2 {
-    DEFINES += DISABLE_SCREENSAVER
     INCLUDEPATH += .
     RC_FILE = wzplayer_os2.rc
 }
