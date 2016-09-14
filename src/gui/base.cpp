@@ -1320,7 +1320,7 @@ void TBase::openRecent() {
 void TBase::openURL() {
     logger()->debug("openURL");
 
-	TInputURL d(this);
+    TInputURL d(this);
 
 	// Get url from clipboard
 	QString clipboard_text = QApplication::clipboard()->text();
@@ -1334,17 +1334,17 @@ void TBase::openURL() {
 		d.setURL(clipboard_text);
 	}
 
-	for (int n = 0; n < pref->history_urls.count(); n++) {
-		d.setURL(pref->history_urls.url(n));
-	}
+    for (int n = 0; n < pref->history_urls.count(); n++) {
+        d.setURL(pref->history_urls.url(n));
+    }
 
-	if (d.exec() == QDialog::Accepted) {
-		QString url = d.url();
-		if (!url.isEmpty()) {
-			pref->history_urls.addUrl(url);
-			open(url);
-		}
-	}
+    if (d.exec() == QDialog::Accepted) {
+        QString url = d.url();
+        if (!url.isEmpty()) {
+            pref->history_urls.addUrl(url);
+            open(url);
+        }
+    }
 }
 
 void TBase::configureDiscDevices() {
