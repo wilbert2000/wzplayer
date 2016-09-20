@@ -178,11 +178,11 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                                  bool protectName) {
 
     QString parentPath = parent->path();
-    QString parentPathPlus;
+    QString parentPathPlusSep;
     if (parentPath.endsWith("/")) {
-        parentPathPlus = parentPath;
+        parentPathPlusSep = parentPath;
     } else {
-        parentPathPlus = parentPath + "/";
+        parentPathPlusSep = parentPath + "/";
     }
 
     // Remove extra slashes and dots from path
@@ -190,7 +190,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
 
     if (path == parentPath) {
         QString filename = path + "/" + fi.fileName();
-        logger()->trace("createPath: creating '%1' in '%2'",
+        logger()->trace("createPath: creating file '%1' in '%2'",
                         filename, parent->filename());
         return new TPlaylistWidgetItem(parent,
                                        filename,
@@ -200,9 +200,9 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                        protectName);
     }
 
-    if (!path.startsWith(parentPathPlus)) {
+    if (!path.startsWith(parentPathPlusSep)) {
         QString filename = fi.absoluteFilePath();
-        logger()->trace("createPath: creating '%1' in '%2'",
+        logger()->trace("createPath: creating link '%1' in '%2'",
                         filename, parent->filename());
         return new TPlaylistWidgetItem(parent,
                                        filename,
@@ -212,7 +212,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                        protectName);
     }
 
-    QString dir = path.mid(parentPathPlus.length());
+    QString dir = path.mid(parentPathPlusSep.length());
     int i = dir.indexOf("/");
     if (i >= 0) {
         dir = dir.left(i);
@@ -221,7 +221,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
         logger()->error("createPath: invalid path");
         return 0;
     }
-    path = parentPathPlus + dir;
+    path = parentPathPlusSep + dir;
 
     // Only check last child to preserve order of playlist
     if (parent->childCount()) {
@@ -232,7 +232,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
         }
     }
 
-    logger()->debug("createPath: creating '%1'", path);
+    logger()->debug("createPath: creating folder '%1'", path);
     emit displayMessage(path, 0);
     TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent,
                                                           path,
@@ -259,7 +259,9 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
     for(int c = 0; c < playlistItem->childCount(); c++) {
         QString fn = playlistItem->plChild(c)->filename();
         if (fn.startsWith(path)) {
+            // Remove path creating relative file name
             fn = fn.mid(path.length());
+            // Reduce paths to containing subdirectory
             int i = fn.indexOf(QDir::separator());
             if (i >= 0) {
                 fn = fn.left(i);
