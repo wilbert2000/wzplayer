@@ -100,10 +100,10 @@ protected:
 
 private:
     static TPlayerInfo* static_obj;
-	static QStringList convertInfoListToList(InfoList l);
-	static InfoList convertListToInfoList(QStringList l);
-	QString getGroup();
-	void clearInfo();
+    static QStringList convertInfoListToList(const InfoList& l);
+    static InfoList convertListToInfoList(const QStringList& l);
+    QString getGroup();
+    void clearInfo();
 };
 
 } // namespace Info

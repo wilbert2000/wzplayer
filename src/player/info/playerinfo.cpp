@@ -37,6 +37,10 @@ using namespace Settings;
 namespace Player {
 namespace Info {
 
+InfoData::~InfoData() {
+}
+
+
 TPlayerInfo* TPlayerInfo::static_obj = 0;
 
 
@@ -157,23 +161,25 @@ void TPlayerInfo::getInfo(const QString& path) {
     set.setValue("option_list", option_list);
 }
 
-QStringList TPlayerInfo::convertInfoListToList(InfoList l) {
-	QStringList r;
-	for (int n = 0; n < l.count(); n++) {
-		r << l[n].name() + "|" + l[n].desc();
-	}
-	return r;
+QStringList TPlayerInfo::convertInfoListToList(const InfoList& l) {
+
+    QStringList r;
+    for (int n = 0; n < l.count(); n++) {
+        r << l[n].name() + "|" + l[n].desc();
+    }
+    return r;
 }
 
-InfoList TPlayerInfo::convertListToInfoList(QStringList l) {
-	InfoList r;
-	for (int n = 0; n < l.count(); n++) {
-		QStringList s = l[n].split("|");
-		if (s.count() >= 2) {
-			r.append(InfoData(s[0], s[1]));
-		}
-	}
-	return r;
+InfoList TPlayerInfo::convertListToInfoList(const QStringList& l) {
+
+    InfoList r;
+    for (int n = 0; n < l.count(); n++) {
+        QStringList s = l[n].split("|");
+        if (s.count() >= 2) {
+            r.append(InfoData(s[0], s[1]));
+        }
+    }
+    return r;
 }
 
 } // namespace Info
