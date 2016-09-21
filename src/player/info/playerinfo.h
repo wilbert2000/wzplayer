@@ -17,26 +17,60 @@
 */
 
 
-#ifndef INFOREADER_MPV_H
-#define INFOREADER_MPV_H
+#ifndef PLAYER_INFO_PLAYERINFO_H
+#define PLAYER_INFO_PLAYERINFO_H
 
-#include "inforeader.h"
-#include "wzdebug.h"
-
+#include "log4qt/logger.h"
+#include <QObject>
 #include <QList>
 #include <QStringList>
 
-class QProcess;
 
-class InfoReaderMPV : QObject {
-    Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+namespace Player {
+namespace Info {
+
+class InfoData {
 
 public:
-	InfoReaderMPV(const QString& path);
-	virtual ~InfoReaderMPV();
+	InfoData() {}
+	InfoData(const QString& name, const QString& desc) {
+		_name = name;
+		_desc = desc;
+	};
+	virtual ~InfoData() {}
+
+	void setName(const QString& name) { _name = name; }
+	void setDesc(const QString& desc) { _desc = desc; }
+
+	QString name() const { return _name; }
+	QString desc() const { return _desc; }
+
+	bool operator<(const InfoData& other) const {
+		return name() < other.name();
+	}
+
+	bool operator==(const InfoData& other) const {
+		return name() == other.name();
+	}
+
+private:
+	QString _name, _desc;
+};
+
+
+typedef QList<InfoData> InfoList;
+
+
+class TPlayerInfo : QObject {
+	Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+
+public:
+    TPlayerInfo();
+    virtual ~TPlayerInfo();
 
 	void getInfo();
+	void getInfo(const QString& path);
 
 	InfoList voList() { return vo_list; }
 	InfoList aoList() { return ao_list; }
@@ -47,13 +81,13 @@ public:
 	QStringList vfList() { return vf_list; }
 	QStringList optionList() { return option_list; }
 
-protected:
-	QList<QByteArray> run(QString options);
-	InfoList getList(const QList<QByteArray> &);
-	QStringList getOptionsList(const QList<QByteArray> &);
+    //! Returns an TPlayerInfo object. If it didn't exist before, one
+	//! is created.
+    static TPlayerInfo* obj();
 
 protected:
 	QString bin;
+	qint64 bin_size;
 
 	InfoList vo_list;
 	InfoList ao_list;
@@ -61,9 +95,18 @@ protected:
 	InfoList demuxer_list;
 	InfoList vc_list;
 	InfoList ac_list;
-
 	QStringList vf_list;
 	QStringList option_list;
+
+private:
+    static TPlayerInfo* static_obj;
+	static QStringList convertInfoListToList(InfoList l);
+	static InfoList convertListToInfoList(QStringList l);
+	QString getGroup();
+	void clearInfo();
 };
 
-#endif
+} // namespace Info
+} // namespace Player
+
+#endif // PLAYER_INFO_PLAYERINFO_H

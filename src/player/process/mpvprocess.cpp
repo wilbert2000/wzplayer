@@ -28,7 +28,7 @@
 #include "player/process/playerprocess.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
-#include "inforeader.h"
+#include "player/info/playerinfo.h"
 #include "mediadata.h"
 
 
@@ -748,14 +748,14 @@ void TMPVProcess::disableInput() {
 
 bool TMPVProcess::isOptionAvailable(const QString& option) {
 
-	InfoReader* ir = InfoReader::obj();
+    Player::Info::TPlayerInfo* ir = Player::Info::TPlayerInfo::obj();
 	ir->getInfo();
 	return ir->optionList().contains(option);
 }
 
 void TMPVProcess::addVFIfAvailable(const QString& vf, const QString& value) {
 
-    InfoReader* ir = InfoReader::obj();
+    Player::Info::TPlayerInfo* ir = Player::Info::TPlayerInfo::obj();
     ir->getInfo();
     if (ir->vfList().contains(vf)) {
         QString s = "--vf-add=" + vf;

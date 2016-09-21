@@ -1085,7 +1085,7 @@ void TBase::showFilePropertiesDialog(bool checked) {
 void TBase::setDataToFileProperties() {
 	logger()->debug("TBase::setDataToFileProperties");
 
-	InfoReader *i = InfoReader::obj();
+    Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
 	i->getInfo();
 	file_properties_dialog->setCodecs(i->vcList(), i->acList(), i->demuxerList());
 

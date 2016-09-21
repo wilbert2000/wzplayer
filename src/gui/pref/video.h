@@ -24,7 +24,7 @@
 #include "gui/pref/widget.h"
 #include "gui/deviceinfo.h"
 #include "settings/preferences.h"
-#include "inforeader.h"
+#include "player/info/playerinfo.h"
 
 #ifndef Q_OS_WIN
 #define USE_XV_ADAPTORS 1
@@ -43,9 +43,9 @@ class TVideo : public TWidget, public Ui::TVideo {
     DECLARE_QCLASS_LOGGER
 
 public:
-	InfoList vo_list;
+    Player::Info::InfoList vo_list;
 
-	TVideo(QWidget* parent, InfoList vol);
+    TVideo(QWidget* parent, const Player::Info::InfoList& vol);
 	virtual ~TVideo();
 
 	virtual QString sectionName();

@@ -21,7 +21,7 @@
 
 #include "ui_filepropertiesdialog.h"
 #include "log4qt/logger.h"
-#include "inforeader.h"
+#include "player/info/playerinfo.h"
 #include "mediadata.h"
 
 
@@ -38,9 +38,9 @@ public:
 	virtual ~TFilePropertiesDialog();
 
 	// Call it as soon as possible
-    void setCodecs(const InfoList& vc,
-                   const InfoList& ac,
-                   const InfoList& demuxer);
+    void setCodecs(const Player::Info::InfoList& vc,
+                   const Player::Info::InfoList& ac,
+                   const Player::Info::InfoList& demuxer);
 
     void setDemuxer(const QString& demuxer,
                     const QString& original_demuxer = "");
@@ -80,7 +80,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event);
 
 	bool hasCodecsList() { return codecs_set; }
-    int find(const QString& s, InfoList &list);
+    int find(const QString& s, Player::Info::InfoList &list);
 
 protected:
 	virtual void retranslateStrings();
@@ -88,7 +88,7 @@ protected:
 
 private:
 	bool codecs_set;
-	InfoList vclist, aclist, demuxerlist;
+    Player::Info::InfoList vclist, aclist, demuxerlist;
 	QString orig_demuxer, orig_ac, orig_vc;
 	TMediaData* media_data;
 

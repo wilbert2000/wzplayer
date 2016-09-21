@@ -17,45 +17,46 @@
 */
 
 
-#ifndef INFOREADER_MPLAYER_H
-#define INFOREADER_MPLAYER_H
+#ifndef PLAYER_INFO_PLAYERINFO_MPV_H
+#define PLAYER_INFO_PLAYERINFO_MPV_H
 
-#include "inforeader.h"
-#include <QObject>
-#include <QList>
-
+#include "player/info/playerinfo.h"
 #include "wzdebug.h"
+
+#include <QList>
+#include <QStringList>
 
 class QProcess;
 
+namespace Player {
+namespace Info {
 
-class InfoReaderMplayer : QObject {
+class TPlayerInfoMPV : QObject {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
-
 public:
-        InfoReaderMplayer(const QString& path);
-	virtual ~InfoReaderMplayer();
+	TPlayerInfoMPV(const QString& path);
+	virtual ~TPlayerInfoMPV();
 
 	void getInfo();
 
 	InfoList voList() { return vo_list; }
 	InfoList aoList() { return ao_list; }
+
 	InfoList demuxerList() { return demuxer_list; }
 	InfoList vcList() { return vc_list; }
 	InfoList acList() { return ac_list; }
-
-protected slots:
-	virtual void readLine(QByteArray);
+	QStringList vfList() { return vf_list; }
+	QStringList optionList() { return option_list; }
 
 protected:
-	bool run(QString options);
+	QList<QByteArray> run(QString options);
+	InfoList getList(const QList<QByteArray> &);
+	QStringList getOptionsList(const QList<QByteArray> &);
 
 protected:
 	QString bin;
-
-	QProcess* proc;
 
 	InfoList vo_list;
 	InfoList ao_list;
@@ -64,9 +65,11 @@ protected:
 	InfoList vc_list;
 	InfoList ac_list;
 
-private:
-	bool waiting_for_key;
-	int reading_type;
+	QStringList vf_list;
+	QStringList option_list;
 };
 
-#endif
+} // namespace Info
+} // namespace Player
+
+#endif // PLAYER_INFO_PLAYERINFO_MPV_H

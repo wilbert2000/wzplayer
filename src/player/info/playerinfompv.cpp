@@ -16,22 +16,25 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "inforeadermpv.h"
+#include "player/info/playerinfompv.h"
 #include <QDebug>
 #include <QStringList>
 #include <QProcess>
 
 
-InfoReaderMPV::InfoReaderMPV(const QString& path)
+namespace Player {
+namespace Info {
+
+TPlayerInfoMPV::TPlayerInfoMPV(const QString& path)
     : QObject(),
     debug(logger()),
     bin(path) {
 }
 
-InfoReaderMPV::~InfoReaderMPV() {
+TPlayerInfoMPV::~TPlayerInfoMPV() {
 }
 
-void InfoReaderMPV::getInfo() {
+void TPlayerInfoMPV::getInfo() {
 
 	vo_list.clear();
 	ao_list.clear();
@@ -55,7 +58,7 @@ void InfoReaderMPV::getInfo() {
 	option_list = getOptionsList(run("--list-options"));
 }
 
-QList<QByteArray> InfoReaderMPV::run(QString options) {
+QList<QByteArray> TPlayerInfoMPV::run(QString options) {
     logger()->debug("run: bin '" + bin + "' options '" + options + "'");
 
 	QList<QByteArray> r;
@@ -80,7 +83,7 @@ QList<QByteArray> InfoReaderMPV::run(QString options) {
 	return r;
 }
 
-InfoList InfoReaderMPV::getList(const QList<QByteArray> & lines) {
+InfoList TPlayerInfoMPV::getList(const QList<QByteArray> & lines) {
 	InfoList l;
 
 	foreach(QByteArray line, lines) {
@@ -106,7 +109,7 @@ InfoList InfoReaderMPV::getList(const QList<QByteArray> & lines) {
 	return l;
 }
 
-QStringList InfoReaderMPV::getOptionsList(const QList<QByteArray> & lines) {
+QStringList TPlayerInfoMPV::getOptionsList(const QList<QByteArray> & lines) {
 	QStringList l;
 
 	foreach(QByteArray line, lines) {
@@ -124,4 +127,7 @@ QStringList InfoReaderMPV::getOptionsList(const QList<QByteArray> & lines) {
 	return l;
 }
 
-#include "moc_inforeadermpv.cpp"
+} // namespace Info
+} // namespace Player
+
+#include "moc_playerinfompv.cpp"

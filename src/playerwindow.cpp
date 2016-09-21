@@ -32,7 +32,6 @@
 #include "colorutils.h"
 #include "images.h"
 #include "settings/preferences.h"
-#include "proc/playerprocess.h"
 #include "gui/msg.h"
 
 

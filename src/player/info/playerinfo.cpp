@@ -16,50 +16,51 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "inforeader.h"
+#include "player/info/playerinfo.h"
 
 #include <QFileInfo>
 #include <QDateTime>
 #include <QSettings>
 #include <QDebug>
 
-#include "proc/playerprocess.h"
 #include "settings/preferences.h"
 #include "settings/paths.h"
 
-#include "inforeadermpv.h"
-#include "inforeadermplayer.h"
+#include "player/info/playerinfomplayer.h"
+#include "player/info/playerinfompv.h"
 
 #define INFOREADER_SAVE_VERSION 3
 
 
 using namespace Settings;
 
+namespace Player {
+namespace Info {
 
-InfoReader* InfoReader::static_obj = 0;
+TPlayerInfo* TPlayerInfo::static_obj = 0;
 
 
-InfoReader* InfoReader::obj() {
+TPlayerInfo* TPlayerInfo::obj() {
 
     if (!static_obj) {
-        static_obj = new InfoReader();
+        static_obj = new TPlayerInfo();
     }
     return static_obj;
 }
 
-InfoReader::InfoReader()
+TPlayerInfo::TPlayerInfo()
     : QObject()
     , bin_size(0) {
 }
 
-InfoReader::~InfoReader() {
+TPlayerInfo::~TPlayerInfo() {
 }
 
-void InfoReader::getInfo() {
+void TPlayerInfo::getInfo() {
     getInfo(Settings::pref->player_bin);
 }
 
-QString InfoReader::getGroup() {
+QString TPlayerInfo::getGroup() {
     QString group = bin;
     return group
             .replace("/", "_")
@@ -68,7 +69,7 @@ QString InfoReader::getGroup() {
             .replace(":", "_");
 }
 
-void InfoReader::clearInfo() {
+void TPlayerInfo::clearInfo() {
 
     vo_list.clear();
     ao_list.clear();
@@ -79,7 +80,7 @@ void InfoReader::clearInfo() {
     option_list.clear();
 }
 
-void InfoReader::getInfo(const QString& path) {
+void TPlayerInfo::getInfo(const QString& path) {
     logger()->debug("getInfo: '%1'", path);
 
     // Player not existing
@@ -123,7 +124,7 @@ void InfoReader::getInfo(const QString& path) {
 
     // Get info from player
     if (TPreferences::getPlayerID(bin) == TPreferences::ID_MPLAYER) {
-        InfoReaderMplayer ir(bin);
+        TPlayerInfoMplayer ir(bin);
         ir.getInfo();
         vo_list = ir.voList();
         ao_list = ir.aoList();
@@ -133,7 +134,7 @@ void InfoReader::getInfo(const QString& path) {
         vf_list.clear();
         option_list.clear();
     } else {
-        InfoReaderMPV ir(bin);
+        TPlayerInfoMPV ir(bin);
         ir.getInfo();
         vo_list = ir.voList();
         ao_list = ir.aoList();
@@ -156,7 +157,7 @@ void InfoReader::getInfo(const QString& path) {
     set.setValue("option_list", option_list);
 }
 
-QStringList InfoReader::convertInfoListToList(InfoList l) {
+QStringList TPlayerInfo::convertInfoListToList(InfoList l) {
 	QStringList r;
 	for (int n = 0; n < l.count(); n++) {
 		r << l[n].name() + "|" + l[n].desc();
@@ -164,7 +165,7 @@ QStringList InfoReader::convertInfoListToList(InfoList l) {
 	return r;
 }
 
-InfoList InfoReader::convertListToInfoList(QStringList l) {
+InfoList TPlayerInfo::convertListToInfoList(QStringList l) {
 	InfoList r;
 	for (int n = 0; n < l.count(); n++) {
 		QStringList s = l[n].split("|");
@@ -175,4 +176,7 @@ InfoList InfoReader::convertListToInfoList(QStringList l) {
 	return r;
 }
 
-#include "moc_inforeader.cpp"
+} // namespace Info
+} // namespace Player
+
+#include "moc_playerinfo.cpp"

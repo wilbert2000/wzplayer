@@ -22,7 +22,7 @@
 #include "ui_audio.h"
 #include "gui/pref/widget.h"
 #include "log4qt/logger.h"
-#include "inforeader.h"
+#include "player/info/playerinfo.h"
 #include "settings/preferences.h"
 #include "gui/deviceinfo.h"
 
@@ -43,9 +43,9 @@ class TAudio : public TWidget, public Ui::TAudio {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	InfoList ao_list;
+    Player::Info::InfoList ao_list;
 
-	TAudio(QWidget* parent, InfoList aol);
+    TAudio(QWidget* parent, const Player::Info::InfoList& aol);
 	virtual ~TAudio();
 
 	// Return the name of the section

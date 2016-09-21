@@ -94,9 +94,9 @@ void TFilePropertiesDialog::apply() {
     emit applied();
 }
 
-void TFilePropertiesDialog::setCodecs(const InfoList& vc,
-                                      const InfoList& ac,
-                                      const InfoList& demuxer) {
+void TFilePropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
+                                      const Player::Info::InfoList& ac,
+                                      const Player::Info::InfoList& demuxer) {
 
     vclist = vc;
     aclist = ac;
@@ -110,7 +110,7 @@ void TFilePropertiesDialog::setCodecs(const InfoList& vc,
     ac_listbox->clear();
     demuxer_listbox->clear();
 
-    InfoList::iterator it;
+    Player::Info::InfoList::iterator it;
 
     for (it = vclist.begin(); it != vclist.end(); ++it) {
         vc_listbox->addItem((*it).name() + " - " + (*it).desc());
@@ -219,10 +219,11 @@ void TFilePropertiesDialog::on_resetVCButton_clicked() {
     setVideoCodec(orig_vc);
 }
 
-int TFilePropertiesDialog::find(const QString& s, InfoList &list) {
+int TFilePropertiesDialog::find(const QString& s,
+                                Player::Info::InfoList &list) {
 
     int n = 0;
-    InfoList::iterator it;
+    Player::Info::InfoList::iterator it;
 
     for (it = list.begin(); it != list.end(); ++it) {
         if ((*it).name() == s) {

@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "inforeadermplayer.h"
+#include "player/info/playerinfomplayer.h"
 
 #include <QStringList>
 #include <QApplication>
@@ -33,7 +33,10 @@
 #define AC 5
 
 
-InfoReaderMplayer::InfoReaderMplayer(const QString& path)
+namespace Player {
+namespace Info {
+
+TPlayerInfoMplayer::TPlayerInfoMplayer(const QString& path)
     : QObject(),
     debug(logger()),
     bin(path) {
@@ -42,10 +45,10 @@ InfoReaderMplayer::InfoReaderMplayer(const QString& path)
     proc->setProcessChannelMode(QProcess::MergedChannels);
 }
 
-InfoReaderMplayer::~InfoReaderMplayer() {
+TPlayerInfoMplayer::~TPlayerInfoMplayer() {
 }
 
-void InfoReaderMplayer::getInfo() {
+void TPlayerInfoMplayer::getInfo() {
 	waiting_for_key = true;
 	vo_list.clear();
 	ao_list.clear();
@@ -66,7 +69,7 @@ static QRegExp rx_demuxer("^\\s+([A-Z,a-z,0-9]+)\\s+(\\d+)\\s+(\\S.*)");
 static QRegExp rx_demuxer2("^\\s+([A-Z,a-z,0-9]+)\\s+(\\S.*)");
 static QRegExp rx_codec("^([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+(\\S.*)");
 
-void InfoReaderMplayer::readLine(QByteArray ba) {
+void TPlayerInfoMplayer::readLine(QByteArray ba) {
 
 #if COLOR_OUTPUT_SUPPORT
     QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
@@ -167,7 +170,7 @@ void InfoReaderMplayer::readLine(QByteArray ba) {
 	}
 }
 
-bool InfoReaderMplayer::run(QString options) {
+bool TPlayerInfoMplayer::run(QString options) {
     logger()->debug("run: '" + options + "'");
 
 	if (proc->state() == QProcess::Running) {
@@ -202,4 +205,7 @@ bool InfoReaderMplayer::run(QString options) {
 	return true;
 }
 
-#include "moc_inforeadermplayer.cpp"
+} // namespace Info
+} // namespace Player
+
+#include "moc_playerinfomplayer.cpp"

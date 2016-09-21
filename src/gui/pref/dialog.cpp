@@ -64,8 +64,8 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 	help_window->setWindowIcon(Images::icon("logo"));
 	help_window->setOpenExternalLinks(true);
 
-	// Get VO and AO driver lists from InfoReader:
-	InfoReader* i = InfoReader::obj();
+	// Get VO and AO driver lists from TPlayerInfo:
+    Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
 	i->getInfo();
 
     page_player = new TPlayer(this);
@@ -169,7 +169,7 @@ void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
 						   bool keep_current_drivers,
 						   const QString& path) {
 
-	InfoReader* i = InfoReader::obj();
+    Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
 	i->getInfo(path);
 	page_video->vo_list = i->voList();
 	page_video->updateDriverCombo(player_id, keep_current_drivers);
