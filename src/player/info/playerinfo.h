@@ -32,29 +32,29 @@ namespace Info {
 class InfoData {
 
 public:
-	InfoData() {}
-	InfoData(const QString& name, const QString& desc) {
-		_name = name;
-		_desc = desc;
-	};
-	virtual ~InfoData() {}
+    InfoData() {}
+    InfoData(const QString& name, const QString& desc) {
+        _name = name;
+        _desc = desc;
+    };
+    virtual ~InfoData();
 
-	void setName(const QString& name) { _name = name; }
-	void setDesc(const QString& desc) { _desc = desc; }
+    void setName(const QString& name) { _name = name; }
+    void setDesc(const QString& desc) { _desc = desc; }
 
-	QString name() const { return _name; }
-	QString desc() const { return _desc; }
+    QString name() const { return _name; }
+    QString desc() const { return _desc; }
 
-	bool operator<(const InfoData& other) const {
-		return name() < other.name();
-	}
+    bool operator<(const InfoData& other) const {
+        return name() < other.name();
+    }
 
-	bool operator==(const InfoData& other) const {
-		return name() == other.name();
-	}
+    bool operator==(const InfoData& other) const {
+        return name() == other.name();
+    }
 
 private:
-	QString _name, _desc;
+    QString _name, _desc;
 };
 
 
@@ -62,41 +62,41 @@ typedef QList<InfoData> InfoList;
 
 
 class TPlayerInfo : QObject {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TPlayerInfo();
     virtual ~TPlayerInfo();
 
-	void getInfo();
-	void getInfo(const QString& path);
+    void getInfo();
+    void getInfo(const QString& path);
 
-	InfoList voList() { return vo_list; }
-	InfoList aoList() { return ao_list; }
+    InfoList voList() { return vo_list; }
+    InfoList aoList() { return ao_list; }
 
-	InfoList demuxerList() { return demuxer_list; }
-	InfoList vcList() { return vc_list; }
-	InfoList acList() { return ac_list; }
-	QStringList vfList() { return vf_list; }
-	QStringList optionList() { return option_list; }
+    InfoList demuxerList() { return demuxer_list; }
+    InfoList vcList() { return vc_list; }
+    InfoList acList() { return ac_list; }
+    QStringList vfList() { return vf_list; }
+    QStringList optionList() { return option_list; }
 
     //! Returns an TPlayerInfo object. If it didn't exist before, one
-	//! is created.
+    //! is created.
     static TPlayerInfo* obj();
 
 protected:
-	QString bin;
-	qint64 bin_size;
+    QString bin;
+    qint64 bin_size;
 
-	InfoList vo_list;
-	InfoList ao_list;
+    InfoList vo_list;
+    InfoList ao_list;
 
-	InfoList demuxer_list;
-	InfoList vc_list;
-	InfoList ac_list;
-	QStringList vf_list;
-	QStringList option_list;
+    InfoList demuxer_list;
+    InfoList vc_list;
+    InfoList ac_list;
+    QStringList vf_list;
+    QStringList option_list;
 
 private:
     static TPlayerInfo* static_obj;
