@@ -186,7 +186,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     }
 
     // Remove extra slashes and dots from path
-    QString path = fi.dir().path();
+    QString path = fi.dir().absolutePath();
 
     if (path == parentPath) {
         QString filename = path + "/" + fi.fileName();
@@ -457,7 +457,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     emit displayMessage(fi.filePath(), 0);
 
     // Path to use for relative filenames in playlist
-    playlistPath = QDir::toNativeSeparators(fi.dir().path());
+    playlistPath = QDir::toNativeSeparators(fi.dir().absolutePath());
 
     QString canonical;
     bool wzplaylist = fi.fileName() == TConfig::WZPLAYLIST;
@@ -755,43 +755,35 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
         filename = QUrl(filename).toLocalFile();
     }
 
-    QFileInfo fi(filename);
+    QFileInfo fi(playlistPath, filename);
     if (fi.exists()) {
         logger()->trace("addItem: found '%1'", fi.absoluteFilePath());
-    } else {
-        // Try relative path
-        fi.setFile(playlistPath, filename);
-        if (fi.exists()) {
-            logger()->trace("addItem: found relative path to '%1'",
-                            fi.fileName());
-        } else if (fi.fileName() == TConfig::WZPLAYLIST) {
-            parent->setModified();
-            // Try the directory
-            QString path = fi.dir().path();
-            if (path.isEmpty()) {
-                logger()->error("addItem: self referencing playlist in '%1'",
-                                filename);
+    } else if (fi.fileName() == TConfig::WZPLAYLIST) {
+        // Non-existing wzplaylist
+        parent->setModified();
+
+        // Try the directory
+        if (fi.dir().exists()) {
+            QString dir = fi.dir().absolutePath();
+            if (dir.compare(playlistPath, caseSensitiveFileNames) == 0) {
+                logger()->error("addItem: skipping self referencing folder"
+                                " '%1' in playlist '%2'", dir, filename);
                 return 0;
             }
 
-            fi.setFile(path);
-            if (fi.isRelative()) {
-                fi.setFile(playlistPath, path);
-            }
-
-            if (fi.exists()) {
-                logger()->info("addItem: '%1' no longer exists. Linking"
-                               " to directory '%2' instead",
-                               filename, fi.absoluteFilePath());
-            } else {
-                logger()->info("addItem: ignoring no longer existing"
-                               " playlist '%1'", filename);
-                return 0;
-            }
+            fi.setFile(dir);
+            name = "";
+            protectName = false;
+            logger()->info("addItem: '%1' no longer exists. Linking to"
+                           " directory '%2' instead",
+                           filename, fi.absoluteFilePath());
         } else {
-            return addItemNotFound(parent, filename, name, protectName,
-                                   wzplaylist);
+            logger()->info("addItem: ignoring no longer existing playlist '%1'",
+                           filename);
+            return 0;
         }
+    } else {
+        return addItemNotFound(parent, filename, name, protectName, wzplaylist);
     }
 
     if (name.isEmpty()) {
