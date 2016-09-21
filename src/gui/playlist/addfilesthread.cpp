@@ -786,23 +786,24 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
         return addItemNotFound(parent, filename, name, protectName, wzplaylist);
     }
 
-    if (name.isEmpty()) {
-        name = fi.completeBaseName();
-    }
-
     QString savedPlaylistPath = playlistPath;
 
     TPlaylistWidgetItem* item;
     if (fi.isDir()) {
         item = addDirectory(parent, fi, name, protectName);
-    } else if (extensions.isPlaylist(fi)) {
-        item = openPlaylist(parent, fi, name, protectName);
     } else {
-        // For Windows shortcuts, follow the link...
-        if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
-            fi.setFile(fi.symLinkTarget());
+        if (name.isEmpty()) {
+            name = fi.completeBaseName();
         }
-        item = createPath(parent, fi, name, duration, protectName);
+        if (extensions.isPlaylist(fi)) {
+            item = openPlaylist(parent, fi, name, protectName);
+        } else {
+            // For Windows shortcuts, follow the link...
+            if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
+                fi.setFile(fi.symLinkTarget());
+            }
+            item = createPath(parent, fi, name, duration, protectName);
+        }
     }
 
     playlistPath = savedPlaylistPath;
