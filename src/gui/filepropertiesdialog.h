@@ -80,7 +80,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event);
 
 	bool hasCodecsList() { return codecs_set; }
-    int find(const QString& s, Player::Info::InfoList &list);
+    int find(const QString& s, const Player::Info::InfoList& list) const;
 
 protected:
 	virtual void retranslateStrings();

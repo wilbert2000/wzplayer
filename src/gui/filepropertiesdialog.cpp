@@ -220,12 +220,12 @@ void TFilePropertiesDialog::on_resetVCButton_clicked() {
 }
 
 int TFilePropertiesDialog::find(const QString& s,
-                                Player::Info::InfoList &list) {
+                                const Player::Info::InfoList& list) const {
 
     int n = 0;
-    Player::Info::InfoList::iterator it;
+    Player::Info::InfoList::const_iterator it;
 
-    for (it = list.begin(); it != list.end(); ++it) {
+    for (it = list.constBegin(); it != list.constEnd(); ++it) {
         if ((*it).name() == s) {
             return n;
         }
