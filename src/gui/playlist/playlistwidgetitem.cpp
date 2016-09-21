@@ -360,7 +360,7 @@ TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) {
         }
         if (!fname.startsWith(path, caseSensitiveFileNames)) {
             // Path mismatch
-            logger()->trace("f: path '%1' mismatches '%2'", fname, path);
+            // logger()->trace("f: path '%1' mismatches '%2'", fname, path);
             return 0;
         }
     }
@@ -408,7 +408,7 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
 
     // Sort on path
     int i = QString::localeAwareCompare(QFileInfo(filename()).absolutePath(),
-                                        QFileInfo(o->filename()).absolutePath());
+        QFileInfo(o->filename()).absolutePath());
     if (i < 0) {
         return true;
     }
