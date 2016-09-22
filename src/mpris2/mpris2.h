@@ -44,17 +44,16 @@
 #include <QVariantMap>
 #include "gui/base.h"
 
-class TCore;
 
-class Mpris2 : public QObject
-{
+class Mpris2 : public QObject {
     Q_OBJECT
 
     public:
 		explicit Mpris2(Gui::TBase* gui, QObject* parent);
 		virtual ~Mpris2();
 
-        static void signalPropertiesChange(const QObject* adaptor, const QVariantMap& properties);
+        static void signalPropertiesChange(const QObject* adaptor,
+                                           const QVariantMap& properties);
 };
 
 #endif
