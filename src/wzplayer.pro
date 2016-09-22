@@ -111,7 +111,7 @@ HEADERS += wzdebug.h \
     gui/pref/combobox.h \
     gui/pref/dialog.h \
     gui/pref/widget.h \
-    gui/pref/player.h \
+    gui/pref/playersection.h \
     gui/pref/demuxer.h \
     gui/pref/video.h \
     gui/pref/audio.h \
@@ -238,7 +238,7 @@ SOURCES	+= wzdebug.cpp \
     gui/pref/combobox.cpp \
     gui/pref/dialog.cpp \
     gui/pref/widget.cpp \
-    gui/pref/player.cpp \
+    gui/pref/playersection.cpp \
     gui/pref/demuxer.cpp \
     gui/pref/video.cpp \
     gui/pref/audio.cpp \
@@ -307,7 +307,7 @@ FORMS = gui/inputdvddirectory.ui \
     gui/action/favoriteeditor.ui \
     gui/pref/vdpauproperties.ui \
     gui/pref/dialog.ui \
-    gui/pref/player.ui \
+    gui/pref/playersection.ui \
     gui/pref/demuxer.ui \
     gui/pref/video.ui \
     gui/pref/audio.ui \

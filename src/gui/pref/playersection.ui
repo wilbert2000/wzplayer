@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Gui::Pref::TPlayer</class>
- <widget class="QWidget" name="Gui::Pref::TPlayer">
+ <class>Gui::Pref::TPlayerSection</class>
+ <widget class="QWidget" name="Gui::Pref::TPlayerSection">
   <property name="geometry">
    <rect>
     <x>0</x>

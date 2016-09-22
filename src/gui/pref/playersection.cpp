@@ -17,7 +17,7 @@
 */
 
 
-#include "gui/pref/player.h"
+#include "gui/pref/playersection.h"
 
 #include <QDebug>
 
@@ -33,7 +33,7 @@ using namespace Settings;
 namespace Gui {
 namespace Pref {
 
-TPlayer::TPlayer(QWidget* parent)
+TPlayerSection::TPlayerSection(QWidget* parent)
 	: TWidget(parent, 0) {
 
 	setupUi(this);
@@ -57,18 +57,18 @@ TPlayer::TPlayer(QWidget* parent)
 	retranslateStrings();
 }
 
-TPlayer::~TPlayer() {
+TPlayerSection::~TPlayerSection() {
 }
 
-QString TPlayer::sectionName() {
+QString TPlayerSection::sectionName() {
     return tr("Player");
 }
 
-QPixmap TPlayer::sectionIcon() {
+QPixmap TPlayerSection::sectionIcon() {
     return Images::icon("pref_player", icon_size);
 }
 
-void TPlayer::retranslateStrings() {
+void TPlayerSection::retranslateStrings() {
 
 	retranslateUi(this);
 
@@ -100,7 +100,7 @@ void TPlayer::retranslateStrings() {
 	createHelp();
 }
 
-void TPlayer::setData(TPreferences* pref) {
+void TPlayerSection::setData(TPreferences* pref) {
 
 	// Player
 	setPlayerID(pref->player_id);
@@ -120,7 +120,7 @@ void TPlayer::setData(TPreferences* pref) {
 	requires_restart = false;
 }
 
-void TPlayer::getData(TPreferences* pref) {
+void TPlayerSection::getData(TPreferences* pref) {
 
     // Update player
     pref->mplayer_bin = mplayer_edit->text();
@@ -147,7 +147,7 @@ void TPlayer::getData(TPreferences* pref) {
     pref->check_channels_conf_on_startup = radio_tv_rescan_check->isChecked();
 }
 
-void TPlayer::setPlayerID(Settings::TPreferences::TPlayerID id) {
+void TPlayerSection::setPlayerID(Settings::TPreferences::TPlayerID id) {
 
 	if (id == Settings::TPreferences::ID_MPLAYER) {
 		mplayer_radio->setChecked(true);
@@ -158,7 +158,7 @@ void TPlayer::setPlayerID(Settings::TPreferences::TPlayerID id) {
 	}
 }
 
-Settings::TPreferences::TPlayerID TPlayer::playerID() {
+Settings::TPreferences::TPlayerID TPlayerSection::playerID() {
 
 	if (mplayer_radio->isChecked()) {
 		return Settings::TPreferences::ID_MPLAYER;
@@ -166,27 +166,27 @@ Settings::TPreferences::TPlayerID TPlayer::playerID() {
 	return Settings::TPreferences::ID_MPV;
 }
 
-void TPlayer::setPlayerPath(const QString& mplayer, const QString& mpv) {
+void TPlayerSection::setPlayerPath(const QString& mplayer, const QString& mpv) {
 
 	mplayer_edit->setText(mplayer);
 	mpv_edit->setText(mpv);
 }
 
-void TPlayer::onMPlayerFileChanged(QString file) {
+void TPlayerSection::onMPlayerFileChanged(QString file) {
 
 	if (mplayer_radio->isChecked()) {
 		emit binChanged(TPreferences::ID_MPLAYER, true, pref->getAbsolutePathPlayer(file));
 	}
 }
 
-void TPlayer::onMPVFileChanged(QString file) {
+void TPlayerSection::onMPVFileChanged(QString file) {
 
 	if (mpv_radio->isChecked()) {
 		emit binChanged(TPreferences::ID_MPV, true, pref->getAbsolutePathPlayer(file));
 	}
 }
 
-void TPlayer::onPlayerRadioClicked(bool) {
+void TPlayerSection::onPlayerRadioClicked(bool) {
 
 	TPreferences::TPlayerID player_id;
 	QString file;
@@ -200,31 +200,31 @@ void TPlayer::onPlayerRadioClicked(bool) {
 	emit binChanged(player_id, false, pref->getAbsolutePathPlayer(file));
 }
 
-void TPlayer::setRememberSettings(bool b) {
+void TPlayerSection::setRememberSettings(bool b) {
 	settings_group->setChecked(b);
 }
 
-bool TPlayer::rememberSettings() {
+bool TPlayerSection::rememberSettings() {
 	return settings_group->isChecked();
 }
 
-void TPlayer::setRememberTimePos(bool b) {
+void TPlayerSection::setRememberTimePos(bool b) {
 	remember_time_check->setChecked(b);
 }
 
-bool TPlayer::rememberTimePos() {
+bool TPlayerSection::rememberTimePos() {
 	return remember_time_check->isChecked();
 }
 
-void TPlayer::setGlobalVolume(bool b) {
+void TPlayerSection::setGlobalVolume(bool b) {
 	remember_volume_check->setChecked(!b);
 }
 
-bool TPlayer::globalVolume() {
+bool TPlayerSection::globalVolume() {
 	return !remember_volume_check->isChecked();
 }
 
-void TPlayer::setFileSettingsMethod(const QString& method) {
+void TPlayerSection::setFileSettingsMethod(const QString& method) {
 
 	int index = filesettings_method_combo->findData(method);
 	if (index < 0)
@@ -232,11 +232,11 @@ void TPlayer::setFileSettingsMethod(const QString& method) {
 	filesettings_method_combo->setCurrentIndex(index);
 }
 
-QString TPlayer::fileSettingsMethod() {
+QString TPlayerSection::fileSettingsMethod() {
 	return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
 }
 
-void TPlayer::createHelp() {
+void TPlayerSection::createHelp() {
 
 	clearHelp();
 
@@ -321,4 +321,4 @@ void TPlayer::createHelp() {
 } // namespace Pref
 } // namespace Gui
 
-#include "moc_player.cpp"
+#include "moc_playersection.cpp"

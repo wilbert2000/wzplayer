@@ -16,10 +16,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_PREF_PLAYER_H
-#define GUI_PREF_PLAYER_H
+#ifndef GUI_PREF_PLAYERSECTION_H
+#define GUI_PREF_PLAYERSECTION_H
 
-#include "ui_player.h"
+#include "ui_playersection.h"
 #include "gui/pref/widget.h"
 #include "settings/preferences.h"
 
@@ -27,12 +27,12 @@
 namespace Gui {
 namespace Pref {
 
-class TPlayer : public TWidget, public Ui::TPlayer {
+class TPlayerSection : public TWidget, public Ui::TPlayerSection {
 	Q_OBJECT
 
 public:
-    TPlayer(QWidget* parent);
-    virtual ~TPlayer();
+    TPlayerSection(QWidget* parent);
+    virtual ~TPlayerSection();
 
 	// Return the name of the section
 	virtual QString sectionName();
@@ -84,4 +84,4 @@ private slots:
 } // namespace Pref
 } // namespace Gui
 
-#endif // GUI_PREF_PLAYER_H
+#endif // GUI_PREF_PLAYERSECTION_H

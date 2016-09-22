@@ -25,7 +25,7 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "gui/pref/widget.h"
-#include "gui/pref/player.h"
+#include "gui/pref/playersection.h"
 #include "gui/pref/demuxer.h"
 #include "gui/pref/video.h"
 #include "gui/pref/audio.h"
@@ -68,7 +68,7 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
     Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
 	i->getInfo();
 
-    page_player = new TPlayer(this);
+    page_player = new TPlayerSection(this);
     addSection(page_player);
     connect(page_player, SIGNAL(binChanged(Settings::TPreferences::TPlayerID,
                                            bool, const QString&)),

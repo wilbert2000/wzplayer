@@ -32,7 +32,7 @@ namespace Gui {
 namespace Pref {
 
 class TWidget;
-class TPlayer;
+class TPlayerSection;
 class TDemuxer;
 class TVideo;
 class TAudio;
@@ -106,7 +106,7 @@ protected:
     virtual void changeEvent (QEvent* event);
 
 private:
-    TPlayer* page_player;
+    TPlayerSection* page_player;
     TDemuxer* page_demuxer;
     TVideo* page_video;
     TAudio* page_audio;
