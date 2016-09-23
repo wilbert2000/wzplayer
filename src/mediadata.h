@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MEDIADATA_H_
-#define _MEDIADATA_H_
+#ifndef MEDIADATA_H
+#define MEDIADATA_H
 
 #include <QString>
 #include <QSettings>
@@ -55,7 +55,7 @@ public:
 	Type selected_type;
 	// Detected type only set for disc types
 	Type detected_type;
-	// Parsed disc data set by TCore::openDisc()
+    // Parsed disc data set by TPlayer::openDisc()
 	TDiscName disc;
     // Image file
     bool image;
@@ -163,4 +163,4 @@ private:
     QString getTitle() const;
 };
 
-#endif
+#endif // MEDIADATA_H

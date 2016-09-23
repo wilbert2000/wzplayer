@@ -28,7 +28,7 @@
 #include "config.h"
 #include "images.h"
 #include "gui/desktop.h"
-#include "core.h"
+#include "player/player.h"
 #include "gui/action/action.h"
 #include "gui/action/menufile.h"
 #include "gui/action/menuplay.h"
@@ -193,7 +193,7 @@ void TBasePlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
-    core->stop();
+    player->stop();
 
 	if (pref->balloon_count > 0) {
 		tray->showMessage(TConfig::PROGRAM_NAME,
@@ -263,7 +263,7 @@ void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 	if (reason == QSystemTrayIcon::Trigger) {
 		toggleShowAll();
 	} else if (reason == QSystemTrayIcon::MiddleClick) {
-		core->playOrPause();
+        player->playOrPause();
 	}
 }
 
@@ -327,7 +327,7 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
                             + " with new size "
                             + QString::number(pref->size_factor));
             saveSize = pref->size_factor;
-            saveSizeFileName = core->mdat.filename;
+            saveSizeFileName = player->mdat.filename;
             saveSizeFloating = playlistdock->isFloating();
             if (saveVisible) {
                 saveSizeVisible = playlistdock->isVisible();
@@ -406,7 +406,7 @@ void TBasePlus::restoreVideoSize() {
         if (saveSize < 0.1) {
             debug << "restoreVideoSize: ignoring small saved size "
                   << saveSize << debug;
-        } else if (saveSizeFileName == core->mdat.filename) {
+        } else if (saveSizeFileName == player->mdat.filename) {
             debug << "restoreVideoSize: restoring size factor from"
                   << pref->size_factor << "to" << saveSize << debug;
             QSize oldWinSize = frameGeometry().size();
@@ -416,7 +416,7 @@ void TBasePlus::restoreVideoSize() {
         } else {
             logger()->debug("restoreVideoSize: file name save size '%1'"
                             " mismatches '%2', canceling resize",
-                            saveSizeFileName, core->mdat.filename);
+                            saveSizeFileName, player->mdat.filename);
         }
     }
 
@@ -447,7 +447,7 @@ void TBasePlus::onTopLevelChanged(bool topLevel) {
         //      << debug;;
     }
 
-    if (core->stateReady()) {
+    if (player->stateReady()) {
         //debug << "onTopLevelChanged: posting restoreVideoSize() with size"
         //         " factor" << saveSize << debug;
         postedResize = true;
@@ -488,7 +488,7 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
         saveSizeFactor(false, false, true);
     }
 
-    if (core->stateReady()) {
+    if (player->stateReady()) {
         //debug << "onDockVisibilityChanged: posting restoreVideoSize() with"
         //         " size factor" << saveSize << debug;
         postedResize = true;

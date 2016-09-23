@@ -4,8 +4,6 @@
 #include "gui/action/menu.h"
 
 
-class TCore;
-
 namespace Gui {
 
 class TBase;
@@ -18,33 +16,31 @@ class TAction;
 
 class TMenuAudio : public TMenu {
 public:
-    explicit TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer);
+    explicit TMenuAudio(TBase* mw, TAudioEqualizer* audioEqualizer);
 
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:
-	TCore* core;
+    TAction* muteAct;
+    TAction* decVolumeAct;
+    TAction* incVolumeAct;
 
-	TAction* muteAct;
-	TAction* decVolumeAct;
-	TAction* incVolumeAct;
+    TAction* decAudioDelayAct;
+    TAction* incAudioDelayAct;
+    TAction* audioDelayAct;
 
-	TAction* decAudioDelayAct;
-	TAction* incAudioDelayAct;
-	TAction* audioDelayAct;
+    TAction* audioEqualizerAct;
+    TAction* resetAudioEqualizerAct;
 
-	TAction* audioEqualizerAct;
-	TAction* resetAudioEqualizerAct;
+    QMenu* audioFilterMenu;
+    TAction* volnormAct;
+    TAction* extrastereoAct;
+    TAction* karaokeAct;
 
-	QMenu* audioFilterMenu;
-	TAction* volnormAct;
-	TAction* extrastereoAct;
-	TAction* karaokeAct;
-
-	TAction* loadAudioAct;
-	TAction* unloadAudioAct;
+    TAction* loadAudioAct;
+    TAction* unloadAudioAct;
 }; // class TMenuAudio
 
 } // namespace Action

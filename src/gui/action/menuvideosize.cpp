@@ -3,7 +3,7 @@
 #include "settings/preferences.h"
 #include "playerwindow.h"
 #include "gui/base.h"
-#include "core.h"
+#include "player/player.h"
 
 
 using namespace Settings;
@@ -122,8 +122,7 @@ TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw) :
 
 void TMenuVideoSize::enableActions() {
 
-    TCore* core = main_window->getCore();
-    bool enable = core->statePOP() && core->hasVideo();
+    bool enable = player->statePOP() && player->hasVideo();
 	group->setEnabled(enable);
 	doubleSizeAct->setEnabled(enable);
 	currentSizeAct->setEnabled(enable);
@@ -185,7 +184,7 @@ void TMenuVideoSize::optimizeSizeFactor() {
 	double factor;
 
 	if (pref->fullscreen) {
-		// TODO: use core to update mset.zoom_factor_fullscreen
+        // TODO: use player to update mset.zoom_factor_fullscreen
 		playerWindow->setZoom(1.0);
 		return;
 	}

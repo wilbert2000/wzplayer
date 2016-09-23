@@ -1,6 +1,6 @@
 #include "gui/action/menuaudio.h"
 #include "gui/base.h"
-#include "core.h"
+#include "player/player.h"
 #include "gui/action/actiongroup.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/menuaudiotracks.h"
@@ -19,20 +19,18 @@ namespace Action {
 
 class TMenuAudioChannel : public TMenu {
 public:
-    explicit TMenuAudioChannel(TBase* mw, TCore* c);
+    explicit TMenuAudioChannel(TBase* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
-	TCore* core;
 	TActionGroup* group;
 };
 
 
-TMenuAudioChannel::TMenuAudioChannel(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "audiochannels_menu", tr("&Channels"), "audio_channels")
-	, core(c) {
+TMenuAudioChannel::TMenuAudioChannel(TBase* mw)
+    : TMenu(mw, mw, "audiochannels_menu", tr("&Channels"), "audio_channels") {
 
 	group = new TActionGroup(this, "channels");
 	group->setEnabled(false);
@@ -41,41 +39,39 @@ TMenuAudioChannel::TMenuAudioChannel(TBase* mw, TCore* c)
 	new TActionGroupItem(this, group, "channels_ful51", tr("&5.1 Surround"), TMediaSettings::ChFull51);
 	new TActionGroupItem(this, group, "channels_ful61", tr("&6.1 Surround"), TMediaSettings::ChFull61);
 	new TActionGroupItem(this, group, "channels_ful71", tr("&7.1 Surround"), TMediaSettings::ChFull71);
-	group->setChecked(core->mset.audio_use_channels);
-	connect(group, SIGNAL(activated(int)), core, SLOT(setAudioChannels(int)));
+    group->setChecked(player->mset.audio_use_channels);
+    connect(group, SIGNAL(activated(int)), player, SLOT(setAudioChannels(int)));
 	// No one else sets it
     addActionsTo(main_window);
 }
 
 void TMenuAudioChannel::enableActions() {
-	// Uses mset, so useless to set if stopped or no audio
-    group->setEnabled(core->statePOP() && core->hasAudio());
+    // Uses mset, so useless to set if stopped or no audio
+    group->setEnabled(player->statePOP() && player->hasAudio());
 }
 
 void TMenuAudioChannel::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->audio_use_channels);
+    group->setChecked(mset->audio_use_channels);
 }
 
 void TMenuAudioChannel::onAboutToShow() {
-	group->setChecked(core->mset.audio_use_channels);
+    group->setChecked(player->mset.audio_use_channels);
 }
 
 
 class TMenuStereo : public TMenu {
 public:
-    explicit TMenuStereo(TBase* mw, TCore* c);
+    explicit TMenuStereo(TBase* mw);
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-	virtual void onAboutToShow();
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
+    virtual void onAboutToShow();
 private:
-	TCore* core;
-	TActionGroup* group;
+    TActionGroup* group;
 };
 
-TMenuStereo::TMenuStereo(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "stereomode_menu", tr("&Stereo mode"), "stereo_mode")
-	, core(c) {
+TMenuStereo::TMenuStereo(TBase* mw)
+    : TMenu(mw, mw, "stereomode_menu", tr("&Stereo mode"), "stereo_mode") {
 
 	group = new TActionGroup(this, "stereo");
 	group->setEnabled(false);
@@ -84,14 +80,14 @@ TMenuStereo::TMenuStereo(TBase* mw, TCore* c)
 	new TActionGroupItem(this, group, "right_channel", tr("&Right channel"), TMediaSettings::Right);
 	new TActionGroupItem(this, group, "mono", tr("&Mono"), TMediaSettings::Mono);
 	new TActionGroupItem(this, group, "reverse_channels", tr("Re&verse"), TMediaSettings::Reverse);
-	group->setChecked(core->mset.stereo_mode);
-	connect(group, SIGNAL(activated(int)), core, SLOT(setStereoMode(int)));
+    group->setChecked(player->mset.stereo_mode);
+    connect(group, SIGNAL(activated(int)), player, SLOT(setStereoMode(int)));
 	// No one else changes it
     addActionsTo(main_window);
 }
 
 void TMenuStereo::enableActions() {
-    group->setEnabled(core->statePOP() && core->hasAudio());
+    group->setEnabled(player->statePOP() && player->hasAudio());
 }
 
 void TMenuStereo::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -99,41 +95,40 @@ void TMenuStereo::onMediaSettingsChanged(TMediaSettings* mset) {
 }
 
 void TMenuStereo::onAboutToShow() {
-	group->setChecked(core->mset.stereo_mode);
+    group->setChecked(player->mset.stereo_mode);
 }
 
 
-TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
-    : TMenu(mw, mw, "audio_menu", tr("&Audio"), "noicon")
-	, core(c) {
+TMenuAudio::TMenuAudio(TBase* mw, TAudioEqualizer* audioEqualizer)
+    : TMenu(mw, mw, "audio_menu", tr("&Audio"), "noicon") {
 
 	// Mute
 	muteAct = new TAction(this, "mute", tr("&Mute"), "noicon", Qt::Key_M);
 	muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
 	muteAct->setCheckable(true);
-	muteAct->setChecked(core->getMute());
+    muteAct->setChecked(player->getMute());
 
 	QIcon icset(Images::icon("volume"));
 	icset.addPixmap(Images::icon("mute"), QIcon::Normal, QIcon::On);
 	muteAct->setIcon(icset);
 
-	connect(muteAct, SIGNAL(triggered(bool)), core, SLOT(mute(bool)));
-	connect(core, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
+    connect(muteAct, SIGNAL(triggered(bool)), player, SLOT(mute(bool)));
+    connect(player, SIGNAL(muteChanged(bool)), muteAct, SLOT(setChecked(bool)));
 
     decVolumeAct = new TAction(this, "decrease_volume", tr("Volume &-"), "audio_down", Qt::Key_Minus);
 	decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
-	connect(decVolumeAct, SIGNAL(triggered()), core, SLOT(decVolume()));
+    connect(decVolumeAct, SIGNAL(triggered()), player, SLOT(decVolume()));
 
     incVolumeAct = new TAction(this, "increase_volume", tr("Volume &+"), "audio_up", Qt::Key_Plus);
 	incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
-	connect(incVolumeAct, SIGNAL(triggered()), core, SLOT(incVolume()));
+    connect(incVolumeAct, SIGNAL(triggered()), player, SLOT(incVolume()));
 
 	addSeparator();
     decAudioDelayAct = new TAction(this, "dec_audio_delay", tr("&Delay -"), "delay_down", Qt::CTRL | Qt::Key_Minus);
-	connect(decAudioDelayAct, SIGNAL(triggered()), core, SLOT(decAudioDelay()));
+    connect(decAudioDelayAct, SIGNAL(triggered()), player, SLOT(decAudioDelay()));
 
     incAudioDelayAct = new TAction(this, "inc_audio_delay", tr("Del&ay +"), "delay_up", Qt::CTRL | Qt::Key_Plus);
-	connect(incAudioDelayAct, SIGNAL(triggered()), core, SLOT(incAudioDelay()));
+    connect(incAudioDelayAct, SIGNAL(triggered()), player, SLOT(incAudioDelay()));
 
     audioDelayAct = new TAction(this, "audio_delay", tr("Set dela&y..."), "", Qt::META | Qt::Key_Plus);
     connect(audioDelayAct, SIGNAL(triggered()), main_window, SLOT(showAudioDelayDialog()));
@@ -151,38 +146,38 @@ TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
 
 	// Stereo and channel subs
 	addSeparator();
-    addMenu(new TMenuStereo(main_window, core));
-    addMenu(new TMenuAudioChannel(main_window, core));
+    addMenu(new TMenuStereo(main_window));
+    addMenu(new TMenuAudioChannel(main_window));
 
     // Filter sub
     audioFilterMenu = new TMenu(main_window, main_window, "audiofilter_menu", tr("&Filters"), "audio_filters");
 	volnormAct = new TAction(this, "volnorm_filter", tr("Volume &normalization"), "", 0, false);
 	volnormAct->setCheckable(true);
 	audioFilterMenu->addAction(volnormAct);
-	connect(volnormAct, SIGNAL(triggered(bool)), core, SLOT(toggleVolnorm(bool)));
+    connect(volnormAct, SIGNAL(triggered(bool)), player, SLOT(toggleVolnorm(bool)));
 
 	extrastereoAct = new TAction(this, "extrastereo_filter", tr("&Extrastereo"), "", 0, false);
 	extrastereoAct->setCheckable(true);
 	audioFilterMenu->addAction(extrastereoAct);
-	connect(extrastereoAct, SIGNAL(triggered(bool)), core, SLOT(toggleExtrastereo(bool)));
+    connect(extrastereoAct, SIGNAL(triggered(bool)), player, SLOT(toggleExtrastereo(bool)));
 
 	karaokeAct = new TAction(this, "karaoke_filter", tr("&Karaoke"), "", 0, false);
 	karaokeAct->setCheckable(true);
 	audioFilterMenu->addAction(karaokeAct);
-	connect(karaokeAct, SIGNAL(triggered(bool)), core, SLOT(toggleKaraoke(bool)));
+    connect(karaokeAct, SIGNAL(triggered(bool)), player, SLOT(toggleKaraoke(bool)));
 
 	addMenu(audioFilterMenu);
 
 	// Audio tracks
 	addSeparator();
-    addMenu(new TMenuAudioTracks(main_window, core));
+    addMenu(new TMenuAudioTracks(main_window));
 
 	// Load/unload
 	addSeparator();
 	loadAudioAct = new TAction(this, "load_audio_file", tr("&Load external file..."), "open");
     connect(loadAudioAct, SIGNAL(triggered()), main_window, SLOT(loadAudioFile()));
 	unloadAudioAct = new TAction(this, "unload_audio_file", tr("&Unload"), "unload");
-	connect(unloadAudioAct, SIGNAL(triggered()), core, SLOT(unloadAudioFile()));
+    connect(unloadAudioAct, SIGNAL(triggered()), player, SLOT(unloadAudioFile()));
 
     addActionsTo(main_window);
 }
@@ -190,13 +185,13 @@ TMenuAudio::TMenuAudio(TBase* mw, TCore* c, TAudioEqualizer* audioEqualizer)
 void TMenuAudio::enableActions() {
 
     // Maybe global settings
-    bool enable = pref->global_volume || (core->statePOP() && core->hasAudio());
+    bool enable = pref->global_volume || (player->statePOP() && player->hasAudio());
     muteAct->setEnabled(enable);
     decVolumeAct->setEnabled(enable);
     incVolumeAct->setEnabled(enable);
 
     // Settings only stored in mset
-    enable = core->statePOP() && core->hasAudio();
+    enable = player->statePOP() && player->hasAudio();
 
     decAudioDelayAct->setEnabled(enable);
     incAudioDelayAct->setEnabled(enable);
@@ -213,8 +208,8 @@ void TMenuAudio::enableActions() {
     extrastereoAct->setEnabled(enable);
     karaokeAct->setEnabled(enable && pref->isMPlayer());
 
-    loadAudioAct->setEnabled(core->statePOP());
-    unloadAudioAct->setEnabled(enable && core->mset.external_audio.count());
+    loadAudioAct->setEnabled(player->statePOP());
+    unloadAudioAct->setEnabled(enable && player->mset.external_audio.count());
 }
 
 void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {

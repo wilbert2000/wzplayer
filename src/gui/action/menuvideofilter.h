@@ -4,8 +4,6 @@
 #include "gui/action/menu.h"
 
 
-class TCore;
-
 namespace Gui {
 namespace Action {
 
@@ -16,14 +14,12 @@ class TActionGroup;
 class TMenuVideoFilter : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuVideoFilter(TBase* mw, TCore* c);
+    explicit TMenuVideoFilter(TBase* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
-	TCore* core;
-
 	QActionGroup* group;
 	TAction* postProcessingAct;
 	TAction* deblockAct;

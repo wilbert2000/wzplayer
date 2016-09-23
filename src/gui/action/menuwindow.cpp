@@ -4,7 +4,7 @@
 
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
-#include "core.h"
+#include "player/player.h"
 #include "images.h"
 #include "gui/base.h"
 #include "gui/action/action.h"
@@ -17,23 +17,21 @@ namespace Action {
 
 class TMenuOSD : public TMenu {
 public:
-    explicit TMenuOSD(TBase* mw, TCore* c);
+    explicit TMenuOSD(TBase* mw);
 protected:
     virtual void enableActions();
 	virtual void onAboutToShow();
 private:
-	TCore* core;
-	TActionGroup* group;
+    TActionGroup* group;
 	TAction* showFilenameAct;
 	TAction* showTimeAct;
 };
 
-TMenuOSD::TMenuOSD(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "osd_menu", tr("&OSD"), "osd")
-	, core(c) {
+TMenuOSD::TMenuOSD(TBase* mw)
+    : TMenu(mw, mw, "osd_menu", tr("&OSD"), "osd") {
 
     TAction* a = new TAction(this, "next_osd", tr("OSD - Next level"), "", Qt::Key_O);
-    connect(a, SIGNAL(triggered()), core, SLOT(nextOSDLevel()));
+    connect(a, SIGNAL(triggered()), player, SLOT(nextOSDLevel()));
 
     addSeparator();
     group = new TActionGroup(this, "osd");
@@ -47,28 +45,28 @@ TMenuOSD::TMenuOSD(TBase* mw, TCore* c)
     new TActionGroupItem(this, group, "osd_total", tr("Volume + Seek + Timer + T&otal time"),
         Settings::TPreferences::SeekTimerTotal, true, false, Qt::META | Qt::Key_O);
 	group->setChecked(pref->osd_level);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeOSDLevel(int)));
-	connect(core, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
+    connect(group, SIGNAL(activated(int)), player, SLOT(changeOSDLevel(int)));
+    connect(player, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
 
 	addSeparator();
     a = new TAction(this, "inc_osd_scale", tr("Size &+"), "", QKeySequence(")"));
-	connect(a, SIGNAL(triggered()), core, SLOT(incOSDScale()));
+    connect(a, SIGNAL(triggered()), player, SLOT(incOSDScale()));
     a = new TAction(this, "dec_osd_scale", tr("Size &-"), "", QKeySequence("("));
-	connect(a, SIGNAL(triggered()), core, SLOT(decOSDScale()));
+    connect(a, SIGNAL(triggered()), player, SLOT(decOSDScale()));
 
 	addSeparator();
     showFilenameAct = new TAction(this, "show_filename", tr("Show filename on OSD"));
-	connect(showFilenameAct, SIGNAL(triggered()), core, SLOT(showFilenameOnOSD()));
+    connect(showFilenameAct, SIGNAL(triggered()), player, SLOT(showFilenameOnOSD()));
 
     showTimeAct = new TAction(this, "show_time", tr("Show playback time on OSD"));
-	connect(showTimeAct, SIGNAL(triggered()), core, SLOT(showTimeOnOSD()));
+    connect(showTimeAct, SIGNAL(triggered()), player, SLOT(showTimeOnOSD()));
 
     addActionsTo(main_window);
 }
 
 void TMenuOSD::enableActions() {
 
-    bool enabled = core->statePOP() && core->hasVideo();
+    bool enabled = player->statePOP() && player->hasVideo();
 	showFilenameAct->setEnabled(enabled);
 	showTimeAct->setEnabled(enabled);
 }
@@ -138,14 +136,13 @@ void TMenuStayOnTop::onAboutToShow() {
 }
 
 TMenuWindow::TMenuWindow(TBase* mw,
-                         TCore* core,
                          QMenu* toolBarMenu,
                          QWidget* playlist,
                          QWidget* logWindow)
     : TMenu(mw, mw, "window_menu", tr("&Window"), "noicon") {
 
 	// OSD
-    addMenu(new TMenuOSD(main_window, core));
+    addMenu(new TMenuOSD(main_window));
 	// Toolbars
 	addMenu(toolBarMenu);
 	// Ontop submenu

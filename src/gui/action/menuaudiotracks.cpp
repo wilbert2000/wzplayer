@@ -1,7 +1,7 @@
 #include "gui/action/menuaudiotracks.h"
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
-#include "core.h"
+#include "player/player.h"
 #include "gui/base.h"
 
 
@@ -9,25 +9,24 @@ namespace Gui {
 namespace Action {
 
 
-TMenuAudioTracks::TMenuAudioTracks(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track")
-	, core(c) {
+TMenuAudioTracks::TMenuAudioTracks(TBase* mw)
+    : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track") {
 
 	// Next audio track
     nextAudioTrackAct = new TAction(this, "next_audio_track", tr("Next audio track"), "", QKeySequence("*"));
     main_window->addAction(nextAudioTrackAct);
-	connect(nextAudioTrackAct, SIGNAL(triggered()), core, SLOT(nextAudioTrack()));
+    connect(nextAudioTrackAct, SIGNAL(triggered()), player, SLOT(nextAudioTrack()));
 
 	addSeparator();
 	audioTrackGroup = new TActionGroup(this, "audiotrack");
-	connect(audioTrackGroup, SIGNAL(activated(int)), core, SLOT(changeAudioTrack(int)));
-	connect(core, SIGNAL(audioTracksChanged()), this, SLOT(updateAudioTracks()));
-	connect(core, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
+    connect(audioTrackGroup, SIGNAL(activated(int)), player, SLOT(changeAudioTrack(int)));
+    connect(player, SIGNAL(audioTracksChanged()), this, SLOT(updateAudioTracks()));
+    connect(player, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
 }
 
 void TMenuAudioTracks::enableActions() {
 
-    nextAudioTrackAct->setEnabled(core->statePOP() && core->mdat.audios.count() > 1);
+    nextAudioTrackAct->setEnabled(player->statePOP() && player->mdat.audios.count() > 1);
 }
 
 void TMenuAudioTracks::updateAudioTracks() {
@@ -35,7 +34,7 @@ void TMenuAudioTracks::updateAudioTracks() {
 
 		audioTrackGroup->clear();
 
-		Maps::TTracks* audios = &core->mdat.audios;
+        Maps::TTracks* audios = &player->mdat.audios;
 		if (audios->count() == 0) {
 			QAction* a = audioTrackGroup->addAction(tr("<empty>"));
 			a->setEnabled(false);

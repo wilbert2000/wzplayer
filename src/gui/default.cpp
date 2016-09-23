@@ -27,7 +27,7 @@
 
 #include "colorutils.h"
 #include "images.h"
-#include "core.h"
+#include "player/player.h"
 #include "gui/action/action.h"
 #include "playerwindow.h"
 
@@ -113,9 +113,9 @@ void TDefault::createStatusBar() {
     in_out_points_label->setFrameShape(QFrame::NoFrame);
     in_out_points_label->setContentsMargins(margins);
     statusBar()->addPermanentWidget(in_out_points_label, 0);
-    connect(core, SIGNAL(InOutPointsChanged()),
+    connect(player, SIGNAL(InOutPointsChanged()),
             this, SLOT(displayInOutPoints()));
-    connect(core, SIGNAL(mediaSettingsChanged()),
+    connect(player, SIGNAL(mediaSettingsChanged()),
             this, SLOT(displayInOutPoints()));
 
     time_label = new QLabel(statusBar());
@@ -133,23 +133,23 @@ void TDefault::createStatusBar() {
 void TDefault::displayFrames(bool b) {
 
     pref->show_frames = b;
-    onDurationChanged(core->mdat.duration);
+    onDurationChanged(player->mdat.duration);
 }
 
 void TDefault::displayInOutPoints() {
 
 	QString s;
-    int secs = qRound(core->mset.in_point);
+    int secs = qRound(player->mset.in_point);
     if (secs > 0)
         s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
 
-    secs = qRound(core->mset.out_point);
+    secs = qRound(player->mset.out_point);
     if (secs > 0) {
 		if (!s.isEmpty()) s += " ";
         s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
 	}
 
-    if (core->mset.loop) {
+    if (player->mset.loop) {
         if (!s.isEmpty()) s += " ";
         s += tr("R", "Repeat in-out in statusbar");
     }
@@ -159,18 +159,18 @@ void TDefault::displayInOutPoints() {
 
 void TDefault::displayVideoInfo() {
 
-	if (core->mdat.noVideo()) {
+    if (player->mdat.noVideo()) {
         video_info_label->setText("");
 	} else {
 		QSize video_out_size = playerwindow->lastVideoOutSize();
         video_info_label->setText(tr("%1x%2", "video source width x height")
-			.arg(core->mdat.video_width)
-			.arg(core->mdat.video_height)
+            .arg(player->mdat.video_width)
+            .arg(player->mdat.video_height)
 			+ " " + QString::fromUtf8("\u279F") + " "
 			+ tr("%1x%2 %3 fps", "video out width x height + fps")
 			.arg(video_out_size.width())
 			.arg(video_out_size.height())
-			.arg(core->mdat.video_fps));
+            .arg(player->mdat.video_fps));
 	}
 }
 

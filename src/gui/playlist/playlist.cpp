@@ -46,7 +46,7 @@
 #include "gui/playlist/playlistwidget.h"
 #include "gui/playlist/playlistwidgetitem.h"
 #include "gui/playlist/addfilesthread.h"
-#include "core.h"
+#include "player/player.h"
 #include "gui/multilineinputdialog.h"
 #include "gui/action/menuinoutpoints.h"
 #include "gui/action/action.h"
@@ -131,11 +131,10 @@ void TAddRemovedMenu::onTriggered(QAction* action) {
 }
 
 
-TPlaylist::TPlaylist(TBase* mw, TCore* c) :
+TPlaylist::TPlaylist(TBase* mw) :
     QWidget(mw),
     debug(logger()),
     main_window(mw),
-    core(c),
     thread(0),
     restartThread(false),
     disable_enableActions(false) {
@@ -144,15 +143,15 @@ TPlaylist::TPlaylist(TBase* mw, TCore* c) :
     createActions();
     createToolbar();
 
-    connect(core, SIGNAL(newMediaStartedPlaying()),
+    connect(player, SIGNAL(newMediaStartedPlaying()),
             this, SLOT(onNewMediaStartedPlaying()));
-    connect(core, SIGNAL(playerError(int)),
+    connect(player, SIGNAL(playerError(int)),
             this, SLOT(onPlayerError()));
-    connect(core, SIGNAL(titleTrackChanged(int)),
+    connect(player, SIGNAL(titleTrackChanged(int)),
             this, SLOT(onTitleTrackChanged(int)));
-    connect(core, SIGNAL(mediaEOF()),
+    connect(player, SIGNAL(mediaEOF()),
             this, SLOT(onMediaEOF()), Qt::QueuedConnection);
-    connect(core, SIGNAL(noFileToPlay()),
+    connect(player, SIGNAL(noFileToPlay()),
             this, SLOT(resumePlay()), Qt::QueuedConnection);
 
     connect(main_window, SIGNAL(enableActions()),
@@ -245,7 +244,7 @@ void TPlaylist::createActions() {
     // Pause
     pauseAct = new TAction(this, "pause", tr("Pause"), "",
                            QKeySequence("Media Pause")); // MCE remote key
-    connect(pauseAct, SIGNAL(triggered()), core, SLOT(pause()));
+    connect(pauseAct, SIGNAL(triggered()), player, SLOT(pause()));
 
     // Play/pause
     playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play",
@@ -267,7 +266,7 @@ void TPlaylist::createActions() {
     connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
     // In-out menu
-    inOutMenu = new TMenuInOut(main_window, core);
+    inOutMenu = new TMenuInOut(main_window);
     addActions(inOutMenu->actions());
 
     // Repeat
@@ -603,12 +602,12 @@ void TPlaylist::addFiles() {
 void TPlaylist::addCurrentFile() {
    logger()->debug("addCurrentFile");
 
-    if (!core->mdat.filename.isEmpty()) {
+    if (!player->mdat.filename.isEmpty()) {
         TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
             playlistWidget->root(),
-            core->mdat.filename,
-            core->mdat.name(),
-            core->mdat.duration,
+            player->mdat.filename,
+            player->mdat.name(),
+            player->mdat.duration,
             false);
         i->setPlayed(true);
         i->setModified();
@@ -665,34 +664,34 @@ void TPlaylist::play() {
     if (item) {
         playItem(item);
     } else {
-        core->play();
+        player->play();
     }
 }
 
 void TPlaylist::playOrPause() {
-    logger()->debug("playOrPause: state " + core->stateToString());
+    logger()->debug("playOrPause: state " + player->stateToString());
 
-    if (core->state() == STATE_PLAYING) {
-        core->pause();
-    } else if (core->state() == STATE_PAUSED) {
-        core->play();
+    if (player->state() == Player::STATE_PLAYING) {
+        player->pause();
+    } else if (player->state() == Player::STATE_PAUSED) {
+        player->play();
     } else if (playlistWidget->playing_item) {
         playItem(playlistWidget->playing_item);
     } else if (playlistWidget->currentItem()) {
         playItem(playlistWidget->currentPlaylistWidgetItem());
     } else {
-        core->play();
+        player->play();
     }
 }
 
 void TPlaylist::stop() {
-    logger()->debug("stop: state " + core->stateToString());
+    logger()->debug("stop: state " + player->stateToString());
 
     if (thread) {
         logger()->debug("stop: aborting add files thread");
         abortThread();
     }
-    core->stop();
+    player->stop();
 }
 
 TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
@@ -769,7 +768,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
     if (item) {
         logger()->debug("playItem: '%1'", item->filename());
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
-        core->open(item->filename(), playlistWidget->hasSingleItem());
+        player->open(item->filename(), playlistWidget->hasSingleItem());
     } else {
         logger()->debug("playItem: end of playlist");
         msg(tr("End of playlist"), 7000);
@@ -819,7 +818,7 @@ void TPlaylist::playDirectory(const QString &dir) {
     if (Helper::directoryContainsDVD(dir)) {
         // onNewMediaStartedPlaying() will pickup the playlist
         playlistWidget->enableSort(false);
-        core->open(dir);
+        player->open(dir);
     } else {
         clear();
         addFiles(QStringList() << dir, true);
@@ -858,8 +857,8 @@ bool TPlaylist::deleteFileFromDisk(const QString& filename,
 
     if (res == QMessageBox::Yes) {
         // Cannot delete file on Windows when in use...
-        if (filename == playingFile && core->state() != STATE_STOPPED) {
-            core->stop();
+        if (filename == playingFile && player->state() != Player::STATE_STOPPED) {
+            player->stop();
         }
         if (QFile::remove(filename)) {
             return true;
@@ -973,11 +972,11 @@ void TPlaylist::refresh() {
     if (!filename.isEmpty() && maybeSave()) {
         QString fn = filename;
         QString current;
-        if (core->state() == STATE_PLAYING) {
+        if (player->state() == Player::STATE_PLAYING) {
             current = playingFile();
             if (!current.isEmpty()) {
-                core->saveRestartTime();
-                core->stop();
+                player->saveRestartTime();
+                player->stop();
             }
         }
         clear();
@@ -1060,7 +1059,7 @@ void TPlaylist::enableActions() {
         logger()->debug("enableActions: disabled");
         return;
     }
-    logger()->debug("enableActions: state " + core->stateToString());
+    logger()->debug("enableActions: state " + player->stateToString());
 
     // Note: there is always something selected if there are items
     bool haveItems = playlistWidget->hasItems();
@@ -1069,35 +1068,35 @@ void TPlaylist::enableActions() {
     TPlaylistWidgetItem* current_item =
             playlistWidget->currentPlaylistWidgetItem();
 
-    TCoreState s = core->state();
-    bool enable = (s == STATE_STOPPED || s == STATE_PLAYING
-                   || s == STATE_PAUSED)
+    Player::TState s = player->state();
+    bool enable = (s == Player::STATE_STOPPED || s == Player::STATE_PLAYING
+                   || s == Player::STATE_PAUSED)
                   && thread == 0;
     bool e = enable && haveItems;
-    bool coreHasFilename = core->mdat.filename.count();
+    bool playerHasFilename = player->mdat.filename.count();
 
     openAct->setEnabled(thread == 0);
     saveAct->setEnabled(e);
     saveAsAct->setEnabled(e);
 
-    playAct->setEnabled(enable && (coreHasFilename || haveItems));
-    pauseAct->setEnabled(s == STATE_PLAYING);
+    playAct->setEnabled(enable && (playerHasFilename || haveItems));
+    pauseAct->setEnabled(s == Player::STATE_PLAYING);
 
-    playOrPauseAct->setEnabled(enable && (coreHasFilename || haveItems));
+    playOrPauseAct->setEnabled(enable && (playerHasFilename || haveItems));
 
     if (!enable) {
         QString text;
         if (thread) {
             text = tr("loading");
         } else {
-            text = core->stateToString();
+            text = player->stateToString();
         }
         playOrPauseAct->setTextAndTip(text + "...");
         playOrPauseAct->setIcon(Images::icon("loading"));
-    } else if (s == STATE_PLAYING) {
+    } else if (s == Player::STATE_PLAYING) {
         disable_enableActions = true;
         if (playing_item == 0) {
-            playing_item = findFilename(core->mdat.filename);
+            playing_item = findFilename(player->mdat.filename);
         }
         if (playing_item && playing_item->state() != PSTATE_PLAYING) {
             playlistWidget->setPlayingItem(playing_item, PSTATE_PLAYING);
@@ -1112,10 +1111,10 @@ void TPlaylist::enableActions() {
 
     // Stop action
     stopAct->setEnabled(thread
-                        || s == STATE_PLAYING
-                        || s == STATE_PAUSED
-                        || s == STATE_RESTARTING
-                        || s == STATE_LOADING);
+                        || s == Player::STATE_PLAYING
+                        || s == Player::STATE_PAUSED
+                        || s == Player::STATE_RESTARTING
+                        || s == Player::STATE_LOADING);
 
     // Prev/Next
     bool changed = false;
@@ -1132,7 +1131,7 @@ void TPlaylist::enableActions() {
         emit enablePrevNextChanged();
     }
 
-    addCurrentAct->setEnabled(coreHasFilename && thread == 0);
+    addCurrentAct->setEnabled(playerHasFilename && thread == 0);
 
     e = haveItems && thread == 0;
     removeSelectedAct->setEnabled(e);
@@ -1143,7 +1142,7 @@ void TPlaylist::enableActions() {
     editAct->setEnabled(e && current_item);
     findPlayingAct->setEnabled(playing_item);
     cutAct->setEnabled(e);
-    copyAct->setEnabled(haveItems || coreHasFilename);
+    copyAct->setEnabled(haveItems || playerHasFilename);
 
     openDirectoryAct->setEnabled(current_item);
     refreshAct->setEnabled(enable && !filename.isEmpty());
@@ -1151,10 +1150,10 @@ void TPlaylist::enableActions() {
 
 void TPlaylist::onPlayerError() {
 
-    if (core->state() != STATE_STOPPING) {
+    if (player->state() != Player::STATE_STOPPING) {
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item) {
-            if (item->filename() == core->mdat.filename) {
+            if (item->filename() == player->mdat.filename) {
                 item->setState(PSTATE_FAILED);
                 playlistWidget->scrollToItem(item);
             }
@@ -1165,7 +1164,7 @@ void TPlaylist::onPlayerError() {
 
 void TPlaylist::onNewMediaStartedPlaying() {
 
-    const TMediaData* md = &core->mdat;
+    const TMediaData* md = &player->mdat;
     QString filename = md->filename;
     QString current_filename = playlistWidget->playingFile();
     logger()->debug("onNewMediaStartedPlaying: md->filename '%1'"
@@ -1288,7 +1287,7 @@ void TPlaylist::onTitleTrackChanged(int id) {
     }
 
     // Search for id
-    TDiscName disc = core->mdat.disc;
+    TDiscName disc = player->mdat.disc;
     disc.title = id;
     QString filename = disc.toString();
 
@@ -1316,8 +1315,8 @@ void TPlaylist::copySelection(const QString& actionName) {
         it++;
     }
 
-    if (copied == 0 && core->mdat.filename.count()) {
-        text = core->mdat.filename + "\n";
+    if (copied == 0 && player->mdat.filename.count()) {
+        text = player->mdat.filename + "\n";
         copied = 1;
     }
 

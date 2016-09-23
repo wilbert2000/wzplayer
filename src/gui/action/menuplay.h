@@ -2,10 +2,7 @@
 #define GUI_ACTION_PLAYMENU_H
 
 #include "gui/action/menu.h"
-#include "corestate.h"
 
-
-class TCore;
 
 namespace Gui {
 
@@ -59,14 +56,12 @@ private slots:
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuPlay(TBase* mw, TCore* c, Gui::Playlist::TPlaylist* playlist);
+    explicit TMenuPlay(TBase* mw, Gui::Playlist::TPlaylist* playlist);
 
 protected:
     virtual void enableActions();
 
 private:
-	TCore* core;
-
     TAction* seekToAct;
 }; // class TMenuPlay
 

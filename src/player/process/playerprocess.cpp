@@ -72,19 +72,21 @@ void TPlayerProcess::writeToStdin(const QString& text, bool log) {
 	}
 }
 
-TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent, TMediaData* md) {
+TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
+                                                    TMediaData* md) {
 
-    TPlayerProcess* proc;
-    Log4Qt::Logger* logger = Log4Qt::Logger::logger("Proc::TPlayerProcess");
+    TPlayerProcess* process;
+    Log4Qt::Logger* logger = Log4Qt::Logger::logger(
+                                 "Player::Process::TPlayerProcess");
     if (Settings::pref->isMPlayer()) {
         logger->debug("createPlayerProcess: creating TMPlayerProcess");
-        proc = new TMPlayerProcess(parent, md);
+        process = new TMPlayerProcess(parent, md);
     } else {
         logger->debug("createPlayerProcess: creating TMPVProcess");
-        proc = new TMPVProcess(parent, md);
+        process = new TMPVProcess(parent, md);
     }
 
-    return proc;
+    return process;
 }
 
 bool TPlayerProcess::startPlayer() {

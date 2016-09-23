@@ -4,7 +4,6 @@
 #include "gui/action/menu.h"
 #include "log4qt/logger.h"
 
-class TCore;
 
 namespace Gui {
 namespace Action {
@@ -18,14 +17,12 @@ class TMenuBrowse : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMenuBrowse(TBase* mw, TCore* c);
+    TMenuBrowse(TBase* mw);
 
 protected:
     virtual void enableActions();
 
 private:
-    TCore* core;
-
     TMenu* titlesMenu;
     TActionGroup* titleGroup;
 

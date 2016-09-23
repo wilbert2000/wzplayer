@@ -36,7 +36,6 @@ class QToolButton;
 class QTimer;
 class QItemSelection;
 
-class TCore;
 
 namespace Gui {
 
@@ -81,7 +80,7 @@ class TPlaylist : public QWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlaylist(TBase* mw, TCore* c);
+    TPlaylist(TBase* mw);
     virtual ~TPlaylist();
 
     void openPlaylist(const QString& filename);
@@ -178,7 +177,6 @@ private:
     Action::TMenuInOut* inOutMenu;
 
     TBase* main_window;
-    TCore* core;
     TPlaylistWidget* playlistWidget;
 
     QString filename;

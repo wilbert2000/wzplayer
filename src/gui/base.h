@@ -25,13 +25,12 @@
 #include "wzdebug.h"
 #include "gui/action/actionlist.h"
 #include "config.h"
-#include "corestate.h"
+#include "player/state.h"
 
 
 class QWidget;
 class QMenu;
 
-class TCore;
 class TPlayerWindow;
 
 namespace Settings {
@@ -91,7 +90,6 @@ public:
 	//! Execute all the actions after the video has started to play
     void runActionsLater(const QString& actions, bool postCheck);
 
-	TCore* getCore() { return core; }
     Playlist::TPlaylist* getPlaylist() { return playlist; }
 	Action::TActionList getAllNamedActions();
 	QMenu* getToolbarMenu() { return toolbar_menu; }
@@ -139,7 +137,7 @@ public slots:
 
 	void setStayOnTop(bool b);
 	virtual void changeStayOnTop(int);
-    virtual void checkStayOnTop(TCoreState);
+    virtual void checkStayOnTop(Player::TState);
 	void toggleStayOnTop();
 
 	void changeSize(double factor);
@@ -174,7 +172,7 @@ protected slots:
     // Replace for setCaption (in Qt 4 it's not virtual)
     virtual void setWindowCaption(const QString& title);
 
-    virtual void onStateChanged(TCoreState state);
+    virtual void onStateChanged(Player::TState state);
 
     virtual void onPositionChanged(double, bool changed = false);
     virtual void onDurationChanged(double duration);
@@ -243,7 +241,7 @@ protected:
 	virtual void didExitFullscreen();
 	virtual QString settingsGroupName() = 0;
 
-	void createCore();
+	void createPlayer();
 	void createPlayerWindow();
 	void createVideoEqualizer();
 	void createAudioEqualizer();
@@ -261,7 +259,6 @@ protected:
 protected:
 	QWidget* panel;
 	TPlayerWindow* playerwindow;
-	TCore* core;
 
 	Action::TAction* showContextMenuAct;
 	Action::TAction* nextWheelFunctionAct;

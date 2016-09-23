@@ -41,6 +41,7 @@
 #include <QMimeData>
 #include <QNetworkProxy>
 
+#include "player/player.h"
 #include "player/process/exitmsg.h"
 #include "version.h"
 #include "gui/desktop.h"
@@ -51,7 +52,6 @@
 #include "helper.h"
 #include "mediadata.h"
 #include "playerwindow.h"
-#include "core.h"
 #include "clhelp.h"
 #include "gui/filedialog.h"
 
@@ -166,7 +166,7 @@ TBase::TBase() :
     setCentralWidget(panel);
 
     createPlayerWindow();
-    createCore();
+    createPlayer();
     createPlaylist();
     createVideoEqualizer();
     createAudioEqualizer();
@@ -230,42 +230,42 @@ void TBase::createPlayerWindow() {
 			this, SLOT(moveWindow(QPoint)));
 }
 
-void TBase::createCore() {
+void TBase::createPlayer() {
 
-    core = new TCore(this, playerwindow);
+    new Player::TPlayer(this, playerwindow);
 
-    connect(core, SIGNAL(positionChanged(double)),
+    connect(player, SIGNAL(positionChanged(double)),
             this, SLOT(onPositionChanged(double)));
-    connect(core, SIGNAL(durationChanged(double)),
+    connect(player, SIGNAL(durationChanged(double)),
             this, SLOT(onDurationChanged(double)));
 
-	connect(core, SIGNAL(stateChanged(TCoreState)),
-			this, SLOT(onStateChanged(TCoreState)));
-	connect(core, SIGNAL(stateChanged(TCoreState)),
-			this, SLOT(checkStayOnTop(TCoreState)), Qt::QueuedConnection);
+    connect(player, SIGNAL(stateChanged(Player::TState)),
+            this, SLOT(onStateChanged(Player::TState)));
+    connect(player, SIGNAL(stateChanged(Player::TState)),
+            this, SLOT(checkStayOnTop(Player::TState)), Qt::QueuedConnection);
 
-	connect(core, SIGNAL(mediaSettingsChanged()),
+    connect(player, SIGNAL(mediaSettingsChanged()),
 			this, SLOT(onMediaSettingsChanged()));
-	connect(core, SIGNAL(videoOutResolutionChanged(int, int)),
+    connect(player, SIGNAL(videoOutResolutionChanged(int, int)),
 			this, SLOT(onVideoOutResolutionChanged(int,int)));
 
-    connect(core, SIGNAL(newMediaStartedPlaying()),
+    connect(player, SIGNAL(newMediaStartedPlaying()),
             this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
-	connect(core, SIGNAL(mediaInfoChanged()),
+    connect(player, SIGNAL(mediaInfoChanged()),
 			this, SLOT(onMediaInfoChanged()));
 
-	connect(core, SIGNAL(mediaStopped()),
+    connect(player, SIGNAL(mediaStopped()),
 			this, SLOT(exitFullscreenOnStop()));
 
-    connect(core, SIGNAL(playerError(int)),
+    connect(player, SIGNAL(playerError(int)),
             this, SLOT(onPlayerError(int)),
             Qt::QueuedConnection);
 }
 
 void TBase::createPlaylist() {
 
-    playlist = new Playlist::TPlaylist(this, core);
+    playlist = new Playlist::TPlaylist(this);
     connect(playlist, SIGNAL(playlistEnded()),
             this, SLOT(playlistHasFinished()));
 }
@@ -276,22 +276,22 @@ void TBase::createVideoEqualizer() {
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
 	connect(video_equalizer, SIGNAL(contrastChanged(int)),
-			core, SLOT(setContrast(int)));
+            player, SLOT(setContrast(int)));
 	connect(video_equalizer, SIGNAL(brightnessChanged(int)),
-			core, SLOT(setBrightness(int)));
+            player, SLOT(setBrightness(int)));
 	connect(video_equalizer, SIGNAL(hueChanged(int)),
-			core, SLOT(setHue(int)));
+            player, SLOT(setHue(int)));
 	connect(video_equalizer, SIGNAL(saturationChanged(int)),
-			core, SLOT(setSaturation(int)));
+            player, SLOT(setSaturation(int)));
 	connect(video_equalizer, SIGNAL(gammaChanged(int)),
-			core, SLOT(setGamma(int)));
+            player, SLOT(setGamma(int)));
 
 	connect(video_equalizer, SIGNAL(requestToChangeDefaultValues()),
 			this, SLOT(setDefaultValuesFromVideoEqualizer()));
 	connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
 			this, SLOT(changeVideoEqualizerBySoftware(bool)));
 
-	connect(core, SIGNAL(videoEqualizerNeedsUpdate()),
+    connect(player, SIGNAL(videoEqualizerNeedsUpdate()),
 			this, SLOT(updateVideoEqualizer()));
 }
 
@@ -300,30 +300,30 @@ void TBase::createAudioEqualizer() {
 	audio_equalizer = new TAudioEqualizer(this);
 
 	connect(audio_equalizer->eq[0], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq0(int)));
+            player, SLOT(setAudioEq0(int)));
 	connect(audio_equalizer->eq[1], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq1(int)));
+            player, SLOT(setAudioEq1(int)));
 	connect(audio_equalizer->eq[2], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq2(int)));
+            player, SLOT(setAudioEq2(int)));
 	connect(audio_equalizer->eq[3], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq3(int)));
+            player, SLOT(setAudioEq3(int)));
 	connect(audio_equalizer->eq[4], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq4(int)));
+            player, SLOT(setAudioEq4(int)));
 	connect(audio_equalizer->eq[5], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq5(int)));
+            player, SLOT(setAudioEq5(int)));
 	connect(audio_equalizer->eq[6], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq6(int)));
+            player, SLOT(setAudioEq6(int)));
 	connect(audio_equalizer->eq[7], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq7(int)));
+            player, SLOT(setAudioEq7(int)));
 	connect(audio_equalizer->eq[8], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq8(int)));
+            player, SLOT(setAudioEq8(int)));
 	connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
-			core, SLOT(setAudioEq9(int)));
+            player, SLOT(setAudioEq9(int)));
 
 	connect(audio_equalizer, SIGNAL(applyClicked(const Settings::TAudioEqualizerList&)),
-			core, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
+            player, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
 	connect(audio_equalizer, SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
-			core, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
+            player, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
 }
 
 void TBase::createActions() {
@@ -337,35 +337,35 @@ void TBase::createActions() {
     nextWheelFunctionAct = new TAction(this, "next_wheel_function",
                                        tr("Next wheel function"), 0, Qt::Key_W);
     connect(nextWheelFunctionAct, SIGNAL(triggered()),
-            core, SLOT(nextWheelFunction()));
+            player, SLOT(nextWheelFunction()));
 
 	// Time slider
     timeslider_action = new TTimeSliderAction(this);
 	timeslider_action->setObjectName("timeslider_action");
 
-    connect(core, SIGNAL(positionChanged(double)),
+    connect(player, SIGNAL(positionChanged(double)),
             timeslider_action, SLOT(setPosition(double)));
-    connect(core, SIGNAL(durationChanged(double)),
+    connect(player, SIGNAL(durationChanged(double)),
             timeslider_action, SLOT(setDuration(double)));
 
     connect(timeslider_action, SIGNAL(positionChanged(double)),
-            core, SLOT(seekTime(double)));
+            player, SLOT(seekTime(double)));
     connect(timeslider_action, SIGNAL(percentageChanged(double)),
-            core, SLOT(seekPercentage(double)));
+            player, SLOT(seekPercentage(double)));
     connect(timeslider_action, SIGNAL(dragPositionChanged(double)),
             this, SLOT(onDragPositionChanged(double)));
 
     connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
-            core, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
+            player, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
     connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
-            core, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
+            player, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
 
 	// Volume slider action
-	volumeslider_action = new TVolumeSliderAction(this, core->getVolume());
+    volumeslider_action = new TVolumeSliderAction(this, player->getVolume());
 	volumeslider_action->setObjectName("volumeslider_action");
     connect(volumeslider_action, SIGNAL(valueChanged(int)),
-            core, SLOT(setVolume(int)));
-    connect(core, SIGNAL(volumeChanged(int)),
+            player, SLOT(setVolume(int)));
+    connect(player, SIGNAL(volumeChanged(int)),
             volumeslider_action, SLOT(setValue(int)));
 
 	// Menu bar
@@ -400,22 +400,22 @@ void TBase::createMenus() {
 	// MENUS
     fileMenu = new TMenuFile(this);
 	menuBar()->addMenu(fileMenu);
-	playMenu = new TMenuPlay(this, core, playlist);
+    playMenu = new TMenuPlay(this, playlist);
 	menuBar()->addMenu(playMenu);
-	videoMenu = new TMenuVideo(this, core, playerwindow, video_equalizer);
+    videoMenu = new TMenuVideo(this, playerwindow, video_equalizer);
 	menuBar()->addMenu(videoMenu);
-	audioMenu = new TMenuAudio(this, core, audio_equalizer);
+    audioMenu = new TMenuAudio(this, audio_equalizer);
 	menuBar()->addMenu(audioMenu);
-	subtitleMenu = new TMenuSubtitle(this, core);
+    subtitleMenu = new TMenuSubtitle(this);
 	menuBar()->addMenu(subtitleMenu);
-	browseMenu = new TMenuBrowse(this, core);
+    browseMenu = new TMenuBrowse(this);
 	menuBar()->addMenu(browseMenu);
 
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
 	// and filled by descendants::createMenus()
 	statusbar_menu = new QMenu(this);
 	toolbar_menu = createToolbarMenu();
-	windowMenu = new TMenuWindow(this, core, toolbar_menu, playlist, log_window);
+    windowMenu = new TMenuWindow(this, toolbar_menu, playlist, log_window);
 	menuBar()->addMenu(windowMenu);
     auto_hide_timer->add(windowMenu->findChild<TAction*>("show_playlist"),
                          playlist);
@@ -582,9 +582,9 @@ void TBase::setupNetworkProxy() {
 }
 
 void TBase::sendEnableActions() {
-    logger()->debug("sendEnableActions: state " + core->stateToString());
+    logger()->debug("sendEnableActions: state " + player->stateToString());
 
-    timeslider_action->enable(core->statePOP());
+    timeslider_action->enable(player->statePOP());
 
     emit enableActions();
 }
@@ -657,9 +657,10 @@ void TBase::showEvent(QShowEvent* event) {
 	}
 
     if (pref->pause_when_hidden
-        && core->state() == STATE_PAUSED && !ignore_show_hide_events) {
+        && player->state() == Player::STATE_PAUSED
+        && !ignore_show_hide_events) {
         logger()->debug("showEvent: unpausing");
-		core->play();
+        player->play();
 	}
 
 	setFloatingToolbarsVisible(true);
@@ -673,9 +674,10 @@ void TBase::hideEvent(QHideEvent* event) {
 	}
 
     if (pref->pause_when_hidden
-        && core->state() == STATE_PLAYING && !ignore_show_hide_events) {
+        && player->state() == Player::STATE_PLAYING
+        && !ignore_show_hide_events) {
         logger()->debug("hideEvent: pausing");
-		core->pause();
+        player->pause();
 	}
 
 	setFloatingToolbarsVisible(false);
@@ -724,13 +726,13 @@ void TBase::createFilePropertiesDialog() {
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    file_properties_dialog = new TFilePropertiesDialog(this, &core->mdat);
+    file_properties_dialog = new TFilePropertiesDialog(this, &player->mdat);
     file_properties_dialog->setModal(false);
     connect(file_properties_dialog, SIGNAL(applied()),
             this, SLOT(applyFileProperties()));
-    connect(core, SIGNAL(videoBitRateChanged(int)),
+    connect(player, SIGNAL(videoBitRateChanged(int)),
             file_properties_dialog, SLOT(showInfo()));
-    connect(core, SIGNAL(audioBitRateChanged(int)),
+    connect(player, SIGNAL(audioBitRateChanged(int)),
             file_properties_dialog, SLOT(showInfo()));
     TAction* action = findChild<TAction*>("view_properties");
     if (action) {
@@ -769,7 +771,7 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "media_title") {
 			QStringList list = arg.split(" <<sep>> ");
-			core->addForcedTitle(list[0], list[1]);
+            player->addForcedTitle(list[0], list[1]);
 		}
 		else
 		if (command == "action") {
@@ -778,8 +780,8 @@ void TBase::handleMessageFromOtherInstances(const QString& message) {
 		else
 		if (command == "load_sub") {
 			setInitialSubtitle(arg);
-            if (core->statePOP()) {
-				core->loadSub(arg);
+            if (player->statePOP()) {
+                player->loadSub(arg);
 			}
 		}
 	}
@@ -934,7 +936,7 @@ void TBase::closeEvent(QCloseEvent* e)  {
     logger()->debug("closeEvent");
 
     if (playlist->maybeSave()) {
-        core->close(STATE_STOPPING);
+        player->close(Player::STATE_STOPPING);
         exitFullscreen();
         save();
         e->accept();
@@ -1025,7 +1027,7 @@ void TBase::applyNewPreferences() {
 	playerwindow->setColorKey();
 
 	// Forced demuxer
-	core->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
+    player->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
 
 	// Video equalizer
 	video_equalizer->setBySoftware(pref->use_soft_video_eq);
@@ -1063,7 +1065,7 @@ void TBase::applyNewPreferences() {
 
 	// Restart video if needed
 	if (pref_dialog->requiresRestart()) {
-		core->restart();
+        player->restart();
 	}
 } // TBase::applyNewPreferences()
 
@@ -1089,31 +1091,31 @@ void TBase::setDataToFileProperties() {
 	file_properties_dialog->setCodecs(i->vcList(), i->acList(), i->demuxerList());
 
 	// Save a copy of the demuxer, video and audio codec
-	if (core->mset.original_demuxer.isEmpty()) 
-		core->mset.original_demuxer = core->mdat.demuxer;
-	if (core->mset.original_video_codec.isEmpty()) 
-		core->mset.original_video_codec = core->mdat.video_codec;
-	if (core->mset.original_audio_codec.isEmpty()) 
-		core->mset.original_audio_codec = core->mdat.audio_codec;
+    if (player->mset.original_demuxer.isEmpty())
+        player->mset.original_demuxer = player->mdat.demuxer;
+    if (player->mset.original_video_codec.isEmpty())
+        player->mset.original_video_codec = player->mdat.video_codec;
+    if (player->mset.original_audio_codec.isEmpty())
+        player->mset.original_audio_codec = player->mdat.audio_codec;
 
 	// Set demuxer, video and audio codec
-	QString demuxer = core->mset.forced_demuxer;
+    QString demuxer = player->mset.forced_demuxer;
 	if (demuxer.isEmpty())
-		demuxer = core->mdat.demuxer;
-	QString vc = core->mset.forced_video_codec;
+        demuxer = player->mdat.demuxer;
+    QString vc = player->mset.forced_video_codec;
 	if (vc.isEmpty())
-		vc = core->mdat.video_codec;
-	QString ac = core->mset.forced_audio_codec;
+        vc = player->mdat.video_codec;
+    QString ac = player->mset.forced_audio_codec;
 	if (ac.isEmpty())
-		ac = core->mdat.audio_codec;
+        ac = player->mdat.audio_codec;
 
-	file_properties_dialog->setDemuxer(demuxer, core->mset.original_demuxer);
-    file_properties_dialog->setVideoCodec(vc, core->mset.original_video_codec);
-    file_properties_dialog->setAudioCodec(ac, core->mset.original_audio_codec);
+    file_properties_dialog->setDemuxer(demuxer, player->mset.original_demuxer);
+    file_properties_dialog->setVideoCodec(vc, player->mset.original_video_codec);
+    file_properties_dialog->setAudioCodec(ac, player->mset.original_audio_codec);
 
-	file_properties_dialog->setPlayerAdditionalArguments(core->mset.player_additional_options);
-	file_properties_dialog->setPlayerAdditionalVideoFilters(core->mset.player_additional_video_filters);
-	file_properties_dialog->setPlayerAdditionalAudioFilters(core->mset.player_additional_audio_filters);
+    file_properties_dialog->setPlayerAdditionalArguments(player->mset.player_additional_options);
+    file_properties_dialog->setPlayerAdditionalVideoFilters(player->mset.player_additional_video_filters);
+    file_properties_dialog->setPlayerAdditionalAudioFilters(player->mset.player_additional_audio_filters);
 
 	file_properties_dialog->showInfo();
 }
@@ -1129,39 +1131,39 @@ void TBase::applyFileProperties() {
 
 	bool demuxer_changed = false;
 
-	QString prev_demuxer = core->mset.forced_demuxer;
+    QString prev_demuxer = player->mset.forced_demuxer;
 
 	QString demuxer = file_properties_dialog->demuxer();
-	if (demuxer == core->mset.original_demuxer) demuxer="";
-	TEST_AND_SET(core->mset.forced_demuxer, demuxer);
+    if (demuxer == player->mset.original_demuxer) demuxer="";
+    TEST_AND_SET(player->mset.forced_demuxer, demuxer);
 
-	if (prev_demuxer != core->mset.forced_demuxer) {
+    if (prev_demuxer != player->mset.forced_demuxer) {
 		// Demuxer changed
 		demuxer_changed = true;
-		core->mset.current_audio_id = TMediaSettings::NoneSelected;
-		core->mset.current_sub_idx = TMediaSettings::NoneSelected;
+        player->mset.current_audio_id = TMediaSettings::NoneSelected;
+        player->mset.current_sub_idx = TMediaSettings::NoneSelected;
 	}
 
 	QString ac = file_properties_dialog->audioCodec();
-	if (ac == core->mset.original_audio_codec) ac="";
-	TEST_AND_SET(core->mset.forced_audio_codec, ac);
+    if (ac == player->mset.original_audio_codec) ac="";
+    TEST_AND_SET(player->mset.forced_audio_codec, ac);
 
 	QString vc = file_properties_dialog->videoCodec();
-	if (vc == core->mset.original_video_codec) vc="";
-	TEST_AND_SET(core->mset.forced_video_codec, vc);
+    if (vc == player->mset.original_video_codec) vc="";
+    TEST_AND_SET(player->mset.forced_video_codec, vc);
 
-	TEST_AND_SET(core->mset.player_additional_options, file_properties_dialog->playerAdditionalArguments());
-	TEST_AND_SET(core->mset.player_additional_video_filters, file_properties_dialog->playerAdditionalVideoFilters());
-	TEST_AND_SET(core->mset.player_additional_audio_filters, file_properties_dialog->playerAdditionalAudioFilters());
+    TEST_AND_SET(player->mset.player_additional_options, file_properties_dialog->playerAdditionalArguments());
+    TEST_AND_SET(player->mset.player_additional_video_filters, file_properties_dialog->playerAdditionalVideoFilters());
+    TEST_AND_SET(player->mset.player_additional_audio_filters, file_properties_dialog->playerAdditionalAudioFilters());
 
 #undef TEST_AND_SET
 
 	// Restart the video to apply
 	if (need_restart) {
 		if (demuxer_changed) {
-			core->reload();
+            player->reload();
 		} else {
-			core->restart();
+            player->restart();
 		}
 	}
 }
@@ -1173,9 +1175,9 @@ void TBase::onMediaInfoChanged() {
 		setDataToFileProperties();
 	}
 
-    QString title = core->mdat.displayName();
+    QString title = player->mdat.displayName();
 	setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
-	emit mediaFileTitleChanged(core->mdat.filename, title);
+    emit mediaFileTitleChanged(player->mdat.filename, title);
 }
 
 void TBase::onNewMediaStartedPlaying() {
@@ -1184,8 +1186,8 @@ void TBase::onNewMediaStartedPlaying() {
 	enterFullscreenOnPlay();
 
 	// Recents
-    pref->history_recents.addItem(core->mdat.filename,
-                                  core->mdat.displayName());
+    pref->history_recents.addItem(player->mdat.filename,
+                                  player->mdat.displayName());
 	fileMenu->updateRecents();
 
     checkPendingActionsToRun();
@@ -1194,17 +1196,17 @@ void TBase::onNewMediaStartedPlaying() {
 void TBase::updateVideoEqualizer() {
     logger()->debug("updateVideoEqualizer");
 
-	video_equalizer->setContrast(core->mset.contrast);
-	video_equalizer->setBrightness(core->mset.brightness);
-	video_equalizer->setHue(core->mset.hue);
-	video_equalizer->setSaturation(core->mset.saturation);
-	video_equalizer->setGamma(core->mset.gamma);
+    video_equalizer->setContrast(player->mset.contrast);
+    video_equalizer->setBrightness(player->mset.brightness);
+    video_equalizer->setHue(player->mset.hue);
+    video_equalizer->setSaturation(player->mset.saturation);
+    video_equalizer->setGamma(player->mset.gamma);
 }
 
 void TBase::updateAudioEqualizer() {
     logger()->debug("updateAudioEqualizer");
 
-	audio_equalizer->setEqualizer(core->getAudioEqualizer());
+    audio_equalizer->setEqualizer(player->getAudioEqualizer());
 }
 
 void TBase::setDefaultValuesFromVideoEqualizer() {
@@ -1226,7 +1228,7 @@ void TBase::changeVideoEqualizerBySoftware(bool b) {
 
 	if (b != pref->use_soft_video_eq) {
 		pref->use_soft_video_eq = b;
-		core->restart();
+        player->restart();
 	}
 }
 
@@ -1267,7 +1269,7 @@ void TBase::open(const QString &file) {
         pref->latest_dir = fi.absolutePath();
 	}
 
-	core->open(file);
+    player->open(file);
     logger()->debug("open: done");
 }
 
@@ -1362,7 +1364,7 @@ void TBase::openVCD() {
 	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
-        core->openDisc(TDiscName("vcd", pref->vcd_initial_title,
+        player->openDisc(TDiscName("vcd", pref->vcd_initial_title,
                                  pref->cdrom_device));
 	}
 }
@@ -1373,7 +1375,7 @@ void TBase::openAudioCD() {
 	if (pref->cdrom_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
-		core->open("cdda://");
+        player->open("cdda://");
 	}
 }
 
@@ -1383,7 +1385,7 @@ void TBase::openDVD() {
 	if (pref->dvd_device.isEmpty()) {
 		configureDiscDevices();
 	} else if (playlist->maybeSave()) {
-		core->openDisc(TDiscName(pref->dvd_device, pref->useDVDNAV()));
+        player->openDisc(TDiscName(pref->dvd_device, pref->useDVDNAV()));
 	}
 }
 
@@ -1405,7 +1407,7 @@ void TBase::openDVDFromFolder() {
 void TBase::openDVDFromFolder(const QString &directory) {
 
 	pref->last_dvd_directory = directory;
-	core->openDisc(TDiscName(directory, pref->useDVDNAV()));
+    player->openDisc(TDiscName(directory, pref->useDVDNAV()));
 }
 
 void TBase::openBluRay() {
@@ -1414,7 +1416,7 @@ void TBase::openBluRay() {
 	if (pref->bluray_device.isEmpty()) {
 		configureDiscDevices();
 	} else {
-		core->openDisc(TDiscName("br", 0, pref->bluray_device));
+        player->openDisc(TDiscName("br", 0, pref->bluray_device));
 	}
 }
 
@@ -1428,7 +1430,7 @@ void TBase::openBluRayFromFolder() {
                                       | QFileDialog::DontResolveSymlinks);
 		if (!dir.isEmpty()) {
 			pref->last_dvd_directory = dir;
-			core->openDisc(TDiscName("br", 0, dir));
+            player->openDisc(TDiscName("br", 0, dir));
 		}
 	}
 }
@@ -1443,13 +1445,13 @@ void TBase::loadSub() {
 		tr("All files") +" (*.*)");
 
 	if (!s.isEmpty())
-		core->loadSub(s);
+        player->loadSub(s);
 }
 
 void TBase::setInitialSubtitle(const QString & subtitle_file) {
     logger()->debug("setInitialSubtitle: '%1'", subtitle_file);
 
-	core->setInitialSubtitle(subtitle_file);
+    player->setInitialSubtitle(subtitle_file);
 }
 
 void TBase::loadAudioFile() {
@@ -1462,7 +1464,7 @@ void TBase::loadAudioFile() {
 		tr("All files") +" (*.*)");
 
 	if (!s.isEmpty())
-		core->loadAudioFile(s);
+        player->loadAudioFile(s);
 }
 
 void TBase::helpCLOptions() {
@@ -1496,10 +1498,10 @@ void TBase::showSeekToDialog() {
 
 	TTimeDialog d(this);
     d.setWindowTitle(tr("Seek"));
-	d.setMaximumTime((int) core->mdat.duration);
-	d.setTime((int) core->mset.current_sec);
+    d.setMaximumTime((int) player->mdat.duration);
+    d.setTime((int) player->mset.current_sec);
 	if (d.exec() == QDialog::Accepted) {
-        core->seekTime(d.time());
+        player->seekTime(d.time());
 	}
 }
 
@@ -1508,16 +1510,16 @@ void TBase::showAudioDelayDialog() {
 	#if QT_VERSION >= 0x050000
     int delay = QInputDialog::getInt(this,
         tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
-		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
+        tr("Audio delay (in milliseconds):"), player->mset.audio_delay,
 		-3600000, 3600000, 1, &ok);
 	#else
     int delay = QInputDialog::getInteger(this,
         tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
-		tr("Audio delay (in milliseconds):"), core->mset.audio_delay,
+        tr("Audio delay (in milliseconds):"), player->mset.audio_delay,
 		-3600000, 3600000, 1, &ok);
 	#endif
 	if (ok) {
-		core->setAudioDelay(delay);
+        player->setAudioDelay(delay);
 	}
 }
 
@@ -1526,26 +1528,26 @@ void TBase::showSubDelayDialog() {
 	#if QT_VERSION >= 0x050000
     int delay = QInputDialog::getInt(this,
         tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
-		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
+        tr("Subtitle delay (in milliseconds):"), player->mset.sub_delay,
 		-3600000, 3600000, 1, &ok);
 	#else
     int delay = QInputDialog::getInteger(this,
         tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
-		tr("Subtitle delay (in milliseconds):"), core->mset.sub_delay,
+        tr("Subtitle delay (in milliseconds):"), player->mset.sub_delay,
 		-3600000, 3600000, 1, &ok);
 	#endif
 	if (ok) {
-		core->setSubDelay(delay);
+        player->setSubDelay(delay);
 	}
 }
 
 void TBase::showStereo3dDialog() {
 	TStereo3dDialog d(this);
-	d.setInputFormat(core->mset.stereo3d_in);
-	d.setOutputFormat(core->mset.stereo3d_out);
+    d.setInputFormat(player->mset.stereo3d_in);
+    d.setOutputFormat(player->mset.stereo3d_out);
 
 	if (d.exec() == QDialog::Accepted) {
-		core->changeStereo3d(d.inputFormat(), d.outputFormat());
+        player->changeStereo3d(d.inputFormat(), d.outputFormat());
 	}
 }
 
@@ -1666,9 +1668,9 @@ void TBase::didExitFullscreen() {
 void TBase::leftClickFunction() {
     logger()->debug("leftClickFunction");
 
-	if (core->mdat.detected_type == TMediaData::TYPE_DVDNAV
+    if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
 		&& playerwindow->videoWindow()->underMouse()) {
-		core->dvdnavMouse();
+        player->dvdnavMouse();
 	} else if (!pref->mouse_left_click_function.isEmpty()) {
         processAction(pref->mouse_left_click_function);
 	}
@@ -1909,7 +1911,7 @@ void TBase::exitFullscreenOnStop() {
 void TBase::playlistHasFinished() {
     logger()->debug("playlistHasFinished");
 
-    core->stop();
+    player->stop();
 
     // Handle "Close on end of playlist" option
     if (arg_close_on_finish != 0) {
@@ -1919,29 +1921,29 @@ void TBase::playlistHasFinished() {
     }
 }
 
-void TBase::onStateChanged(TCoreState state) {
-    logger()->debug("onStateChanged: new state " + core->stateToString());
+void TBase::onStateChanged(Player::TState state) {
+    logger()->debug("onStateChanged: new state " + player->stateToString());
 
     sendEnableActions();
-    auto_hide_timer->setAutoHideMouse(state == STATE_PLAYING);
+    auto_hide_timer->setAutoHideMouse(state == Player::STATE_PLAYING);
     switch (state) {
-        case STATE_STOPPED:
+        case Player::STATE_STOPPED:
             setWindowCaption(TConfig::PROGRAM_NAME);
             msg(tr("Ready"));
             break;
-        case STATE_PLAYING:
-            msg(tr("Playing %1").arg(core->mdat.displayName()));
+        case Player::STATE_PLAYING:
+            msg(tr("Playing %1").arg(player->mdat.displayName()));
             break;
-        case STATE_PAUSED:
+        case Player::STATE_PAUSED:
             msg(tr("Paused"));
             break;
-        case STATE_STOPPING:
+        case Player::STATE_STOPPING:
             msg(tr("Stopping..."));
             break;
-        case STATE_RESTARTING:
+        case Player::STATE_RESTARTING:
             msg(tr("Restarting..."));
             break;
-        case STATE_LOADING:
+        case Player::STATE_LOADING:
             msg(tr("Loading..."));
             break;
     }
@@ -1962,7 +1964,7 @@ void TBase::onPositionChanged(double sec, bool changed) {
 
     QString frames;
     if (pref->show_frames) {
-        double fps = core->mdat.video_fps;
+        double fps = player->mdat.video_fps;
         if (fps > 0) {
             sec -= s;
             if (sec < 0) {
@@ -1977,7 +1979,7 @@ void TBase::onPositionChanged(double sec, bool changed) {
             } else {
                 frames = "."  + QString::number(s);
             }
-            frames += core->mdat.fuzzy_time;
+            frames += player->mdat.fuzzy_time;
             changed = true;
         }
     }
@@ -1993,7 +1995,7 @@ void TBase::onDurationChanged(double duration) {
     durationText = " / " + Helper::formatTime(qRound(duration));
 
     if (pref->show_frames) {
-        double fps = core->mdat.video_fps;
+        double fps = player->mdat.video_fps;
         if (fps > 0) {
             duration -= (int) duration;
             QString frames = QString::number(qRound(duration * fps));
@@ -2004,27 +2006,27 @@ void TBase::onDurationChanged(double duration) {
         }
     }
 
-    onPositionChanged(core->mset.current_sec, true);
+    onPositionChanged(player->mset.current_sec, true);
 }
 
 void TBase::changeSize(double factor) {
     logger()->debug("changeSize: %1", QString::number(factor));
 
-    if (core->mdat.noVideo()) {
+    if (player->mdat.noVideo()) {
         return;
     }
 
     if (pref->fullscreen) {
         // Adjust zoom to match the requested size factor
-        QSize video_size = QSize(core->mdat.video_out_width,
-                                 core->mdat.video_out_height) * factor;
+        QSize video_size = QSize(player->mdat.video_out_width,
+                                 player->mdat.video_out_height) * factor;
         QSize desktop_size = TDesktop::size(this);
         double zoom = (double) video_size.width() / desktop_size.width();
         double zoomY = (double) video_size.height() / desktop_size.height();
         if (zoomY > zoom) {
             zoom = zoomY;
         }
-        core->setZoom(zoom);
+        player->setZoom(zoom);
     } else {
         // Normal screen
         pref->size_factor = factor;
@@ -2133,7 +2135,7 @@ double TBase::getNewSizeFactor() {
         }
 
         // Make width multiple of 16
-        if (!core->mdat.image) {
+        if (!player->mdat.image) {
             int new_w = ((video_size.width() + 8) / 16) * 16;
             if (new_w != video_size.width()) {
                 size_factor = (double) new_w / res.width();
@@ -2239,7 +2241,7 @@ void TBase::resizeWindow(int w, int h) {
 }
 
 void TBase::resizeWindowToVideo() {
-    resizeWindow(core->mdat.video_out_width, core->mdat.video_out_height);
+    resizeWindow(player->mdat.video_out_width, player->mdat.video_out_height);
 }
 
 void TBase::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {
@@ -2277,7 +2279,7 @@ void TBase::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {
 void TBase::onMediaSettingsChanged() {
     logger()->debug("onMediaSettingsChanged");
 
-	emit mediaSettingsChanged(&core->mset);
+    emit mediaSettingsChanged(&player->mset);
 
 	updateVideoEqualizer();
 	updateAudioEqualizer();
@@ -2289,7 +2291,7 @@ void TBase::onDragPositionChanged(double t) {
     msg(s, 1000);
 
     if (pref->fullscreen) {
-        core->displayTextOnOSD(s);
+        player->displayTextOnOSD(s);
     }
 }
 
@@ -2327,7 +2329,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
         case TPreferences::AlwaysOnTop : setStayOnTop(true); break;
         case TPreferences::NeverOnTop  : setStayOnTop(false); break;
         case TPreferences::WhilePlayingOnTop :
-            setStayOnTop(core->state() == STATE_PLAYING);
+            setStayOnTop(player->state() == Player::STATE_PLAYING);
             break;
     }
 
@@ -2335,7 +2337,7 @@ void TBase::changeStayOnTop(int stay_on_top) {
     emit stayOnTopChanged(stay_on_top);
 }
 
-void TBase::checkStayOnTop(TCoreState) {
+void TBase::checkStayOnTop(Player::TState) {
     logger()->debug("checkStayOnTop");
 
     if (pref->fullscreen
@@ -2343,13 +2345,13 @@ void TBase::checkStayOnTop(TCoreState) {
         return;
     }
 
-    // On queued connection, so better use core->state()
-    switch (core->state()) {
-        case STATE_STOPPED:
-        case STATE_PAUSED:
+    // On queued connection, so better use player->state()
+    switch (player->state()) {
+        case Player::STATE_STOPPED:
+        case Player::STATE_PAUSED:
             setStayOnTop(false);
             break;
-        case STATE_PLAYING:
+        case Player::STATE_PLAYING:
             setStayOnTop(true);
             break;
         default:
@@ -2369,13 +2371,13 @@ void TBase::onPlayerError(int exit_code) {
     logger()->debug("onPlayerError: %1", exit_code);
 
     QString s = Player::Process::TExitMsg::message(exit_code)
-                + " (" + core->mdat.filename + ")";
+                + " (" + player->mdat.filename + ")";
     msg(s, 0);
 
     static bool busy = false;
     if (pref->report_player_crashes
         && !busy
-        && core->state() != STATE_STOPPING) {
+        && player->state() != Player::STATE_STOPPING) {
         busy = true;
         QMessageBox::warning(this,
             tr("%1 process error").arg(pref->playerName()),
@@ -2392,7 +2394,7 @@ bool TBase::winEvent (MSG* m, long* result) {
     if (m->message == WM_SYSCOMMAND) {
         if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
             || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
-            if (core->state() == STATE_PLAYING && core->mdat.hasVideo()) {
+            if (player->state() == Player::STATE_PLAYING && player->mdat.hasVideo()) {
                 logger()->debug("winEvent: not allowing screensaver");
                 (*result) = 0;
                 return true;

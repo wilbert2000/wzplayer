@@ -5,8 +5,6 @@
 #include "config.h"
 
 
-class TCore;
-
 namespace Gui {
 
 extern void msg(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);
@@ -14,7 +12,6 @@ extern void setMessageHandler(QStatusBar* bar);
 
 extern void msgOSD(const QString& message,
                    int timeout = TConfig::MESSAGE_DURATION);
-extern void setOSDMessageHandler(TCore* c);
 
 
 class TMsgSlot : public QObject {
@@ -25,8 +22,8 @@ public:
     virtual ~TMsgSlot();
 
 public slots:
-    void msg(const QString &msg, int timeout = TConfig::MESSAGE_DURATION);
-    void msgOSD(const QString &msg, int timeout = TConfig::MESSAGE_DURATION);
+    void msg(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);
+    void msgOSD(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);
 };
 
 extern TMsgSlot* msgSlot;

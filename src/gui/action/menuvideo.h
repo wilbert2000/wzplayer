@@ -4,7 +4,6 @@
 #include "gui/action/menu.h"
 
 
-class TCore;
 class TPlayerWindow;
 
 namespace Gui {
@@ -22,7 +21,6 @@ class TMenuVideo : public TMenu {
 	Q_OBJECT
 public:
     TMenuVideo(TBase* mw,
-               TCore* c,
                TPlayerWindow* playerwindow,
                TVideoEqualizer* videoEqualizer);
 
@@ -30,8 +28,6 @@ protected:
     virtual void enableActions();
 
 private:
-	TCore* core;
-
 	TAction* fullscreenAct;
 	TAction* exitFullscreenAct;
 

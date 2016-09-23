@@ -4,8 +4,6 @@
 #include "gui/action/menu.h"
 
 
-class TCore;
-
 namespace Gui {
 
 class TBase;
@@ -18,7 +16,7 @@ class TAction;
 class TMenuInOut : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuInOut(TBase* mw, TCore* c);
+    explicit TMenuInOut(TBase* mw);
 
 protected:
     virtual void enableActions();
@@ -26,7 +24,6 @@ protected:
     virtual void onAboutToShow();
 
 private:
-    TCore* core;
     QActionGroup* group;
     TAction* repeatInOutAct;
 

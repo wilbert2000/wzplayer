@@ -6,7 +6,6 @@
 #include "gui/action/menu.h"
 
 
-class TCore;
 class TPlayerWindow;
 
 namespace Gui {

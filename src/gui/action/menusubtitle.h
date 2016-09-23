@@ -5,8 +5,6 @@
 #include "log4qt/logger.h"
 
 
-class TCore;
-
 namespace Gui {
 
 class TBase;
@@ -19,14 +17,13 @@ class TActionGroup;
 
 class TMenuSubFPS : public TMenu {
 public:
-    explicit TMenuSubFPS(TBase* mw, TCore* c);
+    explicit TMenuSubFPS(TBase* mw);
     TActionGroup* group;
 protected:
     virtual void enableActions();
     virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
     virtual void onAboutToShow();
 private:
-    TCore* core;
     friend class TMenuSubtitle;
 };
 
@@ -35,7 +32,7 @@ class TMenuSubtitle : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMenuSubtitle(TBase* mw, TCore* c);
+    TMenuSubtitle(TBase* mw);
     TAction* useForcedSubsOnlyAct;
     TAction* useCustomSubStyleAct;
 
@@ -44,8 +41,6 @@ protected:
     virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 
 private:
-    TCore* core;
-
     TAction* decSubPosAct;
     TAction* incSubPosAct;
     TAction* decSubScaleAct;

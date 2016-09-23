@@ -51,6 +51,8 @@ HEADERS += wzdebug.h \
     player/info/playerinfo.h \
     player/info/playerinfomplayer.h \
     player/info/playerinfompv.h \
+    player/state.h \
+    player/player.h \
     playerwindow.h \
 	mediadata.h \
     settings/paths.h \
@@ -71,8 +73,6 @@ HEADERS += wzdebug.h \
     settings/updatecheckerdata.h \
     iconprovider.h \
     images.h \
-    corestate.h \
-	core.h \
     gui/desktop.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
@@ -180,6 +180,7 @@ SOURCES	+= wzdebug.cpp \
     player/info/playerinfo.cpp \
     player/info/playerinfomplayer.cpp \
     player/info/playerinfompv.cpp \
+    player/player.cpp \
     playerwindow.cpp \
 	mediadata.cpp \
     settings/paths.cpp \
@@ -200,7 +201,6 @@ SOURCES	+= wzdebug.cpp \
     settings/updatecheckerdata.cpp \
     iconprovider.cpp \
     images.cpp \
-	core.cpp \
     gui/desktop.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \

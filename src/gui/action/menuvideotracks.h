@@ -4,7 +4,6 @@
 #include "gui/action/menu.h"
 #include "log4qt/logger.h"
 
-class TCore;
 
 namespace Gui {
 
@@ -21,11 +20,10 @@ class TMenuVideoTracks : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TMenuVideoTracks(TBase* mw, TCore* c);
+    explicit TMenuVideoTracks(TBase* mw);
 protected:
     virtual void enableActions();
 private:
-    TCore* core;
     TAction* nextVideoTrackAct;
     TActionGroup* videoTrackGroup;
 private slots:

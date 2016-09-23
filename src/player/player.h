@@ -16,46 +16,45 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CORE_H
-#define CORE_H
+#ifndef PLAYER_PLAYER_H
+#define PLAYER_PLAYER_H
 
 #include <QProcess>
 #include <QTime>
 
 #include "wzdebug.h"
 #include "config.h"
-#include "corestate.h"
 #include "mediadata.h"
+#include "player/state.h"
 #include "settings/mediasettings.h"
 
 
-class TMediaData;
 class TPlayerWindow;
 
 namespace Player {
-    namespace Process {
+
+namespace Process {
     class TPlayerProcess;
-    }
 }
 
 
-class TCore : public QObject {
+class TPlayer : public QObject {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TCore(QWidget* parent, TPlayerWindow *mpw);
-	virtual ~TCore();
+    TPlayer(QWidget* parent, TPlayerWindow *mpw);
+    virtual ~TPlayer();
 
 	TMediaData mdat;
 	Settings::TMediaSettings mset;
 
 	//! Return the current state
-	TCoreState state() const { return _state; }
+    TState state() const { return _state; }
     //! Change the current state and sends the stateChanged() signal.
-    void setState(TCoreState s);
+    void setState(TState s);
     //! Return a string with the name of the current state.
-    static QString stateToString(TCoreState state);
+    static QString stateToString(TState state);
     QString stateToString() const;
 
     bool statePOP() const {
@@ -77,7 +76,7 @@ public:
 	void openDisc(TDiscName disc, bool fast_open = false);
 
 	// Stop player if running and save MediaInfo
-    void close(TCoreState next_state);
+    void close(TState next_state);
 
 	void addForcedTitle(const QString& file, const QString& title) {
 		forced_titles[file] = title;
@@ -332,7 +331,7 @@ public slots:
 	void clearOSD();
 
 signals:
-	void stateChanged(TCoreState state);
+    void stateChanged(Player::TState state);
 	void mediaSettingsChanged();
 	void videoOutResolutionChanged(int w, int h);
     void newMediaStartedPlaying();
@@ -409,7 +408,7 @@ protected:
 private:
     static double restartTime;
 
-    TCoreState _state;
+    TState _state;
     bool seeking;
     QTime time;
 
@@ -443,4 +442,8 @@ private:
     int getVolumeForPlayer() const;
 };
 
-#endif
+} // namespace Player
+
+extern Player::TPlayer* player;
+
+#endif // PLAYER_PLAYER_H

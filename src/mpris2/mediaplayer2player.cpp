@@ -42,7 +42,7 @@
 #include "mpris2.h"
 #include "gui/playlist/playlist.h"
 #include "gui/base.h"
-#include "core.h"
+#include "player/player.h"
 
 #include <QCryptographicHash>
 
@@ -54,14 +54,13 @@ static QByteArray makeTrackId(const QString& source)
 
 MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
-      m_core(gui->getCore()),
-      m_playlist(gui->getPlaylist())
-{
-//     connect(m_core, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
-//     connect(m_core, SIGNAL(seekableChanged(bool)), this, SLOT(seekableChanged(bool)));
-	connect(m_core, SIGNAL(stateChanged(TCoreState)), this, SLOT(stateUpdated()));
-    connect(m_core, SIGNAL(mediaInfoChanged()), this, SLOT(emitMetadataChange()));
-    connect(m_core, SIGNAL(volumeChanged(int)), this, SLOT(volumeChanged()));
+    m_playlist(gui->getPlaylist()) {
+
+//     connect(player, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
+//     connect(player, SIGNAL(seekableChanged(bool)), this, SLOT(seekableChanged(bool)));
+    connect(player, SIGNAL(stateChanged(Player::TState)), this, SLOT(stateUpdated()));
+    connect(player, SIGNAL(mediaInfoChanged()), this, SLOT(emitMetadataChange()));
+    connect(player, SIGNAL(volumeChanged(int)), this, SLOT(volumeChanged()));
 }
 
 MediaPlayer2Player::~MediaPlayer2Player()
@@ -95,17 +94,17 @@ bool MediaPlayer2Player::CanPause() const
 
 void MediaPlayer2Player::Pause() const
 {
-    m_core->pause();
+    player->pause();
 }
 
 void MediaPlayer2Player::PlayPause() const
 {
-	m_core->playOrPause();
+    player->playOrPause();
 }
 
 void MediaPlayer2Player::Stop() const
 {
-    m_core->stop();
+    player->stop();
 }
 
 bool MediaPlayer2Player::CanPlay() const
@@ -115,23 +114,23 @@ bool MediaPlayer2Player::CanPlay() const
 
 void MediaPlayer2Player::Play() const
 {
-    m_core->play();
+    player->play();
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& TrackId, qlonglong Position) const
 {
-    if (TrackId.path().toLocal8Bit() == makeTrackId(m_core->mdat.filename))
-        m_core->seekTime(Position / 1000000);
+    if (TrackId.path().toLocal8Bit() == makeTrackId(player->mdat.filename))
+        player->seekTime(Position / 1000000);
 }
 
 void MediaPlayer2Player::OpenUri(QString uri) const
 {
-    m_core->open(uri);
+    player->open(uri);
 }
 
 QString MediaPlayer2Player::PlaybackStatus() const
 {
-    return m_core->stateToString();
+    return player->stateToString();
 }
 
 QString MediaPlayer2Player::LoopStatus() const
@@ -146,12 +145,12 @@ void MediaPlayer2Player::setLoopStatus(const QString& loopStatus) const
 
 double MediaPlayer2Player::Rate() const
 {
-    return m_core->mset.speed;
+    return player->mset.speed;
 }
 
 void MediaPlayer2Player::setRate(double rate) const
 {
-    m_core->setSpeed(rate);
+    player->setSpeed(rate);
 }
 
 bool MediaPlayer2Player::Shuffle() const
@@ -168,10 +167,10 @@ QVariantMap MediaPlayer2Player::Metadata() const
 {
 	QVariantMap metaData;
 
-	if (!m_core->mdat.initialized)
+    if (!player->mdat.initialized)
 		return metaData;
 
-	TMediaData* md = &m_core->mdat;
+    TMediaData* md = &player->mdat;
 	metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(QDBusObjectPath(makeTrackId(md->filename).constData()));
 	metaData["mpris:length"] = md->duration * 1000000;
 
@@ -202,17 +201,17 @@ QVariantMap MediaPlayer2Player::Metadata() const
 
 double MediaPlayer2Player::Volume() const
 {
-	return static_cast<double>(m_core->getVolume() / 100.0);
+    return static_cast<double>(player->getVolume() / 100.0);
 }
 
 void MediaPlayer2Player::setVolume(double volume) const
 {
-    m_core->setVolume(static_cast<int>(volume*100));
+    player->setVolume(static_cast<int>(volume*100));
 }
 
 qlonglong MediaPlayer2Player::Position() const
 {
-	return static_cast<qlonglong>(m_core->mset.current_sec * 1000000);
+    return static_cast<qlonglong>(player->mset.current_sec * 1000000);
 }
 
 double MediaPlayer2Player::MinimumRate() const
@@ -232,7 +231,7 @@ bool MediaPlayer2Player::CanSeek() const
 
 void MediaPlayer2Player::Seek(qlonglong Offset) const
 {
-    m_core->seekRelative(Offset / 1000000);
+    player->seekRelative(Offset / 1000000);
 }
 
 bool MediaPlayer2Player::CanControl() const

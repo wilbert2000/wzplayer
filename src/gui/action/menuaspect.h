@@ -4,8 +4,6 @@
 #include "gui/action/menu.h"
 
 
-class TCore;
-
 namespace Gui {
 namespace Action {
 
@@ -15,7 +13,7 @@ class TActionGroup;
 class TMenuAspect : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuAspect(TBase* mw, TCore* c);
+    explicit TMenuAspect(TBase* mw);
 
 protected:
     virtual void enableActions();
@@ -23,7 +21,6 @@ protected:
 	virtual void onAboutToShow();
 
 private:
-	TCore* core;
 	TActionGroup* group;
 	TAction* aspectAutoAct;
 	TAction* aspectDisabledAct;

@@ -2,7 +2,7 @@
 #include <QWidget>
 #include "settings/mediasettings.h"
 #include "gui/action/actiongroup.h"
-#include "core.h"
+#include "player/player.h"
 #include "gui/base.h"
 
 using namespace Settings;
@@ -13,19 +13,18 @@ namespace Action {
 
 class TMenuCC : public TMenu {
 public:
-    explicit TMenuCC(TBase* mw, TCore* c);
+    explicit TMenuCC(TBase* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 	virtual void onAboutToShow();
 private:
-	TCore* core;
-	TActionGroup* group;
+    TActionGroup* group;
 };
 
-TMenuCC::TMenuCC(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "closed_captions_menu", tr("&Closed captions"), "closed_caption")
-	, core(c) {
+TMenuCC::TMenuCC(TBase* mw)
+    : TMenu(mw, mw, "closed_captions_menu", tr("&Closed captions"),
+            "closed_caption") {
 
 	group = new TActionGroup(this, "cc");
 	group->setEnabled(false);
@@ -34,15 +33,15 @@ TMenuCC::TMenuCC(TBase* mw, TCore* c)
 	new TActionGroupItem(this, group, "cc_ch_2", tr("&2"), 2);
 	new TActionGroupItem(this, group, "cc_ch_3", tr("&3"), 3);
 	new TActionGroupItem(this, group, "cc_ch_4", tr("&4"), 4);
-	group->setChecked(core->mset.closed_caption_channel);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeClosedCaptionChannel(int)));
+    group->setChecked(player->mset.closed_caption_channel);
+    connect(group, SIGNAL(activated(int)), player, SLOT(changeClosedCaptionChannel(int)));
 	// Currently no one else sets it
     addActionsTo(main_window);
 }
 
 void TMenuCC::enableActions() {
 	// Using mset, so useless to set if stopped.
-    group->setEnabled(core->statePOP() && core->hasVideo());
+    group->setEnabled(player->statePOP() && player->hasVideo());
 }
 
 void TMenuCC::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -50,13 +49,13 @@ void TMenuCC::onMediaSettingsChanged(TMediaSettings* mset) {
 }
 
 void TMenuCC::onAboutToShow() {
-	group->setChecked(core->mset.closed_caption_channel);
+    group->setChecked(player->mset.closed_caption_channel);
 }
 
 
-TMenuSubFPS::TMenuSubFPS(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "subfps_menu", tr("F&rames per second external subtitles"), "subfps")
-	, core(c) {
+TMenuSubFPS::TMenuSubFPS(TBase* mw)
+    : TMenu(mw, mw, "subfps_menu", tr("F&rames per second external subtitles"),
+            "subfps") {
 
 	group = new TActionGroup(this, "subfps");
 	group->setEnabled(false);
@@ -66,14 +65,14 @@ TMenuSubFPS::TMenuSubFPS(TBase* mw, TCore* c)
 	new TActionGroupItem(this, group, "sub_fps_25", tr("2&5"), TMediaSettings::SFPS_25);
 	new TActionGroupItem(this, group, "sub_fps_29970", tr("29.&970"), TMediaSettings::SFPS_29970);
 	new TActionGroupItem(this, group, "sub_fps_30", tr("3&0"), TMediaSettings::SFPS_30);
-	group->setChecked(core->mset.external_subtitles_fps);
-	connect(group, SIGNAL(activated(int)), core, SLOT(changeExternalSubFPS(int)));
+    group->setChecked(player->mset.external_subtitles_fps);
+    connect(group, SIGNAL(activated(int)), player, SLOT(changeExternalSubFPS(int)));
 	// No one else sets it
     addActionsTo(main_window);
 }
 
 void TMenuSubFPS::enableActions() {
-    group->setEnabled(core->statePOP() && core->haveExternalSubs());
+    group->setEnabled(player->statePOP() && player->haveExternalSubs());
 }
 
 void TMenuSubFPS::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -81,47 +80,46 @@ void TMenuSubFPS::onMediaSettingsChanged(TMediaSettings* mset) {
 }
 
 void TMenuSubFPS::onAboutToShow() {
-	group->setChecked(core->mset.external_subtitles_fps);
+    group->setChecked(player->mset.external_subtitles_fps);
 }
 
 
-TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
-    : TMenu(mw, mw, "subtitle_menu", tr("&Subtitles"), "noicon")
-	, core(c) {
+TMenuSubtitle::TMenuSubtitle(TBase* mw)
+    : TMenu(mw, mw, "subtitle_menu", tr("&Subtitles"), "noicon") {
 
     decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "", Qt::Key_Up);
-	connect(decSubPosAct, SIGNAL(triggered()), core, SLOT(decSubPos()));
+    connect(decSubPosAct, SIGNAL(triggered()), player, SLOT(decSubPos()));
     incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "", Qt::Key_Down);
-	connect(incSubPosAct, SIGNAL(triggered()), core, SLOT(incSubPos()));
+    connect(incSubPosAct, SIGNAL(triggered()), player, SLOT(incSubPos()));
 
 	addSeparator();
     incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"), "", Qt::Key_K);
-    connect(incSubScaleAct, SIGNAL(triggered()), core, SLOT(incSubScale()));
+    connect(incSubScaleAct, SIGNAL(triggered()), player, SLOT(incSubScale()));
     decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"), "", Qt::SHIFT | Qt::Key_K);
-	connect(decSubScaleAct, SIGNAL(triggered()), core, SLOT(decSubScale()));
+    connect(decSubScaleAct, SIGNAL(triggered()), player, SLOT(decSubScale()));
 
 	addSeparator();
     incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"), "", Qt::ALT | Qt::Key_D);
-	connect(incSubDelayAct, SIGNAL(triggered()), core, SLOT(incSubDelay()));
+    connect(incSubDelayAct, SIGNAL(triggered()), player, SLOT(incSubDelay()));
     decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"), "", Qt::SHIFT | Qt::Key_D);
-    connect(decSubDelayAct, SIGNAL(triggered()), core, SLOT(decSubDelay()));
+    connect(decSubDelayAct, SIGNAL(triggered()), player, SLOT(decSubDelay()));
     subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."), "", Qt::META | Qt::Key_D);
     connect(subDelayAct, SIGNAL(triggered()), main_window, SLOT(showSubDelayDialog()));
 
 	addSeparator();
     incSubStepAct = new TAction(this, "inc_sub_step",
         tr("N&ext line in subtitles"), "", Qt::Key_L);
-    connect(incSubStepAct, SIGNAL(triggered()), core, SLOT(incSubStep()));
+    connect(incSubStepAct, SIGNAL(triggered()), player, SLOT(incSubStep()));
     decSubStepAct = new TAction(this, "dec_sub_step",
         tr("&Previous line in subtitles"), "", Qt::SHIFT | Qt::Key_L);
-	connect(decSubStepAct, SIGNAL(triggered()), core, SLOT(decSubStep()));
+    connect(decSubStepAct, SIGNAL(triggered()), player, SLOT(decSubStep()));
 
     seekNextSubAct = new TAction(this, "seek_next_sub",
         tr("Seek to next subtitle"), "", Qt::Key_N, pref->isMPV());
-	connect(seekNextSubAct, SIGNAL(triggered()), core, SLOT(seekToNextSub()));
+    connect(seekNextSubAct, SIGNAL(triggered()), player, SLOT(seekToNextSub()));
     seekPrevSubAct = new TAction(this, "seek_prev_sub",
         tr("Seek to previous subtitle"), "", Qt::SHIFT | Qt::Key_N, pref->isMPV());
-	connect(seekPrevSubAct, SIGNAL(triggered()), core, SLOT(seekToPrevSub()));
+    connect(seekPrevSubAct, SIGNAL(triggered()), player, SLOT(seekToPrevSub()));
 
 	// Subtitle tracks
 	addSeparator();
@@ -133,12 +131,12 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
     main_window->addAction(nextSubtitleAct);
     subtitleTrackMenu->addSeparator();
 	addMenu(subtitleTrackMenu);
-	connect(nextSubtitleAct, SIGNAL(triggered()), core, SLOT(nextSubtitle()));
+    connect(nextSubtitleAct, SIGNAL(triggered()), player, SLOT(nextSubtitle()));
 
 	subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
-	connect(subtitleTrackGroup, SIGNAL(activated(int)), core, SLOT(changeSubtitle(int)));
-	connect(core, SIGNAL(subtitlesChanged()), this, SLOT(updateSubtitles()));
-	connect(core, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
+    connect(subtitleTrackGroup, SIGNAL(activated(int)), player, SLOT(changeSubtitle(int)));
+    connect(player, SIGNAL(subtitlesChanged()), this, SLOT(updateSubtitles()));
+    connect(player, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
 	// Secondary subtitle track
     secondarySubtitleTrackMenu = new TMenu(main_window, main_window,
@@ -147,25 +145,25 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
 		addMenu(secondarySubtitleTrackMenu);
 	secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
     connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)),
-            core, SLOT(changeSecondarySubtitle(int)));
-    connect(core, SIGNAL(secondarySubtitleTrackChanged(int)),
+            player, SLOT(changeSecondarySubtitle(int)));
+    connect(player, SIGNAL(secondarySubtitleTrackChanged(int)),
             this, SLOT(updateSubtitles()));
 
-    addMenu(new TMenuCC(main_window, core));
+    addMenu(new TMenuCC(main_window));
 
     useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only",
         tr("&Forced subtitles only"), "forced_subs");
 	useForcedSubsOnlyAct->setCheckable(true);
 	useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
-    connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), core,
+    connect(useForcedSubsOnlyAct, SIGNAL(triggered(bool)), player,
             SLOT(toggleForcedSubsOnly(bool)));
 
 	addSeparator();
 	loadSubsAct = new TAction(this, "load_subs", tr("&Load subtitles..."), "open");
     connect(loadSubsAct, SIGNAL(triggered()), main_window, SLOT(loadSub()));
 	unloadSubsAct = new TAction(this, "unload_subs", tr("U&nload subtitles"), "unload");
-	connect(unloadSubsAct, SIGNAL(triggered()), core, SLOT(unloadSub()));
-    subFPSMenu = new TMenuSubFPS(main_window, core);
+    connect(unloadSubsAct, SIGNAL(triggered()), player, SLOT(unloadSub()));
+    subFPSMenu = new TMenuSubFPS(main_window);
 	addMenu(subFPSMenu);
 
 	addSeparator();
@@ -174,16 +172,16 @@ TMenuSubtitle::TMenuSubtitle(TBase* mw, TCore* c)
 	useCustomSubStyleAct->setCheckable(true);
 	useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
     connect(useCustomSubStyleAct, SIGNAL(triggered(bool)),
-            core, SLOT(changeUseCustomSubStyle(bool)));
+            player, SLOT(changeUseCustomSubStyle(bool)));
 
     addActionsTo(main_window);
 }
 
 void TMenuSubtitle::enableActions() {
 
-    bool pop = core->statePOP();
-    bool e = pop && (core->mdat.subs.count() > 0
-                     || core->mset.closed_caption_channel > 0);
+    bool pop = player->statePOP();
+    bool e = pop && (player->mdat.subs.count() > 0
+                     || player->mset.closed_caption_channel > 0);
 	decSubPosAct->setEnabled(e);
 	incSubPosAct->setEnabled(e);
 	incSubScaleAct->setEnabled(e);
@@ -199,12 +197,12 @@ void TMenuSubtitle::enableActions() {
 	seekNextSubAct->setEnabled(e && pref->isMPV());
 	seekPrevSubAct->setEnabled(e && pref->isMPV());
 
-	nextSubtitleAct->setEnabled(e && core->mdat.subs.count() > 1);
+    nextSubtitleAct->setEnabled(e && player->mdat.subs.count() > 1);
 
     // useForcedSubsOnlyAct always enabled
 
     loadSubsAct->setEnabled(pop);
-	unloadSubsAct->setEnabled(e && core->haveExternalSubs());
+    unloadSubsAct->setEnabled(e && player->haveExternalSubs());
 
 	// useCustomSubStyleAct always enabled
 }
@@ -223,28 +221,28 @@ void TMenuSubtitle::updateSubtitles() {
 	QAction* subNoneAct = subtitleTrackGroup->addAction(tr("&None"));
 	subNoneAct->setData(SubData::None);
 	subNoneAct->setCheckable(true);
-	if (core->mset.current_sub_idx < 0) {
+    if (player->mset.current_sub_idx < 0) {
 		subNoneAct->setChecked(true);
 	}
 	subNoneAct = secondarySubtitleTrackGroup->addAction(tr("&None"));
 	subNoneAct->setData(SubData::None);
 	subNoneAct->setCheckable(true);
-	if (core->mset.current_secondary_sub_idx < 0) {
+    if (player->mset.current_secondary_sub_idx < 0) {
 		subNoneAct->setChecked(true);
 	}
 
-	for (int idx = 0; idx < core->mdat.subs.count(); idx++) {
-		SubData sub = core->mdat.subs.itemAt(idx);
+    for (int idx = 0; idx < player->mdat.subs.count(); idx++) {
+        SubData sub = player->mdat.subs.itemAt(idx);
 		QAction *a = new QAction(subtitleTrackGroup);
 		a->setCheckable(true);
 		a->setText(sub.displayName());
 		a->setData(idx);
-		if (idx == core->mset.current_sub_idx) {
+        if (idx == player->mset.current_sub_idx) {
 			a->setChecked(true);
 		}
 
 		if (pref->isMPV()) {
-			if (idx == core->mset.current_secondary_sub_idx) {
+            if (idx == player->mset.current_secondary_sub_idx) {
 				a->setEnabled(false);
 			}
 
@@ -252,10 +250,10 @@ void TMenuSubtitle::updateSubtitles() {
 			a->setCheckable(true);
 			a->setText(sub.displayName());
 			a->setData(idx);
-			if (idx == core->mset.current_secondary_sub_idx) {
+            if (idx == player->mset.current_secondary_sub_idx) {
 				a->setChecked(true);
 			}
-			if (idx == core->mset.current_sub_idx) {
+            if (idx == player->mset.current_sub_idx) {
 				a->setEnabled(false);
 			}
 		}

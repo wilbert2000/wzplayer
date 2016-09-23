@@ -1,5 +1,5 @@
 #include "msg.h"
-#include "core.h"
+#include "player/player.h"
 
 
 namespace Gui {
@@ -19,18 +19,12 @@ void setMessageHandler(QStatusBar* bar) {
 }
 
 
-TCore* core = 0;
-
 void msgOSD(const QString& message, int timeout) {
 
-    if (core) {
-        core->displayTextOnOSD(message, timeout);
+    if (player) {
+        player->displayTextOnOSD(message, timeout);
     }
     msg(message, timeout);
-}
-
-void setOSDMessageHandler(TCore* c) {
-    core = c;
 }
 
 

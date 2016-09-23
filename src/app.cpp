@@ -34,8 +34,8 @@
 #include "clhelp.h"
 #include "images.h"
 #include "iconprovider.h"
-#include "core.h"
 
+#include "player/player.h"
 #include "gui/playlist/playlist.h"
 #include "gui/default.h"
 
@@ -477,7 +477,7 @@ void TApp::start() {
 
     if (files_to_play.isEmpty()) {
         // Nothing to open
-        main_window->getCore()->setState(STATE_STOPPED);
+        player->setState(Player::STATE_STOPPED);
 
         // Check clipboard
         if (actions.isEmpty() && acceptClipboard()) {
@@ -488,8 +488,7 @@ void TApp::start() {
             main_window->setInitialSubtitle(subtitle_file);
         }
         if (!media_title.isEmpty()) {
-            main_window->getCore()->addForcedTitle(files_to_play[0],
-                                                   media_title);
+            player->addForcedTitle(files_to_play[0], media_title);
         }
         main_window->openFiles(files_to_play, current_file);
     }
@@ -513,7 +512,7 @@ void TApp::onRequestRestart() {
     Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
     playlist->getFilesToPlay(files_to_play);
     current_file = playlist->playingFile();
-    main_window->getCore()->saveRestartTime();
+    player->saveRestartTime();
 }
 
 void TApp::showInfo() {

@@ -4,7 +4,6 @@
 #include "gui/action/menu.h"
 #include "log4qt/logger.h"
 
-class TCore;
 
 namespace Gui {
 namespace Action {
@@ -17,11 +16,10 @@ class TMenuAudioTracks : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TMenuAudioTracks(TBase* mw, TCore* c);
+    explicit TMenuAudioTracks(TBase* mw);
 protected:
     virtual void enableActions();
 private:
-    TCore* core;
     TAction* nextAudioTrackAct;
     TActionGroup* audioTrackGroup;
 private slots:
