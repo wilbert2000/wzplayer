@@ -122,7 +122,6 @@ signals:
 	void draggingChanged(bool);
 
 	void moveWindow(QPoint);
-	void setZoomAndPan(double, double, double);
 	void videoOutChanged(const QSize& size);
     void videoSizeFactorChanged(double, double);
 

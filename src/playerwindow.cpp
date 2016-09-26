@@ -28,11 +28,12 @@
 #include <QApplication>
 #include <QLabel>
 
+#include "player/player.h"
+#include "gui/msg.h"
 #include "gui/desktop.h"
+#include "settings/preferences.h"
 #include "colorutils.h"
 #include "images.h"
-#include "settings/preferences.h"
-#include "gui/msg.h"
 
 
 using namespace Settings;
@@ -325,7 +326,7 @@ void TPlayerWindow::updateVideoWindow() {
     // MPV wants factor relative to whole scaled video
     double pan_x = (double) pan.x() / vsize.width();
     double pan_y = (double) pan.y() / vsize.height();
-    emit setZoomAndPan(zoom, pan_x, pan_y);
+    player->setZoomAndPan(zoom, pan_x, pan_y);
 
     // Update status with new video out size
     if (vsize != last_video_out_size) {

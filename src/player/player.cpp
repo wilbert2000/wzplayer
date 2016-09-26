@@ -151,10 +151,6 @@ TPlayer::TPlayer(QWidget* parent, TPlayerWindow *mpw) :
     connect(proc, SIGNAL(audioBitRateChanged(int)),
             this, SIGNAL(audioBitRateChanged(int)));
 
-	// playerwindow
-	connect(playerwindow, SIGNAL(setZoomAndPan(double, double, double)),
-			this, SLOT(setZoomAndPan(double, double, double)));
-
 	// Mouse wheel
 	connect(playerwindow, SIGNAL(wheelUp()),
 			this, SLOT(wheelUp()));
