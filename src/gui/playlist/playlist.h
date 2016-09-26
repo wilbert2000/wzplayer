@@ -39,7 +39,7 @@ class QItemSelection;
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 class TAction;
@@ -56,7 +56,7 @@ class TAddRemovedMenu : public Gui::Action::TMenu {
 
 public:
     explicit TAddRemovedMenu(QWidget* parent,
-                             TBase* w,
+                             TMainWindow* w,
                              TPlaylistWidget* plWidget);
     virtual ~TAddRemovedMenu();
 
@@ -80,7 +80,7 @@ class TPlaylist : public QWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlaylist(TBase* mw);
+    TPlaylist(TMainWindow* mw);
     virtual ~TPlaylist();
 
     void openPlaylist(const QString& filename);
@@ -176,7 +176,7 @@ private:
 
     Action::TMenuInOut* inOutMenu;
 
-    TBase* main_window;
+    TMainWindow* main_window;
     TPlaylistWidget* playlistWidget;
 
     QString filename;

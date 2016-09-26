@@ -3,7 +3,7 @@
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "player/player.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 using namespace Settings;
@@ -12,7 +12,7 @@ namespace Gui {
 namespace Action {
 
 
-TMenuVideoFilter::TMenuVideoFilter(TBase* mw)
+TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
     : TMenu(mw, mw, "videofilter_menu", tr("F&ilters"), "video_filters") {
 
 	group = new QActionGroup(this);

@@ -37,7 +37,7 @@ public:
 	enum Service { TV = 1, Radio = 2, Data = 4 };
 	Q_DECLARE_FLAGS(Services, Service)
 
-    TTVList(TBase* mw,
+    TTVList(TMainWindow* mw,
             const QString& name,
             const QString& text,
             const QString& icon,

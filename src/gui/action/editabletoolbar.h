@@ -27,7 +27,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -40,7 +40,7 @@ class TEditableToolbar : public QToolBar {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TEditableToolbar(TBase* mainwindow);
+    TEditableToolbar(TMainWindow* mainwindow);
     virtual ~TEditableToolbar();
 
     QStringList actionsToStringList(bool remove_size_grip = true);
@@ -58,7 +58,7 @@ public slots:
     void edit();
 
 protected:
-    TBase* main_window;
+    TMainWindow* main_window;
 
     virtual void resizeEvent(QResizeEvent* event);
     virtual void moveEvent(QMoveEvent* event);

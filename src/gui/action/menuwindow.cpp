@@ -6,7 +6,7 @@
 #include "settings/preferences.h"
 #include "player/player.h"
 #include "images.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/action/action.h"
 #include "images.h"
 
@@ -17,7 +17,7 @@ namespace Action {
 
 class TMenuOSD : public TMenu {
 public:
-    explicit TMenuOSD(TBase* mw);
+    explicit TMenuOSD(TMainWindow* mw);
 protected:
     virtual void enableActions();
 	virtual void onAboutToShow();
@@ -27,7 +27,7 @@ private:
 	TAction* showTimeAct;
 };
 
-TMenuOSD::TMenuOSD(TBase* mw)
+TMenuOSD::TMenuOSD(TMainWindow* mw)
     : TMenu(mw, mw, "osd_menu", tr("&OSD"), "osd") {
 
     TAction* a = new TAction(this, "next_osd", tr("OSD - Next level"), "", Qt::Key_O);
@@ -85,7 +85,7 @@ static QString stayOnTopToIconString(int stay_on_top) {
     }
 }
 
-TMenuStayOnTop::TMenuStayOnTop(TBase* mw) :
+TMenuStayOnTop::TMenuStayOnTop(TMainWindow* mw) :
     TMenu(mw, mw, "stay_on_top_menu", tr("&Stay on top")) {
 
     toggleStayOnTopAct = new TAction(this, "stay_on_top_toggle",
@@ -135,7 +135,7 @@ void TMenuStayOnTop::onAboutToShow() {
 	group->setChecked((int) pref->stay_on_top);
 }
 
-TMenuWindow::TMenuWindow(TBase* mw,
+TMenuWindow::TMenuWindow(TMainWindow* mw,
                          QMenu* toolBarMenu,
                          QWidget* playlist,
                          QWidget* logWindow)

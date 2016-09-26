@@ -42,7 +42,7 @@
 #include "player/mpris2/mpris2.h"
 #include "player/player.h"
 #include "gui/playlist/playlist.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 #include <QCryptographicHash>
 
@@ -59,7 +59,7 @@ static QByteArray makeTrackId(const QString& source) {
 }
 
 
-TMediaPlayer2Player::TMediaPlayer2Player(Gui::TBase* gui, QObject* parent)
+TMediaPlayer2Player::TMediaPlayer2Player(Gui::TMainWindow* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
     m_playlist(gui->getPlaylist()) {
 

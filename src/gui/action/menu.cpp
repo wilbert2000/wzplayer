@@ -4,7 +4,7 @@
 #include "gui/desktop.h"
 #include "images.h"
 #include "settings/mediasettings.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 using namespace Settings;
@@ -53,7 +53,7 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 
 
 TMenu::TMenu(QWidget* parent,
-             TBase* w,
+             TMainWindow* w,
              const QString& name,
              const QString& text,
              const QString& icon) :

@@ -148,7 +148,7 @@ HEADERS += wzdebug.h \
     gui/playlist/playlistwidget.h \
     gui/playlist/playlist.h \
     gui/autohidetimer.h \
-    gui/base.h \
+    gui/mainwindow.h \
 	gui/baseplus.h \
     gui/default.h \
     gui/logwindow.h \
@@ -275,7 +275,7 @@ SOURCES	+= wzdebug.cpp \
     gui/playlist/playlistwidget.cpp \
     gui/playlist/playlist.cpp \
     gui/autohidetimer.cpp \
-    gui/base.cpp \
+    gui/mainwindow.cpp \
 	gui/baseplus.cpp \
     gui/default.cpp \
     gui/logwindow.cpp \

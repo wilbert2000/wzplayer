@@ -1,6 +1,6 @@
 #include "gui/action/menuaspect.h"
 #include "player/player.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/action/actiongroup.h"
 #include "gui/action/menu.h"
 #include "settings/mediasettings.h"
@@ -13,7 +13,7 @@ namespace Gui {
 namespace Action {
 
 
-TMenuAspect::TMenuAspect(TBase* mw) :
+TMenuAspect::TMenuAspect(TMainWindow* mw) :
     TMenu(mw, mw, "aspect_menu", tr("&Aspect ratio"), "aspect") {
 
 	group = new TActionGroup(this, "aspect");

@@ -24,7 +24,7 @@
 
 #include "gui/desktop.h"
 #include "settings/preferences.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
@@ -37,7 +37,7 @@ namespace Gui {
 namespace Action {
 
 
-TEditableToolbar::TEditableToolbar(TBase* mainwindow) :
+TEditableToolbar::TEditableToolbar(TMainWindow* mainwindow) :
     QToolBar(mainwindow),
     debug(logger()),
     main_window(mainwindow),

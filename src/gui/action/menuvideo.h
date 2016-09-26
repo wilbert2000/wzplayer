@@ -8,7 +8,7 @@ class TPlayerWindow;
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 class TVideoEqualizer;
 
 namespace Action {
@@ -20,7 +20,7 @@ class TActionGroup;
 class TMenuVideo : public TMenu {
 	Q_OBJECT
 public:
-    TMenuVideo(TBase* mw,
+    TMenuVideo(TMainWindow* mw,
                TPlayerWindow* playerwindow,
                TVideoEqualizer* videoEqualizer);
 

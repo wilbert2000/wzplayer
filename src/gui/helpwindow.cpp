@@ -52,7 +52,7 @@ void THelpWindow::retranslateStrings() {
 	saveButton->setIcon(Images::icon("save"));
 	copyButton->setIcon(Images::icon("copy"));
 
-	// Title changed by TBase::helpCLOptions()
+	// Title changed by TMainWindow::helpCLOptions()
     setWindowTitle(tr("%1 help").arg(TConfig::PROGRAM_NAME));
 	setWindowIcon(Images::icon("logo"));
 }

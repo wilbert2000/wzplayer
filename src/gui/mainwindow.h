@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_BASE_H
-#define GUI_BASE_H
+#ifndef GUI_MAINWINDOW_H
+#define GUI_MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QTimer>
@@ -71,13 +71,13 @@ class TVideoEqualizer;
 class TUpdateChecker;
 
 
-class TBase : public QMainWindow {
+class TMainWindow : public QMainWindow {
 	Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TBase();
-	virtual ~TBase();
+    TMainWindow();
+    virtual ~TMainWindow();
 
 	/* Return true if the window shouldn't show on startup */
 	virtual bool startHidden() { return false; }
@@ -356,5 +356,5 @@ private slots:
 
 } // namespace Gui
 
-#endif // GUI_BASE_H
+#endif // GUI_MAINWINDOW_H
 

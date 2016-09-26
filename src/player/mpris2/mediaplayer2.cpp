@@ -42,13 +42,13 @@
 #include "player/mpris2/mediaplayer2.h"
 #include "player/mpris2/mpris2.h"
 #include "config.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 namespace Player {
 namespace Mpris2 {
 
-TMediaPlayer2::TMediaPlayer2(Gui::TBase* gui, QObject* parent)
+TMediaPlayer2::TMediaPlayer2(Gui::TMainWindow* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
       m_gui(gui) {
 //     connect(m_gui, SIGNAL(fullScreen(bool)),

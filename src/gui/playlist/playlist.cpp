@@ -42,7 +42,7 @@
 #include <QProcess>
 #include <QApplication>
 
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/playlist/playlistwidget.h"
 #include "gui/playlist/playlistwidgetitem.h"
 #include "gui/playlist/addfilesthread.h"
@@ -68,7 +68,7 @@ namespace Playlist {
 
 
 TAddRemovedMenu::TAddRemovedMenu(QWidget* parent,
-                                 TBase* w,
+                                 TMainWindow* w,
                                  TPlaylistWidget* plWidget) :
     TMenu(parent, w, "pl_add_removed_menu", tr("Add &removed item")),
     debug(logger()),
@@ -131,7 +131,7 @@ void TAddRemovedMenu::onTriggered(QAction* action) {
 }
 
 
-TPlaylist::TPlaylist(TBase* mw) :
+TPlaylist::TPlaylist(TMainWindow* mw) :
     QWidget(mw),
     debug(logger()),
     main_window(mw),

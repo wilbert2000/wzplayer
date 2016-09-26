@@ -7,7 +7,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -17,7 +17,7 @@ class TActionGroup;
 
 class TMenuSubFPS : public TMenu {
 public:
-    explicit TMenuSubFPS(TBase* mw);
+    explicit TMenuSubFPS(TMainWindow* mw);
     TActionGroup* group;
 protected:
     virtual void enableActions();
@@ -32,7 +32,7 @@ class TMenuSubtitle : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMenuSubtitle(TBase* mw);
+    TMenuSubtitle(TMainWindow* mw);
     TAction* useForcedSubsOnlyAct;
     TAction* useCustomSubStyleAct;
 

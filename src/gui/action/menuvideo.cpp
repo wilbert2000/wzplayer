@@ -7,7 +7,7 @@
 #include "gui/action/menuvideosize.h"
 #include "gui/action/menuvideotracks.h"
 #include "gui/videoequalizer.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 #ifdef Q_OS_WIN
 #include "gui/deviceinfo.h"
@@ -22,7 +22,7 @@ namespace Action {
 
 class TMenuDeinterlace : public TMenu {
 public:
-    explicit TMenuDeinterlace(TBase* mw);
+    explicit TMenuDeinterlace(TMainWindow* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -33,7 +33,7 @@ private:
 };
 
 
-TMenuDeinterlace::TMenuDeinterlace(TBase* mw)
+TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
     : TMenu(mw, mw, "deinterlace_menu", tr("&Deinterlace"), "deinterlace") {
 
 	group = new TActionGroup(this, "deinterlace");
@@ -76,7 +76,7 @@ void TMenuDeinterlace::onAboutToShow() {
 
 class TMenuTransform : public TMenu {
 public:
-    explicit TMenuTransform(TBase* mw);
+    explicit TMenuTransform(TMainWindow* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
@@ -88,7 +88,7 @@ private:
 };
 
 
-TMenuTransform::TMenuTransform(TBase* mw)
+TMenuTransform::TMenuTransform(TMainWindow* mw)
     : TMenu(mw, mw, "transform_menu", tr("&Transform"), "transform") {
 
     flipAct = new TAction(this, "flip", tr("Fli&p image"));
@@ -140,7 +140,7 @@ void TMenuTransform::onAboutToShow() {
 
 class TMenuZoomAndPan : public TMenu {
 public:
-    explicit TMenuZoomAndPan(TBase* mw);
+    explicit TMenuZoomAndPan(TMainWindow* mw);
 protected:
     virtual void enableActions();
 private:
@@ -148,7 +148,7 @@ private:
 };
 
 
-TMenuZoomAndPan::TMenuZoomAndPan(TBase* mw)
+TMenuZoomAndPan::TMenuZoomAndPan(TMainWindow* mw)
     : TMenu(mw, mw, "zoom_and_pan_menu", tr("&Zoom and pan"), "zoom_and_pan") {
 
 	group = new QActionGroup(this);
@@ -193,7 +193,7 @@ void TMenuZoomAndPan::enableActions() {
 }
 
 
-TMenuVideo::TMenuVideo(TBase* mw,
+TMenuVideo::TMenuVideo(TMainWindow* mw,
                        TPlayerWindow* playerwindow,
                        TVideoEqualizer* videoEqualizer) :
         TMenu(mw, mw, "video_menu", tr("&Video"), "noicon") {

@@ -10,7 +10,7 @@ class TPlayerWindow;
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -36,7 +36,7 @@ class TMenuVideoSize : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMenuVideoSize(TBase* mw, TPlayerWindow* pw);
+    TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw);
 
 protected:
     virtual void enableActions();

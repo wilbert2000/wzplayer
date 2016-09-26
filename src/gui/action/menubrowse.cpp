@@ -3,7 +3,7 @@
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
 #include "player/player.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 using namespace Settings;
@@ -12,7 +12,7 @@ namespace Gui {
 namespace Action {
 
 
-TMenuBrowse::TMenuBrowse(TBase* mw)
+TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     : TMenu(mw, mw, "browse_menu", tr("&Browse"), "noicon") {
 
 	// Titles

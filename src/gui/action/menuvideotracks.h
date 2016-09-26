@@ -7,7 +7,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -20,7 +20,7 @@ class TMenuVideoTracks : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TMenuVideoTracks(TBase* mw);
+    explicit TMenuVideoTracks(TMainWindow* mw);
 protected:
     virtual void enableActions();
 private:

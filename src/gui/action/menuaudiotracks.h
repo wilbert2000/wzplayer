@@ -16,7 +16,7 @@ class TMenuAudioTracks : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TMenuAudioTracks(TBase* mw);
+    explicit TMenuAudioTracks(TMainWindow* mw);
 protected:
     virtual void enableActions();
 private:

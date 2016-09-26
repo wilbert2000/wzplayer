@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "player/player.h"
 #include "gui/action/action.h"
 
@@ -14,7 +14,7 @@ namespace Action {
 
 
 // Create in-out points menu
-TMenuInOut::TMenuInOut(TBase* mw)
+TMenuInOut::TMenuInOut(TMainWindow* mw)
     : TMenu(mw, mw, "in_out_points_menu", tr("&In-out points")) {
 
     // Put in group to enable/disable together, if we disable the menu users

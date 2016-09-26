@@ -10,7 +10,7 @@ class TMediaSettings;
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -23,7 +23,7 @@ class TMenu : public QMenu {
 	Q_OBJECT
 public:
 	explicit TMenu(QWidget* parent,
-                   TBase* w,
+                   TMainWindow* w,
 				   const QString& name,
 				   const QString& text,
 				   const QString& icon = QString());
@@ -32,7 +32,7 @@ public:
 	void addActionsTo(QWidget* w);
 
 protected:
-    TBase* main_window;
+    TMainWindow* main_window;
 	virtual void onAboutToShow();
 	virtual void setVisible(bool visible);
 

@@ -5,7 +5,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 namespace Action {
 
 class TAction;
@@ -13,7 +13,7 @@ class TAction;
 
 class TMenuHelp : public TMenu {
 public:
-    explicit TMenuHelp(TBase* mw);
+    explicit TMenuHelp(TMainWindow* mw);
 };
 
 } // namespace Action

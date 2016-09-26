@@ -6,7 +6,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 class TAudioEqualizer;
 
 namespace Action {
@@ -16,7 +16,7 @@ class TAction;
 
 class TMenuAudio : public TMenu {
 public:
-    explicit TMenuAudio(TBase* mw, TAudioEqualizer* audioEqualizer);
+    explicit TMenuAudio(TMainWindow* mw, TAudioEqualizer* audioEqualizer);
 
 protected:
     virtual void enableActions();

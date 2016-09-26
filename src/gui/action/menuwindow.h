@@ -6,7 +6,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -16,7 +16,7 @@ class TActionGroup;
 class TMenuStayOnTop : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuStayOnTop(TBase* mw);
+    explicit TMenuStayOnTop(TMainWindow* mw);
     // Group to enable/disable together
     TActionGroup* group;
 
@@ -32,7 +32,7 @@ private slots:
 
 class TMenuWindow : public TMenu {
 public:
-    TMenuWindow(TBase* mw,
+    TMenuWindow(TMainWindow* mw,
                 QMenu* toolBarMenu,
                 QWidget* playlist,
                 QWidget* logWindow);

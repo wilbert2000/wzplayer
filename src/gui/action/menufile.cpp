@@ -2,7 +2,7 @@
 #include <QMessageBox>
 #include <QFileInfo>
 
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
 #include "gui/action/favorites.h"
 #include "gui/action/tvlist.h"
@@ -18,10 +18,10 @@ namespace Action {
 
 class TMenuDisc : public TMenu {
 public:
-	explicit TMenuDisc(TBase* parent);
+	explicit TMenuDisc(TMainWindow* parent);
 };
 
-TMenuDisc::TMenuDisc(TBase* parent)
+TMenuDisc::TMenuDisc(TMainWindow* parent)
     : TMenu(parent, parent, "disc_menu", tr("Open d&isc"), "open_disc") {
 
     // DVD
@@ -52,7 +52,7 @@ TMenuDisc::TMenuDisc(TBase* parent)
 }
 
 
-TMenuFile::TMenuFile(TBase* mw) :
+TMenuFile::TMenuFile(TMainWindow* mw) :
     TMenu(mw, mw, "file_menu", tr("&File"), "noicon") {
 
     // Open URL

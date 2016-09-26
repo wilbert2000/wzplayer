@@ -2,7 +2,7 @@
 #include "gui/desktop.h"
 #include "settings/preferences.h"
 #include "playerwindow.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "player/player.h"
 
 
@@ -87,7 +87,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 }
 
 
-TMenuVideoSize::TMenuVideoSize(TBase* mw, TPlayerWindow* pw) :
+TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
     TMenu(mw, mw, "videosize_menu", tr("&Size"), "video_size"),
     playerWindow(pw) {
 

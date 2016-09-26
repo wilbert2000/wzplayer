@@ -45,7 +45,7 @@
 
 
 namespace Gui {
-class TBase;
+class TMainWindow;
 }
 
 namespace Player {
@@ -72,7 +72,7 @@ class TMediaPlayer2 : public QDBusAbstractAdaptor {
     Q_PROPERTY(QStringList SupportedMimeTypes READ SupportedMimeTypes)
 
     public:
-        explicit TMediaPlayer2(Gui::TBase* gui, QObject* parent);
+        explicit TMediaPlayer2(Gui::TMainWindow* gui, QObject* parent);
         virtual ~TMediaPlayer2();
 
         bool CanQuit() const;
@@ -97,7 +97,7 @@ class TMediaPlayer2 : public QDBusAbstractAdaptor {
     private slots:
         void emitFullscreenChange(bool fullscreen) const;
     private:
-		Gui::TBase* m_gui;
+		Gui::TMainWindow* m_gui;
 };
 
 } // namespace Mpris2

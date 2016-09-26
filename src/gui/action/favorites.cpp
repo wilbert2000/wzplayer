@@ -25,7 +25,7 @@
 #include <QFileInfo>
 #include "gui/action/action.h"
 #include "gui/action/favoriteeditor.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 #define FIRST_MENU_ENTRY 3
 
@@ -53,7 +53,7 @@ void TFavorite::setIcon(QString file) {
 }
 
 
-TFavorites::TFavorites(TBase* mw,
+TFavorites::TFavorites(TMainWindow* mw,
 					   const QString& name,
 					   const QString& text,
 					   const QString& icon,

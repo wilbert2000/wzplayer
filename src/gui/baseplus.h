@@ -19,7 +19,7 @@
 #ifndef GUI_BASEPLUS_H
 #define GUI_BASEPLUS_H
 
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 #include <QSystemTrayIcon>
 #include <QPoint>
@@ -31,7 +31,7 @@ class QDockWidget;
 
 namespace Gui {
 
-class TBasePlus : public TBase {
+class TBasePlus : public TMainWindow {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 

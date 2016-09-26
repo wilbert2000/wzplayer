@@ -17,7 +17,7 @@ class TMenuBrowse : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMenuBrowse(TBase* mw);
+    TMenuBrowse(TMainWindow* mw);
 
 protected:
     virtual void enableActions();

@@ -44,7 +44,7 @@
 
 
 namespace Gui {
-class TBase;
+class TMainWindow;
 namespace Playlist {
 class TPlaylist;
 }
@@ -76,7 +76,7 @@ class TMediaPlayer2Player : public QDBusAbstractAdaptor {
     Q_PROPERTY(bool CanControl READ CanControl)
 
     public:
-		explicit TMediaPlayer2Player(Gui::TBase* gui, QObject* parent);
+		explicit TMediaPlayer2Player(Gui::TMainWindow* gui, QObject* parent);
 		virtual ~TMediaPlayer2Player();
 
         QString PlaybackStatus() const;

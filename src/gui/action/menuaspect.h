@@ -13,7 +13,7 @@ class TActionGroup;
 class TMenuAspect : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuAspect(TBase* mw);
+    explicit TMenuAspect(TMainWindow* mw);
 
 protected:
     virtual void enableActions();

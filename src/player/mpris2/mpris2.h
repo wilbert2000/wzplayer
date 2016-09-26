@@ -45,7 +45,7 @@
 
 
 namespace Gui {
-class TBase;
+class TMainWindow;
 }
 
 namespace Player {
@@ -55,7 +55,7 @@ class TMpris2 : public QObject {
     Q_OBJECT
 
 public:
-    explicit TMpris2(Gui::TBase* gui, QObject* parent);
+    explicit TMpris2(Gui::TMainWindow* gui, QObject* parent);
     virtual ~TMpris2();
 
     static void signalPropertiesChange(const QObject* adaptor,

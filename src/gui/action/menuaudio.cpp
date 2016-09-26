@@ -1,5 +1,5 @@
 #include "gui/action/menuaudio.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "player/player.h"
 #include "gui/action/actiongroup.h"
 #include "gui/action/actionseditor.h"
@@ -19,7 +19,7 @@ namespace Action {
 
 class TMenuAudioChannel : public TMenu {
 public:
-    explicit TMenuAudioChannel(TBase* mw);
+    explicit TMenuAudioChannel(TMainWindow* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -29,7 +29,7 @@ private:
 };
 
 
-TMenuAudioChannel::TMenuAudioChannel(TBase* mw)
+TMenuAudioChannel::TMenuAudioChannel(TMainWindow* mw)
     : TMenu(mw, mw, "audiochannels_menu", tr("&Channels"), "audio_channels") {
 
 	group = new TActionGroup(this, "channels");
@@ -61,7 +61,7 @@ void TMenuAudioChannel::onAboutToShow() {
 
 class TMenuStereo : public TMenu {
 public:
-    explicit TMenuStereo(TBase* mw);
+    explicit TMenuStereo(TMainWindow* mw);
 protected:
     virtual void enableActions();
     virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
@@ -70,7 +70,7 @@ private:
     TActionGroup* group;
 };
 
-TMenuStereo::TMenuStereo(TBase* mw)
+TMenuStereo::TMenuStereo(TMainWindow* mw)
     : TMenu(mw, mw, "stereomode_menu", tr("&Stereo mode"), "stereo_mode") {
 
 	group = new TActionGroup(this, "stereo");
@@ -99,7 +99,7 @@ void TMenuStereo::onAboutToShow() {
 }
 
 
-TMenuAudio::TMenuAudio(TBase* mw, TAudioEqualizer* audioEqualizer)
+TMenuAudio::TMenuAudio(TMainWindow* mw, TAudioEqualizer* audioEqualizer)
     : TMenu(mw, mw, "audio_menu", tr("&Audio"), "noicon") {
 
 	// Mute

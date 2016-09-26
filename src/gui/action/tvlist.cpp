@@ -23,7 +23,7 @@
 #include <QTextStream>
 
 #include "log4qt/log4qt.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/action/favoriteeditor.h"
 #include "images.h"
 
@@ -32,7 +32,7 @@ namespace Gui {
 namespace Action {
 
 
-TTVList::TTVList(TBase* mw,
+TTVList::TTVList(TMainWindow* mw,
 				 const QString& name,
 				 const QString& text,
 				 const QString& icon,

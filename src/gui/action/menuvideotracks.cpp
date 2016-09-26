@@ -2,14 +2,14 @@
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "player/player.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 namespace Gui {
 namespace Action {
 
 
-TMenuVideoTracks::TMenuVideoTracks(TBase* mw)
+TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
     : TMenu(mw, mw, "videotrack_menu", tr("&Video track"), "video_track") {
 
 	// Next video track

@@ -26,7 +26,7 @@
 #include <QTranslator>
 
 #include "log4qt/logger.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 #ifdef Q_OS_WIN
 #if QT_VERSION < 0x050000
@@ -82,7 +82,7 @@ private:
     QString initial_config_path;
 	QTranslator app_trans;
 	QTranslator qt_trans;
-	Gui::TBase* main_window;
+	Gui::TMainWindow* main_window;
 
 
 	QString subtitle_file;

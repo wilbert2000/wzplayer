@@ -6,7 +6,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -16,7 +16,7 @@ class TAction;
 class TMenuInOut : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuInOut(TBase* mw);
+    explicit TMenuInOut(TMainWindow* mw);
 
 protected:
     virtual void enableActions();

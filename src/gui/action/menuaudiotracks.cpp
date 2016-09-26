@@ -2,14 +2,14 @@
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "player/player.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 namespace Gui {
 namespace Action {
 
 
-TMenuAudioTracks::TMenuAudioTracks(TBase* mw)
+TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
     : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track") {
 
 	// Next audio track

@@ -1,11 +1,11 @@
 #include "gui/action/menuhelp.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/action/action.h"
 
 namespace Gui {
 namespace Action {
 
-TMenuHelp::TMenuHelp(TBase* mw) :
+TMenuHelp::TMenuHelp(TMainWindow* mw) :
     TMenu(mw, mw, "help_menu", tr("&Help"), "noicon") {
 
 	// Menu Help

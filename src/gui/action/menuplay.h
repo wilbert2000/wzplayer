@@ -6,7 +6,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Playlist {
 class TPlaylist;
@@ -20,7 +20,7 @@ class TMenuSeek: public TMenu {
     Q_OBJECT
 public:
     explicit TMenuSeek(QWidget* parent,
-                       TBase* mainwindow,
+                       TMainWindow* mainwindow,
                        const QString& name,
                        const QString& text,
                        const QString& sign);
@@ -56,7 +56,7 @@ private slots:
 class TMenuPlay : public TMenu {
 	Q_OBJECT
 public:
-    explicit TMenuPlay(TBase* mw, Gui::Playlist::TPlaylist* playlist);
+    explicit TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist);
 
 protected:
     virtual void enableActions();

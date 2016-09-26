@@ -6,7 +6,7 @@
 
 namespace Gui {
 
-class TBase;
+class TMainWindow;
 
 namespace Action {
 
@@ -16,7 +16,7 @@ class TAction;
 class TMenuFile : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuFile(TBase* mw);
+    explicit TMenuFile(TMainWindow* mw);
     void updateRecents();
 
 private:

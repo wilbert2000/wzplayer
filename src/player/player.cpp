@@ -3237,7 +3237,7 @@ void TPlayer::dvdnavSelect() {
 	}
 }
 
-// Slot called by action dvdnav_mouse and Gui::TBase when left mouse clicked
+// Slot called by action dvdnav_mouse and Gui::TMainWindow when left mouse clicked
 void TPlayer::dvdnavMouse() {
     logger()->debug("dvdnavMouse");
 

@@ -178,7 +178,7 @@ void TDefault::displayVideoInfo() {
 void TDefault::onMediaSettingsChanged() {
     logger()->debug("onMediaSettingsChanged");
 
-    TBase::onMediaSettingsChanged();
+    TBasePlus::onMediaSettingsChanged();
     displayInOutPoints();
 }
 

@@ -3,7 +3,7 @@
 #include "settings/mediasettings.h"
 #include "gui/action/actiongroup.h"
 #include "player/player.h"
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 using namespace Settings;
 
@@ -13,7 +13,7 @@ namespace Action {
 
 class TMenuCC : public TMenu {
 public:
-    explicit TMenuCC(TBase* mw);
+    explicit TMenuCC(TMainWindow* mw);
 protected:
     virtual void enableActions();
 	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
@@ -22,7 +22,7 @@ private:
     TActionGroup* group;
 };
 
-TMenuCC::TMenuCC(TBase* mw)
+TMenuCC::TMenuCC(TMainWindow* mw)
     : TMenu(mw, mw, "closed_captions_menu", tr("&Closed captions"),
             "closed_caption") {
 
@@ -53,7 +53,7 @@ void TMenuCC::onAboutToShow() {
 }
 
 
-TMenuSubFPS::TMenuSubFPS(TBase* mw)
+TMenuSubFPS::TMenuSubFPS(TMainWindow* mw)
     : TMenu(mw, mw, "subfps_menu", tr("F&rames per second external subtitles"),
             "subfps") {
 
@@ -84,7 +84,7 @@ void TMenuSubFPS::onAboutToShow() {
 }
 
 
-TMenuSubtitle::TMenuSubtitle(TBase* mw)
+TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     : TMenu(mw, mw, "subtitle_menu", tr("&Subtitles"), "noicon") {
 
     decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "", Qt::Key_Up);

@@ -45,7 +45,7 @@ using namespace Settings;
 namespace Gui {
 
 TBasePlus::TBasePlus() :
-    TBase(),
+    TMainWindow(),
     debug(logger()),
     mainwindow_visible(true),
     restore_playlist(false),
@@ -164,7 +164,7 @@ void TBasePlus::setWinTitle() {
 
 void TBasePlus::setWindowCaption(const QString& title) {
 
-    TBase::setWindowCaption(title);
+    TMainWindow::setWindowCaption(title);
     tray->setToolTip(title);
 }
 
@@ -209,7 +209,7 @@ void TBasePlus::closeWindow() {
 	if (tray->isVisible()) {
 		switchToTray();
 	} else {
-		TBase::closeWindow();
+        TMainWindow::closeWindow();
 	}
 }
 
@@ -217,13 +217,13 @@ void TBasePlus::quit() {
     logger()->debug("quit");
 
 	// Bypass switch to tray
-	TBase::closeWindow();
+    TMainWindow::closeWindow();
 }
 
 void TBasePlus::saveConfig() {
     logger()->debug("saveConfig");
 
-	TBase::saveConfig();
+    TMainWindow::saveConfig();
 
 	// Store inside group derived class
 	pref->beginGroup(settingsGroupName());
@@ -237,7 +237,7 @@ void TBasePlus::saveConfig() {
 void TBasePlus::loadConfig() {
     logger()->debug("loadConfig");
 
-	TBase::loadConfig();
+    TMainWindow::loadConfig();
 
 	// load from group derived class
 	pref->beginGroup(settingsGroupName());
@@ -301,7 +301,7 @@ void TBasePlus::showAll(bool b) {
 void TBasePlus::onMediaInfoChanged() {
     logger()->debug("onMediaInfoChanged");
 
-	TBase::onMediaInfoChanged();
+    TMainWindow::onMediaInfoChanged();
 	tray->setToolTip(windowTitle());
 }
 

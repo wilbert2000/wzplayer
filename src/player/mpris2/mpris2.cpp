@@ -48,15 +48,15 @@
 
 #include <unistd.h>
 
-// base.h includes windows.h which creates a conflict with QDBusConnection
+// mainwindow.h includes windows.h which creates a conflict with QDBusConnection
 // so moved here to avoid it
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 
 
 namespace Player {
 namespace Mpris2 {
 
-TMpris2::TMpris2(Gui::TBase* gui, QObject* parent)
+TMpris2::TMpris2(Gui::TMainWindow* gui, QObject* parent)
     : QObject(parent) {
 
     QString mpris2Name("org.mpris.MediaPlayer2." + TConfig::PROGRAM_ID);

@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QToolButton>
 
-#include "gui/base.h"
+#include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
 #include "gui/action/widgetactions.h"
 #include "gui/action/menuinoutpoints.h"
@@ -19,7 +19,7 @@ namespace Action {
 
 // Base class for seeking forward/rewinding
 TMenuSeek::TMenuSeek(QWidget* parent,
-                     TBase* mainwindow,
+                     TMainWindow* mainwindow,
                      const QString& name,
                      const QString& text,
                      const QString& sign) :
@@ -137,13 +137,13 @@ void TMenuSeek::setJumpTexts() {
 class TMenuSeekForward: public TMenuSeek {
 public:
     explicit TMenuSeekForward(QWidget* parent,
-                              TBase* mainwindow,
+                              TMainWindow* mainwindow,
                               Gui::Playlist::TPlaylist* playlist);
 };
 
 // Create forward menu as descendant from TMenuSeek
 TMenuSeekForward::TMenuSeekForward(QWidget* parent,
-                                   TBase* mainwindow,
+                                   TMainWindow* mainwindow,
                                    Gui::Playlist::TPlaylist* playlist) :
     TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"),
               tr("+", "sign to use in menu for forward seeking")) {
@@ -173,13 +173,13 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
 class TMenuSeekRewind: public TMenuSeek {
 public:
     explicit TMenuSeekRewind(QWidget* parent,
-                             TBase* mainwindow,
+                             TMainWindow* mainwindow,
                              Gui::Playlist::TPlaylist* playlist);
 };
 
 // Create rewind menu as descendant from TMenuSeek
 TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
-                                 TBase* mainwindow,
+                                 TMainWindow* mainwindow,
                                  Gui::Playlist::TPlaylist* playlist) :
     TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"),
               tr("-", "sign to use in menu for rewind seeking")) {
@@ -208,7 +208,7 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
 
 class TMenuPlaySpeed : public TMenu {
 public:
-    explicit TMenuPlaySpeed(TBase* mw);
+    explicit TMenuPlaySpeed(TMainWindow* mw);
 protected:
     virtual void enableActions();
 private:
@@ -216,7 +216,7 @@ private:
 };
 
 
-TMenuPlaySpeed::TMenuPlaySpeed(TBase* mw)
+TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     : TMenu(mw, mw, "speed_menu", tr("Spee&d"), "speed") {
 
 	group = new QActionGroup(this);
@@ -279,7 +279,7 @@ void TMenuPlaySpeed::enableActions() {
 
 
 // Create main play menu
-TMenuPlay::TMenuPlay(TBase* mw, Gui::Playlist::TPlaylist* playlist)
+TMenuPlay::TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist)
     : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon") {
 
     addAction(playlist->findChild<TAction*>("play_or_pause"));
