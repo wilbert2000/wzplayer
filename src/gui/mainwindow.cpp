@@ -1136,40 +1136,66 @@ void TMainWindow::setDataToFileProperties() {
 void TMainWindow::applyFileProperties() {
     logger()->debug("applyFileProperties");
 
-	bool need_restart = false;
+    bool need_restart = false;
+    bool demuxer_changed = false;
 
-#undef TEST_AND_SET
-#define TEST_AND_SET(Pref, Dialog) \
-	if (Pref != Dialog) { Pref = Dialog; need_restart = true; }
-
-	bool demuxer_changed = false;
-
+    // Demuxer
     QString prev_demuxer = player->mset.forced_demuxer;
-
-	QString demuxer = file_properties_dialog->demuxer();
-    if (demuxer == player->mset.original_demuxer) demuxer="";
-    TEST_AND_SET(player->mset.forced_demuxer, demuxer);
-
+    QString s = file_properties_dialog->demuxer();
+    if (s == player->mset.original_demuxer) {
+        s = "";
+    }
+    if (s != player->mset.forced_demuxer) {
+        player->mset.forced_demuxer = s;
+        need_restart = true;
+    }
     if (prev_demuxer != player->mset.forced_demuxer) {
 		// Demuxer changed
 		demuxer_changed = true;
         player->mset.current_audio_id = TMediaSettings::NoneSelected;
         player->mset.current_sub_idx = TMediaSettings::NoneSelected;
-	}
+    }
 
-	QString ac = file_properties_dialog->audioCodec();
-    if (ac == player->mset.original_audio_codec) ac="";
-    TEST_AND_SET(player->mset.forced_audio_codec, ac);
+    // Video codec
+    s = file_properties_dialog->videoCodec();
+    if (s == player->mset.original_video_codec) {
+        s = "";
+    }
+    if (s != player->mset.forced_video_codec) {
+        player->mset.forced_video_codec = s;
+        need_restart = true;
+    }
 
-	QString vc = file_properties_dialog->videoCodec();
-    if (vc == player->mset.original_video_codec) vc="";
-    TEST_AND_SET(player->mset.forced_video_codec, vc);
+    // Audio codec
+    s = file_properties_dialog->audioCodec();
+    if (s == player->mset.original_audio_codec) {
+        s = "";
+    }
+    if (s != player->mset.forced_audio_codec) {
+        player->mset.forced_audio_codec = s;
+        need_restart = true;
+    }
 
-    TEST_AND_SET(player->mset.player_additional_options, file_properties_dialog->playerAdditionalArguments());
-    TEST_AND_SET(player->mset.player_additional_video_filters, file_properties_dialog->playerAdditionalVideoFilters());
-    TEST_AND_SET(player->mset.player_additional_audio_filters, file_properties_dialog->playerAdditionalAudioFilters());
+    // Additional options
+    s = file_properties_dialog->playerAdditionalArguments();
+    if (s != player->mset.player_additional_options) {
+        player->mset.player_additional_options = s;
+        need_restart = true;
+    }
 
-#undef TEST_AND_SET
+    // Additional video filters
+    s = file_properties_dialog->playerAdditionalVideoFilters();
+    if (s != player->mset.player_additional_video_filters) {
+        player->mset.player_additional_video_filters = s;
+        need_restart = true;
+    }
+
+    // Additional audio filters
+    s = file_properties_dialog->playerAdditionalAudioFilters();
+    if (s != player->mset.player_additional_audio_filters) {
+        player->mset.player_additional_audio_filters = s;
+        need_restart = true;
+    }
 
 	// Restart the video to apply
 	if (need_restart) {
