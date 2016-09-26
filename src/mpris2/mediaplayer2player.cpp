@@ -48,19 +48,22 @@
 
 static QByteArray makeTrackId(const QString& source)
 {
-	return ("/org/" + TConfig::PROGRAM_ID + "/" + TConfig::PROGRAM_ID + "/tid_").toLocal8Bit()
-			+ QCryptographicHash::hash(source.toLocal8Bit(), QCryptographicHash::Sha1).toHex();
+    return ("/org/" + TConfig::PROGRAM_ID + "/" + TConfig::PROGRAM_ID
+            + "/tid_").toLocal8Bit()
+            + QCryptographicHash::hash(source.toLocal8Bit(),
+                                       QCryptographicHash::Sha1).toHex();
 }
 
 MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
     m_playlist(gui->getPlaylist()) {
 
-//     connect(player, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
-//     connect(player, SIGNAL(seekableChanged(bool)), this, SLOT(seekableChanged(bool)));
-    connect(player, SIGNAL(stateChanged(Player::TState)), this, SLOT(stateUpdated()));
-    connect(player, SIGNAL(mediaInfoChanged()), this, SLOT(emitMetadataChange()));
-    connect(player, SIGNAL(volumeChanged(int)), this, SLOT(volumeChanged()));
+    connect(player, SIGNAL(stateChanged(Player::TState)),
+            this, SLOT(stateUpdated()));
+    connect(player, SIGNAL(mediaInfoChanged()),
+            this, SLOT(emitMetadataChange()));
+    connect(player, SIGNAL(volumeChanged(int)),
+            this, SLOT(volumeChanged()));
 }
 
 MediaPlayer2Player::~MediaPlayer2Player()
@@ -117,7 +120,8 @@ void MediaPlayer2Player::Play() const
     player->play();
 }
 
-void MediaPlayer2Player::SetPosition(const QDBusObjectPath& TrackId, qlonglong Position) const
+void MediaPlayer2Player::SetPosition(const QDBusObjectPath& TrackId,
+                                     qlonglong Position) const
 {
     if (TrackId.path().toLocal8Bit() == makeTrackId(player->mdat.filename))
         player->seekTime(Position / 1000000);
@@ -171,7 +175,8 @@ QVariantMap MediaPlayer2Player::Metadata() const
 		return metaData;
 
     TMediaData* md = &player->mdat;
-	metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(QDBusObjectPath(makeTrackId(md->filename).constData()));
+    metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(
+        QDBusObjectPath(makeTrackId(md->filename).constData()));
 	metaData["mpris:length"] = md->duration * 1000000;
 
 	if (md->selected_type == TMediaData::TYPE_STREAM)

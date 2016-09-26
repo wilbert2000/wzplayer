@@ -61,7 +61,8 @@ public:
         return _state == STATE_PLAYING || _state == STATE_PAUSED;
     }
     bool stateReady() const {
-        return _state == STATE_STOPPED || _state == STATE_PLAYING || _state == STATE_PAUSED;
+        return _state == STATE_STOPPED || _state == STATE_PLAYING
+            || _state == STATE_PAUSED;
     }
     bool hasVideo() const {
         return mdat.hasVideo();
@@ -95,9 +96,12 @@ public slots:
 	void loadSub(const QString& sub);
 	void unloadSub();
 
-	//! Forces to use the specified subtitle file. It's not loaded immediately but stored
-	//! and will be used for the next video. After that the variable is cleared.  
-	void setInitialSubtitle(const QString& subtitle_file) { initial_subtitle = subtitle_file; }
+    //! Forces to use the specified subtitle file. It's not loaded immediately
+    //! but stored and will be used for the next video. After that the variable
+    //! is cleared.
+    void setInitialSubtitle(const QString& subtitle_file) {
+        initial_subtitle = subtitle_file;
+    }
 
 	void loadAudioFile(const QString& audiofile);
 	void unloadAudioFile();
@@ -180,8 +184,10 @@ public slots:
 	void rewind(int secs);
 	void seekToNextSub();
 	void seekToPrevSub();
-	void wheelUp(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::DoNothing);
-	void wheelDown(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::DoNothing);
+    void wheelUp(Settings::TPreferences::TWheelFunction function =
+        Settings::TPreferences::DoNothing);
+    void wheelDown(Settings::TPreferences::TWheelFunction function =
+        Settings::TPreferences::DoNothing);
 
 	void setSpeed(double value);
 	void incSpeed10();	//!< Inc speed 10%
@@ -243,8 +249,10 @@ public slots:
 	void changeExternalSubFPS(int fps_id);
 
 	//! Audio equalizer
-	void setAudioEqualizer(const Settings::TAudioEqualizerList& values, bool restart = false);
-	void setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList& values) {
+    void setAudioEqualizer(const Settings::TAudioEqualizerList& values,
+                           bool restart = false);
+    void setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&
+                                       values) {
 		setAudioEqualizer(values, true);
 	}
 
@@ -417,7 +425,8 @@ private:
 
 	int cache_size;
 
-	static QString equalizerListToString(const Settings::TAudioEqualizerList& values);
+    static QString equalizerListToString(const Settings::TAudioEqualizerList&
+                                         values);
 
     void openFile(const QString& filename, bool loopImage);
 	void openStream(const QString& name);
