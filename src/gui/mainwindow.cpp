@@ -320,10 +320,14 @@ void TMainWindow::createAudioEqualizer() {
 	connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq9(int)));
 
-	connect(audio_equalizer, SIGNAL(applyClicked(const Settings::TAudioEqualizerList&)),
-            player, SLOT(setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&)));
-	connect(audio_equalizer, SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
-            player, SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
+    connect(audio_equalizer,
+            SIGNAL(applyClicked(const Settings::TAudioEqualizerList&)),
+            player, SLOT(setAudioAudioEqualizerRestart(
+                             const Settings::TAudioEqualizerList&)));
+    connect(audio_equalizer,
+            SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
+            player,
+            SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
 }
 
 void TMainWindow::createActions() {
@@ -695,7 +699,8 @@ void TMainWindow::changeEvent(QEvent* e) {
 #if QT_VERSION_MAJOR >= 5
 		// Emulate show/hide events for Qt >= 5
 		if(e->type() == QEvent::WindowStateChange) {
-			bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState() == Qt::WindowMinimized;
+            bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState()
+                           == Qt::WindowMinimized;
 			if (was_min) {
 				if (!isMinimized()) {
 					showEvent(0);
@@ -1090,7 +1095,8 @@ void TMainWindow::setDataToFileProperties() {
 
     Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
 	i->getInfo();
-	file_properties_dialog->setCodecs(i->vcList(), i->acList(), i->demuxerList());
+    file_properties_dialog->setCodecs(i->vcList(), i->acList(),
+                                      i->demuxerList());
 
 	// Save a copy of the demuxer, video and audio codec
     if (player->mset.original_demuxer.isEmpty())
@@ -1112,12 +1118,17 @@ void TMainWindow::setDataToFileProperties() {
         ac = player->mdat.audio_codec;
 
     file_properties_dialog->setDemuxer(demuxer, player->mset.original_demuxer);
-    file_properties_dialog->setVideoCodec(vc, player->mset.original_video_codec);
-    file_properties_dialog->setAudioCodec(ac, player->mset.original_audio_codec);
+    file_properties_dialog->setVideoCodec(vc,
+                                          player->mset.original_video_codec);
+    file_properties_dialog->setAudioCodec(ac,
+                                          player->mset.original_audio_codec);
 
-    file_properties_dialog->setPlayerAdditionalArguments(player->mset.player_additional_options);
-    file_properties_dialog->setPlayerAdditionalVideoFilters(player->mset.player_additional_video_filters);
-    file_properties_dialog->setPlayerAdditionalAudioFilters(player->mset.player_additional_audio_filters);
+    file_properties_dialog->setPlayerAdditionalArguments(
+                player->mset.player_additional_options);
+    file_properties_dialog->setPlayerAdditionalVideoFilters(
+                player->mset.player_additional_video_filters);
+    file_properties_dialog->setPlayerAdditionalAudioFilters(
+                player->mset.player_additional_audio_filters);
 
 	file_properties_dialog->showInfo();
 }

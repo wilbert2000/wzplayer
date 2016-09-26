@@ -198,13 +198,16 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
                        TVideoEqualizer* videoEqualizer) :
         TMenu(mw, mw, "video_menu", tr("&Video"), "noicon") {
 
-    fullscreenAct = new TAction(this, "fullscreen", tr("&Fullscreen"), "", Qt::Key_F);
+    fullscreenAct = new TAction(this, "fullscreen", tr("&Fullscreen"), "",
+                                Qt::Key_F);
     //fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
 	fullscreenAct->setCheckable(true);
     connect(fullscreenAct, SIGNAL(triggered(bool)),
             main_window, SLOT(toggleFullscreen(bool)));
 
-    exitFullscreenAct = new TAction(this, "exit_fullscreen", tr("Exit fullscreen"), "", Qt::Key_Escape, false);
+    exitFullscreenAct = new TAction(this, "exit_fullscreen",
+                                    tr("Exit fullscreen"), "", Qt::Key_Escape,
+                                    false);
 	exitFullscreenAct->setEnabled(false);
     main_window->addAction(exitFullscreenAct);
     connect(exitFullscreenAct, SIGNAL(triggered()),
