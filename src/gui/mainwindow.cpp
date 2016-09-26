@@ -2283,7 +2283,8 @@ void TMainWindow::resizeWindowToVideo() {
     resizeWindow(player->mdat.video_out_width, player->mdat.video_out_height);
 }
 
-void TMainWindow::resizeMainWindow(int w, int h, double size_factor, bool try_twice) {
+void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
+                                   bool try_twice) {
     logger()->debug("resizeMainWindow: requested video size "
                     + QString::number(w) + " x " + QString::number(h)
                     + " size factor " + QString::number(pref->size_factor));
@@ -2433,7 +2434,8 @@ bool TMainWindow::winEvent (MSG* m, long* result) {
     if (m->message == WM_SYSCOMMAND) {
         if (((m->wParam & 0xFFF0) == SC_SCREENSAVE)
             || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
-            if (player->state() == Player::STATE_PLAYING && player->mdat.hasVideo()) {
+            if (player->state() == Player::STATE_PLAYING
+                && player->mdat.hasVideo()) {
                 logger()->debug("winEvent: not allowing screensaver");
                 (*result) = 0;
                 return true;
