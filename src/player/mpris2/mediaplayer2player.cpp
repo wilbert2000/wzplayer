@@ -38,23 +38,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#include "mediaplayer2player.h"
-#include "mpris2.h"
+#include "player/mpris2/mediaplayer2player.h"
+#include "player/mpris2/mpris2.h"
+#include "player/player.h"
 #include "gui/playlist/playlist.h"
 #include "gui/base.h"
-#include "player/player.h"
 
 #include <QCryptographicHash>
 
-static QByteArray makeTrackId(const QString& source)
-{
+
+namespace Player {
+namespace Mpris2 {
+
+static QByteArray makeTrackId(const QString& source) {
+
     return ("/org/" + TConfig::PROGRAM_ID + "/" + TConfig::PROGRAM_ID
             + "/tid_").toLocal8Bit()
             + QCryptographicHash::hash(source.toLocal8Bit(),
                                        QCryptographicHash::Sha1).toHex();
 }
 
-MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)
+
+TMediaPlayer2Player::TMediaPlayer2Player(Gui::TBase* gui, QObject* parent)
     : QDBusAbstractAdaptor(parent),
     m_playlist(gui->getPlaylist()) {
 
@@ -66,118 +71,99 @@ MediaPlayer2Player::MediaPlayer2Player(Gui::TBase* gui, QObject* parent)
             this, SLOT(volumeChanged()));
 }
 
-MediaPlayer2Player::~MediaPlayer2Player()
-{
+TMediaPlayer2Player::~TMediaPlayer2Player() {
 }
 
-bool MediaPlayer2Player::CanGoNext() const
-{
+bool TMediaPlayer2Player::CanGoNext() const {
     return true;
 }
 
-void MediaPlayer2Player::Next() const
-{
+void TMediaPlayer2Player::Next() const {
     m_playlist->playNext();
 }
 
-bool MediaPlayer2Player::CanGoPrevious() const
-{
+bool TMediaPlayer2Player::CanGoPrevious() const {
     return true;
 }
 
-void MediaPlayer2Player::Previous() const
-{
+void TMediaPlayer2Player::Previous() const {
     m_playlist->playPrev();
 }
 
-bool MediaPlayer2Player::CanPause() const
-{
+bool TMediaPlayer2Player::CanPause() const {
     return true;
 }
 
-void MediaPlayer2Player::Pause() const
-{
+void TMediaPlayer2Player::Pause() const {
     player->pause();
 }
 
-void MediaPlayer2Player::PlayPause() const
-{
+void TMediaPlayer2Player::PlayPause() const {
     player->playOrPause();
 }
 
-void MediaPlayer2Player::Stop() const
-{
+void TMediaPlayer2Player::Stop() const {
     player->stop();
 }
 
-bool MediaPlayer2Player::CanPlay() const
-{
+bool TMediaPlayer2Player::CanPlay() const {
     return true;
 }
 
-void MediaPlayer2Player::Play() const
-{
+void TMediaPlayer2Player::Play() const {
     player->play();
 }
 
-void MediaPlayer2Player::SetPosition(const QDBusObjectPath& TrackId,
-                                     qlonglong Position) const
-{
+void TMediaPlayer2Player::SetPosition(const QDBusObjectPath& TrackId,
+                                     qlonglong Position) const {
+
     if (TrackId.path().toLocal8Bit() == makeTrackId(player->mdat.filename))
         player->seekTime(Position / 1000000);
 }
 
-void MediaPlayer2Player::OpenUri(QString uri) const
-{
+void TMediaPlayer2Player::OpenUri(QString uri) const {
     player->open(uri);
 }
 
-QString MediaPlayer2Player::PlaybackStatus() const
-{
+QString TMediaPlayer2Player::PlaybackStatus() const {
     return player->stateToString();
 }
 
-QString MediaPlayer2Player::LoopStatus() const
-{
+QString TMediaPlayer2Player::LoopStatus() const {
     return "None";
 }
 
-void MediaPlayer2Player::setLoopStatus(const QString& loopStatus) const
-{
+void TMediaPlayer2Player::setLoopStatus(const QString& loopStatus) const {
     Q_UNUSED(loopStatus)
 }
 
-double MediaPlayer2Player::Rate() const
-{
+double TMediaPlayer2Player::Rate() const {
     return player->mset.speed;
 }
 
-void MediaPlayer2Player::setRate(double rate) const
-{
+void TMediaPlayer2Player::setRate(double rate) const {
     player->setSpeed(rate);
 }
 
-bool MediaPlayer2Player::Shuffle() const
-{
+bool TMediaPlayer2Player::Shuffle() const {
     return false;
 }
 
-void MediaPlayer2Player::setShuffle(bool shuffle) const
-{
+void TMediaPlayer2Player::setShuffle(bool shuffle) const {
     Q_UNUSED(shuffle)
 }
 
-QVariantMap MediaPlayer2Player::Metadata() const
-{
-	QVariantMap metaData;
+QVariantMap TMediaPlayer2Player::Metadata() const {
+
+    QVariantMap metaData;
 
     if (!player->mdat.initialized)
-		return metaData;
+        return metaData;
 
     TMediaData* md = &player->mdat;
     metaData["mpris:trackid"] = QVariant::fromValue<QDBusObjectPath>(
         QDBusObjectPath(makeTrackId(md->filename).constData()));
-	metaData["mpris:length"] = md->duration * 1000000;
+    metaData["mpris:length"] = md->duration * 1000000;
 
 	if (md->selected_type == TMediaData::TYPE_STREAM)
 		metaData["xesam:url"] = md->stream_url;
@@ -204,89 +190,84 @@ QVariantMap MediaPlayer2Player::Metadata() const
 	return metaData;
 }
 
-double MediaPlayer2Player::Volume() const
-{
+double TMediaPlayer2Player::Volume() const {
     return static_cast<double>(player->getVolume() / 100.0);
 }
 
-void MediaPlayer2Player::setVolume(double volume) const
-{
+void TMediaPlayer2Player::setVolume(double volume) const {
     player->setVolume(static_cast<int>(volume*100));
 }
 
-qlonglong MediaPlayer2Player::Position() const
-{
+qlonglong TMediaPlayer2Player::Position() const {
     return static_cast<qlonglong>(player->mset.current_sec * 1000000);
 }
 
-double MediaPlayer2Player::MinimumRate() const
-{
+double TMediaPlayer2Player::MinimumRate() const {
     return 0.01;
 }
 
-double MediaPlayer2Player::MaximumRate() const
-{
+double TMediaPlayer2Player::MaximumRate() const {
     return 100.0;
 }
 
-bool MediaPlayer2Player::CanSeek() const
-{
+bool TMediaPlayer2Player::CanSeek() const {
     return true;
 }
 
-void MediaPlayer2Player::Seek(qlonglong Offset) const
-{
+void TMediaPlayer2Player::Seek(qlonglong Offset) const {
     player->seekRelative(Offset / 1000000);
 }
 
-bool MediaPlayer2Player::CanControl() const
-{
+bool TMediaPlayer2Player::CanControl() const {
     return true;
 }
 
-void MediaPlayer2Player::tick(qint64 newPos)
-{
-//     if (newPos - oldPos > tickInterval + 250 || newPos < oldPos)
-//         emit Seeked(newPos * 1000);
+void TMediaPlayer2Player::tick(qint64 newPos) {
+
+//   if (newPos - oldPos > tickInterval + 250 || newPos < oldPos)
+//       emit Seeked(newPos * 1000);
 
     oldPos = newPos;
 }
 
-void MediaPlayer2Player::emitMetadataChange() const
-{
+void TMediaPlayer2Player::emitMetadataChange() const {
+
     QVariantMap properties;
     properties["Metadata"] = Metadata();
 	properties["CanSeek"] = CanSeek();
-	Mpris2::signalPropertiesChange(this, properties);
+	TMpris2::signalPropertiesChange(this, properties);
 }
 
-void MediaPlayer2Player::stateUpdated() const
-{
+void TMediaPlayer2Player::stateUpdated() const {
+
     QVariantMap properties;
     properties["PlaybackStatus"] = PlaybackStatus();
     properties["CanPause"] = CanPause();
-    Mpris2::signalPropertiesChange(this, properties);
+    TMpris2::signalPropertiesChange(this, properties);
 }
 
-void MediaPlayer2Player::totalTimeChanged() const
-{
+void TMediaPlayer2Player::totalTimeChanged() const {
+
     QVariantMap properties;
     properties["Metadata"] = Metadata();
-    Mpris2::signalPropertiesChange(this, properties);
+    TMpris2::signalPropertiesChange(this, properties);
 }
 
-void MediaPlayer2Player::seekableChanged(bool seekable) const
-{
+void TMediaPlayer2Player::seekableChanged(bool seekable) const {
+
     QVariantMap properties;
     properties["CanSeek"] = seekable;
-    Mpris2::signalPropertiesChange(this, properties);
+    TMpris2::signalPropertiesChange(this, properties);
 }
 
-void MediaPlayer2Player::volumeChanged() const
-{
+void TMediaPlayer2Player::volumeChanged() const {
+
     QVariantMap properties;
     properties["Volume"] = Volume();
-    Mpris2::signalPropertiesChange(this, properties);
+    TMpris2::signalPropertiesChange(this, properties);
 }
+
+} // namespace Mpris2
+} // namespace Player
 
 #include "moc_mediaplayer2player.cpp"

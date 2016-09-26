@@ -37,17 +37,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#ifndef MEDIAPLAYER2_H
-#define MEDIAPLAYER2_H
+#ifndef PLAYER_MPRIS2_MEDIAPLAYER2_H
+#define PLAYER_MPRIS2_MEDIAPLAYER2_H
 
 #include <QDBusAbstractAdaptor>
 #include <QStringList>
-#include "gui/baseplus.h"
 
-class MediaPlayer2 : public QDBusAbstractAdaptor
-{
+
+namespace Gui {
+class TBase;
+}
+
+namespace Player {
+namespace Mpris2 {
+
+class TMediaPlayer2 : public QDBusAbstractAdaptor {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2") // Docs: http://www.mpris.org/2.1/spec/Root_Node.html
+
+    // Docs: http://www.mpris.org/2.1/spec/Root_Node.html
+    Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2")
 
     Q_PROPERTY(bool CanQuit READ CanQuit)
     Q_PROPERTY(bool CanRaise READ CanRaise)
@@ -64,8 +72,8 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
     Q_PROPERTY(QStringList SupportedMimeTypes READ SupportedMimeTypes)
 
     public:
-		explicit MediaPlayer2(Gui::TBase* gui, QObject* parent);
-		virtual ~MediaPlayer2();
+        explicit TMediaPlayer2(Gui::TBase* gui, QObject* parent);
+        virtual ~TMediaPlayer2();
 
         bool CanQuit() const;
         bool CanRaise() const;
@@ -92,4 +100,7 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
 		Gui::TBase* m_gui;
 };
 
-#endif
+} // namespace Mpris2
+} // namespace Player
+
+#endif // PLAYER_MPRIS2_MEDIAPLAYER2_H

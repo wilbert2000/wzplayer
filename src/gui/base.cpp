@@ -101,7 +101,7 @@
 #include "app.h"
 
 #ifdef MPRIS2
-#include "mpris2/mpris2.h"
+#include "player/mpris2/mpris2.h"
 #endif
 
 #ifdef Q_OS_WIN
@@ -182,7 +182,7 @@ TBase::TBase() :
 
 #ifdef MPRIS2
     if (pref->use_mpris2)
-        new Mpris2(this, this);
+        new Player::Mpris2::TMpris2(this, this);
 #endif
 
     retranslateStrings();

@@ -36,19 +36,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#ifndef MEDIAPLAYER2PLAYER_H
-#define MEDIAPLAYER2PLAYER_H
+#ifndef PLAYER_MPRIS2_MEDIAPLAYER2PLAYER_H
+#define PLAYER_MPRIS2_MEDIAPLAYER2PLAYER_H
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusObjectPath>
-#include "gui/playlist/playlist.h"
-#include "gui/base.h"
 
 
-class MediaPlayer2Player : public QDBusAbstractAdaptor
-{
+namespace Gui {
+class TBase;
+namespace Playlist {
+class TPlaylist;
+}
+}
+
+namespace Player {
+namespace Mpris2 {
+
+class TMediaPlayer2Player : public QDBusAbstractAdaptor {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Player") // Docs: http://www.mpris.org/2.1/spec/Player_Node.html
+
+    // Docs: http://www.mpris.org/2.1/spec/Player_Node.html
+    Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Player")
 
     Q_PROPERTY(QString PlaybackStatus READ PlaybackStatus)
     Q_PROPERTY(QString LoopStatus READ LoopStatus WRITE setLoopStatus)
@@ -67,8 +76,8 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
     Q_PROPERTY(bool CanControl READ CanControl)
 
     public:
-		explicit MediaPlayer2Player(Gui::TBase* gui, QObject* parent);
-		virtual ~MediaPlayer2Player();
+		explicit TMediaPlayer2Player(Gui::TBase* gui, QObject* parent);
+		virtual ~TMediaPlayer2Player();
 
         QString PlaybackStatus() const;
         QString LoopStatus() const;
@@ -117,4 +126,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
         Gui::Playlist::TPlaylist* m_playlist;
 };
 
-#endif // MEDIAPLAYER2PLAYER_H
+} // namespace Mpris2
+} // namespace Player
+
+#endif // PLAYER_MPRIS2_MEDIAPLAYER2PLAYER_H

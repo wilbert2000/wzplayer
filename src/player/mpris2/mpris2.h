@@ -37,23 +37,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#ifndef MPRIS2_H
-#define MPRIS2_H
+#ifndef PLAYER_MPRIS2_MPRIS2_H
+#define PLAYER_MPRIS2_MPRIS2_H
 
 #include <QObject>
 #include <QVariantMap>
-#include "gui/base.h"
 
 
-class Mpris2 : public QObject {
+namespace Gui {
+class TBase;
+}
+
+namespace Player {
+namespace Mpris2 {
+
+class TMpris2 : public QObject {
     Q_OBJECT
 
-    public:
-		explicit Mpris2(Gui::TBase* gui, QObject* parent);
-		virtual ~Mpris2();
+public:
+    explicit TMpris2(Gui::TBase* gui, QObject* parent);
+    virtual ~TMpris2();
 
-        static void signalPropertiesChange(const QObject* adaptor,
-                                           const QVariantMap& properties);
+    static void signalPropertiesChange(const QObject* adaptor,
+                                       const QVariantMap& properties);
 };
 
-#endif
+} // namespace Mpris2
+} // namespace Player
+
+#endif // PLAYER_MPRIS2_MPRIS2_H

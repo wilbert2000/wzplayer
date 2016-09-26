@@ -323,11 +323,15 @@ FORMS = gui/inputdvddirectory.ui \
 
 
 contains(DEFINES, MPRIS2) {
-	INCLUDEPATH += mpris2
-	DEPENDPATH += mpris2
+    INCLUDEPATH += player/mpris2
+    DEPENDPATH += player/mpris2
 
-	HEADERS += mpris2/mediaplayer2.h mpris2/mediaplayer2player.h mpris2/mpris2.h
-	SOURCES += mpris2/mediaplayer2.cpp mpris2/mediaplayer2player.cpp mpris2/mpris2.cpp
+    HEADERS += player/mpris2/mediaplayer2.h \
+               player/mpris2/mediaplayer2player.h \
+               player/mpris2/mpris2.h
+    SOURCES += player/mpris2/mediaplayer2.cpp \
+               player/mpris2/mediaplayer2player.cpp \
+               player/mpris2/mpris2.cpp
 
 	QT += dbus
 }

@@ -37,59 +37,84 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#include "mpris2.h"
-#include "mediaplayer2.h"
-#include "mediaplayer2player.h"
+#include <QApplication>
 
-#include <QDBusConnection>
-#include <QDBusMessage>
-#include <QMetaClassInfo>
-#include <QStringList>
-
-#include <unistd.h>
-
-// base.h includes windows.h which creates a conflict with QDBusConnection
-// so moved here to avoid it
+#include "player/mpris2/mediaplayer2.h"
+#include "player/mpris2/mpris2.h"
+#include "config.h"
 #include "gui/base.h"
 
-Mpris2::Mpris2(Gui::TBase* gui, QObject* parent)
-    : QObject(parent)
-{
-	QString mpris2Name("org.mpris.MediaPlayer2." + TConfig::PROGRAM_ID);
 
-    bool success = QDBusConnection::sessionBus().registerService(mpris2Name);
+namespace Player {
+namespace Mpris2 {
 
-    // If the above failed, it's likely because we're not the first instance
-    // and the name is already taken. In that event the MPRIS2 spec wants the
-    // following:
-    if (!success)
-        success = QDBusConnection::sessionBus().registerService(mpris2Name + ".instance" + QString::number(getpid()));
-
-    if (success)
-    {
-        new MediaPlayer2(gui, this);
-        new MediaPlayer2Player(gui, this);
-        QDBusConnection::sessionBus().registerObject("/org/mpris/MediaPlayer2", this, QDBusConnection::ExportAdaptors);
-    }
+TMediaPlayer2::TMediaPlayer2(Gui::TBase* gui, QObject* parent)
+    : QDBusAbstractAdaptor(parent),
+      m_gui(gui) {
+//     connect(m_gui, SIGNAL(fullScreen(bool)),
+//             this, SLOT(emitFullscreenChange(bool)));
 }
 
-Mpris2::~Mpris2()
-{
+TMediaPlayer2::~TMediaPlayer2() {
 }
 
-void Mpris2::signalPropertiesChange(const QObject* adaptor, const QVariantMap& properties)
-{
-    QDBusMessage msg = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
-        "org.freedesktop.DBus.Properties", "PropertiesChanged");
-
-    QVariantList args;
-    args << adaptor->metaObject()->classInfo(0).value();
-    args << properties;
-    args << QStringList();
-
-    msg.setArguments(args);
-
-    QDBusConnection::sessionBus().send(msg);
+bool TMediaPlayer2::CanQuit() const {
+    return true;
 }
 
-#include "moc_mpris2.cpp"
+void TMediaPlayer2::Quit() const {
+	m_gui->runActions("close");
+}
+
+bool TMediaPlayer2::CanRaise() const {
+    return true;
+}
+
+void TMediaPlayer2::Raise() const {
+    m_gui->raise();
+}
+
+bool TMediaPlayer2::Fullscreen() const {
+    return m_gui->isFullScreen();
+}
+
+void TMediaPlayer2::setFullscreen(bool fullscreen) const {
+    m_gui->toggleFullscreen(fullscreen);
+}
+
+void TMediaPlayer2::emitFullscreenChange(bool fullscreen) const {
+    QVariantMap properties;
+    properties["Fullscreen"] = fullscreen;
+    TMpris2::signalPropertiesChange(this, properties);
+}
+
+bool TMediaPlayer2::CanSetFullscreen() const {
+    return true;
+}
+
+bool TMediaPlayer2::HasTrackList() const {
+    return false;
+}
+
+QString TMediaPlayer2::Identity() const {
+	return TConfig::PROGRAM_NAME;
+}
+
+QString TMediaPlayer2::DesktopEntry() const {
+	return TConfig::PROGRAM_ID;
+}
+
+QStringList TMediaPlayer2::SupportedUriSchemes() const {
+    //TODO: Implement me
+    return QStringList();
+}
+
+QStringList TMediaPlayer2::SupportedMimeTypes() const {
+    //TODO: Implement me
+    return QStringList();
+}
+
+} // namespace Mpris2
+} // namespace Player
+
+#include "moc_mediaplayer2.cpp"
