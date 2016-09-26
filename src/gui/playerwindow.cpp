@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "playerwindow.h"
+#include "gui/playerwindow.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -37,6 +37,8 @@
 
 
 using namespace Settings;
+
+namespace Gui {
 
 // Window containing the video player
 TVideoWindow::TVideoWindow(QWidget* parent) :
@@ -620,5 +622,7 @@ void TPlayerWindow::restoreNormalWindow(bool clrScreen) {
     // Clear video size
     video_size = QSize(0, 0);
 }
+
+} // namespace Gui
 
 #include "moc_playerwindow.cpp"

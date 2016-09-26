@@ -17,8 +17,8 @@
 */
 
 
-#ifndef PLAYERWINDOW_H
-#define PLAYERWINDOW_H
+#ifndef GUI_PLAYERWINDOW_H
+#define GUI_PLAYERWINDOW_H
 
 #include <QWidget>
 #include <QPoint>
@@ -34,6 +34,7 @@
 
 class QTimer;
 
+namespace Gui {
 
 //! TVideoWindow can be instructed to not delete the background.
 class TVideoWindow : public QWidget {
@@ -163,5 +164,7 @@ private:
 	void clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan);
 };
 
-#endif // PLAYERWINDOW_H
+} // namespace Gui
+
+#endif // GUI_PLAYERWINDOW_H
 

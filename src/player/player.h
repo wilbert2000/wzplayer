@@ -29,7 +29,9 @@
 #include "settings/mediasettings.h"
 
 
+namespace Gui {
 class TPlayerWindow;
+}
 
 namespace Player {
 
@@ -43,7 +45,7 @@ class TPlayer : public QObject {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlayer(QWidget* parent, TPlayerWindow *mpw);
+    TPlayer(QWidget* parent, Gui::TPlayerWindow *mpw);
     virtual ~TPlayer();
 
 	TMediaData mdat;
@@ -411,7 +413,7 @@ protected slots:
 
 protected:
     Player::Process::TPlayerProcess* proc;
-	TPlayerWindow* playerwindow;
+    Gui::TPlayerWindow* playerwindow;
 
 private:
     static double restartTime;

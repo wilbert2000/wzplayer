@@ -29,7 +29,7 @@
 #include "images.h"
 #include "player/player.h"
 #include "gui/action/action.h"
-#include "playerwindow.h"
+#include "gui/playerwindow.h"
 
 
 using namespace Settings;

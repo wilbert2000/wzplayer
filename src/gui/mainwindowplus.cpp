@@ -24,7 +24,7 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 
-#include "playerwindow.h"
+#include "gui/playerwindow.h"
 #include "config.h"
 #include "images.h"
 #include "gui/desktop.h"

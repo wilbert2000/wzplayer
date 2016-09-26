@@ -51,7 +51,7 @@
 #include "images.h"
 #include "helper.h"
 #include "mediadata.h"
-#include "playerwindow.h"
+#include "gui/playerwindow.h"
 #include "clhelp.h"
 #include "gui/filedialog.h"
 
@@ -204,7 +204,7 @@ void TMainWindow::createPanel() {
 
 void TMainWindow::createPlayerWindow() {
 
-	playerwindow = new TPlayerWindow(panel);
+    playerwindow = new TPlayerWindow(panel);
 	playerwindow->setObjectName("playerwindow");
 
 	QVBoxLayout* layout = new QVBoxLayout;

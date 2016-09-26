@@ -31,12 +31,9 @@
 class QWidget;
 class QMenu;
 
-class TPlayerWindow;
-
 namespace Settings {
 class TMediaSettings;
 }
-
 
 namespace Gui {
 
@@ -62,6 +59,7 @@ namespace Playlist {
 class TPlaylist;
 }
 
+class TPlayerWindow;
 class TAutoHideTimer;
 class TLogWindow;
 class THelpWindow;
@@ -258,7 +256,7 @@ protected:
 
 protected:
 	QWidget* panel;
-	TPlayerWindow* playerwindow;
+    TPlayerWindow* playerwindow;
 
 	Action::TAction* showContextMenuAct;
 	Action::TAction* nextWheelFunctionAct;

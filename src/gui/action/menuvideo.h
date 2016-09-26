@@ -4,10 +4,9 @@
 #include "gui/action/menu.h"
 
 
-class TPlayerWindow;
-
 namespace Gui {
 
+class TPlayerWindow;
 class TMainWindow;
 class TVideoEqualizer;
 

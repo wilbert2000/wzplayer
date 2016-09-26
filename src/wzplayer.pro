@@ -53,7 +53,6 @@ HEADERS += wzdebug.h \
     player/info/playerinfompv.h \
     player/state.h \
     player/player.h \
-    playerwindow.h \
 	mediadata.h \
     settings/paths.h \
     settings/assstyles.h \
@@ -148,6 +147,7 @@ HEADERS += wzdebug.h \
     gui/playlist/playlistwidget.h \
     gui/playlist/playlist.h \
     gui/autohidetimer.h \
+    gui/playerwindow.h \
     gui/mainwindow.h \
     gui/mainwindowplus.h \
     gui/default.h \
@@ -181,7 +181,6 @@ SOURCES	+= wzdebug.cpp \
     player/info/playerinfomplayer.cpp \
     player/info/playerinfompv.cpp \
     player/player.cpp \
-    playerwindow.cpp \
 	mediadata.cpp \
     settings/paths.cpp \
     settings/assstyles.cpp \
@@ -275,6 +274,7 @@ SOURCES	+= wzdebug.cpp \
     gui/playlist/playlistwidget.cpp \
     gui/playlist/playlist.cpp \
     gui/autohidetimer.cpp \
+    gui/playerwindow.cpp \
     gui/mainwindow.cpp \
     gui/mainwindowplus.cpp \
     gui/default.cpp \

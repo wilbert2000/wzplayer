@@ -1,7 +1,7 @@
 #include "gui/action/menuvideosize.h"
 #include "gui/desktop.h"
 #include "settings/preferences.h"
-#include "playerwindow.h"
+#include "gui/playerwindow.h"
 #include "gui/mainwindow.h"
 #include "player/player.h"
 

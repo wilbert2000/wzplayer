@@ -45,7 +45,7 @@
 
 #include "player/process/playerprocess.h"
 #include "player/process/exitmsg.h"
-#include "playerwindow.h"
+#include "gui/playerwindow.h"
 
 #include "gui/desktop.h"
 #include "gui/msg.h"
@@ -60,7 +60,7 @@ namespace Player {
 
 double TPlayer::restartTime = 0;
 
-TPlayer::TPlayer(QWidget* parent, TPlayerWindow *mpw) :
+TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow *mpw) :
     QObject(parent),
     debug(logger()),
     mdat(),
@@ -156,7 +156,7 @@ TPlayer::TPlayer(QWidget* parent, TPlayerWindow *mpw) :
 			this, SLOT(wheelUp()));
 	connect(playerwindow, SIGNAL(wheelDown()),
 			this, SLOT(wheelDown()));
-	// For DVDNAV subscribe to TPlayerWindow::mouseMoved()
+    // For DVDNAV subscribe to Gui::TPlayerWindow::mouseMoved()
 	connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
 			this, SLOT(dvdnavUpdateMousePos(QPoint)));
 }

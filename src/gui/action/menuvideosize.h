@@ -6,11 +6,10 @@
 #include "gui/action/menu.h"
 
 
-class TPlayerWindow;
-
 namespace Gui {
 
 class TMainWindow;
+class TPlayerWindow;
 
 namespace Action {
 
