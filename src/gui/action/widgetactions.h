@@ -32,37 +32,37 @@ namespace Action {
 
 
 class TWidgetAction : public QWidgetAction {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TWidgetAction(QWidget* parent);
+    TWidgetAction(QWidget* parent);
     virtual ~TWidgetAction();
 
-	void setCustomStyle(QStyle* style) { custom_style = style; }
-	QStyle* customStyle() const { return custom_style; }
+    void setCustomStyle(QStyle* style) { custom_style = style; }
+    QStyle* customStyle() const { return custom_style; }
 
-	void setStyleSheet(const QString& style) { custom_stylesheet = style; }
-	QString styleSheet() const { return custom_stylesheet; }
+    void setStyleSheet(const QString& style) { custom_stylesheet = style; }
+    QString styleSheet() const { return custom_stylesheet; }
 
 public slots:
-	virtual void enable(bool e = true); // setEnabled in QAction is not virtual :(
-	virtual void disable();
+    virtual void enable(bool e = true); // setEnabled in QAction is not virtual :(
+    virtual void disable();
 
 protected:
-	virtual void propagate_enabled(bool);
+    virtual void propagate_enabled(bool);
 
 protected:
-	QStyle* custom_style;
-	QString custom_stylesheet;
+    QStyle* custom_style;
+    QString custom_stylesheet;
 };
 
 
 class TTimeSliderAction : public TWidgetAction {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     TTimeSliderAction(QWidget* parent);
-	virtual ~TTimeSliderAction();
+    virtual ~TTimeSliderAction();
 
 public slots:
     virtual void setPosition(double sec);
@@ -73,15 +73,17 @@ signals:
     void percentageChanged(double percentage);
     void dragPositionChanged(double sec);
 
-	void wheelUp(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::Seeking);
-	void wheelDown(Settings::TPreferences::TWheelFunction function = Settings::TPreferences::Seeking);
+    void wheelUp(Settings::TPreferences::TWheelFunction function =
+                 Settings::TPreferences::Seeking);
+    void wheelDown(Settings::TPreferences::TWheelFunction function =
+                   Settings::TPreferences::Seeking);
 
 protected:
-	virtual QWidget* createWidget(QWidget* parent);
+    virtual QWidget* createWidget(QWidget* parent);
 
 private:
     int pos;
-	int max_pos;
+    int max_pos;
     double duration;
 
     void setPos();
@@ -94,36 +96,36 @@ private slots:
 
 
 class TVolumeSliderAction : public TWidgetAction {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TVolumeSliderAction(QWidget* parent, int vol);
+    TVolumeSliderAction(QWidget* parent, int vol);
     virtual ~TVolumeSliderAction();
 
-	void setFixedSize(QSize size) { fixed_size = size; }
-	QSize fixedSize() const { return fixed_size; }
+    void setFixedSize(QSize size) { fixed_size = size; }
+    QSize fixedSize() const { return fixed_size; }
 
-	void setTickPosition(QSlider::TickPosition position);
-	QSlider::TickPosition tickPosition() const { return tick_position; }
+    void setTickPosition(QSlider::TickPosition position);
+    QSlider::TickPosition tickPosition() const { return tick_position; }
 
-	virtual int value();
+    virtual int value();
 
 public slots:
-	virtual void setValue(int);
+    virtual void setValue(int);
 
 signals:
-	void valueChanged(int value);
+    void valueChanged(int value);
 
 protected:
-	virtual QWidget* createWidget(QWidget* parent);
+    virtual QWidget* createWidget(QWidget* parent);
 
 private:
-	int volume;
-	QSize fixed_size;
-	QSlider::TickPosition tick_position;
+    int volume;
+    QSize fixed_size;
+    QSlider::TickPosition tick_position;
 
 private slots:
-	void valueSliderChanged(int value);
+    void valueSliderChanged(int value);
 };
 
 } // namespace Action

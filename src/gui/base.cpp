@@ -355,9 +355,11 @@ void TBase::createActions() {
     connect(timeslider_action, SIGNAL(dragPositionChanged(double)),
             this, SLOT(onDragPositionChanged(double)));
 
-    connect(timeslider_action, SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
+    connect(timeslider_action,
+            SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
             player, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
-    connect(timeslider_action, SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
+    connect(timeslider_action,
+            SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
             player, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
 
 	// Volume slider action
