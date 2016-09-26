@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/baseplus.h"
+#include "gui/mainwindowplus.h"
 
 #include <QEvent>
 #include <QMenu>
@@ -44,7 +44,7 @@ using namespace Settings;
 
 namespace Gui {
 
-TBasePlus::TBasePlus() :
+TMainWindowPlus::TMainWindowPlus() :
     TMainWindow(),
     debug(logger()),
     mainwindow_visible(true),
@@ -137,18 +137,18 @@ TBasePlus::TBasePlus() :
 	retranslateStrings();
 }
 
-TBasePlus::~TBasePlus() {
+TMainWindowPlus::~TMainWindowPlus() {
 	tray->hide();
 }
 
 
-void TBasePlus::retranslateStrings() {
+void TMainWindowPlus::retranslateStrings() {
 
     setWinTitle();
     updateShowAllAct();
 }
 
-void TBasePlus::changeEvent(QEvent* e) {
+void TMainWindowPlus::changeEvent(QEvent* e) {
 
     if (e->type() == QEvent::LanguageChange) {
         retranslateStrings();
@@ -157,18 +157,18 @@ void TBasePlus::changeEvent(QEvent* e) {
     }
 }
 
-void TBasePlus::setWinTitle() {
+void TMainWindowPlus::setWinTitle() {
 
     playlistdock->setWindowTitle(playlist->windowTitle());
 }
 
-void TBasePlus::setWindowCaption(const QString& title) {
+void TMainWindowPlus::setWindowCaption(const QString& title) {
 
     TMainWindow::setWindowCaption(title);
     tray->setToolTip(title);
 }
 
-void TBasePlus::updateShowAllAct() {
+void TMainWindowPlus::updateShowAllAct() {
 
     if (isVisible()) {
         showAllAct->setTextAndTip(tr("&Hide"));
@@ -177,7 +177,7 @@ void TBasePlus::updateShowAllAct() {
     }
 }
 
-bool TBasePlus::startHidden() {
+bool TMainWindowPlus::startHidden() {
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	return false;
@@ -189,7 +189,7 @@ bool TBasePlus::startHidden() {
 #endif
 }
 
-void TBasePlus::switchToTray() {
+void TMainWindowPlus::switchToTray() {
 
 	exitFullscreen();
 	showAll(false); // Hide windows
@@ -203,7 +203,7 @@ void TBasePlus::switchToTray() {
 	}
 }
 
-void TBasePlus::closeWindow() {
+void TMainWindowPlus::closeWindow() {
     logger()->debug("closeWindow");
 
 	if (tray->isVisible()) {
@@ -213,14 +213,14 @@ void TBasePlus::closeWindow() {
 	}
 }
 
-void TBasePlus::quit() {
+void TMainWindowPlus::quit() {
     logger()->debug("quit");
 
 	// Bypass switch to tray
     TMainWindow::closeWindow();
 }
 
-void TBasePlus::saveConfig() {
+void TMainWindowPlus::saveConfig() {
     logger()->debug("saveConfig");
 
     TMainWindow::saveConfig();
@@ -234,7 +234,7 @@ void TBasePlus::saveConfig() {
 	pref->endGroup();
 }
 
-void TBasePlus::loadConfig() {
+void TMainWindowPlus::loadConfig() {
     logger()->debug("loadConfig");
 
     TMainWindow::loadConfig();
@@ -255,7 +255,7 @@ void TBasePlus::loadConfig() {
 	updateShowAllAct();
 }
 
-void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
     logger()->debug("trayIconActivated: %1", reason);
 
 	updateShowAllAct();
@@ -267,7 +267,7 @@ void TBasePlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 	}
 }
 
-void TBasePlus::toggleShowAll() {
+void TMainWindowPlus::toggleShowAll() {
 
 	// Ignore if tray is not visible
 	if (tray->isVisible()) {
@@ -275,12 +275,12 @@ void TBasePlus::toggleShowAll() {
 	}
 }
 
-void TBasePlus::showAll() {
+void TMainWindowPlus::showAll() {
 	if (!isVisible())
 		showAll(true);
 }
 
-void TBasePlus::showAll(bool b) {
+void TMainWindowPlus::showAll(bool b) {
 
     if (b) {
         show();
@@ -298,7 +298,7 @@ void TBasePlus::showAll(bool b) {
 	updateShowAllAct();
 }
 
-void TBasePlus::onMediaInfoChanged() {
+void TMainWindowPlus::onMediaInfoChanged() {
     logger()->debug("onMediaInfoChanged");
 
     TMainWindow::onMediaInfoChanged();
@@ -309,13 +309,13 @@ void TBasePlus::onMediaInfoChanged() {
 // The following is an awfull lot of code to keep the video panel
 // the same size before and after docking...
 
-void TBasePlus::onDockLocationChanged(Qt::DockWidgetArea area) {
+void TMainWindowPlus::onDockLocationChanged(Qt::DockWidgetArea area) {
     logger()->debug("onDockLocationChanged: changed from %1 to %2",
                     dockArea, area);
     dockArea = area;
 }
 
-void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) {
+void TMainWindowPlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) {
 
     if (checkMouse && qApp->mouseButtons()) {
         saveSizeTimer->start();
@@ -343,7 +343,7 @@ void TBasePlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) 
 }
 
 // Try to save the size factor used before the dock resized the video panel
-void TBasePlus::onvideoSizeFactorChanged(double, double) {
+void TMainWindowPlus::onvideoSizeFactorChanged(double, double) {
 
     if (pref->resize_on_docking
         && !pref->fullscreen
@@ -356,7 +356,7 @@ void TBasePlus::onvideoSizeFactorChanged(double, double) {
     }
 }
 
-void TBasePlus::showPlaylist(bool v) {
+void TMainWindowPlus::showPlaylist(bool v) {
     logger()->debug("showPlaylist: %1", v);
 
     restore_playlist = false;
@@ -374,7 +374,7 @@ void TBasePlus::showPlaylist(bool v) {
     playlistdock->setVisible(v);
 }
 
-void TBasePlus::reposition(const QSize& oldWinSize) {
+void TMainWindowPlus::reposition(const QSize& oldWinSize) {
 
     QSize d = (frameGeometry().size() - oldWinSize) / 2;
     QPoint p = pos() - QPoint(d.width(), d.height());
@@ -383,7 +383,7 @@ void TBasePlus::reposition(const QSize& oldWinSize) {
 }
 
 // Slot to resize the video to its saved size
-void TBasePlus::restoreVideoSize() {
+void TMainWindowPlus::restoreVideoSize() {
 
     saveSizeTimer->stop();
 
@@ -424,7 +424,7 @@ void TBasePlus::restoreVideoSize() {
     postedResize = false;
 }
 
-void TBasePlus::onTopLevelChanged(bool topLevel) {
+void TMainWindowPlus::onTopLevelChanged(bool topLevel) {
     //debug << "onTopLevelChanged: topLevel" << topLevel
     //      << "size" << pref->size_factor
     //      << "saved size" << saveSize << debug;
@@ -455,7 +455,7 @@ void TBasePlus::onTopLevelChanged(bool topLevel) {
     }
 }
 
-void TBasePlus::onDockVisibilityChanged(bool visible) {
+void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
     //debug << "onDockVisibilityChanged: visible" << visible
     //      << "floating" << playlistdock->isFloating()
     //      << "size" << pref->size_factor
@@ -499,7 +499,7 @@ void TBasePlus::onDockVisibilityChanged(bool visible) {
 #ifdef Q_OS_OS2
 // we test if xcenter is available at all. if not disable the tray action. this
 // is possible when xcenter is not opened or crashed
-void TBasePlus::trayAvailable() {
+void TMainWindowPlus::trayAvailable() {
 	if (!tray->isSystemTrayAvailable()) {
 			windowMenu->removeAction(showTrayAct);
 	}
@@ -511,4 +511,4 @@ void TBasePlus::trayAvailable() {
 
 } // namespace Gui
 
-#include "moc_baseplus.cpp"
+#include "moc_mainwindowplus.cpp"

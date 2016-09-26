@@ -37,7 +37,7 @@ using namespace Settings;
 namespace Gui {
 
 TDefault::TDefault() :
-    TBasePlus(),
+    TMainWindowPlus(),
     debug(logger()) {
 
 	createStatusBar();
@@ -178,21 +178,21 @@ void TDefault::displayVideoInfo() {
 void TDefault::onMediaSettingsChanged() {
     logger()->debug("onMediaSettingsChanged");
 
-    TBasePlus::onMediaSettingsChanged();
+    TMainWindowPlus::onMediaSettingsChanged();
     displayInOutPoints();
 }
 
 void TDefault::onMediaInfoChanged() {
     logger()->debug("onMediaInfoChanged");
 
-	TBasePlus::onMediaInfoChanged();
+    TMainWindowPlus::onMediaInfoChanged();
     displayVideoInfo();
 }
 
 void TDefault::saveConfig() {
     logger()->debug("saveConfig");
 
-	TBasePlus::saveConfig();
+    TMainWindowPlus::saveConfig();
 
 	pref->beginGroup(settingsGroupName());
 	pref->setValue("video_info", viewVideoInfoAct->isChecked());
@@ -204,7 +204,7 @@ void TDefault::saveConfig() {
 void TDefault::loadConfig() {
     logger()->debug("loadConfig");
 
-	TBasePlus::loadConfig();
+    TMainWindowPlus::loadConfig();
 
 	pref->beginGroup(settingsGroupName());
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());

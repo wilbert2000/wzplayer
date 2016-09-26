@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_BASEPLUS_H
-#define GUI_BASEPLUS_H
+#ifndef GUI_MAINWINDOWPLUS_H
+#define GUI_MAINWINDOWPLUS_H
 
 #include "gui/mainwindow.h"
 
@@ -31,13 +31,13 @@ class QDockWidget;
 
 namespace Gui {
 
-class TBasePlus : public TMainWindow {
+class TMainWindowPlus : public TMainWindow {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TBasePlus();
-	virtual ~TBasePlus();
+    TMainWindowPlus();
+    virtual ~TMainWindowPlus();
 
 	virtual bool startHidden();
 	virtual void loadConfig();
@@ -106,4 +106,4 @@ private slots:
 
 } // namespace Gui
 
-#endif // GUI_BASEPLUS_H
+#endif // GUI_MAINWINDOWPLUS_H

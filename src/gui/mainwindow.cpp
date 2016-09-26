@@ -953,7 +953,7 @@ void TMainWindow::closeWindow() {
 	close();
 }
 
-// Overriden by TBasePlus
+// Overriden by TMainWindowPlus
 void TMainWindow::showPlaylist(bool b) {
     playlist->setVisible(b);
 }

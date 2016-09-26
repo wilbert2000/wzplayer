@@ -19,7 +19,7 @@
 #ifndef GUI_DEFAULT_H
 #define GUI_DEFAULT_H
 
-#include "gui/baseplus.h"
+#include "gui/mainwindowplus.h"
 
 
 class QLabel;
@@ -31,7 +31,7 @@ class QMenu;
 
 namespace Gui {
 
-class TDefault : public TBasePlus {
+class TDefault : public TMainWindowPlus {
 	Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
