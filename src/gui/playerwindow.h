@@ -38,130 +38,131 @@ namespace Gui {
 
 //! TVideoWindow can be instructed to not delete the background.
 class TVideoWindow : public QWidget {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	explicit TVideoWindow(QWidget* parent);
-	virtual ~TVideoWindow();
+    explicit TVideoWindow(QWidget* parent);
+    virtual ~TVideoWindow();
 
-	bool normal_background;
+    bool normal_background;
 
-	void setFastBackground();
-	void restoreNormalBackground();
+    void setFastBackground();
+    void restoreNormalBackground();
 
 protected:
-	virtual void paintEvent(QPaintEvent*);
+    virtual void paintEvent(QPaintEvent*);
 };
 
 
+// Window containing video window
 class TPlayerWindow : public QWidget {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TPlayerWindow(QWidget* parent);
-	virtual ~TPlayerWindow();
+    TPlayerWindow(QWidget* parent);
+    virtual ~TPlayerWindow();
 
-	TVideoWindow* videoWindow() { return video_window; }
+    TVideoWindow* videoWindow() { return video_window; }
 
-	void setResolution(int width, int height);
-	QSize resolution() const { return video_size; }
-	QSize lastVideoOutSize() const { return last_video_out_size; }
-	double aspectRatio() const { return aspect; }
+    void setResolution(int width, int height);
+    QSize resolution() const { return video_size; }
+    QSize lastVideoOutSize() const { return last_video_out_size; }
+    double aspectRatio() const { return aspect; }
 
-	// Zoom
-	// Sets current zoom to factor if factor_fullscreen == 0
-	// else sets both zoom for normal and full screen.
-	void setZoom(double factor,
-				 double factor_fullscreen = 0,
-				 bool updateVideoWindow = true);
-	// Zoom current screen
-	double zoom();
-	// Zoom normal screen
-	double zoomNormalScreen() { return zoom_factor; }
-	// Zoom full screen
-	double zoomFullScreen() { return zoom_factor_fullscreen; }
+    // Zoom
+    // Sets current zoom to factor if factor_fullscreen == 0
+    // else sets both zoom for normal and full screen.
+    void setZoom(double factor,
+                 double factor_fullscreen = 0,
+                 bool updateVideoWindow = true);
+    // Zoom current screen
+    double zoom();
+    // Zoom normal screen
+    double zoomNormalScreen() { return zoom_factor; }
+    // Zoom full screen
+    double zoomFullScreen() { return zoom_factor_fullscreen; }
 
-	// Pan
-	void setPan(QPoint pan, QPoint pan_fullscreen);
-	// Pan current screen
-	QPoint pan();
-	// Pan normal screen
-	QPoint panNormalScreen() { return pan_offset; }
-	// Pan full screen
-	QPoint panFullScreen() { return pan_offset_fullscreen; }
+    // Pan
+    void setPan(QPoint pan, QPoint pan_fullscreen);
+    // Pan current screen
+    QPoint pan();
+    // Pan normal screen
+    QPoint panNormalScreen() { return pan_offset; }
+    // Pan full screen
+    QPoint panFullScreen() { return pan_offset_fullscreen; }
 
-	// Reset zoom and pan full and normal screen
-	void resetZoomAndPan();
+    // Reset zoom and pan full and normal screen
+    void resetZoomAndPan();
 
-	void setDelayLeftClick(bool b) { delay_left_click = b; }
+    void setDelayLeftClick(bool b) { delay_left_click = b; }
 
-	// Calculate size factor for current view
-	void getSizeFactors(double& factorX, double& factorY);
-	double getSizeFactor();
-	void updateSizeFactor();
+    // Calculate size factor for current view
+    void getSizeFactors(double& factorX, double& factorY);
+    double getSizeFactor();
+    void updateSizeFactor();
 
-	void updateVideoWindow();
-	void moveVideo(int dx, int dy);
+    void updateVideoWindow();
+    void moveVideo(int dx, int dy);
 
-	void setColorKey();
+    void setColorKey();
     void restoreNormalWindow(bool clrScreen = true);
 
 signals:
-	void leftClicked();
-	void doubleClicked();
-	void rightClicked();
-	void middleClicked();
-	void xbutton1Clicked(); // first X button
-	void xbutton2Clicked(); // second X button
+    void leftClicked();
+    void doubleClicked();
+    void rightClicked();
+    void middleClicked();
+    void xbutton1Clicked(); // first X button
+    void xbutton2Clicked(); // second X button
 
-	void wheelUp();
-	void wheelDown();
+    void wheelUp();
+    void wheelDown();
 
-	void mouseMoved(QPoint);
-	void draggingChanged(bool);
+    void mouseMoved(QPoint);
+    void draggingChanged(bool);
 
-	void moveWindow(QPoint);
-	void videoOutChanged(const QSize& size);
+    void moveWindow(QPoint);
+    void videoOutChanged(const QSize& size);
     void videoSizeFactorChanged(double, double);
 
 protected:
-	virtual void resizeEvent(QResizeEvent*);
-	virtual void mousePressEvent(QMouseEvent* e);
-	virtual void mouseMoveEvent(QMouseEvent* e);
-	virtual void mouseReleaseEvent(QMouseEvent* e);
-	virtual void mouseDoubleClickEvent(QMouseEvent* e);
-	virtual void wheelEvent(QWheelEvent* e);
+    virtual void resizeEvent(QResizeEvent*);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void mouseMoveEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
+    virtual void mouseDoubleClickEvent(QMouseEvent* e);
+    virtual void wheelEvent(QWheelEvent* e);
 
 private:
-	TVideoWindow* video_window;
+    TVideoWindow* video_window;
 
-	QSize video_size;
-	QSize last_video_out_size;
-	double aspect;
+    QSize video_size;
+    QSize last_video_out_size;
+    double aspect;
 
-	double zoom_factor;
-	double zoom_factor_fullscreen;
-	QPoint pan_offset;
-	QPoint pan_offset_fullscreen;
+    double zoom_factor;
+    double zoom_factor_fullscreen;
+    QPoint pan_offset;
+    QPoint pan_offset_fullscreen;
 
-	bool double_clicked;
-	bool delay_left_click;
-	QTimer* left_click_timer;
-	QTime left_button_pressed_time;
-	QPoint drag_pos;
-	bool dragging;
-	bool kill_fake_event;
+    bool double_clicked;
+    bool delay_left_click;
+    QTimer* left_click_timer;
+    QTime left_button_pressed_time;
+    QPoint drag_pos;
+    bool dragging;
+    bool kill_fake_event;
 
-	void moveVideo(QPoint delta);
+    void moveVideo(QPoint delta);
 
-	void startDragging();
-	void stopDragging();
-	bool checkDragging(QMouseEvent* event);
+    void startDragging();
+    void stopDragging();
+    bool checkDragging(QMouseEvent* event);
 
-	void setFastWindow();
-	void clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan);
+    void setFastWindow();
+    void clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan);
 };
 
 } // namespace Gui

@@ -358,24 +358,24 @@ void TPlayerWindow::startDragging() {
 void TPlayerWindow::stopDragging() {
     //logger()->debug("stopDragging");
 
-	dragging = false;
-	QApplication::restoreOverrideCursor();
-	emit draggingChanged(false);
+    dragging = false;
+    QApplication::restoreOverrideCursor();
+    emit draggingChanged(false);
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
     // logger()->debug("mousePressEvent");
 
-	event->accept();
+    event->accept();
 
-	if (event->button() == Qt::LeftButton && !double_clicked) {
-		left_button_pressed_time.start();
-		drag_pos = event->globalPos();
-		dragging = false;
-		// Catch release_events with button still down
-		// Happens only when mouse capture is released?
-		kill_fake_event = true;
-	}
+    if (event->button() == Qt::LeftButton && !double_clicked) {
+        left_button_pressed_time.start();
+        drag_pos = event->globalPos();
+        dragging = false;
+        // Catch release_events with button still down
+        // Happens only when mouse capture is released?
+        kill_fake_event = true;
+    }
 }
 
 void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
