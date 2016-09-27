@@ -139,8 +139,7 @@ TMainWindow::TMainWindow() :
     setWindowTitle(TConfig::PROGRAM_NAME);
     setAcceptDrops(true);
 
-    setMessageHandler(statusBar());
-    msgSlot = new TMsgSlot(this);
+    createStatusBar();
 
     // Reset size factor
     if (pref->save_window_size_on_exit) {
@@ -192,6 +191,62 @@ TMainWindow::~TMainWindow() {
 
     msgSlot = 0;
     setMessageHandler(0);
+}
+
+QString TMainWindow::settingsGroupName() {
+    return "mainwindow";
+}
+
+void TMainWindow::createStatusBar() {
+
+    logger()->debug("createStatusBar");
+
+    setMessageHandler(statusBar());
+    msgSlot = new TMsgSlot(this);
+
+    QColor bgc(0, 0, 0);
+    QColor fgc(255, 255, 255);
+    int margin = 3;
+    QMargins margins(margin, 0, margin, 0);
+
+    statusBar()->setSizeGripEnabled(false);
+    ColorUtils::setBackgroundColor(statusBar(), bgc);
+    ColorUtils::setForegroundColor(statusBar(), fgc);
+    statusBar()->setContentsMargins(1, 1, 1, 1);
+
+    video_info_label = new QLabel(statusBar());
+    video_info_label->setObjectName("video_info_label");
+    ColorUtils::setBackgroundColor(video_info_label, bgc);
+    ColorUtils::setForegroundColor(video_info_label, fgc);
+    video_info_label->setFrameShape(QFrame::NoFrame);
+    video_info_label->setContentsMargins(margins);
+    statusBar()->addWidget(video_info_label);
+    connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
+            this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
+
+    in_out_points_label = new QLabel(statusBar());
+    in_out_points_label->setObjectName("in_out_points_label");
+    ColorUtils::setBackgroundColor(in_out_points_label, bgc);
+    ColorUtils::setForegroundColor(in_out_points_label, fgc);
+    in_out_points_label->setFrameShape(QFrame::NoFrame);
+    in_out_points_label->setContentsMargins(margins);
+    statusBar()->addPermanentWidget(in_out_points_label, 0);
+    connect(player, SIGNAL(InOutPointsChanged()),
+            this, SLOT(displayInOutPoints()));
+    connect(player, SIGNAL(mediaSettingsChanged()),
+            this, SLOT(displayInOutPoints()));
+
+    time_label = new QLabel(statusBar());
+    time_label->setObjectName("time_label");
+    ColorUtils::setBackgroundColor(time_label, bgc);
+    ColorUtils::setForegroundColor(time_label, fgc);
+    time_label->setFrameShape(QFrame::NoFrame);
+    time_label->setContentsMargins(margins);
+    time_label->setText("00:00 / 00:00");
+    statusBar()->addPermanentWidget(time_label, 0);
+    connect(this, SIGNAL(timeChanged(QString)),
+            time_label, SLOT(setText(QString)));
+
 }
 
 void TMainWindow::createPanel() {
@@ -399,6 +454,37 @@ void TMainWindow::createActions() {
 	viewStatusBarAct->setChecked(true);
     connect(viewStatusBarAct, SIGNAL(toggled(bool)),
             statusBar(), SLOT(setVisible(bool)));
+
+    viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
+                                           tr("&Video info"));
+    viewVideoInfoAct->setCheckable(true);
+    viewVideoInfoAct->setChecked(true);
+    statusbar_menu->addAction(viewVideoInfoAct);
+    connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
+            video_info_label, SLOT(setVisible(bool)));
+
+    viewInOutPointsAct = new Action::TAction(this, "toggle_in_out_points",
+                                             tr("&In-out points"));
+    viewInOutPointsAct->setCheckable(true);
+    viewInOutPointsAct->setChecked(true);
+    statusbar_menu->addAction(viewInOutPointsAct);
+    connect(viewInOutPointsAct, SIGNAL(toggled(bool)),
+            in_out_points_label, SLOT(setVisible(bool)));
+
+    viewVideoTimeAct = new Action::TAction(this, "toggle_video_time",
+                                           tr("&Video time"));
+    viewVideoTimeAct->setCheckable(true);
+    viewVideoTimeAct->setChecked(true);
+    statusbar_menu->addAction(viewVideoTimeAct);
+    connect(viewVideoTimeAct, SIGNAL(toggled(bool)),
+            time_label, SLOT(setVisible(bool)));
+
+    viewFramesAct = new Action::TAction(this, "toggle_frames", tr("&Frames"));
+    viewFramesAct->setCheckable(true);
+    viewFramesAct->setChecked(false);
+    statusbar_menu->addAction(viewFramesAct);
+    connect(viewFramesAct, SIGNAL(toggled(bool)),
+            this, SLOT(displayFrames(bool)));
 } // createActions
 
 void TMainWindow::createMenus() {
@@ -642,6 +728,51 @@ void TMainWindow::retranslateStrings() {
 		pref_dialog->mod_input()->actions_editor->updateView();
 } // retranslateStrings()
 
+void TMainWindow::displayVideoInfo() {
+
+    if (player->mdat.noVideo()) {
+        video_info_label->setText("");
+    } else {
+        QSize video_out_size = playerwindow->lastVideoOutSize();
+        video_info_label->setText(tr("%1x%2", "video source width x height")
+            .arg(player->mdat.video_width)
+            .arg(player->mdat.video_height)
+            + " " + QString::fromUtf8("\u279F") + " "
+            + tr("%1x%2 %3 fps", "video out width x height and fps")
+            .arg(video_out_size.width())
+            .arg(video_out_size.height())
+            .arg(player->mdat.video_fps));
+    }
+}
+
+void TMainWindow::displayInOutPoints() {
+
+    QString s;
+    int secs = qRound(player->mset.in_point);
+    if (secs > 0)
+        s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
+
+    secs = qRound(player->mset.out_point);
+    if (secs > 0) {
+        if (!s.isEmpty()) s += " ";
+        s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
+    }
+
+    if (player->mset.loop) {
+        if (!s.isEmpty()) s += " ";
+        s += tr("R", "Symbol for repeat in-out in statusbar");
+    }
+
+    in_out_points_label->setText(s);
+}
+
+void TMainWindow::displayFrames(bool b) {
+
+    pref->show_frames = b;
+    onDurationChanged(player->mdat.duration);
+}
+
+
 void TMainWindow::setFloatingToolbarsVisible(bool visible) {
 
 	if (toolbar->isFloating()) {
@@ -815,10 +946,9 @@ void TMainWindow::loadConfig() {
     sendEnableActions();
     // Get all actions with a name
     TActionList all_actions = getAllNamedActions();
-    // Load actions from outside group derived class
+    // Load actions
     Action::TActionsEditor::loadFromConfig(pref, all_actions);
 
-    // Load from inside group derived class for backwards compatibility
     pref->beginGroup(settingsGroupName());
 
     if (pref->save_window_size_on_exit) {
@@ -878,6 +1008,13 @@ void TMainWindow::loadConfig() {
     state_restored = restoreState(pref->value("toolbars_state").toByteArray(),
                                   Helper::qtVersion());
 
+    pref->beginGroup("statusbar");
+    viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
+    viewInOutPointsAct->setChecked(pref->value("in_out_points", true).toBool());
+    viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
+    viewFramesAct->setChecked(pref->show_frames);
+    pref->endGroup();
+
     pref->endGroup();
 
     playlist->loadSettings();
@@ -917,6 +1054,12 @@ void TMainWindow::saveConfig() {
                    fullscreen_statusbar_visible);
 
 	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+
+    pref->beginGroup("statusbar");
+    pref->setValue("video_info", viewVideoInfoAct->isChecked());
+    pref->setValue("in_out_points", viewInOutPointsAct->isChecked());
+    pref->setValue("video_time", viewVideoTimeAct->isChecked());
+    pref->endGroup();
 
 	pref->endGroup();
 
@@ -1217,6 +1360,8 @@ void TMainWindow::onMediaInfoChanged() {
     QString title = player->mdat.displayName();
 	setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
     emit mediaFileTitleChanged(player->mdat.filename, title);
+
+    displayVideoInfo();
 }
 
 void TMainWindow::onNewMediaStartedPlaying() {
@@ -2323,6 +2468,8 @@ void TMainWindow::onMediaSettingsChanged() {
 
 	updateVideoEqualizer();
 	updateAudioEqualizer();
+
+    displayInOutPoints();
 }
 
 void TMainWindow::onDragPositionChanged(double t) {

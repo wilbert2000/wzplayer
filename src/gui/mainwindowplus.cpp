@@ -56,61 +56,61 @@ TMainWindowPlus::TMainWindowPlus() :
     dockArea(Qt::LeftDockWidgetArea),
     postedResize(false) {
 
-	tray = new QSystemTrayIcon(this);
+    tray = new QSystemTrayIcon(this);
     tray->setIcon(Images::icon("logo", 22));
-	tray->setToolTip(TConfig::PROGRAM_NAME);
-	connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-			 this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    tray->setToolTip(TConfig::PROGRAM_NAME);
+    connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
 
     quitAct = new Action::TAction(this, "quit", tr("&Quit"), "exit",
                                   QKeySequence("Ctrl+Q"));
     quitAct->setVisible(false);
-	connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
-	fileMenu->addAction(quitAct);
+    connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
+    fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
                                       tr("S&how icon in system tray"),
                                       "systray");
-	showTrayAct->setCheckable(true);
-	connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
+    showTrayAct->setCheckable(true);
+    connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
     connect(showTrayAct, SIGNAL(toggled(bool)),
             quitAct, SLOT(setVisible(bool)));
 
 #ifndef Q_OS_OS2
-	windowMenu->addSeparator();
-	windowMenu->addAction(showTrayAct);
+    windowMenu->addSeparator();
+    windowMenu->addAction(showTrayAct);
 #else
-	trayAvailable();
-	connect(windowMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
+    trayAvailable();
+    connect(windowMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
 #endif
 
-	showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
+    showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
     connect(showAllAct, SIGNAL(triggered()), this, SLOT(toggleShowAll()));
 
-	context_menu = new QMenu(this);
-	context_menu->addMenu(fileMenu);
-	context_menu->addMenu(playMenu);
-	context_menu->addMenu(videoMenu);
-	context_menu->addMenu(audioMenu);
-	context_menu->addMenu(subtitleMenu);
-	context_menu->addMenu(browseMenu);
-	context_menu->addMenu(windowMenu);
-	context_menu->addSeparator();
-	context_menu->addAction(showAllAct);
-	context_menu->addAction(quitAct);
-	
-	tray->setContextMenu(context_menu);
+    context_menu = new QMenu(this);
+    context_menu->addMenu(fileMenu);
+    context_menu->addMenu(playMenu);
+    context_menu->addMenu(videoMenu);
+    context_menu->addMenu(audioMenu);
+    context_menu->addMenu(subtitleMenu);
+    context_menu->addMenu(browseMenu);
+    context_menu->addMenu(windowMenu);
+    context_menu->addSeparator();
+    context_menu->addAction(showAllAct);
+    context_menu->addAction(quitAct);
 
-	// Playlistdock
+    tray->setContextMenu(context_menu);
+
+    // Playlistdock
     setAnimated(false);
-	playlistdock = new QDockWidget(this);
-	playlistdock->setObjectName("playlistdock");
+    playlistdock = new QDockWidget(this);
+    playlistdock->setObjectName("playlistdock");
     playlistdock->setWidget(playlist);
     playlistdock->setFloating(true);
-	playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
-								  | Qt::BottomDockWidgetArea
-								  | Qt::LeftDockWidgetArea
-								  | Qt::RightDockWidgetArea);
+    playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
+                                  | Qt::BottomDockWidgetArea
+                                  | Qt::LeftDockWidgetArea
+                                  | Qt::RightDockWidgetArea);
     playlistdock->setAcceptDrops(true);
     addDockWidget(Qt::LeftDockWidgetArea, playlistdock);
     playlistdock->hide();
@@ -121,8 +121,8 @@ TMainWindowPlus::TMainWindowPlus() :
     connect(saveSizeTimer, SIGNAL(timeout()),
             this, SLOT(saveSizeFactor()));
 
-	connect(playlistdock, SIGNAL(topLevelChanged(bool)),
-			this, SLOT(onTopLevelChanged(bool)));
+    connect(playlistdock, SIGNAL(topLevelChanged(bool)),
+            this, SLOT(onTopLevelChanged(bool)));
     connect(playlistdock, SIGNAL(visibilityChanged(bool)),
             this, SLOT(onDockVisibilityChanged(bool)));
     connect(playlistdock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
@@ -132,13 +132,13 @@ TMainWindowPlus::TMainWindowPlus() :
     connect(playlist, SIGNAL(windowTitleChanged()),
             this, SLOT(setWinTitle()));
     connect(this, SIGNAL(openFileRequested()),
-			this, SLOT(showAll()));
+            this, SLOT(showAll()));
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TMainWindowPlus::~TMainWindowPlus() {
-	tray->hide();
+    tray->hide();
 }
 
 
@@ -180,43 +180,43 @@ void TMainWindowPlus::updateShowAllAct() {
 bool TMainWindowPlus::startHidden() {
 
 #if defined(Q_OS_WIN) || defined(Q_OS_OS2)
-	return false;
+    return false;
 #else
-	if (!showTrayAct->isChecked() || mainwindow_visible)
-		return false;
-	else
-		return true;
+    if (!showTrayAct->isChecked() || mainwindow_visible)
+        return false;
+    else
+        return true;
 #endif
 }
 
 void TMainWindowPlus::switchToTray() {
 
-	exitFullscreen();
-	showAll(false); // Hide windows
+    exitFullscreen();
+    showAll(false); // Hide windows
     player->stop();
 
-	if (pref->balloon_count > 0) {
-		tray->showMessage(TConfig::PROGRAM_NAME,
-			tr("%1 is still running here").arg(TConfig::PROGRAM_NAME),
-			QSystemTrayIcon::Information, TConfig::MESSAGE_DURATION);
-		pref->balloon_count--;
-	}
+    if (pref->balloon_count > 0) {
+        tray->showMessage(TConfig::PROGRAM_NAME,
+            tr("%1 is still running here").arg(TConfig::PROGRAM_NAME),
+            QSystemTrayIcon::Information, TConfig::MESSAGE_DURATION);
+        pref->balloon_count--;
+    }
 }
 
 void TMainWindowPlus::closeWindow() {
     logger()->debug("closeWindow");
 
-	if (tray->isVisible()) {
-		switchToTray();
-	} else {
+    if (tray->isVisible()) {
+        switchToTray();
+    } else {
         TMainWindow::closeWindow();
-	}
+    }
 }
 
 void TMainWindowPlus::quit() {
     logger()->debug("quit");
 
-	// Bypass switch to tray
+    // Bypass switch to tray
     TMainWindow::closeWindow();
 }
 
@@ -225,13 +225,10 @@ void TMainWindowPlus::saveConfig() {
 
     TMainWindow::saveConfig();
 
-	// Store inside group derived class
-	pref->beginGroup(settingsGroupName());
-	pref->beginGroup("base_gui_plus");
+    pref->beginGroup("mainwindowplus");
     pref->setValue("show_tray_icon", showTrayAct->isChecked());
-	pref->setValue("mainwindow_visible", isVisible());
-	pref->endGroup();
-	pref->endGroup();
+    pref->setValue("mainwindow_visible", isVisible());
+    pref->endGroup();
 }
 
 void TMainWindowPlus::loadConfig() {
@@ -239,20 +236,15 @@ void TMainWindowPlus::loadConfig() {
 
     TMainWindow::loadConfig();
 
-	// load from group derived class
-	pref->beginGroup(settingsGroupName());
-	pref->beginGroup("base_gui_plus");
-
+    pref->beginGroup("mainwindowplus");
     showTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());
 	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
-
     pref->endGroup();
-	pref->endGroup();
 
     restore_playlist = playlistdock->isVisible() && playlistdock->isFloating();
 
-	setWinTitle();
-	updateShowAllAct();
+    setWinTitle();
+    updateShowAllAct();
 }
 
 void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {

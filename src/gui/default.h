@@ -39,33 +39,10 @@ public:
 	TDefault();
 	virtual ~TDefault();
 
-	virtual void loadConfig();
-	virtual void saveConfig();
-
 protected:
 	virtual QString settingsGroupName() { return "default_gui"; }
 
-protected slots:
-	// Override
-	virtual void onMediaInfoChanged();
-    virtual void onMediaSettingsChanged();
-
-	void displayInOutPoints();
-	void displayVideoInfo();
-    void displayFrames(bool);
-
 private:
-    QLabel* video_info_label;
-    QLabel* in_out_points_label;
-    QLabel* time_label;
-
-    Action::TAction* viewVideoInfoAct;
-    Action::TAction* viewInOutPointsAct;
-    Action::TAction* viewVideoTimeAct;
-    Action::TAction* viewFramesAct;
-
-	void createStatusBar();
-	void createActions();
 	void createMenus();
 };
 

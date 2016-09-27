@@ -37,7 +37,7 @@
 
 #include "player/player.h"
 #include "gui/playlist/playlist.h"
-#include "gui/default.h"
+#include "gui/mainwindowplus.h"
 
 #ifdef Q_OS_WIN
 #if USE_ASSOCIATIONS
@@ -426,9 +426,9 @@ TApp::ExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-    logger()->debug("createGUI: creating main window 'Gui::TDefault'");
+    logger()->debug("createGUI: creating main window 'Gui::TMainWindowPlus'");
 
-    main_window = new Gui::TDefault();
+    main_window = new Gui::TMainWindowPlus();
 
     logger()->debug("createGUI: loading window config");
     main_window->loadConfig();

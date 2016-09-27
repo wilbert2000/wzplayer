@@ -29,6 +29,7 @@
 
 
 class QWidget;
+class QLabel;
 class QMenu;
 
 namespace Settings {
@@ -237,14 +238,13 @@ protected:
 	virtual void didEnterFullscreen();
 	virtual void aboutToExitFullscreen();
 	virtual void didExitFullscreen();
-	virtual QString settingsGroupName() = 0;
 
-	void createPlayer();
+    void createPlayer();
 	void createPlayerWindow();
 	void createVideoEqualizer();
 	void createAudioEqualizer();
 	void createPlaylist();
-	void createPanel();
+    void createPanel();
 	void createPreferencesDialog();
 	void createFilePropertiesDialog();
 	void setDataToFileProperties();
@@ -281,7 +281,6 @@ protected:
 	Action::TAction* viewStatusBarAct;
 
 	QMenu* toolbar_menu;
-	QMenu* statusbar_menu;
 
 	Action::TEditableToolbar* toolbar;
 	Action::TEditableToolbar* toolbar2;
@@ -305,6 +304,17 @@ protected:
     bool switching_to_fullscreen;
 
 private:
+    QLabel* video_info_label;
+    QLabel* in_out_points_label;
+    QLabel* time_label;
+
+    Action::TAction* viewVideoInfoAct;
+    Action::TAction* viewInOutPointsAct;
+    Action::TAction* viewVideoTimeAct;
+    Action::TAction* viewFramesAct;
+
+    QMenu* statusbar_menu;
+
     QString positionText;
     QString durationText;
 
@@ -331,8 +341,11 @@ private:
 	TAutoHideTimer* auto_hide_timer;
 	TUpdateChecker* update_checker;
 
-	void createToolbars();
+    void createStatusBar();
+    void createToolbars();
 	QMenu* createToolbarMenu();
+
+    static QString settingsGroupName();
 
     void sendEnableActions();
 
@@ -348,7 +361,11 @@ private:
 	void retranslateStrings();
 
 private slots:
-	void moveWindowMerged();
+    void displayVideoInfo();
+    void displayInOutPoints();
+    void displayFrames(bool);
+
+    void moveWindowMerged();
     void checkPendingActionsToRun();
 };
 
