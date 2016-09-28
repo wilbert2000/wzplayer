@@ -85,7 +85,7 @@ public:
     double zoomFullScreen() { return zoom_factor_fullscreen; }
 
     // Pan
-    void setPan(QPoint pan, QPoint pan_fullscreen);
+    void setPan(const QPoint& pan, const QPoint& pan_fullscreen);
     // Pan current screen
     QPoint pan();
     // Pan normal screen

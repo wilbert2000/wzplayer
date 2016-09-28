@@ -96,10 +96,11 @@ public:
     virtual void loadConfig();
     virtual void saveConfig();
 
+    void openFiles(const QStringList& files, const QString& current = "");
+
 public slots:
     virtual void open(const QString& file); // Generic open, autodetect type.
     virtual void openFile();
-    virtual void openFiles(QStringList files, const QString& current = "");
     virtual void openURL();
     virtual void openVCD();
     virtual void openAudioCD();

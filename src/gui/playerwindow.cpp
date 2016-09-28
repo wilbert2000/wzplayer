@@ -561,7 +561,7 @@ double TPlayerWindow::zoom() {
     return pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
 }
 
-void TPlayerWindow::setPan(QPoint pan, QPoint pan_fullscreen) {
+void TPlayerWindow::setPan(const QPoint& pan, const QPoint& pan_fullscreen) {
     debug << "setPan: pan" << pan << "pan full screen" << pan_fullscreen;
     debug << debug;
 

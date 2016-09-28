@@ -518,7 +518,7 @@ void TMainWindow::createMenus() {
     helpMenu = new TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
 
-    // POPUP MENU
+    // Popup menu
     popup = new QMenu(this);
     popup->addMenu(fileMenu);
     popup->addMenu(playMenu);
@@ -1460,7 +1460,7 @@ void TMainWindow::open(const QString &file) {
     logger()->debug("open: done");
 }
 
-void TMainWindow::openFiles(QStringList files, const QString& current) {
+void TMainWindow::openFiles(const QStringList& files, const QString& current) {
     logger()->debug("openFiles");
 
     if (files.empty()) {
