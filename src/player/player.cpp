@@ -443,7 +443,7 @@ void TPlayer::loadSub(const QString & sub) {
 	}
 }
 
-bool TPlayer::haveExternalSubs() const {
+bool TPlayer::hasExternalSubs() const {
 	return mdat.subs.hasFileSubs()
 		|| (mset.sub.type() == SubData::Vob && !mset.sub.filename().isEmpty());
 }
@@ -2561,7 +2561,7 @@ void TPlayer::changeExternalSubFPS(int fps_id) {
     logger()->debug("setExternalSubFPS: %1", fps_id);
 
 	mset.external_subtitles_fps = fps_id;
-	if (haveExternalSubs()) {
+    if (hasExternalSubs()) {
 		restartPlay();
 	}
 }

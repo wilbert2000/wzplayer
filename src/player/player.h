@@ -72,6 +72,7 @@ public:
     bool hasAudio() const {
         return mdat.hasAudio();
     }
+    bool hasExternalSubs() const;
 
     //! Generic open, with autodetection of type
     void open(QString filename = "", bool loopImage = false);
@@ -84,7 +85,6 @@ public:
 	void addForcedTitle(const QString& file, const QString& title) {
 		forced_titles[file] = title;
 	}
-	bool haveExternalSubs() const;
 	int getVolume() const;
 	bool getMute() const;
 	Settings::TAudioEqualizerList getAudioEqualizer() const;

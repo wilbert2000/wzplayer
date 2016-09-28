@@ -72,7 +72,7 @@ TMenuSubFPS::TMenuSubFPS(TMainWindow* mw)
 }
 
 void TMenuSubFPS::enableActions() {
-    group->setEnabled(player->statePOP() && player->haveExternalSubs());
+    group->setEnabled(player->statePOP() && player->hasExternalSubs());
 }
 
 void TMenuSubFPS::onMediaSettingsChanged(TMediaSettings* mset) {
@@ -202,7 +202,7 @@ void TMenuSubtitle::enableActions() {
     // useForcedSubsOnlyAct always enabled
 
     loadSubsAct->setEnabled(pop);
-    unloadSubsAct->setEnabled(e && player->haveExternalSubs());
+    unloadSubsAct->setEnabled(e && player->hasExternalSubs());
 
 	// useCustomSubStyleAct always enabled
 }
