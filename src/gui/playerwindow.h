@@ -61,7 +61,7 @@ class TPlayerWindow : public QWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlayerWindow(QWidget* parent);
+    explicit TPlayerWindow(QWidget* parent);
     virtual ~TPlayerWindow();
 
     TVideoWindow* videoWindow() { return video_window; }

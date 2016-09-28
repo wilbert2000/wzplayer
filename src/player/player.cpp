@@ -60,12 +60,12 @@ namespace Player {
 
 double TPlayer::restartTime = 0;
 
-TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow *mpw) :
+TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     QObject(parent),
     debug(logger()),
     mdat(),
     mset(&mdat),
-    playerwindow(mpw),
+    playerwindow(pw),
     _state(STATE_LOADING) {
 
     //qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
