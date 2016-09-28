@@ -72,7 +72,7 @@ static QRegExp rx_codec("^([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]+)\\s+([A-Z,a-z,0-9]
 void TPlayerInfoMplayer::readLine(QByteArray ba) {
 
 #if COLOR_OUTPUT_SUPPORT
-    QString line = ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
+    QString line = TColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
 #else
 	QString line = QString::fromLocal8Bit(ba);
 #endif

@@ -1072,7 +1072,7 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
     // Colorkey, only used by XP directx and OS2 kva drivers
     // to set color key for overlay
     if (pref->useColorKey()) {
-        proc->setOption("colorkey", ColorUtils::colorToRGB(pref->color_key));
+        proc->setOption("colorkey", TColorUtils::colorToRGB(pref->color_key));
     }
 
     // Synchronization

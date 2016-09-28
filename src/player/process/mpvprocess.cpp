@@ -1422,14 +1422,14 @@ void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles, const QString
 	QString font = styles.fontname;
 	//arg << "--sub-text-font=" + font.replace(" ", "");
     args << "--sub-text-font=" + font;
-    args << "--sub-text-color=#" + ColorUtils::colorToRRGGBB(styles.primarycolor);
+    args << "--sub-text-color=#" + TColorUtils::colorToRRGGBB(styles.primarycolor);
 
 	if (styles.borderstyle == TAssStyles::Outline) {
-        args << "--sub-text-shadow-color=#" + ColorUtils::colorToRRGGBB(styles.backcolor);
+        args << "--sub-text-shadow-color=#" + TColorUtils::colorToRRGGBB(styles.backcolor);
 	} else {
-        args << "--sub-text-back-color=#" + ColorUtils::colorToRRGGBB(styles.outlinecolor);
+        args << "--sub-text-back-color=#" + TColorUtils::colorToRRGGBB(styles.outlinecolor);
 	}
-    args << "--sub-text-border-color=#" + ColorUtils::colorToRRGGBB(styles.outlinecolor);
+    args << "--sub-text-border-color=#" + TColorUtils::colorToRRGGBB(styles.outlinecolor);
 
     args << "--sub-text-border-size=" + QString::number(styles.outline * 2.5);
     args << "--sub-text-shadow-offset=" + QString::number(styles.shadow * 2.5);

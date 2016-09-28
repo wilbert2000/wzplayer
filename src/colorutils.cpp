@@ -19,7 +19,7 @@
 #include "colorutils.h"
 #include <QWidget>
 
-QString ColorUtils::colorToRRGGBBAA(unsigned int color) {
+QString TColorUtils::colorToRRGGBBAA(unsigned int color) {
     QColor c;
     c.setRgb(color);
 
@@ -27,7 +27,7 @@ QString ColorUtils::colorToRRGGBBAA(unsigned int color) {
     return s.sprintf("%02x%02x%02x00", c.red(), c.green(), c.blue());
 }
 
-QString ColorUtils::colorToRRGGBB(unsigned int color) {
+QString TColorUtils::colorToRRGGBB(unsigned int color) {
     QColor c;
     c.setRgb(color);
 
@@ -35,7 +35,7 @@ QString ColorUtils::colorToRRGGBB(unsigned int color) {
     return s.sprintf("%02x%02x%02x", c.red(), c.green(), c.blue());
 }
 
-QString ColorUtils::colorToRGB(unsigned int color) {
+QString TColorUtils::colorToRGB(unsigned int color) {
     QColor c;
     c.setRgb(color);
 
@@ -43,7 +43,7 @@ QString ColorUtils::colorToRGB(unsigned int color) {
     return s.sprintf("0x%02x%02x%02x", c.blue(), c.green(), c.red());
 }
 
-QString ColorUtils::colorToAABBGGRR(unsigned int color) {
+QString TColorUtils::colorToAABBGGRR(unsigned int color) {
     QColor c;
     c.setRgb(color);
 
@@ -51,20 +51,20 @@ QString ColorUtils::colorToAABBGGRR(unsigned int color) {
     return s.sprintf("00%02x%02x%02x", c.blue(), c.green(), c.red());
 }
 
-void ColorUtils::setForegroundColor(QWidget* w, const QColor& color) {
+void TColorUtils::setForegroundColor(QWidget* w, const QColor& color) {
     QPalette p = w->palette();
     p.setColor(w->foregroundRole(), color);
     w->setPalette(p);
 }
 
-void ColorUtils::setBackgroundColor(QWidget* w, const QColor& color) {
+void TColorUtils::setBackgroundColor(QWidget* w, const QColor& color) {
     QPalette p = w->palette();
     p.setColor(w->backgroundRole(), color);
     w->setPalette(p);
 }
 
 #if COLOR_OUTPUT_SUPPORT
-QString ColorUtils::stripColorsTags(QString s) {
+QString TColorUtils::stripColorsTags(QString s) {
     QRegExp rx_console_colors("\033\\[\\d\\d?;\\d\\d?m");
     int removePos = rx_console_colors.lastIndexIn(s);
     removePos += rx_console_colors.matchedLength();

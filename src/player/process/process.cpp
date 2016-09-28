@@ -95,7 +95,7 @@ void TProcess::handleLine(QString& line) {
 }
 
 QString TProcess::bytesToString(const char* bytes, int size) {
-// memo: ColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
+// memo: TColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
 
 #ifdef Q_OS_WIN
     return QString::fromUtf8(bytes, size);

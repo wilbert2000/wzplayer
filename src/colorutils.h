@@ -28,7 +28,7 @@
 class QWidget;
 class QColor;
 
-class ColorUtils {
+class TColorUtils {
 
 public:
 

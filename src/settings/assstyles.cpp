@@ -110,9 +110,9 @@ bool TAssStyles::exportStyles(const QString& filename) const {
 		out << "Style: Default,";
 		out << fontname << "," ;
 		out << fontsize << "," ;
-		out << "&H" << ColorUtils::colorToAABBGGRR(primarycolor) << "," ;
-		out << "&H" << ColorUtils::colorToAABBGGRR(backcolor) << "," ;
-		out << "&H" << ColorUtils::colorToAABBGGRR(outlinecolor) << "," ;
+		out << "&H" << TColorUtils::colorToAABBGGRR(primarycolor) << "," ;
+		out << "&H" << TColorUtils::colorToAABBGGRR(backcolor) << "," ;
+		out << "&H" << TColorUtils::colorToAABBGGRR(outlinecolor) << "," ;
 		out << (bold ? -1 : 0) << "," ;
 		out << (italic ? -1 : 0) << "," ;
 		out << alignment << "," ;
@@ -143,9 +143,9 @@ QString TAssStyles::toString() {
 
 	s += QString("Name=Default,Fontname=%1,Fontsize=%2,PrimaryColour=&H%3,BackColour=&H%4,"
                  "OutlineColour=&H%5,Bold=%6,Italic=%7,Alignment=%8,BorderStyle=%9,")
-                 .arg(fontname).arg(fontsize).arg(ColorUtils::colorToAABBGGRR(primarycolor))
-                 .arg(ColorUtils::colorToAABBGGRR(backcolor))
-                 .arg(ColorUtils::colorToAABBGGRR(outlinecolor))
+                 .arg(fontname).arg(fontsize).arg(TColorUtils::colorToAABBGGRR(primarycolor))
+                 .arg(TColorUtils::colorToAABBGGRR(backcolor))
+                 .arg(TColorUtils::colorToAABBGGRR(outlinecolor))
                  .arg(bold ? 1 : 0).arg(italic ? 1 : 0)
                  .arg(alignment).arg(borderstyle);
 

@@ -114,7 +114,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
 
     setMinimumSize(QSize(0, 0));
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
-    ColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
+    TColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
     setAutoFillBackground(true);
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
@@ -601,9 +601,9 @@ void TPlayerWindow::resetZoomAndPan() {
 void TPlayerWindow::setColorKey() {
 
     if (pref->useColorKey()) {
-        ColorUtils::setBackgroundColor(video_window, pref->color_key);
+        TColorUtils::setBackgroundColor(video_window, pref->color_key);
     } else {
-        ColorUtils::setBackgroundColor(video_window, QColor(0, 0, 0));
+        TColorUtils::setBackgroundColor(video_window, QColor(0, 0, 0));
     }
 }
 

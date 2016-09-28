@@ -210,30 +210,30 @@ void TMainWindow::createStatusBar() {
     QMargins margins(margin, 0, margin, 0);
 
     statusBar()->setSizeGripEnabled(false);
-    ColorUtils::setBackgroundColor(statusBar(), bgc);
-    ColorUtils::setForegroundColor(statusBar(), fgc);
+    TColorUtils::setBackgroundColor(statusBar(), bgc);
+    TColorUtils::setForegroundColor(statusBar(), fgc);
     statusBar()->setContentsMargins(1, 1, 1, 1);
 
     video_info_label = new QLabel(statusBar());
     video_info_label->setObjectName("video_info_label");
-    ColorUtils::setBackgroundColor(video_info_label, bgc);
-    ColorUtils::setForegroundColor(video_info_label, fgc);
+    TColorUtils::setBackgroundColor(video_info_label, bgc);
+    TColorUtils::setForegroundColor(video_info_label, fgc);
     video_info_label->setFrameShape(QFrame::NoFrame);
     video_info_label->setContentsMargins(margins);
     statusBar()->addWidget(video_info_label);
 
     in_out_points_label = new QLabel(statusBar());
     in_out_points_label->setObjectName("in_out_points_label");
-    ColorUtils::setBackgroundColor(in_out_points_label, bgc);
-    ColorUtils::setForegroundColor(in_out_points_label, fgc);
+    TColorUtils::setBackgroundColor(in_out_points_label, bgc);
+    TColorUtils::setForegroundColor(in_out_points_label, fgc);
     in_out_points_label->setFrameShape(QFrame::NoFrame);
     in_out_points_label->setContentsMargins(margins);
     statusBar()->addPermanentWidget(in_out_points_label, 0);
 
     time_label = new QLabel(statusBar());
     time_label->setObjectName("time_label");
-    ColorUtils::setBackgroundColor(time_label, bgc);
-    ColorUtils::setForegroundColor(time_label, fgc);
+    TColorUtils::setBackgroundColor(time_label, bgc);
+    TColorUtils::setForegroundColor(time_label, fgc);
     time_label->setFrameShape(QFrame::NoFrame);
     time_label->setContentsMargins(margins);
     time_label->setText("00:00 / 00:00");
