@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -245,38 +245,38 @@ void TMainWindow::createStatusBar() {
 
 void TMainWindow::createPanel() {
 
-	panel = new QWidget(this);
-	panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	panel->setMinimumSize(QSize(1, 1));
-	panel->setFocusPolicy(Qt::StrongFocus);
+    panel = new QWidget(this);
+    panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    panel->setMinimumSize(QSize(1, 1));
+    panel->setFocusPolicy(Qt::StrongFocus);
 }
 
 void TMainWindow::createPlayerWindow() {
 
     playerwindow = new TPlayerWindow(panel);
-	playerwindow->setObjectName("playerwindow");
+    playerwindow->setObjectName("playerwindow");
 
-	QVBoxLayout* layout = new QVBoxLayout;
-	layout->setSpacing(0);
-	layout->setMargin(0);
-	layout->addWidget(playerwindow);
-	panel->setLayout(layout);
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->addWidget(playerwindow);
+    panel->setLayout(layout);
 
-	// Connect player window mouse events
-	connect(playerwindow, SIGNAL(doubleClicked()),
-			this, SLOT(doubleClickFunction()));
-	connect(playerwindow, SIGNAL(leftClicked()),
-			this, SLOT(leftClickFunction()));
-	connect(playerwindow, SIGNAL(rightClicked()),
-			this, SLOT(rightClickFunction()));
-	connect(playerwindow, SIGNAL(middleClicked()),
-			this, SLOT(middleClickFunction()));
-	connect(playerwindow, SIGNAL(xbutton1Clicked()),
-			this, SLOT(xbutton1ClickFunction()));
-	connect(playerwindow, SIGNAL(xbutton2Clicked()),
-			this, SLOT(xbutton2ClickFunction()));
-	connect(playerwindow, SIGNAL(moveWindow(QPoint)),
-			this, SLOT(moveWindow(QPoint)));
+    // Connect player window mouse events
+    connect(playerwindow, SIGNAL(doubleClicked()),
+            this, SLOT(doubleClickFunction()));
+    connect(playerwindow, SIGNAL(leftClicked()),
+            this, SLOT(leftClickFunction()));
+    connect(playerwindow, SIGNAL(rightClicked()),
+            this, SLOT(rightClickFunction()));
+    connect(playerwindow, SIGNAL(middleClicked()),
+            this, SLOT(middleClickFunction()));
+    connect(playerwindow, SIGNAL(xbutton1Clicked()),
+            this, SLOT(xbutton1ClickFunction()));
+    connect(playerwindow, SIGNAL(xbutton2Clicked()),
+            this, SLOT(xbutton2ClickFunction()));
+    connect(playerwindow, SIGNAL(moveWindow(QPoint)),
+            this, SLOT(moveWindow(QPoint)));
 
     connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
             this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
@@ -297,18 +297,18 @@ void TMainWindow::createPlayer() {
             this, SLOT(checkStayOnTop(Player::TState)), Qt::QueuedConnection);
 
     connect(player, SIGNAL(mediaSettingsChanged()),
-			this, SLOT(onMediaSettingsChanged()));
+            this, SLOT(onMediaSettingsChanged()));
     connect(player, SIGNAL(videoOutResolutionChanged(int, int)),
-			this, SLOT(onVideoOutResolutionChanged(int,int)));
+            this, SLOT(onVideoOutResolutionChanged(int,int)));
 
     connect(player, SIGNAL(newMediaStartedPlaying()),
             this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
 
     connect(player, SIGNAL(mediaInfoChanged()),
-			this, SLOT(onMediaInfoChanged()));
+            this, SLOT(onMediaInfoChanged()));
 
     connect(player, SIGNAL(mediaStopped()),
-			this, SLOT(exitFullscreenOnStop()));
+            this, SLOT(exitFullscreenOnStop()));
 
     connect(player, SIGNAL(playerError(int)),
             this, SLOT(onPlayerError(int)),
@@ -329,52 +329,52 @@ void TMainWindow::createPlaylist() {
 
 void TMainWindow::createVideoEqualizer() {
 
-	video_equalizer = new TVideoEqualizer(this);
-	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+    video_equalizer = new TVideoEqualizer(this);
+    video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
-	connect(video_equalizer, SIGNAL(contrastChanged(int)),
+    connect(video_equalizer, SIGNAL(contrastChanged(int)),
             player, SLOT(setContrast(int)));
-	connect(video_equalizer, SIGNAL(brightnessChanged(int)),
+    connect(video_equalizer, SIGNAL(brightnessChanged(int)),
             player, SLOT(setBrightness(int)));
-	connect(video_equalizer, SIGNAL(hueChanged(int)),
+    connect(video_equalizer, SIGNAL(hueChanged(int)),
             player, SLOT(setHue(int)));
-	connect(video_equalizer, SIGNAL(saturationChanged(int)),
+    connect(video_equalizer, SIGNAL(saturationChanged(int)),
             player, SLOT(setSaturation(int)));
-	connect(video_equalizer, SIGNAL(gammaChanged(int)),
+    connect(video_equalizer, SIGNAL(gammaChanged(int)),
             player, SLOT(setGamma(int)));
 
-	connect(video_equalizer, SIGNAL(requestToChangeDefaultValues()),
-			this, SLOT(setDefaultValuesFromVideoEqualizer()));
-	connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
-			this, SLOT(changeVideoEqualizerBySoftware(bool)));
+    connect(video_equalizer, SIGNAL(requestToChangeDefaultValues()),
+            this, SLOT(setDefaultValuesFromVideoEqualizer()));
+    connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
+            this, SLOT(changeVideoEqualizerBySoftware(bool)));
 
     connect(player, SIGNAL(videoEqualizerNeedsUpdate()),
-			this, SLOT(updateVideoEqualizer()));
+            this, SLOT(updateVideoEqualizer()));
 }
 
 void TMainWindow::createAudioEqualizer() {
 
-	audio_equalizer = new TAudioEqualizer(this);
+    audio_equalizer = new TAudioEqualizer(this);
 
-	connect(audio_equalizer->eq[0], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[0], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq0(int)));
-	connect(audio_equalizer->eq[1], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[1], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq1(int)));
-	connect(audio_equalizer->eq[2], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[2], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq2(int)));
-	connect(audio_equalizer->eq[3], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[3], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq3(int)));
-	connect(audio_equalizer->eq[4], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[4], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq4(int)));
-	connect(audio_equalizer->eq[5], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[5], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq5(int)));
-	connect(audio_equalizer->eq[6], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[6], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq6(int)));
-	connect(audio_equalizer->eq[7], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[7], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq7(int)));
-	connect(audio_equalizer->eq[8], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[8], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq8(int)));
-	connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
+    connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
             player, SLOT(setAudioEq9(int)));
 
     connect(audio_equalizer,
@@ -400,9 +400,9 @@ void TMainWindow::createActions() {
     connect(nextWheelFunctionAct, SIGNAL(triggered()),
             player, SLOT(nextWheelFunction()));
 
-	// Time slider
+    // Time slider
     timeslider_action = new TTimeSliderAction(this);
-	timeslider_action->setObjectName("timeslider_action");
+    timeslider_action->setObjectName("timeslider_action");
 
     connect(player, SIGNAL(positionChanged(double)),
             timeslider_action, SLOT(setPosition(double)));
@@ -423,37 +423,37 @@ void TMainWindow::createActions() {
             SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
             player, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
 
-	// Volume slider action
+    // Volume slider action
     volumeslider_action = new TVolumeSliderAction(this, player->getVolume());
-	volumeslider_action->setObjectName("volumeslider_action");
+    volumeslider_action->setObjectName("volumeslider_action");
     connect(volumeslider_action, SIGNAL(valueChanged(int)),
             player, SLOT(setVolume(int)));
     connect(player, SIGNAL(volumeChanged(int)),
             volumeslider_action, SLOT(setValue(int)));
 
-	// Menu bar
+    // Menu bar
     viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"),
                                  "", Qt::Key_F2);
-	viewMenuBarAct->setCheckable(true);
-	viewMenuBarAct->setChecked(true);
+    viewMenuBarAct->setCheckable(true);
+    viewMenuBarAct->setChecked(true);
     connect(viewMenuBarAct, SIGNAL(toggled(bool)),
             menuBar(), SLOT(setVisible(bool)));
 
-	// Toolbars
+    // Toolbars
     editToolbarAct = new TAction(this, "edit_toolbar1",
                                  tr("Edit main &toolbar..."));
     editToolbar2Act = new TAction(this, "edit_toolbar2",
                                   tr("Edit extra t&oolbar..."));
 
-	// Control bar
+    // Control bar
     editControlBarAct = new TAction(this, "edit_controlbar",
                                     tr("Edit control &bar.."));
 
-	// Status bar
+    // Status bar
     viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("&Status bar"),
                                    "", Qt::Key_F7);
-	viewStatusBarAct->setCheckable(true);
-	viewStatusBarAct->setChecked(true);
+    viewStatusBarAct->setCheckable(true);
+    viewStatusBarAct->setChecked(true);
     connect(viewStatusBarAct, SIGNAL(toggled(bool)),
             statusBar(), SLOT(setVisible(bool)));
 
@@ -487,92 +487,92 @@ void TMainWindow::createActions() {
 
 void TMainWindow::createMenus() {
 
-	// MENUS
+    // MENUS
     fileMenu = new TMenuFile(this);
-	menuBar()->addMenu(fileMenu);
+    menuBar()->addMenu(fileMenu);
     playMenu = new TMenuPlay(this, playlist);
-	menuBar()->addMenu(playMenu);
+    menuBar()->addMenu(playMenu);
     videoMenu = new TMenuVideo(this, playerwindow, video_equalizer);
-	menuBar()->addMenu(videoMenu);
+    menuBar()->addMenu(videoMenu);
     audioMenu = new TMenuAudio(this, audio_equalizer);
-	menuBar()->addMenu(audioMenu);
+    menuBar()->addMenu(audioMenu);
     subtitleMenu = new TMenuSubtitle(this);
-	menuBar()->addMenu(subtitleMenu);
+    menuBar()->addMenu(subtitleMenu);
     browseMenu = new TMenuBrowse(this);
-	menuBar()->addMenu(browseMenu);
+    menuBar()->addMenu(browseMenu);
 
-	// statusbar_menu added to toolbar_menu by createToolbarMenu()
-	statusbar_menu = new QMenu(this);
+    // statusbar_menu added to toolbar_menu by createToolbarMenu()
+    statusbar_menu = new QMenu(this);
     statusbar_menu->addAction(viewVideoInfoAct);
     statusbar_menu->addAction(viewInOutPointsAct);
     statusbar_menu->addAction(viewVideoTimeAct);
     statusbar_menu->addAction(viewFramesAct);
 
-	toolbar_menu = createToolbarMenu();
+    toolbar_menu = createToolbarMenu();
 
     windowMenu = new TMenuWindow(this, toolbar_menu, playlist, log_window);
-	menuBar()->addMenu(windowMenu);
+    menuBar()->addMenu(windowMenu);
     auto_hide_timer->add(windowMenu->findChild<TAction*>("show_playlist"),
                          playlist);
 
-	helpMenu = new TMenuHelp(this);
-	menuBar()->addMenu(helpMenu);
+    helpMenu = new TMenuHelp(this);
+    menuBar()->addMenu(helpMenu);
 
-	// POPUP MENU
-	popup = new QMenu(this);
-	popup->addMenu(fileMenu);
-	popup->addMenu(playMenu);
-	popup->addMenu(videoMenu);
-	popup->addMenu(audioMenu);
-	popup->addMenu(subtitleMenu);
-	popup->addMenu(browseMenu);
-	popup->addMenu(windowMenu);
+    // POPUP MENU
+    popup = new QMenu(this);
+    popup->addMenu(fileMenu);
+    popup->addMenu(playMenu);
+    popup->addMenu(videoMenu);
+    popup->addMenu(audioMenu);
+    popup->addMenu(subtitleMenu);
+    popup->addMenu(browseMenu);
+    popup->addMenu(windowMenu);
 } // createMenus()
 
 QMenu* TMainWindow::createToolbarMenu() {
 
-	// Use name "toolbar_menu" only for first
-	QString name = toolbar_menu ? "" : "toolbar_menu";
+    // Use name "toolbar_menu" only for first
+    QString name = toolbar_menu ? "" : "toolbar_menu";
     QMenu* menu = new TMenu(this, this, name, tr("&Toolbars"), "toolbars");
 
-	menu->addAction(viewMenuBarAct);
-	menu->addAction(toolbar->toggleViewAction());
-	menu->addAction(toolbar2->toggleViewAction());
-	menu->addAction(controlbar->toggleViewAction());
-	menu->addAction(viewStatusBarAct);
+    menu->addAction(viewMenuBarAct);
+    menu->addAction(toolbar->toggleViewAction());
+    menu->addAction(toolbar2->toggleViewAction());
+    menu->addAction(controlbar->toggleViewAction());
+    menu->addAction(viewStatusBarAct);
 
-	menu->addSeparator();
-	menu->addAction(editToolbarAct);
-	menu->addAction(editToolbar2Act);
-	menu->addAction(editControlBarAct);
+    menu->addSeparator();
+    menu->addAction(editToolbarAct);
+    menu->addAction(editToolbar2Act);
+    menu->addAction(editControlBarAct);
 
-	menu->addSeparator();
-	menu->addMenu(statusbar_menu);
+    menu->addSeparator();
+    menu->addMenu(statusbar_menu);
 
-	connect(menu, SIGNAL(aboutToShow()), auto_hide_timer, SLOT(disable()));
-	connect(menu, SIGNAL(aboutToHide()), auto_hide_timer, SLOT(enable()));
+    connect(menu, SIGNAL(aboutToShow()), auto_hide_timer, SLOT(disable()));
+    connect(menu, SIGNAL(aboutToHide()), auto_hide_timer, SLOT(enable()));
 
-	return menu;
+    return menu;
 } // createToolbarMenu
 
 // Called by main window to show context popup.
 // Main window takes ownership of menu.
 QMenu* TMainWindow::createPopupMenu() {
-	return createToolbarMenu();
+    return createToolbarMenu();
 }
 
 void TMainWindow::showStatusBarPopup(const QPoint& pos) {
-	execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
+    execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
 }
 
 void TMainWindow::createToolbars() {
 
-	menuBar()->setObjectName("menubar");
+    menuBar()->setObjectName("menubar");
 
-	// Control bar
-	controlbar = new TEditableToolbar(this);
-	controlbar->setObjectName("controlbar");
-	QStringList actions;
+    // Control bar
+    controlbar = new TEditableToolbar(this);
+    controlbar->setObjectName("controlbar");
+    QStringList actions;
     actions << "play_or_pause"
             << "stop"
             << "timeslider_action"
@@ -586,94 +586,94 @@ void TMainWindow::createToolbars() {
             << "reset_zoom_and_pan|0|1"
             << "separator|0|1"
             << "mute|0|1"
-			<< "volumeslider_action"
+            << "volumeslider_action"
             << "separator|0|1"
             << "osd_menu|0|1"
             << "view_properties|0|1"
             << "show_playlist|0|1"
             << "separator|0|1"
             << "fullscreen";
-	controlbar->setDefaultActions(actions);
-	addToolBar(Qt::BottomToolBarArea, controlbar);
-	connect(editControlBarAct, SIGNAL(triggered()),
-			controlbar, SLOT(edit()));
+    controlbar->setDefaultActions(actions);
+    addToolBar(Qt::BottomToolBarArea, controlbar);
+    connect(editControlBarAct, SIGNAL(triggered()),
+            controlbar, SLOT(edit()));
 
-	QAction* action = controlbar->toggleViewAction();
-	action->setObjectName("toggle_controlbar");
+    QAction* action = controlbar->toggleViewAction();
+    action->setObjectName("toggle_controlbar");
     action->setShortcut(Qt::Key_F6);
 
-	// Main toolbar
-	toolbar = new TEditableToolbar(this);
-	toolbar->setObjectName("toolbar1");
-	actions.clear();
+    // Main toolbar
+    toolbar = new TEditableToolbar(this);
+    toolbar->setObjectName("toolbar1");
+    actions.clear();
     actions << "open_url" << "favorites_menu";
-	toolbar->setDefaultActions(actions);
-	addToolBar(Qt::TopToolBarArea, toolbar);
-	connect(editToolbarAct, SIGNAL(triggered()),
-			toolbar, SLOT(edit()));
+    toolbar->setDefaultActions(actions);
+    addToolBar(Qt::TopToolBarArea, toolbar);
+    connect(editToolbarAct, SIGNAL(triggered()),
+            toolbar, SLOT(edit()));
 
-	action = toolbar->toggleViewAction();
-	action->setObjectName("toggle_toolbar1");
-	action->setShortcut(Qt::Key_F3);
+    action = toolbar->toggleViewAction();
+    action->setObjectName("toggle_toolbar1");
+    action->setShortcut(Qt::Key_F3);
 
-	// Extra toolbar
-	toolbar2 = new TEditableToolbar(this);
-	toolbar2->setObjectName("toolbar2");
-	actions.clear();
+    // Extra toolbar
+    toolbar2 = new TEditableToolbar(this);
+    toolbar2->setObjectName("toolbar2");
+    actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
             << "separator" << "view_properties" << "show_playlist"
             << "show_log" << "separator" << "show_preferences";
     toolbar2->setDefaultActions(actions);
-	addToolBar(Qt::TopToolBarArea, toolbar2);
-	connect(editToolbar2Act, SIGNAL(triggered()),
-			toolbar2, SLOT(edit()));
+    addToolBar(Qt::TopToolBarArea, toolbar2);
+    connect(editToolbar2Act, SIGNAL(triggered()),
+            toolbar2, SLOT(edit()));
 
-	action = toolbar2->toggleViewAction();
-	action->setObjectName("toggle_toolbar2");
-	action->setShortcut(Qt::Key_F4);
+    action = toolbar2->toggleViewAction();
+    action->setObjectName("toggle_toolbar2");
+    action->setShortcut(Qt::Key_F4);
 
-	// Statusbar
-	statusBar()->setObjectName("statusbar");
-	statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
-			this, SLOT(showStatusBarPopup(const QPoint&)));
+    // Statusbar
+    statusBar()->setObjectName("statusbar");
+    statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(showStatusBarPopup(const QPoint&)));
 
-	// Add toolbars to auto_hide_timer
-	auto_hide_timer = new TAutoHideTimer(this, playerwindow);
-	auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
-	auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
-	auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
-	auto_hide_timer->add(viewMenuBarAct, menuBar());
-	auto_hide_timer->add(viewStatusBarAct, statusBar());
+    // Add toolbars to auto_hide_timer
+    auto_hide_timer = new TAutoHideTimer(this, playerwindow);
+    auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
+    auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
+    auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
+    auto_hide_timer->add(viewMenuBarAct, menuBar());
+    auto_hide_timer->add(viewStatusBarAct, statusBar());
     // Playlist added by createmenus
-	connect(playerwindow, SIGNAL(draggingChanged(bool)),
-			auto_hide_timer, SLOT(setDraggingPlayerWindow(bool)));
+    connect(playerwindow, SIGNAL(draggingChanged(bool)),
+            auto_hide_timer, SLOT(setDraggingPlayerWindow(bool)));
 }
 
 void TMainWindow::setupNetworkProxy() {
     //logger()->debug("setupNetworkProxy");
 
-	QNetworkProxy proxy;
+    QNetworkProxy proxy;
 
-	if (pref->use_proxy && !pref->proxy_host.isEmpty()) {
-		proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
-		proxy.setHostName(pref->proxy_host);
-		proxy.setPort(pref->proxy_port);
+    if (pref->use_proxy && !pref->proxy_host.isEmpty()) {
+        proxy.setType((QNetworkProxy::ProxyType) pref->proxy_type);
+        proxy.setHostName(pref->proxy_host);
+        proxy.setPort(pref->proxy_port);
         if (!pref->proxy_username.isEmpty()
             && !pref->proxy_password.isEmpty()) {
-			proxy.setUser(pref->proxy_username);
-			proxy.setPassword(pref->proxy_password);
-		}
+            proxy.setUser(pref->proxy_username);
+            proxy.setPassword(pref->proxy_password);
+        }
         logger()->debug("setupNetworkProxy: using proxy: host: %1, port: %2,"
                         " type: %3",
                pref->proxy_host, pref->proxy_port, pref->proxy_type);
-	} else {
-		// No proxy
-		proxy.setType(QNetworkProxy::NoProxy);
+    } else {
+        // No proxy
+        proxy.setType(QNetworkProxy::NoProxy);
         logger()->debug("setupNetworkProxy: no proxy");
-	}
+    }
 
-	QNetworkProxy::setApplicationProxy(proxy);
+    QNetworkProxy::setApplicationProxy(proxy);
 }
 
 void TMainWindow::sendEnableActions() {
@@ -687,48 +687,48 @@ void TMainWindow::sendEnableActions() {
 void TMainWindow::retranslateStrings() {
     logger()->debug("retranslateStrings");
 
-	setWindowIcon(Images::icon("logo", 64));
+    setWindowIcon(Images::icon("logo", 64));
 
-	// Toolbars
-	toolbar_menu->menuAction()->setText(tr("&Toolbars"));
-	toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
+    // Toolbars
+    toolbar_menu->menuAction()->setText(tr("&Toolbars"));
+    toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
 
-	// Main toolbar
-	toolbar->setWindowTitle(tr("&Main toolbar"));
-	toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
+    // Main toolbar
+    toolbar->setWindowTitle(tr("&Main toolbar"));
+    toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
 
-	// Extra toolbar
-	toolbar2->setWindowTitle(tr("&Extra toolbar"));
-	toolbar2->toggleViewAction()->setIcon(Images::icon("extra_toolbar"));
+    // Extra toolbar
+    toolbar2->setWindowTitle(tr("&Extra toolbar"));
+    toolbar2->toggleViewAction()->setIcon(Images::icon("extra_toolbar"));
 
-	// Control bar
-	controlbar->setWindowTitle(tr("&Control bar"));
-	controlbar->toggleViewAction()->setIcon(Images::icon("controlbar"));
+    // Control bar
+    controlbar->setWindowTitle(tr("&Control bar"));
+    controlbar->toggleViewAction()->setIcon(Images::icon("controlbar"));
 
-	// Status bar
-	statusbar_menu->menuAction()->setText(tr("St&atusbar"));
-	statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
+    // Status bar
+    statusbar_menu->menuAction()->setText(tr("St&atusbar"));
+    statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
 
-	// Sliders
-	timeslider_action->setText(tr("Time slider"));
-	volumeslider_action->setText(tr("Volume slider"));
+    // Sliders
+    timeslider_action->setText(tr("Time slider"));
+    volumeslider_action->setText(tr("Volume slider"));
 
-	// Playlist
-	playlist->retranslateStrings();
+    // Playlist
+    playlist->retranslateStrings();
 
-	// Log window
-	log_window->retranslateStrings();
+    // Log window
+    log_window->retranslateStrings();
 
-	// Help window
-	if (help_window) {
-		help_window->retranslateStrings();
-	}
+    // Help window
+    if (help_window) {
+        help_window->retranslateStrings();
+    }
 
-	// Update actions view in preferences
-	// It has to be done, here. The actions are translated after the
-	// preferences dialog.
-	if (pref_dialog)
-		pref_dialog->mod_input()->actions_editor->updateView();
+    // Update actions view in preferences
+    // It has to be done, here. The actions are translated after the
+    // preferences dialog.
+    if (pref_dialog)
+        pref_dialog->mod_input()->actions_editor->updateView();
 } // retranslateStrings()
 
 void TMainWindow::displayVideoInfo() {
@@ -778,88 +778,88 @@ void TMainWindow::displayFrames(bool b) {
 
 void TMainWindow::setFloatingToolbarsVisible(bool visible) {
 
-	if (toolbar->isFloating()) {
-		toolbar->setVisible(visible);
-	}
-	if (toolbar2->isFloating()) {
-		toolbar2->setVisible(visible);
-	}
-	if (controlbar->isFloating()) {
-		controlbar->setVisible(visible);
-	}
+    if (toolbar->isFloating()) {
+        toolbar->setVisible(visible);
+    }
+    if (toolbar2->isFloating()) {
+        toolbar2->setVisible(visible);
+    }
+    if (controlbar->isFloating()) {
+        controlbar->setVisible(visible);
+    }
 }
 
 void TMainWindow::showEvent(QShowEvent* event) {
     logger()->debug("showEvent");
 
-	if (event) {
-		QMainWindow::showEvent(event);
-	}
+    if (event) {
+        QMainWindow::showEvent(event);
+    }
 
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PAUSED
         && !ignore_show_hide_events) {
         logger()->debug("showEvent: unpausing");
         player->play();
-	}
+    }
 
-	setFloatingToolbarsVisible(true);
+    setFloatingToolbarsVisible(true);
 }
 
 void TMainWindow::hideEvent(QHideEvent* event) {
     logger()->debug("hideEvent");
 
-	if (event) {
-		QMainWindow::hideEvent(event);
-	}
+    if (event) {
+        QMainWindow::hideEvent(event);
+    }
 
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PLAYING
         && !ignore_show_hide_events) {
         logger()->debug("hideEvent: pausing");
         player->pause();
-	}
+    }
 
-	setFloatingToolbarsVisible(false);
+    setFloatingToolbarsVisible(false);
 }
 
 void TMainWindow::changeEvent(QEvent* e) {
 
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QMainWindow::changeEvent(e);
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
+    } else {
+        QMainWindow::changeEvent(e);
 
 #if QT_VERSION_MAJOR >= 5
-		// Emulate show/hide events for Qt >= 5
-		if(e->type() == QEvent::WindowStateChange) {
+        // Emulate show/hide events for Qt >= 5
+        if(e->type() == QEvent::WindowStateChange) {
             bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState()
                            == Qt::WindowMinimized;
-			if (was_min) {
-				if (!isMinimized()) {
-					showEvent(0);
-				}
-			} else if (isMinimized()) {
-				hideEvent(0);
-			}
-		}
+            if (was_min) {
+                if (!isMinimized()) {
+                    showEvent(0);
+                }
+            } else if (isMinimized()) {
+                hideEvent(0);
+            }
+        }
 #endif
 
-	}
+    }
 }
 
 void TMainWindow::setWindowCaption(const QString& title) {
-	setWindowTitle(title);
+    setWindowTitle(title);
 }
 
 void TMainWindow::createPreferencesDialog() {
 
-	QApplication::setOverrideCursor(Qt::WaitCursor);
-	pref_dialog = new Pref::TDialog(this);
-	pref_dialog->setModal(false);
-	connect(pref_dialog, SIGNAL(applied()),
-			 this, SLOT(applyNewPreferences()));
-	QApplication::restoreOverrideCursor();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    pref_dialog = new Pref::TDialog(this);
+    pref_dialog->setModal(false);
+    connect(pref_dialog, SIGNAL(applied()),
+             this, SLOT(applyNewPreferences()));
+    QApplication::restoreOverrideCursor();
 }
 
 void TMainWindow::createFilePropertiesDialog() {
@@ -887,59 +887,59 @@ void TMainWindow::createFilePropertiesDialog() {
 void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
     logger()->debug("handleMessageFromOtherInstances: '%1'", message);
 
-	int pos = message.indexOf(' ');
-	if (pos > -1) {
-		QString command = message.left(pos);
-		QString arg = message.mid(pos+1);
+    int pos = message.indexOf(' ');
+    if (pos > -1) {
+        QString command = message.left(pos);
+        QString arg = message.mid(pos+1);
         logger()->debug("command: '%1'", command);
         logger()->debug("arg: '%1'", arg);
 
-		if (command == "open_file") {
-			emit openFileRequested();
-			open(arg);
-		}
-		else
-		if (command == "open_files") {
-			QStringList file_list = arg.split(" <<sep>> ");
-			emit openFileRequested();
-			openFiles(file_list);
-		}
-		else
-		if (command == "add_to_playlist") {
-			QStringList file_list = arg.split(" <<sep>> ");
-			playlist->addFiles(file_list);
-		}
-		else
-		if (command == "media_title") {
-			QStringList list = arg.split(" <<sep>> ");
+        if (command == "open_file") {
+            emit openFileRequested();
+            open(arg);
+        }
+        else
+        if (command == "open_files") {
+            QStringList file_list = arg.split(" <<sep>> ");
+            emit openFileRequested();
+            openFiles(file_list);
+        }
+        else
+        if (command == "add_to_playlist") {
+            QStringList file_list = arg.split(" <<sep>> ");
+            playlist->addFiles(file_list);
+        }
+        else
+        if (command == "media_title") {
+            QStringList list = arg.split(" <<sep>> ");
             player->addForcedTitle(list[0], list[1]);
-		}
-		else
-		if (command == "action") {
+        }
+        else
+        if (command == "action") {
             processAction(arg);
-		}
-		else
-		if (command == "load_sub") {
-			setInitialSubtitle(arg);
+        }
+        else
+        if (command == "load_sub") {
+            setInitialSubtitle(arg);
             if (player->statePOP()) {
                 player->loadSub(arg);
-			}
-		}
-	}
+            }
+        }
+    }
 }
 
 TActionList TMainWindow::getAllNamedActions() {
 
-	// Get all actions with a name
-	TActionList all_actions = findChildren<QAction*>();
-	for (int i = all_actions.count() - 1; i >= 0; i--) {
-		QAction* a = all_actions[i];
-		if (a->objectName().isEmpty() || a->isSeparator()) {
-			all_actions.removeAt(i);
-		}
-	}
+    // Get all actions with a name
+    TActionList all_actions = findChildren<QAction*>();
+    for (int i = all_actions.count() - 1; i >= 0; i--) {
+        QAction* a = all_actions[i];
+        if (a->objectName().isEmpty() || a->isSeparator()) {
+            all_actions.removeAt(i);
+        }
+    }
 
-	return all_actions;
+    return all_actions;
 }
 
 void TMainWindow::loadConfig() {
@@ -1027,36 +1027,36 @@ void TMainWindow::loadConfig() {
 void TMainWindow::saveConfig() {
     logger()->debug("saveConfig");
 
-	pref->beginGroup(settingsGroupName());
+    pref->beginGroup(settingsGroupName());
 
     if (pref->save_window_size_on_exit && save_size) {
-		pref->setValue("pos", pos());
-		pref->setValue("size", size());
-		pref->setValue("state", (int) windowState());
-	}
+        pref->setValue("pos", pos());
+        pref->setValue("size", size());
+        pref->setValue("state", (int) windowState());
+    }
 
-	// Toolbars
-	pref->beginGroup("actions");
-	pref->setValue("toolbar1", toolbar->actionsToStringList());
-	pref->setValue("toolbar2", toolbar2->actionsToStringList());
-	// Using old name "controlwidget" for backward compat
-	pref->setValue("controlwidget", controlbar->actionsToStringList());
-	pref->endGroup();
+    // Toolbars
+    pref->beginGroup("actions");
+    pref->setValue("toolbar1", toolbar->actionsToStringList());
+    pref->setValue("toolbar2", toolbar2->actionsToStringList());
+    // Using old name "controlwidget" for backward compat
+    pref->setValue("controlwidget", controlbar->actionsToStringList());
+    pref->endGroup();
 
-	pref->beginGroup("toolbars_icon_size");
-	pref->setValue("toolbar1", toolbar->iconSize());
-	pref->setValue("toolbar2", toolbar2->iconSize());
-	// Using old name "controlwidget" for backward compat
-	pref->setValue("controlwidget", controlbar->iconSize());
-	pref->endGroup();
+    pref->beginGroup("toolbars_icon_size");
+    pref->setValue("toolbar1", toolbar->iconSize());
+    pref->setValue("toolbar2", toolbar2->iconSize());
+    // Using old name "controlwidget" for backward compat
+    pref->setValue("controlwidget", controlbar->iconSize());
+    pref->endGroup();
 
-	pref->setValue("menubar_visible", !menuBar()->isHidden());
-	pref->setValue("fullscreen_menubar_visible", fullscreen_menubar_visible);
-	pref->setValue("statusbar_visible", !statusBar()->isHidden());
+    pref->setValue("menubar_visible", !menuBar()->isHidden());
+    pref->setValue("fullscreen_menubar_visible", fullscreen_menubar_visible);
+    pref->setValue("statusbar_visible", !statusBar()->isHidden());
     pref->setValue("fullscreen_statusbar_visible",
                    fullscreen_statusbar_visible);
 
-	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+    pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
 
     pref->beginGroup("statusbar");
     pref->setValue("video_info", viewVideoInfoAct->isChecked());
@@ -1064,13 +1064,13 @@ void TMainWindow::saveConfig() {
     pref->setValue("video_time", viewVideoTimeAct->isChecked());
     pref->endGroup();
 
-	pref->endGroup();
+    pref->endGroup();
 
-	playlist->saveSettings();
-	log_window->saveConfig();
-	if (help_window) {
-		help_window->saveConfig();
-	}
+    playlist->saveSettings();
+    log_window->saveConfig();
+    if (help_window) {
+        help_window->saveConfig();
+    }
 }
 
 void TMainWindow::save() {
@@ -1101,7 +1101,7 @@ void TMainWindow::closeEvent(QCloseEvent* e)  {
 void TMainWindow::closeWindow() {
     logger()->debug("closeWindow");
 
-	close();
+    close();
 }
 
 // Overriden by TMainWindowPlus
@@ -1142,26 +1142,26 @@ void TMainWindow::restartApplication() {
         // TODO: messagebox...
         logger()->warn("restartApplication: close canceled...");
     }
-	return;
+    return;
 }
 
 // The user has pressed OK in preferences dialog
 void TMainWindow::applyNewPreferences() {
     logger()->debug("applyNewPreferences");
 
-	QString old_player_bin = pref->player_bin;
+    QString old_player_bin = pref->player_bin;
 
-	// Update pref from dialog
-	pref_dialog->getData(pref);
+    // Update pref from dialog
+    pref_dialog->getData(pref);
 
     // Save playlist preferences repeat and shuffle
     playlist->saveSettings();
 
     // Update and save actions
-	pref_dialog->mod_input()->actions_editor->applyChanges();
+    pref_dialog->mod_input()->actions_editor->applyChanges();
     Action::TActionsEditor::saveToConfig(pref, this);
 
-	// Commit changes
+    // Commit changes
     pref->save();
 
     // Player bin, style, icon set or language change need restart TApp
@@ -1171,55 +1171,55 @@ void TMainWindow::applyNewPreferences() {
         || mod_interface->iconsetChanged()
         || mod_interface->languageChanged()) {
         restartApplication();
-		return;
-	}
+        return;
+    }
 
-	// Keeping the current main window
+    // Keeping the current main window
 
-	// Set color key, depends on VO
-	playerwindow->setColorKey();
+    // Set color key, depends on VO
+    playerwindow->setColorKey();
 
-	// Forced demuxer
+    // Forced demuxer
     player->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
 
-	// Video equalizer
-	video_equalizer->setBySoftware(pref->use_soft_video_eq);
+    // Video equalizer
+    video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
-	// Subtitles
-	subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
+    // Subtitles
+    subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
-	// Interface continued
-	// Show panel
-	if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
-		resize(width(), height() + 200);
-		panel->show();
-	}
-	// Hide toolbars delay
-	auto_hide_timer->setInterval(pref->floating_hide_delay);
-	// Recents
+    // Interface continued
+    // Show panel
+    if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+        resize(width(), height() + 200);
+        panel->show();
+    }
+    // Hide toolbars delay
+    auto_hide_timer->setInterval(pref->floating_hide_delay);
+    // Recents
     if (mod_interface->recentsChanged()) {
-		fileMenu->updateRecents();
-	}
+        fileMenu->updateRecents();
+    }
 
-	// Keyboard and mouse
-	playerwindow->setDelayLeftClick(pref->delay_left_click);
+    // Keyboard and mouse
+    playerwindow->setDelayLeftClick(pref->delay_left_click);
 
-	// Network
-	setupNetworkProxy();
+    // Network
+    setupNetworkProxy();
 
     // Update log window edit control
     log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
 
-	// Reenable actions to reflect changes
+    // Reenable actions to reflect changes
     sendEnableActions();
 
     // TODO: move code above to preferencesChanged() signal
     emit preferencesChanged();
 
-	// Restart video if needed
-	if (pref_dialog->requiresRestart()) {
+    // Restart video if needed
+    if (pref_dialog->requiresRestart()) {
         player->restart();
-	}
+    }
 } // TMainWindow::applyNewPreferences()
 
 void TMainWindow::showFilePropertiesDialog(bool checked) {
@@ -1240,11 +1240,11 @@ void TMainWindow::setDataToFileProperties() {
     logger()->debug("setDataToFileProperties");
 
     Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
-	i->getInfo();
+    i->getInfo();
     file_properties_dialog->setCodecs(i->vcList(), i->acList(),
                                       i->demuxerList());
 
-	// Save a copy of the demuxer, video and audio codec
+    // Save a copy of the demuxer, video and audio codec
     if (player->mset.original_demuxer.isEmpty())
         player->mset.original_demuxer = player->mdat.demuxer;
     if (player->mset.original_video_codec.isEmpty())
@@ -1252,15 +1252,15 @@ void TMainWindow::setDataToFileProperties() {
     if (player->mset.original_audio_codec.isEmpty())
         player->mset.original_audio_codec = player->mdat.audio_codec;
 
-	// Set demuxer, video and audio codec
+    // Set demuxer, video and audio codec
     QString demuxer = player->mset.forced_demuxer;
-	if (demuxer.isEmpty())
+    if (demuxer.isEmpty())
         demuxer = player->mdat.demuxer;
     QString vc = player->mset.forced_video_codec;
-	if (vc.isEmpty())
+    if (vc.isEmpty())
         vc = player->mdat.video_codec;
     QString ac = player->mset.forced_audio_codec;
-	if (ac.isEmpty())
+    if (ac.isEmpty())
         ac = player->mdat.audio_codec;
 
     file_properties_dialog->setDemuxer(demuxer, player->mset.original_demuxer);
@@ -1276,7 +1276,7 @@ void TMainWindow::setDataToFileProperties() {
     file_properties_dialog->setPlayerAdditionalAudioFilters(
                 player->mset.player_additional_audio_filters);
 
-	file_properties_dialog->showInfo();
+    file_properties_dialog->showInfo();
 }
 
 void TMainWindow::applyFileProperties() {
@@ -1296,8 +1296,8 @@ void TMainWindow::applyFileProperties() {
         need_restart = true;
     }
     if (prev_demuxer != player->mset.forced_demuxer) {
-		// Demuxer changed
-		demuxer_changed = true;
+        // Demuxer changed
+        demuxer_changed = true;
         player->mset.current_audio_id = TMediaSettings::NoneSelected;
         player->mset.current_sub_idx = TMediaSettings::NoneSelected;
     }
@@ -1343,25 +1343,25 @@ void TMainWindow::applyFileProperties() {
         need_restart = true;
     }
 
-	// Restart the video to apply
-	if (need_restart) {
-		if (demuxer_changed) {
+    // Restart the video to apply
+    if (need_restart) {
+        if (demuxer_changed) {
             player->reload();
-		} else {
+        } else {
             player->restart();
-		}
-	}
+        }
+    }
 }
 
 void TMainWindow::onMediaInfoChanged() {
     logger()->debug("onMediaInfoChanged");
 
-	if (file_properties_dialog && file_properties_dialog->isVisible()) {
-		setDataToFileProperties();
-	}
+    if (file_properties_dialog && file_properties_dialog->isVisible()) {
+        setDataToFileProperties();
+    }
 
     QString title = player->mdat.displayName();
-	setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
+    setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
     emit mediaFileTitleChanged(player->mdat.filename, title);
 
     displayVideoInfo();
@@ -1370,12 +1370,12 @@ void TMainWindow::onMediaInfoChanged() {
 void TMainWindow::onNewMediaStartedPlaying() {
     logger()->debug("onNewMediaStartedPlaying");
 
-	enterFullscreenOnPlay();
+    enterFullscreenOnPlay();
 
-	// Recents
+    // Recents
     pref->history_recents.addItem(player->mdat.filename,
                                   player->mdat.displayName());
-	fileMenu->updateRecents();
+    fileMenu->updateRecents();
 
     checkPendingActionsToRun();
 }
@@ -1399,54 +1399,54 @@ void TMainWindow::updateAudioEqualizer() {
 void TMainWindow::setDefaultValuesFromVideoEqualizer() {
     logger()->debug("setDefaultValuesFromVideoEqualizer");
 
-	pref->initial_contrast = video_equalizer->contrast();
-	pref->initial_brightness = video_equalizer->brightness();
-	pref->initial_hue = video_equalizer->hue();
-	pref->initial_saturation = video_equalizer->saturation();
-	pref->initial_gamma = video_equalizer->gamma();
+    pref->initial_contrast = video_equalizer->contrast();
+    pref->initial_brightness = video_equalizer->brightness();
+    pref->initial_hue = video_equalizer->hue();
+    pref->initial_saturation = video_equalizer->saturation();
+    pref->initial_gamma = video_equalizer->gamma();
 
-	QMessageBox::information(this, tr("Information"), 
-							 tr("The current values have been stored to be "
-								"used as default."));
+    QMessageBox::information(this, tr("Information"),
+                             tr("The current values have been stored to be "
+                                "used as default."));
 }
 
 void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
     logger()->debug("changeVideoEqualizerBySoftware: %1", b);
 
-	if (b != pref->use_soft_video_eq) {
-		pref->use_soft_video_eq = b;
+    if (b != pref->use_soft_video_eq) {
+        pref->use_soft_video_eq = b;
         player->restart();
-	}
+    }
 }
 
 void TMainWindow::openDirectory() {
     logger()->debug("openDirectory");
 
-	QString s = TFileDialog::getExistingDirectory(
-					this, tr("Choose a directory"),
-					pref->latest_dir);
+    QString s = TFileDialog::getExistingDirectory(
+                    this, tr("Choose a directory"),
+                    pref->latest_dir);
 
     if (!s.isEmpty() && playlist->maybeSave()) {
-		playlist->playDirectory(s);
-	}
+        playlist->playDirectory(s);
+    }
 }
 
 void TMainWindow::open(const QString &file) {
     logger()->debug("open: " + file);
 
-	if (file.isEmpty()) {
+    if (file.isEmpty()) {
         logger()->warn("open: filename is empty");
-		return;
-	}
-	if (!playlist->maybeSave()) {
-		return;
-	}
+        return;
+    }
+    if (!playlist->maybeSave()) {
+        return;
+    }
 
-	QFileInfo fi(file);
-	if (fi.exists()) {
-		if (fi.isDir()) {
-			playlist->playDirectory(file);
-			return;
+    QFileInfo fi(file);
+    if (fi.exists()) {
+        if (fi.isDir()) {
+            playlist->playDirectory(file);
+            return;
         }
         QString ext = fi.suffix().toLower();
         if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
@@ -1454,7 +1454,7 @@ void TMainWindow::open(const QString &file) {
             return;
         }
         pref->latest_dir = fi.absolutePath();
-	}
+    }
 
     player->open(file);
     logger()->debug("open: done");
@@ -1488,21 +1488,21 @@ void TMainWindow::openFile() {
         + tr("Images") + extensions.images().forFilter() + ";;"
         + tr("All files") +" (*.*)");
 
-	if (!s.isEmpty()) {
-		open(s);
-	}
+    if (!s.isEmpty()) {
+        open(s);
+    }
 }
 
 void TMainWindow::openRecent() {
     logger()->debug("openRecent");
 
-	QAction *a = qobject_cast<QAction *> (sender());
-	if (a) {
-		int item = a->data().toInt();
-		QString filename = pref->history_recents.item(item);
-		if (!filename.isEmpty())
-			open(filename);
-	}
+    QAction *a = qobject_cast<QAction *> (sender());
+    if (a) {
+        int item = a->data().toInt();
+        QString filename = pref->history_recents.item(item);
+        if (!filename.isEmpty())
+            open(filename);
+    }
 }
 
 void TMainWindow::openURL() {
@@ -1536,102 +1536,102 @@ void TMainWindow::openURL() {
 }
 
 void TMainWindow::configureDiscDevices() {
-	QMessageBox::information(this, TConfig::PROGRAM_NAME + tr(" - Information"),
-			tr("The CDROM / DVD drives are not configured yet.\n"
-			   "The configuration dialog will be shown now, "
-			   "so you can do it."), QMessageBox::Ok);
-	
-	showPreferencesDialog();
-	pref_dialog->showSection(Pref::TDialog::SECTION_DRIVES);
+    QMessageBox::information(this, TConfig::PROGRAM_NAME + tr(" - Information"),
+            tr("The CDROM / DVD drives are not configured yet.\n"
+               "The configuration dialog will be shown now, "
+               "so you can do it."), QMessageBox::Ok);
+
+    showPreferencesDialog();
+    pref_dialog->showSection(Pref::TDialog::SECTION_DRIVES);
 }
 
 void TMainWindow::openVCD() {
     logger()->debug("openVCD");
 
-	if (pref->cdrom_device.isEmpty()) {
-		configureDiscDevices();
-	} else if (playlist->maybeSave()) {
+    if (pref->cdrom_device.isEmpty()) {
+        configureDiscDevices();
+    } else if (playlist->maybeSave()) {
         player->openDisc(TDiscName("vcd", pref->vcd_initial_title,
                                  pref->cdrom_device));
-	}
+    }
 }
 
 void TMainWindow::openAudioCD() {
     logger()->debug("openAudioCD");
 
-	if (pref->cdrom_device.isEmpty()) {
-		configureDiscDevices();
-	} else if (playlist->maybeSave()) {
+    if (pref->cdrom_device.isEmpty()) {
+        configureDiscDevices();
+    } else if (playlist->maybeSave()) {
         player->open("cdda://");
-	}
+    }
 }
 
 void TMainWindow::openDVD() {
     logger()->debug("openDVD");
 
-	if (pref->dvd_device.isEmpty()) {
-		configureDiscDevices();
-	} else if (playlist->maybeSave()) {
+    if (pref->dvd_device.isEmpty()) {
+        configureDiscDevices();
+    } else if (playlist->maybeSave()) {
         player->openDisc(TDiscName(pref->dvd_device, pref->useDVDNAV()));
-	}
+    }
 }
 
 void TMainWindow::openDVDFromFolder() {
     logger()->debug("openDVDFromFolder");
 
-	if (playlist->maybeSave()) {
-		TInputDVDDirectory *d = new TInputDVDDirectory(this);
-		d->setFolder(pref->last_dvd_directory);
-		if (d->exec() == QDialog::Accepted) {
+    if (playlist->maybeSave()) {
+        TInputDVDDirectory *d = new TInputDVDDirectory(this);
+        d->setFolder(pref->last_dvd_directory);
+        if (d->exec() == QDialog::Accepted) {
             logger()->debug("openDVDFromFolder: accepted");
-			openDVDFromFolder(d->folder());
-		}
+            openDVDFromFolder(d->folder());
+        }
 
-		delete d;
-	}
+        delete d;
+    }
 }
 
 void TMainWindow::openDVDFromFolder(const QString &directory) {
 
-	pref->last_dvd_directory = directory;
+    pref->last_dvd_directory = directory;
     player->openDisc(TDiscName(directory, pref->useDVDNAV()));
 }
 
 void TMainWindow::openBluRay() {
     logger()->debug("openBluRay");
 
-	if (pref->bluray_device.isEmpty()) {
-		configureDiscDevices();
-	} else {
+    if (pref->bluray_device.isEmpty()) {
+        configureDiscDevices();
+    } else {
         player->openDisc(TDiscName("br", 0, pref->bluray_device));
-	}
+    }
 }
 
 void TMainWindow::openBluRayFromFolder() {
     logger()->debug("openBluRayFromFolder");
 
-	if (playlist->maybeSave()) {
+    if (playlist->maybeSave()) {
         QString dir = QFileDialog::getExistingDirectory(this,
             tr("Select the Blu-ray folder"),
             pref->last_dvd_directory, QFileDialog::ShowDirsOnly
                                       | QFileDialog::DontResolveSymlinks);
-		if (!dir.isEmpty()) {
-			pref->last_dvd_directory = dir;
+        if (!dir.isEmpty()) {
+            pref->last_dvd_directory = dir;
             player->openDisc(TDiscName("br", 0, dir));
-		}
-	}
+        }
+    }
 }
 
 void TMainWindow::loadSub() {
     logger()->debug("loadSub");
 
     QString s = TFileDialog::getOpenFileName(
-		this, tr("Choose a file"),
-		pref->latest_dir,
+        this, tr("Choose a file"),
+        pref->latest_dir,
         tr("Subtitles") + extensions.subtitles().forFilter()+ ";;" +
-		tr("All files") +" (*.*)");
+        tr("All files") +" (*.*)");
 
-	if (!s.isEmpty())
+    if (!s.isEmpty())
         player->loadSub(s);
 }
 
@@ -1645,97 +1645,97 @@ void TMainWindow::loadAudioFile() {
     logger()->debug("loadAudioFile");
 
     QString s = TFileDialog::getOpenFileName(
-		this, tr("Choose a file"),
-		pref->latest_dir,
+        this, tr("Choose a file"),
+        pref->latest_dir,
         tr("Audio") + extensions.audio().forFilter()+";;" +
-		tr("All files") +" (*.*)");
+        tr("All files") +" (*.*)");
 
-	if (!s.isEmpty())
+    if (!s.isEmpty())
         player->loadAudioFile(s);
 }
 
 void TMainWindow::helpCLOptions() {
 
-	if (help_window == 0) {
-		help_window = new THelpWindow(this, "helpwindow");
+    if (help_window == 0) {
+        help_window = new THelpWindow(this, "helpwindow");
         help_window->setWindowTitle(tr("%1 command line options")
                                     .arg(TConfig::PROGRAM_NAME));
-		help_window->loadConfig();
-	}
+        help_window->loadConfig();
+    }
 
-	// Hide event clears the help window content, so recreate it
-	help_window->setHtml(CLHelp::help(true));
-	help_window->show();
+    // Hide event clears the help window content, so recreate it
+    help_window->setHtml(CLHelp::help(true));
+    help_window->show();
 }
 
 void TMainWindow::helpCheckUpdates() {
-	update_checker->check();
+    update_checker->check();
 }
 
 void TMainWindow::showConfigFolder() {
-	QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::configPath()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::configPath()));
 }
 
 void TMainWindow::helpAbout() {
-	TAbout d(this);
-	d.exec();
+    TAbout d(this);
+    d.exec();
 }
 
 void TMainWindow::showSeekToDialog() {
 
-	TTimeDialog d(this);
+    TTimeDialog d(this);
     d.setWindowTitle(tr("Seek"));
     d.setMaximumTime((int) player->mdat.duration);
     d.setTime((int) player->mset.current_sec);
-	if (d.exec() == QDialog::Accepted) {
+    if (d.exec() == QDialog::Accepted) {
         player->seekTime(d.time());
-	}
+    }
 }
 
 void TMainWindow::showAudioDelayDialog() {
-	bool ok;
-	#if QT_VERSION >= 0x050000
+    bool ok;
+    #if QT_VERSION >= 0x050000
     int delay = QInputDialog::getInt(this,
         tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
         tr("Audio delay (in milliseconds):"), player->mset.audio_delay,
-		-3600000, 3600000, 1, &ok);
-	#else
+        -3600000, 3600000, 1, &ok);
+    #else
     int delay = QInputDialog::getInteger(this,
         tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
         tr("Audio delay (in milliseconds):"), player->mset.audio_delay,
-		-3600000, 3600000, 1, &ok);
-	#endif
-	if (ok) {
+        -3600000, 3600000, 1, &ok);
+    #endif
+    if (ok) {
         player->setAudioDelay(delay);
-	}
+    }
 }
 
 void TMainWindow::showSubDelayDialog() {
-	bool ok;
-	#if QT_VERSION >= 0x050000
+    bool ok;
+    #if QT_VERSION >= 0x050000
     int delay = QInputDialog::getInt(this,
         tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
         tr("Subtitle delay (in milliseconds):"), player->mset.sub_delay,
-		-3600000, 3600000, 1, &ok);
-	#else
+        -3600000, 3600000, 1, &ok);
+    #else
     int delay = QInputDialog::getInteger(this,
         tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
         tr("Subtitle delay (in milliseconds):"), player->mset.sub_delay,
-		-3600000, 3600000, 1, &ok);
-	#endif
-	if (ok) {
+        -3600000, 3600000, 1, &ok);
+    #endif
+    if (ok) {
         player->setSubDelay(delay);
-	}
+    }
 }
 
 void TMainWindow::showStereo3dDialog() {
-	TStereo3dDialog d(this);
+    TStereo3dDialog d(this);
     d.setInputFormat(player->mset.stereo3d_in);
     d.setOutputFormat(player->mset.stereo3d_out);
 
-	if (d.exec() == QDialog::Accepted) {
+    if (d.exec() == QDialog::Accepted) {
         player->changeStereo3d(d.inputFormat(), d.outputFormat());
-	}
+    }
 }
 
 void TMainWindow::exitFullscreen() {
@@ -1748,208 +1748,208 @@ void TMainWindow::exitFullscreen() {
 void TMainWindow::toggleFullscreen() {
     logger()->debug("toggleFullscreen");
 
-	toggleFullscreen(!pref->fullscreen);
+    toggleFullscreen(!pref->fullscreen);
 }
 
 void TMainWindow::toggleFullscreen(bool b) {
     logger()->debug("toggleFullscreen: %1", b);
 
-	if (b == pref->fullscreen) {
+    if (b == pref->fullscreen) {
         logger()->debug("toggleFullscreen: nothing to do, returning");
-		return;
-	}
+        return;
+    }
 
     switching_to_fullscreen = true;
-	pref->fullscreen = b;
-	emit fullscreenChanged();
+    pref->fullscreen = b;
+    emit fullscreenChanged();
 
-	if (pref->fullscreen) {
-		aboutToEnterFullscreen();
-		showFullScreen();
-		didEnterFullscreen();
-	} else {
-		aboutToExitFullscreen();
-		showNormal();
-		didExitFullscreen();
-	}
+    if (pref->fullscreen) {
+        aboutToEnterFullscreen();
+        showFullScreen();
+        didEnterFullscreen();
+    } else {
+        aboutToExitFullscreen();
+        showNormal();
+        didExitFullscreen();
+    }
 
-	setFocus(); // Fixes bug #2493415
+    setFocus(); // Fixes bug #2493415
     switching_to_fullscreen = false;
 }
 
 void TMainWindow::aboutToEnterFullscreen() {
     //logger()->debug("aboutToEnterFullscreen");
 
-	emit aboutToEnterFullscreenSignal();
+    emit aboutToEnterFullscreenSignal();
 
-	// Save current state
+    // Save current state
     was_maximized = isMaximized();
-	menubar_visible = !menuBar()->isHidden();
-	statusbar_visible = !statusBar()->isHidden();
+    menubar_visible = !menuBar()->isHidden();
+    statusbar_visible = !statusBar()->isHidden();
 
-	pref->beginGroup(settingsGroupName());
-	pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
-	pref->endGroup();
+    pref->beginGroup(settingsGroupName());
+    pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+    pref->endGroup();
 }
 
 void TMainWindow::didEnterFullscreen() {
     //logger()->debug("didEnterFullscreen");
 
-	// Restore fullscreen state
-	viewMenuBarAct->setChecked(fullscreen_menubar_visible);
-	viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
+    // Restore fullscreen state
+    viewMenuBarAct->setChecked(fullscreen_menubar_visible);
+    viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 
-	pref->beginGroup(settingsGroupName());
+    pref->beginGroup(settingsGroupName());
     state_restored = restoreState(pref->value("toolbars_state_fullscreen")
                                   .toByteArray(), Helper::qtVersion());
     if (!state_restored) {
-		// First time there is no fullscreen toolbar state
+        // First time there is no fullscreen toolbar state
         logger()->debug("didEnterFullscreen: failed to restore fullscreen"
                         " toolbar state");
-		toolbar->hide();
-		toolbar2->hide();
-	}
-	pref->endGroup();
+        toolbar->hide();
+        toolbar2->hide();
+    }
+    pref->endGroup();
 
-	emit didEnterFullscreenSignal();
+    emit didEnterFullscreenSignal();
 
-	auto_hide_timer->start();
+    auto_hide_timer->start();
 }
 
 void TMainWindow::aboutToExitFullscreen() {
     //logger()->debug("aboutToExitFullscreen");
 
-	auto_hide_timer->stop();
+    auto_hide_timer->stop();
 
-	// Save fullscreen state
-	fullscreen_menubar_visible = !menuBar()->isHidden();
-	fullscreen_statusbar_visible = !statusBar()->isHidden();
+    // Save fullscreen state
+    fullscreen_menubar_visible = !menuBar()->isHidden();
+    fullscreen_statusbar_visible = !statusBar()->isHidden();
 
-	pref->beginGroup(settingsGroupName());
-	pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
-	pref->endGroup();
+    pref->beginGroup(settingsGroupName());
+    pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
+    pref->endGroup();
 }
 
 void TMainWindow::didExitFullscreen() {
     //logger()->debug("didExitFullscreen");
 
     // Restore maximizednormal state
-	if (was_maximized) {
-		showMaximized();
+    if (was_maximized) {
+        showMaximized();
     }
 
-	viewMenuBarAct->setChecked(menubar_visible);
-	viewStatusBarAct->setChecked(statusbar_visible);
+    viewMenuBarAct->setChecked(menubar_visible);
+    viewStatusBarAct->setChecked(statusbar_visible);
 
-	pref->beginGroup(settingsGroupName());
+    pref->beginGroup(settingsGroupName());
     state_restored = restoreState(pref->value("toolbars_state")
                                   .toByteArray(), Helper::qtVersion());
     if  (!state_restored) {
         logger()->warn("didExitFullscreen: failed to restore toolbar state");
     }
-	pref->endGroup();
+    pref->endGroup();
 
-	emit didExitFullscreenSignal();
+    emit didExitFullscreenSignal();
 }
 
 void TMainWindow::leftClickFunction() {
     logger()->debug("leftClickFunction");
 
     if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
-		&& playerwindow->videoWindow()->underMouse()) {
+        && playerwindow->videoWindow()->underMouse()) {
         player->dvdnavMouse();
-	} else if (!pref->mouse_left_click_function.isEmpty()) {
+    } else if (!pref->mouse_left_click_function.isEmpty()) {
         processAction(pref->mouse_left_click_function);
-	}
+    }
 }
 
 void TMainWindow::rightClickFunction() {
     logger()->debug("rightClickFunction");
 
-	if (!pref->mouse_right_click_function.isEmpty()) {
+    if (!pref->mouse_right_click_function.isEmpty()) {
         processAction(pref->mouse_right_click_function);
-	}
+    }
 }
 
 void TMainWindow::doubleClickFunction() {
     logger()->debug("doubleClickFunction");
 
-	if (!pref->mouse_double_click_function.isEmpty()) {
+    if (!pref->mouse_double_click_function.isEmpty()) {
         processAction(pref->mouse_double_click_function);
-	}
+    }
 }
 
 void TMainWindow::middleClickFunction() {
     logger()->debug("middleClickFunction");
 
-	if (!pref->mouse_middle_click_function.isEmpty()) {
+    if (!pref->mouse_middle_click_function.isEmpty()) {
         processAction(pref->mouse_middle_click_function);
-	}
+    }
 }
 
 void TMainWindow::xbutton1ClickFunction() {
     logger()->debug("xbutton1ClickFunction");
 
-	if (!pref->mouse_xbutton1_click_function.isEmpty()) {
+    if (!pref->mouse_xbutton1_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton1_click_function);
-	}
+    }
 }
 
 void TMainWindow::xbutton2ClickFunction() {
     logger()->debug("xbutton2ClickFunction");
 
-	if (!pref->mouse_xbutton2_click_function.isEmpty()) {
+    if (!pref->mouse_xbutton2_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton2_click_function);
-	}
+    }
 }
 
 void TMainWindow::moveWindowMerged() {
 
-	move(pos() + move_window_diff);
-	move_window_diff = QPoint(0, 0);
+    move(pos() + move_window_diff);
+    move_window_diff = QPoint(0, 0);
 }
 
 // Called by playerwindow when dragging main window
 void TMainWindow::moveWindow(QPoint diff) {
 
-	// Merge multiple moves into one for machines that cannot keep up
-	move_window_diff += diff;
-	// Zero timeout, calls moveWindowMerged()
-	move_window_timer.start();
+    // Merge multiple moves into one for machines that cannot keep up
+    move_window_diff += diff;
+    // Zero timeout, calls moveWindowMerged()
+    move_window_timer.start();
 }
 
 void TMainWindow::processAction(QString action_name) {
 
     // Check name for checkable actions
-	static QRegExp func_rx("(.*) (true|false)");
-	bool value = false;
-	bool checkableFunction = false;
+    static QRegExp func_rx("(.*) (true|false)");
+    bool value = false;
+    bool checkableFunction = false;
 
     if (func_rx.indexIn(action_name) >= 0) {
         action_name = func_rx.cap(1);
-		value = func_rx.cap(2) == "true";
-		checkableFunction = true;
-	}
+        value = func_rx.cap(2) == "true";
+        checkableFunction = true;
+    }
 
     QAction* action = findChild<QAction*>(action_name);
-	if (action) {
-		if (action->isEnabled()) {
-			if (action->isCheckable() && checkableFunction) {
+    if (action) {
+        if (action->isEnabled()) {
+            if (action->isCheckable() && checkableFunction) {
                 logger()->debug("processAction: setting checked action '%1'"
                                 " to %2", action_name, QString::number(value));
-				action->setChecked(value);
-			} else {
+                action->setChecked(value);
+            } else {
                 logger()->debug("processAction: triggering action '%1'",
                                 action_name);
-				action->trigger();
-			}
-		} else {
+                action->trigger();
+            }
+        } else {
             logger()->warn("processAction: canceling disabled action '%1'",
                            action_name);
-		}
-	} else {
+        }
+    } else {
         logger()->warn("processAction: action '%1' not found", action_name);
-	}
+    }
 }
 
 void TMainWindow::runActions(QString actions) {
@@ -2037,7 +2037,7 @@ void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {
             e->accept();
             return;
         }
-	}
+    }
     QMainWindow::dragEnterEvent(e);
 }
 
@@ -2058,11 +2058,11 @@ void TMainWindow::dropEvent(QDropEvent *e) {
 }
 
 void TMainWindow::showContextMenu() {
-	showContextMenu(QCursor::pos());
+    showContextMenu(QCursor::pos());
 }
 
 void TMainWindow::showContextMenu(QPoint p) {
-	execPopup(this, popup, p);
+    execPopup(this, popup, p);
 }
 
 // Called when a video has started to play
@@ -2090,9 +2090,9 @@ void TMainWindow::enterFullscreenOnPlay() {
 // Called when the playlist has stopped
 void TMainWindow::exitFullscreenOnStop() {
 
-	if (pref->fullscreen) {
-		toggleFullscreen(false);
-	}
+    if (pref->fullscreen) {
+        toggleFullscreen(false);
+    }
 }
 
 void TMainWindow::playlistHasFinished() {
@@ -2234,32 +2234,32 @@ void TMainWindow::changeSize(double factor) {
 
 void TMainWindow::changeSize(int percentage) {
     logger()->debug("changeSize %1%", percentage);
-	changeSize((double) percentage / 100);
+    changeSize((double) percentage / 100);
 }
 
 void TMainWindow::toggleDoubleSize() {
 
-	if (pref->size_factor != 1.0)
-		changeSize(1.0);
-	else changeSize(2.0);
+    if (pref->size_factor != 1.0)
+        changeSize(1.0);
+    else changeSize(2.0);
 }
 
 void TMainWindow::hidePanel() {
     logger()->debug("hidePanel");
 
-	if (panel->isVisible()) {
-		// Exit from fullscreen mode
-		if (pref->fullscreen) {
-			toggleFullscreen(false);
-			update();
-		}
+    if (panel->isVisible()) {
+        // Exit from fullscreen mode
+        if (pref->fullscreen) {
+            toggleFullscreen(false);
+            update();
+        }
 
-		int width = this->width();
-		if (width > pref->default_size.width())
-			width = pref->default_size.width();
-		resize(width, height() - panel->height());
-		panel->hide();
-	}
+        int width = this->width();
+        if (width > pref->default_size.width())
+            width = pref->default_size.width();
+        resize(width, height() - panel->height());
+        panel->hide();
+    }
 }
 
 double TMainWindow::getNewSizeFactor() {
@@ -2379,12 +2379,12 @@ void TMainWindow::getNewGeometry(int w, int h) {
 void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
     logger()->debug("onVideoOutResolutionChanged: %1 x %2", w, h);
 
-	if (w <= 0 || h <= 0) {
-		// No video
-		if (pref->hide_video_window_on_audio_files) {
-			hidePanel();
-		}
-	} else {
+    if (w <= 0 || h <= 0) {
+        // No video
+        if (pref->hide_video_window_on_audio_files) {
+            hidePanel();
+        }
+    } else {
         // Have video
         if (!panel->isVisible()) {
             panel->show();
@@ -2409,14 +2409,14 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
     // Center window only set for the first video
     // when pref->save_window_size_on_exit not set.
     if (center_window) {
-		center_window = false;
+        center_window = false;
         // Only center when user did not move window
         if (center_window_pos == pos()) {
             TDesktop::centerWindow(this);
         }
-	}
+    }
 
-	force_resize = false;
+    force_resize = false;
 }
 
 void TMainWindow::resizeWindow(int w, int h) {
@@ -2469,8 +2469,8 @@ void TMainWindow::onMediaSettingsChanged() {
 
     emit mediaSettingsChanged(&player->mset);
 
-	updateVideoEqualizer();
-	updateAudioEqualizer();
+    updateVideoEqualizer();
+    updateAudioEqualizer();
 
     displayInOutPoints();
 }
@@ -2488,28 +2488,28 @@ void TMainWindow::onDragPositionChanged(double t) {
 void TMainWindow::setStayOnTop(bool b) {
     logger()->debug("setStayOnTop: %1", b);
 
-	bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
-	if (b == stay_on_top) {
-		// identical do nothing
+    bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
+    if (b == stay_on_top) {
+        // identical do nothing
         logger()->debug("setStayOnTop: WindowStaysOnTopHint already up2date");
-		return;
-	}
+        return;
+    }
 
-	ignore_show_hide_events = true;
-	bool visible = isVisible();
-	QPoint old_pos = pos();
+    ignore_show_hide_events = true;
+    bool visible = isVisible();
+    QPoint old_pos = pos();
 
-	if (b) {
-		setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-	} else {
-		setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-	}
+    if (b) {
+        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    } else {
+        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    }
 
-	move(old_pos);
-	if (visible) {
-		show();
-	}
-	ignore_show_hide_events = false;
+    move(old_pos);
+    if (visible) {
+        show();
+    }
+    ignore_show_hide_events = false;
 }
 
 void TMainWindow::changeStayOnTop(int stay_on_top) {
