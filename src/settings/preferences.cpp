@@ -42,7 +42,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 18;
+static const int CURRENT_CONFIG_VERSION = 19;
 
 TPreferences* pref = 0;
 
