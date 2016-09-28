@@ -221,8 +221,6 @@ void TMainWindow::createStatusBar() {
     video_info_label->setFrameShape(QFrame::NoFrame);
     video_info_label->setContentsMargins(margins);
     statusBar()->addWidget(video_info_label);
-    connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
-            this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
 
     in_out_points_label = new QLabel(statusBar());
     in_out_points_label->setObjectName("in_out_points_label");
@@ -231,10 +229,6 @@ void TMainWindow::createStatusBar() {
     in_out_points_label->setFrameShape(QFrame::NoFrame);
     in_out_points_label->setContentsMargins(margins);
     statusBar()->addPermanentWidget(in_out_points_label, 0);
-    connect(player, SIGNAL(InOutPointsChanged()),
-            this, SLOT(displayInOutPoints()));
-    connect(player, SIGNAL(mediaSettingsChanged()),
-            this, SLOT(displayInOutPoints()));
 
     time_label = new QLabel(statusBar());
     time_label->setObjectName("time_label");
@@ -283,6 +277,9 @@ void TMainWindow::createPlayerWindow() {
 			this, SLOT(xbutton2ClickFunction()));
 	connect(playerwindow, SIGNAL(moveWindow(QPoint)),
 			this, SLOT(moveWindow(QPoint)));
+
+    connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
+            this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
 }
 
 void TMainWindow::createPlayer() {
@@ -316,6 +313,11 @@ void TMainWindow::createPlayer() {
     connect(player, SIGNAL(playerError(int)),
             this, SLOT(onPlayerError(int)),
             Qt::QueuedConnection);
+
+    connect(player, SIGNAL(InOutPointsChanged()),
+            this, SLOT(displayInOutPoints()));
+    connect(player, SIGNAL(mediaSettingsChanged()),
+            this, SLOT(displayInOutPoints()));
 }
 
 void TMainWindow::createPlaylist() {
@@ -459,7 +461,6 @@ void TMainWindow::createActions() {
                                            tr("&Video info"));
     viewVideoInfoAct->setCheckable(true);
     viewVideoInfoAct->setChecked(true);
-    statusbar_menu->addAction(viewVideoInfoAct);
     connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
             video_info_label, SLOT(setVisible(bool)));
 
@@ -467,7 +468,6 @@ void TMainWindow::createActions() {
                                              tr("&In-out points"));
     viewInOutPointsAct->setCheckable(true);
     viewInOutPointsAct->setChecked(true);
-    statusbar_menu->addAction(viewInOutPointsAct);
     connect(viewInOutPointsAct, SIGNAL(toggled(bool)),
             in_out_points_label, SLOT(setVisible(bool)));
 
@@ -475,14 +475,12 @@ void TMainWindow::createActions() {
                                            tr("&Video time"));
     viewVideoTimeAct->setCheckable(true);
     viewVideoTimeAct->setChecked(true);
-    statusbar_menu->addAction(viewVideoTimeAct);
     connect(viewVideoTimeAct, SIGNAL(toggled(bool)),
             time_label, SLOT(setVisible(bool)));
 
     viewFramesAct = new Action::TAction(this, "toggle_frames", tr("&Frames"));
     viewFramesAct->setCheckable(true);
     viewFramesAct->setChecked(false);
-    statusbar_menu->addAction(viewFramesAct);
     connect(viewFramesAct, SIGNAL(toggled(bool)),
             this, SLOT(displayFrames(bool)));
 } // createActions
@@ -504,9 +502,14 @@ void TMainWindow::createMenus() {
 	menuBar()->addMenu(browseMenu);
 
 	// statusbar_menu added to toolbar_menu by createToolbarMenu()
-	// and filled by descendants::createMenus()
 	statusbar_menu = new QMenu(this);
+    statusbar_menu->addAction(viewVideoInfoAct);
+    statusbar_menu->addAction(viewInOutPointsAct);
+    statusbar_menu->addAction(viewVideoTimeAct);
+    statusbar_menu->addAction(viewFramesAct);
+
 	toolbar_menu = createToolbarMenu();
+
     windowMenu = new TMenuWindow(this, toolbar_menu, playlist, log_window);
 	menuBar()->addMenu(windowMenu);
     auto_hide_timer->add(windowMenu->findChild<TAction*>("show_playlist"),
