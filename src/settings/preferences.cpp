@@ -392,11 +392,7 @@ void TPreferences::reset() {
     change_video_equalizer_on_startup = true;
     clean_config = false;
 
-#ifdef MPRIS2
-	use_mpris2 = true;
-#endif
-
-	filters.init();
+    filters.init();
 }
 
 void TPreferences::save() {
@@ -755,10 +751,6 @@ void TPreferences::save() {
     setValue("balloon_count", balloon_count);
 
     setValue("change_video_equalizer_on_startup", change_video_equalizer_on_startup);
-
-#ifdef MPRIS2
-    setValue("use_mpris2", use_mpris2);
-#endif
 
     endGroup(); // advanced
 
@@ -1280,10 +1272,6 @@ void TPreferences::load() {
 
     change_video_equalizer_on_startup = value("change_video_equalizer_on_startup",
         change_video_equalizer_on_startup).toBool();
-
-#ifdef MPRIS2
-    use_mpris2 = value("use_mpris2", use_mpris2).toBool();
-#endif
 
     endGroup(); // advanced
 

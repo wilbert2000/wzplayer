@@ -411,10 +411,6 @@ public:
 	//! mplayer. It seems that some graphic cards don't support those options.
 	bool change_video_equalizer_on_startup;
 
-#ifdef MPRIS2
-	bool use_mpris2;
-#endif
-
     // Filters
     TFilters filters;
 

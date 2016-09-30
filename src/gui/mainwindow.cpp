@@ -100,10 +100,6 @@
 #include "gui/pref/advanced.h"
 #include "app.h"
 
-#ifdef MPRIS2
-#include "player/mpris2/mpris2.h"
-#endif
-
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include "gui/deviceinfo.h"
@@ -178,11 +174,6 @@ TMainWindow::TMainWindow() :
     changeStayOnTop(pref->stay_on_top);
 
     update_checker = new TUpdateChecker(this, &pref->update_checker_data);
-
-#ifdef MPRIS2
-    if (pref->use_mpris2)
-        new Player::Mpris2::TMpris2(this, this);
-#endif
 
     retranslateStrings();
 }

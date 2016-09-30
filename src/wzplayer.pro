@@ -19,17 +19,13 @@ QT += network
 
 RESOURCES = icons.qrc
 
-DEFINES += MPRIS2
 DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tags)\\\"
 
 # Support for program switch in TS files
 #DEFINES += PROGRAM_SWITCH
 
 isEqual(QT_MAJOR_VERSION, 5) {
-	QT += widgets gui
-    win32 {
-		DEFINES -= MPRIS2
-	}
+    QT += widgets gui
 }
 
 contains(QT_VERSION, ^4\\.[0-5]\\..*) {
@@ -319,20 +315,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/network.ui \
     gui/pref/advanced.ui
 
-
-contains(DEFINES, MPRIS2) {
-    INCLUDEPATH += player/mpris2
-    DEPENDPATH += player/mpris2
-
-    HEADERS += player/mpris2/mediaplayer2.h \
-               player/mpris2/mediaplayer2player.h \
-               player/mpris2/mpris2.h
-    SOURCES += player/mpris2/mediaplayer2.cpp \
-               player/mpris2/mediaplayer2player.cpp \
-               player/mpris2/mpris2.cpp
-
-	QT += dbus
-}
 
 unix {
     DEFINES += DATA_PATH=$(DATA_PATH)
