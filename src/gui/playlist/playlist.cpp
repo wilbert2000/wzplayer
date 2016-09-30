@@ -139,6 +139,8 @@ TPlaylist::TPlaylist(TMainWindow* mw) :
     restartThread(false),
     disable_enableActions(false) {
 
+    setAcceptDrops(true);
+
     createTree();
     createActions();
     createToolbar();
@@ -161,9 +163,6 @@ TPlaylist::TPlaylist(TMainWindow* mw) :
     layout->addWidget(playlistWidget);
     layout->addWidget(toolbar);
     setLayout(layout);
-
-    setAcceptDrops(true);
-    setAttribute(Qt::WA_NoMousePropagation);
 
     // Random seed
     QTime t;
