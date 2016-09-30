@@ -116,7 +116,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setUniformRowHeights(false);
     setItemDelegate(new TWordWrapItemDelegate(this));
     wordWrapTimer = new QTimer();
-    wordWrapTimer->setInterval(750);
+    wordWrapTimer->setInterval(500);
     wordWrapTimer->setSingleShot(true);
 
     connect(wordWrapTimer, SIGNAL(timeout()),
