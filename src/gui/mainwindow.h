@@ -142,6 +142,7 @@ public slots:
 
     void changeSize(double factor);
     void changeSize(int percentage);
+    void optimizeSizeFactor();
 
     void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
     int forceCloseOnFinish() { return arg_close_on_finish; }
@@ -355,6 +356,7 @@ private:
 
     void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
+    bool optimizeSizeFactorPreDef(int factor, int predef_factor);
     void getNewGeometry(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 

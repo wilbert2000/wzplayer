@@ -2253,6 +2253,80 @@ void TMainWindow::hidePanel() {
     }
 }
 
+bool TMainWindow::optimizeSizeFactorPreDef(int factor, int predef_factor) {
+
+    int d = predef_factor / 10;
+    if (d < 10) {
+        d = 10;
+    }
+    if (qAbs(factor - predef_factor) < d) {
+        logger()->debug("optimizeSizeFactorPreDef: optimizing size from %1 to"
+                        " predefined value %2", factor, predef_factor);
+        changeSize(predef_factor);
+        return true;
+    }
+    return false;
+}
+
+// TODO: merge with getNewSizeFactor
+void TMainWindow::optimizeSizeFactor() {
+    logger()->debug("optimizeSizeFactor");
+
+    if (pref->fullscreen) {
+        player->setZoom(1.0);
+        return;
+    }
+
+    double size_factor = pref->size_factor;
+    QSize available_size = TDesktop::availableSize(this);
+    QSize res = playerwindow->resolution();
+    QSize video_size = res * size_factor;
+
+    // Limit size to 0.6 of available desktop
+    const double f = 0.6;
+    double max = f * available_size.height();
+
+    // Adjust height first
+    if (video_size.height() > max) {
+        double factor = max / res.height();
+        logger()->debug("optimizeSizeFactor: height larger as %1 desktop,"
+                        " reducing size factor from %2 to %3",
+                        f, size_factor, factor);
+        size_factor = factor;
+        video_size = res * size_factor;
+    }
+
+    // Adjust width
+    max = f * available_size.width();
+    if (video_size.width() > max) {
+        double factor = max / res.width();
+        logger()->debug("menuVideoSize::optimizeSizeFactor: width larger as %1"
+                        " desktop, reducing size factor from %2 to %3",
+                        f, size_factor, factor);
+        size_factor = factor;
+        video_size = res * size_factor;
+    }
+
+    // Round to predefined values
+    int factor_int = qRound(size_factor * 100);
+    const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400 };
+    for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
+        if (optimizeSizeFactorPreDef(factor_int, factors[i])) {
+            return;
+        }
+    }
+
+    // Make width multiple of 16
+    int new_w = ((video_size.width() + 8) / 16) * 16;
+    double factor = (double) new_w / res.width();
+    logger()->debug("optimizeSizeFactor: optimizing width "
+                    + QString::number(video_size.width())
+                    + ", factor " + QString::number(size_factor)
+                    + " to multiple of 16 " + QString::number(new_w)
+                    + ", factor " + QString::number(factor));
+    changeSize(factor);
+}
+
 double TMainWindow::getNewSizeFactor() {
 
     double size_factor = 1.0;

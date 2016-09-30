@@ -48,12 +48,10 @@ private:
     TAction* resizeOnLoadAct;
     TAction* currentSizeAct;
 
-    bool optimizeSizeFactorPreDef(int factor, int predef_factor);
     void upd();
 
 private slots:
     void onVideoSizeFactorChanged();
-    void optimizeSizeFactor();
     void onResizeOnLoadTriggered(bool);
 }; // class TMenuVideoSize
 

@@ -103,7 +103,7 @@ TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
 
     currentSizeAct = new TAction(this, "video_size", "", "", QKeySequence("`"));
     connect(currentSizeAct, SIGNAL(triggered()),
-            this, SLOT(optimizeSizeFactor()));
+            main_window, SLOT(optimizeSizeFactor()));
     //setDefaultAction(currentSizeAct);
     connect(playerWindow, SIGNAL(videoSizeFactorChanged(double, double)),
             this, SLOT(onVideoSizeFactorChanged()), Qt::QueuedConnection);
@@ -162,82 +162,6 @@ void TMenuVideoSize::onResizeOnLoadTriggered(bool b) {
 
     pref->resize_on_load = b;
 }
-
-bool TMenuVideoSize::optimizeSizeFactorPreDef(int factor, int predef_factor) {
-
-    int d = predef_factor / 10;
-    if (d < 10) {
-        d = 10;
-    }
-    if (qAbs(factor - predef_factor) < d) {
-        logger()->debug("optimizeSizeFactorPreDef: optimizing size from %1 to"
-                        " predefined value %2", factor, predef_factor);
-        main_window->changeSize(predef_factor);
-        return true;
-    }
-    return false;
-}
-
-void TMenuVideoSize::optimizeSizeFactor() {
-    logger()->debug("optimizeSizeFactor");
-
-	double factor;
-
-	if (pref->fullscreen) {
-        // TODO: use player to update mset.zoom_factor_fullscreen
-		playerWindow->setZoom(1.0);
-		return;
-	}
-
-	double size_factor = pref->size_factor;
-
-	// Limit size to 0.6 of available desktop
-	const double f = 0.6;
-	QSize available_size = TDesktop::availableSize(playerWindow);
-	QSize res = playerWindow->resolution();
-	QSize video_size = res * size_factor;
-
-	double max = f * available_size.height();
-	// Adjust height first
-	if (video_size.height() > max) {
-		factor = max / res.height();
-        logger()->debug("optimizeSizeFactor: height larger as %1 desktop,"
-                        " reducing size factor from %2 to %3",
-                        f, size_factor, factor);
-		size_factor = factor;
-		video_size = res * size_factor;
-	}
-	// Adjust width
-	max = f * available_size.width();
-	if (video_size.width() > max) {
-		factor = max / res.width();
-        logger()->debug("menuVideoSize::optimizeSizeFactor: width larger as %1"
-                        " desktop, reducing size factor from %2 to %3",
-                        f, size_factor, factor);
-		size_factor = factor;
-		video_size = res * size_factor;
-	}
-
-	// Round to predefined values
-	int factor_int = qRound(size_factor * 100);
-    const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400 };
-	for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
-		if (optimizeSizeFactorPreDef(factor_int, factors[i])) {
-			return;
-		}
-	}
-
-	// Make width multiple of 16
-	int new_w = ((video_size.width() + 8) / 16) * 16;
-	factor = (double) new_w / res.width();
-    logger()->debug("optimizeSizeFactor: optimizing width "
-                    + QString::number(video_size.width())
-                    + ", factor " + QString::number(size_factor)
-                    + " to multiple of 16 " + QString::number(new_w)
-                    + ", factor " + QString::number(factor));
-    main_window->changeSize(factor);
-}
-
 
 } // namespace Action
 } // namespace Gui
