@@ -31,36 +31,36 @@
 
 class TMediaData {
 public:
-	// Types of media
-	enum Type {
-		TYPE_UNKNOWN = -1,
-		TYPE_FILE = 0,
+    // Types of media
+    enum Type {
+        TYPE_UNKNOWN = -1,
+        TYPE_FILE = 0,
 
-		// Need to be the same as TDiscName
-		TYPE_DVD = TDiscName::DVD,
-		TYPE_DVDNAV = TDiscName::DVDNAV,
-		TYPE_VCD = TDiscName::VCD,
-		TYPE_CDDA = TDiscName::CDDA,
-		TYPE_BLURAY = TDiscName::BLURAY,
+        // Need to be the same as TDiscName
+        TYPE_DVD = TDiscName::DVD,
+        TYPE_DVDNAV = TDiscName::DVDNAV,
+        TYPE_VCD = TDiscName::VCD,
+        TYPE_CDDA = TDiscName::CDDA,
+        TYPE_BLURAY = TDiscName::BLURAY,
 
-		TYPE_STREAM,
-		TYPE_TV
-	};
+        TYPE_STREAM,
+        TYPE_TV
+    };
 
-	TMediaData();
-	virtual ~TMediaData() {}
+    TMediaData();
+    virtual ~TMediaData() {}
 
-	QString filename;
+    QString filename;
 
-	Type selected_type;
-	// Detected type only set for disc types
-	Type detected_type;
+    Type selected_type;
+    // Detected type only set for disc types
+    Type detected_type;
     // Parsed disc data set by TPlayer::openDisc()
-	TDiscName disc;
+    TDiscName disc;
     // Image file
     bool image;
-	// Streams
-	QString stream_url;
+    // Streams
+    QString stream_url;
 
     // Start time currently in use
     double start_sec;
@@ -68,95 +68,95 @@ public:
     double start_sec_player;
     bool start_sec_set;
     QString fuzzy_time;
-	// Current time video, without start time substracted
-	// See TMediaSettings for time with start time substracted
-	double time_sec;
-	double duration;
+    // Current time video, without start time substracted
+    // See TMediaSettings for time with start time substracted
+    double time_sec;
+    double duration;
 
-	// Demuxer
-	QString demuxer;
-	QString demuxer_description;
-	bool mpegts;
+    // Demuxer
+    QString demuxer;
+    QString demuxer_description;
+    bool mpegts;
 
-	// Video
-	QString vo;
-	int video_width;
-	int video_height;
-	QString video_aspect;
-	double video_aspect_original;
-	double video_fps;
+    // Video
+    QString vo;
+    int video_width;
+    int video_height;
+    QString video_aspect;
+    double video_aspect_original;
+    double video_fps;
 
-	// Resolution with aspect and filters applied
-	int video_out_width;
-	int video_out_height;
+    // Resolution with aspect and filters applied
+    int video_out_width;
+    int video_out_height;
 
-	bool hasVideo() const {
-		return video_out_width > 0 && video_out_height > 0;
-	}
-	bool noVideo() const {
-		return video_out_width <= 0 || video_out_height <= 0;
-	}
+    bool hasVideo() const {
+        return video_out_width > 0 && video_out_height > 0;
+    }
+    bool noVideo() const {
+        return video_out_width <= 0 || video_out_height <= 0;
+    }
 
-	QString video_format;
-	QString video_codec;
-	QString video_codec_description;
-	int video_bitrate;
-	bool video_hwdec;
-	Maps::TTracks videos;
+    QString video_format;
+    QString video_codec;
+    QString video_codec_description;
+    int video_bitrate;
+    bool video_hwdec;
+    Maps::TTracks videos;
 
-	// Audio
-	QString ao;
-	QString audio_format;
-	QString audio_codec;
-	QString audio_codec_description;
-	int audio_bitrate;
-	int audio_rate;
-	int audio_nch;
-	Maps::TTracks audios;
+    // Audio
+    QString ao;
+    QString audio_format;
+    QString audio_codec;
+    QString audio_codec_description;
+    int audio_bitrate;
+    int audio_rate;
+    int audio_nch;
+    Maps::TTracks audios;
 
     bool hasAudio() const {
         return audios.count() > 0;
     }
-	bool noAudio() const {
-		return audios.count() <= 0;
-	}
+    bool noAudio() const {
+        return audios.count() <= 0;
+    }
 
-	// Subtitles, titles and chapters
+    // Subtitles, titles and chapters
     TSubTracks subs;
-	Maps::TTitleTracks titles;
-	Maps::TChapters chapters;
+    Maps::TTitleTracks titles;
+    Maps::TChapters chapters;
 
 #if PROGRAM_SWITCH
-	Tracks programs;
+    Tracks programs;
 #endif
 
-	// Clip info
-	QString title;
-	// Meta data names and values
-	typedef QMap<QString, QString> TMetaData;
-	TMetaData meta_data;
+    // Clip info
+    QString title;
+    // Meta data names and values
+    typedef QMap<QString, QString> TMetaData;
+    TMetaData meta_data;
 
-	// DVD ID
-	QString dvd_id;
-	// DVD angles
-	int angle;
-	int angles;
+    // DVD ID
+    QString dvd_id;
+    // DVD angles
+    int angle;
+    int angles;
 
-	static bool isCD(Type type);
-	static bool isDVD(Type type);
-	static bool isDisc(Type type);
-	bool detectedDisc() const;
-	bool selectedDisc() const;
+    static bool isCD(Type type);
+    static bool isDVD(Type type);
+    static bool isDisc(Type type);
+    bool detectedDisc() const;
+    bool selectedDisc() const;
 
-	static QString typeToString(Type type);
-	static Type stringToType(QString type);
+    static QString typeToString(Type type);
+    static Type stringToType(QString type);
 
     QString name() const;
     QString displayName() const;
-	void list() const;
+    void list() const;
 
 private:
-	void init();
+    void init();
     QString addTitleOrTrack(const QString& title) const;
     QString getTitle() const;
 };

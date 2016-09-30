@@ -61,27 +61,27 @@ TMediaData::TMediaData() :
 }
 
 bool TMediaData::isCD(Type type) {
-	return type == TYPE_CDDA || type == TYPE_VCD;
+    return type == TYPE_CDDA || type == TYPE_VCD;
 }
 
 bool TMediaData::isDVD(Type type) {
-	return type == TYPE_DVD || type == TYPE_DVDNAV;
+    return type == TYPE_DVD || type == TYPE_DVDNAV;
 }
 
 bool TMediaData::isDisc(Type type) {
-	return type == TYPE_DVD
-			|| type == TYPE_DVDNAV
-			|| type == TYPE_VCD
-			|| type == TYPE_CDDA
-			|| type == TYPE_BLURAY;
+    return type == TYPE_DVD
+            || type == TYPE_DVDNAV
+            || type == TYPE_VCD
+            || type == TYPE_CDDA
+            || type == TYPE_BLURAY;
 }
 
 bool TMediaData::detectedDisc() const {
-	return isDisc(detected_type);
+    return isDisc(detected_type);
 }
 
 bool TMediaData::selectedDisc() const {
-	return isDisc(selected_type);
+    return isDisc(selected_type);
 }
 
 QString TMediaData::addTitleOrTrack(const QString& title) const {
@@ -102,7 +102,7 @@ QString TMediaData::addTitleOrTrack(const QString& title) const {
         return title + " - " + disc.displayName();
     }
 
-	return title;
+    return title;
 }
 
 QString TMediaData::getTitle() const {
@@ -165,44 +165,44 @@ QString TMediaData::displayName() const {
 
 QString TMediaData::typeToString(Type type) {
 
-	QString s;
-	switch (type) {
-	case TYPE_UNKNOWN: s = "unknown"; break;
-	case TYPE_FILE: s = "file"; break;
-	case TYPE_DVD: s = "dvd"; break;
-	case TYPE_DVDNAV: s = "dvdnav"; break;
-	case TYPE_VCD: s = "vcd"; break;
-	case TYPE_CDDA: s = "cdda"; break;
-	case TYPE_BLURAY: s = "br"; break;
-	case TYPE_STREAM: s = "stream"; break;
-	case TYPE_TV: s = "tv"; break;
-	}
+    QString s;
+    switch (type) {
+    case TYPE_UNKNOWN: s = "unknown"; break;
+    case TYPE_FILE: s = "file"; break;
+    case TYPE_DVD: s = "dvd"; break;
+    case TYPE_DVDNAV: s = "dvdnav"; break;
+    case TYPE_VCD: s = "vcd"; break;
+    case TYPE_CDDA: s = "cdda"; break;
+    case TYPE_BLURAY: s = "br"; break;
+    case TYPE_STREAM: s = "stream"; break;
+    case TYPE_TV: s = "tv"; break;
+    }
 
-	return s;
+    return s;
 }
 
 TMediaData::Type TMediaData::stringToType(QString type) {
 
-	type = type.toLower();
+    type = type.toLower();
 
-	if (type == "file")
-		return TYPE_FILE;
-	if (type == "dvd")
-		return TYPE_DVD;
-	if (type == "dvdnav")
-		return TYPE_DVDNAV;
-	if (type == "vcd")
-		return TYPE_VCD;
-	if (type == "cdda")
-		return TYPE_CDDA;
-	if (type == "br")
-		return TYPE_BLURAY;
-	if (type == "stream")
-		return TYPE_STREAM;
-	if (type == "tv")
-		return TYPE_TV;
+    if (type == "file")
+        return TYPE_FILE;
+    if (type == "dvd")
+        return TYPE_DVD;
+    if (type == "dvdnav")
+        return TYPE_DVDNAV;
+    if (type == "vcd")
+        return TYPE_VCD;
+    if (type == "cdda")
+        return TYPE_CDDA;
+    if (type == "br")
+        return TYPE_BLURAY;
+    if (type == "stream")
+        return TYPE_STREAM;
+    if (type == "tv")
+        return TYPE_TV;
 
-	return TYPE_UNKNOWN;
+    return TYPE_UNKNOWN;
 }
 
 void TMediaData::list() const {
@@ -241,7 +241,7 @@ void TMediaData::list() const {
     logger()->debug("video_bitrate: %1", video_bitrate);
     logger()->debug("video_hwdec: %1", video_hwdec);
     logger()->debug("Video tracks:");
-	videos.list();
+    videos.list();
 
     logger()->debug("audio driver: '%1'", ao);
     logger()->debug("audio_format: '%1'", audio_format);
@@ -250,18 +250,18 @@ void TMediaData::list() const {
     logger()->debug("audio_rate: %1", audio_rate);
     logger()->debug("audio_nch: %1", audio_nch);
     logger()->debug("Audio tracks:");
-	audios.list();
+    audios.list();
 
     logger()->debug("Subtitles:");
-	subs.list();
+    subs.list();
     logger()->debug("Titles:");
-	titles.list();
+    titles.list();
     logger()->debug("Chapters:");
-	chapters.list();
+    chapters.list();
 
 #if PROGRAM_SWITCH
     logger()->debug("Programs:");
-	programs.list();
+    programs.list();
 #endif
 
     logger()->debug("Title: '%1'", title);
