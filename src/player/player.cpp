@@ -635,7 +635,6 @@ void TPlayer::initPlaying(bool loopImages) {
 void TPlayer::playingStartedNewMedia() {
     logger()->debug("playingStartedNewMedia");
 
-    mdat.initialized = true;
     mdat.list();
 
     // Copy the demuxer

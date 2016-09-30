@@ -57,9 +57,7 @@ TMediaData::TMediaData() :
     audio_nch(0),
 
     angle(0),
-    angles(0),
-
-    initialized(false) {
+    angles(0) {
 }
 
 bool TMediaData::isCD(Type type) {
@@ -276,7 +274,5 @@ void TMediaData::list() const {
 
     logger()->debug("dvd_id: '%1'", dvd_id);
     logger()->debug("Angle: %1/%2", angle, angles);
-
-    logger()->debug("initialized: %1", initialized);
 }
 

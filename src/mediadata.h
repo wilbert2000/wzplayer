@@ -142,8 +142,6 @@ public:
 	int angle;
 	int angles;
 
-	bool initialized;
-
 	static bool isCD(Type type);
 	static bool isDVD(Type type);
 	static bool isDisc(Type type);
