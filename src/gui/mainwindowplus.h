@@ -64,7 +64,7 @@ protected slots:
     virtual void closeWindow();
     virtual void setWindowCaption(const QString& title);
     virtual void onMediaInfoChanged();
-    virtual void showPlaylist(bool v);
+    virtual void showPlaylist(bool visible);
 
     // New
     virtual void trayIconActivated(QSystemTrayIcon::ActivationReason);
@@ -78,30 +78,13 @@ protected slots:
 
 
 private:
-    QTimer* saveSizeTimer;
-    double saveSize;
-    QString saveSizeFileName;
-    bool saveSizeVisible;
-    bool saveSizeFloating;
-    Qt::DockWidgetArea saveSizeDockArea;
-    Qt::DockWidgetArea dockArea;
-    bool postedResize;
-
     void switchToTray();
 	void retranslateStrings();
     void updateShowAllAct();
 
 private slots:
     void onDockVisibilityChanged(bool visible);
-    void onTopLevelChanged(bool);
-    void onDockLocationChanged(Qt::DockWidgetArea area);
-    void onvideoSizeFactorChanged(double, double);
-    void reposition(const QSize& oldWinSize);
-    void restoreVideoSize();
     void setWinTitle();
-    void saveSizeFactor(bool checkMouse = true,
-                        bool saveVisible = true,
-                        bool visible = false);
 };
 
 } // namespace Gui

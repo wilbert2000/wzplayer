@@ -48,13 +48,7 @@ TMainWindowPlus::TMainWindowPlus() :
     TMainWindow(),
     debug(logger()),
     mainwindow_visible(true),
-    restore_playlist(false),
-    saveSize(0),
-    saveSizeVisible(false),
-    saveSizeFloating(true),
-    saveSizeDockArea(Qt::LeftDockWidgetArea),
-    dockArea(Qt::LeftDockWidgetArea),
-    postedResize(false) {
+    restore_playlist(false) {
 
     tray = new QSystemTrayIcon(this);
     tray->setIcon(Images::icon("logo", 22));
@@ -115,20 +109,8 @@ TMainWindowPlus::TMainWindowPlus() :
     addDockWidget(Qt::LeftDockWidgetArea, playlistdock);
     playlistdock->hide();
 
-    saveSizeTimer = new QTimer(this);
-    saveSizeTimer->setInterval(750);
-    saveSizeTimer->setSingleShot(true);
-    connect(saveSizeTimer, SIGNAL(timeout()),
-            this, SLOT(saveSizeFactor()));
-
-    connect(playlistdock, SIGNAL(topLevelChanged(bool)),
-            this, SLOT(onTopLevelChanged(bool)));
     connect(playlistdock, SIGNAL(visibilityChanged(bool)),
             this, SLOT(onDockVisibilityChanged(bool)));
-    connect(playlistdock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
-            this, SLOT(onDockLocationChanged(Qt::DockWidgetArea)));
-    connect(playerwindow, SIGNAL(videoSizeFactorChanged(double, double)),
-            this, SLOT(onvideoSizeFactorChanged(double,double)));
     connect(playlist, SIGNAL(windowTitleChanged()),
             this, SLOT(setWinTitle()));
     connect(this, SIGNAL(openFileRequested()),
@@ -261,15 +243,16 @@ void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason
 
 void TMainWindowPlus::toggleShowAll() {
 
-	// Ignore if tray is not visible
-	if (tray->isVisible()) {
-		showAll(!isVisible());
-	}
+    // Ignore if tray is not visible
+    if (tray->isVisible()) {
+        showAll(!isVisible());
+    }
 }
 
 void TMainWindowPlus::showAll() {
-	if (!isVisible())
-		showAll(true);
+
+    if (!isVisible())
+        showAll(true);
 }
 
 void TMainWindowPlus::showAll(bool b) {
@@ -279,7 +262,7 @@ void TMainWindowPlus::showAll(bool b) {
         if (restore_playlist) {
             playlistdock->show();
         }
-	} else {
+    } else {
         restore_playlist = playlistdock->isVisible()
                            && playlistdock->isFloating();
         if (restore_playlist) {
@@ -287,204 +270,30 @@ void TMainWindowPlus::showAll(bool b) {
         }
         hide();
     }
-	updateShowAllAct();
+    updateShowAllAct();
 }
 
 void TMainWindowPlus::onMediaInfoChanged() {
     logger()->debug("onMediaInfoChanged");
 
     TMainWindow::onMediaInfoChanged();
-	tray->setToolTip(windowTitle());
+    tray->setToolTip(windowTitle());
 }
 
+void TMainWindowPlus::showPlaylist(bool visible) {
+    logger()->debug("showPlaylist: visible %1", visible);
 
-// The following is an awfull lot of code to keep the video panel
-// the same size before and after docking...
-
-void TMainWindowPlus::onDockLocationChanged(Qt::DockWidgetArea area) {
-    logger()->debug("onDockLocationChanged: changed from %1 to %2",
-                    dockArea, area);
-    dockArea = area;
-}
-
-void TMainWindowPlus::saveSizeFactor(bool checkMouse, bool saveVisible, bool visible) {
-
-    if (checkMouse && qApp->mouseButtons()) {
-        saveSizeTimer->start();
-    } else {
-        saveSizeTimer->stop();
-        if (pref->size_factor >= 0.1) {
-            logger()->debug("saveSizeFactor: overwriting save size "
-                            + QString::number(saveSize)
-                            + " with new size "
-                            + QString::number(pref->size_factor));
-            saveSize = pref->size_factor;
-            saveSizeFileName = player->mdat.filename;
-            saveSizeFloating = playlistdock->isFloating();
-            if (saveVisible) {
-                saveSizeVisible = playlistdock->isVisible();
-            } else {
-                saveSizeVisible = visible;
-            }
-            saveSizeDockArea = dockArea;
-        } else {
-            debug << "saveSizeFactor: ignoring small size"
-                  << pref->size_factor << debug;
-        }
-    }
-}
-
-// Try to save the size factor used before the dock resized the video panel
-void TMainWindowPlus::onvideoSizeFactorChanged(double, double) {
-
-    if (pref->resize_on_docking
-        && !pref->fullscreen
-        && !switching_to_fullscreen) {
-        if (saveSize == pref->size_factor || postedResize) {
-            saveSizeTimer->stop();
-        } else {
-            saveSizeTimer->start();
-        }
-    }
-}
-
-void TMainWindowPlus::showPlaylist(bool v) {
-    logger()->debug("showPlaylist: %1", v);
-
-    restore_playlist = false;
-    if (playlistdock->isFloating()) {
-        if (v) {
-            restore_playlist = true;
-        }
-    } else if (pref->resize_on_docking && !pref->fullscreen) {
-        saveSizeFactor(false);
-        postedResize = true;
-        QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
-    }
+    restore_playlist = visible && playlistdock->isFloating();
 
     // Triggers onDockVisibilityChanged
-    playlistdock->setVisible(v);
-}
-
-void TMainWindowPlus::reposition(const QSize& oldWinSize) {
-
-    QSize d = (frameGeometry().size() - oldWinSize) / 2;
-    QPoint p = pos() - QPoint(d.width(), d.height());
-    move(p);
-    TDesktop::keepInsideDesktop(this);
-}
-
-// Slot to resize the video to its saved size
-void TMainWindowPlus::restoreVideoSize() {
-
-    saveSizeTimer->stop();
-
-    // Wait until mouse released
-    if (qApp->mouseButtons()) {
-        QTimer::singleShot(200, this, SLOT(restoreVideoSize()));
-        return;
-    }
-
-    bool dockVertical = dockArea == Qt::LeftDockWidgetArea
-                        || dockArea == Qt::RightDockWidgetArea;
-    bool saveDockVertical = saveSizeDockArea == Qt::LeftDockWidgetArea
-                            || saveSizeDockArea == Qt::RightDockWidgetArea;
-    if (!playlistdock->isFloating()
-        && !saveSizeFloating
-        && saveSizeVisible == playlistdock->isVisible()
-        && dockVertical == saveDockVertical) {
-        logger()->debug("restoreVideoSize: areas match, canceling resize");
-    } else {
-        if (saveSize < 0.1) {
-            debug << "restoreVideoSize: ignoring small saved size "
-                  << saveSize << debug;
-        } else if (saveSizeFileName == player->mdat.filename) {
-            debug << "restoreVideoSize: restoring size factor from"
-                  << pref->size_factor << "to" << saveSize << debug;
-            QSize oldWinSize = frameGeometry().size();
-            pref->size_factor = saveSize;
-            resizeWindowToVideo();
-            reposition(oldWinSize);
-        } else {
-            logger()->debug("restoreVideoSize: file name save size '%1'"
-                            " mismatches '%2', canceling resize",
-                            saveSizeFileName, player->mdat.filename);
-        }
-    }
-
-    saveSizeFactor(false);
-    postedResize = false;
-}
-
-void TMainWindowPlus::onTopLevelChanged(bool topLevel) {
-    //debug << "onTopLevelChanged: topLevel" << topLevel
-    //      << "size" << pref->size_factor
-    //      << "saved size" << saveSize << debug;
-
-    if (!pref->resize_on_docking
-        || pref->fullscreen
-        || switching_to_fullscreen
-        || postedResize) {
-        return;
-    }
-
-    if (topLevel) {
-        // We became toplevel and the video size has not yet changed
-        saveSizeFactor(false);
-        //debug << "onTopLevelChanged: saved size factor" << saveSize << debug;
-    } else {
-        // We are docked now and the video size already changed
-        saveSizeTimer->stop();
-        //debug << "onTopLevelChanged: keeping saved size factor" << saveSize
-        //      << debug;;
-    }
-
-    if (player->stateReady()) {
-        //debug << "onTopLevelChanged: posting restoreVideoSize() with size"
-        //         " factor" << saveSize << debug;
-        postedResize = true;
-        QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
-    }
+    playlistdock->setVisible(visible);
 }
 
 void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
-    //debug << "onDockVisibilityChanged: visible" << visible
-    //      << "floating" << playlistdock->isFloating()
-    //      << "size" << pref->size_factor
-    //      << "saved size" << saveSize
-    //      << debug;
+    logger()->debug("onDockVisibilityChanged: visible %1", visible);
 
-    if (playlistdock->isFloating()) {
-        if (visible) {
-            TDesktop::keepInsideDesktop(playlistdock);
-        }
-        return;
-    }
-
-    if (!pref->resize_on_docking
-        || pref->fullscreen
-        || switching_to_fullscreen
-        || postedResize) {
-        return;
-    }
-
-    if (visible) {
-        // Dock became visible, video size already changed
-        saveSizeTimer->stop();
-        //debug << "onDockVisibilityChanged: keeping saved size" << saveSize
-        //      << debug;
-    } else {
-        // Dock is hiding, video size not yet changed
-        //debug << "onDockVisibilityChanged: saving size factor"
-        //      << pref->size_factor << debug;
-        saveSizeFactor(false, false, true);
-    }
-
-    if (player->stateReady()) {
-        //debug << "onDockVisibilityChanged: posting restoreVideoSize() with"
-        //         " size factor" << saveSize << debug;
-        postedResize = true;
-        QTimer::singleShot(250, this, SLOT(restoreVideoSize()));
+    if (visible && playlistdock->isFloating()) {
+        TDesktop::keepInsideDesktop(playlistdock);
     }
 }
 
