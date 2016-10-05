@@ -138,12 +138,9 @@ void TPlaylistWidgetItem::setFilename(const QString& filename) {
 void TPlaylistWidgetItem::setNameText(bool setSizeHint) {
 
     QString n = name();
-
-    if (duration() != 0) {
-        QString ext = extension();
-        if (!ext.isEmpty()) {
-            n += " (" + ext + ")";
-        }
+    QString ext = extension();
+    if (!ext.isEmpty()) {
+        n += " (" + ext + ")";
     }
 
     if (mModified) {
@@ -214,9 +211,7 @@ void TPlaylistWidgetItem::setDurationText() {
 
     QString s;
     double d = playlistItem.duration();
-    if (d == 0) {
-        s = extension();
-    } else {
+    if (d != 0) {
         s = Helper::formatTime(qRound(d));
     }
     setText(COL_TIME, s);
