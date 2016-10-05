@@ -50,7 +50,7 @@ int TTimeStamp::getStamp() {
     return elapsed();
 }
 
-TTimeStamp timeStamper;
+static TTimeStamp timeStamper;
 
 
 // Default constructor
