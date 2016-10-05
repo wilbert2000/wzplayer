@@ -142,7 +142,7 @@ QString TMediaData::name() const {
         return disc.displayName();
     }
 
-    return Helper::nameForFile(filename);
+    return Helper::baseNameForURL(filename);
 }
 
 QString TMediaData::displayName() const {
@@ -160,7 +160,7 @@ QString TMediaData::displayName() const {
         return disc.displayName();
     }
 
-    return Helper::cleanName(Helper::nameForFile(filename));
+    return Helper::cleanName(Helper::baseNameForURL(filename));
 }
 
 QString TMediaData::typeToString(Type type) {

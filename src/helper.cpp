@@ -98,32 +98,33 @@ int Helper::qtVersion() {
     return r;
 }
 
-QString Helper::nameForFile(QString filename) {
+// Return base name for url
+QString Helper::baseNameForURL(QString url) {
 
-    if (filename.isEmpty()) {
+    if (url.isEmpty()) {
         return "";
     }
 
-    QString name;
-    QUrl url(filename);
-    QString scheme = url.scheme().toLower();
+    QUrl qUrl(url);
+    QString scheme = qUrl.scheme().toLower();
     if (scheme == "file" ) {
-        filename = url.toLocalFile();
+        url = qUrl.toLocalFile();
         scheme = "";
     }
 
+    QString name;
     if (scheme.isEmpty()) {
-        QFileInfo fi(filename);
+        QFileInfo fi(url);
         if (fi.isDir()) {
-            name = fi.fileName();
+            name = fi.fileName(); // Returns "" when named ends with /
             if (name.isEmpty()) {
-                name = fi.dir().dirName();
+                name = fi.dir().dirName(); // Returns "" for root
             }
         } else {
             name = fi.completeBaseName();
         }
     } else {
-        name = url.toString(QUrl::RemoveScheme
+        name = qUrl.toString(QUrl::RemoveScheme
                             | QUrl::RemoveAuthority
                             | QUrl::RemoveQuery
                             | QUrl::RemoveFragment
@@ -134,7 +135,7 @@ QString Helper::nameForFile(QString filename) {
     }
 
     if (name.isEmpty()) {
-        name = filename;
+        name = url;
     }
 
     return name;

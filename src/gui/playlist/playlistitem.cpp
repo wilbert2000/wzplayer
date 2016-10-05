@@ -26,6 +26,7 @@ Qt::CaseSensitivity caseSensitiveFileNames =
         #endif
 
 
+// Generate a timestamp for played items
 class TTimeStamp : public QTime {
 public:
     TTimeStamp();
@@ -52,6 +53,7 @@ int TTimeStamp::getStamp() {
 TTimeStamp timeStamper;
 
 
+// Default constructor
 TPlaylistItem::TPlaylistItem() :
     mDuration(0),
     mState(PSTATE_STOPPED),
@@ -64,6 +66,7 @@ TPlaylistItem::TPlaylistItem() :
     mPlayedTime(0) {
 }
 
+// Constructor from data
 TPlaylistItem::TPlaylistItem(const QString &filename,
                              const QString &name,
                              double duration,
@@ -79,12 +82,13 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mPlayedTime(0) {
 
     if (mName.isEmpty()) {
-        mName = Helper::nameForFile(mFilename);
+        mName = Helper::baseNameForURL(mFilename);
     }
 
     setFileInfo();
 }
 
+// Copy constructor
 TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     mFilename(item.filename()),
     mName(item.name()),
@@ -114,6 +118,7 @@ QString TPlaylistItem::playlistItemState(TPlaylistItemState state) {
     return "failed";
 }
 
+// Update file name related fields
 void TPlaylistItem::setFileInfo() {
 
     QFileInfo fi(mFilename);
