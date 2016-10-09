@@ -137,7 +137,7 @@ void TPlaylistWidgetItem::setFilename(const QString& filename) {
 
 void TPlaylistWidgetItem::setNameText(bool setSizeHint) {
 
-    QString n = name();
+    QString n = baseName();
     QString ext = extension();
     if (!ext.isEmpty()) {
         n += " (" + ext + ")";
@@ -401,11 +401,9 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
         return true;
     }
 
-    // return QString::localeAwareCompare(filename(), o->filename()) < 0;
-
     // Sort on path
     int i = QString::localeAwareCompare(QFileInfo(filename()).absolutePath(),
-        QFileInfo(o->filename()).absolutePath());
+                                        QFileInfo(o->filename()).absolutePath());
     if (i < 0) {
         return true;
     }
@@ -414,7 +412,7 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
     }
 
     // Sort on name
-    return QString::localeAwareCompare(name(), o->name()) < 0;
+    return QString::localeAwareCompare(baseName(), o->baseName()) < 0;
 }
 
 

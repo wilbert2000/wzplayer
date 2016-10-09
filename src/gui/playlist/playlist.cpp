@@ -1187,16 +1187,18 @@ void TPlaylist::onNewMediaStartedPlaying() {
         }
         bool modified = false;
 
+        // Update item name
         if (!item->edited()) {
             QString name = md->name();
-            if (item->name() != name) {
+            if (item->baseName() != name) {
                 logger()->debug("onNewMediaStartedPlaying: updating name from"
-                                " '%1' to '%2'", item->name(), name);
+                                " '%1' to '%2'", item->baseName(), name);
                 item->setName(name, item->extension());
                 modified = true;
             }
         }
 
+        // Update item duration
         if (!md->image && md->duration > 0) {
             if (!this->filename.isEmpty()
                 && qAbs(md->duration - item->duration()) > 1) {
@@ -1367,7 +1369,7 @@ void TPlaylist:: setWinTitle() {
 
     TPlaylistWidgetItem* root = playlistWidget->root();
     if (root) {
-        title = root->name();
+        title = root->baseName();
         if (title.isEmpty()) {
             title = root->fname();
         }
@@ -1429,7 +1431,7 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
                        || !item->plParent()->isPlaylist())
                       && QFileInfo(item->filename()).exists();
 
-    QString name = item->name();
+    QString name = item->baseName();
     QString ext = item->extension();
     if (renameFile && !ext.isEmpty()) {
         name += "." + ext;
@@ -1577,15 +1579,11 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
             // Switch pls to m3u8
             QFileInfo fi(i->filename());
             if (fi.suffix().toLower() == "pls") {
+                // Replace extension pls with m3u8
                 logger()->warn("saveM3uFolder: saving '%1' as m3u8",
                                i->filename());
-                bool switchName = i->name() == fi.fileName();
                 filename = filename.left(filename.length() - 4) + ".m3u8";
                 i->setFilename(filename);
-                if (switchName) {
-                    fi.setFile(filename);
-                    i->setName(fi.completeBaseName(), i->extension());
-                }
                 modified = true;
             }
 
@@ -1594,7 +1592,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                     result = false;
                 }
             } else {
-                logger()->info("saveM3uFolder: playlist not modified '%1'",
+                logger()->info("saveM3uFolder: playlist '%1' not modified",
                                i->filename());
             }
         } else if (i->isFolder()) {
@@ -1620,7 +1618,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
             }
         } else {
             stream << "#EXTINF:" << (int) i->duration()
-                   << "," << i->name() << "\n";
+                   << "," << i->baseName() << "\n";
         }
 
         if (filename.startsWith(path)) {
@@ -1715,7 +1713,7 @@ bool TPlaylist::savePls(const QString& filename) {
             }
             QString ns = QString::number(n + 1);
             set.setValue("File" + ns, filename);
-            set.setValue("Title" + ns, i->name());
+            set.setValue("Title" + ns, i->baseName());
             set.setValue("Length" + ns, (int) i->duration());
             n++;
         }

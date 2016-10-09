@@ -590,10 +590,11 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
 
         if (item->childCount()) {
-            msg(tr("Sorting '%1'").arg(item->name()));
+            msg(tr("Sorting '%1'").arg(item->baseName()));
             setCurrentItem(item->child(0));
         }
 
+        // Update modified field
         if (item->modified() != mModified) {
             mModified = item->modified();
             emit modifiedChanged();
