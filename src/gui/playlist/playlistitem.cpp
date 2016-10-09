@@ -66,32 +66,11 @@ TPlaylistItem::TPlaylistItem() :
     mPlayedTime(0) {
 }
 
-// Constructor from data
-TPlaylistItem::TPlaylistItem(const QString &filename,
-                             const QString &name,
-                             double duration,
-                             bool isFolder,
-                             bool protectName) :
-    mFilename(filename),
-    mName(name),
-    mDuration(duration),
-    mState(PSTATE_STOPPED),
-    mPlayed(false),
-    mEdited(protectName),
-    mFolder(isFolder),
-    mPlayedTime(0) {
-
-    if (mName.isEmpty()) {
-        mName = Helper::baseNameForURL(mFilename);
-    }
-
-    setFileInfo();
-}
-
 // Copy constructor
 TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     mFilename(item.filename()),
-    mName(item.name()),
+    mBaseName(item.baseName()),
+    mExt(item.extension()),
     mDuration(item.duration()),
     mState(item.state()),
     mPlayed(item.played()),
@@ -101,9 +80,33 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     mWZPlaylist(item.wzPlaylist()),
     mSymLink(item.symLink()),
     mTarget(item.target()),
-    mExt(item.extension()),
     mPlayedTime(item.playedTime()),
     mBlacklist(item.getBlacklist()) {
+}
+
+// Constructor from arguments
+TPlaylistItem::TPlaylistItem(const QString &filename,
+                             const QString &name,
+                             double duration,
+                             bool isFolder,
+                             bool protectName) :
+    mFilename(filename),
+    mBaseName(name),
+    mDuration(duration),
+    mState(PSTATE_STOPPED),
+    mPlayed(false),
+    mEdited(protectName),
+    mFolder(isFolder),
+    mPlayedTime(0) {
+
+    if (mBaseName.isEmpty()) {
+        mBaseName = Helper::baseNameForURL(mFilename);
+    }
+
+    setFileInfo();
+}
+
+TPlaylistItem::~TPlaylistItem() {
 }
 
 // static
@@ -133,8 +136,9 @@ void TPlaylistItem::setFileInfo() {
         mWZPlaylist = false;
     } else {
         mExt = fi.suffix().toLower();
-        if (!mExt.isEmpty() && mName.endsWith(mExt, Qt::CaseInsensitive)) {
-            mName = mName.left(mName.length() - mExt.length() - 1);
+        // Remove extension from base name
+        if (!mExt.isEmpty() && mBaseName.endsWith(mExt, Qt::CaseInsensitive)) {
+            mBaseName = mBaseName.left(mBaseName.length() - mExt.length() - 1);
         }
         mWZPlaylist = fi.fileName() == TConfig::WZPLAYLIST;
     }
@@ -146,9 +150,9 @@ void TPlaylistItem::setFilename(const QString &filename) {
     setFileInfo();
 }
 
-void TPlaylistItem::setName(const QString& name, bool protectName) {
+void TPlaylistItem::setBaseName(const QString& baseName, bool protectName) {
 
-    mName = name;
+    mBaseName = baseName;
     if (protectName) {
         mEdited = true;
     }

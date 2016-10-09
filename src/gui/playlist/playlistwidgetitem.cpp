@@ -154,11 +154,13 @@ void TPlaylistWidgetItem::setNameText(bool setSizeHint) {
     }
 }
 
-void TPlaylistWidgetItem::setName(const QString& name,
+void TPlaylistWidgetItem::setName(const QString& baseName,
+                                  const QString& ext,
                                   bool protectName,
                                   bool setSizeHint) {
 
-    playlistItem.setName(name, protectName);
+    playlistItem.setBaseName(baseName, protectName);
+    playlistItem.setExtension(ext);
     setNameText(setSizeHint);
 }
 

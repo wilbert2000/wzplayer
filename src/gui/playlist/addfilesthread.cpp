@@ -151,7 +151,7 @@ void TAddFilesThread::run() {
         root = 0;
     } else {
         root->setFilename("");
-        root->setName("", false, false);
+        root->setName("", "", false, false);
     }
 
     logger()->debug("run: exiting. stopped %1 aborted %2",
@@ -350,7 +350,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
                               bool wzplaylist) {
 
     if (wzplaylist) {
-        playlistItem->setName(fi.dir().dirName(), false, false);
+        playlistItem->setName(fi.dir().dirName(), "", false, false);
     }
 
     QFile file(fi.absoluteFilePath());
@@ -583,9 +583,9 @@ TPlaylistWidgetItem* TAddFilesThread::copyDirectory(TPlaylistWidgetItem* parent,
         if (name.isEmpty()
             || name == TConfig::PROGRAM_ID
             || name == TConfig::WZPLAYLIST) {
-            item->setName(dir.dirName(), false, false);
+            item->setName(dir.dirName(), "", false, false);
         } else {
-            item->setName(name, protectName, false);
+            item->setName(name, "", protectName, false);
         }
 
         if (append) {

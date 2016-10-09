@@ -22,21 +22,24 @@ class TPlaylistItem {
 
 public:
     TPlaylistItem();
+    TPlaylistItem(const TPlaylistItem& item);
     TPlaylistItem(const QString &filename,
                   const QString &name,
                   double duration,
                   bool isFolder,
                   bool protectName);
-    TPlaylistItem(const TPlaylistItem& item);
-    virtual ~TPlaylistItem() {}
+    virtual ~TPlaylistItem();
 
     static QString playlistItemState(TPlaylistItemState state);
 
     QString filename() const { return mFilename; }
     void setFilename(const QString &filename);
 
-    QString name() const { return mName; }
-    void setName(const QString &name, bool protectName = false);
+    QString baseName() const { return mBaseName; }
+    void setBaseName(const QString &baseName, bool protectName = false);
+
+    QString extension() const { return mExt; }
+    void setExtension(const QString& ext) { mExt = ext; }
 
     double duration() const { return mDuration; }
     void setDuration(double duration) { mDuration = duration; }
@@ -57,7 +60,6 @@ public:
     bool wzPlaylist() const { return mWZPlaylist; }
     bool symLink() const { return mSymLink; }
     QString target() const { return mTarget; }
-    QString extension() const { return mExt; }
 
     int playedTime() const { return mPlayedTime; }
 
@@ -72,7 +74,8 @@ public:
 
 private:
     QString mFilename;
-    QString mName;
+    QString mBaseName;
+    QString mExt;
     double mDuration;
     TPlaylistItemState mState;
     bool mPlayed;
@@ -82,7 +85,6 @@ private:
     bool mWZPlaylist;
     bool mSymLink;
     QString mTarget;
-    QString mExt;
     int mPlayedTime;
     QStringList mBlacklist;
 

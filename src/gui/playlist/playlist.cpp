@@ -1190,10 +1190,9 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (!item->edited()) {
             QString name = md->name();
             if (item->name() != name) {
-                logger()->debug("onNewMediaStartedPlaying: updating"
-                                " name from '%1' to '%2'",
-                                item->name(), name);
-                item->setName(name);
+                logger()->debug("onNewMediaStartedPlaying: updating name from"
+                                " '%1' to '%2'", item->name(), name);
+                item->setName(name, item->extension());
                 modified = true;
             }
         }
@@ -1239,8 +1238,9 @@ void TPlaylist::onNewMediaStartedPlaying() {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
             }
         }
-        playlistWidget->root()->setFilename(filename);
-        playlistWidget->root()->setName(md->name());
+        TPlaylistWidgetItem* root = playlistWidget->root();
+        root->setFilename(filename);
+        root->setName(md->name(), root->extension());
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
@@ -1425,13 +1425,14 @@ bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
 
 void TPlaylist::editItem(TPlaylistWidgetItem* item) {
 
-    TPlaylistWidgetItem* p = item->plParent();
-    bool renameFile = (!p->isPlaylist() || p->isWZPlaylist())
+    bool renameFile = (item->plParent()->isWZPlaylist()
+                       || !item->plParent()->isPlaylist())
                       && QFileInfo(item->filename()).exists();
 
     QString name = item->name();
-    if (renameFile && !item->extension().isEmpty()) {
-        name += "." + item->extension();
+    QString ext = item->extension();
+    if (renameFile && !ext.isEmpty()) {
+        name += "." + ext;
     }
 
     bool ok;
@@ -1445,12 +1446,15 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
         if (!rename(item, newName)) {
             return;
         }
+        QFileInfo fi(newName);
+        newName = fi.completeBaseName();
+        ext = fi.suffix();
     } else {
-        logger()->info("rename: renaming '%1' to '%2'", item->name(), newName);
+        logger()->info("rename: renaming '%1' to '%2'", name, newName);
     }
 
-    item->setName(newName, true);
-    playlistWidget->setModified(p);
+    item->setName(newName, ext, true);
+    playlistWidget->setModified(item);
 }
 
 void TPlaylist::findPlayingItem() {
@@ -1580,7 +1584,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                 i->setFilename(filename);
                 if (switchName) {
                     fi.setFile(filename);
-                    i->setName(fi.fileName());
+                    i->setName(fi.completeBaseName(), i->extension());
                 }
                 modified = true;
             }
@@ -1755,7 +1759,14 @@ bool TPlaylist::save() {
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
     root->setFilename(filename);
-    root->setName(root->fname());
+    QString baseName, ext;
+    if (wzplaylist) {
+        baseName = fi.dir().dirName();
+    } else {
+        baseName = fi.completeBaseName();
+        ext = root->extension();
+    }
+    root->setName(baseName, ext);
     setWinTitle();
     pref->latest_dir = fi.absolutePath();
 

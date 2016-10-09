@@ -48,8 +48,10 @@ public:
     QString pathPlusSep() const;
     QString fname() const;
 
-    QString name() const { return playlistItem.name(); }
-    void setName(const QString& name,
+    // TODO: rename to baseName()
+    QString name() const { return playlistItem.baseName(); }
+    void setName(const QString& baseName,
+                 const QString& ext,
                  bool protectName = false,
                  bool setSizeHint = true);
 
