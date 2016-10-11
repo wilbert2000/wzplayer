@@ -135,7 +135,8 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 /*
     if (name == "TRACKS_COUNT") {
         int tracks = value.toInt();
-        logger()->debug("parseProperty: requesting track inf%1for %1 tracks", tracks);
+        logger()->debug("parseProperty: requesting track info for %1 tracks",
+                        tracks);
         for (int n = 0; n < tracks; n++) {
             writeToStdin(QString("print_text \"TRACK_INFO_%1="
                 "${track-list/%1/type} "
@@ -153,7 +154,9 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
         logger()->debug("parseProperty: creating %1 titles", n_titles);
         for (int idx = 0; idx < n_titles; idx++) {
             md->titles.addID(idx + 1);
-            writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1 ${=disc-title-list/%1/length:-1}\"").arg(idx));
+            writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1"
+                                 " ${=disc-title-list/%1/length:-1}\"")
+                         .arg(idx));
         }
         waiting_for_answers += n_titles;
         return true;
@@ -175,9 +178,12 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "CHAPTERS") {
         int n_chapters = value.toInt();
-        logger()->debug("parseProperty: requesting start and titel of %1 chapter(s)", n_chapters);
+        logger()->debug("parseProperty: requesting start and titel of %1"
+                        " chapter(s)", n_chapters);
         for (int n = 0; n < n_chapters; n++) {
-            writeToStdin(QString("print_text \"CHAPTER_%1=${=chapter-list/%1/time:} '${chapter-list/%1/title:}'\"").arg(n));
+            writeToStdin(QString("print_text \"CHAPTER_%1="
+                                 "${=chapter-list/%1/time:}"
+                                 " '${chapter-list/%1/title:}'\"").arg(n));
         }
         waiting_for_answers += n_chapters;
         return true;
@@ -250,8 +256,8 @@ void TMPVProcess::fixTitle() {
     // Let the playlist try the next title if a valid title was requested and
     // there is more than 1 title.
     if (title <= md->titles.count() && md->titles.count() > 1) {
-        // Need to notify the requested title, otherwise the playlist will select
-        // the second title instead of the title after this one.
+        // Need to notify the requested title, otherwise the playlist will
+        // select the second title instead of the title after this one.
         notifyTitleTrackChanged(title);
         // Pass eof to trigger playNext() in playlist
         received_end_of_file = true;
@@ -319,7 +325,8 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
             // - Current md->time_sec can be behind
             // - Menus tend to be triggered on the last second of video
             // - Quit needs time to arrive
-            quit_at_end_of_title_ms = (int) ((md->duration - md->time_sec) * 1000);
+            quit_at_end_of_title_ms =
+                (int) ((md->duration - md->time_sec) * 1000);
             // Quit right away if less than 400 ms to go.
             if (quit_at_end_of_title_ms <= 400) {
                 logger()->debug("parseTitleSwitched: quitting at end of title");
@@ -421,7 +428,8 @@ void TMPVProcess::requestBitrateInfo() {
 
 bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     // Parse custom status line
-    // STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}
+    // STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause}
+    //         B: ${=paused-for-cache} I: ${=core-idle}
 
     paused = rx.cap(3) == "yes";
 
@@ -476,7 +484,8 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
 bool TMPVProcess::parseLine(QString& line) {
 
     // Custom status line. Make sure it matches!
-    static QRegExp rx_status("^STATUS: ([0-9\\.-]*) / ([0-9\\.-]+) P: (yes|no) B: (yes|no) I: (yes|no)");
+    static QRegExp rx_status("^STATUS: ([0-9\\.-]*) / ([0-9\\.-]+) P: (yes|no)"
+                             " B: (yes|no) I: (yes|no)");
 
     // Tracks:
     static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(.*)");
@@ -683,11 +692,11 @@ void TMPVProcess::setMedia(const QString& media) {
     args << "--term-playing-msg="
         "VIDEO_ASPECT=${video-aspect}\n"
         "VIDEO_FPS=${=fps}\n"
-//        "VIDEO_BITRATE=${=video-bitrate}\n"
+//      "VIDEO_BITRATE=${=video-bitrate}\n"
         "VIDEO_FORMAT=${=video-format}\n"
         "VIDEO_CODEC=${=video-codec}\n"
 
-//        "AUDIO_BITRATE=${=audio-bitrate}\n"
+//      "AUDIO_BITRATE=${=audio-bitrate}\n"
         "AUDIO_FORMAT=${=audio-codec-name}\n"
         "AUDIO_CODEC=${=audio-codec}\n"
         "AUDIO_RATE=${=audio-params/samplerate}\n"
@@ -700,7 +709,7 @@ void TMPVProcess::setMedia(const QString& media) {
         "INFO_TITLES=${=disc-titles}\n"
         "INFO_CHAPTERS=${=chapters}\n"
         "INFO_ANGLE_EX=${angle}\n"
-//        "INFO_TRACKS_COUNT=${=track-list/count}\n"
+//      "INFO_TRACKS_COUNT=${=track-list/count}\n"
 
         "METADATA_LIST=${=metadata/list:}\n"
         "INFO_MEDIA_TITLE=${=media-title:}\n";
