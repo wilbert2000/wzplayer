@@ -2,20 +2,18 @@
 
 #include "log4qt/logger.h"
 
-#include <QTime>
+#include <QApplication>
 #include <QUrl>
 #include <QFileInfo>
-#include <QApplication>
+#include <QTime>
 
+#include "config.h"
 #include "helper.h"
 #include "extensions.h"
-#include "config.h"
 
 
 namespace Gui {
 namespace Playlist {
-
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistItem)
 
 // TODO: find the file sys func reporting case
 Qt::CaseSensitivity caseSensitiveFileNames =
@@ -52,6 +50,8 @@ int TTimeStamp::getStamp() {
 
 static TTimeStamp timeStamper;
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistItem)
 
 // Default constructor
 TPlaylistItem::TPlaylistItem() :
@@ -121,7 +121,25 @@ QString TPlaylistItem::playlistItemState(TPlaylistItemState state) {
     return "failed";
 }
 
-// Update file name related fields
+void TPlaylistItem::setState(TPlaylistItemState state) {
+
+    if (state == PSTATE_PLAYING) {
+        mPlayed = true;
+        mPlayedTime = timeStamper.getStamp();
+        logger()->debug("setState: stamped %1 on '%2'", mPlayedTime, mFilename);
+    }
+    mState = state;
+}
+
+void TPlaylistItem::setBaseName(const QString& baseName, bool protectName) {
+
+    mBaseName = baseName;
+    if (protectName) {
+        mEdited = true;
+    }
+}
+
+// Update fields depending on file name
 void TPlaylistItem::setFileInfo() {
 
     QFileInfo fi(mFilename);
@@ -148,24 +166,6 @@ void TPlaylistItem::setFilename(const QString &filename) {
 
     mFilename = filename;
     setFileInfo();
-}
-
-void TPlaylistItem::setBaseName(const QString& baseName, bool protectName) {
-
-    mBaseName = baseName;
-    if (protectName) {
-        mEdited = true;
-    }
-}
-
-void TPlaylistItem::setState(TPlaylistItemState state) {
-
-    if (state == PSTATE_PLAYING) {
-        mPlayed = true;
-        mPlayedTime = timeStamper.getStamp();
-        logger()->debug("setState: stamped %1 on '%2'", mPlayedTime, mFilename);
-    }
-    mState = state;
 }
 
 bool TPlaylistItem::blacklisted(const QString& filename) const {
