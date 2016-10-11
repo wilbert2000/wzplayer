@@ -1190,7 +1190,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         // Update item name
         if (!item->edited()) {
             QString name = md->name();
-            if (item->baseName() != name) {
+            if (name != item->baseName()) {
                 logger()->debug("onNewMediaStartedPlaying: updating name from"
                                 " '%1' to '%2'", item->baseName(), name);
                 item->setName(name, item->extension());
@@ -1214,7 +1214,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (modified) {
             playlistWidget->setModified(item);
         } else {
-            logger()->debug("onNewMediaStartedPlaying: item considered uptodate");
+            logger()->debug("onNewMediaStartedPlaying: item considered"
+                            " uptodate");
         }
         return;
     }
