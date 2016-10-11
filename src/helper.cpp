@@ -99,7 +99,7 @@ int Helper::qtVersion() {
 }
 
 // Return base name for url
-QString Helper::baseNameForURL(QString url) {
+QString Helper::nameForURL(QString url, bool extension) {
 
     if (url.isEmpty()) {
         return "";
@@ -120,6 +120,8 @@ QString Helper::baseNameForURL(QString url) {
             if (name.isEmpty()) {
                 name = fi.dir().dirName(); // Returns "" for root
             }
+        } else if (extension) {
+            name = fi.fileName();
         } else {
             name = fi.completeBaseName();
         }
@@ -130,7 +132,11 @@ QString Helper::baseNameForURL(QString url) {
                             | QUrl::RemoveFragment
                             | QUrl::StripTrailingSlash);
         if (!name.isEmpty()) {
-            name = QFileInfo(name).completeBaseName();
+            if (extension) {
+                name = QFileInfo(name).fileName();
+            } else {
+                name = QFileInfo(name).completeBaseName();
+            }
         }
     }
 

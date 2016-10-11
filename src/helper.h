@@ -44,7 +44,7 @@ public:
     //! Returns the path if found or empty string if not.
     static QString findExecutable(const QString& name);
 
-    static QString baseNameForURL(QString url);
+    static QString nameForURL(QString url, bool extension);
     static QString clean(const QString& name);
     static QString cleanName(const QString& name);
     static QString cleanTitle(const QString& name);

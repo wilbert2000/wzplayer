@@ -100,7 +100,7 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mPlayedTime(0) {
 
     if (mBaseName.isEmpty()) {
-        mBaseName = Helper::baseNameForURL(mFilename);
+        mBaseName = Helper::nameForURL(mFilename, false);
     }
 
     setFileInfo();

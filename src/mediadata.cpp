@@ -127,6 +127,7 @@ QString TMediaData::getTitle() const {
     return title;
 }
 
+// TODO: merge name() with displayName()
 QString TMediaData::name() const {
 
     if (filename.isEmpty()) {
@@ -142,7 +143,7 @@ QString TMediaData::name() const {
         return disc.displayName();
     }
 
-    return Helper::baseNameForURL(filename);
+    return Helper::nameForURL(filename, false);
 }
 
 QString TMediaData::displayName() const {
@@ -160,7 +161,7 @@ QString TMediaData::displayName() const {
         return disc.displayName();
     }
 
-    return Helper::cleanName(Helper::baseNameForURL(filename));
+    return Helper::cleanName(Helper::nameForURL(filename, true));
 }
 
 QString TMediaData::typeToString(Type type) {
