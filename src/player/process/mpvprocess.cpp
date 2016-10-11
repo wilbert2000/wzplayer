@@ -190,10 +190,16 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
     }
 
     if (name == "MEDIA_TITLE") {
-        // TODO: set if <> filename
         if (!md->image) {
-            md->title = value.simplified();
-            logger()->debug("parseProperty: title set to '%1'", md->title);
+            QString name = Helper::nameForURL(md->filename, true).simplified();
+            QString title = value.simplified();
+            if (name == title) {
+                logger()->debug("parseProperty: ignoring title matching file"
+                                " name");
+            } else {
+                md->title = title;
+                logger()->debug("parseProperty: title set to '%1'", md->title);
+            }
         }
         return true;
     }
