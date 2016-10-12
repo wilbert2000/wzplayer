@@ -127,16 +127,17 @@ QString TMediaData::getTitle() const {
     return title;
 }
 
-// TODO: merge name() with displayName()
 QString TMediaData::name() const {
 
     if (filename.isEmpty()) {
         return "";
     }
 
-    QString title = getTitle();
-    if (!title.isEmpty()) {
-        return title;
+    if (selected_type != TYPE_FILE) {
+        QString title = getTitle();
+        if (!title.isEmpty()) {
+            return title;
+        }
     }
 
     if (disc.valid) {
