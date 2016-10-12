@@ -35,14 +35,10 @@ public:
                         double duration,
                         bool isDir,
                         bool protectName = false);
-    TPlaylistWidgetItem(TPlaylistWidgetItem* parent,
-                        const TPlaylistWidgetItem& item,
-                        const QString& from,
-                        QString to);
     virtual ~TPlaylistWidgetItem();
 
     QString filename() const { return playlistItem.filename(); }
-    void setFilename(const QString& filename);
+    void setFilename(const QString& fileName, const QString& baseName);
 
     QString path() const;
     QString pathPlusSep() const;
@@ -107,8 +103,6 @@ public:
 
     void loadIcon();
 
-    TPlaylistWidgetItem* ff(const QString& fname);
-
     virtual bool operator<(const QTreeWidgetItem& other) const;
     // TODO: override clone?
 
@@ -122,7 +116,6 @@ private:
     void setStateIcon();
     void setNameText(bool setSizeHint);
     void setDurationText();
-    TPlaylistWidgetItem* f(const QString& fname);
 };
 
 } // namespace Playlist

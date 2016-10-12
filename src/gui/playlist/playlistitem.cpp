@@ -170,9 +170,11 @@ void TPlaylistItem::setFileInfo() {
     }
 }
 
-void TPlaylistItem::setFilename(const QString &filename) {
+void TPlaylistItem::setFilename(const QString &fileName,
+                                const QString& baseName) {
 
-    mFilename = filename;
+    mFilename = fileName;
+    mBaseName = baseName;
     setFileInfo();
 }
 

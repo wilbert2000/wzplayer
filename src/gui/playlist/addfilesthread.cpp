@@ -150,8 +150,7 @@ void TAddFilesThread::run() {
         delete root;
         root = 0;
     } else {
-        root->setFilename("");
-        root->setName("", "", false, false);
+        root->setFilename("", "");
     }
 
     logger()->debug("run: exiting. stopped %1 aborted %2",
@@ -454,26 +453,6 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     // Path to use for relative filenames in playlist
     playlistPath = QDir::toNativeSeparators(fi.dir().absolutePath());
 
-    QString canonical;
-    if (fi.fileName().compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
-        == 0) {
-        canonical = fi.dir().canonicalPath();
-        int i = loadedDirectoryLinks.indexOf(canonical);
-        if (i >= 0) {
-            return copyDirectory(parent, loadedDirectoryItems.at(i), fi.dir(),
-                                 name, protectName, append);
-        }
-        if (QFileInfo(playlistPath).isSymLink()) {
-            TPlaylistWidgetItem* item = root->ff(canonical);
-            if (item) {
-                return copyDirectory(parent, item, fi.dir(), name, protectName,
-                                     append);
-            }
-        } else {
-            canonical = "";
-        }
-    }
-
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(parent,
         playlistPath + QDir::separator() + fi.fileName(), name, 0, true,
@@ -512,12 +491,6 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
                             TConfig::ERROR_MESSAGE_DURATION);
         delete playlistItem;
         playlistItem = 0;
-    }
-
-    if (!canonical.isEmpty()) {
-        logger()->debug("openPlaylist: storing canonical path '%1'", canonical);
-        loadedDirectoryLinks.append(canonical);
-        loadedDirectoryItems.append(playlistItem);
     }
 
     return playlistItem;
@@ -563,47 +536,6 @@ QDir::SortFlags TAddFilesThread::getSortFlags() {
     return flags;
 }
 
-TPlaylistWidgetItem* TAddFilesThread::copyDirectory(TPlaylistWidgetItem* parent,
-                                                    TPlaylistWidgetItem* item,
-                                                    const QDir& dir,
-                                                    const QString& name,
-                                                    bool protectName,
-                                                    bool append) {
-
-    if (item) {
-        QString from = item->pathPlusSep();
-        QString to = QDir::toNativeSeparators(dir.path());
-        logger()->debug("copyDirectory: copy '%1' to '%2'", from, to);
-        item = new TPlaylistWidgetItem(0, *item, from, to);
-
-        if (name.isEmpty()) {
-            item->setName(dir.dirName(), "", false, false);
-        } else if (name.compare(TConfig::PROGRAM_ID, caseSensitiveFileNames)
-                   == 0
-                   || name.compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
-                   == 0) {
-            item->setName(dir.dirName(), "m3u8", false, false);
-        } else {
-            item->setName(name, "", protectName, false);
-        }
-
-        if (append) {
-            parent->addChild(item);
-        } else {
-            // Sort folder into place
-            int i = parent->childCount();
-            while (i > 0 && *item < *(parent->plChild(i - 1))) {
-                i--;
-            }
-            parent->insertChild(i, item);
-        }
-
-        return item;
-    }
-
-    return 0;
-}
-
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi,
                                                    QString name,
@@ -627,23 +559,6 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     if (directory.exists(TConfig::WZPLAYLIST)) {
         fi.setFile(directory.path(), TConfig::WZPLAYLIST);
         return openPlaylist(parent, fi, name, protectName, append);
-    }
-
-    QString canonical = directory.canonicalPath();
-    int i = loadedDirectoryLinks.indexOf(canonical);
-    if (i >= 0) {
-        return copyDirectory(parent, loadedDirectoryItems.at(i), directory,
-                             name, protectName, append);
-    }
-
-    if (fi.isSymLink()) {
-        TPlaylistWidgetItem* item = root->ff(canonical);
-        if (item) {
-            return copyDirectory(parent, item, directory, name, protectName,
-                                 append);
-        }
-    } else {
-        canonical = "";
     }
 
     directory.setFilter(dirFilter);
@@ -694,12 +609,6 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                         dirItem->filename());
         delete dirItem;
         dirItem = 0;
-    }
-
-    if (!canonical.isEmpty()) {
-        logger()->debug("addDirectory: storing canonical path '%1'", canonical);
-        loadedDirectoryLinks.append(canonical);
-        loadedDirectoryItems.append(dirItem);
     }
 
     return dirItem;

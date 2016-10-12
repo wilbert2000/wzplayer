@@ -81,41 +81,6 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     init();
 }
 
-TPlaylistWidgetItem::TPlaylistWidgetItem(TPlaylistWidgetItem* parent,
-                                         const TPlaylistWidgetItem& item,
-                                         const QString& from,
-                                         QString to) :
-    QTreeWidgetItem(parent),
-    playlistItem(item.playlistItem),
-    mModified(item.modified()) {
-
-    if (parent == 0) {
-        if (isWZPlaylist()) {
-            if (!to.endsWith(QDir::separator())) {
-                to += QDir::separator();
-            }
-            setFilename(to + TConfig::WZPLAYLIST);
-        } else {
-            setFilename(to);
-            if (!to.endsWith(QDir::separator())) {
-                to += QDir::separator();
-            }
-        }
-    } else {
-        QString fn = filename();
-        if (fn.startsWith(from, caseSensitiveFileNames)) {
-            setFilename(to + fn.mid(from.length()));
-        }
-    }
-
-    init();
-
-    // Copy kids
-    for(int c = 0; c < item.childCount(); c++) {
-        addChild(new TPlaylistWidgetItem(this, *(item.plChild(c)), from, to));
-    }
-}
-
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
 }
 
@@ -131,8 +96,9 @@ int TPlaylistWidgetItem::getLevel() const {
     return plParent()->getLevel() + 1;
 }
 
-void TPlaylistWidgetItem::setFilename(const QString& filename) {
-    playlistItem.setFilename(filename);
+void TPlaylistWidgetItem::setFilename(const QString& fileName,
+                                      const QString& baseName) {
+    playlistItem.setFilename(fileName, baseName);
 }
 
 void TPlaylistWidgetItem::setNameText(bool setSizeHint) {
@@ -335,50 +301,6 @@ void TPlaylistWidgetItem::setSzHint(int level) {
                                        iconProvider.iconSize,
                                        level));
     }
-}
-
-TPlaylistWidgetItem* TPlaylistWidgetItem::f(const QString &fname) {
-
-    QString path = filename();
-
-    if (isWZPlaylist()) {
-        path.chop(TConfig::WZPLAYLIST.length() + 1);
-    }
-
-    if (path.compare(fname, caseSensitiveFileNames) == 0) {
-        logger()->debug("f: found '%1'", fname);
-        return this;
-    }
-
-    // Ignore mismatching folders excluding root
-    if (isFolder() && parent()) {
-        if (!path.endsWith(QDir::separator())) {
-            path += QDir::separator();
-        }
-        if (!fname.startsWith(path, caseSensitiveFileNames)) {
-            // Path mismatch
-            // logger()->trace("f: path '%1' mismatches '%2'", fname, path);
-            return 0;
-        }
-    }
-
-    for(int c = 0; c < childCount(); c++) {
-        TPlaylistWidgetItem* item = plChild(c)->f(fname);
-        if (item) {
-            return item;
-        }
-    }
-
-    return 0;
-}
-
-TPlaylistWidgetItem* TPlaylistWidgetItem::ff(const QString &fname) {
-
-    TPlaylistWidgetItem* item = f(QDir::toNativeSeparators(fname));
-    if (item == 0) {
-        logger()->debug("ff: '%1' not loaded", fname);
-    }
-    return item;
 }
 
 bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {

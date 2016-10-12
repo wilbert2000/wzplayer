@@ -53,8 +53,6 @@ private:
     bool recurse;
 
     QString playlistPath;
-    QStringList loadedDirectoryLinks;
-    QList<TPlaylistWidgetItem*> loadedDirectoryItems;
 
     QStringList lockedFiles;
     QStringList nameFilterList;
@@ -65,13 +63,6 @@ private:
     QDir::SortFlags getSortFlags();
 
     TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
-
-    TPlaylistWidgetItem* copyDirectory(TPlaylistWidgetItem* parent,
-                                       TPlaylistWidgetItem* item,
-                                       const QDir& dir,
-                                       const QString& name,
-                                       bool protectName,
-                                       bool append);
 
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       QFileInfo& fi,

@@ -33,7 +33,7 @@ public:
     static QString playlistItemState(TPlaylistItemState state);
 
     QString filename() const { return mFilename; }
-    void setFilename(const QString &filename);
+    void setFilename(const QString& fileName, const QString& baseName);
 
     QString baseName() const { return mBaseName; }
     void setBaseName(const QString &baseName, bool protectName = false);

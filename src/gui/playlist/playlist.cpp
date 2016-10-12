@@ -1242,8 +1242,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
         TPlaylistWidgetItem* root = playlistWidget->root();
-        root->setFilename(filename);
-        root->setName(md->name(), root->extension());
+        root->setFilename(filename, md->name());
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
@@ -1413,7 +1412,7 @@ bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
     if (QFile::rename(item->filename(), nn)) {
         logger()->info("rename: renamed file '%1' to '%2'",
                        item->filename(), nn);
-        item->setFilename(nn);
+        item->setFilename(nn, QFileInfo(newName).completeBaseName());
     } else {
         logger()->error("rename: failed to rename '%1' to '%2'",
                         item->filename(), nn);
@@ -1449,14 +1448,11 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
         if (!rename(item, newName)) {
             return;
         }
-        QFileInfo fi(newName);
-        newName = fi.completeBaseName();
-        ext = fi.suffix();
     } else {
         logger()->info("rename: renaming '%1' to '%2'", name, newName);
+        item->setName(newName, ext, true);
     }
 
-    item->setName(newName, ext, true);
     playlistWidget->setModified(item);
 }
 
@@ -1584,7 +1580,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                 logger()->warn("saveM3uFolder: saving '%1' as m3u8",
                                i->filename());
                 filename = filename.left(filename.length() - 4) + ".m3u8";
-                i->setFilename(filename);
+                i->setFilename(filename, i->baseName());
                 modified = true;
             }
 
@@ -1757,10 +1753,7 @@ bool TPlaylist::save() {
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
-    root->setFilename(filename);
-    if (!wzplaylist) {
-        root->setName(fi.completeBaseName(), root->extension());
-    }
+    root->setFilename(filename, fi.completeBaseName());
     setWinTitle();
     pref->latest_dir = fi.absolutePath();
 
