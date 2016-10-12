@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QUrl>
+#include <QDir>
 #include <QFileInfo>
 #include <QTime>
 
@@ -154,11 +155,18 @@ void TPlaylistItem::setFileInfo() {
         mWZPlaylist = false;
     } else {
         mExt = fi.suffix().toLower();
+
         // Remove extension from base name
         if (!mExt.isEmpty() && mBaseName.endsWith(mExt, Qt::CaseInsensitive)) {
             mBaseName = mBaseName.left(mBaseName.length() - mExt.length() - 1);
         }
-        mWZPlaylist = fi.fileName() == TConfig::WZPLAYLIST;
+
+        // Handle WZPlaylist
+        mWZPlaylist = fi.fileName().compare(TConfig::WZPLAYLIST,
+                                            caseSensitiveFileNames) == 0;
+        if (mWZPlaylist) {
+            mBaseName = fi.dir().dirName();
+        }
     }
 }
 

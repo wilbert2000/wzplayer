@@ -1758,14 +1758,9 @@ bool TPlaylist::save() {
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
     root->setFilename(filename);
-    QString baseName, ext;
-    if (wzplaylist) {
-        baseName = fi.dir().dirName();
-    } else {
-        baseName = fi.completeBaseName();
-        ext = root->extension();
+    if (!wzplaylist) {
+        root->setName(fi.completeBaseName(), root->extension());
     }
-    root->setName(baseName, ext);
     setWinTitle();
     pref->latest_dir = fi.absolutePath();
 

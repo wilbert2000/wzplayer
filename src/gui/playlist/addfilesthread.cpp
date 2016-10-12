@@ -346,12 +346,7 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem,
 
 bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
                               const QFileInfo& fi,
-                              bool utf8,
-                              bool wzplaylist) {
-
-    if (wzplaylist) {
-        playlistItem->setName(fi.dir().dirName(), "", false, false);
-    }
+                              bool utf8) {
 
     QFile file(fi.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly)) {
@@ -387,7 +382,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
             duration = rx.cap(1).toDouble();
             name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            addItem(playlistItem, line, name, duration, wzplaylist);
+            addItem(playlistItem, line, name, duration);
             name = "";
             duration = 0;
         } else if (line.startsWith("#WZP-blacklist:")) {
@@ -401,7 +396,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
 
     file.close();
 
-    if (!stopRequested && wzplaylist) {
+    if (!stopRequested && playlistItem->isWZPlaylist()) {
         addNewItems(playlistItem, fi);
     }
     return true;
@@ -460,8 +455,8 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     playlistPath = QDir::toNativeSeparators(fi.dir().absolutePath());
 
     QString canonical;
-    bool wzplaylist = fi.fileName() == TConfig::WZPLAYLIST;
-    if (wzplaylist) {
+    if (fi.fileName().compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
+        == 0) {
         canonical = fi.dir().canonicalPath();
         int i = loadedDirectoryLinks.indexOf(canonical);
         if (i >= 0) {
@@ -481,15 +476,15 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
 
     // Put playlist in a folder
     TPlaylistWidgetItem* playlistItem = new TPlaylistWidgetItem(parent,
-        playlistPath + QDir::separator() + fi.fileName(),
-        name, 0, true, protectName);
+        playlistPath + QDir::separator() + fi.fileName(), name, 0, true,
+        protectName);
 
     bool result;
     QString ext = fi.suffix().toLower();
     if (ext == "pls") {
         result = openPls(playlistItem, fi.absoluteFilePath());
     } else {
-        result = openM3u(playlistItem, fi, ext != "m3u", wzplaylist);
+        result = openM3u(playlistItem, fi, ext != "m3u");
     }
 
     if (result) {
@@ -580,10 +575,14 @@ TPlaylistWidgetItem* TAddFilesThread::copyDirectory(TPlaylistWidgetItem* parent,
         QString to = QDir::toNativeSeparators(dir.path());
         logger()->debug("copyDirectory: copy '%1' to '%2'", from, to);
         item = new TPlaylistWidgetItem(0, *item, from, to);
-        if (name.isEmpty()
-            || name == TConfig::PROGRAM_ID
-            || name == TConfig::WZPLAYLIST) {
+
+        if (name.isEmpty()) {
             item->setName(dir.dirName(), "", false, false);
+        } else if (name.compare(TConfig::PROGRAM_ID, caseSensitiveFileNames)
+                   == 0
+                   || name.compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
+                   == 0) {
+            item->setName(dir.dirName(), "m3u8", false, false);
         } else {
             item->setName(name, "", protectName, false);
         }
@@ -710,8 +709,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
         TPlaylistWidgetItem* parent,
         const QString& filename,
         QString name,
-        bool protectName,
-        bool wzplaylist) {
+        bool protectName) {
 
     bool setFailed = false;
 
@@ -721,9 +719,9 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
             name = disc.displayName();
         }
     } else if (QUrl(filename).scheme().isEmpty()) {
-        if (wzplaylist) {
+        if (parent->isWZPlaylist()) {
             logger()->info("addItemNotFound: ignoring no longer existing "
-                               " item '%1'", filename);
+                               " playlist item '%1'", filename);
             parent->setModified();
             return 0;
         }
@@ -746,8 +744,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
 TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
                                               QString filename,
                                               QString name,
-                                              double duration,
-                                              bool wzplaylist) {
+                                              double duration) {
 
     bool protectName = !name.isEmpty();
 
@@ -758,7 +755,8 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
     QFileInfo fi(playlistPath, filename);
     if (fi.exists()) {
         logger()->trace("addItem: found '%1'", fi.absoluteFilePath());
-    } else if (fi.fileName() == TConfig::WZPLAYLIST) {
+    } else if (fi.fileName().compare(TConfig::WZPLAYLIST,
+                                     caseSensitiveFileNames) == 0) {
         // Non-existing wzplaylist
         parent->setModified();
 
@@ -783,7 +781,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
             return 0;
         }
     } else {
-        return addItemNotFound(parent, filename, name, protectName, wzplaylist);
+        return addItemNotFound(parent, filename, name, protectName);
     }
 
     QString savedPlaylistPath = playlistPath;
