@@ -180,28 +180,29 @@ public slots:
     void seekRelative(double secs);
     void seekPercentage(double perc);
     void seekTime(double sec);
-    void sforward();     // + 10 seconds
+    void sforward();    // + 10 seconds
     void srewind();     // - 10 seconds
     void forward();     // + 1 minute
-    void rewind();         // -1 minute
-    void fastforward();    // + 10 minutes
-    void fastrewind();    // - 10 minutes
+    void rewind();      // -1 minute
+    void fastforward(); // + 10 minutes
+    void fastrewind();  // - 10 minutes
     void forward(int secs);
     void rewind(int secs);
     void seekToNextSub();
     void seekToPrevSub();
+
     void wheelUp(Settings::TPreferences::TWheelFunction function =
         Settings::TPreferences::DoNothing);
     void wheelDown(Settings::TPreferences::TWheelFunction function =
         Settings::TPreferences::DoNothing);
 
     void setSpeed(double value);
-    void incSpeed10();    //!< Inc speed 10%
-    void decSpeed10();    //!< Dec speed 10%
-    void incSpeed4();    //!< Inc speed 4%
-    void decSpeed4();    //!< Dec speed 4%
-    void incSpeed1();    //!< Inc speed 1%
-    void decSpeed1();    //!< Dec speed 1%
+    void incSpeed10(); //!< Inc speed 10%
+    void decSpeed10(); //!< Dec speed 10%
+    void incSpeed4();  //!< Inc speed 4%
+    void decSpeed4();  //!< Dec speed 4%
+    void incSpeed1();  //!< Inc speed 1%
+    void decSpeed1();  //!< Dec speed 1%
     void doubleSpeed();
     void halveSpeed();
     void normalSpeed();
