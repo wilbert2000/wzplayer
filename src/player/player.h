@@ -98,6 +98,8 @@ public:
         restartTime = mset.current_sec;
     }
 
+    void dvdnavUpdateMousePos(const QPoint& pos);
+
 public slots:
     void loadSub(const QString& sub);
     void unloadSub();
@@ -414,14 +416,11 @@ protected slots:
     void onSubtitlesChanged();
     void onSubtitleChanged();
 
-    void dvdnavUpdateMousePos(QPoint);
-
-protected:
-    Player::Process::TPlayerProcess* proc;
-    Gui::TPlayerWindow* playerwindow;
-
 private:
     static double restartTime;
+
+    Player::Process::TPlayerProcess* proc;
+    Gui::TPlayerWindow* playerwindow;
 
     TState _state;
     bool seeking;

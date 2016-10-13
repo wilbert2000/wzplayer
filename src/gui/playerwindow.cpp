@@ -417,7 +417,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
     if (!dragging && video_window->underMouse()) {
         // Make event relative to video layer
         QPoint pos = event->pos() - video_window->pos();
-        emit mouseMoved(pos);
+        player->dvdnavUpdateMousePos(pos);
     }
 }
 

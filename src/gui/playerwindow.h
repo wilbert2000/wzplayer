@@ -120,7 +120,6 @@ signals:
     void wheelUp();
     void wheelDown();
 
-    void mouseMoved(QPoint);
     void draggingChanged(bool);
 
     void moveWindow(QPoint);

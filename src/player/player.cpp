@@ -156,9 +156,6 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
             this, SLOT(wheelUp()));
     connect(playerwindow, SIGNAL(wheelDown()),
             this, SLOT(wheelDown()));
-    // For DVDNAV subscribe to Gui::TPlayerWindow::mouseMoved()
-    connect(playerwindow, SIGNAL(mouseMoved(QPoint)),
-            this, SLOT(dvdnavUpdateMousePos(QPoint)));
 }
 
 TPlayer::~TPlayer() {
@@ -3256,9 +3253,10 @@ void TPlayer::dvdnavMouse() {
 }
 
 // Slot called by playerwindow to pass mouse move local to video
-void TPlayer::dvdnavUpdateMousePos(QPoint pos) {
+void TPlayer::dvdnavUpdateMousePos(const QPoint& pos) {
 
-    if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
+    if (proc->isFullyStarted()
+        && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         // MPlayer won't act if paused. Play if menu not animated.
         if (_state == STATE_PAUSED && mdat.duration == 0) {
             play();
