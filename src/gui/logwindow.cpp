@@ -42,6 +42,7 @@ namespace Gui {
 
 TLogWindowAppender* TLogWindow::appender = 0;
 
+
 TLogWindowAppender::TLogWindowAppender(Log4Qt::Layout* aLayout) :
     Log4Qt::ListAppender(),
     textEdit(0),
@@ -117,6 +118,15 @@ TLogWindow::TLogWindow(QWidget* parent)
     setupUi(this);
     setObjectName("logwindow");
 
+    connect(saveButton, SIGNAL(clicked()), this, SLOT(onSaveButtonClicked()));
+    connect(copyButton, SIGNAL(clicked()), this, SLOT(onCopyButtonClicked()));
+    connect(findEdit, SIGNAL(returnPressed()),
+            this, SLOT(onFindNextButtonClicked()));
+    connect(findPreviousButton, SIGNAL(clicked()),
+            this, SLOT(onFindPreviousButtonClicked()));
+    connect(findNextButton, SIGNAL(clicked()),
+            this, SLOT(onFindNextButtonClicked()));
+
     edit->setFont(QFont("fixed"));
     edit->setMaximumBlockCount(pref->log_window_max_events);
 
@@ -155,7 +165,7 @@ void TLogWindow::hideEvent(QShowEvent*) {
     emit visibilityChanged(false);
 }
 
-// Fix hideEvent() not called on close
+// Call hideEvent() and accept close
 void TLogWindow::closeEvent(QCloseEvent* event) {
     logger()->debug("closeEvent");
 
@@ -188,12 +198,6 @@ void TLogWindow::saveConfig() {
     pref->setValue("size", size());
     pref->setValue("state", (int) windowState());
     pref->endGroup();
-}
-
-void TLogWindow::onCopyButtonClicked() {
-
-    edit->selectAll();
-    edit->copy();
 }
 
 void TLogWindow::onSaveButtonClicked() {
@@ -233,6 +237,22 @@ void TLogWindow::onSaveButtonClicked() {
 
         }
     }
+}
+
+void TLogWindow::onCopyButtonClicked() {
+
+    edit->selectAll();
+    edit->copy();
+}
+
+void TLogWindow::onFindPreviousButtonClicked() {
+
+    edit->find(findEdit->text(), QTextDocument::FindBackward);
+}
+
+void TLogWindow::onFindNextButtonClicked() {
+
+    edit->find(findEdit->text());
 }
 
 } // namespace Gui

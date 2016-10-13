@@ -80,8 +80,10 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 protected slots:
-    void onCopyButtonClicked();
     void onSaveButtonClicked();
+    void onCopyButtonClicked();
+    void onFindPreviousButtonClicked();
+    void onFindNextButtonClicked();
 };
 
 } // namespace Gui
