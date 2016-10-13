@@ -39,7 +39,19 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
     setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
 }
 
-void TPlaylistWidgetItem::init() {
+TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
+                                         const QString& filename,
+                                         const QString& name,
+                                         double duration,
+                                         bool isDir,
+                                         bool protectName) :
+    QTreeWidgetItem(parent),
+    playlistItem(QDir::toNativeSeparators(filename),
+                 name,
+                 duration,
+                 isDir,
+                 protectName),
+    mModified(false) {
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsEnabled
@@ -58,27 +70,11 @@ void TPlaylistWidgetItem::init() {
         setToolTip(COL_NAME, qApp->translate(
             "Gui::Playlist::TPlaylistWidgetItem", "Links to %1").arg(target()));
     } else {
-        setToolTip(COL_NAME, filename());
+        setToolTip(COL_NAME, this->filename());
     }
 
     setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
     setDurationText();
-}
-
-TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
-                                         const QString& filename,
-                                         const QString& name,
-                                         double duration,
-                                         bool isDir,
-                                         bool protectName) :
-    QTreeWidgetItem(parent),
-    playlistItem(QDir::toNativeSeparators(filename),
-                 name,
-                 duration,
-                 isDir,
-                 protectName),
-    mModified(false) {
-    init();
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {

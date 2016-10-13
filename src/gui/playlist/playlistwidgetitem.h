@@ -111,7 +111,6 @@ private:
     QIcon itemIcon;
     bool mModified;
 
-    void init();
     QIcon getIcon();
     void setStateIcon();
     void setNameText(bool setSizeHint);
