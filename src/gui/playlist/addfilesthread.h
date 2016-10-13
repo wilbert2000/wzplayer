@@ -9,7 +9,6 @@
 #include "wzdebug.h"
 
 
-class QDir;
 class QFileInfo;
 
 namespace Gui {

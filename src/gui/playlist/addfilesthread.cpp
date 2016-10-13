@@ -177,20 +177,18 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                                  bool protectName) {
 
     QString parentPath = parent->path();
-    QString parentPathPlusSep;
-    if (parentPath.endsWith("/")) {
-        parentPathPlusSep = parentPath;
-    } else {
-        parentPathPlusSep = parentPath + "/";
+    QString parentPathPlusSep = parentPath;
+    if (!parentPathPlusSep.endsWith("/")) {
+        parentPathPlusSep += "/";
     }
 
     // Remove extra slashes and dots from path
     QString path = fi.dir().absolutePath();
 
+    // File residing inside parent directory
     if (path == parentPath) {
-        QString filename = path + "/" + fi.fileName();
-        logger()->trace("createPath: creating file '%1' in '%2'",
-                        filename, parent->filename());
+        QString filename = parentPathPlusSep + fi.fileName();
+        logger()->trace("createPath: creating file '%1'", filename);
         return new TPlaylistWidgetItem(parent,
                                        filename,
                                        name,
@@ -199,6 +197,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                        protectName);
     }
 
+    // File residing outside parent directory from symbolic link or playlist
     if (!path.startsWith(parentPathPlusSep)) {
         QString filename = fi.absoluteFilePath();
         logger()->trace("createPath: creating link '%1' in '%2'",
@@ -211,6 +210,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                        protectName);
     }
 
+    // File residing in subdir of parent
     QString dir = path.mid(parentPathPlusSep.length());
     int i = dir.indexOf("/");
     if (i >= 0) {
