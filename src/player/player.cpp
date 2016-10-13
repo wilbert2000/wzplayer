@@ -1841,7 +1841,8 @@ void TPlayer::seekOutPoint() {
     } else if (mset.out_point > 0){
         seek = mset.out_point;
     } else {
-        seek = mdat.duration;
+        Gui::msgOSD(tr("Out point not set"));
+        return;
     }
     seekTime(seek);
     Gui::msgOSD(tr("Seeking to %1").arg(Helper::formatTime(qRound(seek))));
