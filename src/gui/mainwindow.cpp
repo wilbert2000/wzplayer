@@ -1846,10 +1846,7 @@ void TMainWindow::didExitFullscreen() {
 void TMainWindow::leftClickFunction() {
     logger()->debug("leftClickFunction");
 
-    if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
-        && playerwindow->videoWindow()->underMouse()) {
-        player->dvdnavMouse();
-    } else if (!pref->mouse_left_click_function.isEmpty()) {
+    if (!pref->mouse_left_click_function.isEmpty()) {
         processAction(pref->mouse_left_click_function);
     }
 }

@@ -159,6 +159,9 @@ private:
 
     void setFastWindow();
     void clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan);
+
+private slots:
+    void onLeftClicked();
 };
 
 } // namespace Gui

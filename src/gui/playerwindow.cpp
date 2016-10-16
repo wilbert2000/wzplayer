@@ -129,7 +129,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     left_click_timer = new QTimer(this);
     left_click_timer->setSingleShot(true);
     left_click_timer->setInterval(qApp->doubleClickInterval() + 10);
-    connect(left_click_timer, SIGNAL(timeout()), this, SIGNAL(leftClicked()));
+    connect(left_click_timer, SIGNAL(timeout()), this, SLOT(onLeftClicked()));
     setDelayLeftClick(pref->delay_left_click);
 }
 
@@ -464,6 +464,17 @@ bool TPlayerWindow::checkDragging(QMouseEvent* event) {
     return true;
 }
 
+void TPlayerWindow::onLeftClicked() {
+    logger()->debug("onLeftClicked");
+
+    if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
+        && video_window->underMouse()) {
+        player->dvdnavMouse();
+    } else {
+        emit leftClicked();
+    }
+}
+
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
     // logger()->debug("mouseReleaseEvent");
 
@@ -472,23 +483,18 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         if (checkDragging(event)) {
             if (event->modifiers() != Qt::NoModifier) {
-                logger()->debug("mouseReleaseEvent: ignoring modified"
-                       " event");
+                logger()->debug("mouseReleaseEvent: ignoring modified event");
             } else if (delay_left_click) {
                 if (double_clicked) {
                     double_clicked = false;
-                    //logger()->debug("mouseReleaseEvent: ignoring event"
-                    //       " after double click");
                 } else {
-                    // Delay left click until double click has a chance to arrive
+                    // Delay left click until double click has chance to arrive
                     left_click_timer->start();
-                    //logger()->debug("mouseReleaseEvent: delaying left click");
                 }
             } else {
                 double_clicked = false;
                 // Click right away
-                // logger()->debug("mouseReleaseEvent: emitting left click");
-                emit leftClicked();
+                onLeftClicked();
             }
         }
     } else if (event->button() == Qt::MidButton) {
