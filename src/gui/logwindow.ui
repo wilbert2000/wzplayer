@@ -44,6 +44,16 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="findLabel">
+       <property name="text">
+        <string>Find:</string>
+       </property>
+       <property name="buddy">
+        <cstring>findEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLineEdit" name="findEdit"/>
      </item>
      <item>
