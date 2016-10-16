@@ -117,9 +117,6 @@ signals:
     void xbutton1Clicked(); // first X button
     void xbutton2Clicked(); // second X button
 
-    void wheelUp();
-    void wheelDown();
-
     void draggingChanged(bool);
 
     void moveWindow(QPoint);

@@ -524,9 +524,9 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
 
     if (event->orientation() == Qt::Vertical) {
         if (event->delta() >= 0)
-            emit wheelUp();
+            player->wheelUp();
         else
-            emit wheelDown();
+            player->wheelDown();
     } else {
         logger()->debug("wheelEvent: ignoring horizontal event");
     }
