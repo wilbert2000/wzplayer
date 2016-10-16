@@ -1946,7 +1946,8 @@ void TPlayer::setStereoMode(int mode) {
 
 // Video filters
 
-void TPlayer::changeVF(const QString& filter, bool enable, const QVariant& option) {
+void TPlayer::changeVF(const QString& filter, bool enable,
+                       const QVariant& option) {
 
     if (pref->isMPV() && !mdat.video_hwdec) { \
         proc->changeVF(filter, enable, option); \
@@ -2134,14 +2135,16 @@ void TPlayer::changeStereo3d(const QString & in, const QString & out) {
         } else {
             // Remove previous filter
             if (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty()) {
-                proc->changeStereo3DFilter(false, mset.stereo3d_in, mset.stereo3d_out);
+                proc->changeStereo3DFilter(false, mset.stereo3d_in,
+                                           mset.stereo3d_out);
             }
 
             // New filter
             mset.stereo3d_in = in;
             mset.stereo3d_out = out;
             if (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty()) {
-                proc->changeStereo3DFilter(true, mset.stereo3d_in, mset.stereo3d_out);
+                proc->changeStereo3DFilter(true, mset.stereo3d_in,
+                                           mset.stereo3d_out);
             }
         }
     }
@@ -2396,7 +2399,8 @@ void TPlayer::decVolume() {
 }
 
 TAudioEqualizerList TPlayer::getAudioEqualizer() const {
-    return pref->global_audio_equalizer ? pref->audio_equalizer : mset.audio_equalizer;
+    return pref->global_audio_equalizer ? pref->audio_equalizer
+                                        : mset.audio_equalizer;
 }
 
 void TPlayer::setSubDelay(int delay) {
@@ -2579,7 +2583,8 @@ QString TPlayer::equalizerListToString(const Settings::TAudioEqualizerList& valu
     return s;
 }
 
-void TPlayer::setAudioEqualizer(const TAudioEqualizerList& values, bool restart) {
+void TPlayer::setAudioEqualizer(const TAudioEqualizerList& values,
+                                bool restart) {
 
     if (pref->global_audio_equalizer) {
         pref->audio_equalizer = values;
@@ -2718,7 +2723,8 @@ void TPlayer::onReceivedPosition(double sec) {
     int new_chapter_id = mdat.chapters.idForTime(sec);
     if (new_chapter_id != chapter_id) {
         mdat.chapters.setSelectedID(new_chapter_id);
-        logger()->debug("onReceivedPosition: emit chapterChanged(%1)", new_chapter_id);
+        logger()->debug("onReceivedPosition: emit chapterChanged(%1)",
+                        new_chapter_id);
         emit chapterChanged(new_chapter_id);
     }
 }
@@ -2739,23 +2745,22 @@ void TPlayer::changeDeinterlace(int ID) {
             mset.current_deinterlacer = ID;
             restartPlay();
         } else {
-            // MPV
-            // Remove previous filter
+            // MPV: remove previous filter
             switch (mset.current_deinterlacer) {
-                case TMediaSettings::L5:        proc->changeVF("l5", false); break;
-                case TMediaSettings::Yadif:        proc->changeVF("yadif", false); break;
-                case TMediaSettings::LB:        proc->changeVF("lb", false); break;
-                case TMediaSettings::Yadif_1:    proc->changeVF("yadif", false, "1"); break;
-                case TMediaSettings::Kerndeint:    proc->changeVF("kerndeint", false, "5"); break;
+                case TMediaSettings::L5: proc->changeVF("l5", false); break;
+                case TMediaSettings::Yadif: proc->changeVF("yadif", false); break;
+                case TMediaSettings::LB: proc->changeVF("lb", false); break;
+                case TMediaSettings::Yadif_1: proc->changeVF("yadif", false, "1"); break;
+                case TMediaSettings::Kerndeint: proc->changeVF("kerndeint", false, "5"); break;
             }
             mset.current_deinterlacer = ID;
-            // New filter
+            // Add new filter
             switch (mset.current_deinterlacer) {
-                case TMediaSettings::L5:        proc->changeVF("l5", true); break;
-                case TMediaSettings::Yadif:        proc->changeVF("yadif", true); break;
-                case TMediaSettings::LB:        proc->changeVF("lb", true); break;
-                case TMediaSettings::Yadif_1:    proc->changeVF("yadif", true, "1"); break;
-                case TMediaSettings::Kerndeint:    proc->changeVF("kerndeint", true, "5"); break;
+                case TMediaSettings::L5: proc->changeVF("l5", true); break;
+                case TMediaSettings::Yadif: proc->changeVF("yadif", true); break;
+                case TMediaSettings::LB: proc->changeVF("lb", true); break;
+                case TMediaSettings::Yadif_1: proc->changeVF("yadif", true, "1"); break;
+                case TMediaSettings::Kerndeint: proc->changeVF("kerndeint", true, "5"); break;
             }
         }
     }
@@ -2868,7 +2873,8 @@ void TPlayer::changeTitle(int title) {
     if (proc->isRunning()) {
         // Handle CDs with the chapter commands
         if (TMediaData::isCD(mdat.detected_type)) {
-            changeChapter(title - mdat.titles.firstID() + mdat.chapters.firstID());
+            changeChapter(title - mdat.titles.firstID()
+                          + mdat.chapters.firstID());
             return;
         }
         // Handle DVDNAV with title command
@@ -2940,7 +2946,6 @@ void TPlayer::changeProgram(int ID) {
         /*
         mset.current_video_id = TMediaSettings::NoneSelected;
         mset.current_audio_id = TMediaSettings::NoneSelected;
-
         */
     }
 }
@@ -3228,17 +3233,20 @@ void TPlayer::dvdnavSelect() {
     }
 }
 
-// Slot called by action dvdnav_mouse and Gui::TMainWindow when left mouse clicked
+// Slot called by action dvdnav_mouse and Gui::TPlayerWindow when left mouse
+// clicked
 void TPlayer::dvdnavMouse() {
     logger()->debug("dvdnavMouse");
 
-    if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
+    if (proc->isFullyStarted()
+        && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         if (_state == STATE_PAUSED) {
             play();
         }
         if (_state == STATE_PLAYING) {
             // Give a last update on the mouse position
-            QPoint pos = playerwindow->videoWindow()->mapFromGlobal(QCursor::pos());
+            QPoint pos = playerwindow->videoWindow()->mapFromGlobal(
+                             QCursor::pos());
             dvdnavUpdateMousePos(pos);
             // Click
             proc->discButtonPressed("mouse");
@@ -3286,13 +3294,15 @@ void TPlayer::displayBufferingEnded() {
 void TPlayer::onReceivedVideoOut() {
     logger()->debug("onReceivedVideoOut");
 
-    // w x h is output resolution selected by player with aspect and filters applied
+    // w x h is output resolution selected by player with aspect and filters
+    // applied
     playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
 
     // Normally, let the main window know the new video dimension, unless
     // restarting, then need to prevent the main window from resizing itself.
     if (_state != STATE_RESTARTING) {
-        emit videoOutResolutionChanged(mdat.video_out_width, mdat.video_out_height);
+        emit videoOutResolutionChanged(mdat.video_out_width,
+                                       mdat.video_out_height);
     }
 
     // If resize of main window is canceled adjust new video to the old size
@@ -3317,7 +3327,8 @@ bool TPlayer::setPreferredAudio() {
         if (selected_id >= 0) {
             int wanted_id = mdat.audios.findLangID(pref->audio_lang);
             if (wanted_id >= 0 && wanted_id != selected_id) {
-                logger()->debug("setPreferredAudio: selecting preferred audio with id %1", wanted_id);
+                logger()->debug("setPreferredAudio: selecting preferred audio"
+                                " with id %1", wanted_id);
                 changeAudioTrack(wanted_id);
                 return true;
             }
@@ -3363,7 +3374,8 @@ void TPlayer::selectPreferredSubtitles() {
     } else if (wanted_idx == mset.current_sub_idx) {
         logger()->debug("selectPreferredSubtitles: keeping selected subtitles");
     } else {
-        logger()->debug("selectPreferredSubtitles: selecting preferred subtitles");
+        logger()->debug("selectPreferredSubtitles: selecting preferred"
+                        " subtitles");
         changeSubtitle(wanted_idx, false);
     }
 }
@@ -3377,7 +3389,8 @@ void TPlayer::onSubtitlesChanged() {
     emit subtitlesChanged();
 
     if (pref->isMPlayer()) {
-        // MPlayer selected sub will not yet be updated, que the subtitle selection
+        // MPlayer selected sub will not yet be updated, que the subtitle
+        // selection
         logger()->debug("onSubtitlesChanged: posting selectPreferredSubtitles()");
         QTimer::singleShot(1500, this, SLOT(selectPreferredSubtitles()));
     } else {
