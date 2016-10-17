@@ -444,10 +444,7 @@ void TPlaylist::getFilesToPlay(QStringList& files) const {
 
 void TPlaylist::clear() {
 
-    if (thread) {
-        logger()->info("clear: add files thread still running, aborting it");
-        abortThread();
-    }
+    abortThread();
     playlistWidget->clr();
     filename = "";
     setWinTitle();
@@ -535,9 +532,12 @@ void TPlaylist::onThreadFinished() {
 
 void TPlaylist::abortThread() {
 
-    addFilesStartPlay = false;
-    restartThread = false;
-    thread->abort();
+    if (thread) {
+        logger()->debug("abortThread: aborting add files thread");
+        addFilesStartPlay = false;
+        restartThread = false;
+        thread->abort();
+    }
 }
 
 void TPlaylist::addFilesStartThread() {
@@ -686,10 +686,7 @@ void TPlaylist::playOrPause() {
 void TPlaylist::stop() {
     logger()->debug("stop: state " + player->stateToString());
 
-    if (thread) {
-        logger()->debug("stop: aborting add files thread");
-        abortThread();
-    }
+    abortThread();
     player->stop();
 }
 
@@ -1527,16 +1524,6 @@ void TPlaylist::hideEvent(QHideEvent*) {
 
 void TPlaylist::showEvent(QShowEvent*) {
     emit visibilityChanged(true);
-}
-
-void TPlaylist::closeEvent(QCloseEvent* e)  {
-
-    if (maybeSave()) {
-        saveSettings();
-        e->accept();
-    } else {
-        e->ignore();
-    }
 }
 
 void TPlaylist::openPlaylist(const QString& filename) {

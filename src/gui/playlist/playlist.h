@@ -103,6 +103,7 @@ public:
                   const QString& fileToPlay = "",
                   bool searchForItems = false);
     void getFilesToPlay(QStringList& files) const;
+    void abortThread();
 
     bool maybeSave();
     void loadSettings();
@@ -130,7 +131,6 @@ protected:
     virtual void dropEvent(QDropEvent*);
     virtual void hideEvent (QHideEvent*);
     virtual void showEvent (QShowEvent*);
-    virtual void closeEvent(QCloseEvent* e);
 
 private:
     Action::TMenu* add_menu;
@@ -196,7 +196,6 @@ private:
     void createActions();
     void createToolbar();
 
-    void abortThread();
     void addFilesStartThread();
 
     void setWinTitle();

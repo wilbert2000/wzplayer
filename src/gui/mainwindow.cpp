@@ -1080,6 +1080,7 @@ void TMainWindow::closeEvent(QCloseEvent* e)  {
     logger()->debug("closeEvent");
 
     if (playlist->maybeSave()) {
+        playlist->abortThread();
         player->close(Player::STATE_STOPPING);
         exitFullscreen();
         save();
