@@ -3069,9 +3069,12 @@ void TPlayer::changeRotate(int r) {
     }
 }
 
-// Slot called by player window to set zoom and pan (MPV only)
+// Slot called by player window to set zoom and pan
 void TPlayer::setZoomAndPan(double zoom, double pan_x, double pan_y) {
+
+    if (proc->isReady()) {
         proc->setZoomAndPan(zoom, pan_x, pan_y, pref->osd_level);
+    }
 }
 
 void TPlayer::getZoomFromPlayerWindow() {
