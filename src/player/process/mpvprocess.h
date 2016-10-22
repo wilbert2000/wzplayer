@@ -96,14 +96,21 @@ public:
     void takeScreenshot(ScreenshotType t, bool include_subtitles = false);
     void switchCapturing();
     void setTitle(int ID);
-    void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant());
-    void changeStereo3DFilter(bool enable, const QString& in, const QString& out);
+    void changeVF(const QString& filter,
+                  bool enable,
+                  const QVariant& option = QVariant());
+    void changeStereo3DFilter(bool enable,
+                              const QString& in,
+                              const QString& out);
 
     void discSetMousePos(int, int);
     void discButtonPressed(const QString& button_name);
 
     void setAspect(double aspect);
-    virtual void setZoomAndPan(double zoom, double pan_x, double pan_y, int osd_level);
+    virtual void setZoomAndPan(double zoom,
+                               double pan_x,
+                               double pan_y,
+                               int osd_level);
 
 #if PROGRAM_SWITCH
     void setTSProgram(int ID);

@@ -991,8 +991,10 @@ void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
     } else if (filter_name == "subs_on_screenshots") {
         // Ignore
     } else if (filter_name == "screenshot") {
-        if (!screenshot_dir.isEmpty() && isOptionAvailable("--screenshot-directory")) {
-            args << "--screenshot-directory=" + QDir::toNativeSeparators(screenshot_dir);
+        if (!screenshot_dir.isEmpty()
+            && isOptionAvailable("--screenshot-directory")) {
+            args << "--screenshot-directory="
+                    + QDir::toNativeSeparators(screenshot_dir);
         }
     } else if (filter_name == "rotate") {
         args << "--vf-add=rotate=" + option;
@@ -1102,7 +1104,10 @@ void TMPVProcess::setSubtitlesVisibility(bool b) {
     writeToPlayer(QString("set sub-visibility %1").arg(b ? "yes" : "no"));
 }
 
-void TMPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
+void TMPVProcess::seekPlayerTime(double secs,
+                                 int mode,
+                                 bool precise,
+                                 bool currently_paused) {
     Q_UNUSED(currently_paused)
 
     QString s = "seek " + QString::number(secs) + " ";
@@ -1132,7 +1137,8 @@ void TMPVProcess::frameBackStep() {
 }
 
 void TMPVProcess::showOSDText(const QString& text, int duration, int level) {
-    QString str = QString("show_text \"%1\" %2 %3").arg(text).arg(duration).arg(level);
+    QString str = QString("show_text \"%1\" %2 %3")
+                  .arg(text).arg(duration).arg(level);
     writeToPlayer(str);
 }
 
@@ -1218,6 +1224,7 @@ void TMPVProcess::enableKaraoke(bool) {
 }
 
 void TMPVProcess::enableExtrastereo(bool b) {
+
     if (b)
         writeToPlayer("af add lavfi=[extrastereo]");
     else
@@ -1225,7 +1232,12 @@ void TMPVProcess::enableExtrastereo(bool b) {
  }
 
 void TMPVProcess::enableVolnorm(bool b, const QString& option) {
-    if (b) writeToPlayer("af add drc=" + option); else writeToPlayer("af del drc=" + option);
+
+    if (b) {
+        writeToPlayer("af add drc=" + option);
+    } else {
+        writeToPlayer("af del drc=" + option);
+    }
 }
 
 void TMPVProcess::setAudioEqualizer(const QString& values) {
@@ -1257,7 +1269,9 @@ void TMPVProcess::setLoop(int v) {
 }
 
 void TMPVProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
-    writeToPlayer(QString("screenshot %1 %2").arg(include_subtitles ? "subtitles" : "video").arg(t == Single ? "single" : "each-frame"));
+    writeToPlayer(QString("screenshot %1 %2")
+                  .arg(include_subtitles ? "subtitles" : "video")
+                  .arg(t == Single ? "single" : "each-frame"));
 }
 
 void TMPVProcess::switchCapturing() {
@@ -1346,7 +1360,9 @@ void TMPVProcess::setOSDScale(double value) {
     writeToPlayer("set osd-scale " + QString::number(value));
 }
 
-void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& option) {
+void TMPVProcess::changeVF(const QString& filter,
+                           bool enable,
+                           const QVariant& option) {
     logger()->debug("changeVF: " + filter + QString::number(enable)
                   + option.toString());
 
@@ -1423,35 +1439,45 @@ void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& o
     }
 
     if (!f.isEmpty()) {
-        writeToPlayer(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(f));
+        writeToPlayer(QString("vf %1 \"%2\"")
+                      .arg(enable ? "add" : "del").arg(f));
     }
 }
 
-void TMPVProcess::changeStereo3DFilter(bool enable, const QString& in, const QString& out) {
+void TMPVProcess::changeStereo3DFilter(bool enable,
+                                       const QString& in,
+                                       const QString& out) {
     QString filter = "stereo3d=" + in + ":" + out;
-    writeToPlayer(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
+    writeToPlayer(QString("vf %1 \"%2\"")
+                  .arg(enable ? "add" : "del").arg(filter));
 }
 
-void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles, const QString&) {
+void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles,
+                               const QString&) {
 
     using namespace Settings;
     QString font = styles.fontname;
     //arg << "--sub-text-font=" + font.replace(" ", "");
     args << "--sub-text-font=" + font;
-    args << "--sub-text-color=#" + TColorUtils::colorToRRGGBB(styles.primarycolor);
+    args << "--sub-text-color=#"
+            + TColorUtils::colorToRRGGBB(styles.primarycolor);
 
     if (styles.borderstyle == TAssStyles::Outline) {
-        args << "--sub-text-shadow-color=#" + TColorUtils::colorToRRGGBB(styles.backcolor);
+        args << "--sub-text-shadow-color=#"
+                + TColorUtils::colorToRRGGBB(styles.backcolor);
     } else {
-        args << "--sub-text-back-color=#" + TColorUtils::colorToRRGGBB(styles.outlinecolor);
+        args << "--sub-text-back-color=#"
+                + TColorUtils::colorToRRGGBB(styles.outlinecolor);
     }
-    args << "--sub-text-border-color=#" + TColorUtils::colorToRRGGBB(styles.outlinecolor);
+    args << "--sub-text-border-color=#"
+            + TColorUtils::colorToRRGGBB(styles.outlinecolor);
 
     args << "--sub-text-border-size=" + QString::number(styles.outline * 2.5);
     args << "--sub-text-shadow-offset=" + QString::number(styles.shadow * 2.5);
 
     if (isOptionAvailable("--sub-text-font-size")) {
-        args << "--sub-text-font-size=" + QString::number(styles.fontsize * 2.5);
+        args << "--sub-text-font-size="
+                + QString::number(styles.fontsize * 2.5);
     }
     if (isOptionAvailable("--sub-text-bold")) {
         args << QString("--sub-text-bold=%1").arg(styles.bold ? "yes" : "no");
