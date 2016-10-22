@@ -47,6 +47,7 @@ public:
     explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
 	virtual ~TPlayerProcess() {}
 
+    bool isRunning() const { return state() == QProcess::Running; }
     bool isFullyStarted() const {
         return isRunning() && notified_player_is_running;
     }

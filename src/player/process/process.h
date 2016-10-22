@@ -50,7 +50,6 @@ public:
 	QStringList arguments(); 	//!< Return the list of arguments
 
 	void start();				//!< Start the process
-	bool isRunning() const;		//!< Return true if the process is running
 
 	static QStringList splitArguments(const QString& args);
 
