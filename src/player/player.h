@@ -102,6 +102,8 @@ public:
 
     void dvdnavUpdateMousePos(const QPoint& pos);
 
+    void setZoomAndPan(double zoom, double pan_x, double pan_y);
+
 public slots:
     void loadSub(const QString& sub);
     void unloadSub();
@@ -303,7 +305,6 @@ public slots:
     void nextWheelFunction();
 
     void setZoom(double); // Zoom on playerwindow
-    void setZoomAndPan(double zoom, double pan_x, double pan_y);
 
     void changeRotate(int r);
 
