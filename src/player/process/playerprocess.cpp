@@ -59,7 +59,7 @@ void TPlayerProcess::writeToStdin(const QString& text, bool log) {
         logger()->debug("writeToStdin: %1", text);
     }
 
-    if (isRunning()) {
+    if (isRunning() && !received_end_of_file) {
 
 #ifdef Q_OS_WIN
         write(text.toUtf8() + "\n");
@@ -68,7 +68,7 @@ void TPlayerProcess::writeToStdin(const QString& text, bool log) {
 #endif
 
     } else {
-        logger()->warn("writeToStdin: process not in running state");
+        logger()->warn("writeToStdin: process not running");
     }
 }
 
