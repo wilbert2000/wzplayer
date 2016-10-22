@@ -325,7 +325,8 @@ void TPlayerWindow::updateVideoWindow() {
     video_window->setGeometry(vwin);
 
     // Pass zoom and pan to the player.
-    // MPV wants factor relative to whole scaled video
+    // MPV wants pan factor relative to whole scaled video
+    // MPlayer ignores pan
     double pan_x = (double) pan.x() / vsize.width();
     double pan_y = (double) pan.y() / vsize.height();
     player->setZoomAndPan(zoom, pan_x, pan_y);
