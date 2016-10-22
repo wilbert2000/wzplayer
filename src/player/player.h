@@ -90,6 +90,8 @@ public:
     // Stop player if running and save MediaInfo
     void close(TState next_state);
 
+    void restart();
+
     void addForcedTitle(const QString& file, const QString& title) {
         forced_titles[file] = title;
     }
@@ -124,9 +126,6 @@ public slots:
     void screenshot();    //!< Take a screenshot of current frame
     void screenshots();    //!< Start/stop taking screenshot of each frame
     void switchCapturing();
-
-    //! Public restart, for the GUI.
-    void restart();
 
     //! Reopens the file (no restart)
     void reload();
