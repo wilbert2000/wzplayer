@@ -112,8 +112,8 @@ bool TPlayerProcess::startPlayer() {
 
 // Slot called when the process is finished
 void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    logger()->debug("onFinished: exitCode: %1, override:"
-                    " %2, status: %3", exitCode, exit_code_override, exitStatus);
+    logger()->debug("onFinished: exitCode: %1, override: %2, status: %3",
+                    exitCode, exit_code_override, exitStatus);
 
     if (exit_code_override) {
         exitCode = exit_code_override;
@@ -225,7 +225,8 @@ bool TPlayerProcess::waitForAnswers() {
         if (waiting_for_answers_safe_guard > 0)
             return true;
 
-        logger()->warn("waitForAnswers: did not receive answers in time. Stopped waitng.");
+        logger()->warn("waitForAnswers: did not receive answers in time."
+                       " Stopped waitng.");
         waiting_for_answers = 0;
         waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
     }
