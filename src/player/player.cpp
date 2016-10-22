@@ -158,7 +158,7 @@ TPlayer::~TPlayer() {
 }
 
 void TPlayer::onProcessError(QProcess::ProcessError error) {
-    logger()->debug("onProcessError: %1", error);
+    logger()->error("onProcessError: %1", error);
 
     // Restore normal window background
     playerwindow->restoreNormalWindow(false);
@@ -3071,7 +3071,7 @@ void TPlayer::changeRotate(int r) {
 
 // Slot called by player window to set zoom and pan (MPV only)
 void TPlayer::setZoomAndPan(double zoom, double pan_x, double pan_y) {
-    proc->setZoomAndPan(zoom, pan_x, pan_y, pref->osd_level);
+        proc->setZoomAndPan(zoom, pan_x, pan_y, pref->osd_level);
 }
 
 void TPlayer::getZoomFromPlayerWindow() {
