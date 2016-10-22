@@ -45,9 +45,9 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
     quit_send(false),
     line_count(0) {
 
-	//qRegisterMetaType<TSubTracks>("TSubTracks");
-	//qRegisterMetaType<Maps::TTracks>("Tracks");
-	//qRegisterMetaType<Chapters>("Chapters");
+    //qRegisterMetaType<TSubTracks>("TSubTracks");
+    //qRegisterMetaType<Maps::TTracks>("Tracks");
+    //qRegisterMetaType<Chapters>("Chapters");
 
     connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(onFinished(int,QProcess::ExitStatus)));
@@ -59,17 +59,17 @@ void TPlayerProcess::writeToStdin(const QString& text, bool log) {
         logger()->debug("writeToStdin: %1", text);
     }
 
-	if (isRunning()) {
+    if (isRunning()) {
 
 #ifdef Q_OS_WIN
-		write(text.toUtf8() + "\n");
+        write(text.toUtf8() + "\n");
 #else
-		write(text.toLocal8Bit() + "\n");
+        write(text.toLocal8Bit() + "\n");
 #endif
 
-	} else {
+    } else {
         logger()->warn("writeToStdin: process not in running state");
-	}
+    }
 }
 
 TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
@@ -91,23 +91,23 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
 
 bool TPlayerProcess::startPlayer() {
 
-	exit_code_override = 0;
-	TExitMsg::setExitCodeMsg("");
+    exit_code_override = 0;
+    TExitMsg::setExitCodeMsg("");
 
-	notified_player_is_running = false;
+    notified_player_is_running = false;
 
-	waiting_for_answers = 0;
-	waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
+    waiting_for_answers = 0;
+    waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
 
     paused = false;
 
-	received_end_of_file = false;
-	quit_send = false;
+    received_end_of_file = false;
+    quit_send = false;
 
-	// Start the player process
-	start();
-	// and wait for it to come up
-	return waitForStarted();
+    // Start the player process
+    start();
+    // and wait for it to come up
+    return waitForStarted();
 }
 
 // Slot called when the process is finished
@@ -129,16 +129,16 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 void TPlayerProcess::playingStarted() {
     logger()->debug("playingStarted");
 
-	notified_player_is_running = true;
+    notified_player_is_running = true;
 
-	emit receivedVideoOut();
-	emit receivedVideoTracks();
-	emit receivedAudioTracks();
-	emit receivedSubtitleTracks();
-	emit receivedTitleTracks();
+    emit receivedVideoOut();
+    emit receivedVideoTracks();
+    emit receivedAudioTracks();
+    emit receivedSubtitleTracks();
+    emit receivedTitleTracks();
 
     logger()->debug("playingStarted: emit playerFullyLoaded()");
-	emit playerFullyLoaded();
+    emit playerFullyLoaded();
 }
 
 void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
@@ -168,11 +168,11 @@ void TPlayerProcess::notifyDuration(double duration) {
                         QString::number(duration));
         md->duration = duration;
         emit durationChanged(md->duration);
-	}
+    }
 }
 
 void TPlayerProcess::checkTime(double sec) {
-	Q_UNUSED(sec)
+    Q_UNUSED(sec)
 }
 
  // 2^33 / 90 kHz
@@ -180,27 +180,27 @@ static const double ts_rollover = 8589934592.0 / 90000.0;
 
 double TPlayerProcess::guiTimeToPlayerTime(double sec) {
 
-	sec += md->start_sec;
+    sec += md->start_sec;
 
-	// Handle MPEG-TS PTS timestamp rollover
-	if (md->mpegts && sec >= ts_rollover) {
-		sec -= ts_rollover;
-	}
+    // Handle MPEG-TS PTS timestamp rollover
+    if (md->mpegts && sec >= ts_rollover) {
+        sec -= ts_rollover;
+    }
 
-	return sec;
+    return sec;
 }
 
 double TPlayerProcess::playerTimeToGuiTime(double sec) {
 
-	// Substract start time grounding start time at 0
-	sec -= md->start_sec;
+    // Substract start time grounding start time at 0
+    sec -= md->start_sec;
 
-	// Handle MPEG-TS PTS timestamp rollover
-	if (md->mpegts && sec < 0) {
-		sec += ts_rollover;
-	}
+    // Handle MPEG-TS PTS timestamp rollover
+    if (md->mpegts && sec < 0) {
+        sec += ts_rollover;
+    }
 
-	return sec;
+    return sec;
 }
 
 void TPlayerProcess::notifyTime(double time_sec) {
@@ -220,17 +220,17 @@ void TPlayerProcess::notifyTime(double time_sec) {
 // TODO: move to TMPVProcess
 bool TPlayerProcess::waitForAnswers() {
 
-	if (waiting_for_answers > 0) {
-		waiting_for_answers_safe_guard--;
-		if (waiting_for_answers_safe_guard > 0)
-			return true;
+    if (waiting_for_answers > 0) {
+        waiting_for_answers_safe_guard--;
+        if (waiting_for_answers_safe_guard > 0)
+            return true;
 
         logger()->warn("waitForAnswers: did not receive answers in time. Stopped waitng.");
-		waiting_for_answers = 0;
-		waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
-	}
+        waiting_for_answers = 0;
+        waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
+    }
 
-	return false;
+    return false;
 }
 
 void TPlayerProcess::quit(int exit_code) {
@@ -244,9 +244,9 @@ void TPlayerProcess::quit(int exit_code) {
 
 bool TPlayerProcess::parseLine(QString& line) {
 
-	static QRegExp rx_vo("^VO: \\[([^\\]]*)\\] (\\d+)x(\\d+)( => (\\d+)x(\\d+))?");
-	static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
-	static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
+    static QRegExp rx_vo("^VO: \\[([^\\]]*)\\] (\\d+)x(\\d+)( => (\\d+)x(\\d+))?");
+    static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
+    static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
     logger()->debug("parseLine: '%1'", line);
 
@@ -255,58 +255,58 @@ bool TPlayerProcess::parseLine(QString& line) {
         return true;
     }
 
-	// VO
-	if (rx_vo.indexIn(line) >= 0) {
-		return parseVO(rx_vo.cap(1),
-					   rx_vo.cap(2).toInt(), rx_vo.cap(3).toInt(),
-					   rx_vo.cap(5).toInt(), rx_vo.cap(6).toInt());
-	}
+    // VO
+    if (rx_vo.indexIn(line) >= 0) {
+        return parseVO(rx_vo.cap(1),
+                       rx_vo.cap(2).toInt(), rx_vo.cap(3).toInt(),
+                       rx_vo.cap(5).toInt(), rx_vo.cap(6).toInt());
+    }
 
-	if (rx_no_disk.indexIn(line) >= 0) {
+    if (rx_no_disk.indexIn(line) >= 0) {
         logger()->warn("parseLine: no disc in device");
-		quit(TExitMsg::ERR_NO_DISC);
-		return true;
-	}
+        quit(TExitMsg::ERR_NO_DISC);
+        return true;
+    }
 
-	// End of file
-	if (rx_eof.indexIn(line) >= 0)  {
+    // End of file
+    if (rx_eof.indexIn(line) >= 0)  {
         logger()->debug("parseLine: detected end of file");
-		received_end_of_file = true;
-		return true;
-	}
+        received_end_of_file = true;
+        return true;
+    }
 
-	// Like to be parsed a little longer
-	return false;
+    // Like to be parsed a little longer
+    return false;
 }
 
 bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) {
 
-	md->vo = vo;
-	md->video_width = sw;
-	md->video_height = sh;
-	if (dw == 0) {
-		md->video_out_width = sw;
-		md->video_out_height = sh;
-	} else {
-		md->video_out_width = dw;
-		md->video_out_height = dh;
-	}
+    md->vo = vo;
+    md->video_width = sw;
+    md->video_height = sh;
+    if (dw == 0) {
+        md->video_out_width = sw;
+        md->video_out_height = sh;
+    } else {
+        md->video_out_width = dw;
+        md->video_out_height = dh;
+    }
 
     logger()->debug(QString("parseVO: VO '%1' %2 x %3 => %4 x %5")
                     .arg(md->vo).arg(md->video_width).arg(md->video_height)
                     .arg(md->video_out_width).arg(md->video_out_height));
 
-	if (notified_player_is_running) {
-		emit receivedVideoOut();
-	}
+    if (notified_player_is_running) {
+        emit receivedVideoOut();
+    }
 
-	return true;
+    return true;
 }
 
 bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& value) {
 
-	if (name == "ASPECT") {
-		md->video_aspect = value;
+    if (name == "ASPECT") {
+        md->video_aspect = value;
         logger()->debug("parseVideoProperty: video aspect ratio set to '%1'",
                         md->video_aspect);
         return true;
@@ -325,85 +325,85 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
             emit videoBitRateChanged(md->video_bitrate);
         }
         return true;
-	}
-	if (name == "FORMAT") {
-		md->video_format = value;
+    }
+    if (name == "FORMAT") {
+        md->video_format = value;
         logger()->debug("parseVideoProperty: video_format set to '%1'",
                         md->video_format);
-		return true;
-	}
-	if (name == "CODEC") {
-		md->video_codec = value;
+        return true;
+    }
+    if (name == "CODEC") {
+        md->video_codec = value;
         logger()->debug("parseVideoProperty: video_codec set to '%1'",
                         md->video_codec);
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& value) {
 
-	if (name == "BITRATE") {
-		md->audio_bitrate = value.toInt();
+    if (name == "BITRATE") {
+        md->audio_bitrate = value.toInt();
         logger()->debug("parseAudioProperty: audio_bitrate set to %1",
                         md->audio_bitrate);
         if (notified_player_is_running) {
             emit audioBitRateChanged(md->audio_bitrate);
         }
-		return true;
-	}
-	if (name == "FORMAT") {
-		md->audio_format = value;
+        return true;
+    }
+    if (name == "FORMAT") {
+        md->audio_format = value;
         logger()->debug("parseAudioProperty: audio_format set to '%1'",
                         md->audio_format);
-		return true;
-	}
-	if (name == "RATE") {
-		md->audio_rate = value.toInt();
+        return true;
+    }
+    if (name == "RATE") {
+        md->audio_rate = value.toInt();
         logger()->debug("parseAudioProperty: audio_rate set to %1",
                         md->audio_rate);
-		return true;
-	}
-	if (name == "NCH") {
-		md->audio_nch = value.toInt();
+        return true;
+    }
+    if (name == "NCH") {
+        md->audio_nch = value.toInt();
         logger()->debug("parseAudioProperty: audio_nch set to %1",
                         md->audio_nch);
-		return true;
-	}
-	if (name == "CODEC") {
-		md->audio_codec = value;
+        return true;
+    }
+    if (name == "CODEC") {
+        md->audio_codec = value;
         logger()->debug("parseAudioProperty: audio_codec set to '%1'",
                         md->audio_codec);
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 bool TPlayerProcess::parseAngle(const QString& value) {
 
-	static QRegExp rx_angles("(\\d+)/(\\d+)");
+    static QRegExp rx_angles("(\\d+)/(\\d+)");
 
-	if (value.startsWith("$")) {
-		return false;
-	}
-	if (rx_angles.indexIn(value) >= 0) {
-		md->angle = rx_angles.cap(1).toInt();
-		md->angles = rx_angles.cap(2).toInt();
-	} else {
-		md->angle = 0;
-		md->angles = 0;
-	}
+    if (value.startsWith("$")) {
+        return false;
+    }
+    if (rx_angles.indexIn(value) >= 0) {
+        md->angle = rx_angles.cap(1).toInt();
+        md->angles = rx_angles.cap(2).toInt();
+    } else {
+        md->angle = 0;
+        md->angles = 0;
+    }
     logger()->debug("parseAngle: selected angle %1/%2",
-		   md->angle, md->angles);
+           md->angle, md->angles);
 
-	if (notified_player_is_running) {
+    if (notified_player_is_running) {
         logger()->debug("parseAngle: emit receivedAngles()");
-		emit receivedAngles();
-	}
+        emit receivedAngles();
+    }
 
-	return true;
+    return true;
 }
 
 bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
@@ -422,34 +422,34 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
         }
         return true;
     }
-	if (name == "LENGTH") {
-		notifyDuration(value.toDouble());
-		return true;
-	}
-	if (name == "DEMUXER") {
-		md->demuxer = value;
+    if (name == "LENGTH") {
+        notifyDuration(value.toDouble());
+        return true;
+    }
+    if (name == "DEMUXER") {
+        md->demuxer = value;
         logger()->debug("parseProperty: demuxer set to '%1'", md->demuxer);
-		// TODO: mpeg TS detection
-		if (md->demuxer == "mpegts") {
-			md->mpegts = true;
+        // TODO: mpeg TS detection
+        if (md->demuxer == "mpegts") {
+            md->mpegts = true;
             logger()->debug("parseProperty: detected mpegts");
-		}
-		return true;
-	}
-	if (name == "ANGLE_EX") {
-		return parseAngle(value);
-	}
+        }
+        return true;
+    }
+    if (name == "ANGLE_EX") {
+        return parseAngle(value);
+    }
 
-	return false;
+    return false;
 }
 
 bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
 
-	name = name.trimmed();
-	value = value.trimmed();
-	md->meta_data[name] = value;
+    name = name.trimmed();
+    value = value.trimmed();
+    md->meta_data[name] = value;
     logger()->debug("parseMetaDataProperty: '%1' set to '%2'", name, value);
-	return true;
+    return true;
 }
 
 void TPlayerProcess::setImageDuration(int duration) {
@@ -499,30 +499,30 @@ void TPlayerProcess::setImageDuration(int duration) {
 
 void TPlayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
 
-	// Convert time to player time if time is absolute position in secs
-	if (mode == 2) {
-		secs = guiTimeToPlayerTime(secs);
-	}
-	seekPlayerTime(secs, mode, precise, currently_paused);
+    // Convert time to player time if time is absolute position in secs
+    if (mode == 2) {
+        secs = guiTimeToPlayerTime(secs);
+    }
+    seekPlayerTime(secs, mode, precise, currently_paused);
 }
 
 void TPlayerProcess::setCaptureDirectory(const QString& dir) {
 
-	capture_filename = "";
-	if (!dir.isEmpty()) {
-		QFileInfo fi(dir);
-		if (fi.isDir() && fi.isWritable()) {
-			// Find a unique filename
-			QString prefix = "capture";
-			for (int n = 1; ; n++) {
-				QString c = QDir::toNativeSeparators(QString("%1/%2_%3.dump").arg(dir).arg(prefix).arg(n, 4, 10, QChar('0')));
-				if (!QFile::exists(c)) {
-					capture_filename = c;
-					return;
-				}
-			}
-		}
-	}
+    capture_filename = "";
+    if (!dir.isEmpty()) {
+        QFileInfo fi(dir);
+        if (fi.isDir() && fi.isWritable()) {
+            // Find a unique filename
+            QString prefix = "capture";
+            for (int n = 1; ; n++) {
+                QString c = QDir::toNativeSeparators(QString("%1/%2_%3.dump").arg(dir).arg(prefix).arg(n, 4, 10, QChar('0')));
+                if (!QFile::exists(c)) {
+                    capture_filename = c;
+                    return;
+                }
+            }
+        }
+    }
 }
 
 } // namespace Process
