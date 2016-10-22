@@ -250,7 +250,7 @@ void TPlayer::clearOSD() {
 
 void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
 
-    if (proc->isFullyStarted()
+    if (proc->isReady()
         && level <= pref->osd_level
         && mdat.hasVideo()) {
         proc->showOSDText(text, duration, level);
@@ -559,10 +559,10 @@ void TPlayer::restartPlay() {
 void TPlayer::restart() {
     logger()->debug("restart");
 
-    if (proc->isRunning()) {
+    if (proc->isReady()) {
         restartPlay();
     } else {
-        logger()->debug("restart: player is not running");
+        logger()->debug("restart: player not ready");
     }
 }
 
@@ -1649,10 +1649,10 @@ void TPlayer::seekCmd(double secs, int mode) {
         }
     }
 
-    if (proc->isFullyStarted()) {
+    if (proc->isReady()) {
         proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
     } else {
-        logger()->warn("seekCmd: ignored seek, player not yet fully loaded");
+        logger()->warn("seekCmd: ignored seek, player not ready");
     }
 }
 
@@ -3185,37 +3185,37 @@ void TPlayer::changeClosedCaptionChannel(int c) {
 // dvdnav buttons
 void TPlayer::dvdnavUp() {
     logger()->debug("dvdnavUp");
-    if (proc->isFullyStarted())
+    if (proc->isReady())
         proc->discButtonPressed("up");
 }
 
 void TPlayer::dvdnavDown() {
     logger()->debug("dvdnavDown");
-    if (proc->isFullyStarted())
+    if (proc->isReady())
         proc->discButtonPressed("down");
 }
 
 void TPlayer::dvdnavLeft() {
     logger()->debug("dvdnavLeft");
-    if (proc->isFullyStarted())
+    if (proc->isReady())
         proc->discButtonPressed("left");
 }
 
 void TPlayer::dvdnavRight() {
     logger()->debug("dvdnavRight");
-    if (proc->isFullyStarted())
+    if (proc->isReady())
         proc->discButtonPressed("right");
 }
 
 void TPlayer::dvdnavMenu() {
     logger()->debug("dvdnavMenu");
-    if (proc->isFullyStarted())
+    if (proc->isReady())
         proc->discButtonPressed("menu");
 }
 
 void TPlayer::dvdnavPrev() {
     logger()->debug("dvdnavPrev");
-    if (proc->isFullyStarted())
+    if (proc->isReady())
         proc->discButtonPressed("prev");
 }
 
@@ -3223,7 +3223,7 @@ void TPlayer::dvdnavPrev() {
 void TPlayer::dvdnavSelect() {
     logger()->debug("dvdnavSelect");
 
-    if (proc->isFullyStarted() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
+    if (proc->isReady() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         if (_state == STATE_PAUSED) {
             play();
         }
@@ -3238,7 +3238,7 @@ void TPlayer::dvdnavSelect() {
 void TPlayer::dvdnavMouse() {
     logger()->debug("dvdnavMouse");
 
-    if (proc->isFullyStarted()
+    if (proc->isReady()
         && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         if (_state == STATE_PAUSED) {
             play();
@@ -3257,7 +3257,7 @@ void TPlayer::dvdnavMouse() {
 // Slot called by playerwindow to pass mouse move local to video
 void TPlayer::dvdnavUpdateMousePos(const QPoint& pos) {
 
-    if (proc->isFullyStarted()
+    if (proc->isReady()
         && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         // MPlayer won't act if paused. Play if menu not animated.
         if (_state == STATE_PAUSED && mdat.duration == 0) {

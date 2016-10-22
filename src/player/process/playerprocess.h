@@ -48,8 +48,10 @@ public:
 	virtual ~TPlayerProcess() {}
 
     bool isRunning() const { return state() == QProcess::Running; }
-    bool isFullyStarted() const {
-        return isRunning() && notified_player_is_running;
+    bool isReady() const {
+        return notified_player_is_running
+               && !received_end_of_file
+               && isRunning();
     }
 
 	virtual bool startPlayer();
