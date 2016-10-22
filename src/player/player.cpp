@@ -1616,7 +1616,7 @@ end_video_filters:
 
     if (!proc->startPlayer()) {
         // Error reported by onProcessError()
-        logger()->warn("startPlayer: player process didn't start");
+        logger()->error("startPlayer: player process didn't start");
     }
 } //startPlayer()
 
