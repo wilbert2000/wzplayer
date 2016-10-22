@@ -138,7 +138,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
         logger()->debug("parseProperty: requesting track info for %1 tracks",
                         tracks);
         for (int n = 0; n < tracks; n++) {
-            writeToStdin(QString("print_text \"TRACK_INFO_%1="
+            writeToPlayer(QString("print_text \"TRACK_INFO_%1="
                 "${track-list/%1/type} "
                 "${track-list/%1/id} "
                 "${track-list/%1/selected} "
@@ -154,7 +154,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
         logger()->debug("parseProperty: creating %1 titles", n_titles);
         for (int idx = 0; idx < n_titles; idx++) {
             md->titles.addID(idx + 1);
-            writeToStdin(QString("print_text \"INFO_TITLE_LENGTH=%1"
+            writeToPlayer(QString("print_text \"INFO_TITLE_LENGTH=%1"
                                  " ${=disc-title-list/%1/length:-1}\"")
                          .arg(idx));
         }
@@ -181,7 +181,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
         logger()->debug("parseProperty: requesting start and titel of %1"
                         " chapter(s)", n_chapters);
         for (int n = 0; n < n_chapters; n++) {
-            writeToStdin(QString("print_text \"CHAPTER_%1="
+            writeToPlayer(QString("print_text \"CHAPTER_%1="
                                  "${=chapter-list/%1/time:}"
                                  " '${chapter-list/%1/title:}'\"").arg(n));
         }
@@ -234,12 +234,12 @@ bool TMPVProcess::parseChapter(int id, double start, QString title) {
 }
 
 void TMPVProcess::requestChapterInfo() {
-    writeToStdin("print_text \"INFO_CHAPTERS=${=chapters:}\"");
+    writeToPlayer("print_text \"INFO_CHAPTERS=${=chapters:}\"");
 }
 
 void TMPVProcess::fixTitle() {
 
-    // Note: getting prop with writeToStdin("print_text XXX=${=disc-title:}");
+    // Note: getting prop with writeToPlayer("print_text XXX=${=disc-title:}");
     // valid by now.
 
     int title = md->disc.title;
@@ -428,8 +428,8 @@ void TMPVProcess::playingStarted() {
 }
 
 void TMPVProcess::requestBitrateInfo() {
-    writeToStdin("print_text VIDEO_BITRATE=${=video-bitrate}");
-    writeToStdin("print_text AUDIO_BITRATE=${=audio-bitrate}");
+    writeToPlayer("print_text VIDEO_BITRATE=${=video-bitrate}");
+    writeToPlayer("print_text AUDIO_BITRATE=${=audio-bitrate}");
 }
 
 bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
@@ -1057,31 +1057,31 @@ void TMPVProcess::addAF(const QString& filter_name, const QVariant& value) {
 }
 
 void TMPVProcess::setVolume(int v) {
-    writeToStdin("set volume " + QString::number(v));
+    writeToPlayer("set volume " + QString::number(v));
 }
 
 void TMPVProcess::setOSDLevel(int level) {
-    writeToStdin("osd " + QString::number(level));
+    writeToPlayer("osd " + QString::number(level));
 }
 
 void TMPVProcess::setAudio(int ID) {
-    writeToStdin("set aid " + QString::number(ID));
+    writeToPlayer("set aid " + QString::number(ID));
 }
 
 void TMPVProcess::setVideo(int ID) {
-    writeToStdin("set vid " + QString::number(ID));
+    writeToPlayer("set vid " + QString::number(ID));
 }
 
 void TMPVProcess::setSubtitle(SubData::Type type, int ID) {
 
-    writeToStdin("set sid " + QString::number(ID));
+    writeToPlayer("set sid " + QString::number(ID));
     md->subs.setSelected(type, ID);
     emit receivedSubtitleTrackChanged();
 }
 
 void TMPVProcess::disableSubtitles() {
 
-    writeToStdin("set sid no");
+    writeToPlayer("set sid no");
     md->subs.clearSelected();
     emit receivedSubtitleTrackChanged();
 }
@@ -1089,17 +1089,17 @@ void TMPVProcess::disableSubtitles() {
 void TMPVProcess::setSecondarySubtitle(SubData::Type type, int ID) {
 
     md->subs.setSelectedSecondary(type, ID);
-    writeToStdin("set secondary-sid " + QString::number(ID));
+    writeToPlayer("set secondary-sid " + QString::number(ID));
 }
 
 void TMPVProcess::disableSecondarySubtitles() {
 
     md->subs.setSelectedSecondary(SubData::None, -1);
-    writeToStdin("set secondary-sid no");
+    writeToPlayer("set secondary-sid no");
 }
 
 void TMPVProcess::setSubtitlesVisibility(bool b) {
-    writeToStdin(QString("set sub-visibility %1").arg(b ? "yes" : "no"));
+    writeToPlayer(QString("set sub-visibility %1").arg(b ? "yes" : "no"));
 }
 
 void TMPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool currently_paused) {
@@ -1112,105 +1112,105 @@ void TMPVProcess::seekPlayerTime(double secs, int mode, bool precise, bool curre
         case 2 : s += "absolute "; break;
     }
     if (precise) s += "exact"; else s += "keyframes";
-    writeToStdin(s);
+    writeToPlayer(s);
 }
 
 void TMPVProcess::mute(bool b) {
-    writeToStdin(QString("set mute %1").arg(b ? "yes" : "no"));
+    writeToPlayer(QString("set mute %1").arg(b ? "yes" : "no"));
 }
 
 void TMPVProcess::setPause(bool b) {
-    writeToStdin(QString("set pause %1").arg(b ? "yes" : "no"));
+    writeToPlayer(QString("set pause %1").arg(b ? "yes" : "no"));
 }
 
 void TMPVProcess::frameStep() {
-    writeToStdin("frame_step");
+    writeToPlayer("frame_step");
 }
 
 void TMPVProcess::frameBackStep() {
-    writeToStdin("frame_back_step");
+    writeToPlayer("frame_back_step");
 }
 
 void TMPVProcess::showOSDText(const QString& text, int duration, int level) {
     QString str = QString("show_text \"%1\" %2 %3").arg(text).arg(duration).arg(level);
-    writeToStdin(str);
+    writeToPlayer(str);
 }
 
 void TMPVProcess::showFilenameOnOSD() {
-    writeToStdin("show_text \"${filename}\" 2000 0");
+    writeToPlayer("show_text \"${filename}\" 2000 0");
 }
 
 void TMPVProcess::showTimeOnOSD() {
-    writeToStdin("show_text \"${time-pos} / ${length:0} (${percent-pos}%)\" 2000 0");
+    writeToPlayer("show_text \"${time-pos} / ${length:0} (${percent-pos}%)\" 2000 0");
 }
 
 void TMPVProcess::setContrast(int value) {
-    writeToStdin("set contrast " + QString::number(value));
+    writeToPlayer("set contrast " + QString::number(value));
 }
 
 void TMPVProcess::setBrightness(int value) {
-    writeToStdin("set brightness " + QString::number(value));
+    writeToPlayer("set brightness " + QString::number(value));
 }
 
 void TMPVProcess::setHue(int value) {
-    writeToStdin("set hue " + QString::number(value));
+    writeToPlayer("set hue " + QString::number(value));
 }
 
 void TMPVProcess::setSaturation(int value) {
-    writeToStdin("set saturation " + QString::number(value));
+    writeToPlayer("set saturation " + QString::number(value));
 }
 
 void TMPVProcess::setGamma(int value) {
-    writeToStdin("set gamma " + QString::number(value));
+    writeToPlayer("set gamma " + QString::number(value));
 }
 
 void TMPVProcess::setChapter(int ID) {
-    writeToStdin("set chapter " + QString::number(ID));
+    writeToPlayer("set chapter " + QString::number(ID));
 }
 
 void TMPVProcess::nextChapter(int delta) {
-    writeToStdin("add chapter " + QString::number(delta));
+    writeToPlayer("add chapter " + QString::number(delta));
 }
 
 void TMPVProcess::setAngle(int ID) {
-    writeToStdin("set angle " + QString::number(ID));
-    writeToStdin("print_text INFO_ANGLE_EX=${angle}");
+    writeToPlayer("set angle " + QString::number(ID));
+    writeToPlayer("print_text INFO_ANGLE_EX=${angle}");
 }
 
 void TMPVProcess::nextAngle() {
-    writeToStdin("cycle angle");
-    writeToStdin("print_text INFO_ANGLE_EX=${angle}");
+    writeToPlayer("cycle angle");
+    writeToPlayer("print_text INFO_ANGLE_EX=${angle}");
 }
 
 void TMPVProcess::setExternalSubtitleFile(const QString& filename) {
 
-    writeToStdin("sub_add \""+ filename +"\"");
+    writeToPlayer("sub_add \""+ filename +"\"");
     // Remeber filename to add to subs when MPV is done with it
     sub_file = filename;
 }
 
 void TMPVProcess::setSubPos(int pos) {
-    writeToStdin("set sub-pos " + QString::number(pos));
+    writeToPlayer("set sub-pos " + QString::number(pos));
 }
 
 void TMPVProcess::setSubScale(double value) {
-    writeToStdin("set sub-scale " + QString::number(value));
+    writeToPlayer("set sub-scale " + QString::number(value));
 }
 
 void TMPVProcess::setSubStep(int value) {
-    writeToStdin("sub_step " + QString::number(value));
+    writeToPlayer("sub_step " + QString::number(value));
 }
 
 void TMPVProcess::seekSub(int value) {
-    writeToStdin("sub-seek " + QString::number(value));
+    writeToPlayer("sub-seek " + QString::number(value));
 }
 
 void TMPVProcess::setSubForcedOnly(bool b) {
-    writeToStdin(QString("set sub-forced-only %1").arg(b ? "yes" : "no"));
+    writeToPlayer(QString("set sub-forced-only %1").arg(b ? "yes" : "no"));
 }
 
 void TMPVProcess::setSpeed(double value) {
-    writeToStdin("set speed " + QString::number(value));
+    writeToPlayer("set speed " + QString::number(value));
 }
 
 void TMPVProcess::enableKaraoke(bool) {
@@ -1219,31 +1219,31 @@ void TMPVProcess::enableKaraoke(bool) {
 
 void TMPVProcess::enableExtrastereo(bool b) {
     if (b)
-        writeToStdin("af add lavfi=[extrastereo]");
+        writeToPlayer("af add lavfi=[extrastereo]");
     else
-        writeToStdin("af del lavfi=[extrastereo]");
+        writeToPlayer("af del lavfi=[extrastereo]");
  }
 
 void TMPVProcess::enableVolnorm(bool b, const QString& option) {
-    if (b) writeToStdin("af add drc=" + option); else writeToStdin("af del drc=" + option);
+    if (b) writeToPlayer("af add drc=" + option); else writeToPlayer("af del drc=" + option);
 }
 
 void TMPVProcess::setAudioEqualizer(const QString& values) {
     if (values == previous_eq) return;
 
     if (!previous_eq.isEmpty()) {
-        writeToStdin("af del equalizer=" + previous_eq);
+        writeToPlayer("af del equalizer=" + previous_eq);
     }
-    writeToStdin("af add equalizer=" + values);
+    writeToPlayer("af add equalizer=" + values);
     previous_eq = values;
 }
 
 void TMPVProcess::setAudioDelay(double delay) {
-    writeToStdin("set audio-delay " + QString::number(delay));
+    writeToPlayer("set audio-delay " + QString::number(delay));
 }
 
 void TMPVProcess::setSubDelay(double delay) {
-    writeToStdin("set sub-delay " + QString::number(delay));
+    writeToPlayer("set sub-delay " + QString::number(delay));
 }
 
 void TMPVProcess::setLoop(int v) {
@@ -1253,11 +1253,11 @@ void TMPVProcess::setLoop(int v) {
         case 0: o = "inf"; break;
         default: o = QString::number(v);
     }
-    writeToStdin(QString("set loop %1").arg(o));
+    writeToPlayer(QString("set loop %1").arg(o));
 }
 
 void TMPVProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
-    writeToStdin(QString("screenshot %1 %2").arg(include_subtitles ? "subtitles" : "video").arg(t == Single ? "single" : "each-frame"));
+    writeToPlayer(QString("screenshot %1 %2").arg(include_subtitles ? "subtitles" : "video").arg(t == Single ? "single" : "each-frame"));
 }
 
 void TMPVProcess::switchCapturing() {
@@ -1273,36 +1273,36 @@ void TMPVProcess::switchCapturing() {
             f = f.replace("\\", "\\\\");
 #endif
         }
-        writeToStdin("set stream-capture \"" + f + "\"");
+        writeToPlayer("set stream-capture \"" + f + "\"");
         capturing = !capturing;
     }
 }
 
 void TMPVProcess::setTitle(int ID) {
-    writeToStdin("set disc-title " + QString::number(ID));
+    writeToPlayer("set disc-title " + QString::number(ID));
 }
 
 void TMPVProcess::discSetMousePos(int, int) {
 
     // MPV versions later than 18 july 2015 no longer support menus
 
-    // writeToStdin(QString("discnav mouse_move %1 %2").arg(x).arg(y));
+    // writeToPlayer(QString("discnav mouse_move %1 %2").arg(x).arg(y));
     // mouse_move doesn't accept options :?
 
     // For some reason this doesn't work either...
     // So it's not possible to select options in the dvd menus just
     // because there's no way to pass the mouse position to mpv, or it
     // ignores it.
-    // writeToStdin(QString("mouse %1 %2").arg(x).arg(y));
-    // writeToStdin("discnav mouse_move");
+    // writeToPlayer(QString("mouse %1 %2").arg(x).arg(y));
+    // writeToPlayer("discnav mouse_move");
 }
 
 void TMPVProcess::discButtonPressed(const QString& button_name) {
-    writeToStdin("discnav " + button_name);
+    writeToPlayer("discnav " + button_name);
 }
 
 void TMPVProcess::setAspect(double aspect) {
-    writeToStdin("set video-aspect " + QString::number(aspect));
+    writeToPlayer("set video-aspect " + QString::number(aspect));
 }
 
 void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y, int osd_level) {
@@ -1311,23 +1311,23 @@ void TMPVProcess::setZoomAndPan(double zoom, double pan_x, double pan_y, int osd
     if (notified_player_is_running) {
         bool clear_osd = false;
         if (zoom != this->zoom) {
-            writeToStdin("set video-zoom " + QString::number(zoom - 1));
+            writeToPlayer("set video-zoom " + QString::number(zoom - 1));
             this->zoom = zoom;
             clear_osd = true;
         }
         if (pan_x != this->pan_x) {
-            writeToStdin("set video-pan-x " + QString::number(pan_x));
+            writeToPlayer("set video-pan-x " + QString::number(pan_x));
             this->pan_x = pan_x;
             clear_osd = true;
         }
         if (pan_y != this->pan_y) {
-            writeToStdin("set video-pan-y " + QString::number(pan_y));
+            writeToPlayer("set video-pan-y " + QString::number(pan_y));
             this->pan_y = pan_y;
             clear_osd = true;
         }
         // Clear OSD message
         if (clear_osd) {
-            writeToStdin("show_text \"\" 0 " + QString::number(osd_level));
+            writeToPlayer("show_text \"\" 0 " + QString::number(osd_level));
         }
     }
 }
@@ -1339,11 +1339,11 @@ void TMPVProcess::setTSProgram(int ID) {
 #endif
 
 void TMPVProcess::toggleDeinterlace() {
-    writeToStdin("cycle deinterlace");
+    writeToPlayer("cycle deinterlace");
 }
 
 void TMPVProcess::setOSDScale(double value) {
-    writeToStdin("set osd-scale " + QString::number(value));
+    writeToPlayer("set osd-scale " + QString::number(value));
 }
 
 void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& option) {
@@ -1423,13 +1423,13 @@ void TMPVProcess::changeVF(const QString& filter, bool enable, const QVariant& o
     }
 
     if (!f.isEmpty()) {
-        writeToStdin(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(f));
+        writeToPlayer(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(f));
     }
 }
 
 void TMPVProcess::changeStereo3DFilter(bool enable, const QString& in, const QString& out) {
     QString filter = "stereo3d=" + in + ":" + out;
-    writeToStdin(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
+    writeToPlayer(QString("vf %1 \"%2\"").arg(enable ? "add" : "del").arg(filter));
 }
 
 void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles, const QString&) {

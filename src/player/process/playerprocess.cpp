@@ -53,13 +53,14 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
             this, SLOT(onFinished(int,QProcess::ExitStatus)));
 }
 
-void TPlayerProcess::writeToStdin(const QString& text, bool log) {
+void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
 
     if (log) {
-        logger()->debug("writeToStdin: %1", text);
+        logger()->debug("writeToPlayer: %1", text);
     }
 
     if (isRunning() && !received_end_of_file) {
+        // TODO:
 
 #ifdef Q_OS_WIN
         write(text.toUtf8() + "\n");
@@ -68,7 +69,7 @@ void TPlayerProcess::writeToStdin(const QString& text, bool log) {
 #endif
 
     } else {
-        logger()->warn("writeToStdin: process not running");
+        logger()->warn("writeToPlayer: process not running");
     }
 }
 
@@ -239,7 +240,7 @@ void TPlayerProcess::quit(int exit_code) {
 
     if (!quit_send) {
         quit_send = true;
-        writeToStdin("quit " + QString::number(exit_code));
+        writeToPlayer("quit " + QString::number(exit_code));
     }
 }
 

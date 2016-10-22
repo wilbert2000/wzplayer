@@ -85,13 +85,13 @@ void TMPlayerProcess::getSelectedSubtitles() {
     logger()->debug("getSelectedSubtitles");
 
 	if (md->subs.count() > 0) {
-		writeToStdin("get_property sub_source");
+        writeToPlayer("get_property sub_source");
 		if (sub_file)
-			writeToStdin("get_property sub_file");
+            writeToPlayer("get_property sub_file");
 		if (sub_vob)
-			writeToStdin("get_property sub_vob");
+            writeToPlayer("get_property sub_vob");
 		if (sub_demux)
-			writeToStdin("get_property sub_demux");
+            writeToPlayer("get_property sub_demux");
 	}
 }
 
@@ -99,9 +99,9 @@ void TMPlayerProcess::getSelectedTracks() {
     logger()->debug("getSelectedTracks");
 
 	if (md->videos.count() > 0)
-		writeToStdin("get_property switch_video");
+        writeToPlayer("get_property switch_video");
 	if (md->audios.count() > 0)
-		writeToStdin("get_property switch_audio");
+        writeToPlayer("get_property switch_audio");
 	getSelectedSubtitles();
 }
 
@@ -111,7 +111,7 @@ void TMPlayerProcess::getSelectedAngle() {
         logger()->debug("getSelectedAngle");
         // Need "angle/number of angles", hence use run instead of
 		// get_property angle, which only gives the current angle
-		writeToStdin("run \"echo ID_ANGLE_EX=${angle}\"");
+        writeToPlayer("run \"echo ID_ANGLE_EX=${angle}\"");
 	}
 }
 
@@ -414,7 +414,7 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
 
 		// The duration from the title TOC is not always reliable,
 		// so verify duration
-		writeToStdin("get_property length");
+        writeToPlayer("get_property length");
 	}
 
     logger()->debug("dvdnavTitleChanged: emit durationChanged(" +
@@ -437,7 +437,7 @@ bool TMPlayerProcess::dvdnavTitleIsMenu() {
         notifyTime(0);
 		notifyDuration(0);
 		// Menus can have a length...
-		writeToStdin("get_property length");
+        writeToPlayer("get_property length");
 	}
 
 	return true;
@@ -718,7 +718,7 @@ void TMPlayerProcess::notifyChanges() {
 	}
 	if (get_selected_video_track) {
 		get_selected_video_track = false;
-		writeToStdin("get_property switch_video");
+        writeToPlayer("get_property switch_video");
 	}
 	if (audio_tracks_changed) {
 		audio_tracks_changed = false;
@@ -728,7 +728,7 @@ void TMPlayerProcess::notifyChanges() {
 	}
 	if (get_selected_audio_track) {
 		get_selected_audio_track = false;
-		writeToStdin("get_property switch_audio");
+        writeToPlayer("get_property switch_audio");
 	}
 	if (subtitles_changed) {
 		subtitles_changed = false;
@@ -771,7 +771,7 @@ void TMPlayerProcess::playingStarted() {
 
 	if (md->duration == 0 && md->detected_type != TMediaData::TYPE_DVDNAV ) {
 		// See if the duration is known by now
-		writeToStdin("get_property length");
+        writeToPlayer("get_property length");
 	}
 
 	// Get selected subtitles
@@ -863,7 +863,7 @@ bool TMPlayerProcess::parseStatusLine(double secs, const QString& line) {
         if (!paused && qAbs(secs - check_duration_time)
             > check_duration_time_diff) {
 			// Ask for length
-			writeToStdin("get_property length");
+            writeToPlayer("get_property length");
 			// Wait another while
             check_duration_time = secs;
 			// Just a little longer
@@ -1378,32 +1378,32 @@ void TMPlayerProcess::addAF(const QString& filter_name, const QVariant& value) {
 }
 
 void TMPlayerProcess::setVolume(int v) {
-	writeToStdin("pausing_keep_force volume " + QString::number(v) + " 1");
+    writeToPlayer("pausing_keep_force volume " + QString::number(v) + " 1");
 }
 
 void TMPlayerProcess::setOSDLevel(int level) {
-	writeToStdin("pausing_keep osd " + QString::number(level));
+    writeToPlayer("pausing_keep osd " + QString::number(level));
 }
 
 void TMPlayerProcess::setAudio(int ID) {
-	writeToStdin("switch_audio " + QString::number(ID));
+    writeToPlayer("switch_audio " + QString::number(ID));
 }
 
 void TMPlayerProcess::setVideo(int ID) {
-	writeToStdin("set_property switch_video " + QString::number(ID));
+    writeToPlayer("set_property switch_video " + QString::number(ID));
 }
 
 void TMPlayerProcess::setSubtitle(SubData::Type type, int ID) {
 
 	switch (type) {
 		case SubData::Vob:
-			writeToStdin("sub_vob " + QString::number(ID));
+            writeToPlayer("sub_vob " + QString::number(ID));
 			break;
 		case SubData::Sub:
-			writeToStdin("sub_demux " + QString::number(ID));
+            writeToPlayer("sub_demux " + QString::number(ID));
 			break;
 		case SubData::File:
-			writeToStdin("sub_file " + QString::number(ID));
+            writeToPlayer("sub_file " + QString::number(ID));
 			break;
 		default: {
             logger()->warn("setSubtitle: unknown type!");
@@ -1417,14 +1417,14 @@ void TMPlayerProcess::setSubtitle(SubData::Type type, int ID) {
 
 void TMPlayerProcess::disableSubtitles() {
 
-	writeToStdin("sub_source -1");
+    writeToPlayer("sub_source -1");
 
 	md->subs.clearSelected();
 	emit receivedSubtitleTrackChanged();
 }
 
 void TMPlayerProcess::setSubtitlesVisibility(bool b) {
-	writeToStdin(QString("sub_visibility %1").arg(b ? 1 : 0));
+    writeToPlayer(QString("sub_visibility %1").arg(b ? 1 : 0));
 }
 
 void TMPlayerProcess::seekPlayerTime(double secs,
@@ -1446,24 +1446,24 @@ void TMPlayerProcess::seekPlayerTime(double secs,
 		s = "pausing " + s;
     paused = currently_paused;
 
-	writeToStdin(s);
+    writeToPlayer(s);
 }
 
 void TMPlayerProcess::mute(bool b) {
-	writeToStdin("pausing_keep_force mute " + QString::number(b ? 1 : 0));
+    writeToPlayer("pausing_keep_force mute " + QString::number(b ? 1 : 0));
 }
 
 void TMPlayerProcess::setPause(bool pause) {
 
     paused = pause;
-    if (pause) writeToStdin("pausing pause");
-    // else writeToStdin("resume pause"); is buggy
+    if (pause) writeToPlayer("pausing pause");
+    // else writeToPlayer("resume pause"); is buggy
     // maybe use "pausing xxx\npause"
-    else writeToStdin("pause");
+    else writeToPlayer("pause");
 }
 
 void TMPlayerProcess::frameStep() {
-	writeToStdin("frame_step");
+    writeToPlayer("frame_step");
 }
 
 void TMPlayerProcess::frameBackStep() {
@@ -1510,80 +1510,80 @@ void TMPlayerProcess::showOSDText(const QString& text,
 	QString s = "pausing_keep_force osd_show_text \"" + text + "\" "
 			+ QString::number(duration) + " " + QString::number(level);
 
-	writeToStdin(s);
+    writeToPlayer(s);
 }
 
 void TMPlayerProcess::showFilenameOnOSD() {
-    writeToStdin("pausing_keep osd_show_property_text \"${filename}\" "
+    writeToPlayer("pausing_keep osd_show_property_text \"${filename}\" "
                  + QString::number(TConfig::MESSAGE_DURATION)
                  + " 0");
 }
 
 void TMPlayerProcess::showTimeOnOSD() {
-    writeToStdin("pausing_keep osd_show_property_text \"${time_pos} / ${length}"
+    writeToPlayer("pausing_keep osd_show_property_text \"${time_pos} / ${length}"
                  " (${percent_pos}%)\" "
                  + QString::number(TConfig::MESSAGE_DURATION)
                  + " 0");
 }
 
 void TMPlayerProcess::setContrast(int value) {
-	writeToStdin("pausing_keep contrast " + QString::number(value) + " 1");
+    writeToPlayer("pausing_keep contrast " + QString::number(value) + " 1");
 }
 
 void TMPlayerProcess::setBrightness(int value) {
-	writeToStdin("pausing_keep brightness " + QString::number(value) + " 1");
+    writeToPlayer("pausing_keep brightness " + QString::number(value) + " 1");
 }
 
 void TMPlayerProcess::setHue(int value) {
-	writeToStdin("pausing_keep hue " + QString::number(value) + " 1");
+    writeToPlayer("pausing_keep hue " + QString::number(value) + " 1");
 }
 
 void TMPlayerProcess::setSaturation(int value) {
-	writeToStdin("pausing_keep saturation " + QString::number(value) + " 1");
+    writeToPlayer("pausing_keep saturation " + QString::number(value) + " 1");
 }
 
 void TMPlayerProcess::setGamma(int value) {
-	writeToStdin("pausing_keep gamma " + QString::number(value) + " 1");
+    writeToPlayer("pausing_keep gamma " + QString::number(value) + " 1");
 }
 
 void TMPlayerProcess::setChapter(int ID) {
-	writeToStdin("seek_chapter " + QString::number(ID) +" 1");
+    writeToPlayer("seek_chapter " + QString::number(ID) +" 1");
 }
 
 void TMPlayerProcess::nextChapter(int delta) {
-	writeToStdin("seek_chapter " + QString::number(delta) +" 0");
+    writeToPlayer("seek_chapter " + QString::number(delta) +" 0");
 }
 
 void TMPlayerProcess::setAngle(int angle) {
-	writeToStdin("switch_angle " + QString::number(angle - 1));
+    writeToPlayer("switch_angle " + QString::number(angle - 1));
 	// Switch angle does not always succeed, so verify new angle
 	getSelectedAngle();
 }
 
 void TMPlayerProcess::nextAngle() {
 	// switch_angle -1 swicthes to next angle too
-	writeToStdin("switch_angle");
+    writeToPlayer("switch_angle");
 	getSelectedAngle();
 }
 
 void TMPlayerProcess::setExternalSubtitleFile(const QString& filename) {
 
 	// Load it
-	writeToStdin("sub_load \""+ filename +"\"");
+    writeToPlayer("sub_load \""+ filename +"\"");
 	// Select files as sub source
-	writeToStdin("sub_source 0");
+    writeToPlayer("sub_source 0");
 }
 
 void TMPlayerProcess::setSubPos(int pos) {
-	writeToStdin("sub_pos " + QString::number(pos) + " 1");
+    writeToPlayer("sub_pos " + QString::number(pos) + " 1");
 }
 
 void TMPlayerProcess::setSubScale(double value) {
-	writeToStdin("sub_scale " + QString::number(value) + " 1");
+    writeToPlayer("sub_scale " + QString::number(value) + " 1");
 }
 
 void TMPlayerProcess::setSubStep(int value) {
-	writeToStdin("sub_step " + QString::number(value));
+    writeToPlayer("sub_step " + QString::number(value));
 }
 
 void TMPlayerProcess::seekSub(int) {
@@ -1593,64 +1593,64 @@ void TMPlayerProcess::seekSub(int) {
 }
 
 void TMPlayerProcess::setSubForcedOnly(bool b) {
-	writeToStdin(QString("forced_subs_only %1").arg(b ? 1 : 0));
+    writeToPlayer(QString("forced_subs_only %1").arg(b ? 1 : 0));
 }
 
 void TMPlayerProcess::setSpeed(double value) {
-	writeToStdin("speed_set " + QString::number(value));
+    writeToPlayer("speed_set " + QString::number(value));
 }
 
 void TMPlayerProcess::enableKaraoke(bool b) {
-	if (b) writeToStdin("af_add karaoke"); else writeToStdin("af_del karaoke");
+    if (b) writeToPlayer("af_add karaoke"); else writeToPlayer("af_del karaoke");
 }
 
 void TMPlayerProcess::enableExtrastereo(bool b) {
 
-    if (b) writeToStdin("af_add extrastereo");
-    else writeToStdin("af_del extrastereo");
+    if (b) writeToPlayer("af_add extrastereo");
+    else writeToPlayer("af_del extrastereo");
 }
 
 void TMPlayerProcess::enableVolnorm(bool b, const QString& option) {
 
-    if (b) writeToStdin("af_add volnorm=" + option);
-    else writeToStdin("af_del volnorm");
+    if (b) writeToPlayer("af_add volnorm=" + option);
+    else writeToPlayer("af_del volnorm");
 }
 
 void TMPlayerProcess::setAudioEqualizer(const QString& values) {
-	writeToStdin("af_cmdline equalizer " + values);
+    writeToPlayer("af_cmdline equalizer " + values);
 }
 
 void TMPlayerProcess::setAudioDelay(double delay) {
-    writeToStdin("pausing_keep_force audio_delay "
+    writeToPlayer("pausing_keep_force audio_delay "
                  + QString::number(delay) +" 1");
 }
 
 void TMPlayerProcess::setSubDelay(double delay) {
-    writeToStdin("pausing_keep_force sub_delay "
+    writeToPlayer("pausing_keep_force sub_delay "
                  + QString::number(delay) +" 1");
 }
 
 void TMPlayerProcess::setLoop(int v) {
-	writeToStdin(QString("loop %1 1").arg(v));
+    writeToPlayer(QString("loop %1 1").arg(v));
 }
 
 void TMPlayerProcess::takeScreenshot(ScreenshotType t, bool include_subtitles) {
 	Q_UNUSED(include_subtitles)
 
 	if (t == Single) {
-		writeToStdin("pausing_keep_force screenshot 0");
+        writeToPlayer("pausing_keep_force screenshot 0");
 	} else {
-		writeToStdin("screenshot 1");
+        writeToPlayer("screenshot 1");
 	}
 }
 
 void TMPlayerProcess::switchCapturing() {
-	writeToStdin("capturing");
+    writeToPlayer("capturing");
 }
 
 void TMPlayerProcess::setTitle(int ID) {
 
-	writeToStdin("switch_title " + QString::number(ID));
+    writeToPlayer("switch_title " + QString::number(ID));
 
 	// Changing title on a menu without duration does not work :(
 	// This hack seems to solve it.
@@ -1662,20 +1662,20 @@ void TMPlayerProcess::setTitle(int ID) {
 		// Select and hope...
 		discButtonPressed("select");
 		// And set the title again
-		writeToStdin("switch_title " + QString::number(ID));
+        writeToPlayer("switch_title " + QString::number(ID));
 	}
 }
 
 void TMPlayerProcess::discSetMousePos(int x, int y) {
-	writeToStdin(QString("set_mouse_pos %1 %2").arg(x).arg(y), false);
+    writeToPlayer(QString("set_mouse_pos %1 %2").arg(x).arg(y), false);
 }
 
 void TMPlayerProcess::discButtonPressed(const QString& button_name) {
-	writeToStdin("dvdnav " + button_name);
+    writeToPlayer("dvdnav " + button_name);
 }
 
 void TMPlayerProcess::setAspect(double aspect) {
-	writeToStdin("switch_ratio " + QString::number(aspect));
+    writeToPlayer("switch_ratio " + QString::number(aspect));
 }
 
 void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
@@ -1690,7 +1690,7 @@ void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
 			this->zoom = zoom;
 			// Map 1 - ZOOM_MAX to 0 - 1
 			zoom = (zoom - 1) / (TConfig::ZOOM_MAX - 1);
-            writeToStdin("pausing_keep_force panscan "
+            writeToPlayer("pausing_keep_force panscan "
                          + QString::number(zoom) + " 1");
 		}
 	}
@@ -1698,19 +1698,19 @@ void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
 
 #if PROGRAM_SWITCH
 void TMPlayerProcess::setTSProgram(int ID) {
-	writeToStdin("set_property switch_program " + QString::number(ID));
+    writeToPlayer("set_property switch_program " + QString::number(ID));
 	// TODO: check
 	getSelectedTracks();
 }
 #endif
 
 void TMPlayerProcess::toggleDeinterlace() {
-	writeToStdin("step_property deinterlace");
+    writeToPlayer("step_property deinterlace");
 }
 
 void TMPlayerProcess::setOSDScale(double) {
 	// not supported
-	//writeToStdin("set_property subfont-osd-scale " + QString::number(value));
+    //writeToPlayer("set_property subfont-osd-scale " + QString::number(value));
 }
 
 void TMPlayerProcess::changeVF(const QString&, bool, const QVariant&) {

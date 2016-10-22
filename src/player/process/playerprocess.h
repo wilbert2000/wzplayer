@@ -56,7 +56,7 @@ public:
 
     virtual bool startPlayer();
 
-    void writeToStdin(const QString& text, bool log = true);
+    void writeToPlayer(const QString& text, bool log = true);
 
     // Command line options
     virtual void setMedia(const QString& media) = 0;
