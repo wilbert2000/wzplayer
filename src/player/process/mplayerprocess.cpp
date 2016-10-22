@@ -1679,7 +1679,7 @@ void TMPlayerProcess::setAspect(double aspect) {
 }
 
 void TMPlayerProcess::setZoomAndPan(double zoom, double, double, int) {
-	// -panscanrange is set in setFixedOptions() to allow for ZOOM_MAX zoom.
+    // setFixedOptions() sets option -panscanrange to allow for ZOOM_MAX zoom
 
 	if (notified_player_is_running) {
 		// Zoom < 1 does not work.

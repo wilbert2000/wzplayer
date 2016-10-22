@@ -1747,7 +1747,7 @@ void TMainWindow::toggleFullscreen(bool b) {
     logger()->debug("toggleFullscreen: %1", b);
 
     if (b == pref->fullscreen) {
-        logger()->debug("toggleFullscreen: nothing to do, returning");
+        logger()->debug("toggleFullscreen: nothing to do");
         return;
     }
 
