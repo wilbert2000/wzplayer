@@ -88,7 +88,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 
 TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
-    TMenu(mw, mw, "videosize_menu", tr("&Size"), "video_size"),
+    TMenu(mw, mw, "videosize_menu", tr("Window &size"), "video_size"),
     playerWindow(pw) {
 
     group = new TVideoSizeGroup(this, pw);
