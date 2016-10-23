@@ -1678,26 +1678,22 @@ void TMPlayerProcess::setAspect(double aspect) {
     writeToPlayer("switch_ratio " + QString::number(aspect));
 }
 
-void TMPlayerProcess::setZoomAndPan(double zoom,
-                                    double pan_x,
-                                    double pan_y,
-                                    int osd_level) {
-    Q_UNUSED(pan_x)
-    Q_UNUSED(pan_y)
-    Q_UNUSED(osd_level)
-
+void TMPlayerProcess::updateZoom(double zoom) {
     // setFixedOptions() sets option -panscanrange to allow for ZOOM_MAX zoom
 
-    // Zoom < 1 does not work.
-    if (zoom < 1) {
-        zoom = 1;
-    }
-    if (zoom != this->zoom) {
-        this->zoom = zoom;
-        // Map 1 - ZOOM_MAX to 0 - 1
-        zoom = (zoom - 1) / (TConfig::ZOOM_MAX - 1);
-        writeToPlayer("pausing_keep_force panscan " + QString::number(zoom)
-                      + " 1");
+    if (isReady()) {
+        // Zoom < 1 does not work.
+        if (zoom < 1) {
+            zoom = 1;
+        }
+        if (zoom != this->zoom) {
+            this->zoom = zoom;
+            // Map 1 - ZOOM_MAX to 0 - 1
+            zoom = (zoom - 1) / (TConfig::ZOOM_MAX - 1);
+            writeToPlayer("pausing_keep_force panscan "
+                          + QString::number(zoom)
+                          + " 1");
+        }
     }
 }
 

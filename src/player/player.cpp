@@ -3069,14 +3069,6 @@ void TPlayer::changeRotate(int r) {
     }
 }
 
-// Slot called by player window to set zoom and pan
-void TPlayer::setZoomAndPan(double zoom, double pan_x, double pan_y) {
-
-    if (proc->isReady()) {
-        proc->setZoomAndPan(zoom, pan_x, pan_y, pref->osd_level);
-    }
-}
-
 void TPlayer::getZoomFromPlayerWindow() {
     mset.zoom_factor = playerwindow->zoomNormalScreen();
     mset.zoom_factor_fullscreen = playerwindow->zoomFullScreen();
@@ -3099,6 +3091,11 @@ void TPlayer::setZoom(double factor) {
         getZoomFromPlayerWindow();
         Gui::msgOSD(tr("Zoom: %1").arg(playerwindow->zoom()));
     }
+}
+
+// Slot called by TPlayerWindow::updateVideoWindow to update zoom
+void TPlayer::updateZoom(double zoom) {
+    proc->updateZoom(zoom);
 }
 
 void TPlayer::resetZoomAndPan() {

@@ -250,12 +250,11 @@ void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {
 
     // Based on MPlayer source libvo/aspect.c use the vertical zoom for panscan
     zoom = (double) vwin.height() / cwin.height();
-    //qDebug() << "clipMPlayer: clipped win" << cwin << "zoom" << zoom;
     if (zoom > 1) {
-        //qDebug() << "clipMPlayer: clipping win";
+        // Clipping win";
         vwin = cwin;
     } else {
-        //qDebug() << "clipMPlayer: not clipping win";
+        // Not clipping win";
         zoom = 1;
     }
 }
@@ -269,10 +268,11 @@ void TPlayerWindow::updateVideoWindow() {
              << "pan" << pan()
              << "fs" << pref->fullscreen;
     */
+
     // Note: Can give MPV the whole window, it uses it for OSD and Subs.
     // Mplayer too, with most VOs, but with some, like XV, it misbehaves,
     // not properly clearing the background not covered by the video.
-    // To be sure always clipping MPlayer back to video size.
+    // To be sure always clipping MPlayer back to the size of the video.
 
     // On fullscreen ignore the toolbars
     QRect vwin(QPoint(), pref->fullscreen ? TDesktop::size(this) : size());
@@ -298,17 +298,19 @@ void TPlayerWindow::updateVideoWindow() {
     double zoom = this->zoom();
     vsize *= zoom;
 
-    // Clip MPlayer
-    QPoint pan = this->pan();
-    if (pref->isMPlayer()) {
-        // Center the window
-        QSize c = (vwin.size() - vsize) / 2;
-        vwin.moveTo(c.width(), c.height());
-        // Resize the window to the size of the video
-        vwin.setSize(vsize);
-        // MPlayer cannot pan in slave mode, so pan the video window
-        vwin.translate(pan);
+    // Center video window
+    QSize c = (vwin.size() - vsize) / 2;
+    vwin.moveTo(c.width(), c.height());
 
+    // Resize video window to size of video
+    vwin.setSize(vsize);
+
+    // Pan video window
+    QPoint pan = this->pan();
+    vwin.translate(pan);
+
+    // Clip MPlayer
+    if (pref->isMPlayer()) {
         if (zoom > 1) {
             clipMPlayer(vwin, zoom, pan);
         } else {
@@ -324,14 +326,10 @@ void TPlayerWindow::updateVideoWindow() {
     // Set geometry video window
     video_window->setGeometry(vwin);
 
-    // Pass zoom and pan to the player.
-    // MPV wants pan factor relative to whole scaled video
-    // MPlayer ignores pan
-    double pan_x = (double) pan.x() / vsize.width();
-    double pan_y = (double) pan.y() / vsize.height();
-    player->setZoomAndPan(zoom, pan_x, pan_y);
+    // Pass zoom to the player
+    player->updateZoom(zoom);
 
-    // Update status with new video out size
+    // Update status bar with new video out size
     if (vsize != last_video_out_size) {
         last_video_out_size = vsize;
         emit videoOutChanged(vsize);
@@ -342,6 +340,7 @@ void TPlayerWindow::updateVideoWindow() {
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {
+
     updateVideoWindow();
     updateSizeFactor();
 }

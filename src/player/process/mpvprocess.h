@@ -107,10 +107,7 @@ public:
     void discButtonPressed(const QString& button_name);
 
     void setAspect(double aspect);
-    virtual void setZoomAndPan(double zoom,
-                               double pan_x,
-                               double pan_y,
-                               int osd_level);
+    virtual void updateZoom(double zoom);
 
 #if PROGRAM_SWITCH
     void setTSProgram(int ID);
@@ -149,10 +146,6 @@ private:
     QString sub_file;
 
     QString previous_eq;
-
-    double zoom;
-    double pan_x;
-    double pan_y;
 
     bool capturing;
 
