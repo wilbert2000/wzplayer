@@ -245,20 +245,19 @@ void TPlayer::saveMediaSettings() {
 } // saveMediaSettings
 
 void TPlayer::clearOSD() {
+    logger()->debug("clearOSD");
     displayTextOnOSD("", 0, pref->osd_level);
 }
 
 void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
 
-    if (proc->isReady()
-        && level <= pref->osd_level
-        && mdat.hasVideo()) {
+    if (proc->isReady() && level <= pref->osd_level && mdat.hasVideo()) {
         proc->showOSDText(text, duration, level);
     }
 }
 
 void TPlayer::close(TState next_state) {
-    logger()->debug("close()");
+    logger()->debug("close");
 
     stopPlayer();
     // Save data previous file:

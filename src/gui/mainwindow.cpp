@@ -2553,8 +2553,7 @@ void TMainWindow::setStayOnTop(bool b) {
 
     bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
     if (b == stay_on_top) {
-        // identical do nothing
-        logger()->debug("setStayOnTop: WindowStaysOnTopHint already up2date");
+        logger()->debug("setStayOnTop: WindowStaysOnTopHint already uptodate");
         return;
     }
 
