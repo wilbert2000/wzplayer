@@ -385,4 +385,5 @@ OTHER_FILES += \
     ../setup/scripts/install_wzplayer.cmd \
     ../setup/scripts/make_pkgs.cmd \
     ../man/wzplayer.1 \
-    wzplayer.rc
+    wzplayer.rc \
+    ../Watching_TV.txt

@@ -27,7 +27,7 @@
 using namespace Log4Qt;
 
 class main;
-LOG4QT_DECLARE_STATIC_LOGGER(logger, main)
+LOG4QT_DECLARE_STATIC_LOGGER(logger, ::)
 
 void initLog4Qt(Level level) {
 
@@ -49,7 +49,7 @@ void initLog4Qt(Level level) {
         tccLayout->setThreadPrinting(false);
         tccLayout->activateOptions();
 
-        // Create appender A1 for console
+        // Create appender A1 for console if level set through cmd line option
         if (level != Level::INFO_INT) {
             ConsoleAppender* a = new ConsoleAppender(tccLayout,
                 ConsoleAppender::STDERR_TARGET);
@@ -75,7 +75,7 @@ void initLog4Qt(Level level) {
     // Set log window appender on root logger
     LogManager::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
-    logger()->info("initLog4Qt: log initialized on level %1",
+    logger()->info("initLog4Qt: root logger initialized on level %1",
                    LogManager::rootLogger()->level().toString());
 }
 
@@ -115,20 +115,20 @@ int main(int argc, char** argv) {
 
     int exitCode;
     do {
-        logger()->debug("Creating application");
+        logger()->debug("main: creating application TApp");
         TApp app(argc, argv);
-        logger()->debug("Initialising application");
+        logger()->debug("main: initialising application");
         exitCode = app.processArgs();
         if (exitCode == TApp::NoExit) {
-            logger()->debug("Starting application");
+            logger()->debug("main: starting application");
             app.start();
-            logger()->debug("Calling exec()");
+            logger()->debug("main: calling exec()");
             exitCode = app.exec();
-            logger()->debug("exec() returned %1", exitCode);
+            logger()->debug("main: exec() returned %1", exitCode);
         }
     } while (exitCode == TApp::NoExit);
 
-    logger()->debug("returning %1", exitCode);
+    logger()->debug("main: returning exit code %1", exitCode);
     return exitCode;
 }
 

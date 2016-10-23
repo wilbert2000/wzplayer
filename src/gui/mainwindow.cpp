@@ -189,7 +189,6 @@ QString TMainWindow::settingsGroupName() {
 }
 
 void TMainWindow::createStatusBar() {
-
     logger()->debug("createStatusBar");
 
     setMessageHandler(statusBar());
@@ -235,6 +234,7 @@ void TMainWindow::createStatusBar() {
 }
 
 void TMainWindow::createPanel() {
+    logger()->debug("createPanel");
 
     panel = new QWidget(this);
     panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -243,6 +243,7 @@ void TMainWindow::createPanel() {
 }
 
 void TMainWindow::createPlayerWindow() {
+    logger()->debug("createPlayerWindow");
 
     playerwindow = new TPlayerWindow(panel);
     playerwindow->setObjectName("playerwindow");
@@ -274,6 +275,7 @@ void TMainWindow::createPlayerWindow() {
 }
 
 void TMainWindow::createPlayer() {
+    logger()->debug("createPlayer");
 
     new Player::TPlayer(this, playerwindow);
 
@@ -312,6 +314,7 @@ void TMainWindow::createPlayer() {
 }
 
 void TMainWindow::createPlaylist() {
+    logger()->debug("createPlaylist");
 
     playlist = new Playlist::TPlaylist(this);
     connect(playlist, SIGNAL(playlistEnded()),
@@ -477,6 +480,7 @@ void TMainWindow::createActions() {
 } // createActions
 
 void TMainWindow::createMenus() {
+    logger()->debug("createMenus");
 
     // MENUS
     fileMenu = new TMenuFile(this);
@@ -521,6 +525,7 @@ void TMainWindow::createMenus() {
 } // createMenus()
 
 QMenu* TMainWindow::createToolbarMenu() {
+    logger()->debug("createToolbarMenu");
 
     // Use name "toolbar_menu" only for first
     QString name = toolbar_menu ? "" : "toolbar_menu";
@@ -557,6 +562,7 @@ void TMainWindow::showStatusBarPopup(const QPoint& pos) {
 }
 
 void TMainWindow::createToolbars() {
+    logger()->debug("createToolbars");
 
     menuBar()->setObjectName("menubar");
 
@@ -642,7 +648,6 @@ void TMainWindow::createToolbars() {
 }
 
 void TMainWindow::setupNetworkProxy() {
-    //logger()->debug("setupNetworkProxy");
 
     QNetworkProxy proxy;
 

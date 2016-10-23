@@ -1797,7 +1797,7 @@ bool TPlaylist::saveAs() {
 bool TPlaylist::maybeSave() {
 
     if (!playlistWidget->modified()) {
-        logger()->debug("maybeSave: not modified");
+        logger()->debug("maybeSave: playlist not modified");
         return true;
     }
 

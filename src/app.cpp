@@ -426,7 +426,7 @@ TApp::ExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-    logger()->debug("createGUI: creating main window 'Gui::TMainWindowPlus'");
+    logger()->debug("createGUI: creating main window Gui::TMainWindowPlus");
 
     main_window = new Gui::TMainWindowPlus();
 
