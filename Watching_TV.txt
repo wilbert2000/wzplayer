@@ -1,10 +1,10 @@
-Since 0.6.8 it's possible to watch the TV in smplayer (dvb:// and tv://).
+Since 0.6.8 it's possible to watch the TV in wzplayer (dvb:// and tv://).
 
 This document provides some info about how to do it.
 
 INTRO:
 
-smplayer doesn't include any option to scan for channels, so mplayer must be 
+wzplayer doesn't include any option to scan for channels, so mplayer must be
 configured to tune to TV channels.
 
 That means that the following:
@@ -24,10 +24,10 @@ mplayer tv://Channel_name
 
 DVB:
 
-The support for dvb in smplayer is intented for dvb-t (terrestrial). It can 
+The support for dvb in wzplayer is intented for dvb-t (terrestrial). It can
 work with dvb-c and dvb-s (cable and satellite) but it hasn't been tested.
 
-smplayer will look for the file ~/.mplayer/channels.conf.ter (or 
+wzplayer will look for the file ~/.mplayer/channels.conf.ter (or
 ~/.mplayer/channels.conf if that doesn't exist), and the menus Open->TV and 
 Open->Radio will be populated with the channels there (the menu Open->Radio 
 will show the channels without video pid. Notice that for dvb-s and dvb-c the 
@@ -47,7 +47,7 @@ You can also use w_scan, which doesn't require any initial file.
 
 TV:
 
-The support for analog TV (tv://) in smplayer is very basic  (it can recognize
+The support for analog TV (tv://) in wzplayer is very basic  (it can recognize
 a tv:// stream as being a TV channel, but that's all) and configuration
 has to be done manually.
 
@@ -59,7 +59,7 @@ orm=PAL:chanlist=europe-west:channels=46-TV_1,43-TV_2,50-TV_3,53-TV_4
 
 For more info take a look at the mplayer manpage.
 
-After that you have to introduce all channels in smplayer (Open->TV->Edit).
+After that you have to introduce all channels in wzplayer (Open->TV->Edit).
 
 
 THE CHANNEL EDITOR:
@@ -74,13 +74,13 @@ ICON   NAME          STREAM
        BBC           tv://TV_1
        Webcam        tv://
 
-The list of TV channels is saved to ~/.config/smplayer/tv.m3u8, while the
-list of radio is saved to ~/.config/smplayer/radio.m3u8.
+The list of TV channels is saved to ~/.config/wzplayer/tv.m3u8, while the
+list of radio is saved to ~/.config/wzplayer/radio.m3u8.
 
-Note 1: by default smplayer will scan the file ~/.mplayer/channels.conf on every
+Note 1: by default wzplayer will scan the file ~/.mplayer/channels.conf on every
 startup and will add the new channels it finds there. That means that if you
 delete dvb channels from the editor they will appear again in the next session
-(smplayer will think they are new). To avoid that, there's an option in 
+(wzplayer will think they are new). To avoid that, there's an option in
 Preferences->TV to disable the scanning of the channels.conf file.
 
 Note 2: it's possible to set an icon for each channel. The icon will be 
@@ -127,5 +127,5 @@ Several audio pids can be added separated by "+". For instance:
 501:503+504:141
 
 This way the 2nd audio track (504) will be available when you watch that channel
-in smplayer. Notice that to be able to actually switch audio tracks in dvb 
+in wzplayer. Notice that to be able to actually switch audio tracks in dvb
 channels you need a recent version of mplayer (r29381).
