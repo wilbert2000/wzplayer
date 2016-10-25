@@ -70,15 +70,11 @@ bool TMPlayerProcess::startPlayer() {
     start_frame_set = false;
     start_frame = 0;
 
-	zoom = 1;
-	pan_x = 0;
-	pan_y = 0;
+    clearSubSources();
+    frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+    clip_info_id = -1;
 
-	clearSubSources();
-	frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
-	clip_info_id = -1;
-
-	return TPlayerProcess::startPlayer();
+    return TPlayerProcess::startPlayer();
 }
 
 void TMPlayerProcess::getSelectedSubtitles() {
@@ -1236,15 +1232,15 @@ void TMPlayerProcess::setMedia(const QString& media) {
 }
 
 void TMPlayerProcess::setFixedOptions() {
+
     args << "-noquiet"
-		<< "-slave"
-		<< "-identify"
-		<< "-panscanrange" << QString::number(1 - TConfig::ZOOM_MAX);
+         << "-slave"
+         << "-identify";
 
     // Need cplayer msg level 6 to catch DVDNAV, NEW TITLE
-	if (md->selected_type == TMediaData::TYPE_DVDNAV) {
+    if (md->selected_type == TMediaData::TYPE_DVDNAV) {
         args << "-msglevel" << "cplayer=6";
-	}
+    }
 }
 
 void TMPlayerProcess::disableInput() {
@@ -1676,25 +1672,6 @@ void TMPlayerProcess::discButtonPressed(const QString& button_name) {
 
 void TMPlayerProcess::setAspect(double aspect) {
     writeToPlayer("switch_ratio " + QString::number(aspect));
-}
-
-void TMPlayerProcess::updateZoom(double zoom) {
-    // setFixedOptions() sets option -panscanrange to allow for ZOOM_MAX zoom
-
-    if (isReady()) {
-        // Zoom < 1 does not work.
-        if (zoom < 1) {
-            zoom = 1;
-        }
-        if (zoom != this->zoom) {
-            this->zoom = zoom;
-            // Map 1 - ZOOM_MAX to 0 - 1
-            zoom = (zoom - 1) / (TConfig::ZOOM_MAX - 1);
-            writeToPlayer("pausing_keep_force panscan "
-                          + QString::number(zoom)
-                          + " 1");
-        }
-    }
 }
 
 #if PROGRAM_SWITCH

@@ -60,7 +60,6 @@ TVideoWindow::~TVideoWindow() {
 }
 
 void TVideoWindow::paintEvent(QPaintEvent* e) {
-    //qDebug() << "TVideoWindow::paintEvent:" << e->rect();
 
     if (normal_background || pref->isMPV()) {
         QPainter painter(this);
@@ -187,77 +186,6 @@ void TPlayerWindow::updateSizeFactor() {
     }
 }
 
-void TPlayerWindow::clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan) {
-
-    QSize s = pref->fullscreen ? TDesktop::size(this) : size();
-    //qDebug() << "clipMPlayer: in vwin" << vwin
-    //         << "zoom" << zoom
-    //         << "pan" << pan
-    //         << "plwin size" << s;
-
-    // Clip
-    QRect cwin = vwin.intersected(QRect(QPoint(), s));
-    //qDebug() << "clipMPlayer: clipped vwin" << cwin;
-
-    // Add pan
-    cwin = cwin.united(cwin.translated(pan * zoom));
-    //qDebug() << "clipMPlayer: panned" << cwin;
-
-    // Repair aspect ratio
-    double new_aspect = (double) cwin.width() / cwin.height();
-    if (new_aspect < aspect) {
-        int w = qRound(cwin.height() * aspect);
-        int d = w - cwin.width();
-        int dl = d / 2;
-        int dr = d - dl;
-        int right = cwin.left() + cwin.width();
-        if (cwin.left() > 0) {
-            if (right < s.width()) {
-                cwin.moveLeft(cwin.left() - dl);
-                cwin.setWidth(w + dr);
-            } else {
-                cwin.setWidth(w);
-            }
-        } else if (right < s.width()) {
-            cwin.moveLeft(cwin.left() - d);
-            cwin.setWidth(w);
-        } else {
-            cwin.moveLeft(cwin.left() - dl);
-            cwin.setWidth(w + dr);
-        }
-    } else {
-        int h = qRound(cwin.width() / aspect);
-        int d = h - cwin.height();
-        int dt = d / 2;
-        int db = d - dt;
-        int bottom = cwin.top() + cwin.height();
-        if (cwin.top() > 0) {
-            if (bottom < s.height()) {
-                cwin.moveTop(cwin.top() - dt);
-                cwin.setHeight(h + db);
-            } else {
-                cwin.setHeight(h);
-            }
-        } else if (bottom < s.height()) {
-            cwin.moveTop(cwin.top() - d);
-            cwin.setHeight(h);
-        } else {
-            cwin.moveTop(cwin.top() - dt);
-            cwin.setHeight(h + db);
-        }
-    }
-
-    // Based on MPlayer source libvo/aspect.c use the vertical zoom for panscan
-    zoom = (double) vwin.height() / cwin.height();
-    if (zoom > 1) {
-        // Clipping win";
-        vwin = cwin;
-    } else {
-        // Not clipping win";
-        zoom = 1;
-    }
-}
-
 void TPlayerWindow::updateVideoWindow() {
     /*
     qDebug() << "updateVideoWindow: vsize" << video_size
@@ -268,15 +196,14 @@ void TPlayerWindow::updateVideoWindow() {
              << "fs" << pref->fullscreen;
     */
 
-    // Note: Can give MPV the whole window, it uses it for OSD and Subs.
+    // Note: can give MPV the whole window, it uses it for OSD and Subs.
     // Mplayer too, with most VOs, but with some, like XV, it misbehaves,
-    // not properly clearing the background not covered by the video.
-    // To be sure always clipping MPlayer back to the size of the video.
+    // not clearing the background not covered by the video.
 
     // On fullscreen ignore the toolbars
-    QRect vwin(QPoint(), pref->fullscreen ? TDesktop::size(this) : size());
+    QSize wsize = pref->fullscreen ? TDesktop::size(this) : size();
     // Set video size to window size
-    QSize vsize = vwin.size();
+    QSize vsize = wsize;
 
     // Select best fit: height adjusted or width adjusted,
     // in case video aspect does not match the window aspect ratio.
@@ -294,28 +221,14 @@ void TPlayerWindow::updateVideoWindow() {
     }
 
     // Zoom video size
-    double zoom = this->zoom();
-    vsize *= zoom;
+    vsize *= zoom();
 
     // Center video window
-    QSize c = (vwin.size() - vsize) / 2;
-    vwin.moveTo(c.width(), c.height());
-
-    // Resize video window to size of video
-    vwin.setSize(vsize);
+    QSize c = (wsize - vsize) / 2;
+    QRect vwin(c.width(), c.height(), vsize.width(), vsize.height());
 
     // Pan video window
-    QPoint pan = this->pan();
-    vwin.translate(pan);
-
-    // Clip MPlayer
-    if (pref->isMPlayer()) {
-        if (zoom > 1) {
-            clipMPlayer(vwin, zoom, pan);
-        } else {
-            zoom = 1;
-        }
-    }
+    vwin.translate(pan());
 
     // Return to local coords in fullscreen
     if (pref->fullscreen) {
@@ -324,9 +237,6 @@ void TPlayerWindow::updateVideoWindow() {
 
     // Set geometry video window
     video_window->setGeometry(vwin);
-
-    // Pass zoom to the player
-    player->updateZoom(zoom);
 
     // Update status bar with new video out size
     if (vsize != last_video_out_size) {
@@ -541,7 +451,7 @@ void TPlayerWindow::setZoom(double factor,
                             double factor_fullscreen,
                             bool updateVideoWindow) {
     logger()->debug("setZoom: normal screen %1, full screen %2",
-           factor, factor_fullscreen);
+           QString::number(factor), QString::number(factor_fullscreen));
 
     if (factor_fullscreen == 0) {
         // Set only current zoom
@@ -562,7 +472,7 @@ void TPlayerWindow::setZoom(double factor,
     }
 }
 
-double TPlayerWindow::zoom() {
+double TPlayerWindow::zoom() const {
     return pref->fullscreen ? zoom_factor_fullscreen : zoom_factor;
 }
 
@@ -590,7 +500,7 @@ void TPlayerWindow::moveVideo(int dx, int dy) {
     moveVideo(QPoint(dx, dy));
 }
 
-QPoint TPlayerWindow::pan() {
+QPoint TPlayerWindow::pan() const {
     return pref->fullscreen ? pan_offset_fullscreen : pan_offset;
 }
 

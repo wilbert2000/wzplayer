@@ -102,7 +102,6 @@ public:
 
     void dvdnavUpdateMousePos(const QPoint& pos);
 
-    void updateZoom(double zoom);
 
 public slots:
     void loadSub(const QString& sub);

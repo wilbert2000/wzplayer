@@ -77,20 +77,20 @@ public:
                  double factor_fullscreen = 0,
                  bool updateVideoWindow = true);
     // Zoom current screen
-    double zoom();
+    double zoom() const;
     // Zoom normal screen
-    double zoomNormalScreen() { return zoom_factor; }
+    double zoomNormalScreen() const { return zoom_factor; }
     // Zoom full screen
-    double zoomFullScreen() { return zoom_factor_fullscreen; }
+    double zoomFullScreen() const { return zoom_factor_fullscreen; }
 
     // Pan
     void setPan(const QPoint& pan, const QPoint& pan_fullscreen);
     // Pan current screen
-    QPoint pan();
+    QPoint pan() const;
     // Pan normal screen
-    QPoint panNormalScreen() { return pan_offset; }
+    QPoint panNormalScreen() const { return pan_offset; }
     // Pan full screen
-    QPoint panFullScreen() { return pan_offset_fullscreen; }
+    QPoint panFullScreen() const { return pan_offset_fullscreen; }
 
     // Reset zoom and pan full and normal screen
     void resetZoomAndPan();
@@ -157,7 +157,6 @@ private:
     bool checkDragging(QMouseEvent* event);
 
     void setFastWindow();
-    void clipMPlayer(QRect& vwin, double& zoom, const QPoint& pan);
 
 private slots:
     void onLeftClicked();

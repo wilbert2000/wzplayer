@@ -132,7 +132,6 @@ public:
     virtual void discButtonPressed(const QString& button_name) = 0;
 
     virtual void setAspect(double aspect) = 0;
-    virtual void updateZoom(double zoom) = 0;
 
 #if PROGRAM_SWITCH
     virtual void setTSProgram(int ID) = 0;

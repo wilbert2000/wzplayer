@@ -104,7 +104,6 @@ public:
 	void discButtonPressed(const QString& button_name);
 
 	void setAspect(double aspect);
-    virtual void updateZoom(double zoom);
 
 #if PROGRAM_SWITCH
 	void setTSProgram(int ID);
@@ -128,10 +127,6 @@ private:
     bool start_frame_set;
     int start_frame;
     double frame_off_by_one;
-
-	double zoom;
-	double pan_x;
-	double pan_y;
 
 	int sub_source;
 	bool sub_file;

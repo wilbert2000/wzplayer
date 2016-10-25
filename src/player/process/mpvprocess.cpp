@@ -1315,10 +1315,6 @@ void TMPVProcess::setAspect(double aspect) {
     writeToPlayer("set video-aspect " + QString::number(aspect));
 }
 
-void TMPVProcess::updateZoom(double zoom) {
-    Q_UNUSED(zoom)
-}
-
 #if PROGRAM_SWITCH
 void TMPVProcess::setTSProgram(int ID) {
     logger()->debug("setTSProgram: function not supported");

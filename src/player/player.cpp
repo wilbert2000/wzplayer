@@ -3079,7 +3079,7 @@ void TPlayer::getPanFromPlayerWindow() {
 }
 
 void TPlayer::setZoom(double factor) {
-    logger()->debug("setZoom: %1", factor);
+    logger()->debug("setZoom: %1", QString::number(factor));
 
     if (mdat.hasVideo()) {
         if (factor < TConfig::ZOOM_MIN)
@@ -3090,11 +3090,6 @@ void TPlayer::setZoom(double factor) {
         getZoomFromPlayerWindow();
         Gui::msgOSD(tr("Zoom: %1").arg(playerwindow->zoom()));
     }
-}
-
-// Slot called by TPlayerWindow::updateVideoWindow to update zoom
-void TPlayer::updateZoom(double zoom) {
-    proc->updateZoom(zoom);
 }
 
 void TPlayer::resetZoomAndPan() {
