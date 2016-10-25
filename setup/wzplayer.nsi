@@ -142,7 +142,7 @@
   !define MUI_FINISHPAGE_NOREBOOTSUPPORT
   !define MUI_FINISHPAGE_RUN $INSTDIR\wzplayer.exe
   !define MUI_FINISHPAGE_RUN_NOTCHECKED
-  !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\Release_notes.txt
+  !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\Readme.txt
   !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 
   ;Language Selection Dialog Settings
@@ -651,7 +651,6 @@ ${MementoSectionDone}
   Delete "$INSTDIR\Not_so_obvious_things.txt"
   Delete "$INSTDIR\Portable_Edition.txt"
   Delete "$INSTDIR\Readme.txt"
-  Delete "$INSTDIR\Release_notes.txt"
   Delete "$INSTDIR\Watching_TV.txt"
 
   ;Binaries
