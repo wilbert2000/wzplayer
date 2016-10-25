@@ -20,9 +20,8 @@
     WZPlayer is a graphical user interface for MPV and MPlayer based upon
     SMPlayer, http://www.smplayer.info, by Ricardo Villalba.
 
-    The most notable differences are improved performance, better and faster
-    scaling, better DVDNAV support, no working skins yet, no setup needed,
-    lots of setup available, no support and lots of source...
+    With improved performance, zoom and pan by mouse, improved DVDNAV support,
+    no setup needed, lots of setup available and lots of source...
 
     To compile and install WZPlayer please read Install.txt.
 
