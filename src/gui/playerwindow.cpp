@@ -126,10 +126,9 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     video_window->setFocusPolicy(Qt::NoFocus);
     video_window->setMouseTracking(true);
 
-    left_click_timer = new QTimer(this);
-    left_click_timer->setSingleShot(true);
-    left_click_timer->setInterval(qApp->doubleClickInterval() + 10);
-    connect(left_click_timer, SIGNAL(timeout()), this, SLOT(onLeftClicked()));
+    left_click_timer.setSingleShot(true);
+    left_click_timer.setInterval(qApp->doubleClickInterval() + 10);
+    connect(&left_click_timer, SIGNAL(timeout()), this, SLOT(onLeftClicked()));
     setDelayLeftClick(pref->delay_left_click);
 }
 
@@ -350,7 +349,7 @@ void TPlayerWindow::startDragging() {
     dragging = true;
     // Cancel pending left click
     if (delay_left_click)
-        left_click_timer->stop();
+        left_click_timer.stop();
     QApplication::setOverrideCursor(QCursor(Qt::DragMoveCursor));
     emit draggingChanged(true);
 }
@@ -489,7 +488,7 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
                     double_clicked = false;
                 } else {
                     // Delay left click until double click has chance to arrive
-                    left_click_timer->start();
+                    left_click_timer.start();
                 }
             } else {
                 double_clicked = false;
@@ -517,7 +516,7 @@ void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
         && event->modifiers() == Qt::NoModifier) {
         double_clicked = true;
         if (delay_left_click) {
-            left_click_timer->stop();
+            left_click_timer.stop();
         }
         emit doubleClicked();
     }
