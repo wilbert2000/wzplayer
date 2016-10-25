@@ -42,7 +42,7 @@
          <item>
           <widget class="QGroupBox" name="ip_prefer_group">
            <property name="title">
-            <string>Prefer IP version (MPlayer only)</string>
+            <string>IP version</string>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -56,7 +56,7 @@
               <item>
                <widget class="QRadioButton" name="ip_prefer_auto_radiobutton">
                 <property name="text">
-                 <string>&amp;Automatic, let MPlayer decide</string>
+                 <string>&amp;Automatic</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -81,14 +81,14 @@
             <item>
              <widget class="QRadioButton" name="ip_prefer_4_radiobutton">
               <property name="text">
-               <string>Prefer IPv&amp;4, fallback to IPv6</string>
+               <string>IPv&amp;4</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="ip_prefer_6_radiobutton">
               <property name="text">
-               <string>Prefer IPv&amp;6, fallback to IPv4</string>
+               <string>IPv&amp;6</string>
               </property>
              </widget>
             </item>

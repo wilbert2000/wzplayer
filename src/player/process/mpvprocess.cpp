@@ -935,8 +935,13 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
         if (!value.isNull())
             args << "--vf-add=" + value.toString();
     } else if (name == "af-add") {
-        if (!value.isNull())
+        if (!value.isNull()) {
             args << "--af-add=" + value.toString();
+        }
+    } else if (name == "prefer-ipv4") {
+        args << "--ytdl-raw-options=force-ipv4=";
+    } else if (name == "prefer-ipv6") {
+        args << "--ytdl-raw-options=force-ipv6=";
     } else {
         logger()->debug("setOption: ignoring option name '%1' value '%2'",
                         name, value.toString());
