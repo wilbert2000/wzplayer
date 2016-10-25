@@ -5,7 +5,7 @@
 namespace Gui {
 
 
-QStatusBar* statusbar = 0;
+static QStatusBar* statusbar = 0;
 
 void msg(const QString& msg, int timeout) {
 
