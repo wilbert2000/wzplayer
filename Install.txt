@@ -1,16 +1,16 @@
 This document explains how to compile and install wzplayer.
 
-1) Compilation general
+1) Compilation
 2) Changing the installation path
 3) Compiling under Windows
 4) How to create a deb package
 5) How to create a rpm package
 
-1) Compilation general
-----------------------
+1) Compilation
+--------------
 For Windows see "Compiling under Windows"
 
-Be sure you have installed the Qt 4.4 or higher development packages. Its name
+Be sure you have installed the Qt 4.6 or higher development packages. Its name
 maybe qt4-devel, libqt4-dev, the higher the version the better. Issue the
 following commands from the directory under which you want to install the
 source:
@@ -42,7 +42,7 @@ Will build wzplayer for /usr and install it in /tmp/usr/
 
 3) Compiling under Windows
 ----------------------------
-You need to have git and at least Qt 4.4, but preferrable Qt 5.4 or later, with
+You need to have git and at least Qt 4.6, but preferrable Qt 5.4 or later, with
 the MinGW compiler installed. You can get git from
 https://git-scm.com/downloads and Qt with MinGW from http://www.qt.io/.
 
