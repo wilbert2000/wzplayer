@@ -386,4 +386,5 @@ OTHER_FILES += \
     ../setup/scripts/make_pkgs.cmd \
     ../man/wzplayer.1 \
     wzplayer.rc \
-    ../Watching_TV.txt
+    ../Watching_TV.txt \
+    ../setup/wzplayer.nsi
