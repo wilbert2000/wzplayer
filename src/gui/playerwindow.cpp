@@ -220,7 +220,7 @@ void TPlayerWindow::updateVideoWindow() {
         }
     }
 
-    // Zoom video size
+    // Zoom video size. A large size can blow up the video surface.
     vsize *= zoom();
 
     // Center video window
