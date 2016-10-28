@@ -1106,6 +1106,15 @@ void TMainWindow::showPlaylist(bool b) {
     playlist->setVisible(b);
 }
 
+void TMainWindow::showLog(bool b) {
+
+    log_window->setVisible(b);
+    if (b) {
+        log_window->raise();
+        log_window->activateWindow();
+    }
+}
+
 void TMainWindow::showPreferencesDialog() {
     logger()->debug("showPreferencesDialog");
 

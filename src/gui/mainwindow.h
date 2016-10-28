@@ -123,6 +123,7 @@ public slots:
     void setInitialSubtitle(const QString& subtitle_file);
 
     virtual void showPlaylist(bool b);
+    virtual void showLog(bool b);
     virtual void showPreferencesDialog();
     virtual void showFilePropertiesDialog(bool checked);
 

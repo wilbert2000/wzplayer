@@ -167,7 +167,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
                     QKeySequence("Ctrl+L"));
 	a->setCheckable(true);
     main_window->addAction(a);
-    connect(a, SIGNAL(triggered(bool)), logWindow, SLOT(setVisible(bool)));
+    connect(a, SIGNAL(triggered(bool)), main_window, SLOT(showLog(bool)));
     connect(logWindow, SIGNAL(visibilityChanged(bool)),
             a, SLOT(setChecked(bool)));
 
