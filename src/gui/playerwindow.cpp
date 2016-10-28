@@ -288,7 +288,6 @@ void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
-    //logger()->debug("mouseMoveEvent");
 
     event->accept();
 
@@ -433,7 +432,6 @@ void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::wheelEvent(QWheelEvent* event) {
-    //logger()->debug("wheelEvent: delta: %1", event->delta());
 
     event->accept();
 
@@ -450,8 +448,6 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
 void TPlayerWindow::setZoom(double factor,
                             double factor_fullscreen,
                             bool updateVideoWindow) {
-    logger()->debug("setZoom: normal screen %1, full screen %2",
-           QString::number(factor), QString::number(factor_fullscreen));
 
     if (factor_fullscreen == 0) {
         // Set only current zoom
