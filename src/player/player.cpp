@@ -3078,17 +3078,17 @@ void TPlayer::getPanFromPlayerWindow() {
     mset.pan_offset_fullscreen = playerwindow->panFullScreen();
 }
 
-void TPlayer::setZoom(double factor) {
-    logger()->debug("setZoom: %1", QString::number(factor));
+void TPlayer::setZoom(double zoom) {
+    logger()->debug("setZoom: %1", QString::number(zoom));
 
     if (mdat.hasVideo()) {
-        if (factor < TConfig::ZOOM_MIN)
-            factor = TConfig::ZOOM_MIN;
-        else if (factor > TConfig::ZOOM_MAX)
-            factor = TConfig::ZOOM_MAX;
-        playerwindow->setZoom(factor);
+        if (zoom < TConfig::ZOOM_MIN)
+            zoom = TConfig::ZOOM_MIN;
+        else if (zoom > TConfig::ZOOM_MAX)
+            zoom = TConfig::ZOOM_MAX;
+        playerwindow->setZoom(zoom);
         getZoomFromPlayerWindow();
-        Gui::msgOSD(tr("Zoom: %1").arg(playerwindow->zoom()));
+        Gui::msg2(tr("Zoom: %1").arg(playerwindow->zoom()));
     }
 }
 
