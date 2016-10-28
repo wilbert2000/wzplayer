@@ -12,6 +12,8 @@ extern void setMessageHandler(QStatusBar* bar);
 
 extern void msgOSD(const QString& message,
                    int timeout = TConfig::MESSAGE_DURATION);
+extern void msg2(const QString& message,
+                 int timeout = TConfig::MESSAGE_DURATION);
 
 
 class TMsgSlot : public QObject {

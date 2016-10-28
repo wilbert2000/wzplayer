@@ -489,7 +489,7 @@ void TPlayerWindow::moveVideo(QPoint delta) {
     }
     updateVideoWindow();
     QPoint p = pan();
-    Gui::msgOSD(tr("Pan (%1, %2)").arg(p.x()).arg(p.y()));
+    Gui::msg2(tr("Pan (%1, %2)").arg(p.x()).arg(p.y()));
 }
 
 void TPlayerWindow::moveVideo(int dx, int dy) {

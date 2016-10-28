@@ -27,6 +27,14 @@ void msgOSD(const QString& message, int timeout) {
     msg(message, timeout);
 }
 
+void msg2(const QString& message, int timeout) {
+
+    if (Settings::pref->fullscreen) {
+        msgOSD(message, timeout);
+    } else {
+        msg(message);
+    }
+}
 
 TMsgSlot* msgSlot = 0;
 
