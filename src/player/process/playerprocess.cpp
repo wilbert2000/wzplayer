@@ -60,7 +60,6 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
     }
 
     if (isRunning() && !received_end_of_file) {
-        // TODO:
 
 #ifdef Q_OS_WIN
         write(text.toUtf8() + "\n");
