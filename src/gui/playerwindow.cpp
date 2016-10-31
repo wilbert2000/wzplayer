@@ -199,6 +199,10 @@ void TPlayerWindow::updateVideoWindow() {
     // Note: can give MPV the whole window, it uses it for OSD and Subs.
     // Mplayer too, with most VOs, but with some, like XV, it misbehaves,
     // not clearing the background not covered by the video.
+    // MPV supports video-zoom and pan, but pan has really bad performance,
+    // though it enables using black borders for OSD and subs.
+    // MPlayer does not support pan in slave mode. It does support zoom through
+    // the pansan slave command.
 
     // On fullscreen ignore the toolbars
     QSize wsize = pref->fullscreen ? TDesktop::size(this) : size();
