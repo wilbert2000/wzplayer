@@ -2634,7 +2634,7 @@ void TMainWindow::toggleStayOnTop() {
 }
 
 void TMainWindow::onPlayerError(int exit_code) {
-    logger()->debug("onPlayerError: %1", exit_code);
+    logger()->error("onPlayerError: %1", exit_code);
 
     QString s = Player::Process::TExitMsg::message(exit_code)
                 + " (" + player->mdat.filename + ")";
@@ -2648,7 +2648,7 @@ void TMainWindow::onPlayerError(int exit_code) {
         QMessageBox::warning(this,
             tr("%1 process error").arg(pref->playerName()),
             s + " \n"
-            + tr("See menu Window -> View log for additional details."),
+            + tr("See menu Window -> View log for details."),
             QMessageBox::Ok);
         busy = false;
     }
