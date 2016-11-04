@@ -5,9 +5,9 @@
 const int TConfig::MESSAGE_DURATION = 3500;
 const int TConfig::ERROR_MESSAGE_DURATION = 6000;
 
-const double TConfig::ZOOM_MIN = 0.01;
+const double TConfig::ZOOM_MIN = 0.02;
 const double TConfig::ZOOM_MAX = 8.0;
-const double TConfig::ZOOM_STEP = 0.01;
+const double TConfig::ZOOM_STEP = 0.02;
 
 const int TConfig::PAN_STEP = 8;
 
