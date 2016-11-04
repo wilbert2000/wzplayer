@@ -2,6 +2,7 @@
 #define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
 #include <QTreeWidget>
+#include <QTimer>
 #include <gui/playlist/playlistwidgetitem.h>
 #include "wzdebug.h"
 
@@ -74,7 +75,7 @@ protected:
 
 private:
     bool mModified;
-    QTimer* wordWrapTimer;
+    QTimer wordWrapTimer;
 
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
