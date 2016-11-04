@@ -65,6 +65,7 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     debug(logger()),
     mdat(),
     mset(&mdat),
+    keepSize(false),
     playerwindow(pw),
     _state(STATE_LOADING) {
 
@@ -72,6 +73,10 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     qRegisterMetaType<TState>("Player::TState");
 
     player = this;
+
+    keepSizeTimer.setInterval(1000);
+    keepSizeTimer.setSingleShot(true);
+    connect(&keepSizeTimer, SIGNAL(timeout()), this, SLOT(clearKeepSize()));
 
     proc = Player::Process::TPlayerProcess::createPlayerProcess(this, &mdat);
 
@@ -2955,11 +2960,15 @@ void TPlayer::nextProgram() {
 }
 #endif
 
+void TPlayer::clearKeepSize() {
+    logger()->debug("clearKeepSize: clearing keepSize");
+
+    keepSize = false;
+    keepSizeTimer.stop();
+}
+
 void TPlayer::setAspectRatio(int id) {
     logger()->debug("setAspectRatio: %1", id);
-
-    if (mdat.noVideo())
-        return;
 
     // Keep id in range
     TAspectRatio::TMenuID aspect_id;
@@ -2968,11 +2977,25 @@ void TPlayer::setAspectRatio(int id) {
     else
         aspect_id = (TAspectRatio::TMenuID) id;
 
-    mset.aspect_ratio.setID(aspect_id);
-    proc->setAspect(mset.aspect_ratio.toDouble());
+    if (proc->isReady() && mdat.hasVideo()) {
+        mset.aspect_ratio.setID(aspect_id);
 
-    emit aspectRatioChanged(aspect_id);
-    Gui::msg(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
+        // proc->setAspect can generate a change of VO size.
+        // Inform TMainWindow::getNewSizeFactor() to keep the current size
+        keepSize = true;
+        proc->setAspect(mset.aspect_ratio.toDouble());
+
+        emit aspectRatioChanged(aspect_id);
+        Gui::msg(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
+
+        // Clear keepSize in case main window resize not arriving
+        if (keepSize) {
+            keepSizeTimer.start();
+        }
+    } else {
+        logger()->error("setAspectRatio: " + mset.aspect_ratio.toString()
+                        + ". No video player.");
+    }
 }
 
 void TPlayer::nextAspectRatio() {

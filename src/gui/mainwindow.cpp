@@ -2346,6 +2346,7 @@ double TMainWindow::getNewSizeFactor() {
     QSize res = playerwindow->resolution();
     QSize video_size = res;
 
+    // Handle fullscreen
     if (pref->fullscreen) {
         size_factor = (double) available_size.width() / video_size.width();
         double size_factor_y = (double) available_size.height()
@@ -2353,9 +2354,17 @@ double TMainWindow::getNewSizeFactor() {
         if (size_factor_y < size_factor) {
             size_factor = size_factor_y;
         }
-        logger()->debug("getNewSizeFactor: returning %1 for full screen",
+        logger()->debug("getNewSizeFactor: returning size %1 for full screen",
                         QString::number(size_factor));
         return size_factor;
+    }
+
+    // Return current size for VO size change by TPlayer::setAspectRatio()
+    if (player->keepSize) {
+        player->clearKeepSize();
+        logger()->debug(QString("getNewSizeFactor: keepSize set, returning"
+                                " current size %1").arg(pref->size_factor));
+        return pref->size_factor;
     }
 
     // Limit size to 0.6 of available desktop
@@ -2416,7 +2425,7 @@ double TMainWindow::getNewSizeFactor() {
 
 void TMainWindow::getNewGeometry(int w, int h) {
 
-    // Get new size factor, trying 1.0
+    // Get new size factor
     pref->size_factor = getNewSizeFactor();
 
     QSize desktop = TDesktop::availableSize(this);
@@ -2436,7 +2445,7 @@ void TMainWindow::getNewGeometry(int w, int h) {
             stickx = false;
         } else {
             p.rx() = x;
-            logger()->debug("getNewGeometry: sticking to right side");
+            logger()->trace("getNewGeometry: sticking to right side");
         }
     }
     if (sticky) {
@@ -2445,7 +2454,7 @@ void TMainWindow::getNewGeometry(int w, int h) {
             sticky = false;
         } else {
             p.ry() = y;
-            logger()->debug("getNewGeometry: sticking to bottom");
+            logger()->trace("getNewGeometry: sticking to bottom");
         }
     }
     if (stickx || sticky) {
@@ -2466,6 +2475,7 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
         if (!panel->isVisible()) {
             panel->show();
         }
+
         // force_resize is only set for the first video when
         // pref->save_window_size_on_exit is not set.
         if (panel->width() < 64 || panel->height() < 48) {

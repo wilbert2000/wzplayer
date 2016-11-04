@@ -21,6 +21,7 @@
 
 #include <QProcess>
 #include <QTime>
+#include <QTimer>
 
 #include "wzdebug.h"
 #include "config.h"
@@ -50,6 +51,8 @@ public:
 
     TMediaData mdat;
     Settings::TMediaSettings mset;
+
+    bool keepSize;
 
     //! Return the current state
     TState state() const { return _state; }
@@ -345,6 +348,7 @@ public slots:
                           int duration = TConfig::MESSAGE_DURATION,
                           int level = 1);
     void clearOSD();
+    void clearKeepSize();
 
 signals:
     void stateChanged(Player::TState state);
@@ -424,6 +428,7 @@ private:
     TState _state;
     bool seeking;
     QTime time;
+    QTimer keepSizeTimer;
 
     QString initial_subtitle;
     QMap<QString,QString> forced_titles;
