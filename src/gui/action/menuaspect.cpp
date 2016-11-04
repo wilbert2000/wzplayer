@@ -16,11 +16,11 @@ namespace Action {
 TMenuAspect::TMenuAspect(TMainWindow* mw) :
     TMenu(mw, mw, "aspect_menu", tr("&Aspect ratio"), "aspect") {
 
-	group = new TActionGroup(this, "aspect");
-	group->setEnabled(false);
+    group = new TActionGroup(this, "aspect");
+    group->setEnabled(false);
     aspectAutoAct = new TActionGroupItem(this, group, "aspect_detect",
                                          tr("&Auto"), TAspectRatio::AspectAuto);
-	addSeparator();
+    addSeparator();
     new TActionGroupItem(this, group, "aspect_1_1",
         TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
     new TActionGroupItem(this, group, "aspect_5_4",
@@ -49,16 +49,16 @@ TMenuAspect::TMenuAspect(TMainWindow* mw) :
 
     connect(group, SIGNAL(activated(int)), player, SLOT(setAspectRatio(int)));
     connect(player, SIGNAL(aspectRatioChanged(int)),
-			this, SLOT(onAspectRatioChanged(int)),
-			Qt::QueuedConnection);
+            this, SLOT(onAspectRatioChanged(int)),
+            Qt::QueuedConnection);
 
-	addSeparator();
+    addSeparator();
     nextAspectAct = new TAction(this, "next_aspect", tr("&Next aspect ratio"),
                                 "", Qt::Key_A);
     connect(nextAspectAct, SIGNAL(triggered()), player, SLOT(nextAspectRatio()));
 
     addActionsTo(main_window);
-	upd();
+    upd();
 }
 
 void TMenuAspect::upd() {
@@ -66,37 +66,37 @@ void TMenuAspect::upd() {
     group->setChecked(player->mset.aspect_ratio.ID());
 
     double aspect = player->mset.aspectToDouble();
-	QString s = TAspectRatio::doubleToString(aspect);
-	menuAction()->setToolTip(tr("Aspect ratio %1").arg(s));
+    QString s = TAspectRatio::doubleToString(aspect);
+    menuAction()->setToolTip(tr("Aspect ratio %1").arg(s));
 
     s = tr("&Auto") + "\t"
         + TAspectRatio::doubleToString(player->mdat.video_aspect_original);
-	aspectAutoAct->setTextAndTip(s);
+    aspectAutoAct->setTextAndTip(s);
 
-	s = tr("&Disabled") + "\t" + TAspectRatio::doubleToString(
+    s = tr("&Disabled") + "\t" + TAspectRatio::doubleToString(
             (double) player->mdat.video_width / player->mdat.video_height);
-	aspectDisabledAct->setTextAndTip(s);
+    aspectDisabledAct->setTextAndTip(s);
 }
 
 void TMenuAspect::enableActions() {
 
-	// Uses mset, so useless to set if stopped or no video
+    // Uses mset, so useless to set if stopped or no video
     bool enabled = player->statePOP() && player->hasVideo();
-	group->setEnabled(enabled);
-	nextAspectAct->setEnabled(enabled);
-	upd();
+    group->setEnabled(enabled);
+    nextAspectAct->setEnabled(enabled);
+    upd();
 }
 
 void TMenuAspect::onMediaSettingsChanged(TMediaSettings*) {
-	upd();
+    upd();
 }
 
 void TMenuAspect::onAboutToShow() {
-	upd();
+    upd();
 }
 
 void TMenuAspect::onAspectRatioChanged(int) {
-	upd();
+    upd();
 }
 
 } // namespace Action
