@@ -3,6 +3,12 @@ LANGUAGE = C++
 
 CONFIG += qt warn_on
 
+lessThan(QT_MAJOR_VERSION, 5) {
+lessThan(QT_MINOR_VERSION, 6) {
+    error("Qt >= 4.6 required")
+}
+}
+
 !CONFIG(debug, debug|release) {
 !CONFIG(release, debug|release) {
     CONFIG += release
@@ -28,9 +34,6 @@ isEqual(QT_MAJOR_VERSION, 5) {
     QT += widgets gui
 }
 
-contains(QT_VERSION, ^4\\.[0-5]\\..*) {
-    error("Qt >= 4.6 required")
-}
 
 HEADERS += wzdebug.h \
     version.h \
