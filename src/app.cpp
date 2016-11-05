@@ -20,7 +20,6 @@
 
 #include <QFile>
 #include <QDir>
-#include <QUrl>
 #include <QTranslator>
 #include <QLocale>
 #include <QStyle>

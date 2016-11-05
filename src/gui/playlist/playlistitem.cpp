@@ -3,7 +3,6 @@
 #include "log4qt/logger.h"
 
 #include <QApplication>
-#include <QUrl>
 #include <QDir>
 #include <QFileInfo>
 #include <QTime>

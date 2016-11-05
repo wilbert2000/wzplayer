@@ -20,7 +20,6 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QDebug>
-#include <QUrl>
 
 #include "log4qt/logger.h"
 #include "config.h"
