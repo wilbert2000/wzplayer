@@ -984,26 +984,23 @@ void TPlaylist::openFolder() {
 
     TPlaylistWidgetItem* i = playlistWidget->currentPlaylistWidgetItem();
     if (i) {
-        QString folder;
+        QUrl url;
         QFileInfo fi(i->filename());
-        if (i->isPlaylist()
-            || !i->isFolder()
-            || fi.fileName() == TConfig::WZPLAYLIST) {
-            folder = fi.absolutePath();
-        } else {
-            folder = i->filename();
-        }
-
-        if (!folder.isEmpty()) {
-            QUrl url(folder);
-            if (url.scheme().isEmpty()) {
-                url = QUrl::fromLocalFile(folder);
+        if (fi.exists()) {
+            if (i->isPlaylist()
+                || !i->isFolder()
+                || fi.fileName() == TConfig::WZPLAYLIST) {
+                url = QUrl::fromLocalFile(fi.absolutePath());
+            } else {
+                url = QUrl::fromLocalFile(i->filename());
             }
-
-            debug << "openFolder: opening" << url;
-            debug << debug;
-            QDesktopServices::openUrl(url);
+        } else {
+            url.setUrl(i->filename());
         }
+
+        debug << "openFolder: opening" << url;
+        debug << debug;
+        QDesktopServices::openUrl(url);
     }
 }
 
