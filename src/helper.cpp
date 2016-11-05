@@ -105,20 +105,21 @@ QString Helper::nameForURL(QString url, bool extension) {
         return "";
     }
 
+    QString name;
     QUrl qUrl(url);
-    QString scheme = qUrl.scheme().toLower();
-    if (scheme == "file" ) {
+    if (qUrl.scheme().toLower() == "file") {
         url = qUrl.toLocalFile();
-        scheme = "";
     }
 
-    QString name;
-    if (scheme.isEmpty()) {
-        QFileInfo fi(url);
+    QFileInfo fi(url);
+    if (fi.exists()) {
         if (fi.isDir()) {
-            name = fi.fileName(); // Returns "" when named ends with /
+            name = fi.fileName(); // Returns "" when name ends with /
             if (name.isEmpty()) {
                 name = fi.dir().dirName(); // Returns "" for root
+                if (name.isEmpty()) {
+                    name = QDir::separator();
+                }
             }
         } else if (extension) {
             name = fi.fileName();
@@ -126,22 +127,27 @@ QString Helper::nameForURL(QString url, bool extension) {
             name = fi.completeBaseName();
         }
     } else {
+
+#ifdef Q_OS_WIN
+        // For non-existing local files on Windows qUrl will convert \ to %5C
+        qUrl.setUrl(url.replace('\\', '/'));
+#endif
+
         name = qUrl.toString(QUrl::RemoveScheme
-                            | QUrl::RemoveAuthority
-                            | QUrl::RemoveQuery
-                            | QUrl::RemoveFragment
-                            | QUrl::StripTrailingSlash);
-        if (!name.isEmpty()) {
+                             | QUrl::RemoveAuthority
+                             | QUrl::RemoveQuery
+                             | QUrl::RemoveFragment
+                             | QUrl::StripTrailingSlash);
+        if (name.isEmpty()) {
+            name = url;
+        } else {
+            fi.setFile(name);
             if (extension) {
-                name = QFileInfo(name).fileName();
+                name = fi.fileName();
             } else {
-                name = QFileInfo(name).completeBaseName();
+                name = fi.completeBaseName();
             }
         }
-    }
-
-    if (name.isEmpty()) {
-        name = url;
     }
 
     return name;

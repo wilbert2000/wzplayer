@@ -620,34 +620,29 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
         QString name,
         bool protectName) {
 
-    bool setFailed = false;
-
     TDiscName disc(filename);
     if (disc.valid) {
         if (name.isEmpty()) {
             name = disc.displayName();
         }
-    } else if (QUrl(filename).scheme().isEmpty()) {
-        if (parent->isWZPlaylist()) {
+    } else if (parent->isWZPlaylist()){
+
+#ifdef Q_OS_WIN
+        bool localFile = true;
+#else
+        bool localFile = QUrl(filename).scheme().isEmpty();
+#endif
+
+        if (localFile) {
             logger()->info("addItemNotFound: ignoring no longer existing "
-                               " playlist item '%1'", filename);
+                           " playlist item '%1'", filename);
             parent->setModified();
             return 0;
-        }
-        logger()->error("addItemNotFound: '%1' not found", filename);
-        setFailed = true;
+         }
     }
 
-    TPlaylistWidgetItem* item = new TPlaylistWidgetItem(parent,
-                                                        filename,
-                                                        name,
-                                                        0,
-                                                        false,
-                                                        protectName);
-    if (setFailed) {
-        item->setState(PSTATE_FAILED);
-    }
-    return item;
+    return new TPlaylistWidgetItem(parent, filename, name, 0, false,
+                                   protectName);
 }
 
 TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
@@ -681,9 +676,8 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
             fi.setFile(dir);
             name = "";
             protectName = false;
-            logger()->info("addItem: '%1' no longer exists. Linking to"
-                           " directory '%2' instead",
-                           filename, fi.absoluteFilePath());
+            logger()->info("addItem: '%1' no longer exists. Adding directory"
+                           " '%2' instead", filename, fi.absoluteFilePath());
         } else {
             logger()->info("addItem: ignoring no longer existing playlist '%1'",
                            filename);
