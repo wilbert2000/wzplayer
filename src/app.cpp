@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
 #ifdef Q_OS_WIN
 #if USE_ASSOCIATIONS
 #include "extensions.h"
-#include "winfileassoc.h"	//required for Uninstall
+#include "winfileassoc.h"    //required for Uninstall
 #endif
 #endif
 
@@ -168,18 +168,18 @@ bool TApp::loadCatalog(QTranslator& translator,
 void TApp::loadTranslation() {
     logger()->debug("loadTranslations");
 
-	QString locale = pref->language;
-	if (locale.isEmpty()) {
-		locale = QLocale::system().name();
-	}
-	QString trans_path = TPaths::translationPath();
+    QString locale = pref->language;
+    if (locale.isEmpty()) {
+        locale = QLocale::system().name();
+    }
+    QString trans_path = TPaths::translationPath();
 
-	// Try to load it first from app path (in case there's an updated
-	// translation), if it fails it will try then from the Qt path.
-	if (!loadCatalog(qt_trans, "qt", locale, trans_path)) {
-		loadCatalog(qt_trans, "qt", locale, TPaths::qtTranslationPath());
-	}
-	loadCatalog(app_trans, TConfig::PROGRAM_ID, locale, trans_path);
+    // Try to load it first from app path (in case there's an updated
+    // translation), if it fails it will try then from the Qt path.
+    if (!loadCatalog(qt_trans, "qt", locale, trans_path)) {
+        loadCatalog(qt_trans, "qt", locale, TPaths::qtTranslationPath());
+    }
+    loadCatalog(app_trans, TConfig::PROGRAM_ID, locale, trans_path);
 }
 
 void TApp::loadConfig() {
@@ -206,146 +206,146 @@ void TApp::loadConfig() {
 
 QString getArgName(const QString& arg) {
 
-	if (arg.left(2) == "--") {
-		return arg.mid(2);
-	}
-	if (arg.left(1) == "-") {
-		return arg.mid(1);
-	}
+    if (arg.left(2) == "--") {
+        return arg.mid(2);
+    }
+    if (arg.left(1) == "-") {
+        return arg.mid(1);
+    }
 
 #ifdef Q_OS_WIN
-	if (arg.left(1) == "/") {
-		return arg.mid(1);
-	}
+    if (arg.left(1) == "/") {
+        return arg.mid(1);
+    }
 #endif
 
-	return "";
+    return "";
 }
 
 bool TApp::processArgName(const QString& name, const QStringList& args) const {
 
-	for (int i = 0; i < args.size(); i++) {
-		if (getArgName(args.at(i)) == name) {
-			return true;
-		}
-	}
+    for (int i = 0; i < args.size(); i++) {
+        if (getArgName(args.at(i)) == name) {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 int TApp::processArgPos(const QString& name, const QStringList& args) const {
 
-	int pos = args.indexOf("--" + name);
-	if (pos < 0) {
-		pos = args.indexOf("-" + name);
+    int pos = args.indexOf("--" + name);
+    if (pos < 0) {
+        pos = args.indexOf("-" + name);
 
 #ifdef Q_OS_WIN
-		if (pos < 0) {
-			pos = args.indexOf("/" + name);
-		}
+        if (pos < 0) {
+            pos = args.indexOf("/" + name);
+        }
 #endif
 
-	}
+    }
 
-	return pos;
+    return pos;
 }
 
 TApp::ExitCode TApp::processArgs() {
 
-	QStringList args = arguments();
+    QStringList args = arguments();
 
-	// Uninstall Windows file associations
+    // Uninstall Windows file associations
 #ifdef Q_OS_WIN
     if (processArgName("uninstall", args)) {
 #if USE_ASSOCIATIONS
-		// Called by uninstaller. Will restore old associations.
-		WinFileAssoc RegAssoc; 
+        // Called by uninstaller. Will restore old associations.
+        WinFileAssoc RegAssoc;
         QStringList regExts;
         RegAssoc.GetRegisteredExtensions(extensions.allPlayable(), regExts);
-		RegAssoc.RestoreFileAssociations(regExts);
+        RegAssoc.RestoreFileAssociations(regExts);
         logger()->info("processArgs: restored associations");
 #endif
-		return NoError;
-	}
+        return NoError;
+    }
 #endif
 
-	// Get config path from args
-	int pos = processArgPos("config-path", args);
-	if (pos >= 0) {
-		pos++;
-		if (pos < args.count()) {
-			initial_config_path = args[pos];
-			// Delete from list
-			args.removeAt(pos);
-			args.removeAt(pos - 1);
+    // Get config path from args
+    int pos = processArgPos("config-path", args);
+    if (pos >= 0) {
+        pos++;
+        if (pos < args.count()) {
+            initial_config_path = args[pos];
+            // Delete from list
+            args.removeAt(pos);
+            args.removeAt(pos - 1);
             logger()->info("processArgs: configuration path set to '%1'",
                          initial_config_path);
-		} else {
+        } else {
             logger()->error("processArgs: expected path after --config-path");
-			return TApp::ErrorArgument;
-		}
-	}
+            return TApp::ErrorArgument;
+        }
+    }
 
     // Load preferences, set style and load translation
-	loadConfig();
+    loadConfig();
 
-	if (processArgName("delete-config", args)) {
-		TCleanConfig::clean(TPaths::configPath());
-		return NoError;
-	}
+    if (processArgName("delete-config", args)) {
+        TCleanConfig::clean(TPaths::configPath());
+        return NoError;
+    }
 
-	showInfo();
+    showInfo();
 
     QString send_action; // Action to be passed to running instance
-	bool show_help = false;
-	bool add_to_playlist = false;
+    bool show_help = false;
+    bool add_to_playlist = false;
 
-	for (int n = 1; n < args.count(); n++) {
-		QString argument = args[n];
-		QString name = getArgName(argument);
+    for (int n = 1; n < args.count(); n++) {
+        QString argument = args[n];
+        QString name = getArgName(argument);
 
         if (name == "debug" || name == "trace") {
 
-		} else if (name == "send-action") {
+        } else if (name == "send-action") {
             if (n + 1 < args.count()) {
-				n++;
+                n++;
                 send_action = args[n];
-			} else {
+            } else {
                 logger()->error("expected parameter for --send-action");
-				return ErrorArgument;
-			}
-		} else if (name == "actions") {
-			if (n+1 < args.count()) {
-				n++;
+                return ErrorArgument;
+            }
+        } else if (name == "actions") {
+            if (n+1 < args.count()) {
+                n++;
                 actions = args[n];
-			} else {
+            } else {
                 logger()->error("expected parameter for --actions");
-				return ErrorArgument;
-			}
-		} else if (name == "sub") {
+                return ErrorArgument;
+            }
+        } else if (name == "sub") {
             if (n + 1 < args.count()) {
-				n++;
-				QString file = args[n];
-				if (QFile::exists(file)) {
-					subtitle_file = QFileInfo(file).absoluteFilePath();
-				} else {
+                n++;
+                QString file = args[n];
+                if (QFile::exists(file)) {
+                    subtitle_file = QFileInfo(file).absoluteFilePath();
+                } else {
                     logger()->error("file '%s' doesn't exists", file);
-				}
-			} else {
+                }
+            } else {
                 logger()->error("expected parameter for --sub");
-				return ErrorArgument;
-			}
-		} else if (name == "media-title") {
+                return ErrorArgument;
+            }
+        } else if (name == "media-title") {
             if (n + 1 < args.count()) {
-				n++;
+                n++;
                 if (media_title.isEmpty()) {
                     media_title = args[n];
                 }
-			}
+            }
         } else if (name == "close-at-end") {
-			close_at_end = 1;
-		} else if (name == "no-close-at-end") {
-			close_at_end = 0;
+            close_at_end = 1;
+        } else if (name == "no-close-at-end") {
+            close_at_end = 0;
         } else if (name == "add-to-playlist") {
             add_to_playlist = true;
         } else if (!restarting) {
@@ -385,43 +385,43 @@ TApp::ExitCode TApp::processArgs() {
                 files_to_play.append(argument);
             }
         }
-	}
+    }
 
-	if (show_help) {
-		printf("%s\n", CLHelp::help().toLocal8Bit().data());
-		return NoError;
-	}
+    if (show_help) {
+        printf("%s\n", CLHelp::help().toLocal8Bit().data());
+        return NoError;
+    }
 
     if (Settings::pref->use_single_window) {
-		// Single instance
-		if (isRunning()) {
-			sendMessage("Hello");
+        // Single instance
+        if (isRunning()) {
+            sendMessage("Hello");
 
             if (!send_action.isEmpty()) {
                 sendMessage("action " + send_action);
-			} else {
-				if (!subtitle_file.isEmpty()) {
-					sendMessage("load_sub " + subtitle_file);
-				}
+            } else {
+                if (!subtitle_file.isEmpty()) {
+                    sendMessage("load_sub " + subtitle_file);
+                }
 
-				if (!media_title.isEmpty()) {
-					sendMessage("media_title " + files_to_play[0] + " <<sep>> "
-						+ media_title);
-				}
+                if (!media_title.isEmpty()) {
+                    sendMessage("media_title " + files_to_play[0] + " <<sep>> "
+                        + media_title);
+                }
 
-				if (!files_to_play.isEmpty()) {
-					QString command = "open_files";
-					if (add_to_playlist)
-						command = "add_to_playlist";
-					sendMessage(command + " " + files_to_play.join(" <<sep>> "));
-				}
-			}
+                if (!files_to_play.isEmpty()) {
+                    QString command = "open_files";
+                    if (add_to_playlist)
+                        command = "add_to_playlist";
+                    sendMessage(command + " " + files_to_play.join(" <<sep>> "));
+                }
+            }
 
-			return NoError;
-		}
-	}
+            return NoError;
+        }
+    }
 
-	return TApp::NoExit;
+    return TApp::NoExit;
 }
 
 void TApp::createGUI() {
@@ -515,18 +515,19 @@ void TApp::onRequestRestart() {
 }
 
 void TApp::showInfo() {
+
 #ifdef Q_OS_WIN
-	QString win_ver;
-	switch (QSysInfo::WindowsVersion) {
-		case QSysInfo::WV_2000: win_ver = "Windows 2000"; break;
-		case QSysInfo::WV_XP: win_ver = "Windows XP"; break;
+    QString win_ver;
+    switch (QSysInfo::WindowsVersion) {
+        case QSysInfo::WV_2000: win_ver = "Windows 2000"; break;
+        case QSysInfo::WV_XP: win_ver = "Windows XP"; break;
         case QSysInfo::WV_2003:
             win_ver = "Windows XP Professional x64/Server 2003";
             break;
-		case QSysInfo::WV_VISTA: win_ver = "Windows Vista/Server 2008"; break;
-		case QSysInfo::WV_WINDOWS7: win_ver = "Windows 7/Server 2008 R2"; break;
+        case QSysInfo::WV_VISTA: win_ver = "Windows Vista/Server 2008"; break;
+        case QSysInfo::WV_WINDOWS7: win_ver = "Windows 7/Server 2008 R2"; break;
 #if QT_VERSION >= 0x040803
-		case QSysInfo::WV_WINDOWS8: win_ver = "Windows 8/Server 2012"; break;
+        case QSysInfo::WV_WINDOWS8: win_ver = "Windows 8/Server 2012"; break;
 #endif
 #if ((QT_VERSION >= 0x040806 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050200))
         case QSysInfo::WV_WINDOWS8_1:
@@ -534,24 +535,24 @@ void TApp::showInfo() {
             break;
 #endif
 #if ((QT_VERSION >= 0x040807 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050500))
-		case QSysInfo::WV_WINDOWS10: win_ver = "Windows 10"; break;
+        case QSysInfo::WV_WINDOWS10: win_ver = "Windows 10"; break;
 #endif
-		case QSysInfo::WV_NT_based: win_ver = "NT-based Windows"; break;
-		default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
-	}
+        case QSysInfo::WV_NT_based: win_ver = "NT-based Windows"; break;
+        default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
+    }
 #endif
     QString s = tr("This is WZPlayer %1 thinking it is running on %2")
                 .arg(TVersion::version)
 #ifdef Q_OS_LINUX
-				.arg("Linux");
+                .arg("Linux");
 #else
 #ifdef Q_OS_WIN
-				.arg("Windows ("+win_ver+")");
+                .arg("Windows ("+win_ver+")");
 #else
 #ifdef Q_OS_OS2
-				.arg("eCS (OS/2)");
+                .arg("eCS (OS/2)");
 #else
-				.arg("Other OS");
+                .arg("Other OS");
 #endif
 #endif
 #endif
@@ -659,64 +660,64 @@ void TApp::showInfo() {
 
 bool TApp::winEventFilter(MSG* msg, long* result) {
 
-	static uint last_appcommand = 0;
+    static uint last_appcommand = 0;
 
-	if (msg->message == WM_KEYDOWN) {
+    if (msg->message == WM_KEYDOWN) {
         //logger()->debug("TApp::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
-		bool eat_key = false;
-		if ((last_appcommand == APPCOMMAND_MEDIA_NEXTTRACK) && (msg->wParam == VK_MEDIA_NEXT_TRACK)) eat_key = true;
-		else
-		if ((last_appcommand == APPCOMMAND_MEDIA_PREVIOUSTRACK) && (msg->wParam == VK_MEDIA_PREV_TRACK)) eat_key = true;
-		else
-		if ((last_appcommand == APPCOMMAND_MEDIA_PLAY_PAUSE) && (msg->wParam == VK_MEDIA_PLAY_PAUSE)) eat_key = true;
-		else
-		if ((last_appcommand == APPCOMMAND_MEDIA_STOP) && (msg->wParam == VK_MEDIA_STOP)) eat_key = true;
+        bool eat_key = false;
+        if ((last_appcommand == APPCOMMAND_MEDIA_NEXTTRACK) && (msg->wParam == VK_MEDIA_NEXT_TRACK)) eat_key = true;
+        else
+        if ((last_appcommand == APPCOMMAND_MEDIA_PREVIOUSTRACK) && (msg->wParam == VK_MEDIA_PREV_TRACK)) eat_key = true;
+        else
+        if ((last_appcommand == APPCOMMAND_MEDIA_PLAY_PAUSE) && (msg->wParam == VK_MEDIA_PLAY_PAUSE)) eat_key = true;
+        else
+        if ((last_appcommand == APPCOMMAND_MEDIA_STOP) && (msg->wParam == VK_MEDIA_STOP)) eat_key = true;
 
-		if (eat_key) {
+        if (eat_key) {
             logger()->debug("TApp::winEventFilter: ignoring key %X", msg->wParam);
-			last_appcommand = 0;
-			*result = true;
-			return true;
-		}
-	}
-	else
-	if (msg->message == WM_APPCOMMAND) {
+            last_appcommand = 0;
+            *result = true;
+            return true;
+        }
+    }
+    else
+    if (msg->message == WM_APPCOMMAND) {
 
-		uint cmd  = GET_APPCOMMAND_LPARAM(msg->lParam);
-		uint uDevice = GET_DEVICE_LPARAM(msg->lParam);
-		uint dwKeys = GET_KEYSTATE_LPARAM(msg->lParam);
+        uint cmd  = GET_APPCOMMAND_LPARAM(msg->lParam);
+        uint uDevice = GET_DEVICE_LPARAM(msg->lParam);
+        uint dwKeys = GET_KEYSTATE_LPARAM(msg->lParam);
 
-		//if (uDevice == FAPPCOMMAND_KEY) {
-			int key = 0;
-			Qt::KeyboardModifiers modifier = Qt::NoModifier;
-			QString name;
+        //if (uDevice == FAPPCOMMAND_KEY) {
+            int key = 0;
+            Qt::KeyboardModifiers modifier = Qt::NoModifier;
+            QString name;
 
-			switch (cmd) {
-				case APPCOMMAND_MEDIA_PAUSE: key = Qt::Key_MediaPause; name = "Media Pause"; break;
-				case APPCOMMAND_MEDIA_PLAY: key = Qt::Key_MediaPlay; name = "Media Play"; break;
-				case APPCOMMAND_MEDIA_STOP: key = Qt::Key_MediaStop; name = "Media Stop"; break;
-				case APPCOMMAND_MEDIA_PLAY_PAUSE: key = Qt::Key_MediaTogglePlayPause; name = "Toggle Media Play/Pause"; break;
+            switch (cmd) {
+                case APPCOMMAND_MEDIA_PAUSE: key = Qt::Key_MediaPause; name = "Media Pause"; break;
+                case APPCOMMAND_MEDIA_PLAY: key = Qt::Key_MediaPlay; name = "Media Play"; break;
+                case APPCOMMAND_MEDIA_STOP: key = Qt::Key_MediaStop; name = "Media Stop"; break;
+                case APPCOMMAND_MEDIA_PLAY_PAUSE: key = Qt::Key_MediaTogglePlayPause; name = "Toggle Media Play/Pause"; break;
 
-				case APPCOMMAND_MEDIA_NEXTTRACK: key = Qt::Key_MediaNext; name = "Media Next"; break;
-				case APPCOMMAND_MEDIA_PREVIOUSTRACK: key = Qt::Key_MediaPrevious; name = "Media Previous"; break;
+                case APPCOMMAND_MEDIA_NEXTTRACK: key = Qt::Key_MediaNext; name = "Media Next"; break;
+                case APPCOMMAND_MEDIA_PREVIOUSTRACK: key = Qt::Key_MediaPrevious; name = "Media Previous"; break;
 
-				case APPCOMMAND_MEDIA_FAST_FORWARD: key = Qt::Key_F; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
-				case APPCOMMAND_MEDIA_REWIND: key = Qt::Key_B; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
-			}
+                case APPCOMMAND_MEDIA_FAST_FORWARD: key = Qt::Key_F; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
+                case APPCOMMAND_MEDIA_REWIND: key = Qt::Key_B; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
+            }
 
-			if (key != 0) {
-				last_appcommand = cmd;
+            if (key != 0) {
+                last_appcommand = cmd;
 
-				QKeyEvent event(QEvent::KeyPress, key, modifier, name);
-				QWidget* w = QApplication::focusWidget();
-				if (w) QCoreApplication::sendEvent(w, &event);
-				*result = true;
-				return true;
-			}
-		//}
-	}
+                QKeyEvent event(QEvent::KeyPress, key, modifier, name);
+                QWidget* w = QApplication::focusWidget();
+                if (w) QCoreApplication::sendEvent(w, &event);
+                *result = true;
+                return true;
+            }
+        //}
+    }
 
-	return false;
+    return false;
 }
 #endif // USE_WINEVENTFILTER
 
