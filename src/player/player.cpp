@@ -107,7 +107,7 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
             this, SLOT(displayBufferingEnded()));
 
     connect(proc, SIGNAL(receivedMessage(const QString&)),
-            Gui::msgSlot, SLOT(msgOSD(const QString&)));
+            Gui::msgSlot, SLOT(msg(const QString&)));
 
     connect(proc, SIGNAL(receivedScreenshot(const QString&)),
             this, SLOT(displayScreenshotName(const QString&)));
