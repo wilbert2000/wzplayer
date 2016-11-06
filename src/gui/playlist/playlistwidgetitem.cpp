@@ -175,7 +175,7 @@ void TPlaylistWidgetItem::setDurationText() {
 
     QString s;
     double d = playlistItem.duration();
-    if (d != 0) {
+    if (d > 0) {
         s = Helper::formatTime(qRound(d));
     }
     setText(COL_TIME, s);
@@ -184,7 +184,6 @@ void TPlaylistWidgetItem::setDurationText() {
 void TPlaylistWidgetItem::setDuration(double d) {
 
     playlistItem.setDuration(d);
-    setNameText(true);
     setDurationText();
 }
 
