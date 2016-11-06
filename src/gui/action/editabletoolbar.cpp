@@ -98,7 +98,7 @@ void TEditableToolbar::addMenu(QAction* action) {
 
 void TEditableToolbar::setActionsFromStringList(
         const QStringList& acts, const TActionList& all_actions) {
-    logger()->debug("setActionsFromStringList: updating '%1'", objectName());
+    logger()->trace("setActionsFromStringList: updating '%1'", objectName());
 
     clear();
     space_eater = 0;
