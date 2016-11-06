@@ -693,7 +693,7 @@ bool TMPVProcess::parseLine(QString& line) {
 void TMPVProcess::setMedia(const QString& media) {
     args << "--term-playing-msg="
         "VIDEO_ASPECT=${video-aspect}\n"
-        "VIDEO_FPS=${=fps}\n"
+        "VIDEO_FPS=${=container-fps}\n"
 //      "VIDEO_BITRATE=${=video-bitrate}\n"
         "VIDEO_FORMAT=${=video-format}\n"
         "VIDEO_CODEC=${=video-codec}\n"
@@ -706,7 +706,7 @@ void TMPVProcess::setMedia(const QString& media) {
 
         "INFO_START_TIME=${=time-start:}\n"
         "INFO_LENGTH=${=duration:${=length}}\n"
-        "INFO_DEMUXER=${=demuxer}\n"
+        "INFO_DEMUXER=${=current-demuxer}\n"
 
         "INFO_TITLES=${=disc-titles}\n"
         "INFO_CHAPTERS=${=chapters}\n"
@@ -753,7 +753,7 @@ void TMPVProcess::setFixedOptions() {
 
 void TMPVProcess::disableInput() {
     args << "--no-input-default-bindings";
-    args << "--input-x11-keyboard=no";
+    args << "--input-vo-keyboard=no"; // mpv < 0.21 --input-x11-keyboard=no
     args << "--no-input-cursor";
     args << "--cursor-autohide=no";
 }
@@ -791,7 +791,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
         || name == "volume"
         || name == "ass-styles"
         || name == "ass-force-style"
-        || name == "ass-line-spacing"
         || name == "embeddedfonts"
         || name == "osd-scale-by-window"
         || name == "osd-scale"
@@ -851,6 +850,8 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
         args << "--sub-ass";
     } else if (name == "noass") {
         args << "--no-sub-ass";
+    } else if (name == "ass-line-spacing") {
+        args << "--sub-ass-line-spacing=" + value.toString();
     } else if (name == "nosub") {
         args << "--no-sub";
     } else if (name == "sub-fuzziness") {
