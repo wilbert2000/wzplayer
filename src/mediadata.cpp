@@ -91,12 +91,12 @@ QString TMediaData::addTitleOrTrack(const QString& title) const {
                 static const char* format = QT_TRANSLATE_NOOP("TMediaData",
                                                               "%1 track %2");
                 return qApp->translate("TMediaData", format)
-                        .arg(title).arg(QString::number(disc.title));
+                        .arg(title).arg(disc.title);
             }
             static const char* format = QT_TRANSLATE_NOOP("TMediaData",
                                                           "%1 title %2");
             return qApp->translate("TMediaData", format)
-                    .arg(title).arg(QString::number(disc.title));
+                    .arg(title).arg(disc.title);
         }
         return title + " - " + disc.displayName();
     }
@@ -216,12 +216,12 @@ void TMediaData::list() const {
     logger()->debug("valid disc URL: %1", disc.valid);
     logger()->debug("stream_url: '%1'", stream_url);
 
-    logger()->debug("start sec: %1", QString::number(start_sec));
-    logger()->debug("start sec player: %1", QString::number(start_sec_player));
+    logger()->debug("start sec: %1", start_sec);
+    logger()->debug("start sec player: %1", start_sec_player);
     logger()->debug("start sec set: %1", start_sec_set);
     logger()->debug("fuzzy time: %1", fuzzy_time);
-    logger()->debug("time_sec: %1", QString::number(time_sec));
-    logger()->debug("duration: %1", QString::number(duration));
+    logger()->debug("time_sec: %1", time_sec);
+    logger()->debug("duration: %1", duration);
 
     logger()->debug("demuxer: '%1'", demuxer);
     logger()->debug("mpegts: %1", mpegts);
@@ -230,9 +230,8 @@ void TMediaData::list() const {
     logger()->debug("video_width: %1", video_width);
     logger()->debug("video_height: %1", video_height);
     logger()->debug("video_aspect: '%1'", video_aspect);
-    logger()->debug("video_aspect_original: %1",
-                    QString::number(video_aspect_original));
-    logger()->debug("video_fps: %1", QString::number(video_fps));
+    logger()->debug("video_aspect_original: %1", video_aspect_original);
+    logger()->debug("video_fps: %1", video_fps);
 
     logger()->debug("video_out_width: %1", video_out_width);
     logger()->debug("video_out_height: %1", video_out_height);

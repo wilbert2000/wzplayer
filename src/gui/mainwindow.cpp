@@ -2200,7 +2200,7 @@ void TMainWindow::onDurationChanged(double duration) {
 }
 
 void TMainWindow::changeSize(double factor) {
-    logger()->debug("changeSize: %1", QString::number(factor));
+    logger()->debug("changeSize: %1", factor);
 
     if (player->mdat.noVideo()) {
         return;
@@ -2277,16 +2277,15 @@ double TMainWindow::optimizeSize(double size) {
         if (size_y < size) {
             size = size_y;
         }
-        logger()->debug("optimizeSize: returning size %1 for full screen",
-                        QString::number(size));
+        logger()->debug("optimizeSize: returning size %1 for fullscreen", size);
         return size;
     }
 
     // Return current size for VO size change by TPlayer::setAspectRatio()
     if (player->keepSize) {
         player->clearKeepSize();
-        logger()->debug("optimizeSize: keepSize set, returning current size "
-                        + QString::number(pref->size_factor));
+        logger()->debug("optimizeSize: keepSize set, returning current size %1",
+                        pref->size_factor);
         return pref->size_factor;
     }
 
@@ -2322,7 +2321,7 @@ double TMainWindow::optimizeSize(double size) {
             if (qAbs(factor_int - predef) < d) {
                 size = (double) predef / 100;
                 logger()->debug("optimzeSize: rounding size to predefined"
-                                " value " + QString::number(size));
+                                " value %1", size);
                 return size;
             }
         }
@@ -2338,7 +2337,7 @@ double TMainWindow::optimizeSize(double size) {
         }
     }
 
-    debug << "optimzeSize: selected size factor" << size << debug;
+    logger()->debug("optimzeSize: selected size factor %1", size);
     return size;
 }
 
@@ -2418,7 +2417,7 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
             playerwindow->updateSizeFactor();
             logger()->debug("onVideoOutResolutionChanged: adjusted size factor"
                             " to %1 to match current window size",
-                            QString::number(pref->size_factor));
+                            pref->size_factor);
         }
     }
 

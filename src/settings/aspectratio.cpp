@@ -67,7 +67,7 @@ QString TAspectRatio::aspectIDToString(int id) {
 
 	QString name = tr(RATIO_NAMES[id]);
 	double aspect = RATIOS[id];
-	return name + "\t" + tr("(%1)").arg(QString::number(aspect));
+    return name + "\t" + tr("(%1)").arg(aspect);
 }
 
 

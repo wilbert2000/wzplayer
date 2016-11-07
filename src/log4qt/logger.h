@@ -380,6 +380,8 @@ namespace Log4Qt
 	               const QVariant &rArg1,
 	               const QVariant &rArg2,
 	               const QVariant &rArg3) const;
+        void debug(const char *pMessage,
+                   double arg) const;
 
 	    void error(const QString &rMessage) const;
 	    void error(const LogError &rLogError) const;
@@ -960,7 +962,13 @@ namespace Log4Qt
 	{   if (isEnabledFor(Level::DEBUG_INT))
 	    forcedLog(Level::DEBUG_INT, QString::fromUtf8(pMessage).arg(rArg1.toString(), rArg2.toString(), rArg3.toString()));  }
 
-	// Log operations: error
+    inline void Logger::debug(const char *pMessage, double arg) const {
+        if (isEnabledFor(Level::DEBUG_INT))
+            forcedLog(Level::DEBUG_INT, QString::fromUtf8(pMessage).arg(arg));
+    }
+
+
+    // Log operations: error
 
 	inline void Logger::error(const QString &rMessage) const
 	{   if (isEnabledFor(Level::ERROR_INT))

@@ -170,7 +170,7 @@ double TMediaSettings::aspectToDouble() {
 void TMediaSettings::list() {
     logger()->debug("list");
 
-    logger()->debug("  current_sec: " + QString::number(current_sec));
+    logger()->debug("  current_sec: %1", current_sec);
     logger()->debug("  current_video_id: %1", current_video_id);
     logger()->debug("  current_audio_id: %1", current_audio_id);
     logger()->debug("  current_sub_idx: %1", current_sub_idx);
@@ -192,9 +192,9 @@ void TMediaSettings::list() {
     logger()->debug("  sub_delay: %1", sub_delay);
     logger()->debug("  audio_delay: %1", sub_delay);
     logger()->debug("  sub_pos: %1", sub_pos);
-    logger()->debug("  sub_scale: " + QString::number(sub_scale));
-    logger()->debug("  sub_scale_mpv: " + QString::number(sub_scale_mpv));
-    logger()->debug("  sub_scale_ass: " + QString::number(sub_scale_ass));
+    logger()->debug("  sub_scale: %1", sub_scale);
+    logger()->debug("  sub_scale_mpv: %1", sub_scale_mpv);
+    logger()->debug("  sub_scale_ass: %1", sub_scale_ass);
 
     logger()->debug("  closed_caption_channel: %1", closed_caption_channel);
 
@@ -204,7 +204,7 @@ void TMediaSettings::list() {
     logger()->debug("  hue: %1", hue);
     logger()->debug("  saturation: %1", saturation);
 
-    logger()->debug("  speed: " + QString::number(speed));
+    logger()->debug("  speed: %1", speed);
 
     logger()->debug("  phase_filter: %1", phase_filter);
     logger()->debug("  deblock_filter: %1", deblock_filter);
@@ -230,9 +230,8 @@ void TMediaSettings::list() {
     logger()->debug("  audio_use_channels: %1", audio_use_channels);
     logger()->debug("  stereo_mode: %1", stereo_mode);
 
-    logger()->debug("  zoom_factor: " + QString::number(zoom_factor));
-    logger()->debug("  zoom_factor_fullscreen: "
-                    + QString::number(zoom_factor_fullscreen));
+    logger()->debug("  zoom_factor: %1", zoom_factor);
+    logger()->debug("  zoom_factor_fullscreen: %1", zoom_factor_fullscreen);
     logger()->debug("  pan_offset: (%1, %2)", pan_offset.x(), pan_offset.y());
     logger()->debug("  pan_offset_fullscreen: (%1, %2)",
                     pan_offset_fullscreen.x(), pan_offset_fullscreen.y());
@@ -242,8 +241,8 @@ void TMediaSettings::list() {
     logger()->debug("  rotate: %1", rotate);
 
     logger()->debug("  loop: %1", loop);
-    logger()->debug("  in_point: " + QString::number(in_point));
-    logger()->debug("  out_point: " + QString::number(out_point));
+    logger()->debug("  in_point: %1", in_point);
+    logger()->debug("  out_point: %1", out_point);
 
     logger()->debug("  current_demuxer: '%1'", current_demuxer);
 

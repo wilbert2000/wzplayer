@@ -395,7 +395,7 @@ void TMPVProcess::convertChaptersToTitles() {
     }
 
     logger()->debug("convertChaptersToTitles: created %1 titles",
-                    QString::number(md->titles.count()));
+                    md->titles.count());
 }
 
 void TMPVProcess::playingStarted() {
@@ -405,7 +405,7 @@ void TMPVProcess::playingStarted() {
     // Correct them by setting the start time.
     if (!md->start_sec_set && md->time_sec < 0) {
         logger()->debug("playingStarted: setting negative start time %1",
-                        QString::number(md->time_sec));
+                        md->time_sec);
         md->start_sec = md->time_sec;
         // No longer need rollover protection (though not set for MPV anyway).
         md->mpegts = false;
@@ -1338,7 +1338,7 @@ void TMPVProcess::setOSDScale(double value) {
 void TMPVProcess::changeVF(const QString& filter,
                            bool enable,
                            const QVariant& option) {
-    logger()->debug("changeVF: " + filter + QString::number(enable)
+    logger()->debug("changeVF: " + filter + " " + QString::number(enable) + " "
                   + option.toString());
 
     QString f;

@@ -413,8 +413,8 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
         writeToPlayer("get_property length");
     }
 
-    logger()->debug("dvdnavTitleChanged: emit durationChanged(" +
-                    QString::number(md->duration) + ")");
+    logger()->debug("dvdnavTitleChanged: emit durationChanged(%1)",
+                    md->duration);
     emit durationChanged(md->duration);
 
     if (notified_player_is_running) {
@@ -1485,7 +1485,7 @@ void TMPlayerProcess::frameBackStep() {
         frame_backstep_time_requested = 0;
     }
     logger()->debug("frameBackStep: emulating frame back step. Trying %1",
-                    QString::number(frame_backstep_time_requested));
+                    frame_backstep_time_requested);
 
     seekPlayerTime(frame_backstep_time_requested, // time to seek
                    2,        // seek absolute

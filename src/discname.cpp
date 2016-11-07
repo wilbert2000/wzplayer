@@ -110,11 +110,9 @@ QString TDiscName::displayName(bool addDevice) const {
                 name = deviceName + " - ";
             }
             if (protocol == "cdda" || protocol == "vcd") {
-                name += qApp->translate("TDiscName", "track %1")
-                        .arg(QString::number(title));
+                name += qApp->translate("TDiscName", "track %1").arg(title);
             } else {
-                name += qApp->translate("TDiscName", "title %1")
-                        .arg(QString::number(title));
+                name += qApp->translate("TDiscName", "title %1").arg(title);
             }
         } else {
             name = deviceName;

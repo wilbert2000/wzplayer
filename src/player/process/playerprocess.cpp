@@ -315,7 +315,7 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
     if (name == "FPS") {
         md->video_fps = value.toDouble();
         logger()->debug("parseVideoProperty: video_fps set to %1",
-                        QString::number(md->video_fps));
+                        md->video_fps);
         return true;
     }
     if (name == "BITRATE") {
@@ -419,7 +419,7 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
                 md->start_sec = md->start_sec_player;
             }
             logger()->debug("parseProperty: start time set to %1",
-                            QString::number(md->start_sec_player));
+                            md->start_sec_player);
         }
         return true;
     }

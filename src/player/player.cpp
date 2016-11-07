@@ -758,7 +758,7 @@ void TPlayer::playOrPause() {
 }
 
 void TPlayer::frameStep() {
-    logger()->debug("frameStep at %1", QString::number(mset.current_sec));
+    logger()->debug("frameStep at %1", mset.current_sec);
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -770,7 +770,7 @@ void TPlayer::frameStep() {
 }
 
 void TPlayer::frameBackStep() {
-    logger()->debug("frameBackStep at %1", QString::number(mset.current_sec));
+    logger()->debug("frameBackStep at %1", mset.current_sec);
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -3102,7 +3102,7 @@ void TPlayer::getPanFromPlayerWindow() {
 }
 
 void TPlayer::setZoom(double zoom) {
-    logger()->debug("setZoom: %1", QString::number(zoom));
+    logger()->debug("setZoom: %1", zoom);
 
     if (mdat.hasVideo()) {
         if (zoom < TConfig::ZOOM_MIN)
