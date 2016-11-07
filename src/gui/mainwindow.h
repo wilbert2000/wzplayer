@@ -255,7 +255,6 @@ protected:
     void createMenus();
     void configureDiscDevices();
     void setupNetworkProxy();
-    double getNewSizeFactor();
 
 protected:
     QWidget* panel;
@@ -357,7 +356,7 @@ private:
 
     void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
-    bool optimizeSizeFactorPreDef(int factor, int predef_factor);
+    double optimizeSize(double size);
     void getNewGeometry(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 
