@@ -324,6 +324,7 @@ private:
     bool statusbar_visible;
     bool fullscreen_menubar_visible;
     bool fullscreen_statusbar_visible;
+    QString first_fullscreen_filename;
 
     // Force settings from command line
     int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
@@ -355,6 +356,7 @@ private:
     void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
     double optimizeSize(double size);
+    double getDefaultSize();
     void getNewGeometry(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 

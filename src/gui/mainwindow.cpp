@@ -1791,6 +1791,7 @@ void TMainWindow::aboutToEnterFullscreen() {
     // Save current state
     menubar_visible = !menuBar()->isHidden();
     statusbar_visible = !statusBar()->isHidden();
+    first_fullscreen_filename = player->mdat.filename;
 
     pref->beginGroup(settingsGroupName());
     pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
@@ -1848,6 +1849,12 @@ void TMainWindow::didExitFullscreen() {
         logger()->warn("didExitFullscreen: failed to restore toolbar state");
     }
     pref->endGroup();
+
+    // Update size when current video changed in fullscreen
+    if (pref->resize_on_load
+        && player->mdat.filename != first_fullscreen_filename) {
+        changeSize(getDefaultSize());;
+    }
 
     emit didExitFullscreenSignal();
 }
@@ -2263,6 +2270,9 @@ double TMainWindow::optimizeSize(double size) {
 
     QSize available_size = TDesktop::availableSize(this);
     QSize res = playerwindow->resolution();
+    if (res.width() <= 0 || res.height() <= 0) {
+        return size;
+    }
 
     // Handle fullscreen
     if (pref->fullscreen) {
@@ -2345,10 +2355,14 @@ void TMainWindow::optimizeSizeFactor() {
     }
 }
 
+double TMainWindow::getDefaultSize() {
+    return optimizeSize(pref->initial_zoom_factor);
+}
+
 void TMainWindow::getNewGeometry(int w, int h) {
 
     // Get new size factor
-    pref->size_factor = optimizeSize(1.0);
+    pref->size_factor = getDefaultSize();
 
     QSize desktop = TDesktop::availableSize(this);
     bool stickx = !pref->fullscreen
