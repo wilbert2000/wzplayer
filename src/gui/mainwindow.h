@@ -328,8 +328,6 @@ private:
     // Force settings from command line
     int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 
-    bool was_maximized;
-
     bool ignore_show_hide_events;
 
     bool save_size;

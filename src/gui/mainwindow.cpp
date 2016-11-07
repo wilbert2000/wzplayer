@@ -1789,7 +1789,6 @@ void TMainWindow::aboutToEnterFullscreen() {
     emit aboutToEnterFullscreenSignal();
 
     // Save current state
-    was_maximized = isMaximized();
     menubar_visible = !menuBar()->isHidden();
     statusbar_visible = !statusBar()->isHidden();
 
@@ -1838,11 +1837,6 @@ void TMainWindow::aboutToExitFullscreen() {
 
 void TMainWindow::didExitFullscreen() {
     //logger()->debug("didExitFullscreen");
-
-    // Restore maximizednormal state
-    if (was_maximized) {
-        showMaximized();
-    }
 
     viewMenuBarAct->setChecked(menubar_visible);
     viewStatusBarAct->setChecked(statusbar_visible);
