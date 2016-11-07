@@ -453,14 +453,15 @@ void TApp::createGUI() {
 
 bool TApp::acceptClipboard() const {
 
+    // TODO: check extension local files
     const QString txt = QApplication::clipboard()->text();
     return !txt.contains("\x0a")
             && !txt.contains("\x0d")
             && (txt.contains("/")
 #ifdef Q_OS_WIN
-            || txt.contains("\\")
+                || txt.contains("\\")
 #endif
-            );
+               );
 }
 
 void TApp::start() {
