@@ -399,26 +399,6 @@ protected:
 
     void saveMediaSettings();
 
-protected slots:
-    void playingStarted();
-    void onProcessError(QProcess::ProcessError error);
-    void onProcessFinished(bool normal_exit, int exit_code, bool eof);
-
-    void onReceivedPosition(double sec);
-    void onReceivedPause();
-    void onReceivedVideoOut();
-
-    void displayScreenshotName(const QString& filename);
-    void displayUpdatingFontCache();
-    void displayBuffering();
-    void displayBufferingEnded();
-
-    void onAudioTracksChanged();
-
-    void selectPreferredSubtitles();
-    void onSubtitlesChanged();
-    void onSubtitleChanged();
-
 private:
     static double restartTime;
 
@@ -459,6 +439,26 @@ private:
     void updateLoop();
 
     int getVolumeForPlayer() const;
+
+private slots:
+    void playingStarted();
+    void onProcessError(QProcess::ProcessError error);
+    void onProcessFinished(bool normal_exit, int exit_code, bool eof);
+
+    void onReceivedPosition(double sec);
+    void onReceivedPause();
+    void onReceivedVideoOut();
+
+    void displayScreenshotName(const QString& filename);
+    void displayUpdatingFontCache();
+    void displayBuffering();
+    void displayBufferingEnded();
+
+    void onAudioTracksChanged();
+
+    void selectPreferredSubtitles();
+    void onSubtitlesChanged();
+    void onSubtitleChanged();
 };
 
 } // namespace Player
