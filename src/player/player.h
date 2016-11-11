@@ -444,6 +444,7 @@ private slots:
     void playingStarted();
     void onProcessError(QProcess::ProcessError error);
     void onProcessFinished(bool normal_exit, int exit_code, bool eof);
+    void onReceivedMessage(const QString& s);
 
     void onReceivedPosition(double sec);
     void onReceivedPause();

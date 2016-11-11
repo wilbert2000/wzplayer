@@ -107,7 +107,7 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
             this, SLOT(displayBufferingEnded()));
 
     connect(proc, SIGNAL(receivedMessage(const QString&)),
-            Gui::msgSlot, SLOT(msg(const QString&)));
+            this, SLOT(onReceivedMessage(const QString&)));
 
     connect(proc, SIGNAL(receivedScreenshot(const QString&)),
             this, SLOT(displayScreenshotName(const QString&)));
@@ -190,6 +190,13 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
     } else if (!normal_exit) {
         logger()->debug("onProcessFinished: emit playerError()");
         emit playerError(exit_code);
+    }
+}
+
+void TPlayer::onReceivedMessage(const QString& s) {
+
+    if (!mdat.image) {
+        Gui::msg2(s);
     }
 }
 
