@@ -264,7 +264,7 @@ void TPlayerWindow::startDragging() {
     // Cancel pending left click
     if (delay_left_click)
         left_click_timer.stop();
-    QApplication::setOverrideCursor(QCursor(Qt::DragMoveCursor));
+    setCursor(QCursor(Qt::DragMoveCursor));
     emit draggingChanged(true);
 }
 
@@ -272,7 +272,7 @@ void TPlayerWindow::stopDragging() {
     //logger()->debug("stopDragging");
 
     dragging = false;
-    QApplication::restoreOverrideCursor();
+    unsetCursor();
     emit draggingChanged(false);
 }
 
