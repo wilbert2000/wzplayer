@@ -187,6 +187,7 @@ void TPlayerWindow::updateSizeFactor() {
 }
 
 void TPlayerWindow::updateVideoWindow() {
+    /*
     debug << "updateVideoWindow: in vsize" << video_size
           << "wsize" << size()
           << "dsize" << TDesktop::size(this)
@@ -194,6 +195,7 @@ void TPlayerWindow::updateVideoWindow() {
           << "pan" << pan()
           << "fs" << pref->fullscreen
           << debug;
+    */
 
     // Note: can give MPV the whole window, it uses it for OSD and Subs.
     // Mplayer too, with most VOs, but with some, like XV, it misbehaves,
@@ -247,9 +249,9 @@ void TPlayerWindow::updateVideoWindow() {
         emit videoOutChanged(vsize);
     }
 
-    debug << "updateVideoWindow: out window" << vwin
-          << "video size" << vsize;
-    debug << debug;
+    //debug << "updateVideoWindow: out window" << vwin
+    //      << "video size" << vsize;
+    //debug << debug;
 }
 
 void TPlayerWindow::resizeEvent(QResizeEvent*) {
