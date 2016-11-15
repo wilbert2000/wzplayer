@@ -93,8 +93,7 @@ int Helper::qtVersion() {
         r = n1 * 1000 + n2 * 100 + n3;
     }
 
-    logger()->debug("qtVersion: Qt runtime version %1 counting as %2",
-                    v, QString::number(r));
+    logger()->trace("qtVersion: Qt runtime version %1 counting as %2", v, r);
     return r;
 }
 

@@ -186,7 +186,9 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
     }
 
     if (name == "MEDIA_TITLE") {
-        if (!md->image) {
+        if (md->image) {
+            logger()->debug("parseProperty: ignoring image title");
+        } else {
             QString name = Helper::nameForURL(md->filename, true).simplified();
             QString title = value.simplified();
             if (name == title) {
@@ -646,11 +648,12 @@ bool TMPVProcess::parseLine(QString& line) {
         return parseTitleNotFound(rx_title_not_found.cap(1));
     }
 
+    // Stream title
     if (rx_stream_title.indexIn(line) >= 0) {
         md->detected_type = TMediaData::TYPE_STREAM;
         QString s = rx_stream_title.cap(1);
         md->title = s;
-        logger()->debug("parseLine: title '%1'", md->title);
+        logger()->debug("parseLine: stream title set to '%1'", md->title);
         emit receivedStreamTitle();
         return true;
     }
@@ -944,7 +947,7 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
     } else if (name == "prefer-ipv6") {
         args << "--ytdl-raw-options=force-ipv6=";
     } else {
-        logger()->debug("setOption: ignoring option name '%1' value '%2'",
+        logger()->info("setOption: ignoring option name '%1' value '%2'",
                         name, value.toString());
     }
 }

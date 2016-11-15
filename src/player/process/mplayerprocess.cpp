@@ -571,7 +571,7 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
     // DVD title
     if (name == "DVD_VOLUME_ID") {
         md->title = value;
-        logger()->debug("parseProperty: title set to '%1'", md->title);
+        logger()->debug("parseProperty: DVD title set to '%1'", md->title);
         return true;
     }
 
