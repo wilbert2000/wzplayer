@@ -48,7 +48,8 @@ TMainWindowPlus::TMainWindowPlus() :
     TMainWindow(),
     debug(logger()),
     mainwindow_visible(true),
-    restore_playlist(false) {
+    restore_playlist(false),
+    saved_size(0) {
 
     tray = new QSystemTrayIcon(this);
     tray->setIcon(Images::icon("logo", 22));
@@ -115,6 +116,11 @@ TMainWindowPlus::TMainWindowPlus() :
             this, SLOT(setWinTitle()));
     connect(this, SIGNAL(openFileRequested()),
             this, SLOT(showAll()));
+
+    optimizeSizeTimer.setSingleShot(true);
+    optimizeSizeTimer.setInterval(100);
+    connect(&optimizeSizeTimer, SIGNAL(timeout()),
+            this, SLOT(optimizeSizeFactor()));
 
     retranslateStrings();
 }
@@ -285,6 +291,8 @@ void TMainWindowPlus::showPlaylist(bool visible) {
 
     restore_playlist = visible && playlistdock->isFloating();
 
+    saved_size = pref->size_factor;
+
     // Triggers onDockVisibilityChanged
     playlistdock->setVisible(visible);
 }
@@ -292,8 +300,22 @@ void TMainWindowPlus::showPlaylist(bool visible) {
 void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
     logger()->debug("onDockVisibilityChanged: visible %1", visible);
 
-    if (visible && playlistdock->isFloating()) {
-        TDesktop::keepInsideDesktop(playlistdock);
+    if (playlistdock->isFloating()) {
+        if (visible) {
+            TDesktop::keepInsideDesktop(playlistdock);
+        }
+    } else if (!pref->fullscreen) {
+        if (visible) {
+            // When showing the dock, select the size saved by showPlaylist(),
+            // from before the resizing caused by showing the dock.
+            logger()->debug("onDockVisibilityChanged: selecting saved size %1",
+                            saved_size);
+            pref->size_factor = saved_size;
+        }
+
+        // Post optimizeSizeFactor
+        logger()->debug("onDockVisibilityChanged: posting optimizeSizeFactor()");
+        optimizeSizeTimer.start();
     }
 }
 

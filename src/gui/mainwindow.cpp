@@ -1101,9 +1101,9 @@ void TMainWindow::closeWindow() {
     close();
 }
 
-// Overriden by TMainWindowPlus
-void TMainWindow::showPlaylist(bool b) {
-    playlist->setVisible(b);
+void TMainWindow::showPlaylist(bool) {
+    // Overriden by TMainWindowPlus
+    // playlist->setVisible(b);
 }
 
 void TMainWindow::showLog(bool b) {
@@ -2267,6 +2267,7 @@ void TMainWindow::hidePanel() {
 }
 
 double TMainWindow::optimizeSize(double size) {
+    logger()->debug("optimizeSize: size in %1", size);
 
     QSize available_size = TDesktop::availableSize(this);
     QSize res = playerwindow->resolution();
@@ -2300,48 +2301,55 @@ double TMainWindow::optimizeSize(double size) {
     // Adjust width
     double max = f * available_size.width();
     if (video_size.width() > max) {
+        logger()->debug("optizeSize: limiting width to %1", max);
         size = max / res.width();
         video_size = res * size;
     }
     // Adjust height
     max = f * available_size.height();
     if (video_size.height() > max) {
+        logger()->debug("optizeSize: limiting height to %1", max);
         size = max / res.height();
         video_size = res * size;
     }
 
-    if (size == 1.0) {
-        if (video_size.height() < available_size.height() / 4) {
-            size = 2.0;
+    double min = available_size.height() / 4;
+    if (video_size.height() < min) {
+        if (size == 1.0) {
+            logger()->debug("optimzeSize: selecting size 2.0 for small video");
+            return 2.0;
         }
-    } else {
-        // Round to predefined values
-        int factor_int = qRound(size * 100);
-        const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400};
-        for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
-            int predef = factors[i];
-            int d = predef / 10;
-            if (d < 10) d = 10;
-            if (qAbs(factor_int - predef) < d) {
-                size = (double) predef / 100;
-                logger()->debug("optimzeSize: rounding size to predefined"
-                                " value %1", size);
-                return size;
-            }
-        }
+        size = min / res.height();
+        logger()->debug("optimzeSize: selecting size for minimal height %1",
+                        min);
+    }
 
-        // Make width multiple of 16
-        if (!player->mdat.image) {
-            int new_w = ((video_size.width() + 8) / 16) * 16;
-            if (new_w != video_size.width()) {
-                size = (double) new_w / res.width();
-                debug << "optimzeSize: rounding size to" << size
-                      << "for width multiple of 16" << new_w << debug;
-            }
+    // Round to predefined values
+    int factor_int = qRound(size * 100);
+    const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400};
+    for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
+        int predef = factors[i];
+        int d = predef / 10;
+        if (d < 10) d = 10;
+        if (qAbs(factor_int - predef) < d) {
+            size = (double) predef / 100;
+            logger()->debug("optimzeSize: rounding size to predefined value %1",
+                            size);
+            return size;
         }
     }
 
-    logger()->debug("optimzeSize: selected size factor %1", size);
+    // Make width multiple of 16
+    if (!player->mdat.image) {
+        int new_w = ((video_size.width() + 8) / 16) * 16;
+        if (new_w != video_size.width()) {
+            size = (double) new_w / res.width();
+            logger()->debug("optimzeSize: rounding size to create multiple"
+                                " of 16 width");
+        }
+    }
+
+    logger()->debug("optimzeSize: selected size %1", size);
     return size;
 }
 
@@ -2456,9 +2464,9 @@ void TMainWindow::resizeWindowToVideo() {
 
 void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
                                    bool try_twice) {
-    logger()->debug("resizeMainWindow: requested video size "
-                    + QString::number(w) + " x " + QString::number(h)
-                    + " size factor " + QString::number(pref->size_factor));
+    logger()->debug(QString("resizeMainWindow: requested video size %1 x %2"
+                            " size factor %3")
+                    .arg(w).arg(h).arg(pref->size_factor));
 
     QSize panel_size = QSize(w, h) * size_factor;
     if (panel_size == panel->size()) {
@@ -2476,12 +2484,12 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
         if (try_twice) {
             resizeMainWindow(w, h, size_factor, false);
         } else {
-            logger()->debug("resizeMainWindow: resize failed. Panel size now "
-                            + QString::number(panel->size().width())
-                            + " x " + QString::number(panel->size().height())
-                            + ". Wanted size "
-                            + QString::number(panel->size().width())
-                            + " x " + QString::number(panel->size().height()));
+            logger()->debug(QString("resizeMainWindow: resize failed. Panel"
+                                    " size now %1 x %2. Wanted size %3 x %4")
+                            .arg(panel->size().width())
+                            .arg(panel->size().height())
+                            .arg(panel_size.width())
+                            .arg(panel_size.height()));
         }
     }
 }

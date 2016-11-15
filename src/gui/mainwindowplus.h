@@ -76,8 +76,10 @@ protected slots:
     void trayAvailable();
 #endif
 
-
 private:
+    QTimer optimizeSizeTimer;
+    double saved_size;
+
     void switchToTray();
 	void retranslateStrings();
     void updateShowAllAct();

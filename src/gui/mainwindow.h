@@ -122,7 +122,7 @@ public slots:
 
     void setInitialSubtitle(const QString& subtitle_file);
 
-    virtual void showPlaylist(bool b);
+    virtual void showPlaylist(bool);
     virtual void showLog(bool b);
     virtual void showPreferencesDialog();
     virtual void showFilePropertiesDialog(bool checked);
@@ -255,6 +255,7 @@ protected:
     void createMenus();
     void configureDiscDevices();
     void setupNetworkProxy();
+    double optimizeSize(double size);
 
 protected:
     QWidget* panel;
@@ -355,7 +356,6 @@ private:
 
     void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
-    double optimizeSize(double size);
     double getDefaultSize();
     void getNewGeometry(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
