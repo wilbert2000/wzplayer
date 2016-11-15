@@ -78,7 +78,7 @@ void TProcess::start() {
 void TProcess::handleLine(QString& line) {
 
     if (!parseLine(line)) {
-        logger()->debug("handleLine: ignored");
+        logger()->trace("handleLine: ignored");
     }
 
     line_count++;
