@@ -100,9 +100,7 @@ void TAudio::setData(TPreferences* pref) {
 	setScaleTempoFilter(pref->use_scaletempo);
 
 	// Volume
-	setSoftVol(pref->use_soft_vol);
-	setAmplification(pref->softvol_max);
-	setInitialVolNorm(pref->initial_volnorm);
+    setInitialVolNorm(pref->initial_volnorm);
 
 	// Synchronization
 	setAutoSyncActivated(pref->autosync);
@@ -141,9 +139,7 @@ void TAudio::getData(TPreferences* pref) {
 		requires_restart = true;
 	}
 
-    restartIfBoolChanged(pref->use_soft_vol, softVol(), "use_soft_vol");
-	pref->initial_volnorm = initialVolNorm();
-    restartIfIntChanged(pref->softvol_max, amplification(), "softvol_max");
+    pref->initial_volnorm = initialVolNorm();
 
     restartIfBoolChanged(pref->autosync, autoSyncActivated(), "autosync");
     restartIfIntChanged(pref->autosync_factor, autoSyncFactor(),
@@ -216,14 +212,6 @@ QString TAudio::AO() {
 	return ao;
 }
 
-void TAudio::setSoftVol(bool b) {
-	softvol_check->setChecked(b);
-}
-
-bool TAudio::softVol() {
-	return softvol_check->isChecked();
-}
-
 void TAudio::setAutoSyncFactor(int factor) {
 	autosync_spin->setValue(factor);
 }
@@ -278,15 +266,6 @@ void TAudio::setInitialVolNorm(bool b) {
 
 bool TAudio::initialVolNorm() {
 	return volnorm_check->isChecked();
-}
-
-
-void TAudio::setAmplification(int n) {
-	softvol_amp_spin->setValue(n);
-}
-
-int TAudio::amplification() {
-	return softvol_amp_spin->value();
 }
 
 void TAudio::setAudioChannels(int ID) {
@@ -388,16 +367,6 @@ void TAudio::createHelp() {
 	setWhatsThis(scaletempo_combo, tr("High speed playback without altering pitch"),
 		tr("Allows to change the playback speed without altering pitch. "
            "Requires at least MPlayer dev-SVN-r24924."));
-
-	setWhatsThis(softvol_check, tr("Software volume control"),
-		tr("Use the software mixer instead of the sound card mixer and amplify"
-		   " the volume by the factor given by <b>Amplification</b>"));
-
-	setWhatsThis(softvol_amp_spin, tr("Amplification"),
-		tr("Sets the amplification level.<br>"
-		   "100 is no amplification.<br>"
-		   "For MPlayer a value of 200 doubles the volume (linear scale).<br>"
-		   "For MPV a value of 130 doubles the volume (cubic scale)."));
 
 	setWhatsThis(volnorm_check, tr("Volume normalization by default"),
 		tr("Maximizes the volume without distorting the sound."));

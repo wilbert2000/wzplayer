@@ -438,8 +438,6 @@ private:
     void handleOutPoint();
     void updateLoop();
 
-    int getVolumeForPlayer() const;
-
 private slots:
     void playingStarted();
     void onProcessError(QProcess::ProcessError error);

@@ -899,13 +899,6 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
         if (b) args << "--correct-pts"; else args << "--no-correct-pts";
     } else if (name == "idx") {
         args << "--index=default";
-    } else if (name == "softvol") {
-        args << "--softvol=yes";
-    } else if (name == "softvol-max") {
-        int v = value.toInt();
-        if (v < 100)
-            v = 100;
-        args << "--volume-max=" + QString::number(v);
     } else if (name == "subfps") {
         args << "--sub-fps=" + value.toString();
     } else if (name == "forcedsubsonly") {

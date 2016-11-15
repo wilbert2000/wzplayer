@@ -1469,16 +1469,11 @@ end_video_filters:
     if (pref->player_additional_options.contains("-volume")) {
         logger()->debug("startPlayer: don't set volume since -volume is used");
     } else {
-        proc->setOption("volume", QString::number(getVolumeForPlayer()));
+        proc->setOption("volume", QString::number(getVolume()));
     }
 
     if (getMute()) {
         proc->setOption("mute");
-    }
-
-    if (pref->use_soft_vol) {
-        proc->setOption("softvol");
-        proc->setOption("softvol-max", QString::number(pref->softvol_max));
     }
 
     // Audio channels
@@ -2342,22 +2337,16 @@ int TPlayer::getVolume() const {
  MPV uses 0 - 100, where 100 is no amplification.
  MPV softvol-max serves as max and scale for amplification
  and according to the docs doubles volume with softvol-max 130.
+ Since MPV version 0.18.1 softvol is deprecated,
 */
-int TPlayer::getVolumeForPlayer() const {
-
-    int volume = getVolume();
-    if (pref->isMPV() && pref->use_soft_vol) {
-        volume = qRound((qreal)(volume * pref->softvol_max) / 100);
-    }
-    return volume;
-}
 
 void TPlayer::setVolume(int volume, bool unmute) {
 
-    if (volume < 0)
+    if (volume < 0) {
         volume = 0;
-    if (volume > 100)
+    } else if (volume > 100) {
         volume = 100;
+    }
 
     bool muted;
     if (pref->global_volume) {
@@ -2369,11 +2358,13 @@ void TPlayer::setVolume(int volume, bool unmute) {
     }
 
     if (proc->isRunning()) {
-        proc->setVolume(getVolumeForPlayer());
+        proc->setVolume(getVolume());
     }
+
     // Unmute audio if it was muted
-    if (muted && unmute)
+    if (muted && unmute) {
         mute(false);
+    }
 
     Gui::msgOSD(tr("Volume: %1").arg(volume));
     emit volumeChanged(volume);

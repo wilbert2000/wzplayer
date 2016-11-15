@@ -91,12 +91,6 @@ private:
 	void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
 	Settings::TPreferences::TOptionState scaleTempoFilter();
 
-	void setSoftVol(bool b);
-	bool softVol();
-
-	void setAmplification(int n);
-	int amplification();
-
 	void setInitialVolNorm(bool b);
 	bool initialVolNorm();
 

@@ -192,8 +192,6 @@ public:
 
 
 	// Volume group
-	bool use_soft_vol;
-	int softvol_max;
 	bool initial_volnorm;
 
 	// Synchronization group

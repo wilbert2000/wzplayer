@@ -180,13 +180,7 @@ void TPreferences::reset() {
     initial_volume = 100;
 	volume = initial_volume;
 	mute = false;
-
-	use_soft_vol = false;
-	// 100 is no amplification. 110 is default in mplayer, 130 in MPV...
-    // TODO: store per player?
-	softvol_max = 130;
 	initial_volnorm = false;
-
 
 	initial_audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0;
 	global_audio_equalizer = true;
@@ -512,8 +506,6 @@ void TPreferences::save() {
     setValue("initial_audio_equalizer", initial_audio_equalizer);
     setValue("audio_equalizer", audio_equalizer);
 
-    setValue("use_soft_vol", use_soft_vol);
-    setValue("softvol_max", softvol_max);
     setValue("initial_volnorm", initial_volnorm);
 
     setValue("autosync", autosync);
@@ -1043,12 +1035,6 @@ void TPreferences::load() {
     initial_audio_equalizer = value("initial_audio_equalizer", initial_audio_equalizer).toList();
     audio_equalizer = value("audio_equalizer", audio_equalizer).toList();
 
-    use_soft_vol = value("use_soft_vol", use_soft_vol).toBool();
-    softvol_max = value("softvol_max", softvol_max).toInt();
-    if (softvol_max < 100)
-        softvol_max = 100;
-    else if (softvol_max > 1000)
-        softvol_max = 1000;
     initial_volnorm = value("initial_volnorm", initial_volnorm).toBool();
 
     autosync = value("autosync", autosync).toBool();
