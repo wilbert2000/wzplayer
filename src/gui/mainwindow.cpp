@@ -2269,11 +2269,11 @@ void TMainWindow::hidePanel() {
 double TMainWindow::optimizeSize(double size) {
     logger()->debug("optimizeSize: size in %1", size);
 
-    QSize available_size = TDesktop::availableSize(this);
     QSize res = playerwindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
         return size;
     }
+    QSize available_size = TDesktop::availableSize(this);
 
     // Handle fullscreen
     if (pref->fullscreen) {
@@ -2286,7 +2286,7 @@ double TMainWindow::optimizeSize(double size) {
         return size;
     }
 
-    // Return current size for VO size change by TPlayer::setAspectRatio()
+    // Return current size for VO size change caused by TPlayer::setAspectRatio
     if (player->keepSize) {
         player->clearKeepSize();
         logger()->debug("optimizeSize: keepSize set, returning current size %1",
@@ -2301,18 +2301,19 @@ double TMainWindow::optimizeSize(double size) {
     // Adjust width
     double max = f * available_size.width();
     if (video_size.width() > max) {
-        logger()->debug("optizeSize: limiting width to %1", max);
+        logger()->debug("optimizeSize: limiting width to %1", max);
         size = max / res.width();
         video_size = res * size;
     }
     // Adjust height
     max = f * available_size.height();
     if (video_size.height() > max) {
-        logger()->debug("optizeSize: limiting height to %1", max);
+        logger()->debug("optimizeSize: limiting height to %1", max);
         size = max / res.height();
         video_size = res * size;
     }
 
+    // Get 1/4 of available desktop height
     double min = available_size.height() / 4;
     if (video_size.height() < min) {
         if (size == 1.0) {
@@ -2325,32 +2326,43 @@ double TMainWindow::optimizeSize(double size) {
     }
 
     // Round to predefined values
-    int factor_int = qRound(size * 100);
-    const int factors[] = {25, 50, 75, 100, 125, 150, 175, 200, 300, 400};
-    for (unsigned int i = 0; i < sizeof(factors)/sizeof(factors[0]); i++) {
-        int predef = factors[i];
-        int d = predef / 10;
-        if (d < 10) d = 10;
-        if (qAbs(factor_int - predef) < d) {
-            size = (double) predef / 100;
-            logger()->debug("optimzeSize: rounding size to predefined value %1",
-                            size);
-            return size;
-        }
+    int i = qRound(size * 100);
+    if (i <= 0) {
+        logger()->warn("optimizeSize: selecting size 1 for invalid size");
+        return 1;
+    }
+    if (i < 13 || i > 450) {
+        logger()->debug("optimzeSize: selected size %1", size);
+        return size;
     }
 
-    // Make width multiple of 16
-    if (!player->mdat.image) {
-        int new_w = ((video_size.width() + 8) / 16) * 16;
-        if (new_w != video_size.width()) {
-            size = (double) new_w / res.width();
-            logger()->debug("optimzeSize: rounding size to create multiple"
-                                " of 16 width");
-        }
+    if (i < 38) {
+        i = 25;
+    } else if (i < 63) {
+        i = 50;
+    } else if (i < 88) {
+        i = 75;
+    } else if (i < 113) {
+        i = 100;
+    } else if (i < 138) {
+        i = 125;
+    } else if (i < 168) {
+        i = 150;
+    } else if (i < 188) {
+        i = 175;
+    } else if (i < 225) {
+        i = 200;
+    } else if (i < 275) {
+        i = 250;
+    } else if (i < 325) {
+        i = 300;
+    } else if (i < 375) {
+        i = 350;
+    } else {
+        i = 400;
     }
-
-    logger()->debug("optimzeSize: selected size %1", size);
-    return size;
+    logger()->debug("optimzeSize: rounding size to %1", i);
+    return (double) i / 100;
 }
 
 void TMainWindow::optimizeSizeFactor() {

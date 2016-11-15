@@ -308,6 +308,9 @@ void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
         if (visible) {
             // When showing the dock, select the size saved by showPlaylist(),
             // from before the resizing caused by showing the dock.
+            if (saved_size == 0) {
+                return;
+            }
             logger()->debug("onDockVisibilityChanged: selecting saved size %1",
                             saved_size);
             pref->size_factor = saved_size;
