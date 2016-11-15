@@ -390,4 +390,5 @@ OTHER_FILES += \
     ../man/wzplayer.1 \
     wzplayer.rc \
     ../Watching_TV.txt \
-    ../setup/wzplayer.nsi
+    ../setup/wzplayer.nsi \
+    ../Makefile
