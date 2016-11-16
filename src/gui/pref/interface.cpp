@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,32 +36,32 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
     : TWidget(parent, f),
     debug(logger()) {
 
-	setupUi(this);
+    setupUi(this);
 
-	// Style combo
-	style_combo->addItem("<default>");
-	style_combo->addItems(QStyleFactory::keys());
+    // Style combo
+    style_combo->addItem("<default>");
+    style_combo->addItems(QStyleFactory::keys());
 
-	// Icon set combo
-	iconset_combo->addItem("Default");
+    // Icon set combo
+    iconset_combo->addItem("Default");
 
-	// User
-	QDir icon_dir = Settings::TPaths::configPath() + "/themes";
+    // User
+    QDir icon_dir = Settings::TPaths::configPath() + "/themes";
     logger()->debug("TInterface: user icon dir: " + icon_dir.absolutePath());
-	QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-	// Global
-	icon_dir = Settings::TPaths::themesPath();
+    // Global
+    icon_dir = Settings::TPaths::themesPath();
     logger()->debug("TInterface: global icon dir: " + icon_dir.absolutePath());
-	iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-	for (int n = 0; n < iconsets.count(); n++) {
-		if (iconset_combo->findText(iconsets[n]) == -1) {
-			iconset_combo->addItem(iconsets[n]);
-		}
-	}
+    iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for (int n = 0; n < iconsets.count(); n++) {
+        if (iconset_combo->findText(iconsets[n]) == -1) {
+            iconset_combo->addItem(iconsets[n]);
+        }
+    }
 
-	connect(single_instance_check, SIGNAL(toggled(bool)), 
-			this, SLOT(changeInstanceImages()));
+    connect(single_instance_check, SIGNAL(toggled(bool)),
+            this, SLOT(changeInstanceImages()));
 
     retranslateStrings();
 }
@@ -70,140 +70,140 @@ TInterface::~TInterface() {
 }
 
 QString TInterface::sectionName() {
-	return tr("Interface");
+    return tr("Interface");
 }
 
 QPixmap TInterface::sectionIcon() {
-	return Images::icon("instance1", icon_size);
+    return Images::icon("instance1", icon_size);
 }
 
 void TInterface::createLanguageCombo() {
 
-	QMap <QString,QString> m = TLanguages::translations();
+    QMap <QString,QString> m = TLanguages::translations();
 
-	// Language combo
-	QDir translation_dir = Settings::TPaths::translationPath();
-	QStringList languages = translation_dir.entryList(QStringList() << "*.qm");
-	QRegExp rx_lang("(.*)\\.qm");
-	language_combo->clear();
-	language_combo->addItem(tr("<Autodetect>"));
-	for (int n=0; n < languages.count(); n++) {
-		if (rx_lang.indexIn(languages[n]) > -1) {
-			QString l = rx_lang.cap(1);
-			QString text = l;
-			if (m.contains(l)) text = m[l] + " ("+l+")";
-			language_combo->addItem(text, l);
-		}
-	}
+    // Language combo
+    QDir translation_dir = Settings::TPaths::translationPath();
+    QStringList languages = translation_dir.entryList(QStringList() << "*.qm");
+    QRegExp rx_lang("(.*)\\.qm");
+    language_combo->clear();
+    language_combo->addItem(tr("<Autodetect>"));
+    for (int n=0; n < languages.count(); n++) {
+        if (rx_lang.indexIn(languages[n]) > -1) {
+            QString l = rx_lang.cap(1);
+            QString text = l;
+            if (m.contains(l)) text = m[l] + " ("+l+")";
+            language_combo->addItem(text, l);
+        }
+    }
 }
 
 void TInterface::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	changeInstanceImages();
+    changeInstanceImages();
 
-	// Language combo
-	int language_item = language_combo->currentIndex();
-	createLanguageCombo();
-	language_combo->setCurrentIndex(language_item);
+    // Language combo
+    int language_item = language_combo->currentIndex();
+    createLanguageCombo();
+    language_combo->setCurrentIndex(language_item);
 
-	// Iconset combo
-	iconset_combo->setItemText(0, tr("Default"));
+    // Iconset combo
+    iconset_combo->setItemText(0, tr("Default"));
 
-	style_combo->setItemText(0, tr("Default"));
+    style_combo->setItemText(0, tr("Default"));
 
-	createHelp();
+    createHelp();
 }
 
 void TInterface::setData(Settings::TPreferences* pref) {
 
-	setLanguage(pref->language);
-	setIconSet(pref->iconset);
-	setStyle(pref->style);
+    setLanguage(pref->language);
+    setIconSet(pref->iconset);
+    setStyle(pref->style);
 
-	// Main window
-	setUseSingleInstance(pref->use_single_window);
-	setSaveSize(pref->save_window_size_on_exit);
-	resize_on_load_check->setChecked(pref->resize_on_load);
-	resize_on_docking_check->setChecked(pref->resize_on_docking);
+    // Main window
+    setUseSingleInstance(pref->use_single_window);
+    setSaveSize(pref->save_window_size_on_exit);
+    resize_on_load_check->setChecked(pref->resize_on_load);
+    resize_on_docking_check->setChecked(pref->resize_on_docking);
 
-	setPauseWhenHidden(pref->pause_when_hidden);
-	setCloseOnFinish(pref->close_on_finish);
-	setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
+    setPauseWhenHidden(pref->pause_when_hidden);
+    setCloseOnFinish(pref->close_on_finish);
+    setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
 
-	// Fullscreen
-	hide_toolbars_spin->setValue(pref->floating_hide_delay);
-	setStartInFullscreen(pref->start_in_fullscreen);
+    // Fullscreen
+    hide_toolbars_spin->setValue(pref->floating_hide_delay);
+    setStartInFullscreen(pref->start_in_fullscreen);
 
-	// History
-	setRecentsMaxItems(pref->history_recents.maxItems());
-	setURLMaxItems(pref->history_urls.maxItems());
-	setRememberDirs(pref->save_dirs);
+    // History
+    setRecentsMaxItems(pref->history_recents.maxItems());
+    setURLMaxItems(pref->history_urls.maxItems());
+    setRememberDirs(pref->save_dirs);
 }
 
 void TInterface::getData(Settings::TPreferences* pref) {
 
-	requires_restart = false;
-	language_changed = false;
-	iconset_changed = false;
-	style_changed = false;
-	recents_changed = false;
+    requires_restart = false;
+    language_changed = false;
+    iconset_changed = false;
+    style_changed = false;
+    recents_changed = false;
 
-	if (pref->language != language()) {
-		pref->language = language();
-		language_changed = true;
+    if (pref->language != language()) {
+        pref->language = language();
+        language_changed = true;
         logger()->debug("getData: chosen language '%1'", pref->language);
-	}
-	if (pref->iconset != iconSet()) {
-		pref->iconset = iconSet();
-		iconset_changed = true;
-	}
-	if (pref->style != style()) {
-		pref->style = style();
-		style_changed = true;
-	}
+    }
+    if (pref->iconset != iconSet()) {
+        pref->iconset = iconSet();
+        iconset_changed = true;
+    }
+    if (pref->style != style()) {
+        pref->style = style();
+        style_changed = true;
+    }
 
-	// Main window
-	pref->use_single_window = useSingleInstance();
-	pref->save_window_size_on_exit = saveSize();
-	pref->resize_on_load = resize_on_load_check->isChecked();
-	pref->resize_on_docking = resize_on_docking_check->isChecked();
-	pref->pause_when_hidden = pauseWhenHidden();
-	pref->close_on_finish = closeOnFinish();
-	pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
+    // Main window
+    pref->use_single_window = useSingleInstance();
+    pref->save_window_size_on_exit = saveSize();
+    pref->resize_on_load = resize_on_load_check->isChecked();
+    pref->resize_on_docking = resize_on_docking_check->isChecked();
+    pref->pause_when_hidden = pauseWhenHidden();
+    pref->close_on_finish = closeOnFinish();
+    pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 
-	// Fullscreen
-	pref->floating_hide_delay = hide_toolbars_spin->value();
-	pref->start_in_fullscreen = startInFullscreen();
+    // Fullscreen
+    pref->floating_hide_delay = hide_toolbars_spin->value();
+    pref->start_in_fullscreen = startInFullscreen();
 
-	// History
-	if (pref->history_recents.maxItems() != recentsMaxItems()) {
-		pref->history_recents.setMaxItems(recentsMaxItems());
-		recents_changed = true;
+    // History
+    if (pref->history_recents.maxItems() != recentsMaxItems()) {
+        pref->history_recents.setMaxItems(recentsMaxItems());
+        recents_changed = true;
         logger()->debug("getData: need restart, history max items changed");
-	}
+    }
 
-	if (pref->history_urls.maxItems() != urlMaxItems()) {
-		pref->history_urls.setMaxItems(urlMaxItems());
-		url_max_changed = true;
+    if (pref->history_urls.maxItems() != urlMaxItems()) {
+        pref->history_urls.setMaxItems(urlMaxItems());
+        url_max_changed = true;
         logger()->debug("getData: need restart, urls max items changed");
     }
 
-	pref->save_dirs = rememberDirs();
+    pref->save_dirs = rememberDirs();
 }
 
 void TInterface::setLanguage(const QString& lang) {
 
-	if (lang.isEmpty()) {
-		language_combo->setCurrentIndex(0);
-	} else {
-		int pos = language_combo->findData(lang);
-		if (pos != -1) 
-			language_combo->setCurrentIndex(pos);
-		else
-			language_combo->setCurrentText(lang);
-	}
+    if (lang.isEmpty()) {
+        language_combo->setCurrentIndex(0);
+    } else {
+        int pos = language_combo->findData(lang);
+        if (pos != -1)
+            language_combo->setCurrentIndex(pos);
+        else
+            language_combo->setCurrentText(lang);
+    }
 }
 
 QString TInterface::language() {
@@ -333,68 +333,68 @@ void TInterface::createHelp() {
 
     addSectionTitle(tr("Interface"));
 
-	setWhatsThis(language_combo, tr("Language"),
-		tr("Here you can change the language of the application."));
+    setWhatsThis(language_combo, tr("Language"),
+        tr("Here you can change the language of the application."));
 
-	setWhatsThis(iconset_combo, tr("Icon set"),
-		tr("Select the icon set you prefer for the application."));
+    setWhatsThis(iconset_combo, tr("Icon set"),
+        tr("Select the icon set you prefer for the application."));
 
-	setWhatsThis(style_combo, tr("Style"),
-		tr("Select the style you prefer for the application."));
+    setWhatsThis(style_combo, tr("Style"),
+        tr("Select the style you prefer for the application."));
 
 
-	addSectionTitle(tr("Main window"));
+    addSectionTitle(tr("Main window"));
 
-	setWhatsThis(single_instance_check,
-		tr("Use only one window running WZPlayer"),
-		tr("Check this option if you want to use an already running instance "
-		   "of WZPlayer when opening other files."));
+    setWhatsThis(single_instance_check,
+        tr("Use only one window running WZPlayer"),
+        tr("Check this option if you want to use an already running instance "
+           "of WZPlayer when opening other files."));
 
-	setWhatsThis(save_size_check, tr("Remember position and size"),
+    setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "
-		   "window will be saved and restored when you run WZPlayer again."));
+           "window will be saved and restored when you run WZPlayer again."));
 
-	setWhatsThis(resize_on_load_check, tr("Resize window when loading a new video"),
-		tr("Adjust the dimension of the main window to a newly loaded video."));
+    setWhatsThis(resize_on_load_check, tr("Resize window when loading a new video"),
+        tr("Adjust the dimension of the main window to a newly loaded video."));
 
-	setWhatsThis(resize_on_docking_check, tr("Resize window when docking the playlist"),
-		tr("Grows or shrinks the main window when you dock or undock the playlist."));
+    setWhatsThis(resize_on_docking_check, tr("Resize window when docking the playlist"),
+        tr("Grows or shrinks the main window when you dock or undock the playlist."));
 
-	setWhatsThis(pause_on_minimize_check, tr("Pause when minimized"),
-		tr("If this option is enabled, the file will be paused when the "
-		   "main window is hidden. When the window is restored, playback "
-		   "will be resumed."));
+    setWhatsThis(pause_on_minimize_check, tr("Pause when minimized"),
+        tr("If this option is enabled, the file will be paused when the "
+           "main window is hidden. When the window is restored, playback "
+           "will be resumed."));
 
-	setWhatsThis(close_on_finish_check, tr("Close when finished"),
-		tr("If this option is checked, the main window will be automatically "
-		   "closed when the current file/playlist finishes."));
+    setWhatsThis(close_on_finish_check, tr("Close when finished"),
+        tr("If this option is checked, the main window will be automatically "
+           "closed when the current file/playlist finishes."));
 
-	setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
+    setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
         tr("If this option is enabled the video window will be hidden when playing audio files."));
 
-	addSectionTitle(tr("Fullscreen"));
+    addSectionTitle(tr("Fullscreen"));
 
-	setWhatsThis(hide_toolbars_spin, tr("Hide toolbars after"),
-		tr("Sets the time in milliseconds to hide the toolbars after the mouse left a toolbar."));
+    setWhatsThis(hide_toolbars_spin, tr("Hide toolbars after"),
+        tr("Sets the time in milliseconds to hide the toolbars after the mouse left a toolbar."));
 
-	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
-		tr("If this option is checked, all videos will start to play in "
-		   "fullscreen mode."));
+    setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
+        tr("If this option is checked, all videos will start to play in "
+           "fullscreen mode."));
 
-	addSectionTitle(tr("History"));
+    addSectionTitle(tr("History"));
 
-	setWhatsThis(recents_max_items_spin, tr("Recent files"),
+    setWhatsThis(recents_max_items_spin, tr("Recent files"),
         tr("Select the maximum number of items that will be shown in the "
            "<b>Open->Recent files</b> submenu. If you set it to 0 that "
            "menu won't be shown at all."));
 
-	setWhatsThis(url_max_items_spin, tr("Max. URLs"),
+    setWhatsThis(url_max_items_spin, tr("Max. URLs"),
         tr("Select the maximum number of items that the <b>Open->URL</b> "
            "dialog will remember. Set it to 0 if you don't want any URL "
            "to be stored."));
 
-	setWhatsThis(save_dirs_check, tr("Remember last directory"),
-		tr("If this option is checked, WZPlayer will remember the last folder you use to open a file."));
+    setWhatsThis(save_dirs_check, tr("Remember last directory"),
+        tr("If this option is checked, WZPlayer will remember the last folder you use to open a file."));
 }
 
 }} // namespace Gui::Pref

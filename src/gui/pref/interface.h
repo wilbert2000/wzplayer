@@ -30,81 +30,81 @@ class TPreferences;
 namespace Gui { namespace Pref {
 
 class TInterface : public TWidget, public Ui::TInterface {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TInterface(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TInterface();
+    TInterface(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TInterface();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
-	bool languageChanged() const { return language_changed; }
-	bool iconsetChanged() const { return iconset_changed; }
-	bool styleChanged() const { return style_changed; }
-	bool recentsChanged() const { return recents_changed; }
-	bool urlMaxChanged() const { return url_max_changed; }
+    bool languageChanged() const { return language_changed; }
+    bool iconsetChanged() const { return iconset_changed; }
+    bool styleChanged() const { return style_changed; }
+    bool recentsChanged() const { return recents_changed; }
+    bool urlMaxChanged() const { return url_max_changed; }
 
 protected:
-	void createLanguageCombo();
+    void createLanguageCombo();
 
-	void setLanguage(const QString& lang);
-	QString language();
+    void setLanguage(const QString& lang);
+    QString language();
 
-	void setIconSet(const QString& set);
-	QString iconSet();
+    void setIconSet(const QString& set);
+    QString iconSet();
 
-	void setSaveSize(bool b);
-	bool saveSize();
+    void setSaveSize(bool b);
+    bool saveSize();
 
-	void setStyle(const QString& style);
-	QString style();
+    void setStyle(const QString& style);
+    QString style();
 
-	void setUseSingleInstance(bool b);
-	bool useSingleInstance();
+    void setUseSingleInstance(bool b);
+    bool useSingleInstance();
 
-	void setHideVideoOnAudioFiles(bool b);
-	bool hideVideoOnAudioFiles();
+    void setHideVideoOnAudioFiles(bool b);
+    bool hideVideoOnAudioFiles();
 
     // History tab
-	void setRecentsMaxItems(int n);
-	int recentsMaxItems();
+    void setRecentsMaxItems(int n);
+    int recentsMaxItems();
 
-	void setURLMaxItems(int n);
-	int urlMaxItems();
+    void setURLMaxItems(int n);
+    int urlMaxItems();
 
-	void setRememberDirs(bool b);
-	bool rememberDirs();
+    void setRememberDirs(bool b);
+    bool rememberDirs();
 
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 protected slots:
     void changeInstanceImages();
 
 private:
-	bool language_changed;
-	bool iconset_changed;
-	bool style_changed;
-	bool recents_changed;
-	bool url_max_changed;
+    bool language_changed;
+    bool iconset_changed;
+    bool style_changed;
+    bool recents_changed;
+    bool url_max_changed;
 
-	void createHelp();
+    void createHelp();
 
-	void setPauseWhenHidden(bool b);
-	bool pauseWhenHidden();
+    void setPauseWhenHidden(bool b);
+    bool pauseWhenHidden();
 
-	void setCloseOnFinish(bool b);
-	bool closeOnFinish();
+    void setCloseOnFinish(bool b);
+    bool closeOnFinish();
 
-	void setStartInFullscreen(bool b);
-	bool startInFullscreen();
+    void setStartInFullscreen(bool b);
+    bool startInFullscreen();
 };
 
 }} // namespace Gui::Pref
