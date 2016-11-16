@@ -245,11 +245,7 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
 		// Don't show when left button still down, like when dragging
 		if ((QApplication::mouseButtons() & Qt::LeftButton) == 0
 			&& hiddenWidget()) {
-			if (pref->floating_activation_area == TPreferences::Anywhere
-				|| button) {
-				setVisible(true);
-				QTimer::start();
-			} else if (mouseInsideShowArea()) {
+            if (button || mouseInsideShowArea()) {
 				setVisible(true);
 				QTimer::start();
 			}

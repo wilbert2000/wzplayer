@@ -60,7 +60,6 @@ public:
         MultimediaFiles = 3,
         ConsecutiveFiles = 4
     };
-    enum TToolbarActivation { Anywhere = 1, NearToolbar = 2 };
 
     enum TIPPrefer {
         IP_PREFER_AUTO,
@@ -270,7 +269,6 @@ public:
     // Fullscreen
     bool fullscreen;
     int floating_hide_delay;
-    TToolbarActivation floating_activation_area;
     bool start_in_fullscreen;
 
     // Logging

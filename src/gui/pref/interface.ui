@@ -291,13 +291,6 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="show_toolbars_bottom_only_check">
-            <property name="text">
-             <string>Sho&amp;w toolbars only when moving mouse to bottom of screen</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="start_fullscreen_check">
             <property name="text">
              <string>Start videos in &amp;fullscreen</string>
@@ -486,7 +479,6 @@
   <tabstop>pause_on_minimize_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>hide_toolbars_spin</tabstop>
-  <tabstop>show_toolbars_bottom_only_check</tabstop>
   <tabstop>start_fullscreen_check</tabstop>
   <tabstop>recents_max_items_spin</tabstop>
   <tabstop>url_max_items_spin</tabstop>

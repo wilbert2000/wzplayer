@@ -253,7 +253,6 @@ void TPreferences::reset() {
     // Fullscreen
     fullscreen = false;
     floating_hide_delay = 3000;
-    floating_activation_area = Anywhere;
     start_in_fullscreen = false;
 
 
@@ -574,7 +573,6 @@ void TPreferences::save() {
     setValue("size_factor", size_factor);
 
     setValue("hide_delay", floating_hide_delay);
-    setValue("activation_area", floating_activation_area);
     setValue("start_in_fullscreen", start_in_fullscreen);
     endGroup();
 
@@ -1103,7 +1101,6 @@ void TPreferences::load() {
     size_factor = value("size_factor", size_factor).toDouble();
 
     floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
-    floating_activation_area = (TToolbarActivation) value("activation_area", floating_activation_area).toInt();
     start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
 
     endGroup();

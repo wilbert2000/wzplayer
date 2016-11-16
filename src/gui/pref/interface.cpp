@@ -134,8 +134,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 	// Fullscreen
 	hide_toolbars_spin->setValue(pref->floating_hide_delay);
-    show_toolbars_bottom_only_check->setChecked(
-        pref->floating_activation_area == Settings::TPreferences::NearToolbar);
 	setStartInFullscreen(pref->start_in_fullscreen);
 
 	// History
@@ -177,8 +175,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
 
 	// Fullscreen
 	pref->floating_hide_delay = hide_toolbars_spin->value();
-    pref->floating_activation_area = show_toolbars_bottom_only_check->isChecked()
-        ? Settings::TPreferences::NearToolbar : Settings::TPreferences::Anywhere;
 	pref->start_in_fullscreen = startInFullscreen();
 
 	// History
@@ -380,13 +376,6 @@ void TInterface::createHelp() {
 
 	setWhatsThis(hide_toolbars_spin, tr("Hide toolbars after"),
 		tr("Sets the time in milliseconds to hide the toolbars after the mouse left a toolbar."));
-
-	setWhatsThis(show_toolbars_bottom_only_check,
-		tr("Show toolbars only when moving the mouse to the bottom of the screen"),
-		tr("If this option is checked, the toolbars will only be displayed when"
-		   " the mouse is moved to the bottom of the screen or over a hidden"
-		   " toolbar. Otherwise the control will appear whenever the mouse is"
-		   " moved, no matter its position."));
 
 	setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
 		tr("If this option is checked, all videos will start to play in "
