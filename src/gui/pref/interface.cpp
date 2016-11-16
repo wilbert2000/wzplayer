@@ -126,7 +126,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
     setUseSingleInstance(pref->use_single_window);
     setSaveSize(pref->save_window_size_on_exit);
     resize_on_load_check->setChecked(pref->resize_on_load);
-    resize_on_docking_check->setChecked(pref->resize_on_docking);
 
     setPauseWhenHidden(pref->pause_when_hidden);
     setCloseOnFinish(pref->close_on_finish);
@@ -168,7 +167,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->use_single_window = useSingleInstance();
     pref->save_window_size_on_exit = saveSize();
     pref->resize_on_load = resize_on_load_check->isChecked();
-    pref->resize_on_docking = resize_on_docking_check->isChecked();
     pref->pause_when_hidden = pauseWhenHidden();
     pref->close_on_finish = closeOnFinish();
     pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
@@ -354,11 +352,9 @@ void TInterface::createHelp() {
         tr("If you check this option, the position and size of the main "
            "window will be saved and restored when you run WZPlayer again."));
 
-    setWhatsThis(resize_on_load_check, tr("Resize window when loading a new video"),
+    setWhatsThis(resize_on_load_check,
+        tr("Resize window when loading a new video"),
         tr("Adjust the dimension of the main window to a newly loaded video."));
-
-    setWhatsThis(resize_on_docking_check, tr("Resize window when docking the playlist"),
-        tr("Grows or shrinks the main window when you dock or undock the playlist."));
 
     setWhatsThis(pause_on_minimize_check, tr("Pause when minimized"),
         tr("If this option is enabled, the file will be paused when the "
@@ -369,13 +365,16 @@ void TInterface::createHelp() {
         tr("If this option is checked, the main window will be automatically "
            "closed when the current file/playlist finishes."));
 
-    setWhatsThis(hide_video_window_on_audio_check, tr("Hide video window when playing audio files"),
-        tr("If this option is enabled the video window will be hidden when playing audio files."));
+    setWhatsThis(hide_video_window_on_audio_check,
+        tr("Hide video window when playing audio files"),
+        tr("If this option is enabled the video window will be hidden when"
+           " playing audio files."));
 
     addSectionTitle(tr("Fullscreen"));
 
     setWhatsThis(hide_toolbars_spin, tr("Hide toolbars after"),
-        tr("Sets the time in milliseconds to hide the toolbars after the mouse left a toolbar."));
+        tr("Sets the time in milliseconds to hide the toolbars after the mouse"
+           " left a toolbar."));
 
     setWhatsThis(start_fullscreen_check, tr("Start videos in fullscreen"),
         tr("If this option is checked, all videos will start to play in "
@@ -394,7 +393,8 @@ void TInterface::createHelp() {
            "to be stored."));
 
     setWhatsThis(save_dirs_check, tr("Remember last directory"),
-        tr("If this option is checked, WZPlayer will remember the last folder you use to open a file."));
+        tr("If this option is checked, WZPlayer will remember the last folder"
+           " you use to open a file."));
 }
 
 }} // namespace Gui::Pref

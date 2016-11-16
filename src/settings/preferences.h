@@ -255,7 +255,6 @@ public:
     QSize default_size;
     bool save_window_size_on_exit;
     bool resize_on_load;
-    bool resize_on_docking;
     bool hide_video_window_on_audio_files;
     //!< Pause the current file when the main window is not visible
     bool pause_when_hidden;

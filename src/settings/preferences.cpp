@@ -245,7 +245,6 @@ void TPreferences::reset() {
     use_single_window = false;
     save_window_size_on_exit = false;
     resize_on_load = true;
-    resize_on_docking = true;
     pause_when_hidden = false;
     hide_video_window_on_audio_files = true;
     close_on_finish = false;
@@ -564,7 +563,6 @@ void TPreferences::save() {
     setValue("default_size", default_size);
     setValue("save_window_size_on_exit", save_window_size_on_exit);
     setValue("resize_on_load", resize_on_load);
-    setValue("resize_on_docking", resize_on_docking);
     setValue("hide_video_window_on_audio_files", hide_video_window_on_audio_files);
     setValue("pause_when_hidden", pause_when_hidden);
     setValue("close_on_finish", close_on_finish);
@@ -1092,7 +1090,6 @@ void TPreferences::load() {
     default_size = value("default_size", default_size).toSize();
     save_window_size_on_exit = value("save_window_size_on_exit", save_window_size_on_exit).toBool();
     resize_on_load = value("resize_on_load", resize_on_load).toBool();
-    resize_on_docking = value("resize_on_docking", resize_on_docking).toBool();
     hide_video_window_on_audio_files = value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();
     pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
     close_on_finish = value("close_on_finish", close_on_finish).toBool();

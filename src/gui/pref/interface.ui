@@ -180,13 +180,6 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="resize_on_docking_check">
-              <property name="text">
-               <string>Resi&amp;ze window when docking the playlist</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QCheckBox" name="hide_video_window_on_audio_check">
               <property name="text">
                <string>Hide &amp;video window when playing audio files</string>
@@ -474,7 +467,6 @@
   <tabstop>single_instance_check</tabstop>
   <tabstop>save_size_check</tabstop>
   <tabstop>resize_on_load_check</tabstop>
-  <tabstop>resize_on_docking_check</tabstop>
   <tabstop>hide_video_window_on_audio_check</tabstop>
   <tabstop>pause_on_minimize_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
