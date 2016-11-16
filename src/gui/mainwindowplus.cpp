@@ -291,6 +291,7 @@ void TMainWindowPlus::onMediaInfoChanged() {
 void TMainWindowPlus::onOptimizeSizeTimeout() {
     logger()->debug("onOptimizeSizeTimeout");
 
+    saved_size = 0;
     optimizeSizeFactor();
 }
 
