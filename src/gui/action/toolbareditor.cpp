@@ -22,7 +22,6 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QScrollBar>
-#include <QTimer>
 #include <QMatrix>
 
 #include "log4qt/logger.h"

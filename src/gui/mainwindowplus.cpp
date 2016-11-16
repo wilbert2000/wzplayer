@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDockWidget>
+#include <QTimer>
 
 #include "gui/playerwindow.h"
 #include "config.h"
@@ -117,10 +118,11 @@ TMainWindowPlus::TMainWindowPlus() :
     connect(this, SIGNAL(openFileRequested()),
             this, SLOT(showAll()));
 
-    optimizeSizeTimer.setSingleShot(true);
-    optimizeSizeTimer.setInterval(100);
-    connect(&optimizeSizeTimer, SIGNAL(timeout()),
-            this, SLOT(optimizeSizeFactor()));
+    optimizeSizeTimer = new QTimer(this);
+    optimizeSizeTimer->setSingleShot(true);
+    optimizeSizeTimer->setInterval(100);
+    connect(optimizeSizeTimer, SIGNAL(timeout()),
+            this, SLOT(onOptimizeSizeTimeout()));
 
     retranslateStrings();
 }
@@ -286,6 +288,12 @@ void TMainWindowPlus::onMediaInfoChanged() {
     tray->setToolTip(windowTitle());
 }
 
+void TMainWindowPlus::onOptimizeSizeTimeout() {
+    logger()->debug("onOptimizeSizeTimeout");
+
+    optimizeSizeFactor();
+}
+
 void TMainWindowPlus::showPlaylist(bool visible) {
     logger()->debug("showPlaylist: visible %1", visible);
 
@@ -318,7 +326,7 @@ void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
 
         // Post optimizeSizeFactor
         logger()->debug("onDockVisibilityChanged: posting optimizeSizeFactor()");
-        optimizeSizeTimer.start();
+        optimizeSizeTimer->start();
     }
 }
 

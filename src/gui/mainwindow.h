@@ -20,7 +20,6 @@
 #define GUI_MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTimer>
 
 #include "wzdebug.h"
 #include "gui/action/actionlist.h"
@@ -31,6 +30,7 @@
 class QWidget;
 class QLabel;
 class QMenu;
+class QTimer;
 
 namespace Settings {
 class TMediaSettings;
@@ -338,7 +338,7 @@ private:
     QPoint center_window_pos;
 
     QPoint move_window_diff;
-    QTimer move_window_timer;
+    QTimer* move_window_timer;
 
     TAutoHideTimer* auto_hide_timer;
     TUpdateChecker* update_checker;

@@ -115,9 +115,10 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setWordWrap(true);
     setUniformRowHeights(false);
     setItemDelegate(new TWordWrapItemDelegate(this));
-    wordWrapTimer.setInterval(500);
-    wordWrapTimer.setSingleShot(true);
-    connect(&wordWrapTimer, SIGNAL(timeout()),
+    wordWrapTimer = new QTimer(this);
+    wordWrapTimer->setInterval(500);
+    wordWrapTimer->setSingleShot(true);
+    connect(wordWrapTimer, SIGNAL(timeout()),
             this, SLOT(resizeRows()));
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
@@ -491,7 +492,7 @@ void TPlaylistWidget::resizeRows() {
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 
     if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
-        wordWrapTimer.start();
+        wordWrapTimer->start();
         gNameColumnWidth = newSize;
     }
 }
@@ -510,7 +511,7 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
         i->plChild(c)->loadIcon();
     }
 
-    if (i && !wordWrapTimer.isActive()) {
+    if (i && !wordWrapTimer->isActive()) {
         gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
         resizeRows(i, i->getLevel());
     }

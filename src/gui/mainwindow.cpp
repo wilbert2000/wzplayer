@@ -149,9 +149,10 @@ TMainWindow::TMainWindow() :
     resize(pref->default_size);
 
     // Setup move window timer merging multiple move requests into one
-    move_window_timer.setSingleShot(true);
-    move_window_timer.setInterval(0);
-    connect(&move_window_timer, SIGNAL(timeout()),
+    move_window_timer = new QTimer(this);
+    move_window_timer->setSingleShot(true);
+    move_window_timer->setInterval(0);
+    connect(move_window_timer, SIGNAL(timeout()),
             this, SLOT(moveWindowMerged()));
 
     // Create objects:
@@ -1919,7 +1920,7 @@ void TMainWindow::moveWindow(QPoint diff) {
     // Merge multiple moves into one for machines that cannot keep up
     move_window_diff += diff;
     // Zero timeout, calls moveWindowMerged()
-    move_window_timer.start();
+    move_window_timer->start();
 }
 
 void TMainWindow::processAction(QString action_name) {

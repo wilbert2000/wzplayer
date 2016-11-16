@@ -28,10 +28,10 @@
 #include <QWheelEvent>
 #include <QResizeEvent>
 #include <QTime>
-#include <QTimer>
 
 #include "wzdebug.h"
 
+class QTimer;
 
 namespace Gui {
 
@@ -144,7 +144,7 @@ private:
 
     bool double_clicked;
     bool delay_left_click;
-    QTimer left_click_timer;
+    QTimer* left_click_timer;
     QTime left_button_pressed_time;
     QPoint drag_pos;
     bool dragging;

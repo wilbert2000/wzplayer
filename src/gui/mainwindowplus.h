@@ -77,7 +77,7 @@ protected slots:
 #endif
 
 private:
-    QTimer optimizeSizeTimer;
+    QTimer* optimizeSizeTimer;
     double saved_size;
 
     void switchToTray();
@@ -85,6 +85,7 @@ private:
     void updateShowAllAct();
 
 private slots:
+    void onOptimizeSizeTimeout();
     void onDockVisibilityChanged(bool visible);
     void setWinTitle();
 };

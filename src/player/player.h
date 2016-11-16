@@ -21,7 +21,6 @@
 
 #include <QProcess>
 #include <QTime>
-#include <QTimer>
 
 #include "wzdebug.h"
 #include "config.h"
@@ -29,6 +28,8 @@
 #include "player/state.h"
 #include "settings/mediasettings.h"
 
+
+class QTimer;
 
 namespace Gui {
 class TPlayerWindow;
@@ -398,7 +399,7 @@ private:
     TState _state;
     bool seeking;
     QTime time;
-    QTimer keepSizeTimer;
+    QTimer* keepSizeTimer;
 
     QString initial_subtitle;
     QMap<QString,QString> forced_titles;

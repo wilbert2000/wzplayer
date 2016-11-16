@@ -74,9 +74,10 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
 
     player = this;
 
-    keepSizeTimer.setInterval(1000);
-    keepSizeTimer.setSingleShot(true);
-    connect(&keepSizeTimer, SIGNAL(timeout()), this, SLOT(clearKeepSize()));
+    keepSizeTimer = new QTimer(this);
+    keepSizeTimer->setInterval(1000);
+    keepSizeTimer->setSingleShot(true);
+    connect(keepSizeTimer, SIGNAL(timeout()), this, SLOT(clearKeepSize()));
 
     proc = Player::Process::TPlayerProcess::createPlayerProcess(this, &mdat);
 
@@ -2961,8 +2962,8 @@ void TPlayer::nextProgram() {
 void TPlayer::clearKeepSize() {
     logger()->debug("clearKeepSize: clearing keepSize");
 
+    keepSizeTimer->stop();
     keepSize = false;
-    keepSizeTimer.stop();
 }
 
 void TPlayer::setAspectRatio(int id) {
@@ -2988,7 +2989,7 @@ void TPlayer::setAspectRatio(int id) {
 
         // Clear keepSize in case main window resize not arriving
         if (keepSize) {
-            keepSizeTimer.start();
+            keepSizeTimer->start();
         }
     } else {
         logger()->error("setAspectRatio: " + mset.aspect_ratio.toString()

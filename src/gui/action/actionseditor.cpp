@@ -37,7 +37,6 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QApplication>
-#include <QTimer>
 #include <QResizeEvent>
 
 #include "log4qt/logger.h"
