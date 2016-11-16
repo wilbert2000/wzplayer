@@ -148,13 +148,6 @@ TMainWindow::TMainWindow() :
     // Resize window to default size
     resize(pref->default_size);
 
-    // Setup move window timer merging multiple move requests into one
-    move_window_timer = new QTimer(this);
-    move_window_timer->setSingleShot(true);
-    move_window_timer->setInterval(0);
-    connect(move_window_timer, SIGNAL(timeout()),
-            this, SLOT(moveWindowMerged()));
-
     // Create objects:
     log_window = new TLogWindow(this);
 
@@ -246,7 +239,7 @@ void TMainWindow::createPanel() {
 void TMainWindow::createPlayerWindow() {
     logger()->debug("createPlayerWindow");
 
-    playerwindow = new TPlayerWindow(panel);
+    playerwindow = new TPlayerWindow(panel, this);
     playerwindow->setObjectName("playerwindow");
 
     QVBoxLayout* layout = new QVBoxLayout;
@@ -268,8 +261,6 @@ void TMainWindow::createPlayerWindow() {
             this, SLOT(xbutton1ClickFunction()));
     connect(playerwindow, SIGNAL(xbutton2Clicked()),
             this, SLOT(xbutton2ClickFunction()));
-    connect(playerwindow, SIGNAL(moveWindow(QPoint)),
-            this, SLOT(moveWindow(QPoint)));
 
     connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
             this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
@@ -1908,21 +1899,6 @@ void TMainWindow::xbutton2ClickFunction() {
     if (!pref->mouse_xbutton2_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton2_click_function);
     }
-}
-
-void TMainWindow::moveWindowMerged() {
-
-    move(pos() + move_window_diff);
-    move_window_diff = QPoint(0, 0);
-}
-
-// Called by playerwindow when dragging main window
-void TMainWindow::moveWindow(QPoint diff) {
-
-    // Merge multiple moves into one for machines that cannot keep up
-    move_window_diff += diff;
-    // Zero timeout, calls moveWindowMerged()
-    move_window_timer->start();
 }
 
 void TMainWindow::processAction(QString action_name) {

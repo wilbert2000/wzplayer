@@ -28,9 +28,10 @@
 #include <QApplication>
 #include <QLabel>
 
-#include "player/player.h"
+#include "gui/mainwindow.h"
 #include "gui/msg.h"
 #include "gui/desktop.h"
+#include "player/player.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "images.h"
@@ -98,9 +99,10 @@ void TVideoWindow::restoreNormalBackground() {
 }
 
 
-TPlayerWindow::TPlayerWindow(QWidget* parent) :
+TPlayerWindow::TPlayerWindow(QWidget* parent, TMainWindow* mw) :
     QWidget(parent),
     debug(logger()),
+    main_window(mw),
     video_size(0, 0),
     last_video_out_size(0, 0),
     aspect(0),
@@ -317,23 +319,23 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
         }
 
         if (dragging) {
-            // Move video in fullscreen or with modifier, otherwise move window
+            // Move video in fullscreen or with modifier,
+            // otherwise move main window
             drag_pos = pos;
             if (pref->fullscreen || event->modifiers() != Qt::NoModifier) {
                 if (!video_size.isEmpty()) {
                     moveVideo(diff);
                 }
             } else {
-                emit moveWindow(diff);
+                main_window->move(main_window->pos() + diff);
             }
         }
     }
 
-    // For DVDNAV
+    // Pass event to player for DVDNAV
     if (!dragging && video_window->underMouse()) {
         // Make event relative to video layer
-        QPoint pos = event->pos() - video_window->pos();
-        player->dvdnavUpdateMousePos(pos);
+        player->dvdnavUpdateMousePos(event->pos() - video_window->pos());
     }
 }
 

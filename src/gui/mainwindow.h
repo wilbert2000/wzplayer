@@ -30,7 +30,6 @@
 class QWidget;
 class QLabel;
 class QMenu;
-class QTimer;
 
 namespace Settings {
 class TMediaSettings;
@@ -217,7 +216,6 @@ protected slots:
     virtual void middleClickFunction();
     virtual void xbutton1ClickFunction();
     virtual void xbutton2ClickFunction();
-    virtual void moveWindow(QPoint diff);
     virtual void processAction(QString action_name);
 
     virtual void dragEnterEvent(QDragEnterEvent*);
@@ -343,9 +341,6 @@ private:
     bool center_window;
     QPoint center_window_pos;
 
-    QPoint move_window_diff;
-    QTimer* move_window_timer;
-
     TAutoHideTimer* auto_hide_timer;
     TUpdateChecker* update_checker;
 
@@ -374,7 +369,6 @@ private slots:
     void displayInOutPoints();
     void displayFrames(bool);
 
-    void moveWindowMerged();
     void checkPendingActionsToRun();
 };
 

@@ -35,6 +35,8 @@ class QTimer;
 
 namespace Gui {
 
+class TMainWindow;
+
 //! TVideoWindow can be instructed to not delete the background.
 class TVideoWindow : public QWidget {
     Q_OBJECT
@@ -60,7 +62,7 @@ class TPlayerWindow : public QWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TPlayerWindow(QWidget* parent);
+    explicit TPlayerWindow(QWidget* parent, TMainWindow* mw);
     virtual ~TPlayerWindow();
 
     TVideoWindow* videoWindow() { return video_window; }
@@ -118,7 +120,6 @@ signals:
 
     void draggingChanged(bool);
 
-    void moveWindow(QPoint);
     void videoOutChanged(const QSize& size);
     void videoSizeFactorChanged(double, double);
 
@@ -131,6 +132,7 @@ protected:
     virtual void wheelEvent(QWheelEvent* e);
 
 private:
+    TMainWindow* main_window;
     TVideoWindow* video_window;
 
     QSize video_size;
