@@ -2243,16 +2243,18 @@ void TMainWindow::changeSize(int percentage) {
 
 void TMainWindow::toggleDoubleSize() {
 
-    if (pref->size_factor != 1.0)
+    if (pref->size_factor != 1.0) {
         changeSize(1.0);
-    else changeSize(2.0);
+    } else {
+        changeSize(2.0);
+    }
 }
 
 void TMainWindow::hidePanel() {
     logger()->debug("hidePanel");
 
     if (panel->isVisible()) {
-        // Exit from fullscreen mode
+        // Exit from fullscreen
         if (pref->fullscreen) {
             toggleFullscreen(false);
             update();
