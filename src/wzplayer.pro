@@ -3,22 +3,26 @@ LANGUAGE = C++
 
 CONFIG += qt warn_on
 
+# Require Qt 4.6
 lessThan(QT_MAJOR_VERSION, 5) {
 lessThan(QT_MINOR_VERSION, 6) {
     error("Qt >= 4.6 required")
 }
 }
 
+# Default to release build
 !CONFIG(debug, debug|release) {
 !CONFIG(release, debug|release) {
     CONFIG += release
 }
 }
 
+# Intermediates
 UI_DIR = .ui
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
+# Log4qt
 include(log4qt/log4qt.pri)
 
 QT += network
