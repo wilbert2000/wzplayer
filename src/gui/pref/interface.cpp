@@ -125,7 +125,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
     // Main window
     setUseSingleInstance(pref->use_single_window);
     setSaveSize(pref->save_window_size_on_exit);
-    resize_on_load_check->setChecked(pref->resize_on_load);
 
     setPauseWhenHidden(pref->pause_when_hidden);
     setCloseOnFinish(pref->close_on_finish);
@@ -166,7 +165,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
     // Main window
     pref->use_single_window = useSingleInstance();
     pref->save_window_size_on_exit = saveSize();
-    pref->resize_on_load = resize_on_load_check->isChecked();
     pref->pause_when_hidden = pauseWhenHidden();
     pref->close_on_finish = closeOnFinish();
     pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
@@ -351,10 +349,6 @@ void TInterface::createHelp() {
     setWhatsThis(save_size_check, tr("Remember position and size"),
         tr("If you check this option, the position and size of the main "
            "window will be saved and restored when you run WZPlayer again."));
-
-    setWhatsThis(resize_on_load_check,
-        tr("Resize window when loading a new video"),
-        tr("Adjust the dimension of the main window to a newly loaded video."));
 
     setWhatsThis(pause_on_minimize_check, tr("Pause when minimized"),
         tr("If this option is enabled, the file will be paused when the "
