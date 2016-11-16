@@ -158,8 +158,6 @@ QString Helper::clean(const QString& name) {
         return "";
     }
 
-    logger()->trace("clean: '%1'", name);
-
     QString s = QUrl(name).toString(QUrl::RemoveScheme
                                     | QUrl::RemoveAuthority
                                     | QUrl::RemoveQuery
@@ -176,15 +174,19 @@ QString Helper::clean(const QString& name) {
 
     s.replace("_", " ");
 
+    // Replace dots not surrounded by whitespace with space
     static QRegExp rx1("([^\\s])\\.([^\\s])");
     s.replace(rx1, "\\1 \\2");
 
+    // Surround hyphen with spaces
     static QRegExp rx2("([^\\s])-([^\\s])");
     s.replace(rx2, "\\1 - \\2");
 
+    // Surround x with spaces
     static QRegExp rx3("(\\d)[xX](\\d)");
     s.replace(rx3, "\\1 x \\2");
 
+    // Prefix digits not from know media extension with space
     static QRegExp rx4("([^\\d\\s\\WmMpPcCuU])(\\d+)");
     s.replace(rx4, "\\1 \\2");
 
@@ -193,7 +195,7 @@ QString Helper::clean(const QString& name) {
         s = s.left(252) + "...";
     }
 
-    logger()->trace("Clean: returning '%1'", s);
+    logger()->trace("Clean: '%1' to '%2'", name, s);
     return s;
 }
 
