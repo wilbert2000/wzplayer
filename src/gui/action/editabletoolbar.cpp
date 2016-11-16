@@ -28,7 +28,7 @@
 #include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include "gui/action/sizegrip.h"
 #include "gui/action/timeslider.h"
 
@@ -191,7 +191,7 @@ void TEditableToolbar::showContextMenu(const QPoint& pos) {
 
     QMenu* popup = main_window->getToolbarMenu();
     if (popup) {
-        execPopup(this, popup, mapToGlobal(pos));
+        Menu::execPopup(this, popup, mapToGlobal(pos));
     }
 }
 

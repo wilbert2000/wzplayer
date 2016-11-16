@@ -1,7 +1,7 @@
 #ifndef GUI_VIDEOMENU_H
 #define GUI_VIDEOMENU_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -15,6 +15,7 @@ namespace Action {
 class TAction;
 class TActionGroup;
 
+namespace Menu {
 
 class TMenuVideo : public TMenu {
 	Q_OBJECT
@@ -54,6 +55,7 @@ private slots:
 	void onFullscreenChanged();
 }; // class TMenuVideo
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

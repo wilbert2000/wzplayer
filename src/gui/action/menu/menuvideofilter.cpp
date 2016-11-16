@@ -1,4 +1,4 @@
-#include "gui/action/menuvideofilter.h"
+#include "gui/action/menu/menuvideofilter.h"
 #include "settings/mediasettings.h"
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
@@ -10,6 +10,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
@@ -128,5 +129,6 @@ void TMenuVideoFilter::onAboutToShowUnSharp() {
     unsharpGroup->setChecked(player->mset.current_unsharp);
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

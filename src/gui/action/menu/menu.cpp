@@ -1,17 +1,15 @@
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include <QDebug>
 #include <QEvent>
-#include "gui/desktop.h"
-#include "images.h"
-#include "settings/mediasettings.h"
 #include "gui/mainwindow.h"
+#include "gui/desktop.h"
+#include "settings/mediasettings.h"
+#include "images.h"
 
-
-using namespace Settings;
 
 namespace Gui {
 namespace Action {
-
+namespace Menu {
 
 void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 
@@ -106,6 +104,7 @@ void TMenu::addActionsTo(QWidget* w) {
     }
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

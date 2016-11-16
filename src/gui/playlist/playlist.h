@@ -25,7 +25,7 @@
 
 #include "wzdebug.h"
 #include "gui/playlist/playlistwidget.h"
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include "config.h"
 
 
@@ -43,14 +43,16 @@ class TMainWindow;
 
 namespace Action {
 class TAction;
+namespace Menu {
 class TMenuInOut;
+}
 }
 
 namespace Playlist {
 
 class TAddFilesThread;
 
-class TAddRemovedMenu : public Gui::Action::TMenu {
+class TAddRemovedMenu : public Action::Menu::TMenu {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
@@ -110,7 +112,7 @@ public:
     void saveSettings();
     void retranslateStrings();
 
-    Action::TMenuInOut* getInOutMenu() const { return inOutMenu; }
+    Action::Menu::TMenuInOut* getInOutMenu() const { return inOutMenu; }
 
 public slots:
     void playNext(bool loop_playlist = true);
@@ -133,9 +135,9 @@ protected:
     virtual void showEvent (QShowEvent*);
 
 private:
-    Action::TMenu* add_menu;
+    Action::Menu::TMenu* add_menu;
     TAddRemovedMenu* add_removed_menu;
-    Action::TMenu* remove_menu;
+    Action::Menu::TMenu* remove_menu;
     QMenu* popup;
 
     QToolBar* toolbar;
@@ -174,7 +176,7 @@ private:
     Action::TAction* removeSelectedFromDiskAct;
     Action::TAction* removeAllAct;
 
-    Action::TMenuInOut* inOutMenu;
+    Action::Menu::TMenuInOut* inOutMenu;
 
     TMainWindow* main_window;
     TPlaylistWidget* playlistWidget;

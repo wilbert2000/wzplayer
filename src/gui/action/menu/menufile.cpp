@@ -1,4 +1,4 @@
-#include "gui/action/menufile.h"
+#include "gui/action/menu/menufile.h"
 #include <QMessageBox>
 #include <QFileInfo>
 
@@ -15,6 +15,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 class TMenuDisc : public TMenu {
 public:
@@ -223,5 +224,6 @@ void TMenuFile::clearRecentsList() {
     }
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

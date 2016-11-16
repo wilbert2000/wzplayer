@@ -83,24 +83,24 @@ HEADERS += wzdebug.h \
     gui/action/toolbareditor.h \
     gui/action/sizegrip.h \
     gui/action/editabletoolbar.h \
-    gui/action/menu.h \
-    gui/action/menufile.h \
-    gui/action/menuplay.h \
-    gui/action/menuinoutpoints.h \
-    gui/action/menuaspect.h \
-    gui/action/menuvideofilter.h \
-    gui/action/menuvideosize.h \
-    gui/action/menuvideotracks.h \
-    gui/action/menuvideo.h \
-    gui/action/menuaudiotracks.h \
-    gui/action/menuaudio.h \
-    gui/action/menusubtitle.h \
-    gui/action/menubrowse.h \
-    gui/action/menuwindow.h \
-    gui/action/menuhelp.h \
     gui/action/favoriteeditor.h \
     gui/action/favorites.h \
     gui/action/tvlist.h \
+    gui/action/menu/menu.h \
+    gui/action/menu/menufile.h \
+    gui/action/menu/menuplay.h \
+    gui/action/menu/menuinoutpoints.h \
+    gui/action/menu/menuaspect.h \
+    gui/action/menu/menuvideofilter.h \
+    gui/action/menu/menuvideosize.h \
+    gui/action/menu/menuvideotracks.h \
+    gui/action/menu/menuvideo.h \
+    gui/action/menu/menuaudiotracks.h \
+    gui/action/menu/menuaudio.h \
+    gui/action/menu/menusubtitle.h \
+    gui/action/menu/menubrowse.h \
+    gui/action/menu/menuwindow.h \
+    gui/action/menu/menuhelp.h \
     gui/deviceinfo.h \
     gui/pref/languages.h \
     gui/pref/vdpauproperties.h \
@@ -209,24 +209,24 @@ SOURCES	+= wzdebug.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/sizegrip.cpp \
     gui/action/editabletoolbar.cpp \
-    gui/action/menu.cpp \
-    gui/action/menufile.cpp \
-    gui/action/menuplay.cpp \
-    gui/action/menuinoutpoints.cpp \
-    gui/action/menuaspect.cpp \
-    gui/action/menuvideofilter.cpp \
-    gui/action/menuvideosize.cpp \
-    gui/action/menuvideotracks.cpp \
-    gui/action/menuvideo.cpp \
-    gui/action/menuaudiotracks.cpp \
-    gui/action/menuaudio.cpp \
-    gui/action/menusubtitle.cpp \
-    gui/action/menubrowse.cpp \
-    gui/action/menuwindow.cpp \
-    gui/action/menuhelp.cpp \
     gui/action/favoriteeditor.cpp \
     gui/action/favorites.cpp \
     gui/action/tvlist.cpp \
+    gui/action/menu/menu.cpp \
+    gui/action/menu/menufile.cpp \
+    gui/action/menu/menuplay.cpp \
+    gui/action/menu/menuinoutpoints.cpp \
+    gui/action/menu/menuaspect.cpp \
+    gui/action/menu/menuvideofilter.cpp \
+    gui/action/menu/menuvideosize.cpp \
+    gui/action/menu/menuvideotracks.cpp \
+    gui/action/menu/menuvideo.cpp \
+    gui/action/menu/menuaudiotracks.cpp \
+    gui/action/menu/menuaudio.cpp \
+    gui/action/menu/menusubtitle.cpp \
+    gui/action/menu/menubrowse.cpp \
+    gui/action/menu/menuwindow.cpp \
+    gui/action/menu/menuhelp.cpp \
     gui/deviceinfo.cpp \
     gui/pref/languages.cpp \
     gui/pref/vdpauproperties.cpp \

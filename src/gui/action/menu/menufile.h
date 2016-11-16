@@ -1,7 +1,7 @@
-#ifndef GUI_ACTION_MENUFILE_H
-#define GUI_ACTION_MENUFILE_H
+#ifndef GUI_ACTION_MENU_MENUFILE_H
+#define GUI_ACTION_MENU_MENUFILE_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -12,6 +12,7 @@ namespace Action {
 
 class TAction;
 
+namespace Menu {
 
 class TMenuFile : public TMenu {
     Q_OBJECT
@@ -25,9 +26,10 @@ private:
 
 private slots:
     void clearRecentsList();
-}; // class TmenuOpen
+};
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_MENUFILE_H
+#endif // GUI_ACTION_MENU_MENUFILE_H

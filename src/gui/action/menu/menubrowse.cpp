@@ -1,4 +1,4 @@
-#include "gui/action/menubrowse.h"
+#include "gui/action/menu/menubrowse.h"
 #include <QWidget>
 #include "gui/action/actiongroup.h"
 #include "settings/preferences.h"
@@ -10,7 +10,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
-
+namespace Menu {
 
 TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     : TMenu(mw, mw, "browse_menu", tr("&Browse"), "noicon") {
@@ -202,5 +202,6 @@ void TMenuBrowse::updateAngles() {
 	anglesMenu->addActions(angleGroup->actions());
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

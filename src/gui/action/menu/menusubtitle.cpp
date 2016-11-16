@@ -1,4 +1,4 @@
-#include "gui/action/menusubtitle.h"
+#include "gui/action/menu/menusubtitle.h"
 #include <QWidget>
 #include "settings/mediasettings.h"
 #include "gui/action/actiongroup.h"
@@ -9,6 +9,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 class TMenuCC : public TMenu {
@@ -267,5 +268,6 @@ void TMenuSubtitle::updateSubtitles() {
     subFPSMenu->enableActions();
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

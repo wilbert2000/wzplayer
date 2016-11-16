@@ -1,4 +1,4 @@
-#include "gui/action/menuplay.h"
+#include "gui/action/menu/menuplay.h"
 
 #include <QDebug>
 #include <QToolButton>
@@ -6,7 +6,7 @@
 #include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
 #include "gui/action/widgetactions.h"
-#include "gui/action/menuinoutpoints.h"
+#include "gui/action/menu/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "settings/preferences.h"
 #include "player/player.h"
@@ -16,6 +16,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 // Base class for seeking forward/rewinding
 TMenuSeek::TMenuSeek(QWidget* parent,
@@ -320,6 +321,7 @@ void TMenuPlay::enableActions() {
                           || s == Player::STATE_PAUSED);
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

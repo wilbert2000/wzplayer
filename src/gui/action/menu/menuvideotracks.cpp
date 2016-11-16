@@ -1,4 +1,4 @@
-#include "gui/action/menuvideotracks.h"
+#include "gui/action/menu/menuvideotracks.h"
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
 #include "player/player.h"
@@ -7,6 +7,7 @@
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
@@ -55,5 +56,6 @@ void TMenuVideoTracks::updateVideoTracks() {
 	addActions(videoTrackGroup->actions());
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

@@ -1,16 +1,17 @@
-#include "gui/action/menuaspect.h"
-#include "player/player.h"
+#include "gui/action/menu/menuaspect.h"
 #include "gui/mainwindow.h"
-#include "gui/action/actiongroup.h"
-#include "gui/action/menu.h"
+#include "player/player.h"
 #include "settings/mediasettings.h"
 #include "settings/aspectratio.h"
+#include "gui/action/actiongroup.h"
+#include "gui/action/menu/menu.h"
 
 
 using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 TMenuAspect::TMenuAspect(TMainWindow* mw) :
@@ -99,5 +100,6 @@ void TMenuAspect::onAspectRatioChanged(int) {
     upd();
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

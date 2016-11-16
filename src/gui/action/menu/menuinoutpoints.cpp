@@ -1,4 +1,4 @@
-#include "gui/action/menuinoutpoints.h"
+#include "gui/action/menu/menuinoutpoints.h"
 
 #include <QDebug>
 
@@ -11,7 +11,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
-
+namespace Menu {
 
 // Create in-out points menu
 TMenuInOut::TMenuInOut(TMainWindow* mw)
@@ -100,6 +100,7 @@ void TMenuInOut::onAboutToShow() {
     upd();
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

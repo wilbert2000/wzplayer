@@ -1,20 +1,20 @@
-#include "gui/action/menuaudio.h"
-#include "gui/mainwindow.h"
-#include "player/player.h"
-#include "gui/action/actiongroup.h"
+#include "gui/action/menu/menuaudio.h"
+#include "gui/action/menu/menuaudiotracks.h"
 #include "gui/action/actionseditor.h"
-#include "gui/action/menuaudiotracks.h"
+#include "gui/action/actiongroup.h"
+#include "gui/mainwindow.h"
 #include "gui/audioequalizer.h"
+#include "player/player.h"
 #include "settings/mediasettings.h"
 #include "images.h"
 
 #include <QWidget>
 
-
 using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 class TMenuAudioChannel : public TMenu {
@@ -223,5 +223,6 @@ void TMenuAudio::onMediaSettingsChanged(TMediaSettings* mset) {
 	extrastereoAct->setChecked(mset->extrastereo_filter);
 }
 
+} // namespace Menu
 } // namespace Action
 } // namesapce Gui

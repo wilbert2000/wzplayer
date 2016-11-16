@@ -1,7 +1,7 @@
-#ifndef GUI_ACTION_MENUWINDOW_H
-#define GUI_ACTION_MENUWINDOW_H
+#ifndef GUI_ACTION_MENU_MENUWINDOW_H
+#define GUI_ACTION_MENU_MENUWINDOW_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -12,6 +12,8 @@ namespace Action {
 
 class TAction;
 class TActionGroup;
+
+namespace Menu {
 
 class TMenuStayOnTop : public TMenu {
     Q_OBJECT
@@ -38,6 +40,7 @@ public:
                 QWidget* logWindow);
 };
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

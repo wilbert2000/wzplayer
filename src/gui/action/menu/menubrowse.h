@@ -1,7 +1,7 @@
-#ifndef GUI_BROWSEMENU_H
-#define GUI_BROWSEMENU_H
+#ifndef GUI_ACTION_MENU_MENUBROWSE_H
+#define GUI_ACTION_MENU_MENUBROWSE_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include "log4qt/logger.h"
 
 
@@ -11,6 +11,7 @@ namespace Action {
 class TAction;
 class TActionGroup;
 
+namespace Menu {
 
 class TMenuBrowse : public TMenu {
     Q_OBJECT
@@ -56,7 +57,8 @@ private slots:
     void updateAngles();
 }; // class TMenuBrowse
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_BROWSEMENU_H
+#endif // GUI_ACTION_MENU_MENUBROWSE_H

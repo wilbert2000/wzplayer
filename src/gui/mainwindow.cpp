@@ -66,15 +66,15 @@
 #include "gui/action/widgetactions.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
-#include "gui/action/menu.h"
-#include "gui/action/menufile.h"
-#include "gui/action/menuplay.h"
-#include "gui/action/menuvideo.h"
-#include "gui/action/menuaudio.h"
-#include "gui/action/menusubtitle.h"
-#include "gui/action/menubrowse.h"
-#include "gui/action/menuwindow.h"
-#include "gui/action/menuhelp.h"
+#include "gui/action/menu/menu.h"
+#include "gui/action/menu/menufile.h"
+#include "gui/action/menu/menuplay.h"
+#include "gui/action/menu/menuvideo.h"
+#include "gui/action/menu/menuaudio.h"
+#include "gui/action/menu/menusubtitle.h"
+#include "gui/action/menu/menubrowse.h"
+#include "gui/action/menu/menuwindow.h"
+#include "gui/action/menu/menuhelp.h"
 
 #include "gui/msg.h"
 #include "gui/logwindow.h"
@@ -484,17 +484,17 @@ void TMainWindow::createMenus() {
     logger()->debug("createMenus");
 
     // MENUS
-    fileMenu = new TMenuFile(this);
+    fileMenu = new Menu::TMenuFile(this);
     menuBar()->addMenu(fileMenu);
-    playMenu = new TMenuPlay(this, playlist);
+    playMenu = new Menu::TMenuPlay(this, playlist);
     menuBar()->addMenu(playMenu);
-    videoMenu = new TMenuVideo(this, playerwindow, video_equalizer);
+    videoMenu = new Menu::TMenuVideo(this, playerwindow, video_equalizer);
     menuBar()->addMenu(videoMenu);
-    audioMenu = new TMenuAudio(this, audio_equalizer);
+    audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
-    subtitleMenu = new TMenuSubtitle(this);
+    subtitleMenu = new Menu::TMenuSubtitle(this);
     menuBar()->addMenu(subtitleMenu);
-    browseMenu = new TMenuBrowse(this);
+    browseMenu = new Menu::TMenuBrowse(this);
     menuBar()->addMenu(browseMenu);
 
     // statusbar_menu added to toolbar_menu by createToolbarMenu()
@@ -506,12 +506,13 @@ void TMainWindow::createMenus() {
 
     toolbar_menu = createToolbarMenu();
 
-    windowMenu = new TMenuWindow(this, toolbar_menu, playlist, log_window);
+    windowMenu = new Menu::TMenuWindow(this, toolbar_menu, playlist,
+                                       log_window);
     menuBar()->addMenu(windowMenu);
     auto_hide_timer->add(windowMenu->findChild<TAction*>("show_playlist"),
                          playlist);
 
-    helpMenu = new TMenuHelp(this);
+    helpMenu = new Menu::TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
 
     // Popup menu
@@ -530,7 +531,8 @@ QMenu* TMainWindow::createToolbarMenu() {
 
     // Use name "toolbar_menu" only for first
     QString name = toolbar_menu ? "" : "toolbar_menu";
-    QMenu* menu = new TMenu(this, this, name, tr("&Toolbars"), "toolbars");
+    QMenu* menu = new Menu::TMenu(this, this, name, tr("&Toolbars"),
+                                  "toolbars");
 
     menu->addAction(viewMenuBarAct);
     menu->addAction(toolbar->toggleViewAction());
@@ -559,7 +561,7 @@ QMenu* TMainWindow::createPopupMenu() {
 }
 
 void TMainWindow::showStatusBarPopup(const QPoint& pos) {
-    execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
+    Menu::execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
 }
 
 void TMainWindow::createToolbars() {
@@ -2067,7 +2069,7 @@ void TMainWindow::showContextMenu() {
 }
 
 void TMainWindow::showContextMenu(QPoint p) {
-    execPopup(this, popup, p);
+    Menu::execPopup(this, popup, p);
 }
 
 // Called when a video has started to play

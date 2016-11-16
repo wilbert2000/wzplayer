@@ -1,13 +1,13 @@
-#include "gui/action/menuaudiotracks.h"
+#include "gui/action/menu/menuaudiotracks.h"
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
-#include "player/player.h"
 #include "gui/mainwindow.h"
+#include "player/player.h"
 
 
 namespace Gui {
 namespace Action {
-
+namespace Menu {
 
 TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
     : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track") {
@@ -55,5 +55,6 @@ void TMenuAudioTracks::updateAudioTracks() {
 		addActions(audioTrackGroup->actions());
 	}
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

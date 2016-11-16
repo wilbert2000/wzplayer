@@ -1,5 +1,5 @@
-#ifndef GUI_MENU_H
-#define GUI_MENU_H
+#ifndef GUI_ACTION_MENU_MENU_H
+#define GUI_ACTION_MENU_MENU_H
 
 #include <QMenu>
 
@@ -13,7 +13,7 @@ namespace Gui {
 class TMainWindow;
 
 namespace Action {
-
+namespace Menu {
 
 // Evade mouse before popping up
 void execPopup(QWidget* w, QMenu* popup, QPoint p);
@@ -41,7 +41,8 @@ protected slots:
     virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 };
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_MENU_H
+#endif // GUI_ACTION_MENU_MENU_H

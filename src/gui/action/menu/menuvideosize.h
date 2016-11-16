@@ -1,9 +1,9 @@
-#ifndef GUI_VIDEOSIZEMENU_H
-#define GUI_VIDEOSIZEMENU_H
+#ifndef GUI_ACTION_MENU_MENUVIDEOSIZE_H
+#define GUI_ACTION_MENU_MENUVIDEOSIZE_H
 
 #include "log4qt/logger.h"
 #include "gui/action/actiongroup.h"
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -12,6 +12,7 @@ class TMainWindow;
 class TPlayerWindow;
 
 namespace Action {
+namespace Menu {
 
 class TVideoSizeGroup : public TActionGroup {
     Q_OBJECT
@@ -55,7 +56,8 @@ private slots:
     void onResizeOnLoadTriggered(bool);
 }; // class TMenuVideoSize
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_VIDEOSIZEMENU_H
+#endif // GUI_ACTION_MENU_MENUVIDEOSIZE_H

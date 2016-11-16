@@ -1,7 +1,7 @@
-#ifndef GUI_ACTION_AUDIOMENU_H
-#define GUI_ACTION_AUDIOMENU_H
+#ifndef GUI_ACTION_MENU_AUDIOMENU_H
+#define GUI_ACTION_MENU_AUDIOMENU_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -13,6 +13,7 @@ namespace Action {
 
 class TAction;
 
+namespace Menu {
 
 class TMenuAudio : public TMenu {
 public:
@@ -43,7 +44,8 @@ private:
     TAction* unloadAudioAct;
 }; // class TMenuAudio
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_AUDIOMENU_H
+#endif // GUI_ACTION_MENU_AUDIOMENU_H

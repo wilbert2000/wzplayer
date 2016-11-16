@@ -1,4 +1,4 @@
-#include "gui/action/menuwindow.h"
+#include "gui/action/menu/menuwindow.h"
 
 #include <QDebug>
 
@@ -14,6 +14,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 class TMenuOSD : public TMenu {
 public:
@@ -183,5 +184,6 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     connect(a, SIGNAL(triggered()), main_window, SLOT(showPreferencesDialog()));
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

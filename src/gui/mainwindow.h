@@ -39,17 +39,23 @@ class TMediaSettings;
 namespace Gui {
 
 namespace Action {
+
 class TAction;
+class TEditableToolbar;
+class TTimeSliderAction;
+class TVolumeSliderAction;
+class TTimeLabelAction;
+
+namespace Menu {
+
 class TMenuFile;
 class TMenuPlay;
 class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
 class TMenuBrowse;
-class TEditableToolbar;
-class TTimeSliderAction;
-class TVolumeSliderAction;
-class TTimeLabelAction;
+
+}
 }
 
 namespace Pref {
@@ -265,12 +271,12 @@ protected:
     Action::TAction* nextWheelFunctionAct;
 
     // MENUS
-    Action::TMenuFile* fileMenu;
-    Action::TMenuPlay* playMenu;
-    Action::TMenuVideo* videoMenu;
-    Action::TMenuAudio* audioMenu;
-    Action::TMenuSubtitle* subtitleMenu;
-    Action::TMenuBrowse* browseMenu;
+    Action::Menu::TMenuFile* fileMenu;
+    Action::Menu::TMenuPlay* playMenu;
+    Action::Menu::TMenuVideo* videoMenu;
+    Action::Menu::TMenuAudio* audioMenu;
+    Action::Menu::TMenuSubtitle* subtitleMenu;
+    Action::Menu::TMenuBrowse* browseMenu;
     QMenu* windowMenu;
     QMenu* helpMenu;
 

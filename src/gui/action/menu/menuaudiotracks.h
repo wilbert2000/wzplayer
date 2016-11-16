@@ -1,7 +1,7 @@
-#ifndef GUI_ACTION_MENUAUDIOTRACKS_H
-#define GUI_ACTION_MENUAUDIOTRACKS_H
+#ifndef GUI_ACTION_MENU_MENUAUDIOTRACKS_H
+#define GUI_ACTION_MENU_MENUAUDIOTRACKS_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include "log4qt/logger.h"
 
 
@@ -10,6 +10,8 @@ namespace Action {
 
 class TAction;
 class TActionGroup;
+
+namespace Menu {
 
 class TMenuAudioTracks : public TMenu {
     Q_OBJECT
@@ -24,9 +26,10 @@ private:
     TActionGroup* audioTrackGroup;
 private slots:
     void updateAudioTracks();
-}; // class TMenuAudioTracks
+};
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_MENUAUDIOTRACKS_H
+#endif // GUI_ACTION_MENU_MENUAUDIOTRACKS_H

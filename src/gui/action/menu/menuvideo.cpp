@@ -1,11 +1,11 @@
-#include "gui/action/menuvideo.h"
+#include "gui/action/menu/menuvideo.h"
 #include <QDebug>
 #include "player/player.h"
 #include "settings/mediasettings.h"
-#include "gui/action/menuaspect.h"
-#include "gui/action/menuvideofilter.h"
-#include "gui/action/menuvideosize.h"
-#include "gui/action/menuvideotracks.h"
+#include "gui/action/menu/menuaspect.h"
+#include "gui/action/menu/menuvideofilter.h"
+#include "gui/action/menu/menuvideosize.h"
+#include "gui/action/menu/menuvideotracks.h"
 #include "gui/videoequalizer.h"
 #include "gui/mainwindow.h"
 
@@ -18,6 +18,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 class TMenuDeinterlace : public TMenu {
@@ -349,5 +350,6 @@ void TMenuVideo::onFullscreenChanged() {
 	exitFullscreenAct->setEnabled(pref->fullscreen);
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui

@@ -1,7 +1,7 @@
-#ifndef GUI_VIDEOFILTERMENU_H
-#define GUI_VIDEOFILTERMENU_H
+#ifndef GUI_ACTION_MENU_MENUVIDEOFILTER_H
+#define GUI_ACTION_MENU_MENUVIDEOFILTER_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -10,6 +10,7 @@ namespace Action {
 class TAction;
 class TActionGroup;
 
+namespace Menu {
 
 class TMenuVideoFilter : public TMenu {
 	Q_OBJECT
@@ -49,7 +50,8 @@ private slots:
 	void onAboutToShowUnSharp();
 }; // class TMenuVideoFilter
 
+} // namespace Menu
 } // namespace Action
 } // namespace GUI
 
-#endif // GUI_VIDEOFILTERMENU_H
+#endif // GUI_ACTION_MENU_MENUVIDEOFILTER_H

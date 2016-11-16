@@ -48,7 +48,7 @@
 #include "gui/playlist/addfilesthread.h"
 #include "player/player.h"
 #include "gui/multilineinputdialog.h"
-#include "gui/action/menuinoutpoints.h"
+#include "gui/action/menu/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "gui/msg.h"
 #include "images.h"
@@ -265,7 +265,7 @@ void TPlaylist::createActions() {
     connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
     // In-out menu
-    inOutMenu = new TMenuInOut(main_window);
+    inOutMenu = new Menu::TMenuInOut(main_window);
     addActions(inOutMenu->actions());
 
     // Repeat
@@ -279,8 +279,8 @@ void TPlaylist::createActions() {
             this, SLOT(onShuffleToggled(bool)));
 
     // Add menu
-    add_menu = new TMenu(this, main_window, "pl_add_menu",
-                         tr("&Add to playlist"), "plus");
+    add_menu = new Menu::TMenu(this, main_window, "pl_add_menu",
+                               tr("&Add to playlist"), "plus");
 
     addCurrentAct = new TAction(add_menu, "pl_add_current",
                                 tr("Add &current file"));
@@ -306,8 +306,8 @@ void TPlaylist::createActions() {
     addActions(add_menu->actions());
 
     // Remove menu
-    remove_menu = new TMenu(this, main_window, "pl_remove_menu",
-                            tr("&Remove from playlist"), "minus");
+    remove_menu = new Menu::TMenu(this, main_window, "pl_remove_menu",
+                                  tr("&Remove from playlist"), "minus");
 
     removeSelectedAct = new TAction(remove_menu, "pl_remove_selected",
                                     tr("&Remove from list"), "",
@@ -1032,8 +1032,8 @@ void TPlaylist::openInNewWindow() {
 void TPlaylist::showContextMenu(const QPoint & pos) {
 
     if (!popup->isVisible()) {
-        Action::execPopup(this, popup,
-                          playlistWidget->viewport()->mapToGlobal(pos));
+        Menu::execPopup(this, popup,
+                        playlistWidget->viewport()->mapToGlobal(pos));
     }
 }
 

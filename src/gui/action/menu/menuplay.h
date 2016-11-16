@@ -1,7 +1,7 @@
-#ifndef GUI_ACTION_PLAYMENU_H
-#define GUI_ACTION_PLAYMENU_H
+#ifndef GUI_ACTION_MENU_MENUPLAY_H
+#define GUI_ACTION_MENU_MENUPLAY_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -15,6 +15,8 @@ class TPlaylist;
 namespace Action {
 
 class TAction;
+
+namespace Menu {
 
 class TMenuSeek: public TMenu {
     Q_OBJECT
@@ -65,7 +67,8 @@ private:
     TAction* seekToAct;
 }; // class TMenuPlay
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_PLAYMENU_H
+#endif // GUI_ACTION_MENU_MENUPLAY_H

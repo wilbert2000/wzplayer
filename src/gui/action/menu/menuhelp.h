@@ -1,22 +1,25 @@
-#ifndef GUI_ACTION_HELPMENU_H
-#define GUI_ACTION_HELPMENU_H
+#ifndef GUI_ACTION_MENU_MENUHELP_H
+#define GUI_ACTION_MENU_MENUHELP_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 namespace Gui {
 
 class TMainWindow;
+
 namespace Action {
 
 class TAction;
 
+namespace Menu {
 
 class TMenuHelp : public TMenu {
 public:
     explicit TMenuHelp(TMainWindow* mw);
 };
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_HELPMENU_H
+#endif // GUI_ACTION_MENU_MENUHELP_H

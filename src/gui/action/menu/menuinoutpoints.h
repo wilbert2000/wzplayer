@@ -1,7 +1,7 @@
-#ifndef GUI_ACTION_MENUINOUTPOINTS_H
-#define GUI_ACTION_MENUINOUTPOINTS_H
+#ifndef GUI_ACTION_MENU_MENUINOUTPOINTS_H
+#define GUI_ACTION_MENU_MENUINOUTPOINTS_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 
 
 namespace Gui {
@@ -12,6 +12,7 @@ namespace Action {
 
 class TAction;
 
+namespace Menu {
 
 class TMenuInOut : public TMenu {
     Q_OBJECT
@@ -31,7 +32,8 @@ private slots:
     void upd();
 };
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_MENUINOUTPOINTS_H
+#endif // GUI_ACTION_MENU_MENUINOUTPOINTS_H

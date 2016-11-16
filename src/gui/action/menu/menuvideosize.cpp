@@ -1,4 +1,4 @@
-#include "gui/action/menuvideosize.h"
+#include "gui/action/menu/menuvideosize.h"
 #include "gui/desktop.h"
 #include "settings/preferences.h"
 #include "gui/playerwindow.h"
@@ -10,6 +10,7 @@ using namespace Settings;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
@@ -162,6 +163,7 @@ void TMenuVideoSize::onResizeOnLoadTriggered(bool b) {
     pref->resize_on_load = b;
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

@@ -1,7 +1,7 @@
-#ifndef GUI_SUBTITLEMENU_H
-#define GUI_SUBTITLEMENU_H
+#ifndef GUI_ACTION_MENU_MENUSUBTITLE_H
+#define GUI_ACTION_MENU_MENUSUBTITLE_H
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include "log4qt/logger.h"
 
 
@@ -14,6 +14,7 @@ namespace Action {
 class TAction;
 class TActionGroup;
 
+namespace Menu {
 
 class TMenuSubFPS : public TMenu {
 public:
@@ -70,7 +71,8 @@ private slots:
     void updateSubtitles();
 };
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_SUBTITLEMENU_H
+#endif // GUI_ACTION_MENU_MENUSUBTITLE_H

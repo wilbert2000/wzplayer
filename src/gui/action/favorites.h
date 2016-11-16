@@ -19,7 +19,7 @@
 #ifndef _GUI_FAVORITES_H_
 #define _GUI_FAVORITES_H_
 
-#include "gui/action/menu.h"
+#include "gui/action/menu/menu.h"
 #include <QString>
 #include <QList>
 #include "log4qt/logger.h"
@@ -60,7 +60,8 @@ protected:
 
 typedef QList<TFavorite> TFavoriteList;
 
-class TFavorites : public TMenu {
+// TODO: move to namespace Menu
+class TFavorites : public Menu::TMenu {
 	Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
