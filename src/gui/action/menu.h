@@ -20,25 +20,25 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p);
 
 
 class TMenu : public QMenu {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit TMenu(QWidget* parent,
+    explicit TMenu(QWidget* parent,
                    TMainWindow* w,
-				   const QString& name,
-				   const QString& text,
-				   const QString& icon = QString());
-	virtual ~TMenu();
+                   const QString& name,
+                   const QString& text,
+                   const QString& icon = QString());
+    virtual ~TMenu();
 
-	void addActionsTo(QWidget* w);
+    void addActionsTo(QWidget* w);
 
 protected:
     TMainWindow* main_window;
-	virtual void onAboutToShow();
-	virtual void setVisible(bool visible);
+    virtual void onAboutToShow();
+    virtual void setVisible(bool visible);
 
 protected slots:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 };
 
 } // namespace Action
