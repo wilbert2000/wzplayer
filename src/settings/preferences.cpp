@@ -894,12 +894,12 @@ void TPreferences::load() {
 
     // Log
     beginGroup("log");
-    log_verbose = value("log_verbose", log_verbose).toBool();
     log_level = Log4Qt::Level::fromString(
-                    value("log_level", log_level.toString()).toString());
+        value("log_level", log_level.toString()).toString());
     if (log_level < Log4Qt::Level::TRACE_INT) {
         log_level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
     }
+    log_verbose = value("log_verbose", log_verbose).toBool();
     log_window_max_events = value("log_window_max_events",
                                   log_window_max_events).toInt();
     if (log_window_max_events < 10) {
@@ -910,13 +910,13 @@ void TPreferences::load() {
     endGroup(); // Log
 
     // Update Log4Qt
-    // Command line option --debug overrides log level
-    if (Log4Qt::LogManager::rootLogger()->level() != Log4Qt::Level::DEBUG_INT) {
+    // Command line options --debug and --trace override log level
+    if (Log4Qt::LogManager::rootLogger()->level() == Log4Qt::Level::INFO_INT) {
         Log4Qt::LogManager::rootLogger()->setLevel(log_level);
         Log4Qt::LogManager::qtLogger()->setLevel(log_level);
         logger()->info("load: log level set to " + log_level.toString());
     } else {
-        logger()->info("load: log level overriden by --debug command line option");
+        logger()->info("load: log level overriden by command line");
     }
 
 
