@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ TPreferences::TPreferences() :
 }
 
 TPreferences::~TPreferences() {
-	pref = 0;
+    pref = 0;
 }
 
 
@@ -74,186 +74,186 @@ QString default_mpv_bin = "mpv";
 
 void TPreferences::reset() {
 
-	config_version = CURRENT_CONFIG_VERSION;
+    config_version = CURRENT_CONFIG_VERSION;
 
     // General section
-	player_id = ID_MPV;
-	player_bin = default_mpv_bin;
-	mpv_bin = default_mpv_bin;
-	mplayer_bin = default_mplayer_bin;
-	report_player_crashes = true;
+    player_id = ID_MPV;
+    player_bin = default_mpv_bin;
+    mpv_bin = default_mpv_bin;
+    mplayer_bin = default_mplayer_bin;
+    report_player_crashes = true;
 
-	remember_media_settings = false;
-	remember_time_pos = false;
-	global_volume = true;
-	file_settings_method = "hash"; // Possible values: normal & hash
+    remember_media_settings = false;
+    remember_time_pos = false;
+    global_volume = true;
+    file_settings_method = "hash"; // Possible values: normal & hash
 
-	check_channels_conf_on_startup = true;
-
-
-	// Demuxer section
-	use_lavf_demuxer = false;
-	use_idx = true;
+    check_channels_conf_on_startup = true;
 
 
-	// Video section
-	// Video driver
+    // Demuxer section
+    use_lavf_demuxer = false;
+    use_idx = true;
+
+
+    // Video section
+    // Video driver
 
 #ifdef Q_OS_WIN
-	if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
-		mplayer_vo = "direct3d";
-		mpv_vo = mplayer_vo;
-	} else {
-		mplayer_vo = "directx";
-		mpv_vo = mplayer_vo;
-	}
+    if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA) {
+        mplayer_vo = "direct3d";
+        mpv_vo = mplayer_vo;
+    } else {
+        mplayer_vo = "directx";
+        mpv_vo = mplayer_vo;
+    }
 #else
 #ifdef Q_OS_OS2
-	mplayer_vo = "kva";
-	mpv_vo = mplayer_vo;
+    mplayer_vo = "kva";
+    mpv_vo = mplayer_vo;
 #else
     mplayer_vo = ""; // Players default
     mpv_vo = "";
 #endif
 #endif
 
-	vo = mpv_vo;
+    vo = mpv_vo;
 
 #ifndef Q_OS_WIN
-	vdpau.ffh264vdpau = true;
-	vdpau.ffmpeg12vdpau = true;
-	vdpau.ffwmv3vdpau = true;
-	vdpau.ffvc1vdpau = true;
-	vdpau.ffodivxvdpau = false;
-	vdpau.disable_video_filters = true;
+    vdpau.ffh264vdpau = true;
+    vdpau.ffmpeg12vdpau = true;
+    vdpau.ffwmv3vdpau = true;
+    vdpau.ffvc1vdpau = true;
+    vdpau.ffodivxvdpau = false;
+    vdpau.disable_video_filters = true;
 #endif
 
-	hwdec = "auto";
-	use_soft_video_eq = false;
+    hwdec = "auto";
+    use_soft_video_eq = false;
 
-	// Synchronization
-	frame_drop = false;
-	hard_frame_drop = false;
-	use_correct_pts = Detect;
+    // Synchronization
+    frame_drop = false;
+    hard_frame_drop = false;
+    use_correct_pts = Detect;
 
-	initial_postprocessing = false;
-	postprocessing_quality = 6;
-	initial_deinterlace = TMediaSettings::NoDeinterlace;
-	initial_tv_deinterlace = TMediaSettings::Yadif_1;
-	initial_zoom_factor = 1.0;
+    initial_postprocessing = false;
+    postprocessing_quality = 6;
+    initial_deinterlace = TMediaSettings::NoDeinterlace;
+    initial_tv_deinterlace = TMediaSettings::Yadif_1;
+    initial_zoom_factor = 1.0;
 
-	monitor_aspect = ""; // Autodetect
+    monitor_aspect = ""; // Autodetect
 
     color_key = 0x020202;
 
     initial_contrast = 0;
-	initial_brightness = 0;
-	initial_hue = 0;
-	initial_saturation = 0;
-	initial_gamma = 0;
+    initial_brightness = 0;
+    initial_hue = 0;
+    initial_saturation = 0;
+    initial_gamma = 0;
 
-	osd_level = None;
+    osd_level = None;
     osd_scale = 0.5;
-	subfont_osd_scale = 3;
+    subfont_osd_scale = 3;
 
 
     // Audio section
 #ifdef Q_OS_OS2
-	ao = "kai";
+    ao = "kai";
 #else
 #ifdef Q_OS_LINUX
-	ao = "pulse";
+    ao = "pulse";
 #else
-	ao = ""; // Players default
+    ao = ""; // Players default
 #endif
 #endif
-	mplayer_ao = ao;
-	mpv_ao = ao;
+    mplayer_ao = ao;
+    mpv_ao = ao;
 
-	initial_audio_channels = TMediaSettings::ChDefault;
-	initial_stereo_mode = TMediaSettings::Stereo;
-	use_hwac3 = false;
+    initial_audio_channels = TMediaSettings::ChDefault;
+    initial_stereo_mode = TMediaSettings::Stereo;
+    use_hwac3 = false;
     use_audio_equalizer = false;
-	use_scaletempo = Detect;
+    use_scaletempo = Detect;
 
-	// Volume
+    // Volume
     initial_volume = 100;
-	volume = initial_volume;
-	mute = false;
-	initial_volnorm = false;
+    volume = initial_volume;
+    mute = false;
+    initial_volnorm = false;
 
-	initial_audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0;
-	global_audio_equalizer = true;
-	audio_equalizer = initial_audio_equalizer;
+    initial_audio_equalizer << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0 << 0;
+    global_audio_equalizer = true;
+    audio_equalizer = initial_audio_equalizer;
 
-	autosync = false;
-	autosync_factor = 100;
+    autosync = false;
+    autosync_factor = 100;
 
-	use_mc = false;
-	mc_value = 0;
+    use_mc = false;
+    mc_value = 0;
 
-	audio_lang = "";
+    audio_lang = "";
 
-	autoload_m4a = true;
-	min_step = 5;
+    autoload_m4a = true;
+    min_step = 5;
 
 
-	// Subtitles section
-	subtitle_fuzziness = 1;
-	subtitle_language = "";
-	select_first_subtitle = false;
+    // Subtitles section
+    subtitle_fuzziness = 1;
+    subtitle_language = "";
+    select_first_subtitle = false;
 
-	subtitle_enca_language = ""; // Auto detect subtitle encoding language
-	// To use lang from system:
-	// subtitle_enca_language = QString(QLocale::system().name()).section("_" , 0, 0);
-	subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
+    subtitle_enca_language = ""; // Auto detect subtitle encoding language
+    // To use lang from system:
+    // subtitle_enca_language = QString(QLocale::system().name()).section("_" , 0, 0);
+    subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
 
 #ifdef Q_OS_WIN
-	use_windowsfontdir = false;
+    use_windowsfontdir = false;
 #endif
 
-	// Libraries tab
-	freetype_support = true;
-	use_ass_subtitles = true;
+    // Libraries tab
+    freetype_support = true;
+    use_ass_subtitles = true;
     initial_sub_scale_ass = 1;
-	ass_line_spacing = 0;
+    ass_line_spacing = 0;
 
-	use_custom_ass_style = false;
-	force_ass_styles = false;
-	user_forced_ass_style.clear();
+    use_custom_ass_style = false;
+    force_ass_styles = false;
+    user_forced_ass_style.clear();
 
-	initial_sub_pos = 100; // 100%
-	initial_sub_scale = 5;
-	initial_sub_scale_mpv = 1;
+    initial_sub_pos = 100; // 100%
+    initial_sub_scale = 5;
+    initial_sub_scale_mpv = 1;
 
-	use_forced_subs_only = false;
+    use_forced_subs_only = false;
 
 
-	// Interface section
-	language = "";
+    // Interface section
+    language = "";
     iconset = "";
-	style = "";
+    style = "";
 
-	// Main window
-	stay_on_top = NeverOnTop;
-	size_factor = 1.0; // 100%
+    // Main window
+    stay_on_top = NeverOnTop;
+    size_factor = 1.0; // 100%
 
-	// 360p 16:9 is 640 x 360 (360 + 99 = 459)
+    // 360p 16:9 is 640 x 360 (360 + 99 = 459)
     // 480p 4:3 is 640 x 480 (480 + 99 = 579)
     default_size = QSize(640, 579);
 
     use_single_window = false;
     save_window_size_on_exit = false;
-	resize_on_load = true;
-	resize_on_docking = true;
-	pause_when_hidden = false;
-	hide_video_window_on_audio_files = true;
-	close_on_finish = false;
+    resize_on_load = true;
+    resize_on_docking = true;
+    pause_when_hidden = false;
+    hide_video_window_on_audio_files = true;
+    close_on_finish = false;
 
-	// Fullscreen
-	fullscreen = false;
-	floating_hide_delay = 3000;
-	floating_activation_area = Anywhere;
+    // Fullscreen
+    fullscreen = false;
+    floating_hide_delay = 3000;
+    floating_activation_area = Anywhere;
     start_in_fullscreen = false;
 
 
@@ -290,88 +290,88 @@ void TPreferences::reset() {
     // Actions section
     // Mouse tab
     mouse_left_click_function = "play_or_pause";
-	delay_left_click = true;
-	mouse_right_click_function = "show_context_menu";
-	mouse_double_click_function = "fullscreen";
-	mouse_middle_click_function = "next_wheel_function";
-	mouse_xbutton1_click_function = "";
-	mouse_xbutton2_click_function = "";
-	wheel_function = Zoom;
-	wheel_function_cycle = Volume | Zoom;
-	wheel_function_seeking_reverse = false;
+    delay_left_click = true;
+    mouse_right_click_function = "show_context_menu";
+    mouse_double_click_function = "fullscreen";
+    mouse_middle_click_function = "next_wheel_function";
+    mouse_xbutton1_click_function = "";
+    mouse_xbutton2_click_function = "";
+    wheel_function = Zoom;
+    wheel_function_cycle = Volume | Zoom;
+    wheel_function_seeking_reverse = false;
 
-	seeking1 = 10;
-	seeking2 = 60;
-	seeking3 = 10*60;
-	seeking4 = 30;
+    seeking1 = 10;
+    seeking2 = 60;
+    seeking3 = 10*60;
+    seeking4 = 30;
     seeking_current_action = 1; // seek short jump
 
-	update_while_seeking = true;
-	time_slider_drag_delay = 200;
-	relative_seeking = false;
-	precise_seeking = true;
+    update_while_seeking = true;
+    time_slider_drag_delay = 200;
+    relative_seeking = false;
+    precise_seeking = true;
 
 
-	// Drives section
-	cdrom_device = "";
-	vcd_initial_title = 2; // Most VCD's start at title #2
-	dvd_device = "";
+    // Drives section
+    cdrom_device = "";
+    vcd_initial_title = 2; // Most VCD's start at title #2
+    dvd_device = "";
     use_dvdnav = true; // MPlayer only
-	bluray_device = "";
+    bluray_device = "";
 
 #ifndef Q_OS_WIN
-	// Try to set default values
-	if (QFile::exists("/dev/cdrom")) cdrom_device = "/dev/cdrom";
-	if (QFile::exists("/dev/dvd")) dvd_device = "/dev/dvd";
+    // Try to set default values
+    if (QFile::exists("/dev/cdrom")) cdrom_device = "/dev/cdrom";
+    if (QFile::exists("/dev/dvd")) dvd_device = "/dev/dvd";
 #endif
 
 
-	// Capture section
-	screenshot_directory = "";
+    // Capture section
+    screenshot_directory = "";
 
     use_screenshot = false;
-	screenshot_template = "cap_%F_%p_%02n";
-	screenshot_format = "jpg";
-	subtitles_on_screenshots = false;
+    screenshot_template = "cap_%F_%p_%02n";
+    screenshot_format = "jpg";
+    subtitles_on_screenshots = false;
 
 
-	// Performance section
-	cache_enabled = false;
-	cache_for_files = 2048;
-	cache_for_streams = 2048;
-	cache_for_dvds = 0; // not recommended to use cache for dvds
-	cache_for_vcds = 1024;
-	cache_for_audiocds = 1024;
-	cache_for_tv = 3000;
+    // Performance section
+    cache_enabled = false;
+    cache_for_files = 2048;
+    cache_for_streams = 2048;
+    cache_for_dvds = 0; // not recommended to use cache for dvds
+    cache_for_vcds = 1024;
+    cache_for_audiocds = 1024;
+    cache_for_tv = 3000;
 
 
     // Network
     ipPrefer = IP_PREFER_AUTO;
 
     // proxy
-	use_proxy = false;
-	proxy_type = QNetworkProxy::HttpProxy;
-	proxy_host = "";
-	proxy_port = 0;
-	proxy_username = "";
-	proxy_password = "";
+    use_proxy = false;
+    proxy_type = QNetworkProxy::HttpProxy;
+    proxy_host = "";
+    proxy_port = 0;
+    proxy_username = "";
+    proxy_password = "";
 
 
-	// Advanced section
+    // Advanced section
     // Log
     log_verbose = false;
     log_level = Log4Qt::Level::DEBUG_INT;
     log_window_max_events = 1000;
 
     actions_to_run = "";
-	player_additional_options = "";
+    player_additional_options = "";
 
 #ifdef PORTABLE_APP
-	player_additional_options = "-nofontconfig";
+    player_additional_options = "-nofontconfig";
 #endif
 
-	player_additional_video_filters = "";
-	player_additional_audio_filters = "";
+    player_additional_video_filters = "";
+    player_additional_audio_filters = "";
 
     use_edl_files = true;
 
@@ -516,8 +516,8 @@ void TPreferences::save() {
 
     setValue("audio_lang", audio_lang);
 
-	setValue("autoload_m4a", autoload_m4a);
-	setValue("min_step", min_step);
+    setValue("autoload_m4a", autoload_m4a);
+    setValue("min_step", min_step);
     endGroup();
 
 
@@ -753,27 +753,27 @@ void TPreferences::save() {
 
 TPreferences::TPlayerID TPreferences::getPlayerID(const QString& player) {
 
-	QFileInfo fi(player);
-	QString name = fi.fileName();
-	if (name.isEmpty()) {
-		name = player;
-	}
-	if (name.toLower().startsWith("mplayer")) {
-		return ID_MPLAYER;
-	}
-	return ID_MPV;
+    QFileInfo fi(player);
+    QString name = fi.fileName();
+    if (name.isEmpty()) {
+        name = player;
+    }
+    if (name.toLower().startsWith("mplayer")) {
+        return ID_MPLAYER;
+    }
+    return ID_MPV;
 }
 
 void TPreferences::setPlayerID() {
-	player_id = getPlayerID(player_bin);
+    player_id = getPlayerID(player_bin);
 }
 
 QString TPreferences::playerName() const {
 
     if (player_id == ID_MPLAYER) {
-		return "MPlayer";
+        return "MPlayer";
     }
-	return "MPV";
+    return "MPV";
 }
 
 QString TPreferences::playerIDToString(TPlayerID pid) {
@@ -786,81 +786,81 @@ QString TPreferences::playerIDToString(TPlayerID pid) {
 
 QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 
-	QString path = player;
-	QString found_player = Helper::findExecutable(path);
-	if (!found_player.isEmpty()) {
-		path = found_player;
-	}
+    QString path = player;
+    QString found_player = Helper::findExecutable(path);
+    if (!found_player.isEmpty()) {
+        path = found_player;
+    }
     logger()->debug("getAbsolutePathPlayer: '%1'", path);
-	return path;
+    return path;
 }
 
 void TPreferences::setPlayerBin(QString bin,
-								bool allow_other_player,
-								TPlayerID wanted_player) {
+                                bool allow_other_player,
+                                TPlayerID wanted_player) {
 
-	// Check binary and try to fix it
-	if (bin.isEmpty()) {
-		if (wanted_player == ID_MPLAYER) {
-			bin = default_mplayer_bin;
-		} else {
-			bin = default_mpv_bin;
-		}
-	}
+    // Check binary and try to fix it
+    if (bin.isEmpty()) {
+        if (wanted_player == ID_MPLAYER) {
+            bin = default_mplayer_bin;
+        } else {
+            bin = default_mpv_bin;
+        }
+    }
 
-	QString found_bin = Helper::findExecutable(bin);
+    QString found_bin = Helper::findExecutable(bin);
 
-	// Try to find an alternative if not found
-	if (found_bin.isEmpty()) {
-		TPlayerID found_id = ID_MPLAYER;
-		QFileInfo fi(bin);
-		if (wanted_player == ID_MPV || fi.baseName().startsWith("mpv")) {
+    // Try to find an alternative if not found
+    if (found_bin.isEmpty()) {
+        TPlayerID found_id = ID_MPLAYER;
+        QFileInfo fi(bin);
+        if (wanted_player == ID_MPV || fi.baseName().startsWith("mpv")) {
             // Try default mpv first
-			if (bin != default_mpv_bin) {
-				found_bin = Helper::findExecutable(default_mpv_bin);
-				if (!found_bin.isEmpty()) {
-					found_id = ID_MPV;
-				}
-			}
-			if (found_bin.isEmpty()) {
-				if (bin != default_mplayer_bin
-					&& (allow_other_player || wanted_player == ID_MPLAYER)) {
-					// Try default mplayer
-					found_bin = Helper::findExecutable(default_mplayer_bin);
-				}
-			} else {
-				found_id = ID_MPV;
-			}
-		} else {
-			// Try default mplayer
-			if (bin != default_mplayer_bin
-				&& (allow_other_player || wanted_player == ID_MPLAYER)) {
-				found_bin = Helper::findExecutable(default_mplayer_bin);
-			}
-			if (found_bin.isEmpty()
-				&& bin != default_mpv_bin
-				&& (allow_other_player || wanted_player == ID_MPV)) {
-				// Try default mpv
-				found_bin = Helper::findExecutable(default_mpv_bin);
-				if (!found_bin.isEmpty()) {
-					found_id = ID_MPV;
-				}
-			}
-		}
+            if (bin != default_mpv_bin) {
+                found_bin = Helper::findExecutable(default_mpv_bin);
+                if (!found_bin.isEmpty()) {
+                    found_id = ID_MPV;
+                }
+            }
+            if (found_bin.isEmpty()) {
+                if (bin != default_mplayer_bin
+                    && (allow_other_player || wanted_player == ID_MPLAYER)) {
+                    // Try default mplayer
+                    found_bin = Helper::findExecutable(default_mplayer_bin);
+                }
+            } else {
+                found_id = ID_MPV;
+            }
+        } else {
+            // Try default mplayer
+            if (bin != default_mplayer_bin
+                && (allow_other_player || wanted_player == ID_MPLAYER)) {
+                found_bin = Helper::findExecutable(default_mplayer_bin);
+            }
+            if (found_bin.isEmpty()
+                && bin != default_mpv_bin
+                && (allow_other_player || wanted_player == ID_MPV)) {
+                // Try default mpv
+                found_bin = Helper::findExecutable(default_mpv_bin);
+                if (!found_bin.isEmpty()) {
+                    found_id = ID_MPV;
+                }
+            }
+        }
 
-		if (found_bin.isEmpty()) {
+        if (found_bin.isEmpty()) {
             logger()->warn("setPlayerBin: failed to find player '%1'", bin);
-		} else if (allow_other_player || found_id == wanted_player) {
+        } else if (allow_other_player || found_id == wanted_player) {
             logger()->warn("setPlayerBin: failed to find player '%1',"
                            " selecting '%2' instead", bin, found_bin);
-			bin = found_bin;
-		} else {
+            bin = found_bin;
+        } else {
             logger()->warn("setPlayerBin: failed to find player '%1'. Maybe you"
                            " can try '%2' instead.", bin, found_bin);
-		}
-	} else {
-		bin = found_bin;
-	}
+        }
+    } else {
+        bin = found_bin;
+    }
 
     player_bin = bin;
     setPlayerID();
@@ -1092,7 +1092,7 @@ void TPreferences::load() {
 
     use_single_window = value("use_single_window", use_single_window).toBool();
     default_size = value("default_size", default_size).toSize();
-    save_window_size_on_exit = 	value("save_window_size_on_exit", save_window_size_on_exit).toBool();
+    save_window_size_on_exit = value("save_window_size_on_exit", save_window_size_on_exit).toBool();
     resize_on_load = value("resize_on_load", resize_on_load).toBool();
     resize_on_docking = value("resize_on_docking", resize_on_docking).toBool();
     hide_video_window_on_audio_files = value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();
@@ -1281,12 +1281,12 @@ void TPreferences::load() {
 bool TPreferences::useColorKey() const {
 
 #if defined(Q_OS_WIN)
-	return vo.startsWith("directx");
+    return vo.startsWith("directx");
 #else
 #if defined(Q_OS_OS2)
-	return vo.startsWith("kva");
+    return vo.startsWith("kva");
 #else
-	return false;
+    return false;
 #endif
 #endif
 
@@ -1294,34 +1294,34 @@ bool TPreferences::useColorKey() const {
 
 double TPreferences::monitorAspectDouble() {
 
-	QRegExp exp("(\\d+)[:/](\\d+)");
+    QRegExp exp("(\\d+)[:/](\\d+)");
 
-	if (monitor_aspect.isEmpty()) {
-		return 0;
-	}
-	if (exp.indexIn(monitor_aspect) >= 0) {
-		int w = exp.cap(1).toInt();
-		int h = exp.cap(2).toInt();
+    if (monitor_aspect.isEmpty()) {
+        return 0;
+    }
+    if (exp.indexIn(monitor_aspect) >= 0) {
+        int w = exp.cap(1).toInt();
+        int h = exp.cap(2).toInt();
         logger()->info("monitorAspectDouble: monitor aspect set to %1:%2", w, h);
-		return h <= 0.01 ? 0 : (double) w / h;
-	}
+        return h <= 0.01 ? 0 : (double) w / h;
+    }
 
-	bool ok;
-	double res = monitor_aspect.toDouble(&ok);
-	if (ok) {
+    bool ok;
+    double res = monitor_aspect.toDouble(&ok);
+    if (ok) {
         logger()->info("monitorAspectDouble: monitor aspect set to %1", res);
-		return res;
-	}
+        return res;
+    }
 
     logger()->warn("monitorAspectDouble: failed to parse monitor aspect,"
                  " reset to auto detect");
-	return 0;
+    return 0;
 }
 
 void TPreferences::setupScreenshotFolder() {
 
-	if (screenshot_directory.isEmpty()) {
-		QString pdir = TPaths::location(TPaths::PicturesLocation);
+    if (screenshot_directory.isEmpty()) {
+        QString pdir = TPaths::location(TPaths::PicturesLocation);
         if (pdir.isEmpty()) {
             logger()->debug("setupScreenshotFolder: no PicturesLocation");
             pdir = TPaths::location(TPaths::DocumentsLocation);
@@ -1335,12 +1335,12 @@ void TPreferences::setupScreenshotFolder() {
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
-	} else {
-		screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
-	}
+    } else {
+        screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
+    }
 
-	if (screenshot_directory.isEmpty()) {
-		use_screenshot = false;
+    if (screenshot_directory.isEmpty()) {
+        use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
         logger()->info("setupScreenshotFolder: using folder '%1'",
                        screenshot_directory);
