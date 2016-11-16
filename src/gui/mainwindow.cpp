@@ -2267,7 +2267,7 @@ void TMainWindow::hidePanel() {
 }
 
 double TMainWindow::optimizeSize(double size) {
-    logger()->debug("optimizeSize: size in %1", size);
+    logger()->trace("optimizeSize: size in %1", size);
 
     QSize res = playerwindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
@@ -2282,14 +2282,14 @@ double TMainWindow::optimizeSize(double size) {
         if (size_y < size) {
             size = size_y;
         }
-        logger()->debug("optimizeSize: returning size %1 for fullscreen", size);
+        logger()->trace("optimizeSize: returning size %1 for fullscreen", size);
         return size;
     }
 
     // Return current size for VO size change caused by TPlayer::setAspectRatio
     if (player->keepSize) {
         player->clearKeepSize();
-        logger()->debug("optimizeSize: keepSize set, returning current size %1",
+        logger()->trace("optimizeSize: keepSize set, returning current size %1",
                         pref->size_factor);
         return pref->size_factor;
     }
@@ -2301,14 +2301,14 @@ double TMainWindow::optimizeSize(double size) {
     // Adjust width
     double max = f * available_size.width();
     if (video_size.width() > max) {
-        logger()->debug("optimizeSize: limiting width to %1", max);
+        logger()->trace("optimizeSize: limiting width to %1", max);
         size = max / res.width();
         video_size = res * size;
     }
     // Adjust height
     max = f * available_size.height();
     if (video_size.height() > max) {
-        logger()->debug("optimizeSize: limiting height to %1", max);
+        logger()->trace("optimizeSize: limiting height to %1", max);
         size = max / res.height();
         video_size = res * size;
     }
@@ -2317,12 +2317,12 @@ double TMainWindow::optimizeSize(double size) {
     double min = available_size.height() / 4;
     if (video_size.height() < min) {
         if (size == 1.0) {
-            logger()->debug("optimzeSize: selecting size 2.0 for small video");
+            logger()->trace("optimzeSize: selecting size 2.0 for small video");
             return 2.0;
         }
         size = min / res.height();
-        logger()->debug("optimzeSize: selecting size for minimal height %1",
-                        min);
+        logger()->trace("optimzeSize: selecting size for minimal height %1",
+                          min);
     }
 
     // Round to predefined values
@@ -2332,7 +2332,7 @@ double TMainWindow::optimizeSize(double size) {
         return 1;
     }
     if (i < 13 || i > 450) {
-        logger()->debug("optimzeSize: selected size %1", size);
+        logger()->trace("optimzeSize: selected size %1", size);
         return size;
     }
 
@@ -2361,7 +2361,7 @@ double TMainWindow::optimizeSize(double size) {
     } else {
         i = 400;
     }
-    logger()->debug("optimzeSize: rounding size to %1", i);
+    logger()->trace("optimzeSize: rounding size to %1", i);
     return (double) i / 100;
 }
 

@@ -685,6 +685,8 @@ namespace Log4Qt
 	               const QVariant &rArg1,
 	               const QVariant &rArg2,
 	               const QVariant &rArg3) const;
+        void trace(const char *pMessage, double arg) const;
+
 
 	    void warn(const QString &rMessage) const;
 	    void warn(const LogError &rLogError) const;
@@ -1538,7 +1540,13 @@ namespace Log4Qt
 	{   if (isEnabledFor(Level::TRACE_INT))
 	    forcedLog(Level::TRACE_INT, QString::fromUtf8(pMessage).arg(rArg1.toString(), rArg2.toString(), rArg3.toString()));  }
 
-	// Log operations: warn
+    inline void Logger::trace(const char *pMessage, double arg) const {
+        if (isEnabledFor(Level::TRACE_INT))
+            forcedLog(Level::DEBUG_INT, QString::fromUtf8(pMessage).arg(arg));
+    }
+
+
+    // Log operations: warn
 
 	inline void Logger::warn(const QString &rMessage) const
 	{   if (isEnabledFor(Level::WARN_INT))
