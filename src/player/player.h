@@ -389,16 +389,6 @@ signals:
     void videoBitRateChanged(int bitrate);
     void audioBitRateChanged(int bitrate);
 
-protected:
-    void initVolume();
-    void initMediaSettings();
-    void initPlaying(bool loopImages = false);
-    void startPlayer(QString file, bool loopImage);
-    void stopPlayer();
-    void restartPlay();
-
-    void saveMediaSettings();
-
 private:
     static double restartTime;
 
@@ -418,9 +408,20 @@ private:
     static QString equalizerListToString(const Settings::TAudioEqualizerList&
                                          values);
 
+
+    void initVolume();
+    void initMediaSettings();
+    void initPlaying(bool loopImages = false);
+
     void openFile(const QString& filename, bool loopImage);
     void openStream(const QString& name);
     void openTV(QString channel_id);
+
+    void startPlayer(QString file, bool loopImage);
+    void stopPlayer();
+    void restartPlay();
+
+    void saveMediaSettings();
 
     void playingStartedNewMedia();
 
