@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_FAVORITES_H_
-#define _GUI_FAVORITES_H_
+#ifndef GUI_ACTION_FAVORITES_H
+#define GUI_ACTION_FAVORITES_H
 
 #include "gui/action/menu/menu.h"
 #include <QString>
@@ -60,7 +60,6 @@ protected:
 
 typedef QList<TFavorite> TFavoriteList;
 
-// TODO: move to namespace Menu
 class TFavorites : public Menu::TMenu {
 	Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
@@ -108,7 +107,7 @@ protected slots:
 	void triggered_slot(QAction* action);
 	virtual void edit();
 	virtual void jump();
-	virtual void addCurrentPlaying(); // Adds to menu current (or last played) file
+    virtual void addCurrentPlaying();
 
 protected:
 	TFavoriteList f_list;
@@ -119,7 +118,7 @@ protected:
 	TAction* previous_act;
 	TAction* add_current_act;
 
-	// Current (or last) file clicked
+    // Current or last file clicked
 	QString current_file;
 
 	// Last item selected in the jump dialog
@@ -134,5 +133,5 @@ protected:
 } // namespace Action
 } // namespace Gui
 
-#endif // _GUI_FAVORITES_H_
+#endif // GUI_ACTION_FAVORITES_H
 
