@@ -11,7 +11,6 @@ BINDIR=$(DESTDIR)$(PREFIX)/bin/
 MANDIR=$(DESTDIR)$(PREFIX)/share/man/man1/
 
 KDE_PREFIX=$(PREFIX)
-
 KDE_ICONS=$(DESTDIR)$(KDE_PREFIX)/share/icons/hicolor/
 KDE_APPLNK=$(DESTDIR)$(KDE_PREFIX)/share/applications/
 
@@ -58,7 +57,7 @@ $(BUILDDIR)/$(NAME): $(CHANGELOG)
 	cd $(BUILDDIR) && $(DEFS) make
 	cd $(BUILDDIR) && $(LRELEASE) "$(PROJECT_PATH)"
 
-Changelog:
+$(CHANGELOG):
 	echo "See https://github.com/wilbert2000/wzplayer/commits/master" > $(CHANGELOG)
 
 clean:
