@@ -239,7 +239,7 @@ void TMainWindow::createPanel() {
 void TMainWindow::createPlayerWindow() {
     logger()->debug("createPlayerWindow");
 
-    playerwindow = new TPlayerWindow(panel, this);
+    playerwindow = new TPlayerWindow(panel);
     playerwindow->setObjectName("playerwindow");
 
     QVBoxLayout* layout = new QVBoxLayout;

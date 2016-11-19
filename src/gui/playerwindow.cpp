@@ -28,7 +28,6 @@
 #include <QApplication>
 #include <QLabel>
 
-#include "gui/mainwindow.h"
 #include "gui/msg.h"
 #include "gui/desktop.h"
 #include "player/player.h"
@@ -99,10 +98,9 @@ void TVideoWindow::restoreNormalBackground() {
 }
 
 
-TPlayerWindow::TPlayerWindow(QWidget* parent, TMainWindow* mw) :
+TPlayerWindow::TPlayerWindow(QWidget* parent) :
     QWidget(parent),
     debug(logger()),
-    main_window(mw),
     video_size(0, 0),
     last_video_out_size(0, 0),
     aspect(0),
@@ -110,8 +108,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, TMainWindow* mw) :
     zoom_factor_fullscreen(1.0),
     double_clicked(false),
     delay_left_click(true),
-    dragging(false),
-    kill_fake_event(false) {
+    dragging(false) {
 
     setMinimumSize(QSize(0, 0));
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
@@ -275,7 +272,6 @@ void TPlayerWindow::startDragging() {
 }
 
 void TPlayerWindow::stopDragging() {
-    //logger()->debug("stopDragging");
 
     dragging = false;
     unsetCursor();
@@ -283,28 +279,23 @@ void TPlayerWindow::stopDragging() {
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
-    // logger()->debug("mousePressEvent");
-
-    event->accept();
 
     if (event->button() == Qt::LeftButton && !double_clicked) {
         left_button_pressed_time.start();
         drag_pos = event->globalPos();
         dragging = false;
-        // Catch release_events with button still down
-        // Happens only when mouse capture is released?
-        kill_fake_event = true;
     }
+
+    // Don't accept event to let parent handle dragging of main window
+    event->ignore();
 }
 
 void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 
-    event->accept();
-
-    // No longer kill release event with button down
-    kill_fake_event = false;
-
-    if (event->buttons() == Qt::LeftButton && !double_clicked) {
+    // Drag video
+    if (event->buttons() == Qt::LeftButton
+        && !double_clicked
+        && (pref->fullscreen || event->modifiers() != Qt::NoModifier)) {
 
         QPoint pos = event->globalPos();
         QPoint diff = pos - drag_pos;
@@ -314,72 +305,29 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
         if (!dragging &&
             ((diff.manhattanLength() > QApplication::startDragDistance())
              || (left_button_pressed_time.elapsed()
-                >= QApplication::startDragTime()))) {
+                 >= QApplication::startDragTime()))) {
             startDragging();
         }
 
         if (dragging) {
-            // Move video in fullscreen or with modifier,
-            // otherwise move main window
             drag_pos = pos;
-            if (pref->fullscreen || event->modifiers() != Qt::NoModifier) {
-                if (!video_size.isEmpty()) {
-                    moveVideo(diff);
-                }
-            } else {
-                main_window->move(main_window->pos() + diff);
+            if (!video_size.isEmpty()) {
+                moveVideo(diff);
+                event->accept();
+                return;
             }
         }
     }
 
-    // Pass event to player for DVDNAV
-    if (!dragging && video_window->underMouse()) {
+    // For DVDNAV pass event to player.
+    // Don't pass when button down, assuming the video is being dragged.
+    if (event->buttons() == Qt::NoButton && video_window->underMouse()) {
         // Make event relative to video layer
         player->dvdnavUpdateMousePos(event->pos() - video_window->pos());
     }
-}
 
-// Return whether this event is accused of dragging.
-// Returning false will cancel the event.
-bool TPlayerWindow::checkDragging(QMouseEvent* event) {
-
-    // Don't kill double click
-    if (double_clicked)
-        return true;
-
-    // Clear kill_fake_event
-    bool kill = kill_fake_event;
-    kill_fake_event = false;
-
-    if (dragging) {
-        stopDragging();
-        return false;
-    }
-
-    // After the mouse has been captured, mouse release events sometimes
-    // do not come through until the mouse moved (on Qt 4.8 KDE 4.1.14.9).
-    if (left_button_pressed_time.elapsed() >= QApplication::startDragTime()) {
-        logger()->debug("mouseReleaseEvent: canceled release event taking"
-               " longer as %1 ms", QApplication::startDragTime());
-        return false;
-    }
-
-    // Dragging the mouse more then startDragDistance delivers a mouse release
-    // event, before the first mouse move event, while the left mouse is still
-    // down (on Qt 4.8, KDE 4.1.14.9). Like an end-of-capture or what? Kill it.
-    if (kill) {
-        QPoint pos = event->globalPos();
-        QPoint diff = pos - drag_pos;
-        if (diff.manhattanLength() > QApplication::startDragDistance()) {
-            logger()->debug("mouseReleaseEvent: canceled release event"
-                   " with drag distance larger than %1",
-                   QApplication::startDragDistance());
-            return false;
-        }
-    }
-
-    // No dragging
-    return true;
+    // Pass event to parent
+    event->ignore();
 }
 
 void TPlayerWindow::onLeftClicked() {
@@ -394,26 +342,30 @@ void TPlayerWindow::onLeftClicked() {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
-    // logger()->debug("mouseReleaseEvent");
 
-    event->accept();
+    // Show event to parent too
+    event->ignore();
 
     if (event->button() == Qt::LeftButton) {
-        if (checkDragging(event)) {
-            if (event->modifiers() != Qt::NoModifier) {
-                logger()->debug("mouseReleaseEvent: ignoring modified event");
-            } else if (delay_left_click) {
-                if (double_clicked) {
-                    double_clicked = false;
-                } else {
-                    // Delay left click until double click has chance to arrive
-                    left_click_timer->start();
-                }
-            } else {
+        if (dragging) {
+            stopDragging();
+        } else if (event->modifiers() != Qt::NoModifier) {
+            logger()->debug("mouseReleaseEvent: ignoring modified event");
+        } else if (left_button_pressed_time.elapsed()
+                   >= QApplication::startDragTime()) {
+            logger()->debug("mouseReleaseEvent: canceled release event taking"
+                   " longer as %1 ms", QApplication::startDragTime());
+        } else if (delay_left_click) {
+            if (double_clicked) {
                 double_clicked = false;
-                // Click right away
-                onLeftClicked();
+            } else {
+                // Delay left click until double click has chance to arrive
+                left_click_timer->start();
             }
+        } else {
+            // Click right away
+            double_clicked = false;
+            onLeftClicked();
         }
     } else if (event->button() == Qt::MidButton) {
         emit middleClicked();
@@ -427,16 +379,14 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
-    //logger()->debug("mouseDoubleClickEvent");
 
-    event->accept();
+    // Show event to parent too
+    event->ignore();
 
     if (event->button() == Qt::LeftButton
         && event->modifiers() == Qt::NoModifier) {
         double_clicked = true;
-        if (delay_left_click) {
-            left_click_timer->stop();
-        }
+        left_click_timer->stop();
         emit doubleClicked();
     }
 }
