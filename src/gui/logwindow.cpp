@@ -252,6 +252,9 @@ void TLogWindow::onFindPreviousButtonClicked() {
 
 void TLogWindow::onFindNextButtonClicked() {
 
+    if (edit->textCursor().atEnd()) {
+        edit->moveCursor(QTextCursor::Start);
+    }
     edit->find(findEdit->text());
 }
 
