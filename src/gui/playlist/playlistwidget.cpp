@@ -579,6 +579,8 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         // Delete old root
         setRootIndex(QModelIndex());
         delete takeTopLevelItem(0);
+        // Invalidate playing_item
+        playing_item = 0;
 
         // Set item as root
         item->setFlags(ROOT_FLAGS);
