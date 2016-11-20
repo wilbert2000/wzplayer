@@ -357,19 +357,16 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
                    >= QApplication::startDragTime()) {
             logger()->debug("mouseReleaseEvent: canceled release event taking"
                    " longer as %1 ms", QApplication::startDragTime());
-            double_clicked = false;
         } else if (delay_left_click) {
-            if (double_clicked) {
-                double_clicked = false;
-            } else {
+            if (!double_clicked) {
                 // Delay left click until double click has chance to arrive
                 left_click_timer->start();
             }
         } else {
             // Click right away
-            double_clicked = false;
             onLeftClicked();
         }
+        double_clicked = false;
     } else if (event->button() == Qt::MidButton) {
         emit middleClicked();
     } else if (event->button() == Qt::XButton1) {
