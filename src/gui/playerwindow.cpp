@@ -279,7 +279,6 @@ void TPlayerWindow::stopDragging() {
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
-    logger()->trace("mousePressEvent");
 
     if (event->button() == Qt::LeftButton && !double_clicked) {
         left_button_pressed_time.start();
@@ -343,7 +342,6 @@ void TPlayerWindow::onLeftClicked() {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
-    logger()->trace("mouseReleaseEvent");
 
     // Show event to parent too
     event->ignore();
