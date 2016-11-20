@@ -537,7 +537,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     logger()->debug("add");
 
     // Save current sort settings
-    int sort = header()->sortIndicatorSection();
+    int sortIndicator = header()->sortIndicatorSection();
     Qt::SortOrder sortorder = header()->sortIndicatorOrder();
     // Disable sort
     if (isSortingEnabled()) {
@@ -616,9 +616,9 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         setCurrentItem(parent->child(idx));
 
         // Restore sort order
-        if (sort >= 0) {
+        if (sortIndicator >= 0) {
             setSortingEnabled(true);
-            header()->setSortIndicator(sort, sortorder);
+            header()->setSortIndicator(sortIndicator, sortorder);
         }
 
         if (modified) {
