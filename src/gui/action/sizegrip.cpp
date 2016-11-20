@@ -72,7 +72,9 @@ void TSizeGrip::follow() {
 void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 	//logger()->debug("TSizeGrip::mouseMoveEvent");
 
-	if (!resizing || toolbar->testAttribute(Qt::WA_WState_ConfigPending))
+    event->accept();
+
+    if (!resizing || toolbar->testAttribute(Qt::WA_WState_ConfigPending))
 		return;
 
 	QPoint np(event->globalPos());
@@ -111,8 +113,6 @@ void TSizeGrip::mouseMoveEvent(QMouseEvent* event) {
 	toolbar->setGeometry(nr);
 	followToolbar();
 	emit saveSizeHint();
-
-	event->accept();
 }
 
 void TSizeGrip::delayedHide() {
