@@ -279,6 +279,7 @@ void TPlayerWindow::stopDragging() {
 }
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
+    logger()->trace("mousePressEvent");
 
     if (event->button() == Qt::LeftButton && !double_clicked) {
         left_button_pressed_time.start();
@@ -342,6 +343,7 @@ void TPlayerWindow::onLeftClicked() {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
+    logger()->trace("mouseReleaseEvent");
 
     // Show event to parent too
     event->ignore();
@@ -355,6 +357,7 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
                    >= QApplication::startDragTime()) {
             logger()->debug("mouseReleaseEvent: canceled release event taking"
                    " longer as %1 ms", QApplication::startDragTime());
+            double_clicked = false;
         } else if (delay_left_click) {
             if (double_clicked) {
                 double_clicked = false;
