@@ -576,11 +576,12 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
             delete old;
         }
 
+        // Invalidate playing_item
+        playing_item = 0;
+
         // Delete old root
         setRootIndex(QModelIndex());
         delete takeTopLevelItem(0);
-        // Invalidate playing_item
-        playing_item = 0;
 
         // Set item as root
         item->setFlags(ROOT_FLAGS);
@@ -592,7 +593,6 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
 
         if (item->childCount()) {
-            msg(tr("Sorting '%1'").arg(item->baseName()));
             setCurrentItem(item->child(0));
         }
 
