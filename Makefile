@@ -56,6 +56,7 @@ $(BUILDDIR)/$(NAME): $(CHANGELOG)
 	cd $(BUILDDIR) && $(QMAKE) $(QMAKE_OPTS) -o Makefile "$(PROJECT_PATH)"
 	cd $(BUILDDIR) && $(DEFS) make
 	cd $(BUILDDIR) && $(LRELEASE) "$(PROJECT_PATH)"
+	echo "build done"
 
 $(CHANGELOG):
 	echo "See https://github.com/wilbert2000/wzplayer/commits/master" > $(CHANGELOG)
