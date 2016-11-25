@@ -1234,9 +1234,10 @@ void TPreferences::load() {
         player_additional_audio_filters).toString();
 
     use_edl_files = value("use_edl_files", use_edl_files).toBool();
-    time_to_kill_player = value("time_to_kill_player", time_to_kill_player).toInt();
-    if (time_to_kill_player < 2500) {
-        time_to_kill_player = 2500;
+    time_to_kill_player = value("time_to_kill_player", time_to_kill_player)
+                          .toInt();
+    if (time_to_kill_player < 3000) {
+        time_to_kill_player = 3000;
     }
     show_frames = value("show_frames", show_frames).toBool();
 
