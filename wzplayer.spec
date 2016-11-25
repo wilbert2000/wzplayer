@@ -22,10 +22,8 @@ Requires:       (mplayer or mpv)
 %{?_qt4_version:Requires: qt4%{?_isa} >= %{_qt4_version}}
 
 %description
-WZPlayer is a graphical user interface for MPV and MPlayer based upon
-SMPlayer, http://www.smplayer.info, by Ricardo Villalba. With improved
-performance, scaling, DVDNAV support, no setup needed, lots of setup
-available. No support and lots of source.
+WZPlayer is a video player based on SMPlayer, http://www.smplayer.info,
+by Ricardo Villalba. It simplifies playing videos with MPlayer or MPV.
 
 %prep
 %setup -a3 -a4 -qn %{name}-%{version}
