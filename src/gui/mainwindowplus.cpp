@@ -291,32 +291,19 @@ void TMainWindowPlus::onMediaInfoChanged() {
 void TMainWindowPlus::onOptimizeSizeTimeout() {
     logger()->debug("onOptimizeSizeTimeout");
 
-    saved_size = 0;
     optimizeSizeFactor();
 }
 
-void TMainWindowPlus::showPlaylist(bool visible) {
-    logger()->debug("showPlaylist: visible %1", visible);
-
-    restore_playlist = visible && playlistdock->isFloating();
-
-    saved_size = pref->size_factor;
-
-    // Triggers onDockVisibilityChanged
-    playlistdock->setVisible(visible);
-}
-
 void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
-    logger()->debug("onDockVisibilityChanged: visible %1", visible);
+    logger()->trace("onDockVisibilityChanged: visible %1", visible);
 
     if (playlistdock->isFloating()) {
         if (visible) {
             TDesktop::keepInsideDesktop(playlistdock);
         }
-    } else if (!pref->fullscreen) {
+    } else if (!pref->fullscreen && pref->resize_on_load) {
         if (visible) {
-            // When showing the dock, select the size saved by showPlaylist(),
-            // from before the resizing caused by showing the dock.
+            // Restore size saved by showPlaylist() from before showing the dock
             if (saved_size == 0) {
                 return;
             }
@@ -326,9 +313,24 @@ void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
         }
 
         // Post optimizeSizeFactor
-        logger()->debug("onDockVisibilityChanged: posting optimizeSizeFactor()");
+        logger()->debug("onDockVisibilityChanged: posting optimizeSizeFactor");
         optimizeSizeTimer->start();
     }
+
+    saved_size = 0;
+}
+
+void TMainWindowPlus::showPlaylist(bool visible) {
+    logger()->debug("showPlaylist: visible %1", visible);
+
+    restore_playlist = visible && playlistdock->isFloating();
+
+    if (!pref->fullscreen) {
+        saved_size = pref->size_factor;
+    }
+
+    // Triggers onDockVisibilityChanged
+    playlistdock->setVisible(visible);
 }
 
 #ifdef Q_OS_OS2

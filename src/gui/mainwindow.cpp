@@ -2206,7 +2206,8 @@ void TMainWindow::changeSize(double factor) {
             // Need center, on X windows the original pos is not restored
             center = true;
         }
-        resizeWindowToVideo();
+        resizeStickyWindow(player->mdat.video_out_width,
+                           player->mdat.video_out_height);
         if (center) {
             TDesktop::centerWindow(this);
         }
@@ -2360,45 +2361,6 @@ double TMainWindow::getDefaultSize() {
     return optimizeSize(pref->initial_zoom_factor);
 }
 
-void TMainWindow::getNewGeometry(int w, int h) {
-
-    // Get new size factor
-    pref->size_factor = getDefaultSize();
-
-    QSize desktop = TDesktop::availableSize(this);
-    bool stickx = !pref->fullscreen
-                  && pos().x() + frameGeometry().size().width()
-                  >= desktop.width();
-    bool sticky = !pref->fullscreen
-                  && pos().y() + frameGeometry().size().height()
-                  >= desktop.height();
-
-    resizeWindow(w, h);
-
-    QPoint p = pos();
-    if (stickx) {
-        int x = desktop.width() - frameGeometry().size().width();
-        if (x < 0) {
-            stickx = false;
-        } else {
-            p.rx() = x;
-            logger()->trace("getNewGeometry: sticking to right side");
-        }
-    }
-    if (sticky) {
-        int y = desktop.height() - frameGeometry().size().height();
-        if (y < 0) {
-            sticky = false;
-        } else {
-            p.ry() = y;
-            logger()->trace("getNewGeometry: sticking to bottom");
-        }
-    }
-    if (stickx || sticky) {
-        move(p);
-    }
-}
-
 void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
     logger()->debug("onVideoOutResolutionChanged: %1 x %2", w, h);
 
@@ -2420,7 +2382,9 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
         }
         // Leave maximized window as is.
         if (!isMaximized() && (pref->resize_on_load || force_resize)) {
-            getNewGeometry(w, h);
+            // Get new size factor
+            pref->size_factor = getDefaultSize();
+            resizeStickyWindow(w, h);
         } else {
             // Adjust the size factor to the current window size
             playerwindow->updateSizeFactor();
@@ -2451,8 +2415,42 @@ void TMainWindow::resizeWindow(int w, int h) {
     }
 }
 
-void TMainWindow::resizeWindowToVideo() {
-    resizeWindow(player->mdat.video_out_width, player->mdat.video_out_height);
+void TMainWindow::resizeStickyWindow(int w, int h) {
+
+    QSize desktop = TDesktop::availableSize(this);
+    bool stickx, sticky;
+    if (pref->fullscreen) {
+        stickx = false;
+        sticky = false;
+    } else {
+        stickx = pos().x() + frameGeometry().size().width() >= desktop.width();
+        sticky = pos().y() + frameGeometry().size().height() >= desktop.height();
+    }
+
+    resizeWindow(w, h);
+
+    QPoint p = pos();
+    if (stickx) {
+        int x = desktop.width() - frameGeometry().size().width();
+        if (x < 0) {
+            stickx = false;
+        } else {
+            p.rx() = x;
+            logger()->trace("getNewGeometry: sticking to right side");
+        }
+    }
+    if (sticky) {
+        int y = desktop.height() - frameGeometry().size().height();
+        if (y < 0) {
+            sticky = false;
+        } else {
+            p.ry() = y;
+            logger()->trace("getNewGeometry: sticking to bottom");
+        }
+    }
+    if (stickx || sticky) {
+        move(p);
+    }
 }
 
 void TMainWindow::resizeMainWindow(int w, int h, double size_factor,

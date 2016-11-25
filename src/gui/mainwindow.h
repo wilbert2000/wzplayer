@@ -202,7 +202,6 @@ protected slots:
     void toggleDoubleSize();
 
     virtual void resizeWindow(int w, int h);
-    void resizeWindowToVideo();
 
     virtual void onDragPositionChanged(double);
 
@@ -358,7 +357,7 @@ private:
     void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
     double getDefaultSize();
-    void getNewGeometry(int w, int h);
+    void resizeStickyWindow(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 
     void enterFullscreenOnPlay();
