@@ -1040,8 +1040,7 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
         proc->setOption("monitorpixelaspect", aspect);
     }
 
-    // Colorkey, only used by XP directx and OS2 kva drivers
-    // to set color key for overlay
+    // Colorkey, only used by XP directx to set color key for overlay
     if (pref->useColorKey()) {
         proc->setOption("colorkey", TColorUtils::colorToRGB(pref->color_key));
     }
