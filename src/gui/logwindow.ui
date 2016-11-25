@@ -59,7 +59,7 @@
      <item>
       <widget class="QPushButton" name="findPreviousButton">
        <property name="toolTip">
-        <string>Find previous</string>
+        <string>Find previous (Shift+F3)</string>
        </property>
        <property name="text">
         <string>&lt;</string>
@@ -72,7 +72,7 @@
      <item>
       <widget class="QPushButton" name="findNextButton">
        <property name="toolTip">
-        <string>Find next</string>
+        <string>Find next (F3)</string>
        </property>
        <property name="text">
         <string>&gt;</string>
