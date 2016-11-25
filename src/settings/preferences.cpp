@@ -63,7 +63,7 @@ TPreferences::~TPreferences() {
 
 
 // Default names player executables
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN)
 QString default_mplayer_bin = "mplayer.exe";
 QString default_mpv_bin = "mpv.exe";
 #else
@@ -108,13 +108,8 @@ void TPreferences::reset() {
         mpv_vo = mplayer_vo;
     }
 #else
-#ifdef Q_OS_OS2
-    mplayer_vo = "kva";
-    mpv_vo = mplayer_vo;
-#else
     mplayer_vo = ""; // Players default
     mpv_vo = "";
-#endif
 #endif
 
     vo = mpv_vo;
@@ -158,15 +153,12 @@ void TPreferences::reset() {
 
 
     // Audio section
-#ifdef Q_OS_OS2
-    ao = "kai";
-#else
 #ifdef Q_OS_LINUX
     ao = "pulse";
 #else
     ao = ""; // Players default
 #endif
-#endif
+
     mplayer_ao = ao;
     mpv_ao = ao;
 
@@ -373,7 +365,7 @@ void TPreferences::reset() {
 
     use_edl_files = true;
 
-    // If set high tenoughthe OS will detect the "not responding state"
+    // If set high enough the OS will detect the "not responding state"
     // and popup a dialog...
     time_to_kill_player = 6000;
 
@@ -1277,11 +1269,7 @@ bool TPreferences::useColorKey() const {
 #if defined(Q_OS_WIN)
     return vo.startsWith("directx");
 #else
-#if defined(Q_OS_OS2)
-    return vo.startsWith("kva");
-#else
     return false;
-#endif
 #endif
 
 }

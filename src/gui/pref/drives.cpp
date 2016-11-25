@@ -37,12 +37,6 @@ bool isCDDevice(QString drive) {
 
 #endif
 
-#ifdef Q_OS_OS2  // fixme SCS
-bool isCDDevice(QString drive) {
-	return true;
-}
-#endif
-
 TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
     : TWidget(parent, f),
       debug(logger()) {
@@ -94,7 +88,7 @@ void TDrives::updateDriveCombos(bool detect_cd_devices) {
 
 	// DVD device combo
 	// In windows, insert the drives letters
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN)
 	QFileInfoList list = QDir::drives();
 	for (int n = 0; n < list.size(); n++) {
 		QString s = list[n].filePath();

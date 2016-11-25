@@ -30,10 +30,6 @@
 #define USE_ALSA_DEVICES 1
 #endif
 
-#ifdef Q_OS_OS2
-#define MPLAYER_KAI_VERSION 30994
-#endif
-
 
 namespace Gui {
 namespace Pref {

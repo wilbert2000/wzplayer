@@ -81,7 +81,7 @@ void TPaths::setConfigPath(const QString& path) {
 #ifdef PORTABLE_APP
         config_path = qApp->applicationDirPath();
 #else
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN)
 		config_path = location(TLocation::DataLocation);
 #else
 		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");

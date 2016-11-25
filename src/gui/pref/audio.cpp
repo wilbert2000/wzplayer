@@ -171,12 +171,6 @@ void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
 	for (int n = 0; n < ao_list.count(); n++) {
 		ao = ao_list[n].name();
 		ao_combo->addItem(ao, ao);
-#ifdef Q_OS_OS2
-		if (ao == "kai") {
-			ao_combo->addItem("kai (" + tr("uniaud mode") + ")", "kai:uniaud");
-			ao_combo->addItem("kai (" + tr("dart mode") + ")", "kai:dart");
-		}
-#endif
 #if USE_ALSA_DEVICES
 		if ((ao == "alsa") && (!alsa_devices.isEmpty())) {
 			for (int n=0; n < alsa_devices.count(); n++) {
@@ -327,22 +321,14 @@ void TAudio::createHelp() {
 
 	setWhatsThis(ao_combo, tr("Audio output driver"),
 		tr("Select the audio output driver.") 
-#ifdef Q_OS_OS2
-        + " " +
-		tr("%1 is the recommended one. %2 is only available on older MPlayer (before version %3)")
-           .arg("<b><i>kai</i></b>")
-           .arg("<b><i>dart</i></b>")
-           .arg(MPLAYER_KAI_VERSION)
-#else
 #ifndef Q_OS_WIN
 		+ " " +
 		tr("%1 and %2 are the most commonly used drivers.")
-		   .arg("<b><i>pulse</i></b>")
-		   .arg("<b><i>alsa</i></b>")
+           .arg("<b><i>pulse</i></b>").arg("<b><i>alsa</i></b>")
 #endif
 		+ " " +
-		tr("Select <b><i>players default</i></b> to let the player select the audio driver.")
-#endif
+        tr("Select <b><i>players default</i></b> to let the player select the"
+           " audio driver.")
 		);
 
 	setWhatsThis(channels_combo, tr("Channels"),

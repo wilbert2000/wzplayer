@@ -25,10 +25,6 @@
 #include <QNetworkProxy>
 #include <QTimer>
 
-#ifdef Q_OS_OS2
-#include <QEventLoop>
-#endif
-
 #include "discname.h"
 #include "mediadata.h"
 #include "extensions.h"
@@ -679,36 +675,17 @@ void TPlayer::stopPlayer() {
 
     logger()->debug("stopPlayer: entering the stopping state");
     setState(STATE_STOPPING);
+    proc->quit(0);
 
     // If set high enough the OS will detect the "not responding state" and
     // popup a dialog
     int timeout = pref->time_to_kill_player;
-
-#ifdef Q_OS_OS2
-    QEventLoop eventLoop;
-
-    connect(proc, SIGNAL(processFinished(bool, int, bool)),
-            &eventLoop, SLOT(quit()));
-
-    proc->quit(0);
-
-    QTimer::singleShot(timeout, &eventLoop, SLOT(quit()));
-    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
-
-    if (proc->isRunning()) {
-        logger()->warn("stopPlayer: player didn't finish. Killing it...");
-        proc->kill();
-    }
-#else
-    proc->quit(0);
-
     logger()->debug("stopPlayer: Waiting %1 ms for player to quit...", timeout);
     if (!proc->waitForFinished(timeout)) {
         logger()->warn("stopPlayer: player process did not finish in %1 ms."
                        " Killing it...", timeout);
         proc->kill();
     }
-#endif
 
     logger()->debug("stopPlayer: done");
 }
@@ -912,16 +889,8 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
     proc->setExecutable(pref->player_bin);
     proc->setFixedOptions();
     proc->disableInput();
-
-#if defined(Q_OS_OS2)
-#define WINIDFROMHWND(hwnd) ((hwnd) - 0x80000000UL)
-    proc->setOption("wid", QString::number(
-        WINIDFROMHWND((int) playerwindow->videoWindow()->winId())));
-#else
     proc->setOption("wid",
         QString::number((qint64) playerwindow->videoWindow()->winId()));
-#endif
-
     if (pref->log_verbose) {
         proc->setOption("verbose");
     }
@@ -1022,7 +991,7 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
     }
 
     // Enable software scaling for vo x11
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+#if !defined(Q_OS_WIN)
     if (pref->vo.startsWith("x11")) {
         proc->setOption("zoom");
     }

@@ -1246,7 +1246,7 @@ void TMPlayerProcess::setFixedOptions() {
 void TMPlayerProcess::disableInput() {
     args << "-nomouseinput";
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+#if !defined(Q_OS_WIN)
     args << "-input" << "nodefault-bindings:conf=/dev/null";
 #endif
 }

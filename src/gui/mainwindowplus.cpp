@@ -72,13 +72,8 @@ TMainWindowPlus::TMainWindowPlus() :
     connect(showTrayAct, SIGNAL(toggled(bool)),
             quitAct, SLOT(setVisible(bool)));
 
-#ifndef Q_OS_OS2
     windowMenu->addSeparator();
     windowMenu->addAction(showTrayAct);
-#else
-    trayAvailable();
-    connect(windowMenu, SIGNAL(aboutToShow()), this, SLOT(trayAvailable()));
-#endif
 
     showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
     connect(showAllAct, SIGNAL(triggered()), this, SLOT(toggleShowAll()));
@@ -169,7 +164,7 @@ void TMainWindowPlus::updateShowAllAct() {
 
 bool TMainWindowPlus::startHidden() {
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN)
     return false;
 #else
     if (!showTrayAct->isChecked() || mainwindow_visible)
@@ -332,19 +327,6 @@ void TMainWindowPlus::showPlaylist(bool visible) {
     // Triggers onDockVisibilityChanged
     playlistdock->setVisible(visible);
 }
-
-#ifdef Q_OS_OS2
-// we test if xcenter is available at all. if not disable the tray action. this
-// is possible when xcenter is not opened or crashed
-void TMainWindowPlus::trayAvailable() {
-	if (!tray->isSystemTrayAvailable()) {
-			windowMenu->removeAction(showTrayAct);
-	}
-	else {
-		windowMenu->addAction(showTrayAct);
-	}
-}
-#endif
 
 } // namespace Gui
 

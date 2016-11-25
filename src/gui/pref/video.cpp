@@ -64,7 +64,7 @@ TVideo::TVideo(QWidget* parent, const Player::Info::InfoList& vol) :
 	hwdec_combo->addItem("dxva2-copy", "dxva2-copy");
 #endif
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN)
 	vdpau_button->hide();
 #endif
 
@@ -141,7 +141,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 
 	setVO(pref->vo);
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+#if !defined(Q_OS_WIN)
 	vdpau = pref->vdpau;
 #endif
 
@@ -173,7 +173,7 @@ void TVideo::getData(Settings::TPreferences* pref) {
 		pref->mpv_vo = pref->vo;
 	}
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
+#if !defined(Q_OS_WIN)
 	pref->vdpau = vdpau;
 #endif
 
@@ -233,13 +233,6 @@ void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
 			vo_combo->addItem("directx (" + tr("slow") + ")", "directx:noaccel");
 		}
 #else
-#ifdef Q_OS_OS2
-		if (vo == "kva") {
-			vo_combo->addItem("kva (" + tr("fast") + ")", "kva");
-			vo_combo->addItem("kva (" + tr("snap mode") + ")", "kva:snap");
-			vo_combo->addItem("kva (" + tr("slower dive mode") + ")", "kva:dive");
-		}
-#else
 #if USE_XV_ADAPTORS
 		if (vo == "xv" && !xv_adaptors.isEmpty()) {
 			vo_combo->addItem(vo, vo);
@@ -250,7 +243,6 @@ void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
 			}
 		}
 #endif // USE_XV_ADAPTORS
-#endif
 #endif
 
 		else if (vo == "x11") {
@@ -497,13 +489,11 @@ void TVideo::createHelp() {
 	} else {
 		driver = "directx";
 	}
-	remark = tr("%1 should give good performance.").arg("<b><i>" + driver + "</i></b>");
+    remark = tr("%1 should give good performance.").arg("<b><i>" + driver
+                                                        + "</i></b>");
 #else
-#ifdef Q_OS_OS2
-	remark = tr("%1 is probably your best bet.").arg("<b><i>kva</i></b>");
-#else
-	remark = tr("%1 should work and give reasonable performance.") .arg("<b><i>xv</i></b>");
-#endif
+    remark = tr("%1 should work and give reasonable performance.")
+             .arg("<b><i>xv</i></b>");
 #endif
 
 	setWhatsThis(vo_combo, tr("Video output driver"),
@@ -517,10 +507,9 @@ void TVideo::createHelp() {
 
 	setWhatsThis(hwdec_combo, tr("Hardware decoding"),
 		tr("This option only works with MPV.") + " "
-		+ tr("Sets the hardware video decoding API."
-			" If hardware decoding is not possible, software decoding will be used instead.")
-			+ " "
-			+ tr("Available options:")
+        + tr("Sets the hardware video decoding API. If hardware decoding is not"
+             " possible, software decoding will be used instead.")
+            + " " + tr("Available options:")
 			+ "<ul>"
 			"<li>" + tr("None: only software decoding will be used.") + "</li>"
 			"<li>" + tr("Auto: tries to automatically enable hardware decoding.") + "</li>"

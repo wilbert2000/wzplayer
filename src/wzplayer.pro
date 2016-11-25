@@ -351,11 +351,6 @@ win32 {
     RC_FILE = wzplayer.rc
 }
 
-os2 {
-    INCLUDEPATH += .
-    RC_FILE = wzplayer_os2.rc
-}
-
 
 TRANSLATIONS = translations/es.ts translations/de.ts \
                translations/sk.ts translations/it.ts \

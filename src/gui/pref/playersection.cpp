@@ -79,7 +79,7 @@ void TPlayerSection::retranslateStrings() {
 	mplayer_edit->setCaption(tr("Select the MPlayer executable"));
 	mpv_edit->setCaption(tr("Select the MPV executable"));
 
-#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
+#if defined(Q_OS_WIN)
 	mplayer_edit->setFilter(tr("Executables") +" (*.exe)");
 	mpv_edit->setFilter(tr("Executables") +" (*.exe)");
 #else

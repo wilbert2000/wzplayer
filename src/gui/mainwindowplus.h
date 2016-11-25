@@ -72,9 +72,6 @@ protected slots:
     virtual void showAll(bool b);
     virtual void showAll();
     virtual void quit();
-#ifdef Q_OS_OS2
-    void trayAvailable();
-#endif
 
 private:
     QTimer* optimizeSizeTimer;
