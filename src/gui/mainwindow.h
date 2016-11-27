@@ -307,7 +307,7 @@ protected:
     QString pending_actions_to_run;
 
     bool state_restored;
-    bool switching_to_fullscreen;
+    bool switching_fullscreen;
 
 private:
     QLabel* video_info_label;

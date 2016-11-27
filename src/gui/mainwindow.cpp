@@ -120,7 +120,7 @@ TMainWindow::TMainWindow() :
     help_window(0),
     pref_dialog(0),
     file_properties_dialog(0),
-    switching_to_fullscreen(false),
+    switching_fullscreen(false),
     menubar_visible(true),
     statusbar_visible(true),
     fullscreen_menubar_visible(false),
@@ -1759,7 +1759,7 @@ void TMainWindow::toggleFullscreen(bool b) {
         return;
     }
 
-    switching_to_fullscreen = true;
+    switching_fullscreen = true;
     pref->fullscreen = b;
     emit fullscreenChanged();
 
@@ -1774,7 +1774,7 @@ void TMainWindow::toggleFullscreen(bool b) {
     }
 
     setFocus(); // Fixes bug #2493415
-    switching_to_fullscreen = false;
+    switching_fullscreen = false;
 }
 
 void TMainWindow::aboutToEnterFullscreen() {
