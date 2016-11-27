@@ -75,6 +75,7 @@ protected slots:
 
 private:
     QTimer* optimizeSizeTimer;
+    bool reqOptSize;
     double saved_size;
 
     void switchToTray();
