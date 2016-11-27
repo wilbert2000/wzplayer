@@ -1388,6 +1388,14 @@ void TPlaylist::onModifiedChanged() {
 
 bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
 
+    // Stop player if item is playing
+    if (item == playlistWidget->playing_item
+        && player->state() != Player::STATE_STOPPED) {
+        logger()->debug("rename: stopping currently playing item");
+        player->stop();
+        // TODO: restart at current time
+    }
+
     QString nn = QDir::toNativeSeparators(
                      QFileInfo(item->filename()).absolutePath());
     if (!nn.endsWith(QDir::separator())) {
