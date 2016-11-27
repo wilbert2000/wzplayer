@@ -2436,7 +2436,7 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
             stickx = false;
         } else {
             p.rx() = x;
-            logger()->trace("getNewGeometry: sticking to right side");
+            logger()->trace("resizeStickyWindow: sticking to right side");
         }
     }
     if (sticky) {
@@ -2445,7 +2445,7 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
             sticky = false;
         } else {
             p.ry() = y;
-            logger()->trace("getNewGeometry: sticking to bottom");
+            logger()->trace("resizeStickyWindow: sticking to bottom");
         }
     }
     if (stickx || sticky) {
@@ -2456,7 +2456,7 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
 void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
                                    bool try_twice) {
     logger()->debug(QString("resizeMainWindow: requested video size %1 x %2"
-                            " size factor %3")
+                            " window size %3")
                     .arg(w).arg(h).arg(pref->size_factor));
 
     QSize panel_size = QSize(w, h) * size_factor;

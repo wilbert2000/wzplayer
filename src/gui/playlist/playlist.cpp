@@ -1516,10 +1516,12 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 }
 
 void TPlaylist::hideEvent(QHideEvent*) {
+    logger()->debug("hideEvent: emit visibilityChanged(false)");
     emit visibilityChanged(false);
 }
 
 void TPlaylist::showEvent(QShowEvent*) {
+    logger()->debug("showEvent: emit visibilityChanged(true)");
     emit visibilityChanged(true);
 }
 
