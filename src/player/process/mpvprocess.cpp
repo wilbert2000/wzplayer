@@ -432,8 +432,8 @@ void TMPVProcess::requestBitrateInfo() {
 
 bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     // Parse custom status line
-    // STATUS: ${=time-pos} / ${=duration:${=length:0}} P: ${=pause}
-    //         B: ${=paused-for-cache} I: ${=core-idle}
+    // T:${=time-pos}/${=duration:${=length:0}} P:${=pause}
+    // B:${=paused-for-cache} I:${=core-idle}
 
     paused = rx.cap(3) == "yes";
 
@@ -488,8 +488,8 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
 bool TMPVProcess::parseLine(QString& line) {
 
     // Custom status line. Make sure it matches!
-    static QRegExp rx_status("^STATUS: ([0-9\\.-]*) / ([0-9\\.-]+) P: (yes|no)"
-                             " B: (yes|no) I: (yes|no)");
+    static QRegExp rx_status("^T:([0-9\\.-]*)/([0-9\\.-]+) P:(yes|no)"
+                             " B:(yes|no) I:(yes|no)");
 
     // Tracks:
     static QRegExp rx_video_track("^(.*)Video\\s+--vid=(\\d+)(.*)");
@@ -719,8 +719,8 @@ void TMPVProcess::setMedia(const QString& media) {
         "METADATA_LIST=${=metadata/list:}\n"
         "INFO_MEDIA_TITLE=${=media-title:}\n";
 
-    args << "--term-status-msg=STATUS: ${=time-pos} / ${=duration:${=length:0}}"
-            " P: ${=pause} B: ${=paused-for-cache} I: ${=core-idle}";
+    args << "--term-status-msg=T:${=time-pos}/${=duration:${=length:0}}"
+            " P:${=pause} B:${=paused-for-cache} I:${=core-idle}";
 
     // MPV interprets the ID in a DVD URL as index [0..#titles-1] instead of
     // [1..#titles]. Maybe one day they gonna fix it and this will break. Sigh.
