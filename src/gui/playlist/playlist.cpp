@@ -1386,14 +1386,6 @@ void TPlaylist::onModifiedChanged() {
     setWinTitle();
 }
 
-void TPlaylist::editCurrentItem() {
-
-    TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
-    if (current) {
-        editItem(current);
-    }
-}
-
 bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
 
     QString nn = QDir::toNativeSeparators(
@@ -1448,6 +1440,14 @@ void TPlaylist::editItem(TPlaylistWidgetItem* item) {
     }
 
     playlistWidget->setModified(item);
+}
+
+void TPlaylist::editCurrentItem() {
+
+    TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
+    if (current) {
+        editItem(current);
+    }
 }
 
 void TPlaylist::findPlayingItem() {

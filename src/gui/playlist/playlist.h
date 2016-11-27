@@ -210,7 +210,7 @@ private:
     bool deleteFileFromDisk(const QString& filename,
                             const QString& playingFile);
     bool rename(TPlaylistWidgetItem* item, const QString& newName);
-
+    void editItem(TPlaylistWidgetItem* item);
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
                        const QString& path,
@@ -245,7 +245,6 @@ private slots:
     void removeAll();
 
     void editCurrentItem();
-    void editItem(TPlaylistWidgetItem* item);
     void onModifiedChanged();
 
     void findPlayingItem();
