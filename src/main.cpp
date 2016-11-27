@@ -45,7 +45,7 @@ void initLog4Qt(Level level) {
         // Create console layout
         TTCCLayout* tccLayout = new TTCCLayout();
         tccLayout->setName("Layout");
-        //tccLayout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
+        tccLayout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
         tccLayout->setThreadPrinting(false);
         tccLayout->activateOptions();
 
