@@ -48,7 +48,7 @@ namespace Gui {
 TMainWindowPlus::TMainWindowPlus() :
     TMainWindow(),
     debug(logger()),
-    mainwindow_visible(true),
+    hideMainWindowOnStartup(false),
     restore_playlist(false),
     reqOptSize(false),
     saved_size(0) {
@@ -168,10 +168,7 @@ bool TMainWindowPlus::startHidden() {
 #if defined(Q_OS_WIN)
     return false;
 #else
-    if (!showTrayAct->isChecked() || mainwindow_visible)
-        return false;
-    else
-        return true;
+    return hideMainWindowOnStartup && showTrayAct->isChecked();
 #endif
 }
 
@@ -213,7 +210,7 @@ void TMainWindowPlus::saveConfig() {
 
     pref->beginGroup("mainwindowplus");
     pref->setValue("show_tray_icon", showTrayAct->isChecked());
-    pref->setValue("mainwindow_visible", isVisible());
+    pref->setValue("hideMainWindowOnStartup", !isVisible());
     pref->endGroup();
 }
 
@@ -224,7 +221,8 @@ void TMainWindowPlus::loadConfig() {
 
     pref->beginGroup("mainwindowplus");
     showTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());
-	mainwindow_visible = pref->value("mainwindow_visible", true).toBool();
+    hideMainWindowOnStartup = pref->value("hideMainWindowOnStartup",
+                                          hideMainWindowOnStartup).toBool();
     pref->endGroup();
 
     restore_playlist = playlistdock->isVisible() && playlistdock->isFloating();

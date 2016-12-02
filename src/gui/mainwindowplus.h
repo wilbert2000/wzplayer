@@ -62,7 +62,7 @@ private:
     Action::TAction* showAllAct;
 
     // To save state
-    bool mainwindow_visible;
+    bool hideMainWindowOnStartup;
     bool restore_playlist;
 
     QDockWidget* playlistdock;
