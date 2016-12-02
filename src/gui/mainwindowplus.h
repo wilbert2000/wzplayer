@@ -44,36 +44,29 @@ public:
 	virtual void saveConfig();
 
 protected:
-	QSystemTrayIcon* tray;
-	QMenu* context_menu;
-
-	Action::TAction* quitAct;
-	Action::TAction* showTrayAct;
-	Action::TAction* showAllAct;
-
-	// To save state
-	bool mainwindow_visible;
-    bool restore_playlist;
-
-	QDockWidget* playlistdock;
-
     virtual void changeEvent(QEvent* event);
 
 protected slots:
-    // Reimplemented methods
     virtual void closeWindow();
-    virtual void setWindowCaption(const QString& title);
-    virtual void onMediaInfoChanged();
-    virtual void showPlaylist(bool visible);
-
-    // New
-    virtual void trayIconActivated(QSystemTrayIcon::ActivationReason);
-    virtual void toggleShowAll();
-    virtual void showAll(bool b);
-    virtual void showAll();
     virtual void quit();
+    virtual void setWindowCaption(const QString& title);
+    virtual void showPlaylist(bool visible);
+    virtual void onMediaInfoChanged();
 
 private:
+    QSystemTrayIcon* tray;
+    QMenu* context_menu;
+
+    Action::TAction* quitAct;
+    Action::TAction* showTrayAct;
+    Action::TAction* showAllAct;
+
+    // To save state
+    bool mainwindow_visible;
+    bool restore_playlist;
+
+    QDockWidget* playlistdock;
+
     QTimer* optimizeSizeTimer;
     bool reqOptSize;
     double saved_size;
@@ -81,10 +74,14 @@ private:
     void switchToTray();
 	void retranslateStrings();
     void updateShowAllAct();
+    void showAll(bool b);
+    void showAll();
 
 private slots:
+    void trayIconActivated(QSystemTrayIcon::ActivationReason);
     void onOptimizeSizeTimeout();
     void onDockVisibilityChanged(bool visible);
+    void toggleShowAll();
     void setWinTitle();
 };
 
