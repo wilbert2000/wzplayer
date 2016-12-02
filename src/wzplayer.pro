@@ -153,6 +153,7 @@ HEADERS += wzdebug.h \
     gui/playerwindow.h \
     gui/mainwindow.h \
     gui/mainwindowplus.h \
+    gui/logwindowapeender.h \
     gui/logwindow.h \
     gui/helpwindow.h \
     gui/updatechecker.h \
@@ -279,6 +280,7 @@ SOURCES	+= wzdebug.cpp \
     gui/playerwindow.cpp \
     gui/mainwindow.cpp \
     gui/mainwindowplus.cpp \
+    gui/logwindowapeender.cpp \
     gui/logwindow.cpp \
     gui/helpwindow.cpp \
     gui/updatechecker.cpp \

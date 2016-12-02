@@ -21,39 +21,11 @@
 
 #include "ui_logwindow.h"
 #include "log4qt/logger.h"
-#include "log4qt/varia/listappender.h"
 
-
-class QPlainTextEdit;
-
-namespace Log4Qt {
-class Layout;
-class LoggingEvent;
-}
 
 namespace Gui {
 
-class TLogWindow;
-
-class TLogWindowAppender : public Log4Qt::ListAppender {
-
-public:
-    TLogWindowAppender(Log4Qt::Layout* aLayout);
-    virtual ~TLogWindowAppender();
-
-    void setEdit(QPlainTextEdit* edit);
-
-protected:
-    virtual void append(const Log4Qt::LoggingEvent& rEvent);
-
-private:
-    QPlainTextEdit* textEdit;
-    Log4Qt::Layout* layout;
-
-    static void removeNewLine(QString& s);
-    void appendTextToEdit(QString s);
-};
-
+class TLogWindowAppender;
 
 class TLogWindow : public QWidget, public Ui::TLogWindow {
 	Q_OBJECT
