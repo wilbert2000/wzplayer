@@ -232,11 +232,11 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
 
     addSeparator();
     a = new TAction(this, "halve_speed", tr("&Half speed"), "",
-                    Qt::ALT | Qt::Key_Z);
+                    Qt::META | Qt::Key_Z);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(halveSpeed()));
     a = new TAction(this, "double_speed", tr("&Double speed"), "",
-                    Qt::META | Qt::Key_Z);
+                    Qt::ALT | Qt::Key_Z);
     group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(doubleSpeed()));
 
