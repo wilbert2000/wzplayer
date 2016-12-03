@@ -88,16 +88,12 @@ public:
 
     void openFiles(const QStringList& files, const QString& current = "");
 
-    //! Execute all actions in \a actions. The actions should be
-    //! separated by spaces. Checkable actions could have a parameter:
-    //! true or false.
-    void runActions(QString actions);
+    Playlist::TPlaylist* getPlaylist() const { return playlist; }
+    Action::TActionList getAllNamedActions() const;
+    QMenu* getToolbarMenu() const { return toolbar_menu; }
+
     //! Execute all the actions after the video has started to play
     void runActionsLater(const QString& actions, bool postCheck);
-
-    Playlist::TPlaylist* getPlaylist() const { return playlist; }
-    Action::TActionList getAllNamedActions();
-    QMenu* getToolbarMenu() const { return toolbar_menu; }
 
 public slots:
     virtual void open(const QString& file); // Generic open, autodetect type.
@@ -169,6 +165,51 @@ signals:
     void openFileRequested();
     void requestRestart();
 
+protected:
+    Playlist::TPlaylist* playlist;
+
+    Action::Menu::TMenuFile* fileMenu;
+    Action::Menu::TMenuPlay* playMenu;
+    Action::Menu::TMenuVideo* videoMenu;
+    Action::Menu::TMenuAudio* audioMenu;
+    Action::Menu::TMenuSubtitle* subtitleMenu;
+    Action::Menu::TMenuBrowse* browseMenu;
+    QMenu* windowMenu;
+
+    bool state_restored;
+    bool switching_fullscreen;
+
+    virtual void closeEvent(QCloseEvent* e);
+    virtual void changeEvent(QEvent* event);
+    virtual void hideEvent(QHideEvent* event);
+    virtual void showEvent(QShowEvent* event);
+
+#if defined(Q_OS_WIN)
+    // Disable screensaver
+    virtual bool winEvent(MSG* m, long* result);
+#endif
+
+    virtual QMenu* createPopupMenu();
+    virtual void aboutToEnterFullscreen();
+    virtual void didEnterFullscreen();
+    virtual void aboutToExitFullscreen();
+    virtual void didExitFullscreen();
+
+    void createPlayer();
+    void createPlayerWindow();
+    void createVideoEqualizer();
+    void createAudioEqualizer();
+    void createPlaylist();
+    void createPanel();
+    void createPreferencesDialog();
+    void createFilePropertiesDialog();
+    void setDataToFileProperties();
+    void createActions();
+    void createMenus();
+    void configureDiscDevices();
+    void setupNetworkProxy();
+    double optimizeSize(double size);
+
 protected slots:
     virtual void closeWindow();
 
@@ -224,56 +265,42 @@ protected slots:
 
     void onPlayerError(int exit_code);
 
-protected:
-    virtual void closeEvent(QCloseEvent* e);
-    virtual void changeEvent(QEvent* event);
-    virtual void hideEvent(QHideEvent* event);
-    virtual void showEvent(QShowEvent* event);
-
-#if defined(Q_OS_WIN)
-    // Disable screensaver
-    virtual bool winEvent(MSG* m, long* result);
-#endif
-
-    virtual QMenu* createPopupMenu();
-    virtual void aboutToEnterFullscreen();
-    virtual void didEnterFullscreen();
-    virtual void aboutToExitFullscreen();
-    virtual void didExitFullscreen();
-
-    void createPlayer();
-    void createPlayerWindow();
-    void createVideoEqualizer();
-    void createAudioEqualizer();
-    void createPlaylist();
-    void createPanel();
-    void createPreferencesDialog();
-    void createFilePropertiesDialog();
-    void setDataToFileProperties();
-    void createActions();
-    void createMenus();
-    void configureDiscDevices();
-    void setupNetworkProxy();
-    double optimizeSize(double size);
-
-protected:
+private:
     QWidget* panel;
     TPlayerWindow* playerwindow;
 
     Action::TAction* showContextMenuAct;
     Action::TAction* nextWheelFunctionAct;
 
-    // MENUS
-    Action::Menu::TMenuFile* fileMenu;
-    Action::Menu::TMenuPlay* playMenu;
-    Action::Menu::TMenuVideo* videoMenu;
-    Action::Menu::TMenuAudio* audioMenu;
-    Action::Menu::TMenuSubtitle* subtitleMenu;
-    Action::Menu::TMenuBrowse* browseMenu;
-    QMenu* windowMenu;
     QMenu* helpMenu;
+    QMenu* contextMenu;
 
-    QMenu* popup;
+    // Statusbar labels
+    QLabel* video_info_label;
+    QLabel* in_out_points_label;
+    QLabel* time_label;
+
+    // Cache timestamp
+    QString positionText;
+    QString durationText;
+
+    // Visible state bars
+    bool menubar_visible;
+    bool statusbar_visible;
+    bool fullscreen_menubar_visible;
+    bool fullscreen_statusbar_visible;
+
+    // Statusbar menu
+    Action::TAction* viewVideoInfoAct;
+    Action::TAction* viewInOutPointsAct;
+    Action::TAction* viewVideoTimeAct;
+    Action::TAction* viewFramesAct;
+    QMenu* statusbar_menu;
+
+    // Toolbars
+    Action::TEditableToolbar* toolbar;
+    Action::TEditableToolbar* toolbar2;
+    Action::TEditableToolbar* controlbar;
 
     // Toolbar menu
     Action::TAction* viewMenuBarAct;
@@ -281,56 +308,30 @@ protected:
     Action::TAction* editToolbar2Act;
     Action::TAction* editControlBarAct;
     Action::TAction* viewStatusBarAct;
-
     QMenu* toolbar_menu;
 
-    Action::TEditableToolbar* toolbar;
-    Action::TEditableToolbar* toolbar2;
-    Action::TEditableToolbar* controlbar;
-
+    // Slider actions for toolbars
     Action::TTimeSliderAction* timeslider_action;
     Action::TVolumeSliderAction* volumeslider_action;
 
-    Playlist::TPlaylist* playlist;
-    TLogWindow* log_window;
-    THelpWindow* help_window;
-
-    Pref::TDialog* pref_dialog;
-    TFilePropertiesDialog* file_properties_dialog;
+    // Equalizers
     TVideoEqualizer* video_equalizer;
     TAudioEqualizer* audio_equalizer;
 
-    QString pending_actions_to_run;
+    // Windows
+    TFilePropertiesDialog* file_properties_dialog;
+    TLogWindow* log_window;
+    Pref::TDialog* pref_dialog;
+    THelpWindow* help_window;
 
-    bool state_restored;
-    bool switching_fullscreen;
-
-private:
-    QLabel* video_info_label;
-    QLabel* in_out_points_label;
-    QLabel* time_label;
-
-    Action::TAction* viewVideoInfoAct;
-    Action::TAction* viewInOutPointsAct;
-    Action::TAction* viewVideoTimeAct;
-    Action::TAction* viewFramesAct;
-
-    QMenu* statusbar_menu;
-
-    QString positionText;
-    QString durationText;
-
-    bool menubar_visible;
-    bool statusbar_visible;
-    bool fullscreen_menubar_visible;
-    bool fullscreen_statusbar_visible;
     QString first_fullscreen_filename;
-
-    // Force settings from command line
+    QString pending_actions_to_run;
+    // Pass settings from command line
     int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 
     bool ignore_show_hide_events;
 
+    // Fiddel size and pos
     bool save_size;
     bool force_resize;
     bool center_window;
@@ -339,25 +340,30 @@ private:
     TAutoHideTimer* auto_hide_timer;
     TUpdateChecker* update_checker;
 
+    static QString settingsGroupName();
+
     void createStatusBar();
     void createToolbars();
     QMenu* createToolbarMenu();
 
-    static QString settingsGroupName();
-
+    void enterFullscreenOnPlay();
     void sendEnableActions();
-
-    void save();
-    void restartApplication();
-
+    //! Execute all actions in \a actions. The actions should be
+    //! separated by spaces. Checkable actions could have a parameter:
+    //! true or false.
+    void runActions(QString actions);
     void setFloatingToolbarsVisible(bool visible);
+
     void hidePanel();
+
     double getDefaultSize();
     void resizeStickyWindow(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
 
-    void enterFullscreenOnPlay();
     void retranslateStrings();
+
+    void save();
+    void restartApplication();
 
 private slots:
     void displayVideoInfo();

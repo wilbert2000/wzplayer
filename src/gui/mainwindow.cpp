@@ -116,15 +116,15 @@ using namespace Action;
 TMainWindow::TMainWindow() :
     QMainWindow(),
     debug(logger()),
-    toolbar_menu(0),
-    help_window(0),
-    pref_dialog(0),
-    file_properties_dialog(0),
     switching_fullscreen(false),
     menubar_visible(true),
     statusbar_visible(true),
     fullscreen_menubar_visible(false),
     fullscreen_statusbar_visible(true),
+    toolbar_menu(0),
+    file_properties_dialog(0),
+    pref_dialog(0),
+    help_window(0),
     arg_close_on_finish(-1),
     ignore_show_hide_events(false),
     save_size(true),
@@ -507,14 +507,14 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(helpMenu);
 
     // Popup menu
-    popup = new QMenu(this);
-    popup->addMenu(fileMenu);
-    popup->addMenu(playMenu);
-    popup->addMenu(videoMenu);
-    popup->addMenu(audioMenu);
-    popup->addMenu(subtitleMenu);
-    popup->addMenu(browseMenu);
-    popup->addMenu(windowMenu);
+    contextMenu = new QMenu(this);
+    contextMenu->addMenu(fileMenu);
+    contextMenu->addMenu(playMenu);
+    contextMenu->addMenu(videoMenu);
+    contextMenu->addMenu(audioMenu);
+    contextMenu->addMenu(subtitleMenu);
+    contextMenu->addMenu(browseMenu);
+    contextMenu->addMenu(windowMenu);
 } // createMenus()
 
 QMenu* TMainWindow::createToolbarMenu() {
@@ -918,7 +918,7 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
     }
 }
 
-TActionList TMainWindow::getAllNamedActions() {
+TActionList TMainWindow::getAllNamedActions() const {
 
     // Get all actions with a name
     TActionList all_actions = findChildren<QAction*>();
@@ -2045,10 +2045,10 @@ void TMainWindow::showContextMenu() {
 }
 
 void TMainWindow::showContextMenu(QPoint p) {
-    Menu::execPopup(this, popup, p);
+    Menu::execPopup(this, contextMenu, p);
 }
 
-// Called when a video has started to play
+// Called by onNewMediaStartedPlaying() when a video starts playing
 void TMainWindow::enterFullscreenOnPlay() {
     logger()->debug("enterFullscreenOnPlay: app start fs %1"
                     ", pref start fs %2, fs %3",
