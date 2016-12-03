@@ -17,6 +17,19 @@
 */
 
 #include "app.h"
+#include "gui/mainwindowplus.h"
+#include "gui/playlist/playlist.h"
+#include "player/player.h"
+
+#include "settings/preferences.h"
+#include "settings/cleanconfig.h"
+#include "settings/paths.h"
+
+#include "config.h"
+#include "version.h"
+#include "clhelp.h"
+#include "images.h"
+#include "iconprovider.h"
 
 #include <QFile>
 #include <QDir>
@@ -25,23 +38,11 @@
 #include <QStyle>
 #include <QClipboard>
 
-#include "config.h"
-#include "settings/paths.h"
-#include "settings/preferences.h"
-#include "settings/cleanconfig.h"
-#include "version.h"
-#include "clhelp.h"
-#include "images.h"
-#include "iconprovider.h"
-
-#include "player/player.h"
-#include "gui/playlist/playlist.h"
-#include "gui/mainwindowplus.h"
 
 #ifdef Q_OS_WIN
 #if USE_ASSOCIATIONS
 #include "extensions.h"
-#include "winfileassoc.h"    //required for Uninstall
+#include "winfileassoc.h" // Required for uninstall
 #endif
 #endif
 
