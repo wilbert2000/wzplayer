@@ -42,7 +42,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 19;
+static const int CURRENT_CONFIG_VERSION = 20;
 
 TPreferences* pref = 0;
 
@@ -53,12 +53,9 @@ TPreferences::TPreferences() :
     TPlayerSettings(TPaths::iniPath()) {
 
     reset();
-    load();
-    pref = this;
 }
 
 TPreferences::~TPreferences() {
-    pref = 0;
 }
 
 

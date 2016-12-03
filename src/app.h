@@ -19,14 +19,14 @@
 #ifndef APP_H
 #define APP_H
 
+#include "qtsingleapplication/QtSingleApplication"
+#include "log4qt/logger.h"
+
 #include <QtGlobal>
 #include <QString>
 #include <QStringList>
 #include <QSettings>
 #include <QTranslator>
-
-#include "log4qt/logger.h"
-#include "gui/mainwindow.h"
 
 #ifdef Q_OS_WIN
 #if QT_VERSION < 0x050000
@@ -34,8 +34,10 @@
 #endif
 #endif
 
-#include "qtsingleapplication/QtSingleApplication"
 
+namespace Gui {
+class TMainWindowPlus;
+}
 
 class TApp : public QtSingleApplication {
     Q_OBJECT
@@ -62,12 +64,12 @@ public:
     TApp(int& argc, char** argv);
     virtual ~TApp();
 
-    // Nothing to do, let the application close
-    virtual void commitData(QSessionManager& /*manager*/) {}
+    virtual void commitData(QSessionManager&);
 
     void start();
 
-    //! Process arguments. If ExitCode != NoExit the application must be exited.
+    // Process command line arguments.
+    // If returned ExitCode != NoExit ::main() should exit.
     ExitCode processArgs();
 
 #ifdef USE_WINEVENTFILTER
@@ -79,11 +81,11 @@ private:
     static QString current_file;
     static QStringList files_to_play;
 
+    Gui::TMainWindowPlus* main_window;
+
     QString initial_config_path;
     QTranslator app_trans;
     QTranslator qt_trans;
-    Gui::TMainWindow* main_window;
-
 
     QString subtitle_file;
     QString actions; //!< Actions to be run on startup

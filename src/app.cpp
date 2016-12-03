@@ -47,8 +47,6 @@
 #endif
 
 
-using namespace Settings;
-
 // Statics that need to survive a restart
 bool TApp::restarting = false;
 TApp::TStartFS TApp::start_in_fullscreen = TApp::FS_NOT_SET;
@@ -73,7 +71,15 @@ TApp::TApp(int& argc, char** argv) :
 }
 
 TApp::~TApp() {
-    delete Settings::pref;
+
+    logger()->debug("~TApp: deleting pref");
+    Settings::TPreferences* p = Settings::pref;
+    Settings::pref = 0;
+    delete p;
+}
+
+// virtual. Nothing to do, let the application close
+void TApp::commitData(QSessionManager& /*manager*/) {
 }
 
 QString TApp::loadStyleSheet(const QString& filename) {
@@ -85,7 +91,7 @@ QString TApp::loadStyleSheet(const QString& filename) {
 
     QString path;
     if (Images::has_rcc) {
-        path = ":/" + pref->iconset;
+        path = ":/" + Settings::pref->iconset;
     } else {
         QDir current = QDir::current();
         QString td = Images::themesDirectory();
@@ -106,19 +112,20 @@ void TApp::changeStyleSheet(const QString& style) {
 
     if (!style.isEmpty()) {
         // Check main.css
-        QString qss_file = TPaths::configPath() + "/themes/" + pref->iconset
-                           + "/main.css";
+        QString qss_file = Settings::TPaths::configPath() + "/themes/"
+                           + Settings::pref->iconset + "/main.css";
         if (!QFile::exists(qss_file)) {
-            qss_file = TPaths::themesPath() +"/"+ pref->iconset + "/main.css";
+            qss_file = Settings::TPaths::themesPath() +"/"+ Settings::pref->iconset
+                       + "/main.css";
         }
 
         // Check style.qss
         if (!QFile::exists(qss_file)) {
-            qss_file = TPaths::configPath() + "/themes/" + pref->iconset
-                       + "/style.qss";
+            qss_file = Settings::TPaths::configPath() + "/themes/"
+                       + Settings::pref->iconset + "/style.qss";
             if (!QFile::exists(qss_file)) {
-                qss_file = TPaths::themesPath() +"/"+ pref->iconset
-                           + "/style.qss";
+                qss_file = Settings::TPaths::themesPath() +"/"
+                           + Settings::pref->iconset + "/style.qss";
             }
         }
 
@@ -138,15 +145,15 @@ void TApp::setupStyle() {
     // TODO: from help: Warning: To ensure that the application's style is set
     // correctly, it is best to call this function before the QApplication
     // constructor, if possible.
-    if (!pref->style.isEmpty()) {
-        setStyle(pref->style);
+    if (!Settings::pref->style.isEmpty()) {
+        setStyle(Settings::pref->style);
     }
 
     // Set theme
-    Images::setTheme(pref->iconset);
+    Images::setTheme(Settings::pref->iconset);
 
     // Set stylesheets
-    changeStyleSheet(pref->iconset);
+    changeStyleSheet(Settings::pref->iconset);
 
     // Set icon style
     iconProvider.setStyle(style());
@@ -169,16 +176,17 @@ bool TApp::loadCatalog(QTranslator& translator,
 void TApp::loadTranslation() {
     logger()->debug("loadTranslations");
 
-    QString locale = pref->language;
+    QString locale = Settings::pref->language;
     if (locale.isEmpty()) {
         locale = QLocale::system().name();
     }
-    QString trans_path = TPaths::translationPath();
+    QString trans_path = Settings::TPaths::translationPath();
 
     // Try to load it first from app path (in case there's an updated
     // translation), if it fails it will try then from the Qt path.
     if (!loadCatalog(qt_trans, "qt", locale, trans_path)) {
-        loadCatalog(qt_trans, "qt", locale, TPaths::qtTranslationPath());
+        loadCatalog(qt_trans, "qt", locale,
+                    Settings::TPaths::qtTranslationPath());
     }
     loadCatalog(app_trans, TConfig::PROGRAM_ID, locale, trans_path);
 }
@@ -187,9 +195,10 @@ void TApp::loadConfig() {
     logger()->debug("loadConfig");
 
     // Setup config directory
-    TPaths::setConfigPath(initial_config_path);
-    // Load new settings
+    Settings::TPaths::setConfigPath(initial_config_path);
+    // Create Load new settings
     Settings::pref = new Settings::TPreferences();
+    Settings::pref->load();
 
     // Setup style
     setupStyle();
@@ -291,7 +300,7 @@ TApp::ExitCode TApp::processArgs() {
     loadConfig();
 
     if (processArgName("delete-config", args)) {
-        TCleanConfig::clean(TPaths::configPath());
+        Settings::TCleanConfig::clean(Settings::TPaths::configPath());
         return NoError;
     }
 
@@ -506,7 +515,7 @@ void TApp::onRequestRestart() {
     logger()->debug("onRequestRestart");
 
     restarting = true;
-    if (pref->fullscreen && start_in_fullscreen != FS_TRUE) {
+    if (Settings::pref->fullscreen && start_in_fullscreen != FS_TRUE) {
         start_in_fullscreen = FS_RESTART;
     }
 
@@ -559,16 +568,16 @@ void TApp::showInfo() {
     logger()->info("Compiled with Qt version %1, running on Qt version %2",
                    QT_VERSION_STR, qVersion());
     logger()->info("application path: '%1'", applicationDirPath());
-    logger()->info("data path: '%1'", TPaths::dataPath());
-    logger()->info("translation path: '%1'", TPaths::translationPath());
-    logger()->info("doc path: '%1'", TPaths::docPath());
-    logger()->info("themes path: '%1'", TPaths::themesPath());
-    logger()->info("shortcuts path: '%1'", TPaths::shortcutsPath());
-    logger()->info("config path: '%1'", TPaths::configPath());
-    logger()->info("file for subtitle styles: '%1'", TPaths::subtitleStyleFile());
+    logger()->info("data path: '%1'", Settings::TPaths::dataPath());
+    logger()->info("translation path: '%1'", Settings::TPaths::translationPath());
+    logger()->info("doc path: '%1'", Settings::TPaths::docPath());
+    logger()->info("themes path: '%1'", Settings::TPaths::themesPath());
+    logger()->info("shortcuts path: '%1'", Settings::TPaths::shortcutsPath());
+    logger()->info("config path: '%1'", Settings::TPaths::configPath());
+    logger()->info("file for subtitle styles: '%1'", Settings::TPaths::subtitleStyleFile());
     logger()->info("current directory: '%1'", QDir::currentPath());
 #ifdef Q_OS_WIN
-    logger()->info("font path: '%1'", TPaths::fontPath());
+    logger()->info("font path: '%1'", Settings::TPaths::fontPath());
 #endif
 }
 

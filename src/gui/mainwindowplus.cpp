@@ -163,7 +163,7 @@ void TMainWindowPlus::updateShowAllAct() {
     }
 }
 
-bool TMainWindowPlus::startHidden() {
+bool TMainWindowPlus::startHidden() const {
 
 #if defined(Q_OS_WIN)
     return false;

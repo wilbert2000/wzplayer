@@ -83,25 +83,21 @@ public:
     TMainWindow();
     virtual ~TMainWindow();
 
-    /* Return true if the window shouldn't show on startup */
-    virtual bool startHidden() { return false; }
+    virtual void loadConfig();
+    virtual void saveConfig();
+
+    void openFiles(const QStringList& files, const QString& current = "");
 
     //! Execute all actions in \a actions. The actions should be
     //! separated by spaces. Checkable actions could have a parameter:
     //! true or false.
     void runActions(QString actions);
-
     //! Execute all the actions after the video has started to play
     void runActionsLater(const QString& actions, bool postCheck);
 
-    Playlist::TPlaylist* getPlaylist() { return playlist; }
+    Playlist::TPlaylist* getPlaylist() const { return playlist; }
     Action::TActionList getAllNamedActions();
-    QMenu* getToolbarMenu() { return toolbar_menu; }
-
-    virtual void loadConfig();
-    virtual void saveConfig();
-
-    void openFiles(const QStringList& files, const QString& current = "");
+    QMenu* getToolbarMenu() const { return toolbar_menu; }
 
 public slots:
     virtual void open(const QString& file); // Generic open, autodetect type.

@@ -46,7 +46,7 @@ public:
     };
 #else
 	enum TLocation {
-        //DataLocation = QDesktopServices::DataLocation,
+        // DataLocation = QDesktopServices::DataLocation,
         PicturesLocation = QDesktopServices::PicturesLocation,
 		DocumentsLocation = QDesktopServices::DocumentsLocation,
 		HomeLocation = QDesktopServices::HomeLocation

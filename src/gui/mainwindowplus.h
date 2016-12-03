@@ -39,9 +39,9 @@ public:
     TMainWindowPlus();
     virtual ~TMainWindowPlus();
 
-	virtual bool startHidden();
 	virtual void loadConfig();
 	virtual void saveConfig();
+    bool startHidden() const;
 
 protected:
     virtual void changeEvent(QEvent* event);
