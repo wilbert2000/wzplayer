@@ -768,7 +768,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
     } else {
         logger()->debug("playItem: end of playlist");
         msg(tr("End of playlist"), 7000);
-        emit playlistEnded();
+        emit playlistFinished();
     }
 }
 

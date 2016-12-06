@@ -249,12 +249,12 @@ void TMainWindow::createPlayerWindow() {
     panel->setLayout(layout);
 
     // Connect player window mouse events
-    connect(playerwindow, SIGNAL(doubleClicked()),
-            this, SLOT(doubleClickFunction()));
     connect(playerwindow, SIGNAL(leftClicked()),
             this, SLOT(leftClickFunction()));
     connect(playerwindow, SIGNAL(rightClicked()),
             this, SLOT(rightClickFunction()));
+    connect(playerwindow, SIGNAL(doubleClicked()),
+            this, SLOT(doubleClickFunction()));
     connect(playerwindow, SIGNAL(middleClicked()),
             this, SLOT(middleClickFunction()));
     connect(playerwindow, SIGNAL(xbutton1Clicked()),
@@ -279,7 +279,8 @@ void TMainWindow::createPlayer() {
     connect(player, SIGNAL(stateChanged(Player::TState)),
             this, SLOT(onStateChanged(Player::TState)));
     connect(player, SIGNAL(stateChanged(Player::TState)),
-            this, SLOT(checkStayOnTop(Player::TState)), Qt::QueuedConnection);
+            this, SLOT(checkStayOnTop(Player::TState)),
+            Qt::QueuedConnection);
 
     connect(player, SIGNAL(mediaSettingsChanged()),
             this, SLOT(onMediaSettingsChanged()));
@@ -287,7 +288,8 @@ void TMainWindow::createPlayer() {
             this, SLOT(onVideoOutResolutionChanged(int,int)));
 
     connect(player, SIGNAL(newMediaStartedPlaying()),
-            this, SLOT(onNewMediaStartedPlaying()), Qt::QueuedConnection);
+            this, SLOT(onNewMediaStartedPlaying()),
+            Qt::QueuedConnection);
 
     connect(player, SIGNAL(mediaInfoChanged()),
             this, SLOT(onMediaInfoChanged()));
@@ -309,8 +311,8 @@ void TMainWindow::createPlaylist() {
     logger()->debug("createPlaylist");
 
     playlist = new Playlist::TPlaylist(this);
-    connect(playlist, SIGNAL(playlistEnded()),
-            this, SLOT(playlistHasFinished()));
+    connect(playlist, SIGNAL(playlistFinished()),
+            this, SLOT(onPlaylistFinished()));
 }
 
 void TMainWindow::createVideoEqualizer() {
@@ -845,10 +847,11 @@ void TMainWindow::setWindowCaption(const QString& title) {
 void TMainWindow::createPreferencesDialog() {
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
+
     pref_dialog = new Pref::TDialog(this);
     pref_dialog->setModal(false);
-    connect(pref_dialog, SIGNAL(applied()),
-             this, SLOT(applyNewPreferences()));
+    connect(pref_dialog, SIGNAL(applied()), this, SLOT(applyNewPreferences()));
+
     QApplication::restoreOverrideCursor();
 }
 
@@ -2040,12 +2043,12 @@ void TMainWindow::dropEvent(QDropEvent *e) {
     QMainWindow::dropEvent(e);
 }
 
-void TMainWindow::showContextMenu() {
-    showContextMenu(QCursor::pos());
-}
-
 void TMainWindow::showContextMenu(QPoint p) {
     Menu::execPopup(this, contextMenu, p);
+}
+
+void TMainWindow::showContextMenu() {
+    showContextMenu(QCursor::pos());
 }
 
 // Called by onNewMediaStartedPlaying() when a video starts playing
@@ -2078,8 +2081,8 @@ void TMainWindow::exitFullscreenOnStop() {
     }
 }
 
-void TMainWindow::playlistHasFinished() {
-    logger()->debug("playlistHasFinished");
+void TMainWindow::onPlaylistFinished() {
+    logger()->debug("onPlaylistFinished");
 
     player->stop();
 
@@ -2248,7 +2251,7 @@ void TMainWindow::hidePanel() {
     }
 }
 
-double TMainWindow::optimizeSize(double size) {
+double TMainWindow::optimizeSize(double size) const {
     logger()->trace("optimizeSize: size in %1", size);
 
     QSize res = playerwindow->resolution();
@@ -2357,7 +2360,7 @@ void TMainWindow::optimizeSizeFactor() {
     }
 }
 
-double TMainWindow::getDefaultSize() {
+double TMainWindow::getDefaultSize() const {
     return optimizeSize(pref->initial_zoom_factor);
 }
 

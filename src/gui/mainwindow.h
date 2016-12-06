@@ -145,6 +145,9 @@ public slots:
     void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
     int forceCloseOnFinish() { return arg_close_on_finish; }
 
+    // Handle message from new intance send by TApp
+    void handleMessageFromOtherInstances(const QString& message);
+
 signals:
     void enableActions();
 
@@ -183,6 +186,8 @@ protected:
     virtual void changeEvent(QEvent* event);
     virtual void hideEvent(QHideEvent* event);
     virtual void showEvent(QShowEvent* event);
+    virtual void dragEnterEvent(QDragEnterEvent*);
+    virtual void dropEvent(QDropEvent*);
 
 #if defined(Q_OS_WIN)
     // Disable screensaver
@@ -195,75 +200,14 @@ protected:
     virtual void aboutToExitFullscreen();
     virtual void didExitFullscreen();
 
-    void createPlayer();
-    void createPlayerWindow();
-    void createVideoEqualizer();
-    void createAudioEqualizer();
-    void createPlaylist();
-    void createPanel();
-    void createPreferencesDialog();
-    void createFilePropertiesDialog();
-    void setDataToFileProperties();
-    void createActions();
-    void createMenus();
-    void configureDiscDevices();
-    void setupNetworkProxy();
-    double optimizeSize(double size);
-
 protected slots:
     virtual void closeWindow();
-
     // Replace for setCaption (in Qt 4 it's not virtual)
     virtual void setWindowCaption(const QString& title);
-
-    virtual void onStateChanged(Player::TState state);
-
-    virtual void onPositionChanged(double, bool changed = false);
-    virtual void onDurationChanged(double duration);
-
-    virtual void onMediaSettingsChanged();
-    virtual void onVideoOutResolutionChanged(int w, int h);
-
-    virtual void onNewMediaStartedPlaying();
     virtual void onMediaInfoChanged();
 
-    virtual void updateVideoEqualizer();
-    virtual void updateAudioEqualizer();
-    virtual void setDefaultValuesFromVideoEqualizer();
-    virtual void changeVideoEqualizerBySoftware(bool b);
-
-    virtual void openRecent();
-    virtual void exitFullscreenOnStop();
-    virtual void playlistHasFinished();
-
+    void openRecent();
     void toggleDoubleSize();
-
-    virtual void resizeWindow(int w, int h);
-
-    virtual void onDragPositionChanged(double);
-
-    virtual void showContextMenu();
-    virtual void showContextMenu(QPoint p);
-    void showStatusBarPopup(const QPoint& pos);
-
-    virtual void leftClickFunction();
-    virtual void rightClickFunction();
-    virtual void doubleClickFunction();
-    virtual void middleClickFunction();
-    virtual void xbutton1ClickFunction();
-    virtual void xbutton2ClickFunction();
-    virtual void processAction(QString action_name);
-
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual void dropEvent(QDropEvent*);
-
-    virtual void applyNewPreferences();
-    virtual void applyFileProperties();
-
-    // Single instance stuff
-    void handleMessageFromOtherInstances(const QString& message);
-
-    void onPlayerError(int exit_code);
 
 private:
     QWidget* panel;
@@ -342,23 +286,43 @@ private:
 
     static QString settingsGroupName();
 
+    void createPanel();
+    void createPlayer();
+    void createPlayerWindow();
+    void createPlaylist();
     void createStatusBar();
     void createToolbars();
     QMenu* createToolbarMenu();
+    void createActions();
+    void createMenus();
+    void createVideoEqualizer();
+    void createAudioEqualizer();
+    void createPreferencesDialog();
+    void createFilePropertiesDialog();
+    void setDataToFileProperties();
+    void configureDiscDevices();
+    void setupNetworkProxy();
 
-    void enterFullscreenOnPlay();
+    void processAction(QString action_name);
     void sendEnableActions();
     //! Execute all actions in \a actions. The actions should be
     //! separated by spaces. Checkable actions could have a parameter:
     //! true or false.
     void runActions(QString actions);
+
+    void enterFullscreenOnPlay();
+    void updateAudioEqualizer();
+
     void setFloatingToolbarsVisible(bool visible);
-
     void hidePanel();
+    void showContextMenu(QPoint p);
 
-    double getDefaultSize();
+    double optimizeSize(double size) const;
+    double getDefaultSize() const;
+    void resizeWindow(int w, int h);
     void resizeStickyWindow(int w, int h);
-    void resizeMainWindow(int w, int h, double size_factor, bool try_twice = true);
+    void resizeMainWindow(int w, int h, double size_factor,
+                          bool try_twice = true);
 
     void retranslateStrings();
 
@@ -366,11 +330,41 @@ private:
     void restartApplication();
 
 private slots:
+    void onPlayerError(int exit_code);
+
+    // Mouse buttons
+    void leftClickFunction();
+    void rightClickFunction();
+    void doubleClickFunction();
+    void middleClickFunction();
+    void xbutton1ClickFunction();
+    void xbutton2ClickFunction();
+
+    void showContextMenu();
+    void showStatusBarPopup(const QPoint& pos);
+
     void displayVideoInfo();
     void displayInOutPoints();
     void displayFrames(bool);
 
+    void applyFileProperties();
+    void applyNewPreferences();
+
+    void setDefaultValuesFromVideoEqualizer();
+    void changeVideoEqualizerBySoftware(bool b);
+    void updateVideoEqualizer();
+
+    void exitFullscreenOnStop();
     void checkPendingActionsToRun();
+
+    void onStateChanged(Player::TState state);
+    void onDurationChanged(double duration);
+    void onPositionChanged(double, bool changed = false);
+    void onVideoOutResolutionChanged(int w, int h);
+    void onNewMediaStartedPlaying();
+    void onMediaSettingsChanged();
+    void onPlaylistFinished();
+    void onDragPositionChanged(double);
 };
 
 } // namespace Gui

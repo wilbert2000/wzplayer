@@ -123,7 +123,7 @@ public slots:
     bool saveAs();
 
 signals:
-    void playlistEnded();
+    void playlistFinished();
     void enablePrevNextChanged();
     void visibilityChanged(bool visible);
     void windowTitleChanged();

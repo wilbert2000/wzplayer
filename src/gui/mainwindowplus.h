@@ -39,8 +39,9 @@ public:
     TMainWindowPlus();
     virtual ~TMainWindowPlus();
 
-	virtual void loadConfig();
-	virtual void saveConfig();
+    virtual void loadConfig();
+    virtual void saveConfig();
+
     bool startHidden() const;
 
 protected:
@@ -72,15 +73,15 @@ private:
     double saved_size;
 
     void switchToTray();
-	void retranslateStrings();
+    void retranslateStrings();
     void updateShowAllAct();
     void showAll(bool b);
-    void showAll();
 
 private slots:
     void trayIconActivated(QSystemTrayIcon::ActivationReason);
     void onOptimizeSizeTimeout();
     void onDockVisibilityChanged(bool visible);
+    void showAll();
     void toggleShowAll();
     void setWinTitle();
 };
