@@ -1848,7 +1848,7 @@ void TMainWindow::didExitFullscreen() {
     // Update size when current video changed in fullscreen
     if (pref->resize_on_load
         && player->mdat.filename != first_fullscreen_filename) {
-        changeSize(getDefaultSize());;
+        setSize(getDefaultSize());;
     }
 
     emit didExitFullscreenSignal();
@@ -2180,8 +2180,8 @@ void TMainWindow::onDurationChanged(double duration) {
     onPositionChanged(player->mset.current_sec, true);
 }
 
-void TMainWindow::changeSize(double factor) {
-    logger()->debug("changeSize: %1", factor);
+void TMainWindow::setSize(double factor) {
+    logger()->debug("setSize: %1", factor);
 
     if (player->mdat.noVideo()) {
         return;
@@ -2217,17 +2217,17 @@ void TMainWindow::changeSize(double factor) {
     msgOSD(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
 }
 
-void TMainWindow::changeSize(int percentage) {
-    logger()->debug("changeSize %1%", percentage);
-    changeSize((double) percentage / 100);
+void TMainWindow::setSize(int percentage) {
+    logger()->debug("setSize %1%", percentage);
+    setSize((double) percentage / 100);
 }
 
 void TMainWindow::toggleDoubleSize() {
 
     if (pref->size_factor != 1.0) {
-        changeSize(1.0);
+        setSize(1.0);
     } else {
-        changeSize(2.0);
+        setSize(2.0);
     }
 }
 
@@ -2351,7 +2351,7 @@ void TMainWindow::optimizeSizeFactor() {
     if (pref->fullscreen) {
         player->setZoom(1.0);
     } else {
-        changeSize(optimizeSize(pref->size_factor));
+        setSize(optimizeSize(pref->size_factor));
     }
 }
 

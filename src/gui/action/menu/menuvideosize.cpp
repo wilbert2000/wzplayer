@@ -94,7 +94,7 @@ TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
 
     group = new TVideoSizeGroup(this, pw);
     addActions(group->actions());
-    connect(group, SIGNAL(activated(int)), main_window, SLOT(changeSize(int)));
+    connect(group, SIGNAL(activated(int)), main_window, SLOT(setSize(int)));
 
     addSeparator();
     doubleSizeAct = new TAction(this, "toggle_double_size",

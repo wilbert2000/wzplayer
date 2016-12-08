@@ -138,8 +138,8 @@ public slots:
     virtual void checkStayOnTop(Player::TState);
     void toggleStayOnTop();
 
-    void changeSize(double factor);
-    void changeSize(int percentage);
+    void setSize(double factor);
+    void setSize(int percentage);
     void optimizeSizeFactor();
 
     void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
