@@ -1001,8 +1001,8 @@ void TMainWindow::loadConfig() {
     fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible",
         fullscreen_statusbar_visible).toBool();
 
-    state_restored = restoreState(pref->value("toolbars_state").toByteArray(),
-                                  Helper::qtVersion());
+    restoreState(pref->value("toolbars_state").toByteArray(),
+                 Helper::qtVersion());
 
     pref->beginGroup("statusbar");
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
@@ -1803,9 +1803,8 @@ void TMainWindow::didEnterFullscreen() {
     viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 
     pref->beginGroup(settingsGroupName());
-    state_restored = restoreState(pref->value("toolbars_state_fullscreen")
-                                  .toByteArray(), Helper::qtVersion());
-    if (!state_restored) {
+    if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
+                      Helper::qtVersion())) {
         // First time there is no fullscreen toolbar state
         logger()->debug("didEnterFullscreen: failed to restore fullscreen"
                         " toolbar state");
@@ -1840,9 +1839,8 @@ void TMainWindow::didExitFullscreen() {
     viewStatusBarAct->setChecked(statusbar_visible);
 
     pref->beginGroup(settingsGroupName());
-    state_restored = restoreState(pref->value("toolbars_state")
-                                  .toByteArray(), Helper::qtVersion());
-    if  (!state_restored) {
+    if (!restoreState(pref->value("toolbars_state").toByteArray(),
+                      Helper::qtVersion())) {
         logger()->warn("didExitFullscreen: failed to restore toolbar state");
     }
     pref->endGroup();

@@ -179,7 +179,6 @@ protected:
     Action::Menu::TMenuBrowse* browseMenu;
     QMenu* windowMenu;
 
-    bool state_restored;
     bool switching_fullscreen;
 
     virtual void closeEvent(QCloseEvent* e);
