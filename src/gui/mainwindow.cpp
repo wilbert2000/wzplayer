@@ -2241,10 +2241,7 @@ void TMainWindow::hidePanel() {
             update();
         }
 
-        int width = this->width();
-        if (width > pref->default_size.width())
-            width = pref->default_size.width();
-        resize(width, height() - panel->height());
+        resize(width(), height() - panel->height());
         panel->hide();
     }
 }
