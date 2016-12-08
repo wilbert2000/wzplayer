@@ -117,16 +117,20 @@ int main(int argc, char** argv) {
 
     int exitCode;
     do {
-        logger()->debug("main: creating application TApp");
+        logger()->debug("main: creating application");
         TApp app(argc, argv);
-        logger()->debug("main: initialising application");
+        logger()->debug("main: initializing application");
         exitCode = app.processArgs();
         if (exitCode == TApp::NoExit) {
             logger()->debug("main: starting application");
             app.start();
-            logger()->debug("main: calling exec()");
+            logger()->debug("main: executing application");
             exitCode = app.exec();
-            logger()->debug("main: exec() returned %1", exitCode);
+            if (exitCode == TApp::NoExit) {
+                logger()->debug("main: restarting application");
+            } else {
+                logger()->debug("main: exec() returned %1", exitCode);
+            }
         }
     } while (exitCode == TApp::NoExit);
 

@@ -260,7 +260,7 @@ int TApp::processArgPos(const QString& name, const QStringList& args) const {
     return pos;
 }
 
-TApp::ExitCode TApp::processArgs() {
+TApp::TExitCode TApp::processArgs() {
 
     QStringList args = arguments();
 
@@ -292,7 +292,7 @@ TApp::ExitCode TApp::processArgs() {
                          initial_config_path);
         } else {
             logger()->error("processArgs: expected path after --config-path");
-            return TApp::ErrorArgument;
+            return ErrorInvalidArgument;
         }
     }
 
@@ -322,7 +322,7 @@ TApp::ExitCode TApp::processArgs() {
                 send_action = args[n];
             } else {
                 logger()->error("expected parameter for --send-action");
-                return ErrorArgument;
+                return ErrorInvalidArgument;
             }
         } else if (name == "actions") {
             if (n+1 < args.count()) {
@@ -330,7 +330,7 @@ TApp::ExitCode TApp::processArgs() {
                 actions = args[n];
             } else {
                 logger()->error("expected parameter for --actions");
-                return ErrorArgument;
+                return ErrorInvalidArgument;
             }
         } else if (name == "sub") {
             if (n + 1 < args.count()) {
@@ -343,7 +343,7 @@ TApp::ExitCode TApp::processArgs() {
                 }
             } else {
                 logger()->error("expected parameter for --sub");
-                return ErrorArgument;
+                return ErrorInvalidArgument;
             }
         } else if (name == "media-title") {
             if (n + 1 < args.count()) {
@@ -371,7 +371,7 @@ TApp::ExitCode TApp::processArgs() {
                     if (ok_x && ok_y) move_gui = true;
                 } else {
                     logger()->error("expected parameter for --pos");
-                    return ErrorArgument;
+                    return ErrorInvalidArgument;
                 }
             } else if (name == "size") {
                 if (n + 2 < args.count()) {
@@ -383,7 +383,7 @@ TApp::ExitCode TApp::processArgs() {
                     if (ok_width && ok_height) resize_gui = true;
                 } else {
                     logger()->error("expected 2 parameters for --size");
-                    return ErrorArgument;
+                    return ErrorInvalidArgument;
                 }
             } else if (name == "fullscreen") {
                 start_in_fullscreen = FS_TRUE;

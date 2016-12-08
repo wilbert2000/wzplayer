@@ -44,10 +44,8 @@ class TApp : public QtSingleApplication {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    enum ExitCode {
-             ErrorArgument = -3,
-             NoAction = -2,
-             NoRunningInstance = -1,
+    enum TExitCode {
+             ErrorInvalidArgument = -1,
              NoError = 0,
              NoExit = 1111
     };
@@ -70,7 +68,7 @@ public:
 
     // Process command line arguments.
     // If returned ExitCode != NoExit ::main() should exit.
-    ExitCode processArgs();
+    TExitCode processArgs();
 
 #ifdef USE_WINEVENTFILTER
     virtual bool winEventFilter(MSG* msg, long* result);
