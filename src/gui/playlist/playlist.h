@@ -54,7 +54,7 @@ class TAddFilesThread;
 
 class TAddRemovedMenu : public Action::Menu::TMenu {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     explicit TAddRemovedMenu(QWidget* parent,
