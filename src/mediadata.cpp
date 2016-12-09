@@ -208,8 +208,6 @@ TMediaData::Type TMediaData::stringToType(QString type) {
 
 void TMediaData::list() const {
 
-    WZDEBUG("");
-
     WZDEBUG("filename: '" + filename + "'");
     WZDEBUG("selected type: " + typeToString(selected_type));
     WZDEBUG("detected type: " + typeToString(detected_type));

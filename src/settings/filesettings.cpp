@@ -22,6 +22,7 @@
 #include "settings/mediasettings.h"
 #include "settings/paths.h"
 #include "config.h"
+#include "wzdebug.h"
 
 
 namespace Settings {
@@ -55,32 +56,32 @@ QString TFileSettings::filenameToGroupname(const QString& filename) {
 bool TFileSettings::existSettingsFor(const QString& filename) {
 
     QString group_name = filenameToGroupname(filename);
-    logger()->debug("existSettingsFor: group name: '" + group_name + "'");
+    WZDEBUG("group name: '" + group_name + "'");
     beginGroup(group_name);
     bool saved = value("saved", false).toBool();
     endGroup();
 
-    logger()->info("existSettingsFor: '" + filename + "' " + QString::number(saved));
+    WZDEBUG("'" + filename + "' " + QString::number(saved));
     return saved;
 }
 
-void TFileSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
-    logger()->info("loadSettingsFor: '" + filename + "'");
+void TFileSettings::loadSettingsFor(const QString& filename,
+                                    TMediaSettings& mset) {
+    WZDEBUG("'" + filename + "'");
 
 	QString group_name = filenameToGroupname(filename);
-    logger()->debug("loadSettingsFor: group name: '" + group_name +"'");
+    WZDEBUG("group name: '" + group_name +"'");
 	beginGroup(group_name);
     mset.load(this);
 	endGroup();
 }
 
-void TFileSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
-    logger()->info("saveSettingsFor: '" + filename + "'");
+void TFileSettings::saveSettingsFor(const QString& filename,
+                                    TMediaSettings& mset) {
+    WZDEBUG("'" + filename + "'");
 
 	QString group_name = filenameToGroupname(filename);
-
-    logger()->debug("saveSettingsFor: group name: '" + group_name + "'");
-
+    WZDEBUG("group name: '" + group_name + "'");
 	beginGroup(group_name);
 	setValue("saved", true);
     mset.save(this);

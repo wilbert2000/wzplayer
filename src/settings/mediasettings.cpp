@@ -18,7 +18,7 @@
 
 #include <QSettings>
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "config.h"
 #include "settings/aspectratio.h"
 #include "settings/mediasettings.h"
@@ -45,7 +45,7 @@ TMediaSettings::~TMediaSettings() {
 }
 
 void TMediaSettings::reset() {
-    logger()->debug("reset");
+    WZDEBUG("");
 
     player_id = pref->player_id;
 
@@ -168,102 +168,107 @@ double TMediaSettings::aspectToDouble() {
 }
 
 void TMediaSettings::list() {
-    logger()->debug("list");
 
-    logger()->debug("  current_sec: %1", current_sec);
-    logger()->debug("  current_video_id: %1", current_video_id);
-    logger()->debug("  current_audio_id: %1", current_audio_id);
-    logger()->debug("  current_sub_idx: %1", current_sub_idx);
-    logger()->debug("  current_sub_set_by_user: %1", current_sub_set_by_user);
-    logger()->debug("  external_subtitles: '%1'", sub.filename());
-    logger()->debug("  external_subtitles_fps: '%1'", external_subtitles_fps);
-    logger()->debug("  current_secondary_sub_idx: %1", current_secondary_sub_idx);
+    WZDEBUG("current_sec: " + QString::number(current_sec));
+    WZDEBUG("current_video_id: " + QString::number(current_video_id));
+    WZDEBUG("current_audio_id: " + QString::number(current_audio_id));
+    WZDEBUG("current_sub_idx: " + QString::number(current_sub_idx));
+    WZDEBUG("current_sub_set_by_user: "
+            + QString::number(current_sub_set_by_user));
+    WZDEBUG("external_subtitles: '" + sub.filename() + "'");
+    WZDEBUG("external_subtitles_fps: "
+            + QString::number(external_subtitles_fps));
+    WZDEBUG("current_secondary_sub_idx: "
+            + QString::number(current_secondary_sub_idx));
 
 #if PROGRAM_SWITCH
-    logger()->debug("  current_program_id: %1", current_program_id);
+    WZDEBUG("current_program_id: " + QString::number(current_program_id));
 #endif
-    logger()->debug("  current_angle: %1", current_angle);
 
-    logger()->debug("  aspect_ratio: %1", aspect_ratio.toString());
+    WZDEBUG("current_angle: " + QString::number(current_angle));
+    WZDEBUG("aspect_ratio: " + aspect_ratio.toString());
 
-    logger()->debug("  volume: %1", volume);
-    logger()->debug("  mute: %1", mute);
-    logger()->debug("  external_audio: '%1'", external_audio);
-    logger()->debug("  sub_delay: %1", sub_delay);
-    logger()->debug("  audio_delay: %1", sub_delay);
-    logger()->debug("  sub_pos: %1", sub_pos);
-    logger()->debug("  sub_scale: %1", sub_scale);
-    logger()->debug("  sub_scale_mpv: %1", sub_scale_mpv);
-    logger()->debug("  sub_scale_ass: %1", sub_scale_ass);
+    WZDEBUG("volume: " + QString::number(volume));
+    WZDEBUG("mute: " + QString::number(mute));
+    WZDEBUG("external_audio: '" + external_audio + "'");
+    WZDEBUG("sub_delay: " + QString::number(sub_delay));
+    WZDEBUG("audio_delay: " + QString::number(sub_delay));
+    WZDEBUG("sub_pos: " + QString::number(sub_pos));
+    WZDEBUG("sub_scale: " + QString::number(sub_scale));
+    WZDEBUG("sub_scale_mpv: " + QString::number(sub_scale_mpv));
+    WZDEBUG("sub_scale_ass: " + QString::number(sub_scale_ass));
 
-    logger()->debug("  closed_caption_channel: %1", closed_caption_channel);
+    WZDEBUG("closed_caption_channel: "
+            + QString::number(closed_caption_channel));
 
-    logger()->debug("  brightness: %1", brightness);
-    logger()->debug("  contrast: %1", contrast);
-    logger()->debug("  gamma: %1", gamma);
-    logger()->debug("  hue: %1", hue);
-    logger()->debug("  saturation: %1", saturation);
+    WZDEBUG("brightness: " + QString::number(brightness));
+    WZDEBUG("contrast: " + QString::number(contrast));
+    WZDEBUG("gamma: " + QString::number(gamma));
+    WZDEBUG("hue: " + QString::number(hue));
+    WZDEBUG("saturation: " + QString::number(saturation));
 
-    logger()->debug("  speed: %1", speed);
+    WZDEBUG("speed: " + QString::number(speed));
 
-    logger()->debug("  phase_filter: %1", phase_filter);
-    logger()->debug("  deblock_filter: %1", deblock_filter);
-    logger()->debug("  dering_filter: %1", dering_filter);
-    logger()->debug("  gradfun_filter: %1", gradfun_filter);
-    logger()->debug("  noise_filter: %1", noise_filter);
-    logger()->debug("  postprocessing_filter: %1", postprocessing_filter);
-    logger()->debug("  upscaling_filter: %1", upscaling_filter);
-    logger()->debug("  current_denoiser: %1", current_denoiser);
-    logger()->debug("  current_unsharp: %1", current_unsharp);
+    WZDEBUG("phase_filter: " + QString::number(phase_filter));
+    WZDEBUG("deblock_filter: " + QString::number(deblock_filter));
+    WZDEBUG("dering_filter: " + QString::number(dering_filter));
+    WZDEBUG("gradfun_filter: " + QString::number(gradfun_filter));
+    WZDEBUG("noise_filter: " + QString::number(noise_filter));
+    WZDEBUG("postprocessing_filter: " + QString::number(postprocessing_filter));
+    WZDEBUG("upscaling_filter: " + QString::number(upscaling_filter));
+    WZDEBUG("current_denoiser: " + QString::number(current_denoiser));
+    WZDEBUG("current_unsharp: " + QString::number(current_unsharp));
 
-    logger()->debug("  stereo3d_in: %1", stereo3d_in);
-    logger()->debug("  stereo3d_out: %1", stereo3d_out);
+    WZDEBUG("stereo3d_in: '" + stereo3d_in + "'");
+    WZDEBUG("stereo3d_out: '" + stereo3d_out + "'");
 
-    logger()->debug("  current_deinterlacer: %1", current_deinterlacer);
+    WZDEBUG("current_deinterlacer: " + QString::number(current_deinterlacer));
 
-    logger()->debug("  add_letterbox: %1", add_letterbox);
+    WZDEBUG("add_letterbox: " + QString::number(add_letterbox));
 
-    logger()->debug("  karaoke_filter: %1", karaoke_filter);
-    logger()->debug("  extrastereo_filter: %1", extrastereo_filter);
-    logger()->debug("  volnorm_filter: %1", volnorm_filter);
+    WZDEBUG("karaoke_filter: " + QString::number(karaoke_filter));
+    WZDEBUG("extrastereo_filter: " + QString::number(extrastereo_filter));
+    WZDEBUG("volnorm_filter: " + QString::number(volnorm_filter));
 
-    logger()->debug("  audio_use_channels: %1", audio_use_channels);
-    logger()->debug("  stereo_mode: %1", stereo_mode);
+    WZDEBUG("audio_use_channels: " + QString::number(audio_use_channels));
+    WZDEBUG("stereo_mode: " + QString::number(stereo_mode));
 
-    logger()->debug("  zoom_factor: %1", zoom_factor);
-    logger()->debug("  zoom_factor_fullscreen: %1", zoom_factor_fullscreen);
-    logger()->debug("  pan_offset: (%1, %2)", pan_offset.x(), pan_offset.y());
-    logger()->debug("  pan_offset_fullscreen: (%1, %2)",
-                    pan_offset_fullscreen.x(), pan_offset_fullscreen.y());
+    WZDEBUG("zoom_factor: " + QString::number(zoom_factor));
+    WZDEBUG("zoom_factor_fullscreen: "
+            + QString::number(zoom_factor_fullscreen));
+    WZDEBUG("pan_offset: (" + QString::number(pan_offset.x()) + ", "
+             + QString::number(pan_offset.y()) + ")");
+    WZDEBUG("pan_offset_fullscreen: ("
+            + QString::number(pan_offset_fullscreen.x()) + ", "
+            + QString::number(pan_offset_fullscreen.y()) + ")");
 
-    logger()->debug("  flip: %1", flip);
-    logger()->debug("  mirror: %1", mirror);
-    logger()->debug("  rotate: %1", rotate);
+    WZDEBUG("flip: " + QString::number(flip));
+    WZDEBUG("mirror: " + QString::number(mirror));
+    WZDEBUG("rotate: " + QString::number(rotate));
 
-    logger()->debug("  loop: %1", loop);
-    logger()->debug("  in_point: %1", in_point);
-    logger()->debug("  out_point: %1", out_point);
+    WZDEBUG("loop: " + QString::number(loop));
+    WZDEBUG("in_point: " + QString::number(in_point));
+    WZDEBUG("out_point: " + QString::number(out_point));
 
-    logger()->debug("  current_demuxer: '%1'", current_demuxer);
+    WZDEBUG("current_demuxer: '" + current_demuxer + "'");
 
-    logger()->debug("  forced_demuxer: '%1'", forced_demuxer);
-    logger()->debug("  forced_video_codec: '%1'", forced_video_codec);
-    logger()->debug("  forced_audio_codec: '%1'", forced_video_codec);
+    WZDEBUG("forced_demuxer: '" + forced_demuxer + "'");
+    WZDEBUG("forced_video_codec: '" + forced_video_codec + "'");
+    WZDEBUG("forced_audio_codec: '" + forced_video_codec + "'");
 
-    logger()->debug("  original_demuxer: '%1'", original_demuxer);
-    logger()->debug("  original_video_codec: '%1'", original_video_codec);
-    logger()->debug("  original_audio_codec: '%1'", original_video_codec);
+    WZDEBUG("original_demuxer: '" + original_demuxer + "'");
+    WZDEBUG("original_video_codec: '" + original_video_codec + "'");
+    WZDEBUG("original_audio_codec: '" + original_video_codec + "'");
 
-    logger()->debug("  player_additional_options: '%1'",
-                    player_additional_options);
-    logger()->debug("  player_additional_video_filters: '%1'",
-                    player_additional_video_filters);
-    logger()->debug("  player_additional_audio_filters: '%1'",
-                    player_additional_audio_filters);
+    WZDEBUG("player_additional_options: '" + player_additional_options + "'");
+    WZDEBUG("player_additional_video_filters: '"
+            + player_additional_video_filters + "'");
+    WZDEBUG("player_additional_audio_filters: '"
+            + player_additional_audio_filters + "'");
 }
 
 void TMediaSettings::save(QSettings* set) {
-    logger()->debug("save");
+    WZDEBUG("");
 
     set->beginGroup("player_" + QString::number(player_id));
 
@@ -395,7 +400,7 @@ void TMediaSettings::convertOldSelectedTrack(int &id) {
 }
 
 void TMediaSettings::load(QSettings* set) {
-    logger()->debug("load");
+    WZDEBUG("");
 
     // Remember player id, at save time in can be changed
     player_id = pref->player_id;
@@ -416,7 +421,7 @@ void TMediaSettings::load(QSettings* set) {
     if (!forced_demuxer.isEmpty()) {
         demuxer_section = QString("demuxer_%1").arg(forced_demuxer);
     }
-    logger()->debug("load: demuxer_section: " + demuxer_section);
+    WZDEBUG("demuxer_section: '" + demuxer_section + "'");
 
     set->beginGroup(demuxer_section);
 

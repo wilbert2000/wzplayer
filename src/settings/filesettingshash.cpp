@@ -24,9 +24,10 @@
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "filehash.h" // hash function
+#include "wzdebug.h"
+
 
 namespace Settings {
-
 
 QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 
@@ -57,15 +58,15 @@ TFileSettingsHash::~TFileSettingsHash() {
 }
 
 bool TFileSettingsHash::existSettingsFor(const QString& filename) {
-    logger()->debug("existSettingsFor: '" + filename + "'");
+    WZDEBUG("'" + filename + "'");
 
 	QString config_file = iniFilenameFor(filename);
-    logger()->debug("existSettingsFor: config_file: '" + config_file + "'");
+    WZDEBUG("config_file: '" + config_file + "'");
 	return QFile::exists(config_file);
 }
 
 void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
-    logger()->debug("loadSettingsFor: '" + filename + "'");
+    WZDEBUG("'" + filename + "'");
 
 	beginGroup("file_settings");
     mset.load(this);
@@ -73,7 +74,7 @@ void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings&
 }
 
 void TFileSettingsHash::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
-    logger()->debug("saveSettingsFor: '" + filename + "'");
+    WZDEBUG("'" + filename + "'");
 
 	beginGroup("file_settings");
     mset.save(this);
