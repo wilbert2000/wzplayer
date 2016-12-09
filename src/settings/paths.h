@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,52 +33,52 @@ namespace Settings {
 class TPaths {
 public:
 
-	// Fix Qt locations
+    // Fix Qt locations
 #if QT_VERSION_MAJOR >= 5
-	enum TLocation {
+    enum TLocation {
         DataLocation = QStandardPaths::DataLocation,
 #if QT_VERSION >= 0x050400
         AppDataLocation = QStandardPaths::AppDataLocation,
 #endif
-		PicturesLocation = QStandardPaths::PicturesLocation,
-		DocumentsLocation = QStandardPaths::DocumentsLocation,
-		HomeLocation = QStandardPaths::HomeLocation
+        PicturesLocation = QStandardPaths::PicturesLocation,
+        DocumentsLocation = QStandardPaths::DocumentsLocation,
+        HomeLocation = QStandardPaths::HomeLocation
     };
 #else
-	enum TLocation {
+    enum TLocation {
         // DataLocation = QDesktopServices::DataLocation,
         PicturesLocation = QDesktopServices::PicturesLocation,
-		DocumentsLocation = QDesktopServices::DocumentsLocation,
-		HomeLocation = QDesktopServices::HomeLocation
-	};
+        DocumentsLocation = QDesktopServices::DocumentsLocation,
+        HomeLocation = QDesktopServices::HomeLocation
+    };
 #endif
 
-	static QString location(TLocation type);
+    static QString location(TLocation type);
 
-	static void setConfigPath(const QString& path);
-	//! Return the path where wzplayer should save its config files
-	static QString configPath() { return config_path; }
+    static void setConfigPath(const QString& path);
+    //! Return the path where wzplayer should save its config files
+    static QString configPath() { return config_path; }
 
-	// Ini file name
-	static QString iniPath();
+    // Ini file name
+    static QString iniPath();
 
-	static QString dataPath();
-	static QString translationPath();
-	static QString docPath();
-	static QString themesPath();
-	static QString shortcutsPath();
-	static QString qtTranslationPath();
-	static QString doc(const QString& file, QString locale = QString::null, bool english_fallback = true);
-	static QString subtitleStyleFile();
+    static QString dataPath();
+    static QString translationPath();
+    static QString docPath();
+    static QString themesPath();
+    static QString shortcutsPath();
+    static QString qtTranslationPath();
+    static QString doc(const QString& file, QString locale = QString::null, bool english_fallback = true);
+    static QString subtitleStyleFile();
 
 #ifdef Q_OS_WIN
-	static QString fontPath();
+    static QString fontPath();
     static QString fontConfigFilename();
     static void createFontFile();
 #endif
 
 private:
-	static QString config_path;
+    static QString config_path;
     static QStringList fonts(const QString& font_dir);
     static QString fontPathPlayer(const QString& bin);
 };

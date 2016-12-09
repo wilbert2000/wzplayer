@@ -23,9 +23,11 @@
 class CLHelp 
 {
 public:
-	static QString help(bool html = false);
+    static QString help(bool html = false);
 
 protected:
-	static QString formatText(QString s, int col);
-	static QString formatHelp(QString parameter, QString help, bool html = false);
+    static QString formatText(QString s, int col);
+    static QString formatHelp(QString parameter,
+                              QString help,
+                              bool html = false);
 };

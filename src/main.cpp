@@ -24,6 +24,7 @@
 #include "log4qt/level.h"
 #include "gui/logwindow.h"
 #include "gui/logwindowapeender.h"
+#include "wzdebug.h"
 
 
 using namespace Log4Qt;
@@ -36,7 +37,7 @@ void initLog4Qt(Level level) {
     Log4Qt::Layout* layout;
     Appender* appender = LogManager::rootLogger()->appender("A1");
     if (appender) {
-        logger()->debug("initLogQt: using existing appender A1");
+        WZDEBUG("using existing appender A1");
         if (level != Level::INFO_INT) {
             LogManager::rootLogger()->setLevel(level);
         }
@@ -77,8 +78,8 @@ void initLog4Qt(Level level) {
     // Set log window appender on root logger
     LogManager::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
-    logger()->info("initLog4Qt: root logger initialized on level %1",
-                   LogManager::rootLogger()->level().toString());
+    WZINFO("root logger initialized on level "
+           + LogManager::rootLogger()->level().toString());
 }
 
 bool isOption(const QString& arg, const QString& name) {
@@ -117,24 +118,24 @@ int main(int argc, char** argv) {
 
     int exitCode;
     do {
-        logger()->debug("main: creating application");
+        WZDEBUG("creating application");
         TApp app(argc, argv);
-        logger()->debug("main: initializing application");
+        WZDEBUG("initializing application");
         exitCode = app.processArgs();
         if (exitCode == TApp::NoExit) {
-            logger()->debug("main: starting application");
+            WZDEBUG("starting application");
             app.start();
-            logger()->debug("main: executing application");
+            WZDEBUG("executing application");
             exitCode = app.exec();
             if (exitCode == TApp::NoExit) {
-                logger()->debug("main: restarting application");
+                WZDEBUG("restarting application");
             } else {
-                logger()->debug("main: exec() returned %1", exitCode);
+                WZDEBUG("exec() returned " + QString::number(exitCode));
             }
         }
     } while (exitCode == TApp::NoExit);
 
-    logger()->debug("main: returning exit code %1", exitCode);
+    WZDEBUG("returning exit code " + QString::number(exitCode));
     return exitCode;
 }
 

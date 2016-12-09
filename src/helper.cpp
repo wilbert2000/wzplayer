@@ -31,6 +31,7 @@
 #include "settings/preferences.h"
 #include "extensions.h"
 #include "config.h"
+#include "wzdebug.h"
 
 
 using namespace Settings;
@@ -93,7 +94,7 @@ int Helper::qtVersion() {
         r = n1 * 1000 + n2 * 100 + n3;
     }
 
-    logger()->trace("qtVersion: Qt runtime version %1 counting as %2", v, r);
+    WZTRACE("Qt runtime version " + v + " counting as " + QString::number(r));
     return r;
 }
 
@@ -195,7 +196,7 @@ QString Helper::clean(const QString& name) {
         s = s.left(252) + "...";
     }
 
-    logger()->trace("Clean: '%1' to '%2'", name, s);
+    WZTRACE("'" + name + "' to '" + s + "'");
     return s;
 }
 
@@ -207,8 +208,7 @@ QString Helper::cleanTitle(const QString& title) {
 
     foreach(QRegExp* rx, pref->rxTitleBlacklist) {
         if (rx->indexIn(title) >= 0) {
-            logger()->info("cleanTitle: '%1' blacklisted on '%2'",
-                           title, rx->pattern());
+            WZINFO("'" + title + "' blacklisted on '" + rx->pattern() + "'");
             return "";
         }
     }
@@ -217,8 +217,7 @@ QString Helper::cleanTitle(const QString& title) {
 }
 
 QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
-    logger()->debug("searchForConsecutiveFiles: initial file: '%1'",
-                    initial_file);
+    WZDEBUG("initial file '" + initial_file + "'");
 
     QStringList files_to_add;
     QStringList matching_files;
@@ -240,15 +239,14 @@ QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
     QString next_name;
     bool next_found = false;
     while  ((pos = rx.indexIn(basename, pos)) >= 0) {
-        logger()->debug("searchForConsecutiveFiles: captured '%1'", rx.cap(1));
+        WZDEBUG("captured '" + rx.cap(1) + "'");
         digits = rx.cap(1).length();
         current_number = rx.cap(1).toInt() + 1;
         next_name = basename.left(pos) + QString("%1")
                     .arg(current_number, digits, 10, QLatin1Char('0'));
         next_name.replace(QRegExp("([\\[\\]?*])"), "[\\1]");
         next_name += "*." + extension;
-        logger()->debug("searchForConsecutiveFiles: next name '%1'",
-                        next_name);
+        WZDEBUG("next name '" + next_name + "'");
         matching_files = dir.entryList((QStringList)next_name);
 
         if (!matching_files.isEmpty()) {
@@ -260,8 +258,7 @@ QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
 
     if (next_found) {
         while (!matching_files.isEmpty()) {
-            logger()->debug("searchForConsecutiveFiles: added '"
-                          + matching_files[0] + "'");
+            WZDEBUG("added '" + matching_files[0] + "'");
             files_to_add << path  + "/" + matching_files[0];
             current_number++;
             next_name = basename.left(pos) + QString("%1")
@@ -269,8 +266,7 @@ QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
             next_name.replace(QRegExp("([\\[\\]?*])"), "[\\1]");
             next_name += "*." + extension;
             matching_files = dir.entryList((QStringList)next_name);
-            logger()->debug("searchForConsecutiveFiles: looking for '"
-                            + next_name + "'");
+            WZDEBUG("looking for '" + next_name + "'");
         }
     }
 
@@ -279,7 +275,7 @@ QStringList Helper::searchForConsecutiveFiles(const QString& initial_file) {
 
 QStringList Helper::filesInDirectory(const QString& initial_file,
                                      const QStringList& filter) {
-    logger()->debug("filesInDirectory: initial_file: '" + initial_file + "'");
+    WZDEBUG("initial_file: '" + initial_file + "'");
 
     QFileInfo fi(initial_file);
     QString current_file = fi.fileName();
@@ -331,7 +327,7 @@ QString Helper::findExecutable(const QString& name) {
     // Name is executable?
     QFileInfo fi(name);
     if (fi.isFile() && fi.isExecutable()) {
-        logger()->debug("findExecutable: found '" + name + "'");
+        WZDEBUG("found '" + name + "'");
         return fi.absoluteFilePath();
     }
 
@@ -366,15 +362,14 @@ QString Helper::findExecutable(const QString& name) {
         QString candidate = search_paths[n] + "/" + name;
         fi.setFile(candidate);
         if (fi.isFile() && fi.isExecutable()) {
-            logger()->info("findExecutable: found '" + fi.absoluteFilePath()
-                         + "'");
+            WZINFO("found '" + fi.absoluteFilePath() + "'");
             return fi.absoluteFilePath();
         }
-        logger()->debug("findExecutable: '" + candidate + "' not executable");
+        WZDEBUG("'" + candidate + "' not executable");
     }
 
     // Name not found
-    logger()->info("findExecutable: name '" + name + "' not found");
+    WZINFO("name '" + name + "' not found");
     return QString();
 }
 

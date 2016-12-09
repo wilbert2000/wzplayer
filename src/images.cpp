@@ -22,7 +22,7 @@
 #include <QPixmap>
 #include <QResource>
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "settings/preferences.h"
 #include "settings/paths.h"
 
@@ -45,7 +45,7 @@ QString Images::resourceFilename() {
 		filename = themes_path +"/"+ current_theme +"/"+ current_theme +".rcc";
 	}
 
-    logger()->debug("resourceFilename: resource file name '" + filename + "'");
+    WZDEBUG("resource file name '" + filename + "'");
     return filename;
 }
 
@@ -68,18 +68,18 @@ void Images::setTheme(const QString& name) {
 
 	QString rs_file = resourceFilename();
 	if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
-        logger()->debug("setTheme: loading '" + rs_file + "'");
+        WZDEBUG("loading '" + rs_file + "'");
 		QResource::registerResource(rs_file);
 		last_resource_loaded = rs_file;
 		has_rcc = true;
 	} else {
 		has_rcc = false;
 	}
-    logger()->debug("setTheme: has_rcc: %1", has_rcc);
+    WZDEBUG("has_rcc " + QString::number(has_rcc));
 }
 
 void Images::setThemesPath(const QString& folder) {
-    logger()->debug("setThemesPath: '" + folder + "'");
+    WZDEBUG("'" + folder + "'");
 	themes_path = folder;
 }
 
@@ -115,7 +115,7 @@ QPixmap Images::icon(const QString& name, int size) {
 	QString icon_name = file(name);
 	QPixmap p(icon_name);
 	if (p.isNull()) {
-        logger()->trace("icon: '" + name + "' not found");
+        WZTRACE("'" + name + "' not found");
 	} else if (size > 0) {
 		p = resize(&p, size);
 	}
@@ -124,7 +124,8 @@ QPixmap Images::icon(const QString& name, int size) {
 }
 
 QPixmap Images::resize(QPixmap* p, int size) {
-	return QPixmap::fromImage((*p).toImage().scaled(size,size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+    return QPixmap::fromImage((*p).toImage()
+        .scaled(size,size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 }
 
 QPixmap Images::flip(QPixmap* p) {

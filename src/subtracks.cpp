@@ -20,7 +20,7 @@
 #include "subtracks.h"
 #include "settings/mediasettings.h"
 #include <QRegExp>
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 
 
 SubData::SubData()
@@ -107,18 +107,18 @@ int TSubTracks::findSelectedSecondaryIdx() const {
 }
 
 int TSubTracks::findLangIdx(QString expr) const {
-    logger()->debug("findLangIdx: '" + expr + "'");
+    WZDEBUG("'" + expr + "'");
 
 	QRegExp rx(expr);
 
 	for (int n = 0; n < subs.count(); n++) {
 		if (rx.indexIn(subs[n].lang()) >= 0) {
-            logger()->debug("findLangIdx: found preferred language");
+            WZDEBUG("found preferred language");
 			return n;
 		}
 	}
 
-    logger()->debug("findLangIdx: no match for preferred language found");
+    WZDEBUG("no match for preferred language found");
 	return -1;
 }
 
@@ -247,8 +247,8 @@ bool TSubTracks::update(SubData::Type type,
 
 		if (selected) {
 			if (_selected_type != type || _selected_ID != id) {
-                logger()->debug("update: changed selected subtitle from "
-                    " type " + QString::number(_selected_secondary_type)
+                WZDEBUG("changed selected subtitle from type "
+                    + QString::number(_selected_secondary_type)
                     + " id " + QString::number(_selected_ID)
                     + " to type " + QString::number(type)
                     + " id " + QString::number(id));
@@ -257,8 +257,8 @@ bool TSubTracks::update(SubData::Type type,
 				changed = true;
 			}
 		} else if (_selected_type == type && _selected_ID == id) {
-            logger()->debug("update: changed selected subtitle from %1 %2 to"
-                            " none selected", type, id);
+            WZDEBUG("changed selected subtitle from " + QString::number(type)
+                    + " " + QString::number(id) + " to none selected");
 			_selected_type = SubData::None;
 			_selected_ID = -1;
 			changed = true;
@@ -268,10 +268,11 @@ bool TSubTracks::update(SubData::Type type,
 		if (sec_selected) {
 			if (_selected_secondary_type != sec_type
 				|| _selected_secondary_ID != sec_id) {
-                logger()->debug("update: changed selected secondary subtitle"
-                                " from %1 to %2",
-                                _selected_secondary_type,
-                                _selected_secondary_ID);
+                WZDEBUG("changed selected secondary subtitle from type "
+                        + QString::number(_selected_secondary_type)
+                        + " id " + QString::number(_selected_secondary_ID)
+                        + " to type " + QString::number(sec_type)
+                        + " id " + QString::number(sec_id));
                 _selected_secondary_type = sec_type;
 				_selected_secondary_ID = sec_id;
 				changed = true;
@@ -279,8 +280,9 @@ bool TSubTracks::update(SubData::Type type,
 		} else if (sec_id >= 0
 				   && _selected_secondary_type == sec_type
 				   && _selected_secondary_ID == sec_id) {
-            logger()->debug("update: changed selected secondary subtitle from"
-                            " %1 %2 to none selected", sec_type, sec_id);
+            WZDEBUG("changed selected secondary subtitle from type "
+                    + QString::number(sec_type) + " id "
+                    + QString::number(sec_id) + " to none selected");
 			_selected_secondary_type = SubData::None;
 			_selected_secondary_ID = -1;
 			changed = true;
@@ -289,35 +291,34 @@ bool TSubTracks::update(SubData::Type type,
 	}
 
 	if (changed) {
-        logger()->debug("update: updated subtitle track type: "
-                        + QString::number(type)
-                        + " id: " + QString::number(id)
-                        + " sec type: " + QString::number(sec_type)
-                        + " sec id: " + QString::number(sec_id)
-                        + " lang: '" + lang
-                        + "' name: '" + name
-                        + "' filename: '" + filename
-                        + "' selected: " + QString::number(selected)
-                        + " sec selected: " + QString::number(sec_selected));
+        WZDEBUG("updated subtitle track type: " + QString::number(type)
+                + " id: " + QString::number(id)
+                + " sec type: " + QString::number(sec_type)
+                + " sec id: " + QString::number(sec_id)
+                + " lang: '" + lang
+                + "' name: '" + name
+                + "' filename: '" + filename
+                + "' selected: " + QString::number(selected)
+                + " sec selected: " + QString::number(sec_selected));
 	} else {
-        logger()->debug("update:: subtitle track type %1 id %2 was up to date",
-                        type, id);
+        WZDEBUG("subtitle track type " + QString::number(type) + " id "
+                + QString::number(id) + " was up to date");
 	}
 	return changed;
 }
 
 void TSubTracks::list() const {
-    logger()->debug("list: selected subtitle track ID: %1", _selected_ID);
+    WZDEBUG("selected subtitle track ID: " + QString::number(_selected_ID));
 
     int n = 0;
     foreach(const SubData sub, subs) {
         n++;
-        logger()->debug("list: item " + QString::number(n)
-                        + " type: " + QString::number(sub.type())
-                        + " ID: " + QString::number(sub.ID())
-                        + " lang: '" + sub.lang() + "'"
-                        + " name: '" + sub.name() + "'"
-                        + " filename: '" + sub.filename() + "'");
+        WZDEBUG("item " + QString::number(n)
+                + " type: " + QString::number(sub.type())
+                + " ID: " + QString::number(sub.ID())
+                + " lang: '" + sub.lang() + "'"
+                + " name: '" + sub.name() + "'"
+                + " filename: '" + sub.filename() + "'");
 	}
 }
 

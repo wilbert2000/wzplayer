@@ -10,7 +10,7 @@ namespace Settings {
 
 class TCleanConfig {
 public:
-	static void clean(const QString& config_path);
+    static void clean();
 
 private:
 	static QStringList listDir(const QString& path);

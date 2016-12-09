@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -76,30 +76,30 @@ QString TPaths::location(TLocation type) {
 void TPaths::setConfigPath(const QString& path) {
 
     // Set config_path
-	if (path.isEmpty()) {
+    if (path.isEmpty()) {
 
 #ifdef PORTABLE_APP
         config_path = qApp->applicationDirPath();
 #else
 #if defined(Q_OS_WIN)
-		config_path = location(TLocation::DataLocation);
+        config_path = location(TLocation::DataLocation);
 #else
-		const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-		if (XDG_CONFIG_HOME != NULL) {
-			config_path = QString(XDG_CONFIG_HOME) + "/" + TConfig::PROGRAM_ID;
-		} else {
-			config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
-		}
+        const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
+        if (XDG_CONFIG_HOME != NULL) {
+            config_path = QString(XDG_CONFIG_HOME) + "/" + TConfig::PROGRAM_ID;
+        } else {
+            config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
+        }
 #endif
 #endif
 
-	} else {
-		config_path = path;
-	}
+    } else {
+        config_path = path;
+    }
     logger()->info("setConfigPath: configuration path set to '%1'",
                    config_path);
 
-	// Create config directory
+    // Create config directory
 #ifndef PORTABLE_APP
     QDir dir(config_path);
     if (!dir.mkpath(config_path)) {
@@ -112,10 +112,10 @@ void TPaths::setConfigPath(const QString& path) {
 QString TPaths::dataPath() {
 
 #ifdef DATA_PATH
-	QString path = QString(DATA_PATH);
-	if (!path.isEmpty()) {
-		return path;
-	}
+    QString path = QString(DATA_PATH);
+    if (!path.isEmpty()) {
+        return path;
+    }
 #endif
 
     return qApp->applicationDirPath();
@@ -124,9 +124,9 @@ QString TPaths::dataPath() {
 QString TPaths::translationPath() {
 
 #ifdef TRANSLATION_PATH
-	QString path = QString(TRANSLATION_PATH);
-	if (!path.isEmpty())
-		return path;
+    QString path = QString(TRANSLATION_PATH);
+    if (!path.isEmpty())
+        return path;
 #endif
 
     return qApp->applicationDirPath() + "/translations";
@@ -135,9 +135,9 @@ QString TPaths::translationPath() {
 QString TPaths::docPath() {
 
 #ifdef DOC_PATH
-	QString path = QString(DOC_PATH);
-	if (!path.isEmpty())
-		return path;
+    QString path = QString(DOC_PATH);
+    if (!path.isEmpty())
+        return path;
 #endif
 
     return qApp->applicationDirPath() + "/docs";
@@ -146,9 +146,9 @@ QString TPaths::docPath() {
 QString TPaths::themesPath() {
 
 #ifdef THEMES_PATH
-	QString path = QString(THEMES_PATH);
-	if (!path.isEmpty())
-		return path;
+    QString path = QString(THEMES_PATH);
+    if (!path.isEmpty())
+        return path;
 #endif
 
     return qApp->applicationDirPath() + "/themes";
@@ -157,49 +157,49 @@ QString TPaths::themesPath() {
 QString TPaths::shortcutsPath() {
 
 #ifdef SHORTCUTS_PATH
-	QString path = QString(SHORTCUTS_PATH);
-	if (!path.isEmpty())
-		return path;
+    QString path = QString(SHORTCUTS_PATH);
+    if (!path.isEmpty())
+        return path;
 #endif
 
     return qApp->applicationDirPath() + "/shortcuts";
 }
 
 QString TPaths::qtTranslationPath() {
-	return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+    return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
 }
 
 QString TPaths::doc(const QString& file, QString locale, bool english_fallback) {
 
-	if (locale.isEmpty()) {
-		locale = QLocale::system().name();
-	}
+    if (locale.isEmpty()) {
+        locale = QLocale::system().name();
+    }
 
-	QString f = docPath() + "/" + locale + "/" + file;
+    QString f = docPath() + "/" + locale + "/" + file;
     if (QFile::exists(f))
-		return f;
+        return f;
 
-	if (locale.indexOf(QRegExp("_[A-Z]+")) >= 0) {
-		locale.replace(QRegExp("_[A-Z]+"), "");
-		f = docPath() + "/" + locale + "/" + file;
-		if (QFile::exists(f))
-			return f;
-	}
+    if (locale.indexOf(QRegExp("_[A-Z]+")) >= 0) {
+        locale.replace(QRegExp("_[A-Z]+"), "");
+        f = docPath() + "/" + locale + "/" + file;
+        if (QFile::exists(f))
+            return f;
+    }
 
-	if (english_fallback) {
-		f = docPath() + "/en/" + file;
-		return f;
-	}
+    if (english_fallback) {
+        f = docPath() + "/en/" + file;
+        return f;
+    }
 
-	return QString::null;
+    return QString::null;
 }
 
 QString TPaths::iniPath() {
-	return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
+    return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
 }
 
 QString TPaths::subtitleStyleFile() {
-	return config_path + "/styles.ass";
+    return config_path + "/styles.ass";
 }
 
 #ifdef Q_OS_WIN
@@ -218,7 +218,7 @@ QString TPaths::fontPath() {
 
     QString path = fontPathPlayer(pref->player_bin);
     if (fonts(path).count() > 0) {
-		return path;
+        return path;
     }
 
     if (pref->player_id == Settings::TPreferences::ID_MPLAYER) {
@@ -244,38 +244,38 @@ void TPaths::createFontFile() {
 
     // Check if the WZPlayer font config file already exists
     // and uses the current font dir
-	if (QFile::exists(output)) {
-		QFile i(output);
-		if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			QString text = i.readAll();
+    if (QFile::exists(output)) {
+        QFile i(output);
+        if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QString text = i.readAll();
             if (text.contains("<dir>" + fontDir + "</dir>")) {
                 logger()->info("createFontFile: reusing existing font config"
                              " file '%1' which uses font directory '%2'",
                              output, fontDir);
-				return;
-			}
-		}
-	}
+                return;
+            }
+        }
+    }
 
     // Use the font file from the selected font dir
     QString input = fontDir + "/fonts.conf";
     if (!QFile::exists(input)) {
         logger()->warn("createFontFile: font.conf '%1' not found", input);
         return;
-	}
+    }
 
-	QFile infile(input);
-	if (infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		QString text = infile.readAll();
-		text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
-		text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
+    QFile infile(input);
+    if (infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString text = infile.readAll();
+        text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
+        text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
 
         logger()->info("createFontFile: saving '%1'", output);
-		QFile outfile(output);
-		if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			outfile.write(text.toUtf8());
-			outfile.close();
-		}
+        QFile outfile(output);
+        if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            outfile.write(text.toUtf8());
+            outfile.close();
+        }
     } else {
        logger()->warn("createFontFile: failed to open '%1'", input);
     }

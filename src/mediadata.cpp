@@ -21,7 +21,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "config.h"
 
 
@@ -208,71 +208,71 @@ TMediaData::Type TMediaData::stringToType(QString type) {
 
 void TMediaData::list() const {
 
-    logger()->debug("TMediaData::list");
+    WZDEBUG("");
 
-    logger()->debug("filename: '%1'", filename);
-    logger()->debug("selected type: %1", typeToString(selected_type));
-    logger()->debug("detected type: %1", typeToString(detected_type));
-    logger()->debug("valid disc URL: %1", disc.valid);
-    logger()->debug("stream_url: '%1'", stream_url);
+    WZDEBUG("filename: '" + filename + "'");
+    WZDEBUG("selected type: " + typeToString(selected_type));
+    WZDEBUG("detected type: " + typeToString(detected_type));
+    WZDEBUG("disc URL valid: " + QString::number(disc.valid));
+    WZDEBUG("stream_url: '" + stream_url + "'");
 
-    logger()->debug("start sec: %1", start_sec);
-    logger()->debug("start sec player: %1", start_sec_player);
-    logger()->debug("start sec set: %1", start_sec_set);
-    logger()->debug("fuzzy time: %1", fuzzy_time);
-    logger()->debug("time_sec: %1", time_sec);
-    logger()->debug("duration: %1", duration);
+    WZDEBUG("start sec: " + QString::number(start_sec));
+    WZDEBUG("start sec player: " + QString::number(start_sec_player));
+    WZDEBUG("start sec set: " + QString::number(start_sec_set));
+    WZDEBUG("fuzzy time: '" + fuzzy_time + "'");
+    WZDEBUG("time_sec: " + QString::number(time_sec));
+    WZDEBUG("duration: " + QString::number(duration));
 
-    logger()->debug("demuxer: '%1'", demuxer);
-    logger()->debug("mpegts: %1", mpegts);
+    WZDEBUG("demuxer: '" + demuxer + "'");
+    WZDEBUG("mpegts: " + QString::number(mpegts));
 
-    logger()->debug("video driver: '%1'", vo);
-    logger()->debug("video_width: %1", video_width);
-    logger()->debug("video_height: %1", video_height);
-    logger()->debug("video_aspect: '%1'", video_aspect);
-    logger()->debug("video_aspect_original: %1", video_aspect_original);
-    logger()->debug("video_fps: %1", video_fps);
+    WZDEBUG("video driver: '" + vo + "'");
+    WZDEBUG("video_width: " + QString::number(video_width));
+    WZDEBUG("video_height: " + QString::number(video_height));
+    WZDEBUG("video_aspect: '" + video_aspect + "'");
+    WZDEBUG("video_aspect_original: " + QString::number(video_aspect_original));
+    WZDEBUG("video_fps: " + QString::number(video_fps));
 
-    logger()->debug("video_out_width: %1", video_out_width);
-    logger()->debug("video_out_height: %1", video_out_height);
+    WZDEBUG("video_out_width: " + QString::number(video_out_width));
+    WZDEBUG("video_out_height: " + QString::number(video_out_height));
 
-    logger()->debug("video_format: '%1'", video_format);
-    logger()->debug("video_codec: '%1'", video_codec);
-    logger()->debug("video_bitrate: %1", video_bitrate);
-    logger()->debug("video_hwdec: %1", video_hwdec);
-    logger()->debug("Video tracks:");
+    WZDEBUG("video_format: '" + video_format + "'");
+    WZDEBUG("video_codec: '" + video_codec + "'");
+    WZDEBUG("video_bitrate: " + QString::number(video_bitrate));
+    WZDEBUG("video_hwdec: " + QString::number(video_hwdec));
+    WZDEBUG("Video tracks:");
     videos.list();
 
-    logger()->debug("audio driver: '%1'", ao);
-    logger()->debug("audio_format: '%1'", audio_format);
-    logger()->debug("audio_codec: '%1'", audio_codec);
-    logger()->debug("audio_bitrate: %1", audio_bitrate);
-    logger()->debug("audio_rate: %1", audio_rate);
-    logger()->debug("audio_nch: %1", audio_nch);
-    logger()->debug("Audio tracks:");
+    WZDEBUG("audio driver: '" + ao + "'");
+    WZDEBUG("audio_format: '" + audio_format + "'");
+    WZDEBUG("audio_codec: '" + audio_codec + "'");
+    WZDEBUG("audio_bitrate: " + QString::number(audio_bitrate));
+    WZDEBUG("audio_rate: " + QString::number(audio_rate));
+    WZDEBUG("audio_nch: " + QString::number(audio_nch));
+    WZDEBUG("Audio tracks:");
     audios.list();
 
-    logger()->debug("Subtitles:");
+    WZDEBUG("subtitles:");
     subs.list();
-    logger()->debug("Titles:");
+    WZDEBUG("titles:");
     titles.list();
-    logger()->debug("Chapters:");
+    WZDEBUG("chapters:");
     chapters.list();
 
 #if PROGRAM_SWITCH
-    logger()->debug("Programs:");
+    WZDEBUG("programs:");
     programs.list();
 #endif
 
-    logger()->debug("Title: '%1'", title);
-    logger()->debug("Meta data:");
+    WZDEBUG("title: '" + title + "'");
+    WZDEBUG("meta data:");
     TMetaData::const_iterator i = meta_data.constBegin();
     while (i != meta_data.constEnd()) {
-        logger()->debug("'%1' = '%2'", i.key(), i.value());
+        WZDEBUG("'" + i.key() + "' = '" + i.value() + "'");
         i++;
     }
 
-    logger()->debug("dvd_id: '%1'", dvd_id);
-    logger()->debug("Angle: %1/%2", angle, angles);
+    WZDEBUG("dvd_id: '" + dvd_id + "'");
+    WZDEBUG("angle: " + QString::number(angle) + "/" + QString::number(angles));
 }
 

@@ -72,7 +72,7 @@ TApp::TApp(int& argc, char** argv) :
 
 TApp::~TApp() {
 
-    logger()->debug("~TApp: deleting pref");
+    WZDEBUG("deleting pref");
     Settings::TPreferences* p = Settings::pref;
     Settings::pref = 0;
     delete p;
@@ -83,7 +83,7 @@ void TApp::commitData(QSessionManager& /*manager*/) {
 }
 
 QString TApp::loadStyleSheet(const QString& filename) {
-    logger()->debug("loadStyleSheet: '" + filename + "'");
+    WZDEBUG("'" + filename + "'");
 
     QFile file(filename);
     file.open(QFile::ReadOnly);
@@ -105,7 +105,7 @@ QString TApp::loadStyleSheet(const QString& filename) {
 }
 
 void TApp::changeStyleSheet(const QString& style) {
-    logger()->debug("changeStyleSheet: '" + style + "'");
+    WZDEBUG("'" + style + "'");
 
     // Load default stylesheet
     QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
@@ -139,7 +139,7 @@ void TApp::changeStyleSheet(const QString& style) {
 }
 
 void TApp::setupStyle() {
-    logger()->debug("setupStyle");
+    WZDEBUG("");
 
     // Set application style
     // TODO: from help: Warning: To ensure that the application's style is set
@@ -166,15 +166,16 @@ bool TApp::loadCatalog(QTranslator& translator,
 
     QString loc = name + "_" + locale;
     bool r = translator.load(loc, dir);
-    if (r)
-        logger()->info("loadCatalog: loaded " + loc + " from " + dir);
-    else
-        logger()->debug("loadCatalog: failed to load " + loc + " from " + dir);
+    if (r) {
+        WZINFO("loaded '" + loc + "' from '" + dir + "'");
+    } else {
+        WZDEBUG("failed to load '" + loc + "' from '" + dir + "'");
+    }
     return r;
 }
 
 void TApp::loadTranslation() {
-    logger()->debug("loadTranslations");
+    WZDEBUG("");
 
     QString locale = Settings::pref->language;
     if (locale.isEmpty()) {
@@ -192,23 +193,23 @@ void TApp::loadTranslation() {
 }
 
 void TApp::loadConfig() {
-    logger()->debug("loadConfig");
+    WZDEBUG("");
 
     // Setup config directory
     Settings::TPaths::setConfigPath(initial_config_path);
-    // Create Load new settings
+    // Create settings
     Settings::pref = new Settings::TPreferences();
+    // Load settings
     Settings::pref->load();
-
     // Setup style
     setupStyle();
-
     // Load translation
     loadTranslation();
+    // Install translations
     installTranslator(&app_trans);
     installTranslator(&qt_trans);
 
-    // Fonts
+    // Windows font file
 #ifdef Q_OS_WIN
     TPaths::createFontFile();
 #endif
@@ -273,7 +274,7 @@ TApp::TExitCode TApp::processArgs() {
         QStringList regExts;
         RegAssoc.GetRegisteredExtensions(extensions.allPlayable(), regExts);
         RegAssoc.RestoreFileAssociations(regExts);
-        logger()->info("processArgs: restored associations");
+        WZINFO("restored associations");
 #endif
         return NoError;
     }
@@ -288,10 +289,9 @@ TApp::TExitCode TApp::processArgs() {
             // Delete from list
             args.removeAt(pos);
             args.removeAt(pos - 1);
-            logger()->info("processArgs: configuration path set to '%1'",
-                         initial_config_path);
+            WZINFO("configuration path set to '" + initial_config_path + "'");
         } else {
-            logger()->error("processArgs: expected path after --config-path");
+            WZERROR("expected path after option --config-path");
             return ErrorInvalidArgument;
         }
     }
@@ -300,7 +300,7 @@ TApp::TExitCode TApp::processArgs() {
     loadConfig();
 
     if (processArgName("delete-config", args)) {
-        Settings::TCleanConfig::clean(Settings::TPaths::configPath());
+        Settings::TCleanConfig::clean();
         return NoError;
     }
 
@@ -321,7 +321,7 @@ TApp::TExitCode TApp::processArgs() {
                 n++;
                 send_action = args[n];
             } else {
-                logger()->error("expected parameter for --send-action");
+                WZERROR("expected action after option --send-action");
                 return ErrorInvalidArgument;
             }
         } else if (name == "actions") {
@@ -329,7 +329,7 @@ TApp::TExitCode TApp::processArgs() {
                 n++;
                 actions = args[n];
             } else {
-                logger()->error("expected parameter for --actions");
+                WZERROR("expected actions after option --actions");
                 return ErrorInvalidArgument;
             }
         } else if (name == "sub") {
@@ -339,10 +339,10 @@ TApp::TExitCode TApp::processArgs() {
                 if (QFile::exists(file)) {
                     subtitle_file = QFileInfo(file).absoluteFilePath();
                 } else {
-                    logger()->error("file '%s' doesn't exists", file);
+                    WZERROR("file '" + file + "' doesn\'t exists");
                 }
             } else {
-                logger()->error("expected parameter for --sub");
+                WZERROR("expected parameter after option --sub");
                 return ErrorInvalidArgument;
             }
         } else if (name == "media-title") {
@@ -370,7 +370,7 @@ TApp::TExitCode TApp::processArgs() {
                     gui_position.setY(args[n].toInt(&ok_y));
                     if (ok_x && ok_y) move_gui = true;
                 } else {
-                    logger()->error("expected parameter for --pos");
+                    WZERROR("expected x and y position after option --pos");
                     return ErrorInvalidArgument;
                 }
             } else if (name == "size") {
@@ -382,7 +382,7 @@ TApp::TExitCode TApp::processArgs() {
                     gui_size.setHeight(args[n].toInt(&ok_height));
                     if (ok_width && ok_height) resize_gui = true;
                 } else {
-                    logger()->error("expected 2 parameters for --size");
+                    WZERROR("expected width and height after option --size");
                     return ErrorInvalidArgument;
                 }
             } else if (name == "fullscreen") {
@@ -390,8 +390,7 @@ TApp::TExitCode TApp::processArgs() {
             } else if (name == "no-fullscreen") {
                 start_in_fullscreen = FS_FALSE;
             } else {
-                logger()->debug("processArgs: adding '%1' to files to play",
-                                argument);
+                WZDEBUG("adding '" + argument + "' to files to play");
                 files_to_play.append(argument);
             }
         }
@@ -421,8 +420,9 @@ TApp::TExitCode TApp::processArgs() {
 
                 if (!files_to_play.isEmpty()) {
                     QString command = "open_files";
-                    if (add_to_playlist)
+                    if (add_to_playlist) {
                         command = "add_to_playlist";
+                    }
                     sendMessage(command + " " + files_to_play.join(" <<sep>> "));
                 }
             }
@@ -435,11 +435,11 @@ TApp::TExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-    logger()->debug("createGUI: creating main window Gui::TMainWindowPlus");
+    WZDEBUG("creating main window");
 
     main_window = new Gui::TMainWindowPlus();
 
-    logger()->debug("createGUI: loading window config");
+    WZDEBUG("loading window config");
     main_window->loadConfig();
 
     main_window->setForceCloseOnFinish(close_at_end);
@@ -458,7 +458,7 @@ void TApp::createGUI() {
         main_window->resize(gui_size);
     }
 
-    logger()->debug("createGUI: created main window");
+    WZDEBUG("created main window");
 } // createGUI()
 
 bool TApp::acceptClipboard() const {
@@ -475,7 +475,7 @@ bool TApp::acceptClipboard() const {
 }
 
 void TApp::start() {
-    logger()->debug("start");
+    WZDEBUG("");
 
     // Create the main window. It will be destoyed when leaving exec().
     createGUI();
@@ -488,7 +488,6 @@ void TApp::start() {
     if (files_to_play.isEmpty()) {
         // Nothing to open
         player->setState(Player::STATE_STOPPED);
-
         // Check clipboard
         if (actions.isEmpty() && acceptClipboard()) {
             actions = "open_url";
@@ -512,7 +511,7 @@ void TApp::start() {
 }
 
 void TApp::onRequestRestart() {
-    logger()->debug("onRequestRestart");
+    WZDEBUG("");
 
     restarting = true;
     if (Settings::pref->fullscreen && start_in_fullscreen != FS_TRUE) {
@@ -552,32 +551,32 @@ void TApp::showInfo() {
         default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
     }
 #endif
-    QString s = tr("This is WZPlayer %1 thinking it is running on %2")
+    QString s = tr("WZPlayer %1 running on %2")
                 .arg(TVersion::version)
 #ifdef Q_OS_LINUX
                 .arg("Linux");
 #else
 #ifdef Q_OS_WIN
-                .arg("Windows ("+win_ver+")");
+                .arg("Windows (" + win_ver + ")");
 #else
-                .arg("Other OS");
+                .arg("a non-Linux, non-Windows OS");
 #endif
 #endif
 
-    logger()->info(s);
-    logger()->info("Compiled with Qt version %1, running on Qt version %2",
-                   QT_VERSION_STR, qVersion());
-    logger()->info("application path: '%1'", applicationDirPath());
-    logger()->info("data path: '%1'", Settings::TPaths::dataPath());
-    logger()->info("translation path: '%1'", Settings::TPaths::translationPath());
-    logger()->info("doc path: '%1'", Settings::TPaths::docPath());
-    logger()->info("themes path: '%1'", Settings::TPaths::themesPath());
-    logger()->info("shortcuts path: '%1'", Settings::TPaths::shortcutsPath());
-    logger()->info("config path: '%1'", Settings::TPaths::configPath());
-    logger()->info("file for subtitle styles: '%1'", Settings::TPaths::subtitleStyleFile());
-    logger()->info("current directory: '%1'", QDir::currentPath());
+    WZINFO(s);
+    WZINFO(QString("Compiled with Qt version " QT_VERSION_STR
+           ", running on Qt version ") + qVersion());
+    WZINFO("application path '" + applicationDirPath() + "'");
+    WZINFO("data path '" + Settings::TPaths::dataPath() + "'");
+    WZINFO("translation path '" + Settings::TPaths::translationPath() + "'");
+    WZINFO("doc path '" + Settings::TPaths::docPath() + "'");
+    WZINFO("themes path '" + Settings::TPaths::themesPath() + "'");
+    WZINFO("shortcuts path '" + Settings::TPaths::shortcutsPath() + "'");
+    WZINFO("config path '" + Settings::TPaths::configPath() + "'");
+    WZINFO("subtitle styles '" + Settings::TPaths::subtitleStyleFile() + "'");
+    WZINFO("current directory '" + QDir::currentPath() + "'");
 #ifdef Q_OS_WIN
-    logger()->info("font path: '%1'", Settings::TPaths::fontPath());
+    WZINFO("font path '" + Settings::TPaths::fontPath() + "'");
 #endif
 }
 
