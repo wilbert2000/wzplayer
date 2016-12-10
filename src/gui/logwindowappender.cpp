@@ -1,4 +1,4 @@
-#include "gui/logwindowapeender.h"
+#include "gui/logwindowappender.h"
 #include "settings/preferences.h"
 #include "log4qt/layout.h"
 #include <QPlainTextEdit>

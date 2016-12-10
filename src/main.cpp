@@ -23,7 +23,7 @@
 #include "log4qt/ttcclayout.h"
 #include "log4qt/level.h"
 #include "gui/logwindow.h"
-#include "gui/logwindowapeender.h"
+#include "gui/logwindowappender.h"
 #include "wzdebug.h"
 
 

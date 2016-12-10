@@ -17,7 +17,7 @@
 */
 
 #include "gui/logwindow.h"
-#include "gui/logwindowapeender.h"
+#include "gui/logwindowappender.h"
 
 #include <QCloseEvent>
 #include <QMessageBox>
