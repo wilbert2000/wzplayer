@@ -1,5 +1,5 @@
-#ifndef GUI_LOGWINDOWAPEENDER_H
-#define GUI_LOGWINDOWAPEENDER_H
+#ifndef GUI_LOGWINDOWAPPENDER_H
+#define GUI_LOGWINDOWAPPENDER_H
 
 #include "log4qt/varia/listappender.h"
 
@@ -34,4 +34,4 @@ private:
 
 } // namespace Gui
 
-#endif // GUI_LOGWINDOWAPEENDER_H
+#endif // GUI_LOGWINDOWAPPENDER_H
