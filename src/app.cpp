@@ -40,6 +40,7 @@
 
 
 #ifdef Q_OS_WIN
+#include "settings/paths.h"
 #if USE_ASSOCIATIONS
 #include "extensions.h"
 #include "winfileassoc.h" // Required for uninstall
@@ -211,7 +212,7 @@ void TApp::loadConfig() {
 
     // Windows font file
 #ifdef Q_OS_WIN
-    TPaths::createFontFile();
+    Settings::TPaths::createFontFile();
 #endif
 }
 
