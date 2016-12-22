@@ -849,7 +849,9 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
     } else if (name == "noass") {
         args << "--no-sub-ass";
     } else if (name == "ass-line-spacing") {
-        args << "--sub-ass-line-spacing=" + value.toString();
+        // TODO: mpv version check
+        //args << "--sub-ass-line-spacing=" + value.toString();
+        args << "--ass-line-spacing=" + value.toString();
     } else if (name == "nosub") {
         args << "--no-sub";
     } else if (name == "sub-fuzziness") {
