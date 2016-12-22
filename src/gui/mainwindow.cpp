@@ -2314,7 +2314,6 @@ double TMainWindow::optimizeSize(double size) const {
 }
 
 void TMainWindow::optimizeSizeFactor() {
-    WZTRACE("");
 
     if (pref->fullscreen) {
         player->setZoom(1.0);

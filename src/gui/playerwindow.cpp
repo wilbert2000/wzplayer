@@ -181,8 +181,8 @@ void TPlayerWindow::updateSizeFactor() {
     if (!video_size.isEmpty()) {
         double old_factor = pref->size_factor;
         pref->size_factor = getSizeFactor();
-        WZTRACE(QString("updating size from %1 to %2")
-                .arg(old_factor).arg(pref->size_factor));
+        // WZTRACE(QString("updating size from %1 to %2")
+        //         .arg(old_factor).arg(pref->size_factor));
         // Need to emit if old == new to detect changes by user
         emit videoSizeFactorChanged(old_factor, pref->size_factor);
     }
