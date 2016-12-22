@@ -22,7 +22,7 @@
 namespace Settings {
 
 TURLHistory::TURLHistory() : TRecents() {
-	max_items = 50;
+    max_items = 50;
 }
 
 TURLHistory::~TURLHistory() {
@@ -32,24 +32,24 @@ void TURLHistory::addUrl(const QString& url) {
     Log4Qt::Logger::logger("Settings::TURLHistory")->debug("addUrl '" + url
                                                            + "'");
 
-	// Delete duplicates
-	QStringList::iterator iterator = begin();
-	while (iterator != end()) {
-		if (*iterator == url)
-			iterator = erase(iterator);
-		else
-			iterator++;
-	}
+    // Delete duplicates
+    QStringList::iterator iterator = begin();
+    while (iterator != end()) {
+        if (*iterator == url)
+            iterator = erase(iterator);
+        else
+            iterator++;
+    }
 
-	// Add new item to list
-	prepend(url);
+    // Add new item to list
+    prepend(url);
 
-	if (count() > max_items)
-		removeLast();
+    if (count() > max_items)
+        removeLast();
 }
 
 QString TURLHistory::url(int n) {
-	return (*this)[n];
+    return (*this)[n];
 }
 
 } // namespace Settings

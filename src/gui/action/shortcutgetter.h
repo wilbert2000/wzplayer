@@ -15,7 +15,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-	Note: The TShortcutGetter class is taken from the source code of Edyuk
+    Note: The TShortcutGetter class is taken from the source code of Edyuk
     (http://www.edyuk.org/), from file 3rdparty/qcumber/qshortcutdialog.cpp
 
     Copyright (C) 2006 FullMetalCoder

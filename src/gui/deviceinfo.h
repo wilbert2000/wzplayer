@@ -28,19 +28,19 @@ namespace Gui {
 class TDeviceData {
 
 public:
-	TDeviceData() {}
-	TDeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
-	virtual ~TDeviceData() {}
+    TDeviceData() {}
+    TDeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
+    virtual ~TDeviceData() {}
 
-	void setID(QVariant ID) { _id = ID; }
-	void setDesc(QString desc) { _desc = desc; }
+    void setID(QVariant ID) { _id = ID; }
+    void setDesc(QString desc) { _desc = desc; }
 
-	QVariant ID() { return _id; }
-	QString desc() { return _desc; }
+    QVariant ID() { return _id; }
+    QString desc() { return _desc; }
 
 private:
-	QVariant _id;
-	QString _desc;
+    QVariant _id;
+    QString _desc;
 };
 
 
@@ -52,8 +52,8 @@ class TDeviceInfo {
 public:
 
 #ifndef Q_OS_WIN
-	static TDeviceList alsaDevices();
-	static TDeviceList xvAdaptors();
+    static TDeviceList alsaDevices();
+    static TDeviceList xvAdaptors();
 #endif
 
 };

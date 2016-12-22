@@ -46,23 +46,23 @@ public:
 //! TActionGroup makes easier to create exclusive menus based on items
 //! with an integer data.
 class TActionGroup : public QActionGroup {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TActionGroup (QObject* parent, const QString& name);
+    TActionGroup (QObject* parent, const QString& name);
 
-	//! Remove and delete all items.
-	void clear();
+    //! Remove and delete all items.
+    void clear();
 public slots:
-	//! Looks for the item which ID is \a ID and checks it
-	QAction* setChecked(int ID);
+    //! Looks for the item which ID is \a ID and checks it
+    QAction* setChecked(int ID);
 
 signals:
-	//! Emitted when an item has been checked
-	void activated(int);
+    //! Emitted when an item has been checked
+    void activated(int);
 
 protected slots:
-	void itemTriggered(QAction*);
+    void itemTriggered(QAction*);
 };
 
 } // namespace Action

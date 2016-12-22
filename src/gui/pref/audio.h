@@ -35,78 +35,78 @@ namespace Gui {
 namespace Pref {
 
 class TAudio : public TWidget, public Ui::TAudio {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     Player::Info::InfoList ao_list;
 
     TAudio(QWidget* parent, const Player::Info::InfoList& aol);
-	virtual ~TAudio();
+    virtual ~TAudio();
 
-	// Return the name of the section
-	virtual QString sectionName();
-	// Return the icon of the section
-	virtual QPixmap sectionIcon();
+    // Return the name of the section
+    virtual QString sectionName();
+    // Return the icon of the section
+    virtual QPixmap sectionIcon();
 
-	// Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    // Pass data to the dialog
+    void setData(Settings::TPreferences* pref);
 
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
-	void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
-						   bool keep_current_drivers);
+    void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
+                           bool keep_current_drivers);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	Settings::TPreferences::TPlayerID player_id;
-	QString mplayer_ao;
-	QString mpv_ao;
+    Settings::TPreferences::TPlayerID player_id;
+    QString mplayer_ao;
+    QString mpv_ao;
 
 #if USE_ALSA_DEVICES
-	TDeviceList alsa_devices;
+    TDeviceList alsa_devices;
 #endif
 
-	void createHelp();
+    void createHelp();
 
-	void setAO(const QString& ao_driver);
-	QString AO();
+    void setAO(const QString& ao_driver);
+    QString AO();
 
-	void setAudioChannels(int ID);
-	int audioChannels();
+    void setAudioChannels(int ID);
+    int audioChannels();
 
-	void setUseAudioEqualizer(bool b);
-	bool useAudioEqualizer();
+    void setUseAudioEqualizer(bool b);
+    bool useAudioEqualizer();
 
-	void setAc3DTSPassthrough(bool b);
-	bool Ac3DTSPassthrough();
+    void setAc3DTSPassthrough(bool b);
+    bool Ac3DTSPassthrough();
 
-	void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
-	Settings::TPreferences::TOptionState scaleTempoFilter();
+    void setScaleTempoFilter(Settings::TPreferences::TOptionState value);
+    Settings::TPreferences::TOptionState scaleTempoFilter();
 
-	void setInitialVolNorm(bool b);
-	bool initialVolNorm();
+    void setInitialVolNorm(bool b);
+    bool initialVolNorm();
 
-	void setAutoSyncActivated(bool b);
-	bool autoSyncActivated();
+    void setAutoSyncActivated(bool b);
+    bool autoSyncActivated();
 
-	void setAutoSyncFactor(int factor);
-	int autoSyncFactor();
+    void setAutoSyncFactor(int factor);
+    int autoSyncFactor();
 
-	void setMcActivated(bool b);
-	bool mcActivated();
+    void setMcActivated(bool b);
+    bool mcActivated();
 
-	void setMc(double value);
-	double mc();
+    void setMc(double value);
+    double mc();
 
-	void setAudioLang(const QString& lang);
-	QString audioLang();
+    void setAudioLang(const QString& lang);
+    QString audioLang();
 
 private slots:
-	void onAOComboChanged(int);
+    void onAOComboChanged(int);
 };
 
 } // namespace Pref

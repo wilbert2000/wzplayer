@@ -36,95 +36,95 @@ TPlayerInfoMPV::~TPlayerInfoMPV() {
 
 void TPlayerInfoMPV::getInfo() {
 
-	vo_list.clear();
-	ao_list.clear();
-	demuxer_list.clear();
-	vc_list.clear();
-	ac_list.clear();
-	vf_list.clear();
+    vo_list.clear();
+    ao_list.clear();
+    demuxer_list.clear();
+    vc_list.clear();
+    ac_list.clear();
+    vf_list.clear();
 
-	vo_list = getList(run("--vo help"));
-	ao_list = getList(run("--ao help"));
-	demuxer_list = getList(run("--demuxer help"));
-	vc_list = getList(run("--vd help"));
-	ac_list = getList(run("--ad help"));
-	{
-		InfoList list = getList(run("--vf help"));
-		for (int n = 0; n < list.count(); n++) {
-			vf_list.append(list[n].name());
-		}
-	}
+    vo_list = getList(run("--vo help"));
+    ao_list = getList(run("--ao help"));
+    demuxer_list = getList(run("--demuxer help"));
+    vc_list = getList(run("--vd help"));
+    ac_list = getList(run("--ad help"));
+    {
+        InfoList list = getList(run("--vf help"));
+        for (int n = 0; n < list.count(); n++) {
+            vf_list.append(list[n].name());
+        }
+    }
 
-	option_list = getOptionsList(run("--list-options"));
+    option_list = getOptionsList(run("--list-options"));
 }
 
 QList<QByteArray> TPlayerInfoMPV::run(QString options) {
     WZDEBUG("bin '" + bin + "', options '" + options + "'");
 
-	QList<QByteArray> r;
+    QList<QByteArray> r;
 
-	QStringList args = options.split(" ");
-	QProcess proc;
-	proc.setProcessChannelMode(QProcess::MergedChannels);
-	proc.start(bin, args);
-	if (!proc.waitForStarted()) {
+    QStringList args = options.split(" ");
+    QProcess proc;
+    proc.setProcessChannelMode(QProcess::MergedChannels);
+    proc.start(bin, args);
+    if (!proc.waitForStarted()) {
         WZWARN("process can not start");
-		return r;
-	}
+        return r;
+    }
 
-	//Wait until finish
-	if (!proc.waitForFinished()) {
+    //Wait until finish
+    if (!proc.waitForFinished()) {
         WZWARN("process did not finish. Killing it...");
-		proc.kill();
-	}
+        proc.kill();
+    }
 
-	QByteArray data = proc.readAll().replace("\r", "");
-	r = data.split('\n');
-	return r;
+    QByteArray data = proc.readAll().replace("\r", "");
+    r = data.split('\n');
+    return r;
 }
 
 InfoList TPlayerInfoMPV::getList(const QList<QByteArray> & lines) {
-	InfoList l;
+    InfoList l;
 
-	foreach(QByteArray line, lines) {
-		line.replace("\n", "");
-		line = line.simplified();
-		if (line.startsWith("Available") || line.startsWith("demuxer:") ||
+    foreach(QByteArray line, lines) {
+        line.replace("\n", "");
+        line = line.simplified();
+        if (line.startsWith("Available") || line.startsWith("demuxer:") ||
             line.startsWith("Video decoders:")
             || line.startsWith("Audio decoders:")) {
-			line = QByteArray();
-		}
-		if (!line.isEmpty()) {
-			int pos = line.indexOf(' ');
-			if (pos > -1) {
-				QString name = line.left(pos);
-				if (name.endsWith(':')) name = name.left(name.count()-1);
-				QString desc = line.mid(pos+1);
-				desc = desc.replace(": ", "").replace("- ", "");
-				l.append(InfoData(name, desc));
-			}
-		}
-	}
+            line = QByteArray();
+        }
+        if (!line.isEmpty()) {
+            int pos = line.indexOf(' ');
+            if (pos > -1) {
+                QString name = line.left(pos);
+                if (name.endsWith(':')) name = name.left(name.count()-1);
+                QString desc = line.mid(pos+1);
+                desc = desc.replace(": ", "").replace("- ", "");
+                l.append(InfoData(name, desc));
+            }
+        }
+    }
 
-	return l;
+    return l;
 }
 
 QStringList TPlayerInfoMPV::getOptionsList(const QList<QByteArray> & lines) {
-	QStringList l;
+    QStringList l;
 
-	foreach(QByteArray line, lines) {
-		line.replace("\n", "");
-		line = line.simplified();
-		if (line.startsWith("--")) {
-			int pos = line.indexOf(' ');
-			if (pos > -1) {
-				QString option_name = line.left(pos);
-				l << option_name;
-			}
-		}
-	}
+    foreach(QByteArray line, lines) {
+        line.replace("\n", "");
+        line = line.simplified();
+        if (line.startsWith("--")) {
+            int pos = line.indexOf(' ');
+            if (pos > -1) {
+                QString option_name = line.left(pos);
+                l << option_name;
+            }
+        }
+    }
 
-	return l;
+    return l;
 }
 
 } // namespace Info

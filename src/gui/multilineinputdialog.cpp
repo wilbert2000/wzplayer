@@ -22,7 +22,7 @@ namespace Gui {
 
 TMultilineInputDialog::TMultilineInputDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent,f)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 TMultilineInputDialog::~TMultilineInputDialog() {
@@ -32,7 +32,7 @@ void TMultilineInputDialog::setLines(const QStringList&) {
 }
 
 QStringList TMultilineInputDialog::lines() {
-	return editor->toPlainText().split("\n");
+    return editor->toPlainText().split("\n");
 }
 
 } // namespace Gui

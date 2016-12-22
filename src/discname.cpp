@@ -23,72 +23,72 @@
 
 
 TDiscName::TDiscName() :
-	title(0),
-	valid(false) {
+    title(0),
+    valid(false) {
 }
 
 TDiscName::TDiscName(const TDiscName& disc) :
-	title(disc.title),
-	valid(disc.valid) {
+    title(disc.title),
+    valid(disc.valid) {
 
-	if (valid) {
-		protocol = disc.protocol;
-		device = disc.device;
-	}
+    if (valid) {
+        protocol = disc.protocol;
+        device = disc.device;
+    }
 }
 
 TDiscName::TDiscName(const QString& aprotocol,
                      int atitle,
                      const QString& adevice) :
-	protocol(aprotocol),
-	title(atitle),
-	device(adevice),
-	valid(true) {
+    protocol(aprotocol),
+    title(atitle),
+    device(adevice),
+    valid(true) {
 
-	removeTrailingSlashFromDevice();
+    removeTrailingSlashFromDevice();
 }
 
 TDiscName::TDiscName(const QString& adevice, bool use_dvd_nav) :
-	protocol(use_dvd_nav ? "dvdnav" : "dvd"),
-	title(0),
-	device(adevice),
-	valid(true) {
+    protocol(use_dvd_nav ? "dvdnav" : "dvd"),
+    title(0),
+    device(adevice),
+    valid(true) {
 
-	removeTrailingSlashFromDevice();
+    removeTrailingSlashFromDevice();
 }
 
 TDiscName::TDiscName(const QString& url) {
 
-	// TODO: dvdread and title ranges dvd://1-99
-	static QRegExp rx1("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)/(.*)$", Qt::CaseInsensitive);
-	static QRegExp rx2("^(dvd|dvdnav|vcd|cdda|br):///(.*)$", Qt::CaseInsensitive);
-	static QRegExp rx3("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)$", Qt::CaseInsensitive);
-	static QRegExp rx4("^(dvd|dvdnav|vcd|cdda|br):(//)?$", Qt::CaseInsensitive);
+    // TODO: dvdread and title ranges dvd://1-99
+    static QRegExp rx1("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)/(.*)$", Qt::CaseInsensitive);
+    static QRegExp rx2("^(dvd|dvdnav|vcd|cdda|br):///(.*)$", Qt::CaseInsensitive);
+    static QRegExp rx3("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)$", Qt::CaseInsensitive);
+    static QRegExp rx4("^(dvd|dvdnav|vcd|cdda|br):(//)?$", Qt::CaseInsensitive);
 
-	valid = false;
+    valid = false;
 
-	if (rx1.indexIn(url) >= 0) {
-		protocol = rx1.cap(1);
-		title = rx1.cap(2).toInt();
-		device = rx1.cap(3);
-		valid = true;
-	} else if (rx2.indexIn(url) >= 0) {
-		protocol = rx2.cap(1);
-		title = 0;
-		device = rx2.cap(2);
-		valid = true;
-	} else if (rx3.indexIn(url) >= 0) {
-		protocol = rx3.cap(1);
-		title = rx3.cap(2).toInt();
-		valid = true;
-	} else if (rx4.indexIn(url) >= 0) {
-		protocol = rx4.cap(1);
-		title = 0;
-		valid = true;
-	}
+    if (rx1.indexIn(url) >= 0) {
+        protocol = rx1.cap(1);
+        title = rx1.cap(2).toInt();
+        device = rx1.cap(3);
+        valid = true;
+    } else if (rx2.indexIn(url) >= 0) {
+        protocol = rx2.cap(1);
+        title = 0;
+        device = rx2.cap(2);
+        valid = true;
+    } else if (rx3.indexIn(url) >= 0) {
+        protocol = rx3.cap(1);
+        title = rx3.cap(2).toInt();
+        valid = true;
+    } else if (rx4.indexIn(url) >= 0) {
+        protocol = rx4.cap(1);
+        title = 0;
+        valid = true;
+    }
 
-	protocol = protocol.toLower();
-	removeTrailingSlashFromDevice();
+    protocol = protocol.toLower();
+    removeTrailingSlashFromDevice();
 }
 
 TDiscName::~TDiscName() {
@@ -126,47 +126,47 @@ QString TDiscName::displayName(bool addDevice) const {
 // with one exception: from Windows drives letters (D:/ E:/...)
 void TDiscName::removeTrailingSlashFromDevice() {
 
-	if (device.endsWith("/")) {
+    if (device.endsWith("/")) {
 
 #ifdef Q_OS_WIN
-		static QRegExp r("^[A-Z]:/$");
-		if (r.indexIn(device) < 0)
+        static QRegExp r("^[A-Z]:/$");
+        if (r.indexIn(device) < 0)
 #endif
             device.chop(1);
-	}
+    }
 }
 
 QString TDiscName::toString(bool add_zero_title) const {
 
-	QString s;
-	if (valid) {
-		s = protocol + "://";
-		if (title > 0 || (add_zero_title && title == 0)) {
-			s += QString::number(title);
-		}
-		if (!device.isEmpty()) {
-			s += "/" + device;
-		}
-	}
-	return s;
+    QString s;
+    if (valid) {
+        s = protocol + "://";
+        if (title > 0 || (add_zero_title && title == 0)) {
+            s += QString::number(title);
+        }
+        if (!device.isEmpty()) {
+            s += "/" + device;
+        }
+    }
+    return s;
 }
 
 TDiscName::TDisc TDiscName::protocolToTDisc(QString protocol) {
 
-	protocol = protocol.toLower();
-	if (protocol == "dvdnav")
-		return DVDNAV;
-	if (protocol == "vcd")
-		return VCD;
-	if (protocol == "cdda")
-		return CDDA;
-	if (protocol == "br")
-		return BLURAY;
+    protocol = protocol.toLower();
+    if (protocol == "dvdnav")
+        return DVDNAV;
+    if (protocol == "vcd")
+        return VCD;
+    if (protocol == "cdda")
+        return CDDA;
+    if (protocol == "br")
+        return BLURAY;
 
-	return DVD;
+    return DVD;
 }
 
 TDiscName::TDisc TDiscName::disc() const {
-	return protocolToTDisc(protocol);
+    return protocolToTDisc(protocol);
 }
 

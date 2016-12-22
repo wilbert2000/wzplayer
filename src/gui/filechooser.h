@@ -28,46 +28,46 @@ namespace Gui {
 
 class TFileChooser : public TLineEditWithIcon {
     Q_OBJECT
-	Q_PROPERTY(QString text READ text WRITE setText)
-	Q_PROPERTY(QString caption READ caption WRITE setCaption)
-	Q_PROPERTY(QString filter READ filter WRITE setFilter)
-	Q_PROPERTY(DialogType dialogType READ dialogType WRITE setDialogType)
-	Q_PROPERTY(QFileDialog::Options options READ options WRITE setOptions)
+    Q_PROPERTY(QString text READ text WRITE setText)
+    Q_PROPERTY(QString caption READ caption WRITE setCaption)
+    Q_PROPERTY(QString filter READ filter WRITE setFilter)
+    Q_PROPERTY(DialogType dialogType READ dialogType WRITE setDialogType)
+    Q_PROPERTY(QFileDialog::Options options READ options WRITE setOptions)
 
 public:
-	enum DialogType { GetFileName = 0, GetDirectory = 1 };
+    enum DialogType { GetFileName = 0, GetDirectory = 1 };
 
     TFileChooser(QWidget* parent = 0);
     virtual ~TFileChooser();
 
-	QString caption() const { return _caption; }
-	QString filter() const { return _filter; }
-	DialogType dialogType() const { return _type; }
-	QFileDialog::Options options() const { return _options; }
+    QString caption() const { return _caption; }
+    QString filter() const { return _filter; }
+    DialogType dialogType() const { return _type; }
+    QFileDialog::Options options() const { return _options; }
 
 public slots:
-	void setCaption(const QString & caption) { _caption = caption; }
-	void setFilter(const QString & filter) { _filter = filter; }
-	void setDialogType(DialogType type) { _type = type; }
-	void setOptions(QFileDialog::Options options) { _options = options; }
+    void setCaption(const QString & caption) { _caption = caption; }
+    void setFilter(const QString & filter) { _filter = filter; }
+    void setDialogType(DialogType type) { _type = type; }
+    void setOptions(QFileDialog::Options options) { _options = options; }
 
 signals:
-	void fileChanged(QString file);
+    void fileChanged(QString file);
 
 protected:
-	virtual void setupButton();
+    virtual void setupButton();
 
 protected slots:
-	virtual void openFileDialog();
-	void onEditingFinished();
+    virtual void openFileDialog();
+    void onEditingFinished();
 
 protected:
-	QString _caption;
-	QString _filter;
-	DialogType _type;
-	QFileDialog::Options _options;
+    QString _caption;
+    QString _filter;
+    DialogType _type;
+    QFileDialog::Options _options;
 
-	static QString last_dir;
+    static QString last_dir;
 };
 
 } // namespace Gui

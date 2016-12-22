@@ -32,38 +32,38 @@ namespace Gui {
 namespace Pref {
 
 class TCapture : public TWidget, public Ui::TCapture {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TCapture(QWidget* parent);
-	virtual ~TCapture();
+    TCapture(QWidget* parent);
+    virtual ~TCapture();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	void createHelp();
+    void createHelp();
 
-	void setUseScreenshots(bool b);
-	bool useScreenshots();
+    void setUseScreenshots(bool b);
+    bool useScreenshots();
 
-	void setScreenshotDir(const QString& path);
-	QString screenshotDir();
+    void setScreenshotDir(const QString& path);
+    QString screenshotDir();
 
-	void setScreenshotFormat(const QString& format);
-	QString screenshotFormat();
+    void setScreenshotFormat(const QString& format);
+    QString screenshotFormat();
 
-	void setSubtitlesOnScreenshots(bool b);
-	bool subtitlesOnScreenshots();
+    void setSubtitlesOnScreenshots(bool b);
+    bool subtitlesOnScreenshots();
 };
 
 } // namespace Pref

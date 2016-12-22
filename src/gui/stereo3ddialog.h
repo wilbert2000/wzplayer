@@ -26,17 +26,17 @@ namespace Gui {
 
 class TStereo3dDialog : public QDialog, public Ui::TStereo3dDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TStereo3dDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TStereo3dDialog();
+    TStereo3dDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TStereo3dDialog();
 
-	void setInputFormat(const QString & in);
-	void setOutputFormat(const QString & out);
+    void setInputFormat(const QString & in);
+    void setOutputFormat(const QString & out);
 
-	QString inputFormat();
-	QString outputFormat();
+    QString inputFormat();
+    QString outputFormat();
 };
 
 } // namespace GUi

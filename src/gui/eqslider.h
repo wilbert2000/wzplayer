@@ -27,33 +27,33 @@ namespace Gui {
 
 class TEqSlider : public QWidget, public Ui::TEqSlider
 {
-	Q_OBJECT
-	Q_PROPERTY(QPixmap icon READ icon WRITE setIcon)
-	Q_PROPERTY(QString label READ label WRITE setLabel)
-	Q_PROPERTY(int value READ value WRITE setValue)
+    Q_OBJECT
+    Q_PROPERTY(QPixmap icon READ icon WRITE setIcon)
+    Q_PROPERTY(QString label READ label WRITE setLabel)
+    Q_PROPERTY(int value READ value WRITE setValue)
 
 public:
-	TEqSlider(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TEqSlider();
+    TEqSlider(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TEqSlider();
 
-	int value() const;
-	const QPixmap* icon() const;
-	QString label() const;
+    int value() const;
+    const QPixmap* icon() const;
+    QString label() const;
 
-	QSlider* sliderWidget() { return _slider; }
-	TVerticalText* labelWidget() { return _label; }
-	QLabel* iconWidget() { return _icon; }
+    QSlider* sliderWidget() { return _slider; }
+    TVerticalText* labelWidget() { return _label; }
+    QLabel* iconWidget() { return _icon; }
 
 public slots:
-	void setIcon(QPixmap i);
-	void setLabel(const QString& s);
-	void setValue(int value);
+    void setIcon(QPixmap i);
+    void setLabel(const QString& s);
+    void setValue(int value);
 
 signals:
-	void valueChanged(int);
+    void valueChanged(int);
 
 protected slots:
-	void onValueChanged(int);
+    void onValueChanged(int);
 };
 
 } // namespace Gui

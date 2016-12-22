@@ -98,7 +98,7 @@ public:
         return playlistWidget->findFilename(filename);
     }
 
-	void clear();
+    void clear();
     void addFiles(const QStringList& files,
                   bool startPlay = false,
                   QTreeWidgetItem* target = 0,

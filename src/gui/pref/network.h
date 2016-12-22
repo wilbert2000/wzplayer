@@ -30,29 +30,29 @@ class TPreferences;
 namespace Gui { namespace Pref {
 
 class TNetwork : public TWidget, public Ui::TNetwork {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TNetwork(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TNetwork();
+    TNetwork(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TNetwork();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
-	// Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    // Pass data to the dialog
+    void setData(Settings::TPreferences* pref);
 
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
-
-protected:
-	virtual void createHelp();
-
-	void setProxyType(int type);
-	int proxyType();
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void createHelp();
+
+    void setProxyType(int type);
+    int proxyType();
+
+protected:
+    virtual void retranslateStrings();
 };
 
 }} // namespace Gui::Pref

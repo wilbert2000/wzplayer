@@ -29,22 +29,22 @@ namespace Maps {
 class TChapterData : public TData {
 
 public:
-	TChapterData();
-	virtual ~TChapterData() {}
+    TChapterData();
+    virtual ~TChapterData() {}
 
-	void setName(const QString & n) { name = n; }
-	void setStart(double aStart) { start = aStart; }
-	void setEnd(double aEnd) { end = aEnd; }
+    void setName(const QString & n) { name = n; }
+    void setStart(double aStart) { start = aStart; }
+    void setEnd(double aEnd) { end = aEnd; }
 
-	QString getName() const { return name; }
-	double getStart() const { return start; }
-	double getEnd() const { return end; }
-	QString getDisplayName() const;
+    QString getName() const { return name; }
+    double getStart() const { return start; }
+    double getEnd() const { return end; }
+    QString getDisplayName() const;
 
 protected:
-	QString name;
-	double start;
-	double end;
+    QString name;
+    double start;
+    double end;
 };
 
 class TChapters : public TMap<TChapterData> {
@@ -53,17 +53,17 @@ public:
     TChapters();
     virtual ~TChapters();
 
-	typedef QMap <int, TChapterData> TChapterMap;
-	typedef QMapIterator<int, TChapterData> TChapterIterator;
+    typedef QMap <int, TChapterData> TChapterMap;
+    typedef QMapIterator<int, TChapterData> TChapterIterator;
 
-	void list() const;
+    void list() const;
 
-	void addName(int id, const QString &name);
-	void addStart(int id, double start);
-	void addEnd(int id, double end);
-	void addChapter(int id, const QString &name, double start);
+    void addName(int id, const QString &name);
+    void addStart(int id, double start);
+    void addEnd(int id, double end);
+    void addChapter(int id, const QString &name, double start);
 
-	int idForTime(double sec, bool allow_gaps = true) const;
+    int idForTime(double sec, bool allow_gaps = true) const;
 };
 
 } // namespace Maps

@@ -34,32 +34,32 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TFilePropertiesDialog(QWidget* parent, TMediaData* md);
-	virtual ~TFilePropertiesDialog();
+    TFilePropertiesDialog(QWidget* parent, TMediaData* md);
+    virtual ~TFilePropertiesDialog();
 
-	// Call it as soon as possible
+    // Call it as soon as possible
     void setCodecs(const Player::Info::InfoList& vc,
                    const Player::Info::InfoList& ac,
                    const Player::Info::InfoList& demuxer);
 
     void setDemuxer(const QString& demuxer,
                     const QString& original_demuxer = "");
-	QString demuxer();
+    QString demuxer();
 
-	void setVideoCodec(const QString& vc, const QString& original_vc = "");
-	QString videoCodec();
+    void setVideoCodec(const QString& vc, const QString& original_vc = "");
+    QString videoCodec();
 
     void setAudioCodec(const QString& ac, const QString& original_ac = "");
-	QString audioCodec();
+    QString audioCodec();
 
-	void setPlayerAdditionalArguments(const QString& args);
-	QString playerAdditionalArguments();
+    void setPlayerAdditionalArguments(const QString& args);
+    QString playerAdditionalArguments();
 
-	void setPlayerAdditionalVideoFilters(const QString& s);
-	QString playerAdditionalVideoFilters();
+    void setPlayerAdditionalVideoFilters(const QString& s);
+    QString playerAdditionalVideoFilters();
 
-	void setPlayerAdditionalAudioFilters(const QString& s);
-	QString playerAdditionalAudioFilters();
+    void setPlayerAdditionalAudioFilters(const QString& s);
+    QString playerAdditionalAudioFilters();
 
 public slots:
     void accept(); // Reimplemented to send a signal
@@ -72,29 +72,29 @@ signals:
     void visibilityChanged(bool visible);
 
 protected slots:
-	virtual void on_resetDemuxerButton_clicked();
-	virtual void on_resetACButton_clicked();
-	virtual void on_resetVCButton_clicked();
+    virtual void on_resetDemuxerButton_clicked();
+    virtual void on_resetACButton_clicked();
+    virtual void on_resetVCButton_clicked();
 
 protected:
     virtual void closeEvent(QCloseEvent* event);
 
-	bool hasCodecsList() { return codecs_set; }
+    bool hasCodecsList() { return codecs_set; }
     int find(const QString& s, const Player::Info::InfoList& list) const;
 
 protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent* event);
+    virtual void retranslateStrings();
+    virtual void changeEvent(QEvent* event);
 
 private:
-	bool codecs_set;
+    bool codecs_set;
     Player::Info::InfoList vclist, aclist, demuxerlist;
-	QString orig_demuxer, orig_ac, orig_vc;
-	TMediaData* media_data;
+    QString orig_demuxer, orig_ac, orig_vc;
+    TMediaData* media_data;
 
-	QPushButton* okButton;
-	QPushButton* cancelButton;
-	QPushButton* applyButton;
+    QPushButton* okButton;
+    QPushButton* cancelButton;
+    QPushButton* applyButton;
 };
 
 } // namespace Gui

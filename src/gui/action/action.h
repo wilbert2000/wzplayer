@@ -30,20 +30,20 @@ namespace Action {
 class TAction : public QAction {
 public:
     TAction(QObject* parent,
-			const QString& name,
-			const QString& text,
-			const QString& icon = 0,
-			const QKeySequence& shortCut = 0,
-			bool autoAdd = true);
+            const QString& name,
+            const QString& text,
+            const QString& icon = 0,
+            const QKeySequence& shortCut = 0,
+            bool autoAdd = true);
 
-	virtual ~TAction();
+    virtual ~TAction();
 
-	void addShortcut(QKeySequence key);
-	void setTextAndTip(const QString& text);
+    void addShortcut(QKeySequence key);
+    void setTextAndTip(const QString& text);
 
 private:
-	//! Checks if the parent is a QWidget and adds the action to it.
-	void addActionToParent();
+    //! Checks if the parent is a QWidget and adds the action to it.
+    void addActionToParent();
 };
 
 } // namespace Action

@@ -26,21 +26,21 @@ namespace Settings {
 class TRecents : public QStringList {
 
 public:
-	TRecents();
-	virtual ~TRecents();
+    TRecents();
+    virtual ~TRecents();
 
-	virtual void addItem(QString s, const QString& title);
+    virtual void addItem(QString s, const QString& title);
 
-	virtual QString item(int n);
-	virtual QString title(int n);
+    virtual QString item(int n);
+    virtual QString title(int n);
 
-	virtual void setMaxItems(int n_items);
-	virtual int maxItems() { return max_items; }
+    virtual void setMaxItems(int n_items);
+    virtual int maxItems() { return max_items; }
 
-	virtual void fromStringList(const QStringList& list);
+    virtual void fromStringList(const QStringList& list);
 
 protected:
-	int max_items;
+    int max_items;
 };
 
 } // namespace Settings

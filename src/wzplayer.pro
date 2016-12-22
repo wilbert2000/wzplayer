@@ -41,11 +41,11 @@ isEqual(QT_MAJOR_VERSION, 5) {
 
 HEADERS += wzdebug.h \
     version.h \
-	helper.h \
-	colorutils.h \
-	subtracks.h \
-	discname.h \
-	extensions.h \
+    helper.h \
+    colorutils.h \
+    subtracks.h \
+    discname.h \
+    extensions.h \
     player/process/exitmsg.h \
     player/process/process.h \
     player/process/playerprocess.h \
@@ -56,7 +56,7 @@ HEADERS += wzdebug.h \
     player/info/playerinfompv.h \
     player/state.h \
     player/player.h \
-	mediadata.h \
+    mediadata.h \
     settings/paths.h \
     settings/assstyles.h \
     settings/aspectratio.h \
@@ -167,13 +167,13 @@ HEADERS += wzdebug.h \
     app.h
 
 
-SOURCES	+= wzdebug.cpp \
+SOURCES += wzdebug.cpp \
     version.cpp \
-	helper.cpp \
-	colorutils.cpp \
-	subtracks.cpp \
-	discname.cpp \
-	extensions.cpp \
+    helper.cpp \
+    colorutils.cpp \
+    subtracks.cpp \
+    discname.cpp \
+    extensions.cpp \
     player/process/exitmsg.cpp \
     player/process/process.cpp \
     player/process/playerprocess.cpp \
@@ -183,7 +183,7 @@ SOURCES	+= wzdebug.cpp \
     player/info/playerinfomplayer.cpp \
     player/info/playerinfompv.cpp \
     player/player.cpp \
-	mediadata.cpp \
+    mediadata.cpp \
     settings/paths.cpp \
     settings/assstyles.cpp \
     settings/aspectratio.cpp \
@@ -332,22 +332,22 @@ unix {
 }
 
 win32 {
-	!contains(DEFINES, PORTABLE_APP) {
-		DEFINES += USE_ASSOCIATIONS
-	}
-	
-	contains(DEFINES, USE_ASSOCIATIONS) {
+    !contains(DEFINES, PORTABLE_APP) {
+        DEFINES += USE_ASSOCIATIONS
+    }
+
+    contains(DEFINES, USE_ASSOCIATIONS) {
         HEADERS += gui/pref/associations.h winfileassoc.h
         SOURCES += gui/pref/associations.cpp winfileassoc.cpp
         FORMS += gui/pref/associations.ui
-	}
+    }
 
-	contains(TEMPLATE,vcapp) {
-		LIBS += ole32.lib user32.lib
-	} else {
-		LIBS += libole32
-	}
-	
+    contains(TEMPLATE,vcapp) {
+        LIBS += ole32.lib user32.lib
+    } else {
+        LIBS += libole32
+    }
+
     RC_FILE = wzplayer.rc
 }
 

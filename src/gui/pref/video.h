@@ -39,84 +39,84 @@ namespace Gui {
 namespace Pref {
 
 class TVideo : public TWidget, public Ui::TVideo {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
     Player::Info::InfoList vo_list;
 
     TVideo(QWidget* parent, const Player::Info::InfoList& vol);
-	virtual ~TVideo();
+    virtual ~TVideo();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
-	void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
-						   bool keep_driver);
+    void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
+                           bool keep_driver);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	Settings::TPreferences::TPlayerID player_id;
-	QString mplayer_vo;
-	QString mpv_vo;
+    Settings::TPreferences::TPlayerID player_id;
+    QString mplayer_vo;
+    QString mpv_vo;
 
 #if USE_XV_ADAPTORS
-	TDeviceList xv_adaptors;
+    TDeviceList xv_adaptors;
 #endif
 
 #ifndef Q_OS_WIN
-	struct Settings::TPreferences::VDPAU_settings vdpau;
+    struct Settings::TPreferences::VDPAU_settings vdpau;
 #endif
 
-	void createHelp();
+    void createHelp();
 
-	void setVO(const QString& vo_driver);
-	QString VO();
+    void setVO(const QString& vo_driver);
+    QString VO();
 
-	void setHwdec(const QString& v);
-	QString hwdec();
+    void setHwdec(const QString& v);
+    QString hwdec();
 
-	void setSoftwareVideoEqualizer(bool b);
-	bool softwareVideoEqualizer();
+    void setSoftwareVideoEqualizer(bool b);
+    bool softwareVideoEqualizer();
 
-	void setFrameDrop(bool b);
-	bool frameDrop();
+    void setFrameDrop(bool b);
+    bool frameDrop();
 
-	void setHardFrameDrop(bool b);
-	bool hardFrameDrop();
+    void setHardFrameDrop(bool b);
+    bool hardFrameDrop();
 
-	void setInitialPostprocessing(bool b);
-	bool initialPostprocessing();
+    void setInitialPostprocessing(bool b);
+    bool initialPostprocessing();
 
-	void setPostprocessingQuality(int n);
-	int postprocessingQuality();
+    void setPostprocessingQuality(int n);
+    int postprocessingQuality();
 
-	void setInitialDeinterlace(int ID);
-	int initialDeinterlace();
+    void setInitialDeinterlace(int ID);
+    int initialDeinterlace();
 
-	void setInitialDeinterlaceTV(int ID);
-	int initialDeinterlaceTV();
+    void setInitialDeinterlaceTV(int ID);
+    int initialDeinterlaceTV();
 
-	void setInitialZoom(double v);
-	double initialZoom();
+    void setInitialZoom(double v);
+    double initialZoom();
 
 private slots:
-	void onVOComboChanged(int);
+    void onVOComboChanged(int);
 
 #ifndef Q_OS_WIN
-	void on_vdpau_button_clicked();
+    void on_vdpau_button_clicked();
 #endif
 
-	void setMonitorAspect(const QString& asp);
-	QString monitorAspect();
+    void setMonitorAspect(const QString& asp);
+    QString monitorAspect();
 };
 
 } // namespace Pref

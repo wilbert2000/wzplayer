@@ -25,7 +25,7 @@
 
 class ExtensionList : public QStringList {
 public:
-	ExtensionList();
+    ExtensionList();
 
     QString forFilter() const;
     QStringList forDirFilter() const;
@@ -36,8 +36,8 @@ public:
 
 class TExtensions {
 public:
-	TExtensions();
-	virtual ~TExtensions();
+    TExtensions();
+    virtual ~TExtensions();
 
     ExtensionList video() const { return _video; }
     ExtensionList audio() const { return _audio; }
@@ -56,7 +56,7 @@ public:
 protected:
     ExtensionList _video, _audio, _playlists, _subtitles, _images;
     ExtensionList _videoAndAudio; //!< video and audio
-	ExtensionList _all_playable; //!< video, audio and playlist
+    ExtensionList _all_playable; //!< video, audio and playlist
 };
 
 extern TExtensions extensions;

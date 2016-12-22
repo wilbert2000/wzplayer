@@ -36,37 +36,37 @@ class TPlayerInfoMPV : QObject {
     DECLARE_QCLASS_LOGGER
 
 public:
-	TPlayerInfoMPV(const QString& path);
-	virtual ~TPlayerInfoMPV();
+    TPlayerInfoMPV(const QString& path);
+    virtual ~TPlayerInfoMPV();
 
-	void getInfo();
+    void getInfo();
 
-	InfoList voList() { return vo_list; }
-	InfoList aoList() { return ao_list; }
+    InfoList voList() { return vo_list; }
+    InfoList aoList() { return ao_list; }
 
-	InfoList demuxerList() { return demuxer_list; }
-	InfoList vcList() { return vc_list; }
-	InfoList acList() { return ac_list; }
-	QStringList vfList() { return vf_list; }
-	QStringList optionList() { return option_list; }
-
-protected:
-	QList<QByteArray> run(QString options);
-	InfoList getList(const QList<QByteArray> &);
-	QStringList getOptionsList(const QList<QByteArray> &);
+    InfoList demuxerList() { return demuxer_list; }
+    InfoList vcList() { return vc_list; }
+    InfoList acList() { return ac_list; }
+    QStringList vfList() { return vf_list; }
+    QStringList optionList() { return option_list; }
 
 protected:
-	QString bin;
+    QList<QByteArray> run(QString options);
+    InfoList getList(const QList<QByteArray> &);
+    QStringList getOptionsList(const QList<QByteArray> &);
 
-	InfoList vo_list;
-	InfoList ao_list;
+protected:
+    QString bin;
 
-	InfoList demuxer_list;
-	InfoList vc_list;
-	InfoList ac_list;
+    InfoList vo_list;
+    InfoList ao_list;
 
-	QStringList vf_list;
-	QStringList option_list;
+    InfoList demuxer_list;
+    InfoList vc_list;
+    InfoList ac_list;
+
+    QStringList vf_list;
+    QStringList option_list;
 };
 
 } // namespace Info

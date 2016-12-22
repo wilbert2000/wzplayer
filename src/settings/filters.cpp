@@ -22,52 +22,52 @@
 namespace Settings {
 
 TFilters::TFilters() : QObject() {
-	init();
+    init();
 }
 
 TFilters::~TFilters() {
 }
 
 void TFilters::init() {
-	list.clear();
+    list.clear();
 
-	// Video
-	list["noise"] = TFilter("add noise", "noise", "9ah:5ah");
-	list["deblock"] = TFilter("deblock", "pp", "vb/hb");
-	list["gradfun"] = TFilter("gradfun", "gradfun");
-	list["denoise_normal"] = TFilter("normal denoise", "hqdn3d");
-	list["denoise_soft"] = TFilter("soft denoise", "hqdn3d", "2:1:2");
-	list["blur"] = TFilter("blur", "unsharp", "lc:-1.5");
-	list["sharpen"] = TFilter("sharpen", "unsharp", "lc:1.5");
+    // Video
+    list["noise"] = TFilter("add noise", "noise", "9ah:5ah");
+    list["deblock"] = TFilter("deblock", "pp", "vb/hb");
+    list["gradfun"] = TFilter("gradfun", "gradfun");
+    list["denoise_normal"] = TFilter("normal denoise", "hqdn3d");
+    list["denoise_soft"] = TFilter("soft denoise", "hqdn3d", "2:1:2");
+    list["blur"] = TFilter("blur", "unsharp", "lc:-1.5");
+    list["sharpen"] = TFilter("sharpen", "unsharp", "lc:1.5");
 
-	// Audio
-	list["volnorm"] = TFilter("volume normalization", "volnorm", "1");
+    // Audio
+    list["volnorm"] = TFilter("volume normalization", "volnorm", "1");
 }
 
 TFilter TFilters::item(const QString & key) {
-	return list[key];
+    return list[key];
 }
 
 void TFilters::save(QSettings *set) {
-	set->beginGroup("filter_options");
+    set->beginGroup("filter_options");
 
-	QMap<QString, TFilter>::iterator i;
-	for (i = list.begin(); i != list.end(); ++i) {
-		set->setValue(i.key(), i.value().options());
-	}
+    QMap<QString, TFilter>::iterator i;
+    for (i = list.begin(); i != list.end(); ++i) {
+        set->setValue(i.key(), i.value().options());
+    }
 
-	set->endGroup();
+    set->endGroup();
 }
 
 void TFilters::load(QSettings *set) {
-	set->beginGroup("filter_options");
+    set->beginGroup("filter_options");
 
-	QMap<QString, TFilter>::iterator i;
-	for (i = list.begin(); i != list.end(); ++i) {
-		i.value().setOptions(set->value(i.key(), i.value().options()).toString());
-	}
+    QMap<QString, TFilter>::iterator i;
+    for (i = list.begin(); i != list.end(); ++i) {
+        i.value().setOptions(set->value(i.key(), i.value().options()).toString());
+    }
 
-	set->endGroup();
+    set->endGroup();
 }
 
 } // namespace Settings

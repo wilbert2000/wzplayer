@@ -39,11 +39,11 @@ bool Images::has_rcc = false;
 
 QString Images::resourceFilename() {
 
-	QString filename = QString::null;
+    QString filename = QString::null;
 
-	if ((!themes_path.isEmpty()) && (!current_theme.isEmpty())) {
-		filename = themes_path +"/"+ current_theme +"/"+ current_theme +".rcc";
-	}
+    if ((!themes_path.isEmpty()) && (!current_theme.isEmpty())) {
+        filename = themes_path +"/"+ current_theme +"/"+ current_theme +".rcc";
+    }
 
     WZDEBUG("resource file name '" + filename + "'");
     return filename;
@@ -51,76 +51,76 @@ QString Images::resourceFilename() {
 
 void Images::setTheme(const QString& name) {
 
-	current_theme = name;
+    current_theme = name;
 
-	QString dir = TPaths::configPath() + "/themes/" + name;
-	if (QFile::exists(dir)) {
-		setThemesPath(TPaths::configPath() + "/themes/");
-	} else {
-		setThemesPath(TPaths::themesPath());
-	}
+    QString dir = TPaths::configPath() + "/themes/" + name;
+    if (QFile::exists(dir)) {
+        setThemesPath(TPaths::configPath() + "/themes/");
+    } else {
+        setThemesPath(TPaths::themesPath());
+    }
 
-	if (!last_resource_loaded.isEmpty()) {
+    if (!last_resource_loaded.isEmpty()) {
         logger()->debug("setTheme: unloading '" + last_resource_loaded + "'");
-		QResource::unregisterResource(last_resource_loaded);
-		last_resource_loaded = QString::null;
-	}
+        QResource::unregisterResource(last_resource_loaded);
+        last_resource_loaded = QString::null;
+    }
 
-	QString rs_file = resourceFilename();
-	if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
+    QString rs_file = resourceFilename();
+    if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
         WZDEBUG("loading '" + rs_file + "'");
-		QResource::registerResource(rs_file);
-		last_resource_loaded = rs_file;
-		has_rcc = true;
-	} else {
-		has_rcc = false;
-	}
+        QResource::registerResource(rs_file);
+        last_resource_loaded = rs_file;
+        has_rcc = true;
+    } else {
+        has_rcc = false;
+    }
     WZDEBUG("has_rcc " + QString::number(has_rcc));
 }
 
 void Images::setThemesPath(const QString& folder) {
     WZDEBUG("'" + folder + "'");
-	themes_path = folder;
+    themes_path = folder;
 }
 
 QString Images::file(const QString& name) {
 
-	if (name.isEmpty())
-		return "";
+    if (name.isEmpty())
+        return "";
 
-	if (current_theme != pref->iconset) {
-		setTheme(pref->iconset);
-	}
+    if (current_theme != pref->iconset) {
+        setTheme(pref->iconset);
+    }
 
-	QString icon_name;
-	if (!current_theme.isEmpty()) {
-		if (has_rcc)
-			icon_name = ":/" + current_theme + "/"+ name + ".png";
-		else
-			icon_name = themes_path +"/"+ current_theme + "/"+ name + ".png";
-	}
+    QString icon_name;
+    if (!current_theme.isEmpty()) {
+        if (has_rcc)
+            icon_name = ":/" + current_theme + "/"+ name + ".png";
+        else
+            icon_name = themes_path +"/"+ current_theme + "/"+ name + ".png";
+    }
 
-	if (icon_name.isEmpty() || !QFile::exists(icon_name)) {
-		icon_name = ":/default-theme/" + name + ".png";
-	}
+    if (icon_name.isEmpty() || !QFile::exists(icon_name)) {
+        icon_name = ":/default-theme/" + name + ".png";
+    }
 
-	return icon_name;
+    return icon_name;
 }
 
 QPixmap Images::icon(const QString& name, int size) {
 
-	if (name.isEmpty())
+    if (name.isEmpty())
         return QPixmap();
 
-	QString icon_name = file(name);
-	QPixmap p(icon_name);
-	if (p.isNull()) {
+    QString icon_name = file(name);
+    QPixmap p(icon_name);
+    if (p.isNull()) {
         WZTRACE("'" + name + "' not found");
-	} else if (size > 0) {
-		p = resize(&p, size);
-	}
+    } else if (size > 0) {
+        p = resize(&p, size);
+    }
 
-	return p;
+    return p;
 }
 
 QPixmap Images::resize(QPixmap* p, int size) {
@@ -129,38 +129,38 @@ QPixmap Images::resize(QPixmap* p, int size) {
 }
 
 QPixmap Images::flip(QPixmap* p) {
-	return QPixmap::fromImage((*p).toImage().mirrored(true, false));
+    return QPixmap::fromImage((*p).toImage().mirrored(true, false));
 }
 
 QPixmap Images::flippedIcon(const QString& name, int size) {
 
-	QPixmap p = icon(name, size);
-	p = flip(&p);
-	return p;
+    QPixmap p = icon(name, size);
+    p = flip(&p);
+    return p;
 }
 
 QString Images::styleSheet() {
 
-	QString css;
-	QString filename = themesDirectory() + "/main.css";
-	QFile file(filename);
-	if (file.exists()) {
-		file.open(QFile::ReadOnly | QFile::Text);
-		css = QString::fromUtf8(file.readAll().constData());
-	}
-	return css;
+    QString css;
+    QString filename = themesDirectory() + "/main.css";
+    QFile file(filename);
+    if (file.exists()) {
+        file.open(QFile::ReadOnly | QFile::Text);
+        css = QString::fromUtf8(file.readAll().constData());
+    }
+    return css;
 }
 
 QString Images::themesDirectory() {
 
-	QString skin = pref->iconset;
-	QString dirname;
-	if (!skin.isEmpty()) {
-		dirname = TPaths::configPath() + "/themes/" + skin;
-		if (!QFile::exists(dirname)) {
-			dirname = TPaths::themesPath() + "/" + skin ;
-		}
-	}
-	return dirname;
+    QString skin = pref->iconset;
+    QString dirname;
+    if (!skin.isEmpty()) {
+        dirname = TPaths::configPath() + "/themes/" + skin;
+        if (!QFile::exists(dirname)) {
+            dirname = TPaths::themesPath() + "/" + skin ;
+        }
+    }
+    return dirname;
 }
 

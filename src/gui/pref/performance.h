@@ -31,44 +31,44 @@ namespace Gui {
 namespace Pref {
 
 class TPerformance : public TWidget, public Ui::TPerformance {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TPerformance(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TPerformance();
+    TPerformance(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TPerformance();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void createHelp();
+    virtual void createHelp();
 
-	void setCacheForFiles(int n);
-	int cacheForFiles();
+    void setCacheForFiles(int n);
+    int cacheForFiles();
 
-	void setCacheForStreams(int n);
-	int cacheForStreams();
+    void setCacheForStreams(int n);
+    int cacheForStreams();
 
-	void setCacheForDVDs(int n);
-	int cacheForDVDs();
+    void setCacheForDVDs(int n);
+    int cacheForDVDs();
 
-	void setCacheForAudioCDs(int n);
-	int cacheForAudioCDs();
+    void setCacheForAudioCDs(int n);
+    int cacheForAudioCDs();
 
-	void setCacheForVCDs(int n);
-	int cacheForVCDs();
+    void setCacheForVCDs(int n);
+    int cacheForVCDs();
 
-	void setCacheForTV(int n);
-	int cacheForTV();
+    void setCacheForTV(int n);
+    int cacheForTV();
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 };
 
 } // namespace Pref

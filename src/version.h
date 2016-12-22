@@ -24,7 +24,7 @@
 
 class TVersion {
 public:
-	static const QString version;
+    static const QString version;
 };
 
 #endif // VERSION_H

@@ -39,39 +39,39 @@ void ExtensionList::addList(const ExtensionList& list) {
 
 QString ExtensionList::forFilter() const {
 
-	QString s;
+    QString s;
     for (int n = 0; n < count(); n++) {
-		s = s + "*." + at(n) + " ";
-	}
+        s = s + "*." + at(n) + " ";
+    }
     if (!s.isEmpty())
         s = " (" + s + ")";
-	return s;
+    return s;
 }
 
 QStringList ExtensionList::forDirFilter() const {
 
-	QStringList l;
+    QStringList l;
     for (int n = 0; n < count(); n++) {
-		QString s = "*." + at(n);
-		l << s;
-	}
-	return l;
+        QString s = "*." + at(n);
+        l << s;
+    }
+    return l;
 }
 
 QString ExtensionList::forRegExp() const {
 
-	QString s;
+    QString s;
     for (int n = 0; n < count(); n++) {
         if (!s.isEmpty())
             s = s + "|";
-		s = s + "^" + at(n) + "$";
-	}
-	return s;
+        s = s + "^" + at(n) + "$";
+    }
+    return s;
 }
 
 TExtensions::TExtensions() {
 
-	_video << "avi" << "vfw" << "divx" 
+    _video << "avi" << "vfw" << "divx" 
            << "mpg" << "mpeg" << "m1v" << "m2v" << "mpv" << "dv" << "3gp"
            << "mov" << "mp4" << "m4v" << "mqv"
            << "dat" << "vcd"
@@ -89,7 +89,7 @@ TExtensions::TExtensions() {
            << "dts" << "ra" << "ape" << "flac" << "thd" << "mka" << "m4a"
            << "au";
 
-	_subtitles << "srt" << "sub" << "ssa" << "ass" << "idx" << "txt" << "smi"
+    _subtitles << "srt" << "sub" << "ssa" << "ass" << "idx" << "txt" << "smi"
                << "rt" << "utf" << "aqt";
 
     _images << "bmp" << "gif" << "jpg" << "jpeg" << "mj2c" << "mjp2" << "pcx"

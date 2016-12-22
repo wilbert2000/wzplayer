@@ -81,132 +81,132 @@ TUpdateChecker::~TUpdateChecker() {
 void TUpdateChecker::check() {
     WZDEBUG("");
 
-	QNetworkRequest req(check_url);
-	req.setRawHeader("User-Agent", user_agent);
-	QNetworkReply *reply = net_manager->get(req);
-	connect(reply, SIGNAL(finished()), this, SLOT(gotReplyFromUserRequest()));
+    QNetworkRequest req(check_url);
+    req.setRawHeader("User-Agent", user_agent);
+    QNetworkReply *reply = net_manager->get(req);
+    connect(reply, SIGNAL(finished()), this, SLOT(gotReplyFromUserRequest()));
 }
 
 QString TUpdateChecker::parseVersion(const QByteArray& data, const QString& name) {
     debug << "parseVersion: data:\n" << data << debug;
 
-	QTemporaryFile tf;
-	tf.open();
-	tf.write(data);
-	tf.close();
+    QTemporaryFile tf;
+    tf.open();
+    tf.write(data);
+    tf.close();
 
 #ifdef Q_OS_WIN
-	QString group = "windows";
+    QString group = "windows";
 #else
-	QString group = "linux";
+    QString group = "linux";
 #endif
 
-	QSettings set(tf.fileName(), QSettings::IniFormat);
-	set.beginGroup(group);
-	QString version = set.value(name, "").toString();
-	set.endGroup();
-	return version;
+    QSettings set(tf.fileName(), QSettings::IniFormat);
+    set.beginGroup(group);
+    QString version = set.value(name, "").toString();
+    set.endGroup();
+    return version;
 }
 
 void TUpdateChecker::gotReply() {
     WZDEBUG("");
 
-	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
-	if (reply) {
-		if (reply->error() == QNetworkReply::NoError) {
-			QString version = parseVersion(reply->readAll(), "stable");
-			if (!version.isEmpty()) {
-				d->last_checked = QDate::currentDate();
+    if (reply) {
+        if (reply->error() == QNetworkReply::NoError) {
+            QString version = parseVersion(reply->readAll(), "stable");
+            if (!version.isEmpty()) {
+                d->last_checked = QDate::currentDate();
                 WZDEBUG("last known version " + d->last_known_version
                         + ", received version " + version
                         + ", installed version " + TVersion::version);
                 if (d->last_known_version != version
                     && version > TVersion::version) {
                     WZDEBUG("new version found " + version);
-					emit newVersionFound(version);
-				}
-			}
-		} else {
-			//get http status code
+                    emit newVersionFound(version);
+                }
+            }
+        } else {
+            //get http status code
             int status = reply->attribute(
                 QNetworkRequest::HttpStatusCodeAttribute).toInt();
             WZDEBUG("status " + QString::number(status));
-		}
-		reply->deleteLater();
-	}
+        }
+        reply->deleteLater();
+    }
 }
 
 void TUpdateChecker::gotReplyFromUserRequest() {
     WZDEBUG("");
 
-	QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
-	if (reply) {
-		if (reply->error() == QNetworkReply::NoError) {
-			QString version = parseVersion(reply->readAll(), "unstable");
-			if (!version.isEmpty()) {
-				if (version > TVersion::version) {
+    if (reply) {
+        if (reply->error() == QNetworkReply::NoError) {
+            QString version = parseVersion(reply->readAll(), "unstable");
+            if (!version.isEmpty()) {
+                if (version > TVersion::version) {
                     WZDEBUG("new version found: " + version);
-					emit newVersionFound(version);
-				} else {
-					emit noNewVersionFound(version);
-				}
-			} else {
-				emit errorOcurred(1, tr("Failed to get the latest version number"));
-			}
-		} else {
-			int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                    emit newVersionFound(version);
+                } else {
+                    emit noNewVersionFound(version);
+                }
+            } else {
+                emit errorOcurred(1, tr("Failed to get the latest version number"));
+            }
+        } else {
+            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
             WZDEBUG("status " + QString::number(status));
-			emit errorOcurred((int)reply->error(), reply->errorString());
-		}
-		reply->deleteLater();
-	}
+            emit errorOcurred((int)reply->error(), reply->errorString());
+        }
+        reply->deleteLater();
+    }
 }
 
 void TUpdateChecker::saveVersion(QString v) {
-	d->last_known_version = v;
+    d->last_known_version = v;
 }
 
 void TUpdateChecker::reportNewVersionAvailable(const QString& new_version) {
 
-	QWidget* p = qobject_cast<QWidget*>(parent());
+    QWidget* p = qobject_cast<QWidget*>(parent());
 
-	QString git_tag = TVersion::version;
-	QRegExp rx("-g([0-9a-f]+)");
-	if (rx.indexIn(git_tag) >= 0) {
-		git_tag = "<br>" + tr("(You can find your version by searching for %1)").arg(rx.cap(1));
-	} else {
-		git_tag = "";
-	}
-	QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
-		tr("A new version of WZPlayer is available.") + "<br><br>"
-		+ tr("Installed version: %1").arg(TVersion::version) + "<br>"
-		+ tr("Available version: %1").arg(new_version) + "<br><br>"
-		+ tr("Would you like to know more about this new version?")
-		+ git_tag, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    QString git_tag = TVersion::version;
+    QRegExp rx("-g([0-9a-f]+)");
+    if (rx.indexIn(git_tag) >= 0) {
+        git_tag = "<br>" + tr("(You can find your version by searching for %1)").arg(rx.cap(1));
+    } else {
+        git_tag = "";
+    }
+    QMessageBox::StandardButton button = QMessageBox::information(p, tr("New version available"),
+        tr("A new version of WZPlayer is available.") + "<br><br>"
+        + tr("Installed version: %1").arg(TVersion::version) + "<br>"
+        + tr("Available version: %1").arg(new_version) + "<br><br>"
+        + tr("Would you like to know more about this new version?")
+        + git_tag, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
-	if (button == QMessageBox::Yes) {
-		QDesktopServices::openUrl(QUrl(TConfig::URL_CHANGES));
-	}
+    if (button == QMessageBox::Yes) {
+        QDesktopServices::openUrl(QUrl(TConfig::URL_CHANGES));
+    }
 
-	saveVersion(new_version);
+    saveVersion(new_version);
 }
 
 void TUpdateChecker::reportNoNewVersionFound(const QString & version) {
-	QWidget* p = qobject_cast<QWidget*>(parent());
+    QWidget* p = qobject_cast<QWidget*>(parent());
 
-	QMessageBox::information(p, tr("Checking for updates"),
-		tr("Congratulations, WZPlayer is up to date.") + "<br><br>" +
-		tr("Installed version: %1").arg(TVersion::version) + "<br>" +
-		tr("Available version: %1").arg(version));
+    QMessageBox::information(p, tr("Checking for updates"),
+        tr("Congratulations, WZPlayer is up to date.") + "<br><br>" +
+        tr("Installed version: %1").arg(TVersion::version) + "<br>" +
+        tr("Available version: %1").arg(version));
 }
 
 void TUpdateChecker::reportError(int error_number, QString error_str) {
-	QWidget* p = qobject_cast<QWidget*>(parent());
-	QMessageBox::warning(p, tr("Error"), 
-		tr("An error happened while trying to retrieve information about the latest version available.") +
-		"<br>" + tr("Error code: %1").arg(error_number) + "<br>" + error_str);
+    QWidget* p = qobject_cast<QWidget*>(parent());
+    QMessageBox::warning(p, tr("Error"), 
+        tr("An error happened while trying to retrieve information about the latest version available.") +
+        "<br>" + tr("Error code: %1").arg(error_number) + "<br>" + error_str);
 }
 
 } // namespace Gui

@@ -49,12 +49,12 @@ TPlayerInfoMplayer::~TPlayerInfoMplayer() {
 }
 
 void TPlayerInfoMplayer::getInfo() {
-	waiting_for_key = true;
-	vo_list.clear();
-	ao_list.clear();
-	demuxer_list.clear();
+    waiting_for_key = true;
+    vo_list.clear();
+    ao_list.clear();
+    demuxer_list.clear();
 
-	run("-identify -vo help -ao help -demuxer help -vc help -ac help");
+    run("-identify -vo help -ao help -demuxer help -vc help -ac help");
 }
 
 static QRegExp rx_vo_key("^ID_VIDEO_OUTPUTS");
@@ -74,7 +74,7 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
 #if COLOR_OUTPUT_SUPPORT
     QString line = TColorUtils::stripColorsTags(QString::fromLocal8Bit(ba));
 #else
-	QString line = QString::fromLocal8Bit(ba);
+    QString line = QString::fromLocal8Bit(ba);
 #endif
 
     if (line.isEmpty())
@@ -82,114 +82,114 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
 
     // TODO: check early exits
 
-	if (!waiting_for_key) {
-		if ((reading_type == VO) || (reading_type == AO)) {
+    if (!waiting_for_key) {
+        if ((reading_type == VO) || (reading_type == AO)) {
             if (rx_driver.indexIn(line) >= 0) {
-				QString name = rx_driver.cap(1);
-				QString desc = rx_driver.cap(2);
+                QString name = rx_driver.cap(1);
+                QString desc = rx_driver.cap(2);
                 WZDEBUG("found driver: '" + name + "' '" + desc + "'");
                 if (reading_type == VO) {
-					vo_list.append(InfoData(name, desc));
+                    vo_list.append(InfoData(name, desc));
                 } else if (reading_type == AO) {
-					ao_list.append(InfoData(name, desc));
-				}
-			} else {
-                WZDEBUG("skipping line: '" + line + "'");
-			}
-        } else if (reading_type == DEMUXER) {
-            if (rx_demuxer.indexIn(line) >= 0) {
-				QString name = rx_demuxer.cap(1);
-				QString desc = rx_demuxer.cap(3);
-                WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
-				demuxer_list.append(InfoData(name, desc));
-            } else if (rx_demuxer2.indexIn(line) >= 0) {
-				QString name = rx_demuxer2.cap(1);
-				QString desc = rx_demuxer2.cap(2);
-                WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
-				demuxer_list.append(InfoData(name, desc));
+                    ao_list.append(InfoData(name, desc));
+                }
             } else {
                 WZDEBUG("skipping line: '" + line + "'");
-			}
+            }
+        } else if (reading_type == DEMUXER) {
+            if (rx_demuxer.indexIn(line) >= 0) {
+                QString name = rx_demuxer.cap(1);
+                QString desc = rx_demuxer.cap(3);
+                WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
+                demuxer_list.append(InfoData(name, desc));
+            } else if (rx_demuxer2.indexIn(line) >= 0) {
+                QString name = rx_demuxer2.cap(1);
+                QString desc = rx_demuxer2.cap(2);
+                WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
+                demuxer_list.append(InfoData(name, desc));
+            } else {
+                WZDEBUG("skipping line: '" + line + "'");
+            }
         } else if ((reading_type == VC) || (reading_type == AC)) {
             if (rx_codec.indexIn(line) >= 0) {
-				QString name = rx_codec.cap(1);
-				QString desc = rx_codec.cap(4);
+                QString name = rx_codec.cap(1);
+                QString desc = rx_codec.cap(4);
                 WZDEBUG("found codec '" + name + "' '" + desc + "'");
                 if (reading_type == VC) {
-					vc_list.append(InfoData(name, desc));
+                    vc_list.append(InfoData(name, desc));
                 } else if (reading_type == AC) {
-					ac_list.append(InfoData(name, desc));
-				}
-			} else {
+                    ac_list.append(InfoData(name, desc));
+                }
+            } else {
                 WZDEBUG("skipping line '" + line + "'");
-			}
-		}
-	}
+            }
+        }
+    }
 
     if (rx_vo_key.indexIn(line) >= 0) {
-		reading_type = VO;
-		waiting_for_key = false;
+        reading_type = VO;
+        waiting_for_key = false;
         WZDEBUG("found key vo");
-	}
+    }
 
     if (rx_ao_key.indexIn(line) >= 0) {
-		reading_type = AO;
-		waiting_for_key = false;
+        reading_type = AO;
+        waiting_for_key = false;
         WZDEBUG("found key ao");
-	}
+    }
 
     if (rx_demuxer_key.indexIn(line) >= 0) {
-		reading_type = DEMUXER;
-		waiting_for_key = false;
+        reading_type = DEMUXER;
+        waiting_for_key = false;
         WZDEBUG("found key demuxer");
-	}
+    }
 
     if (rx_ac_key.indexIn(line) >= 0) {
-		reading_type = AC;
-		waiting_for_key = false;
+        reading_type = AC;
+        waiting_for_key = false;
         WZDEBUG("found key ac");
-	}
+    }
 
     if (rx_vc_key.indexIn(line) >= 0) {
-		reading_type = VC;
-		waiting_for_key = false;
+        reading_type = VC;
+        waiting_for_key = false;
         WZDEBUG("found key vc");
-	}
+    }
 }
 
 bool TPlayerInfoMplayer::run(QString options) {
     WZDEBUG("'" + options + "'");
 
-	if (proc->state() == QProcess::Running) {
+    if (proc->state() == QProcess::Running) {
         WZWARN("process already running");
-		return false;
-	}
+        return false;
+    }
 
-	QStringList args = options.split(" ");
+    QStringList args = options.split(" ");
 
-	proc->start(bin, args);
-	if (!proc->waitForStarted()) {
+    proc->start(bin, args);
+    if (!proc->waitForStarted()) {
         WZWARN("process can't start!");
-		return false;
-	}
+        return false;
+    }
 
-	//Wait until finish
-	if (!proc->waitForFinished()) {
+    //Wait until finish
+    if (!proc->waitForFinished()) {
         WZWARN("process did not finish. Killing it...");
-		proc->kill();
-	}
+        proc->kill();
+    }
 
     WZDEBUG("terminating");
 
-	QByteArray ba;
-	while (proc->canReadLine()) {
-		ba = proc->readLine();
-		ba.replace("\n", "");
-		ba.replace("\r", "");
-		readLine(ba);
-	}
+    QByteArray ba;
+    while (proc->canReadLine()) {
+        ba = proc->readLine();
+        ba.replace("\n", "");
+        ba.replace("\r", "");
+        readLine(ba);
+    }
 
-	return true;
+    return true;
 }
 
 } // namespace Info

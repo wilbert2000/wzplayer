@@ -32,26 +32,26 @@ namespace Settings {
 QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 
     QString hash = TFileHash::calculateHash(filename);
-	if (hash.isEmpty()) {
-		return QString();
-	}
+    if (hash.isEmpty()) {
+        return QString();
+    }
 
-	QString dir_name = TPaths::configPath() + "/file_settings/" + hash[0];
-	QDir dir(TPaths::configPath());
-	if (!dir.exists(dir_name)) {
-		if (!dir.mkpath(dir_name)) {
+    QString dir_name = TPaths::configPath() + "/file_settings/" + hash[0];
+    QDir dir(TPaths::configPath());
+    if (!dir.exists(dir_name)) {
+        if (!dir.mkpath(dir_name)) {
             Log4Qt::Logger::logger("Settings::TFileSettingsHash")->warn(
                 "iniFilenameFor: failed to create directory '"
                 + dir_name + "'");
-			return QString();
-		}
-	}
+            return QString();
+        }
+    }
 
-	return dir_name + "/" + hash + ".ini";
+    return dir_name + "/" + hash + ".ini";
 }
 
 TFileSettingsHash::TFileSettingsHash(const QString& filename) :
-	TFileSettingsBase(TFileSettingsHash::iniFilenameFor(filename)) {
+    TFileSettingsBase(TFileSettingsHash::iniFilenameFor(filename)) {
 }
 
 TFileSettingsHash::~TFileSettingsHash() {
@@ -60,26 +60,26 @@ TFileSettingsHash::~TFileSettingsHash() {
 bool TFileSettingsHash::existSettingsFor(const QString& filename) {
     WZDEBUG("'" + filename + "'");
 
-	QString config_file = iniFilenameFor(filename);
+    QString config_file = iniFilenameFor(filename);
     WZDEBUG("config_file: '" + config_file + "'");
-	return QFile::exists(config_file);
+    return QFile::exists(config_file);
 }
 
 void TFileSettingsHash::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
     WZDEBUG("'" + filename + "'");
 
-	beginGroup("file_settings");
+    beginGroup("file_settings");
     mset.load(this);
-	endGroup();
+    endGroup();
 }
 
 void TFileSettingsHash::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
     WZDEBUG("'" + filename + "'");
 
-	beginGroup("file_settings");
+    beginGroup("file_settings");
     mset.save(this);
-	endGroup();
-	sync();
+    endGroup();
+    sync();
 }
 
 } // namespace Settings

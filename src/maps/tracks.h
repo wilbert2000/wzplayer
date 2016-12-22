@@ -30,29 +30,29 @@ namespace Maps {
 
 class TTrackData : public TData {
 public:
-	TTrackData() {}
-	virtual ~TTrackData() {}
+    TTrackData() {}
+    virtual ~TTrackData() {}
 
-	QString getLang() const { return lang; }
-	QString getName() const { return name; }
+    QString getLang() const { return lang; }
+    QString getName() const { return name; }
 
-	void setLang(const QString& aLang) { lang = aLang; }
-	void setName(const QString& aName) { name = aName; }
+    void setLang(const QString& aLang) { lang = aLang; }
+    void setName(const QString& aName) { name = aName; }
 
-	void set(int id, const QString &aLang, const QString &aName) {
-		ID = id;
-		lang = aLang;
-		name = aName;
-	}
+    void set(int id, const QString &aLang, const QString &aName) {
+        ID = id;
+        lang = aLang;
+        name = aName;
+    }
 
 
-	QString getDisplayName() const;
+    QString getDisplayName() const;
 
 protected:
-	/* Language code: es, en, etc. */
-	QString lang;
-	/* spanish, english... */
-	QString name;
+    /* Language code: es, en, etc. */
+    QString lang;
+    /* spanish, english... */
+    QString name;
 };
 
 
@@ -61,23 +61,23 @@ public:
     TTracks();
     virtual ~TTracks();
 
-	typedef QMapIterator<int, TTrackData> TTrackIterator;
+    typedef QMapIterator<int, TTrackData> TTrackIterator;
 
-	TTrackIterator getIterator() const { return TTrackIterator(*this); }
+    TTrackIterator getIterator() const { return TTrackIterator(*this); }
 
-	void list() const;
+    void list() const;
 
-	void addLang(int id, const QString &lang);
-	void addName(int id, const QString &name);
-	void addTrack(int id, const QString &lang, const QString &name);
+    void addLang(int id, const QString &lang);
+    void addName(int id, const QString &name);
+    void addTrack(int id, const QString &lang, const QString &name);
 
-	// For mplayer
-	bool updateTrack(int id, const QString &field, const QString &value);
-	// For both
-	bool updateTrack(int ID, const QString &lang, const QString &name, bool selected);
+    // For mplayer
+    bool updateTrack(int id, const QString &field, const QString &value);
+    // For both
+    bool updateTrack(int ID, const QString &lang, const QString &name, bool selected);
 
-	// Select a track matching expr if only one track matches
-	int findLangID(QString expr) const;
+    // Select a track matching expr if only one track matches
+    int findLangID(QString expr) const;
  private:
     Log4Qt::Logger* logger;
 };

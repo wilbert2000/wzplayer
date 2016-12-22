@@ -33,65 +33,65 @@ namespace Gui {
 namespace Pref {
 
 class TSubtitles : public TWidget, public Ui::TSubtitles {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TSubtitles(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TSubtitles();
+    TSubtitles(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TSubtitles();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	void setForceAssStyles(bool b);
-	bool forceAssStyles();
+    void setForceAssStyles(bool b);
+    bool forceAssStyles();
 
-	void setCustomizedAssStyle(const QString& style) { forced_ass_style = style; }
-	QString customizedAssStyle() const { return forced_ass_style; }
+    void setCustomizedAssStyle(const QString& style) { forced_ass_style = style; }
+    QString customizedAssStyle() const { return forced_ass_style; }
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	Encodings* encodings;
-	QString forced_ass_style;
-	bool enable_border_spins;
+    Encodings* encodings;
+    QString forced_ass_style;
+    bool enable_border_spins;
 
-	void createHelp();
+    void createHelp();
 
-	void setFuzziness(int n);
-	int fuzziness();
+    void setFuzziness(int n);
+    int fuzziness();
 
-	void setSubtitleLanguage(const QString& lang);
-	QString subtitleLanguage();
+    void setSubtitleLanguage(const QString& lang);
+    QString subtitleLanguage();
 
-	void setSelectFirstSubtitle(bool v);
-	bool selectFirstSubtitle();
+    void setSelectFirstSubtitle(bool v);
+    bool selectFirstSubtitle();
 
-	void setEncaLang(const QString& s);
-	QString encaLang();
+    void setEncaLang(const QString& s);
+    QString encaLang();
 
-	void setEncodingFallback(const QString& s);
-	QString encodingFallback();
+    void setEncodingFallback(const QString& s);
+    QString encodingFallback();
 
-	void setAssFontScale(double n);
-	double assFontScale();
+    void setAssFontScale(double n);
+    double assFontScale();
 
-	void setAssLineSpacing(int spacing);
-	int assLineSpacing();
+    void setAssLineSpacing(int spacing);
+    int assLineSpacing();
 
 private slots:
-	void onWindowsFontDirCheckToggled(bool b);
-	void onUseCustomStyleToggled(bool b);
-	void onBorderStyleCurrentIndexChanged(int index);
-	void onAssCustomizeButtonClicked();
+    void onWindowsFontDirCheckToggled(bool b);
+    void onUseCustomStyleToggled(bool b);
+    void onBorderStyleCurrentIndexChanged(int index);
+    void onAssCustomizeButtonClicked();
 };
 
 } // namespace Pref

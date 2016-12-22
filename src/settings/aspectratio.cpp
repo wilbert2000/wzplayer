@@ -6,15 +6,15 @@ namespace Settings {
 
 // List of aspect ratios
 const double TAspectRatio::RATIOS[] = {
-	1.0,
-	(double) 5 / 4,   // 1.2
-	(double) 4 / 3,   // 1.3r
-	(double) 11 / 8,  // 1.375
-	(double) 14 / 10, // 1.4
-	(double) 3 / 2,   // 1.5
-	(double) 14 / 9,  // 1.5r
-	(double) 16 / 10, // 1.6
-	(double) 16 / 9,  // 1.7r
+    1.0,
+    (double) 5 / 4,   // 1.2
+    (double) 4 / 3,   // 1.3r
+    (double) 11 / 8,  // 1.375
+    (double) 14 / 10, // 1.4
+    (double) 3 / 2,   // 1.5
+    (double) 14 / 9,  // 1.5r
+    (double) 16 / 10, // 1.6
+    (double) 16 / 9,  // 1.7r
     2,
     2.35
 };
@@ -37,43 +37,43 @@ const char* TAspectRatio::RATIO_NAMES[] = {
 // Convert saved aspect back to TMenuID
 TAspectRatio::TMenuID TAspectRatio::variantToTMenuID(const QVariant& id) {
 
-	int i = id.toInt();
-	if (i >= 0 && i <= MAX_MENU_ID) {
-		return (TMenuID) i;
-	}
-	return AspectAuto;
+    int i = id.toInt();
+    if (i >= 0 && i <= MAX_MENU_ID) {
+        return (TMenuID) i;
+    }
+    return AspectAuto;
 }
 
 // Create pretty string for aspect double, like 0.75 becomes "4:3 (0.75)"
 QString TAspectRatio::doubleToString(double aspect) {
 
-	if (aspect == -1) {
-		return tr("Unknown");
-	}
+    if (aspect == -1) {
+        return tr("Unknown");
+    }
 
-	for(unsigned int i = 0; i < RATIOS_COUNT; i++) {
-		if (qAbs(aspect - RATIOS[i]) < 0.0001) {
-			QString s = RATIO_NAMES[i];
-			s.replace("&", "");
-			return tr("%1 (%2)").arg(s, QString::number(aspect));
-		}
-	}
+    for(unsigned int i = 0; i < RATIOS_COUNT; i++) {
+        if (qAbs(aspect - RATIOS[i]) < 0.0001) {
+            QString s = RATIO_NAMES[i];
+            s.replace("&", "");
+            return tr("%1 (%2)").arg(s, QString::number(aspect));
+        }
+    }
 
-	return QString::number(aspect);
+    return QString::number(aspect);
 }
 
 // Get string to use in menu. Note: id is not a TMenuID!
 QString TAspectRatio::aspectIDToString(int id) {
 
-	QString name = tr(RATIO_NAMES[id]);
-	double aspect = RATIOS[id];
+    QString name = tr(RATIO_NAMES[id]);
+    double aspect = RATIOS[id];
     return name + "\t" + tr("(%1)").arg(aspect);
 }
 
 
 TAspectRatio::TAspectRatio()
-	: QObject()
-	, id(AspectAuto) {
+    : QObject()
+    , id(AspectAuto) {
 }
 
 TAspectRatio::TMenuID TAspectRatio::nextMenuID() const {
@@ -115,52 +115,52 @@ double TAspectRatio::menuIDToDouble(Settings::TAspectRatio::TMenuID id) {
 }
 
 double TAspectRatio::toDouble() const {
-	return menuIDToDouble(id);
+    return menuIDToDouble(id);
 }
 
 QString TAspectRatio::toString() const {
 
-	QString name;
+    QString name;
 
-	switch (id) {
-		case AspectNone: name = tr("disabled"); break;
-		case Aspect43: name = "4:3"; break;
-		case Aspect169: name = "16:9"; break;
-		case Aspect149: name = "14:9"; break;
-		case Aspect1610: name = "16:10"; break;
-		case Aspect54: name = "5:4"; break;
-		case Aspect235: name = QString(RATIO_NAMES[9]).replace("&", ""); break;
-		case Aspect11: name = "1:1"; break;
-		case Aspect32: name = "3:2"; break;
-		case Aspect1410: name = "14:10"; break;
-		case Aspect118: name = "11:8"; break;
-		case AspectAuto: name = tr("auto"); break;
-		default: name = tr("unknown");
-	}
+    switch (id) {
+        case AspectNone: name = tr("disabled"); break;
+        case Aspect43: name = "4:3"; break;
+        case Aspect169: name = "16:9"; break;
+        case Aspect149: name = "14:9"; break;
+        case Aspect1610: name = "16:10"; break;
+        case Aspect54: name = "5:4"; break;
+        case Aspect235: name = QString(RATIO_NAMES[9]).replace("&", ""); break;
+        case Aspect11: name = "1:1"; break;
+        case Aspect32: name = "3:2"; break;
+        case Aspect1410: name = "14:10"; break;
+        case Aspect118: name = "11:8"; break;
+        case AspectAuto: name = tr("auto"); break;
+        default: name = tr("unknown");
+    }
 
-	return name;
+    return name;
 }
 
 QString TAspectRatio::toOption() const {
 
-	// Could use float, but prefer exact
-	QString option;
-	switch (id) {
-		case AspectNone: option = "0"; break;
-		case Aspect43: option = "4:3"; break;
-		case Aspect169: option = "16:9"; break;
-		case Aspect149: option = "14:9"; break;
-		case Aspect1610: option = "16:10"; break;
-		case Aspect54: option = "5:4"; break;
-		case Aspect235: option = "2.35:1"; break;
-		case Aspect11: option = "1:1"; break;
-		case Aspect32: option = "3:2"; break;
-		case Aspect1410: option = "14:10"; break;
-		case Aspect118: option = "11:8"; break;
-		default: ;
-	}
+    // Could use float, but prefer exact
+    QString option;
+    switch (id) {
+        case AspectNone: option = "0"; break;
+        case Aspect43: option = "4:3"; break;
+        case Aspect169: option = "16:9"; break;
+        case Aspect149: option = "14:9"; break;
+        case Aspect1610: option = "16:10"; break;
+        case Aspect54: option = "5:4"; break;
+        case Aspect235: option = "2.35:1"; break;
+        case Aspect11: option = "1:1"; break;
+        case Aspect32: option = "3:2"; break;
+        case Aspect1410: option = "14:10"; break;
+        case Aspect118: option = "11:8"; break;
+        default: ;
+    }
 
-	return option;
+    return option;
 }
 
 } // namespace Settings

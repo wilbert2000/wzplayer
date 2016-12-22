@@ -25,27 +25,27 @@
 namespace Gui { namespace Pref {
 
 class TVDPAUProperties : public QDialog, public Ui::TVDPAUProperties {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TVDPAUProperties(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TVDPAUProperties();
+    TVDPAUProperties(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TVDPAUProperties();
 
-	void setffh264vdpau(bool b);
-	void setffmpeg12vdpau(bool b);
-	void setffwmv3vdpau(bool b);
-	void setffvc1vdpau(bool b);
-	void setffodivxvdpau(bool b);
+    void setffh264vdpau(bool b);
+    void setffmpeg12vdpau(bool b);
+    void setffwmv3vdpau(bool b);
+    void setffvc1vdpau(bool b);
+    void setffodivxvdpau(bool b);
 
-	void setDisableFilters(bool b);
+    void setDisableFilters(bool b);
 
-	bool ffh264vdpau();
-	bool ffmpeg12vdpau();
-	bool ffwmv3vdpau();
-	bool ffvc1vdpau();
-	bool ffodivxvdpau();
+    bool ffh264vdpau();
+    bool ffmpeg12vdpau();
+    bool ffwmv3vdpau();
+    bool ffvc1vdpau();
+    bool ffodivxvdpau();
 
-	bool disableFilters();
+    bool disableFilters();
 };
 
 }} // namespace Gui::Pref

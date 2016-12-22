@@ -58,16 +58,16 @@ void TInfoFile::setMetaData(const QString& filename) {
 
 QString TInfoFile::formatSize(qint64 size) {
 
-	const qint64 MB = 1024 * 1024;
+    const qint64 MB = 1024 * 1024;
 
-	QLocale locale;
-	if (size < MB) {
-		double kb = (double) size / 1024;
+    QLocale locale;
+    if (size < MB) {
+        double kb = (double) size / 1024;
         return tr("%1 KiB (%2 bytes)").arg(locale.toString(kb, 'f', 2),
                                            locale.toString(size));
-	}
+    }
 
-	double mb = (double) size / MB;
+    double mb = (double) size / MB;
     return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2),
                                        locale.toString(size));
 }
@@ -100,31 +100,31 @@ void TInfoFile::addTracks(QString& s,
 
 QString TInfoFile::getInfo(const TMediaData& md) {
 
-	// General
-	QFileInfo fi(md.filename);
+    // General
+    QFileInfo fi(md.filename);
 
-	QString icon;
-	switch (md.selected_type) {
-		case TMediaData::TYPE_FILE:
-			if (md.noVideo()) {
-				if (md.noAudio()) {
-					icon = "type_unknown";
-				} else {
-					icon = "type_audio";
-				}
-			} else {
-				icon = "type_video";
-			}
-			break;
-		case TMediaData::TYPE_DVD:		icon = "type_dvd"; break;
-		case TMediaData::TYPE_DVDNAV:	icon = "type_dvd"; break;
-		case TMediaData::TYPE_VCD:		icon = "type_vcd"; break;
-		case TMediaData::TYPE_CDDA:		icon = "type_vcd"; break;
-		case TMediaData::TYPE_TV:		icon = "type_tv"; break;
-		case TMediaData::TYPE_STREAM:	icon = "type_url"; break;
-		case TMediaData::TYPE_BLURAY:	icon = "type_bluray"; break;
-		default:						icon = "type_unknown";
-	}
+    QString icon;
+    switch (md.selected_type) {
+        case TMediaData::TYPE_FILE:
+            if (md.noVideo()) {
+                if (md.noAudio()) {
+                    icon = "type_unknown";
+                } else {
+                    icon = "type_audio";
+                }
+            } else {
+                icon = "type_video";
+            }
+            break;
+        case TMediaData::TYPE_DVD:        icon = "type_dvd"; break;
+        case TMediaData::TYPE_DVDNAV:    icon = "type_dvd"; break;
+        case TMediaData::TYPE_VCD:        icon = "type_vcd"; break;
+        case TMediaData::TYPE_CDDA:        icon = "type_vcd"; break;
+        case TMediaData::TYPE_TV:        icon = "type_tv"; break;
+        case TMediaData::TYPE_STREAM:    icon = "type_url"; break;
+        case TMediaData::TYPE_BLURAY:    icon = "type_bluray"; break;
+        default:                        icon = "type_unknown";
+    }
 
     QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
     s += "<h1><img src=\"" + Images::file(icon) + "\">" + md.displayName()
@@ -250,8 +250,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
             QString t;
             switch (md.subs.itemAt(n).type()) {
                 case SubData::File: t = tr("file"); break;
-                case SubData::Vob:	t = tr("VOB"); break;
-                default:			t = tr("demuxer"); break;
+                case SubData::Vob:    t = tr("VOB"); break;
+                default:            t = tr("demuxer"); break;
             }
             s += "<tr><th align=\"left\">" + QString::number(n) + "</th>";
             if (Settings::pref->isMPlayer()) {

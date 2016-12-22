@@ -13,41 +13,41 @@ class TActionGroup;
 namespace Menu {
 
 class TMenuVideoFilter : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
 public:
     explicit TMenuVideoFilter(TMainWindow* mw);
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    virtual void onAboutToShow();
 private:
-	QActionGroup* group;
-	TAction* postProcessingAct;
-	TAction* deblockAct;
-	TAction* deringAct;
-	TAction* gradfunAct;
-	TAction* addNoiseAct;
-	TAction* addLetterboxAct;
-	TAction* upscaleAct;
-	TAction* phaseAct;
+    QActionGroup* group;
+    TAction* postProcessingAct;
+    TAction* deblockAct;
+    TAction* deringAct;
+    TAction* gradfunAct;
+    TAction* addNoiseAct;
+    TAction* addLetterboxAct;
+    TAction* upscaleAct;
+    TAction* phaseAct;
 
-	// Denoise Action Group
-	TActionGroup* denoiseGroup;
-	TAction* denoiseNoneAct;
-	TAction* denoiseNormalAct;
-	TAction* denoiseSoftAct;
+    // Denoise Action Group
+    TActionGroup* denoiseGroup;
+    TAction* denoiseNoneAct;
+    TAction* denoiseNormalAct;
+    TAction* denoiseSoftAct;
 
-	// Blur-sharpen group
-	TActionGroup* unsharpGroup;
-	TAction* unsharpNoneAct;
-	TAction* blurAct;
-	TAction* sharpenAct;
+    // Blur-sharpen group
+    TActionGroup* unsharpGroup;
+    TAction* unsharpNoneAct;
+    TAction* blurAct;
+    TAction* sharpenAct;
 
-	void updateFilters();
+    void updateFilters();
 
 private slots:
-	void onAboutToShowDenoise();
-	void onAboutToShowUnSharp();
+    void onAboutToShowDenoise();
+    void onAboutToShowUnSharp();
 }; // class TMenuVideoFilter
 
 } // namespace Menu

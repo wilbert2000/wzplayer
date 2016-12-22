@@ -37,62 +37,62 @@ namespace Action {
 typedef QList<QKeySequence> TShortCutList;
 
 class TActionsEditor : public QWidget {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TActionsEditor();
+    TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TActionsEditor();
 
-	// Clear the actionlist
-	void clear();
-	void addActions(QWidget* widget);
+    // Clear the actionlist
+    void clear();
+    void addActions(QWidget* widget);
     QString findShortcutsAction(const QString& shortcuts);
 
-	// Static functions
-	static QString actionTextToDescription(const QString& text, const QString& action_name);
+    // Static functions
+    static QString actionTextToDescription(const QString& text, const QString& action_name);
 
     static void saveToConfig(QSettings* set, QObject* o);
     static void loadFromConfig(QSettings* set, const TActionList& all_actions);
 
 public slots:
-	void applyChanges();
-	void saveActionsTable();
-	bool saveActionsTable(const QString& filename);
-	void loadActionsTable();
-	bool loadActionsTable(const QString& filename);
+    void applyChanges();
+    void saveActionsTable();
+    bool saveActionsTable(const QString& filename);
+    void loadActionsTable();
+    bool loadActionsTable(const QString& filename);
 
-	void updateView();
+    void updateView();
 
 protected:
-	virtual void retranslateStrings();
-	virtual void resizeEvent(QResizeEvent* event);
+    virtual void retranslateStrings();
+    virtual void resizeEvent(QResizeEvent* event);
 
-	// Find in table, not in actionslist
-	int findActionName(const QString& name);
+    // Find in table, not in actionslist
+    int findActionName(const QString& name);
     int findShortcuts(const QString& accel, int ignoreRow = -1);
-	bool hasConflicts();
-	static bool containsShortcut(const QString& accel, const QString& shortcut);
+    bool hasConflicts();
+    static bool containsShortcut(const QString& accel, const QString& shortcut);
 
 protected slots:
-	void editShortcut();
+    void editShortcut();
 
 private:
 
-	enum TActionCols {
-		COL_CONFLICTS = 0,
-		COL_ACTION = 1,
-		COL_DESC = 2,
-		COL_SHORTCUT = 3,
-		COL_COUNT = 4
-	};
+    enum TActionCols {
+        COL_CONFLICTS = 0,
+        COL_ACTION = 1,
+        COL_DESC = 2,
+        COL_SHORTCUT = 3,
+        COL_COUNT = 4
+    };
 
-	QTableWidget* actionsTable;
-	TActionList actionsList;
-	QPushButton* saveButton;
-	QPushButton* loadButton;
-	QPushButton* editButton;
-	QString latest_dir;
+    QTableWidget* actionsTable;
+    TActionList actionsList;
+    QPushButton* saveButton;
+    QPushButton* loadButton;
+    QPushButton* editButton;
+    QString latest_dir;
 
     static QString keyToString(QKeySequence key);
     static QKeySequence stringToKey(QString s);
@@ -101,7 +101,7 @@ private:
 
     static QString actionToString(QAction *action);
     static void setActionFromString(QAction* action, const QString& s, const TActionList& actions);
-	static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
+    static void removeShortcuts(const TActionList& actions, const TShortCutList& shortcuts, QAction* skip_action);
 
     static QAction* findAction(const TActionList& actions, const QString& name);
 

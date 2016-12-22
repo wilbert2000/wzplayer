@@ -36,31 +36,31 @@ class TUpdateChecker : public QObject {
 
 public:
     TUpdateChecker(QWidget* parent, Settings::TUpdateCheckerData* data);
-	virtual ~TUpdateChecker();
+    virtual ~TUpdateChecker();
 
-	void check();
+    void check();
 
 protected slots:
-	void gotReply();
-	void gotReplyFromUserRequest();
-	void reportNewVersionAvailable(const QString &);
-	void reportNoNewVersionFound(const QString &);
-	void reportError(int, QString);
+    void gotReply();
+    void gotReplyFromUserRequest();
+    void reportNewVersionAvailable(const QString &);
+    void reportNoNewVersionFound(const QString &);
+    void reportError(int, QString);
 
 signals:
-	void newVersionFound(const QString & new_version);
-	void noNewVersionFound(const QString & version);
-	void errorOcurred(int error_number, QString error_str);
+    void newVersionFound(const QString & new_version);
+    void noNewVersionFound(const QString & version);
+    void errorOcurred(int error_number, QString error_str);
 
 protected:
-	void saveVersion(QString v);
+    void saveVersion(QString v);
     QString parseVersion(const QByteArray& data, const QString& name);
 
-	QNetworkAccessManager* net_manager;
+    QNetworkAccessManager* net_manager;
     Settings::TUpdateCheckerData* d;
 
-	QUrl check_url;
-	QByteArray user_agent;
+    QUrl check_url;
+    QByteArray user_agent;
 };
 
 } // namespace Gui

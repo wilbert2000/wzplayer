@@ -25,14 +25,14 @@ namespace Gui {
 
 class TInputDVDDirectory : public QDialog, public Ui::TInputDVDDirectory
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TInputDVDDirectory(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TInputDVDDirectory();
+    TInputDVDDirectory(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TInputDVDDirectory();
 
-	void setFolder(QString folder);
-	QString folder();
+    void setFolder(QString folder);
+    QString folder();
 
 protected slots:
     void on_searchButton_clicked();

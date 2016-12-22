@@ -29,16 +29,16 @@ namespace Settings {
 
 class TUpdateCheckerData {
 public:
-	TUpdateCheckerData();
-	virtual ~TUpdateCheckerData();
+    TUpdateCheckerData();
+    virtual ~TUpdateCheckerData();
 
-	void save(QSettings* set);
-	void load(QSettings* set);
+    void save(QSettings* set);
+    void load(QSettings* set);
 
-	QDate last_checked;
-	bool enabled;
-	int days_to_check;
-	QString last_known_version;
+    QDate last_checked;
+    bool enabled;
+    int days_to_check;
+    QString last_known_version;
 };
 
 } // namespace Settings

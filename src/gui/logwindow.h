@@ -28,28 +28,28 @@ namespace Gui {
 class TLogWindowAppender;
 
 class TLogWindow : public QWidget, public Ui::TLogWindow {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TLogWindow(QWidget* parent);
-	virtual ~TLogWindow();
+    virtual ~TLogWindow();
 
-	virtual void loadConfig();
-	virtual void saveConfig();
+    virtual void loadConfig();
+    virtual void saveConfig();
 
-	void retranslateStrings();
+    void retranslateStrings();
 
     static TLogWindowAppender* appender;
 
 
 signals:
-	void visibilityChanged(bool visible);
+    void visibilityChanged(bool visible);
 
 protected:
-	virtual void showEvent(QShowEvent*);
-	virtual void hideEvent(QShowEvent*);
-	virtual void closeEvent(QCloseEvent* event);
+    virtual void showEvent(QShowEvent*);
+    virtual void hideEvent(QShowEvent*);
+    virtual void closeEvent(QCloseEvent* event);
 
 protected slots:
     void onSaveButtonClicked();

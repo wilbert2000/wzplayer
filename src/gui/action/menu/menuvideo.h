@@ -18,7 +18,7 @@ class TActionGroup;
 namespace Menu {
 
 class TMenuVideo : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
 public:
     TMenuVideo(TMainWindow* mw,
                TPlayerWindow* playerwindow,
@@ -28,31 +28,31 @@ protected:
     virtual void enableActions();
 
 private:
-	TAction* fullscreenAct;
-	TAction* exitFullscreenAct;
+    TAction* fullscreenAct;
+    TAction* exitFullscreenAct;
 
-	TAction* equalizerAct;
-	TAction* resetVideoEqualizerAct;
+    TAction* equalizerAct;
+    TAction* resetVideoEqualizerAct;
 
-	TAction* decContrastAct;
-	TAction* incContrastAct;
-	TAction* decBrightnessAct;
-	TAction* incBrightnessAct;
-	TAction* decHueAct;
-	TAction* incHueAct;
-	TAction* decSaturationAct;
-	TAction* incSaturationAct;
-	TAction* decGammaAct;
-	TAction* incGammaAct;
+    TAction* decContrastAct;
+    TAction* incContrastAct;
+    TAction* decBrightnessAct;
+    TAction* incBrightnessAct;
+    TAction* decHueAct;
+    TAction* incHueAct;
+    TAction* decSaturationAct;
+    TAction* incSaturationAct;
+    TAction* decGammaAct;
+    TAction* incGammaAct;
 
-	TAction* stereo3DAct;
+    TAction* stereo3DAct;
 
-	TAction* screenshotAct;
-	TAction* screenshotsAct;
-	TAction * capturingAct;
+    TAction* screenshotAct;
+    TAction* screenshotsAct;
+    TAction * capturingAct;
 
 private slots:
-	void onFullscreenChanged();
+    void onFullscreenChanged();
 }; // class TMenuVideo
 
 } // namespace Menu

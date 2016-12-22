@@ -28,36 +28,36 @@ class QTextEdit;
 namespace Gui {
 
 class THelpWindow : public QWidget, public Ui::THelpWindow {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     THelpWindow(QWidget* parent, const QString& name);
     virtual ~THelpWindow();
 
-	virtual void loadConfig();
-	virtual void saveConfig();
+    virtual void loadConfig();
+    virtual void saveConfig();
 
-	void setText(const QString& log);
-	QString text();
+    void setText(const QString& log);
+    QString text();
 
-	void setHtml(const QString& text);
-	QString html();
+    void setHtml(const QString& text);
+    QString html();
 
-	void clear();
+    void clear();
 
-	void appendText(const QString& text);
-	void appendHtml(const QString& text);
+    void appendText(const QString& text);
+    void appendHtml(const QString& text);
 
-	void retranslateStrings();
+    void retranslateStrings();
 
 signals:
-	void visibilityChanged(bool visible);
+    void visibilityChanged(bool visible);
 
 protected:
-	virtual void showEvent(QShowEvent*);
-	virtual void hideEvent(QShowEvent*);
-	virtual void closeEvent(QCloseEvent* event);
+    virtual void showEvent(QShowEvent*);
+    virtual void hideEvent(QShowEvent*);
+    virtual void closeEvent(QCloseEvent* event);
 
 protected slots:
     void onCopyButtonClicked();

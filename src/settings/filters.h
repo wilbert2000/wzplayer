@@ -31,51 +31,51 @@ namespace Settings {
 
 class TFilter {
 public:
-	TFilter() {}
-	TFilter(QString tr_name, QString name, QString options = QString::null) {
-		_tr_name = tr_name; _name = name; _options = options;
-	}
-	virtual ~TFilter() {}
+    TFilter() {}
+    TFilter(QString tr_name, QString name, QString options = QString::null) {
+        _tr_name = tr_name; _name = name; _options = options;
+    }
+    virtual ~TFilter() {}
 
-	void setTrName(QString tr_name) { _tr_name = tr_name; }
-	void setName(QString name) { _name = name; }
-	void setOptions(QString options) { _options = options; }
+    void setTrName(QString tr_name) { _tr_name = tr_name; }
+    void setName(QString name) { _name = name; }
+    void setOptions(QString options) { _options = options; }
 
-	QString trName() const { return _tr_name; }
-	QString name() const { return _name; }
-	QString options() const { return _options; }
+    QString trName() const { return _tr_name; }
+    QString name() const { return _name; }
+    QString options() const { return _options; }
 
-	QString filter() {
-		QString s = name();
-		if (!options().isEmpty()) s += "=" + options();
-		return s;
-	}
+    QString filter() {
+        QString s = name();
+        if (!options().isEmpty()) s += "=" + options();
+        return s;
+    }
 
 protected:
-	QString _tr_name, _name, _options;
+    QString _tr_name, _name, _options;
 };
 
 typedef QMap<QString,TFilter> TFilterMap;
 
 class TFilters : public QObject {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TFilters();
-	virtual ~TFilters();
+    TFilters();
+    virtual ~TFilters();
 
-	void init();
+    void init();
 
-	TFilter item(const QString& key);
+    TFilter item(const QString& key);
 
-	void setTFilters(TFilterMap filters) { list = filters; }
-	TFilterMap filters() { return list; }
+    void setTFilters(TFilterMap filters) { list = filters; }
+    TFilterMap filters() { return list; }
 
-	void save(QSettings* set);
-	void load(QSettings* set);
+    void save(QSettings* set);
+    void load(QSettings* set);
 
 protected:
-	TFilterMap list;
+    TFilterMap list;
 };
 
 } // namespace Settings

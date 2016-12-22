@@ -28,15 +28,15 @@ class TFileSettingsHash : public TFileSettingsBase {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TFileSettingsHash(const QString& filename);
-	virtual ~TFileSettingsHash();
+    TFileSettingsHash(const QString& filename);
+    virtual ~TFileSettingsHash();
 
-	virtual bool existSettingsFor(const QString& filename);
+    virtual bool existSettingsFor(const QString& filename);
     virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset);
     virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset);
 
 private:
-	static QString iniFilenameFor(const QString& filename);
+    static QString iniFilenameFor(const QString& filename);
 };
 
 } // namespace Settings

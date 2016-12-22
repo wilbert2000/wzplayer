@@ -24,29 +24,29 @@
 
 class TDiscName {
 public:
-	enum TDisc { DVD = 1, DVDNAV = 2, VCD = 3, CDDA = 4, BLURAY = 5 };
+    enum TDisc { DVD = 1, DVDNAV = 2, VCD = 3, CDDA = 4, BLURAY = 5 };
 
-	TDiscName();
-	TDiscName(const TDiscName& disc);
-	TDiscName(const QString& aprotocol, int atitle, const QString& adevice);
-	TDiscName(const QString& adevice, bool use_dvd_nav);
-	TDiscName(const QString& url);
-	virtual ~TDiscName();
+    TDiscName();
+    TDiscName(const TDiscName& disc);
+    TDiscName(const QString& aprotocol, int atitle, const QString& adevice);
+    TDiscName(const QString& adevice, bool use_dvd_nav);
+    TDiscName(const QString& url);
+    virtual ~TDiscName();
 
-	static TDisc protocolToTDisc(QString protocol);
+    static TDisc protocolToTDisc(QString protocol);
 
-	QString toString(bool add_zero_title = false) const;
-	TDisc disc() const;
+    QString toString(bool add_zero_title = false) const;
+    TDisc disc() const;
 
     QString displayName(bool addDevice = true) const;
 
     QString protocol;
-	int title;
-	QString device;
-	bool valid;
+    int title;
+    QString device;
+    bool valid;
 
 private:
-	void removeTrailingSlashFromDevice();
+    void removeTrailingSlashFromDevice();
 };
 
 #endif // DISCNAME_H

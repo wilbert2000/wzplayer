@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,21 +29,21 @@
 namespace Settings {
 
 TTVSettings::TTVSettings() :
-	TFileSettingsBase(TPaths::configPath() + "/tv.ini") {
+    TFileSettingsBase(TPaths::configPath() + "/tv.ini") {
 }
 
 TTVSettings::~TTVSettings() {
 }
 
 QString TTVSettings::filenameToGroupname(const QString & filename) {
-	QString s = filename;
-	s = s.replace('/', '_');
-	s = s.replace('\\', '_');
-	s = s.replace(':', '_');
-	s = s.replace('.', '_');
-	s = s.replace(' ', '_');
+    QString s = filename;
+    s = s.replace('/', '_');
+    s = s.replace('\\', '_');
+    s = s.replace(':', '_');
+    s = s.replace('.', '_');
+    s = s.replace(' ', '_');
 
-	return s;
+    return s;
 }
 
 bool TTVSettings::existSettingsFor(const QString& filename) {
@@ -60,23 +60,23 @@ bool TTVSettings::existSettingsFor(const QString& filename) {
 void TTVSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
     WZINFO("'" + filename + "'");
 
-	QString group_name = filenameToGroupname(filename);
+    QString group_name = filenameToGroupname(filename);
     WZDEBUG("group name '" + group_name + "'");
-	beginGroup(group_name);
+    beginGroup(group_name);
     mset.load(this);
-	endGroup();
+    endGroup();
 }
 
 void TTVSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
     WZINFO("'" + filename + "'");
 
-	QString group_name = filenameToGroupname(filename);
+    QString group_name = filenameToGroupname(filename);
     WZDEBUG("group name '" + group_name + "'");
-	beginGroup(group_name);
-	setValue("saved", true);
+    beginGroup(group_name);
+    setValue("saved", true);
     mset.save(this);
-	endGroup();
-	sync();
+    endGroup();
+    sync();
 }
 
 } // namespace Settings

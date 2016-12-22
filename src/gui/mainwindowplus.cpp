@@ -234,13 +234,13 @@ void TMainWindowPlus::loadConfig() {
 void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
     WZDEBUG(QString::number(reason));
 
-	updateShowAllAct();
+    updateShowAllAct();
 
-	if (reason == QSystemTrayIcon::Trigger) {
-		toggleShowAll();
-	} else if (reason == QSystemTrayIcon::MiddleClick) {
+    if (reason == QSystemTrayIcon::Trigger) {
+        toggleShowAll();
+    } else if (reason == QSystemTrayIcon::MiddleClick) {
         player->playOrPause();
-	}
+    }
 }
 
 void TMainWindowPlus::toggleShowAll() {

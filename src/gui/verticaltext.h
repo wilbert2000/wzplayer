@@ -13,17 +13,17 @@ namespace Gui {
 class TVerticalText : public QWidget
 {
 public:
-	TVerticalText(QWidget* parent, Qt::WindowFlags f = 0);
-	virtual ~TVerticalText();
+    TVerticalText(QWidget* parent, Qt::WindowFlags f = 0);
+    virtual ~TVerticalText();
 
-	void setText(QString s) { _label = s; }
-	QString text() { return _label; }
+    void setText(QString s) { _label = s; }
+    QString text() { return _label; }
     QSize sizeHint() const;
     QSizePolicy sizePolicy () const;
-	
+    
 protected:
     void paintEvent (QPaintEvent* event);
-	QString _label;
+    QString _label;
 };
 
 } // namespace Gui

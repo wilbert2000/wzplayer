@@ -8,8 +8,8 @@ namespace Settings {
 
 class TPlayerSettings : public QSettings {
 public:
-	TPlayerSettings(const QString& filename);
-	virtual ~TPlayerSettings();
+    TPlayerSettings(const QString& filename);
+    virtual ~TPlayerSettings();
 };
 
 } // namespace Settings

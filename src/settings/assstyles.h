@@ -28,34 +28,34 @@ namespace Settings {
 class TAssStyles {
 
 public:
-	enum HAlignment { Left = 1, HCenter = 2, Right = 3 };
-	enum VAlignment { Bottom = 0, VCenter = 1, Top = 2 };
-	enum BorderStyle { Outline = 1, Opaque = 3 };
+    enum HAlignment { Left = 1, HCenter = 2, Right = 3 };
+    enum VAlignment { Bottom = 0, VCenter = 1, Top = 2 };
+    enum BorderStyle { Outline = 1, Opaque = 3 };
 
-	TAssStyles();
-	virtual ~TAssStyles();
+    TAssStyles();
+    virtual ~TAssStyles();
 
-	QString fontname;
-	int fontsize;
-	unsigned int primarycolor;
-	unsigned int backcolor;
-	unsigned int outlinecolor;
-	bool bold;
-	bool italic;
-	int halignment;
-	int valignment;
-	int borderstyle;
-	double outline;
-	double shadow;
-	int marginl;
-	int marginr;
-	int marginv;
+    QString fontname;
+    int fontsize;
+    unsigned int primarycolor;
+    unsigned int backcolor;
+    unsigned int outlinecolor;
+    bool bold;
+    bool italic;
+    int halignment;
+    int valignment;
+    int borderstyle;
+    double outline;
+    double shadow;
+    int marginl;
+    int marginr;
+    int marginv;
 
-	void save(QSettings* set);
-	void load(QSettings* set);
+    void save(QSettings* set);
+    void load(QSettings* set);
 
-	bool exportStyles(const QString& filename) const;
-	QString toString();
+    bool exportStyles(const QString& filename) const;
+    QString toString();
 };
 
 } // namespace Settings

@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,29 +35,29 @@ namespace Gui {
 
 class TAbout : public QDialog, public Ui::TAbout
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TAbout(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TAbout();
+    TAbout(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TAbout();
 
-	virtual QSize sizeHint () const;
+    virtual QSize sizeHint () const;
 
 protected:
-	QString getTranslators();
+    QString getTranslators();
 
-	//! Return a formatted string with the translator and language
-	QString trad(const QString & lang, const QString & author);
+    //! Return a formatted string with the translator and language
+    QString trad(const QString & lang, const QString & author);
 
-	QString trad(const QString & lang, const QStringList & authors);
+    QString trad(const QString & lang, const QStringList & authors);
 
-	QString link(const QString & url, QString name = "");
+    QString link(const QString & url, QString name = "");
 
-	//! Return a formatted string with the contributor and what he did
-	QString contr(const QString & author, const QString & thing);
+    //! Return a formatted string with the contributor and what he did
+    QString contr(const QString & author, const QString & thing);
 
 protected slots:
-	void openLink(const QUrl & link);
+    void openLink(const QUrl & link);
 };
 
 } // namespace Gui

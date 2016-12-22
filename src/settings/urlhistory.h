@@ -25,13 +25,13 @@ namespace Settings {
 
 class TURLHistory : public TRecents {
 public:
-	TURLHistory();
-	virtual ~TURLHistory();
+    TURLHistory();
+    virtual ~TURLHistory();
 
-	virtual void addUrl(const QString& url);
+    virtual void addUrl(const QString& url);
 
-	//! Returns the URL
-	virtual QString url(int n);
+    //! Returns the URL
+    virtual QString url(int n);
 };
 
 } // namespace Settings

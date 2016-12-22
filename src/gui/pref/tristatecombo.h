@@ -17,7 +17,7 @@
 */
 
 /*! 
-	This class is to replace some QCheckBox with a combo with three possible
+    This class is to replace some QCheckBox with a combo with three possible
     values: true, false or autodetect
 */
 
@@ -32,18 +32,18 @@ namespace Gui {
 namespace Pref {
 
 class TTristateCombo : public QComboBox {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TTristateCombo(QWidget* parent = 0);
-	virtual ~TTristateCombo();
+    TTristateCombo(QWidget* parent = 0);
+    virtual ~TTristateCombo();
 
-	void setState(Settings::TPreferences::TOptionState v);
-	Settings::TPreferences::TOptionState state();
+    void setState(Settings::TPreferences::TOptionState v);
+    Settings::TPreferences::TOptionState state();
 
 protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent* event);
+    virtual void retranslateStrings();
+    virtual void changeEvent(QEvent* event);
 
 };
 

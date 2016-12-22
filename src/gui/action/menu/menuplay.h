@@ -56,7 +56,7 @@ private slots:
 
 
 class TMenuPlay : public TMenu {
-	Q_OBJECT
+    Q_OBJECT
 public:
     explicit TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist);
 

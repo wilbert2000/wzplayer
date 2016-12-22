@@ -32,32 +32,32 @@ TDeviceList TDeviceInfo::alsaDevices() {
     Log4Qt::Logger* logger = Log4Qt::Logger::logger("Gui::TDeviceInfo");
     logger->debug("alsaDevices");
 
-	TDeviceList l;
-	QRegExp rx_device("^card\\s([0-9]+).*\\[(.*)\\],\\sdevice\\s([0-9]+):");
+    TDeviceList l;
+    QRegExp rx_device("^card\\s([0-9]+).*\\[(.*)\\],\\sdevice\\s([0-9]+):");
 
-	QProcess p;
-	p.setProcessChannelMode(QProcess::MergedChannels);
-	p.setEnvironment(QStringList() << "LC_ALL=C");
-	p.start("aplay", QStringList() << "-l");
+    QProcess p;
+    p.setProcessChannelMode(QProcess::MergedChannels);
+    p.setEnvironment(QStringList() << "LC_ALL=C");
+    p.start("aplay", QStringList() << "-l");
 
-	if (p.waitForFinished()) {
-		QByteArray line;
-		while (p.canReadLine()) {
-			line = p.readLine().trimmed();
+    if (p.waitForFinished()) {
+        QByteArray line;
+        while (p.canReadLine()) {
+            line = p.readLine().trimmed();
             if (rx_device.indexIn(line) >= 0) {
-				QString id = rx_device.cap(1);
-				id.append(".");
-				id.append(rx_device.cap(3));
-				QString desc = rx_device.cap(2);
+                QString id = rx_device.cap(1);
+                id.append(".");
+                id.append(rx_device.cap(3));
+                QString desc = rx_device.cap(2);
                 logger->debug("alsaDevices found device: '%1' '%2'", id, desc);
-				l.append(TDeviceData(id, desc));
-			}
-		}
-	} else {
+                l.append(TDeviceData(id, desc));
+            }
+        }
+    } else {
         logger->warn("alsaDevices could not start aplay, error %1", p.error());
-	}
+    }
 
-	return l;
+    return l;
 }
 
 TDeviceList TDeviceInfo::xvAdaptors() {
@@ -65,31 +65,31 @@ TDeviceList TDeviceInfo::xvAdaptors() {
     Log4Qt::Logger* logger = Log4Qt::Logger::logger("Gui::TDeviceInfo");
     logger->debug("xvAdaptors");
 
-	TDeviceList l;
-	QRegExp rx_device("^Adaptor #([0-9]+): \"(.*)\"");
+    TDeviceList l;
+    QRegExp rx_device("^Adaptor #([0-9]+): \"(.*)\"");
 
-	QProcess p;
-	p.setProcessChannelMode(QProcess::MergedChannels);
-	p.setEnvironment(QProcess::systemEnvironment() << "LC_ALL=C");
-	p.start("xvinfo");
+    QProcess p;
+    p.setProcessChannelMode(QProcess::MergedChannels);
+    p.setEnvironment(QProcess::systemEnvironment() << "LC_ALL=C");
+    p.start("xvinfo");
 
-	if (p.waitForFinished()) {
-		while (p.canReadLine()) {
-			QString s = QString::fromLocal8Bit(p.readLine()).trimmed();
+    if (p.waitForFinished()) {
+        while (p.canReadLine()) {
+            QString s = QString::fromLocal8Bit(p.readLine()).trimmed();
             logger->trace("xvAdaptors line '%1'", s);
-			if (rx_device.indexIn(s) >= 0) {
-				QString id = rx_device.cap(1);
-				QString desc = rx_device.cap(2);
+            if (rx_device.indexIn(s) >= 0) {
+                QString id = rx_device.cap(1);
+                QString desc = rx_device.cap(2);
                 logger->debug("xvAdaptors found adaptor: '" + id
                                 + " '" + desc + "'");
-				l.append(TDeviceData(id, desc));
-			}
-		}
-	} else {
+                l.append(TDeviceData(id, desc));
+            }
+        }
+    } else {
         logger->warn("xvAdaptors could not start xvinfo, error %1", p.error());
-	}
+    }
 
-	return l;
+    return l;
 }
 
 #endif

@@ -22,17 +22,17 @@
 #include <QDebug>
 
 QSize TDesktop::size(const QWidget* w) {
-	return QApplication::desktop()->screenGeometry(w).size();
+    return QApplication::desktop()->screenGeometry(w).size();
 }
 
 QSize TDesktop::availableSize(const QWidget* w) {
-	return QApplication::desktop()->availableGeometry(w).size();
+    return QApplication::desktop()->availableGeometry(w).size();
 }
 
 double TDesktop::aspectRatio(const QWidget* w) {
 
-	QSize s = size(w);
-	return  (double) s.width() / s.height() ;
+    QSize s = size(w);
+    return  (double) s.width() / s.height() ;
 }
 
 void TDesktop::centerWindow(QWidget* w) {
@@ -47,27 +47,27 @@ void TDesktop::centerWindow(QWidget* w) {
 
 void TDesktop::keepInsideDesktop(QWidget* w) {
 
-	if (w->isMaximized())
-		return;
+    if (w->isMaximized())
+        return;
 
-	QSize desktop_size = availableSize(w);
-	QPoint p = w->pos();
-	QSize s = w->frameGeometry().size();
-	int max = desktop_size.width() - s.width();
-	if (p.x() > max)
-		p.rx() = max;
-	if (p.x() < 0)
-		p.rx() = 0;
+    QSize desktop_size = availableSize(w);
+    QPoint p = w->pos();
+    QSize s = w->frameGeometry().size();
+    int max = desktop_size.width() - s.width();
+    if (p.x() > max)
+        p.rx() = max;
+    if (p.x() < 0)
+        p.rx() = 0;
 
-	max = desktop_size.height() - s.height();
-	if (p.y() > max)
-		p.ry() = max;
-	if (p.y() < 0)
-		p.ry() = 0;
+    max = desktop_size.height() - s.height();
+    if (p.y() > max)
+        p.ry() = max;
+    if (p.y() < 0)
+        p.ry() = 0;
 
-	if (p != w->pos()) {
-		w->move(p);
-	}
+    if (p != w->pos()) {
+        w->move(p);
+    }
 }
 
 

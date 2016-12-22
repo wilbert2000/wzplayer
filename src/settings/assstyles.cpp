@@ -28,21 +28,21 @@ namespace Settings {
 Log4Qt::Logger* logger = Log4Qt::Logger::logger("Settings::TAssStyles");
 
 TAssStyles::TAssStyles() {
-	fontname = "Arial";
-	fontsize = 20;
-	primarycolor = 0xFFFFFF;
-	backcolor = 0;
-	outlinecolor = 0;
-	bold = false;
-	italic = false;
-	halignment = HCenter;
-	valignment = Bottom;
-	borderstyle = Outline;
-	outline = 1;
-	shadow = 2;
-	marginl = 20;
-	marginr = 20;
-	marginv = 8;
+    fontname = "Arial";
+    fontsize = 20;
+    primarycolor = 0xFFFFFF;
+    backcolor = 0;
+    outlinecolor = 0;
+    bold = false;
+    italic = false;
+    halignment = HCenter;
+    valignment = Bottom;
+    borderstyle = Outline;
+    outline = 1;
+    shadow = 2;
+    marginl = 20;
+    marginr = 20;
+    marginv = 8;
 }
 
 TAssStyles::~TAssStyles() {
@@ -51,97 +51,97 @@ TAssStyles::~TAssStyles() {
 void TAssStyles::save(QSettings* set) {
     logger->debug("save");
 
-	set->setValue("styles/fontname", fontname);
-	set->setValue("styles/fontsize", fontsize);
-	set->setValue("styles/primarycolor", primarycolor);
-	set->setValue("styles/backcolor", backcolor);
-	set->setValue("styles/outlinecolor", outlinecolor);
-	set->setValue("styles/bold", bold);
-	set->setValue("styles/italic", italic);
-	set->setValue("styles/halignment", halignment);
-	set->setValue("styles/valignment", valignment);
-	set->setValue("styles/borderstyle", borderstyle);
-	set->setValue("styles/outline", outline);
-	set->setValue("styles/shadow", shadow);
-	set->setValue("styles/marginl", marginl);
-	set->setValue("styles/marginr", marginr);
-	set->setValue("styles/marginv", marginv);
+    set->setValue("styles/fontname", fontname);
+    set->setValue("styles/fontsize", fontsize);
+    set->setValue("styles/primarycolor", primarycolor);
+    set->setValue("styles/backcolor", backcolor);
+    set->setValue("styles/outlinecolor", outlinecolor);
+    set->setValue("styles/bold", bold);
+    set->setValue("styles/italic", italic);
+    set->setValue("styles/halignment", halignment);
+    set->setValue("styles/valignment", valignment);
+    set->setValue("styles/borderstyle", borderstyle);
+    set->setValue("styles/outline", outline);
+    set->setValue("styles/shadow", shadow);
+    set->setValue("styles/marginl", marginl);
+    set->setValue("styles/marginr", marginr);
+    set->setValue("styles/marginv", marginv);
 }
 
 void TAssStyles::load(QSettings* set) {
     logger->debug("load");
 
-	fontname = set->value("styles/fontname", fontname).toString();
-	fontsize = set->value("styles/fontsize", fontsize).toInt();
-	primarycolor = set->value("styles/primarycolor", primarycolor).toInt();
-	backcolor = set->value("styles/backcolor", backcolor).toInt();
-	outlinecolor = set->value("styles/outlinecolor", outlinecolor).toInt();
-	bold = set->value("styles/bold", bold).toBool();
-	italic = set->value("styles/italic", italic).toBool();
-	halignment = set->value("styles/halignment", halignment).toInt();
-	valignment = set->value("styles/valignment", valignment).toInt();
-	borderstyle = set->value("styles/borderstyle", borderstyle).toInt();
-	outline = set->value("styles/outline", outline).toDouble();
-	shadow = set->value("styles/shadow", shadow).toDouble();
-	marginl = set->value("styles/marginl", marginl).toInt();
-	marginr = set->value("styles/marginr", marginr).toInt();
-	marginv = set->value("styles/marginv", marginv).toInt();
+    fontname = set->value("styles/fontname", fontname).toString();
+    fontsize = set->value("styles/fontsize", fontsize).toInt();
+    primarycolor = set->value("styles/primarycolor", primarycolor).toInt();
+    backcolor = set->value("styles/backcolor", backcolor).toInt();
+    outlinecolor = set->value("styles/outlinecolor", outlinecolor).toInt();
+    bold = set->value("styles/bold", bold).toBool();
+    italic = set->value("styles/italic", italic).toBool();
+    halignment = set->value("styles/halignment", halignment).toInt();
+    valignment = set->value("styles/valignment", valignment).toInt();
+    borderstyle = set->value("styles/borderstyle", borderstyle).toInt();
+    outline = set->value("styles/outline", outline).toDouble();
+    shadow = set->value("styles/shadow", shadow).toDouble();
+    marginl = set->value("styles/marginl", marginl).toInt();
+    marginr = set->value("styles/marginr", marginr).toInt();
+    marginv = set->value("styles/marginv", marginv).toInt();
 }
 
 bool TAssStyles::exportStyles(const QString& filename) const {
     logger->debug("exportStyles '" + filename + "'");
 
-	QFile f(filename);
-	if (f.open(QFile::WriteOnly)) {
-		QTextStream out(&f);
+    QFile f(filename);
+    if (f.open(QFile::WriteOnly)) {
+        QTextStream out(&f);
 
-		int alignment = halignment;
-		if (valignment == 1)
-			alignment += 3; // Middle
-		else if (valignment == 2)
-			alignment += 6; // Top
+        int alignment = halignment;
+        if (valignment == 1)
+            alignment += 3; // Middle
+        else if (valignment == 2)
+            alignment += 6; // Top
 
-		out << "[Script Info]" << endl;
-		out << "ScriptType: v4.00+" << endl;
-		out << "Collisions: Normal" << endl;
-		out << endl;
-		out << "[V4+ Styles]" << endl;
-		out << "Format: Name, Fontname, Fontsize, PrimaryColour, BackColour, OutlineColour, Bold, Italic, Alignment, BorderStyle, Outline, Shadow, MarginL, MarginR, MarginV" << endl;
-		out << "Style: Default,";
-		out << fontname << "," ;
-		out << fontsize << "," ;
-		out << "&H" << TColorUtils::colorToAABBGGRR(primarycolor) << "," ;
-		out << "&H" << TColorUtils::colorToAABBGGRR(backcolor) << "," ;
-		out << "&H" << TColorUtils::colorToAABBGGRR(outlinecolor) << "," ;
-		out << (bold ? -1 : 0) << "," ;
-		out << (italic ? -1 : 0) << "," ;
-		out << alignment << "," ;
-		out << borderstyle << "," ;
-		out << outline << "," ;
-		out << shadow << "," ;
-		out << marginl << "," ;
-		out << marginr << "," ;
-		out << marginv;
-		out << endl;
+        out << "[Script Info]" << endl;
+        out << "ScriptType: v4.00+" << endl;
+        out << "Collisions: Normal" << endl;
+        out << endl;
+        out << "[V4+ Styles]" << endl;
+        out << "Format: Name, Fontname, Fontsize, PrimaryColour, BackColour, OutlineColour, Bold, Italic, Alignment, BorderStyle, Outline, Shadow, MarginL, MarginR, MarginV" << endl;
+        out << "Style: Default,";
+        out << fontname << "," ;
+        out << fontsize << "," ;
+        out << "&H" << TColorUtils::colorToAABBGGRR(primarycolor) << "," ;
+        out << "&H" << TColorUtils::colorToAABBGGRR(backcolor) << "," ;
+        out << "&H" << TColorUtils::colorToAABBGGRR(outlinecolor) << "," ;
+        out << (bold ? -1 : 0) << "," ;
+        out << (italic ? -1 : 0) << "," ;
+        out << alignment << "," ;
+        out << borderstyle << "," ;
+        out << outline << "," ;
+        out << shadow << "," ;
+        out << marginl << "," ;
+        out << marginr << "," ;
+        out << marginv;
+        out << endl;
 
-		f.close();
-		return true;
-	}
-	return false;
+        f.close();
+        return true;
+    }
+    return false;
 }
 
 // Returns a string for -ass-force-style
 // It seems that option ignores "ScriptType: v4.00+" 
 // so the function uses the v4.00 format
 QString TAssStyles::toString() {
-	int alignment = halignment;
-	if (valignment == 1) alignment += 8; // Middle
-	else
-	if (valignment == 2) alignment += 4; // Top
+    int alignment = halignment;
+    if (valignment == 1) alignment += 8; // Middle
+    else
+    if (valignment == 2) alignment += 4; // Top
 
-	QString s = "PlayResX=512,PlayResY=320,"; // Aspect of 1.6, it doesn't look too bad either in 4:3 and 16:9
+    QString s = "PlayResX=512,PlayResY=320,"; // Aspect of 1.6, it doesn't look too bad either in 4:3 and 16:9
 
-	s += QString("Name=Default,Fontname=%1,Fontsize=%2,PrimaryColour=&H%3,BackColour=&H%4,"
+    s += QString("Name=Default,Fontname=%1,Fontsize=%2,PrimaryColour=&H%3,BackColour=&H%4,"
                  "OutlineColour=&H%5,Bold=%6,Italic=%7,Alignment=%8,BorderStyle=%9,")
                  .arg(fontname).arg(fontsize).arg(TColorUtils::colorToAABBGGRR(primarycolor))
                  .arg(TColorUtils::colorToAABBGGRR(backcolor))
@@ -149,11 +149,11 @@ QString TAssStyles::toString() {
                  .arg(bold ? 1 : 0).arg(italic ? 1 : 0)
                  .arg(alignment).arg(borderstyle);
 
-	s += QString("Outline=%1,Shadow=%2,MarginL=%3,MarginR=%4,MarginV=%5")
+    s += QString("Outline=%1,Shadow=%2,MarginL=%3,MarginR=%4,MarginV=%5")
                  .arg(outline).arg(shadow).arg(marginl).arg(marginr).arg(marginv);
 
 
-	return s;
+    return s;
 }
 
 } // namespace Settings

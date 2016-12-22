@@ -27,49 +27,49 @@ namespace Gui {
 namespace Action {
 
 TAction::TAction (QObject* parent,
-				  const QString& name,
-				  const QString& text,
-				  const QString& icon,
-				  const QKeySequence& shortCut,
-				  bool autoAdd)
+                  const QString& name,
+                  const QString& text,
+                  const QString& icon,
+                  const QKeySequence& shortCut,
+                  bool autoAdd)
     : QAction(parent) {
 
-	setObjectName(name);
+    setObjectName(name);
     // Set before calling setTextAndTip
     setShortcut(shortCut);
     setTextAndTip(text);
-	QString iconName = icon.isEmpty() ? name : icon;
-	if (!iconName.isEmpty() && iconName != "noicon")
-		setIcon(Images::icon(iconName));
-	if (autoAdd)
-		addActionToParent();
+    QString iconName = icon.isEmpty() ? name : icon;
+    if (!iconName.isEmpty() && iconName != "noicon")
+        setIcon(Images::icon(iconName));
+    if (autoAdd)
+        addActionToParent();
 }
 
 TAction::~TAction() {
 }
 
 void TAction::addShortcut(QKeySequence key) {
-	setShortcuts(shortcuts() << key);
+    setShortcuts(shortcuts() << key);
 }
 
 void TAction::addActionToParent() {
 
-	QWidget* w = qobject_cast<QWidget*>(parent());
-	if (w) {
-		w->addAction(this);
-	}
+    QWidget* w = qobject_cast<QWidget*>(parent());
+    if (w) {
+        w->addAction(this);
+    }
 }
 
 void TAction::setTextAndTip(const QString& text) {
 
-	setText(text);
+    setText(text);
 
-	QString accel_text = shortcut().toString();
-	if (!accel_text.isEmpty()) {
-		QString s = text;
-		s.replace("&", "");
-		setToolTip(s + " (" + accel_text + ")");
-	}
+    QString accel_text = shortcut().toString();
+    if (!accel_text.isEmpty()) {
+        QString s = text;
+        s.replace("&", "");
+        setToolTip(s + " (" + accel_text + ")");
+    }
 }
 
 } // namespace Action

@@ -21,7 +21,7 @@
 namespace Settings {
 
 TFileSettingsBase::TFileSettingsBase(const QString& filename) :
-	TPlayerSettings(filename) {
+    TPlayerSettings(filename) {
 }
 
 TFileSettingsBase::~TFileSettingsBase() {

@@ -27,10 +27,10 @@ namespace Settings {
 
 class TFileSettingsBase : public TPlayerSettings {
 public:
-	TFileSettingsBase(const QString& filename);
-	virtual ~TFileSettingsBase();
+    TFileSettingsBase(const QString& filename);
+    virtual ~TFileSettingsBase();
 
-	virtual bool existSettingsFor(const QString& filename) = 0;
+    virtual bool existSettingsFor(const QString& filename) = 0;
     virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset) = 0;
     virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset) = 0;
 };

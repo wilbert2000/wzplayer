@@ -62,7 +62,7 @@
         <file>default-theme/pref_cache.png</file>
         <file>default-theme/pref_network.png</file>
         <file>default-theme/pref_updates.png</file>
-		<file>default-theme/pref_advanced.png</file>
+        <file>default-theme/pref_advanced.png</file>
         <file>default-theme/prefs.png</file>
         <file>default-theme/previous.png</file>
         <file>default-theme/saturation.png</file>
@@ -159,7 +159,7 @@
         <file>default-theme/stereo3d.png</file>
         <file>default-theme/reset_zoom_and_pan.png</file>
         <file>default-theme/empty_icon.png</file>
-		<file>default-theme/record.png</file>
+        <file>default-theme/record.png</file>
         <file>default-theme/up.png</file>
         <file>default-theme/down.png</file>
         <file>default-theme/style.qss</file>

@@ -26,9 +26,9 @@ class QWidget;
 
 class TDesktop {
 public:
-	static QSize size(const QWidget* w);
-	static QSize availableSize(const QWidget* w);
-	static double aspectRatio(const QWidget* w);
+    static QSize size(const QWidget* w);
+    static QSize availableSize(const QWidget* w);
+    static double aspectRatio(const QWidget* w);
     static void centerWindow(QWidget* w);
     static void keepInsideDesktop(QWidget* w);
 };

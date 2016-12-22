@@ -3,7 +3,7 @@
 namespace Settings {
 
 TPlayerSettings::TPlayerSettings(const QString& filename) :
-	QSettings(filename, QSettings::IniFormat) {
+    QSettings(filename, QSettings::IniFormat) {
 }
 
 TPlayerSettings::~TPlayerSettings() {

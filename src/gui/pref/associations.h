@@ -16,9 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-	prefassociations.h
-	Handles file associations in Windows
-	Author: Florin Braghis (florin@libertv.ro)
+    prefassociations.h
+    Handles file associations in Windows
+    Author: Florin Braghis (florin@libertv.ro)
 */
 
 #ifndef GUI_PREF_ASSOCIATIONS_H
@@ -41,42 +41,42 @@ namespace Gui {
 namespace Pref {
 
 class TAssociations : public TWidget, public Ui::TAssociations {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TAssociations(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TAssociations();
+    TAssociations(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TAssociations();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
-	// Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    // Pass data to the dialog
+    void setData(Settings::TPreferences* pref);
 
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
-	void addItem(QString label); 
+    void addItem(QString label); 
 
-	int ProcessAssociations(QStringList& current, QStringList& old);
-	void refreshList(); 
-
-protected:
-	QStringList m_regExtensions; 
-protected:
-	virtual void createHelp();
+    int ProcessAssociations(QStringList& current, QStringList& old);
+    void refreshList(); 
 
 protected:
-	virtual void retranslateStrings();
+    QStringList m_regExtensions; 
+protected:
+    virtual void createHelp();
+
+protected:
+    virtual void retranslateStrings();
 
 public slots:
-	void selectAllClicked(bool); 
-	void selectNoneClicked(bool); 
-	void listItemClicked(QListWidgetItem* item); 
-	void listItemPressed(QListWidgetItem* item); 
-	
+    void selectAllClicked(bool); 
+    void selectNoneClicked(bool); 
+    void listItemClicked(QListWidgetItem* item); 
+    void listItemPressed(QListWidgetItem* item); 
+    
 protected:
-	bool something_changed;
+    bool something_changed;
 };
 
 } // namespace Pref

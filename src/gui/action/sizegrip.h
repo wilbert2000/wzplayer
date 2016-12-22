@@ -10,36 +10,36 @@ namespace Action {
 
 
 class TSizeGrip : public QToolBar {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TSizeGrip(QWidget* parent, QToolBar* tb);
-	virtual ~TSizeGrip();
+    TSizeGrip(QWidget* parent, QToolBar* tb);
+    virtual ~TSizeGrip();
 
     void follow();
 
 public slots:
-	void delayedHide();
+    void delayedHide();
     void delayedShow();
 
 signals:
-	void saveSizeHint();
+    void saveSizeHint();
 
 protected:
-	virtual void mousePressEvent(QMouseEvent* event);
-	virtual void mouseMoveEvent(QMouseEvent* event);
-	virtual bool event(QEvent*);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseMoveEvent(QMouseEvent* event);
+    virtual bool event(QEvent*);
 
 private:
-	QToolBar* toolbar;
-	bool resizing;
-	QPoint p;
-	QRect r;
+    QToolBar* toolbar;
+    bool resizing;
+    QPoint p;
+    QRect r;
 
-	void followToolbar();
+    void followToolbar();
 
 private slots:
-	void onOrientationChanged(Qt::Orientation orientation);
+    void onOrientationChanged(Qt::Orientation orientation);
 
 }; // class TSizeGrip
 

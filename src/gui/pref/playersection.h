@@ -28,57 +28,57 @@ namespace Gui {
 namespace Pref {
 
 class TPlayerSection : public TWidget, public Ui::TPlayerSection {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     TPlayerSection(QWidget* parent);
     virtual ~TPlayerSection();
 
-	// Return the name of the section
-	virtual QString sectionName();
+    // Return the name of the section
+    virtual QString sectionName();
 
-	// Return the icon of the section
-	virtual QPixmap sectionIcon();
+    // Return the icon of the section
+    virtual QPixmap sectionIcon();
 
-	// Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    // Pass data to the dialog
+    void setData(Settings::TPreferences* pref);
 
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
 signals:
-	void binChanged(Settings::TPreferences::TPlayerID,
-					bool keep_current_drivers,
-					const QString& path);
+    void binChanged(Settings::TPreferences::TPlayerID,
+                    bool keep_current_drivers,
+                    const QString& path);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	virtual void createHelp();
+    virtual void createHelp();
 
-	void setPlayerID(Settings::TPreferences::TPlayerID id);
-	Settings::TPreferences::TPlayerID playerID();
+    void setPlayerID(Settings::TPreferences::TPlayerID id);
+    Settings::TPreferences::TPlayerID playerID();
 
-	void setPlayerPath(const QString& mplayer, const QString& mpv);
+    void setPlayerPath(const QString& mplayer, const QString& mpv);
 
-	// Media settings
-	void setRememberSettings(bool b);
-	bool rememberSettings();
+    // Media settings
+    void setRememberSettings(bool b);
+    bool rememberSettings();
 
-	void setRememberTimePos(bool b);
-	bool rememberTimePos();
+    void setRememberTimePos(bool b);
+    bool rememberTimePos();
 
-	void setGlobalVolume(bool b);
-	bool globalVolume();
+    void setGlobalVolume(bool b);
+    bool globalVolume();
 
-	void setFileSettingsMethod(const QString& method);
-	QString fileSettingsMethod();
+    void setFileSettingsMethod(const QString& method);
+    QString fileSettingsMethod();
 
 private slots:
-	void onMPlayerFileChanged(QString file);
-	void onMPVFileChanged(QString file);
-	void onPlayerRadioClicked(bool);
+    void onMPlayerFileChanged(QString file);
+    void onMPVFileChanged(QString file);
+    void onPlayerRadioClicked(bool);
 };
 
 } // namespace Pref

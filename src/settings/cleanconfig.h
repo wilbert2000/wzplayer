@@ -13,7 +13,7 @@ public:
     static void clean();
 
 private:
-	static QStringList listDir(const QString& path);
+    static QStringList listDir(const QString& path);
 };
 
 } // namespace Settings

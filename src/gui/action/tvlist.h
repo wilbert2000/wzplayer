@@ -30,12 +30,12 @@ namespace Action {
 
 
 class TTVList : public TFavorites {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	enum Service { TV = 1, Radio = 2, Data = 4 };
-	Q_DECLARE_FLAGS(Services, Service)
+    enum Service { TV = 1, Radio = 2, Data = 4 };
+    Q_DECLARE_FLAGS(Services, Service)
 
     TTVList(TMainWindow* mw,
             const QString& name,
@@ -44,22 +44,22 @@ public:
             const QString& filename,
             bool check_channels_conf,
             Services services);
-	virtual ~TTVList();
+    virtual ~TTVList();
 
 #ifndef Q_OS_WIN
-	static QString findChannelsFile();
+    static QString findChannelsFile();
 #endif
 
 #ifndef Q_OS_WIN
 protected:
-	void parseChannelsConf(Services services);
+    void parseChannelsConf(Services services);
 #endif
 
 protected:
-	virtual TFavorites* createNewObject(const QString& filename);
+    virtual TFavorites* createNewObject(const QString& filename);
 
 protected slots:
-	virtual void edit();
+    virtual void edit();
 }; // class TTVList
 
 } // namespace Action

@@ -25,20 +25,20 @@ namespace Gui {
 
 class TTimeDialog : public QDialog, public Ui::TTimeDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TTimeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TTimeDialog();
+    TTimeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TTimeDialog();
 
-	int time();
-	int maximumTime();
-	QString label();
+    int time();
+    int maximumTime();
+    QString label();
 
 public slots:
-	void setTime(int seconds);
-	void setMaximumTime(int seconds);
-	void setLabel(const QString & label);
+    void setTime(int seconds);
+    void setMaximumTime(int seconds);
+    void setLabel(const QString & label);
 };
 
 } // namespace Gui

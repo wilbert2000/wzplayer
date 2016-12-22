@@ -31,48 +31,48 @@ namespace Action {
 
 
 class TFavoriteEditor : public QDialog, public Ui::TFavoriteEditor {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TFavoriteEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TFavoriteEditor();
+    TFavoriteEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TFavoriteEditor();
 
-	void setCaption(const QString & caption);
-	QString caption();
+    void setCaption(const QString & caption);
+    QString caption();
 
-	void setIntro(const QString & intro);
-	QString intro();
+    void setIntro(const QString & intro);
+    QString intro();
 
-	void setData(TFavoriteList list);
-	TFavoriteList data();
+    void setData(TFavoriteList list);
+    TFavoriteList data();
 
-	void setDialogIcon(const QPixmap& icon);
-	const QPixmap* dialogIcon() const;
+    void setDialogIcon(const QPixmap& icon);
+    const QPixmap* dialogIcon() const;
 
-	//! The editor will give a filename to subentries (submenus), using this path.
-	void setStorePath(const QString& path) { store_path = path; }
-	QString storePath() { return store_path; }
+    //! The editor will give a filename to subentries (submenus), using this path.
+    void setStorePath(const QString& path) { store_path = path; }
+    QString storePath() { return store_path; }
 
 protected slots:
     void onUpButtonClicked();
     void onDownButtonClicked();
-	void on_delete_button_clicked();
-	void on_delete_all_button_clicked();
-	void on_add_button_clicked();
-	void onAddSubmenuButtonClicked();
+    void on_delete_button_clicked();
+    void on_delete_all_button_clicked();
+    void on_add_button_clicked();
+    void onAddSubmenuButtonClicked();
 
-	void edit_icon(int row, int column); 
+    void edit_icon(int row, int column); 
 
 protected:
-	QList<QTableWidgetItem*> takeRow(int row);
-	void setRow(int row, const QList<QTableWidgetItem*>& rowItems);
+    QList<QTableWidgetItem*> takeRow(int row);
+    void setRow(int row, const QList<QTableWidgetItem*>& rowItems);
 
-	void updateTitleLabel();
+    void updateTitleLabel();
 
-	QString caption_text, intro_text;
-	static QString last_dir;
-	QString store_path;
+    QString caption_text, intro_text;
+    static QString last_dir;
+    QString store_path;
 };
 
 } // namespace Action

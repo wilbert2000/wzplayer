@@ -34,28 +34,28 @@ class TWidget : public QWidget {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TWidget();
+    TWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TWidget();
 
-	// Return the name of the section
-	virtual QString sectionName();
+    // Return the name of the section
+    virtual QString sectionName();
 
-	virtual QPixmap sectionIcon();
+    virtual QPixmap sectionIcon();
 
-	// Return true if the changes made require to restart the mplayer
-	// process. Should be call just after the changes have been applied.
-	virtual bool requiresRestart() { return requires_restart; }
+    // Return true if the changes made require to restart the mplayer
+    // process. Should be call just after the changes have been applied.
+    virtual bool requiresRestart() { return requires_restart; }
 
-	virtual QString help() { return help_message; }
+    virtual QString help() { return help_message; }
 
 protected:
-	bool requires_restart;
-	int icon_size;
+    bool requires_restart;
+    int icon_size;
 
-	virtual void retranslateStrings();
-	virtual void changeEvent (QEvent* event) ;
+    virtual void retranslateStrings();
+    virtual void changeEvent (QEvent* event) ;
 
-	// Request restart if changed
+    // Request restart if changed
     void restartIfBoolChanged(bool& old_value, bool new_value,
                               const QString& name);
     void restartIfIntChanged(int& old_value, int new_value, const QString& name);
@@ -65,17 +65,17 @@ protected:
                                 const QString& name);
     void restartIfStringChanged(QString& old_value, const QString& new_value, const QString& name);
 
-	// Help
-	void addSectionTitle(const QString& title);
-	void addSectionGroup(const QString& title);
+    // Help
+    void addSectionTitle(const QString& title);
+    void addSectionGroup(const QString& title);
     void setWhatsThis(QWidget* w,
                       const QString& title,
                       const QString& text,
                       bool set_tooltip = true);
-	void clearHelp();
-	
+    void clearHelp();
+    
 private:
-	QString help_message;
+    QString help_message;
 };
 
 } // namespace Pref

@@ -21,42 +21,42 @@
 namespace Gui {
 
 TTimeDialog::TTimeDialog(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f)
+    : QDialog(parent, f)
 {
-	setupUi(this);
+    setupUi(this);
 
-	time_edit->setDisplayFormat("H:mm:ss");
+    time_edit->setDisplayFormat("H:mm:ss");
 }
 
 TTimeDialog::~TTimeDialog() {
 }
 
 void TTimeDialog::setTime(int seconds) {
-	QTime t(0,0);
-	time_edit->setTime(t.addSecs(seconds));
+    QTime t(0,0);
+    time_edit->setTime(t.addSecs(seconds));
 }
 
 int TTimeDialog::time() {
-	QTime t(0,0);
-	return t.secsTo(time_edit->time());
+    QTime t(0,0);
+    return t.secsTo(time_edit->time());
 }
 
 void TTimeDialog::setMaximumTime(int seconds) {
-	QTime t(0,0);
-	time_edit->setMaximumTime(t.addSecs(seconds));
+    QTime t(0,0);
+    time_edit->setMaximumTime(t.addSecs(seconds));
 }
 
 int TTimeDialog::maximumTime() {
-	QTime t(0,0);
-	return t.secsTo(time_edit->maximumTime());
+    QTime t(0,0);
+    return t.secsTo(time_edit->maximumTime());
 }
 
 void TTimeDialog::setLabel(const QString & label) {
-	time_label->setText(label);
+    time_label->setText(label);
 }
 
 QString TTimeDialog::label() {
-	return time_label->text();
+    return time_label->text();
 }
 
 } // namespace Gui

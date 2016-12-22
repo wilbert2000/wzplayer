@@ -31,61 +31,61 @@ namespace Maps {
 class TTitleData : public TData {
 
 public:
-	TTitleData();
-	virtual ~TTitleData() {}
+    TTitleData();
+    virtual ~TTitleData() {}
 
-	TChapters chapters;
+    TChapters chapters;
 
-	void setName(const QString & aName) { name = aName; }
-	void setDuration(double d) { duration = d; }
-	void setVTS(int n) { vts = n; }
-	void setType(bool aTrack) { isTrack = aTrack; }
-	void setTrack(int id, const QString &aName, double aDuration) {
-		ID = id;
-		name = aName;
-		duration = aDuration;
-		isTrack = true;
-	}
+    void setName(const QString & aName) { name = aName; }
+    void setDuration(double d) { duration = d; }
+    void setVTS(int n) { vts = n; }
+    void setType(bool aTrack) { isTrack = aTrack; }
+    void setTrack(int id, const QString &aName, double aDuration) {
+        ID = id;
+        name = aName;
+        duration = aDuration;
+        isTrack = true;
+    }
 
-	QString getName() const { return name; }
-	double getDuration() const { return duration; }
-	int getVTS() const { return vts; }
+    QString getName() const { return name; }
+    double getDuration() const { return duration; }
+    int getVTS() const { return vts; }
 
-	QString getDisplayName(bool add_duration = true) const;
+    QString getDisplayName(bool add_duration = true) const;
 
 protected:
-	QString name;
-	double duration;
-	int vts;
-	bool isTrack;
+    QString name;
+    double duration;
+    int vts;
+    bool isTrack;
 };
 
 
 class TTitleTracks : public TMap<TTitleData> {
 
 public:
-	TTitleTracks();
-	virtual ~TTitleTracks();
+    TTitleTracks();
+    virtual ~TTitleTracks();
 
-	typedef QMapIterator<int, TTitleData> TTitleTrackIterator;
+    typedef QMapIterator<int, TTitleData> TTitleTrackIterator;
 
-	int getSelectedVTS() const { return selectedVTS; }
-	void setSelectedVTS(int vts) { selectedVTS = vts; }
-	int getVTSCount() const { return vtsCount; }
-	void setVTSCount(int count) { vtsCount = count; }
-	void setSelectedTitle(int title);
-	int findTitleForVTS(int vts);
+    int getSelectedVTS() const { return selectedVTS; }
+    void setSelectedVTS(int vts) { selectedVTS = vts; }
+    int getVTSCount() const { return vtsCount; }
+    void setVTSCount(int count) { vtsCount = count; }
+    void setSelectedTitle(int title);
+    int findTitleForVTS(int vts);
 
-	void list() const;
+    void list() const;
 
-	void addName(int ID, const QString &name);
-	void addDuration(int ID, double duration, bool is_track = false);
-	void addChapters(int ID, int n);
-	void addTrack(int ID, const QString &name, double duration);
+    void addName(int ID, const QString &name);
+    void addDuration(int ID, double duration, bool is_track = false);
+    void addChapters(int ID, int n);
+    void addTrack(int ID, const QString &name, double duration);
 
 protected:
-	int selectedVTS;
-	int vtsCount;
+    int selectedVTS;
+    int vtsCount;
 };
 
 } // namespace Maps

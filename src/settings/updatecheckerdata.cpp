@@ -24,8 +24,8 @@
 namespace Settings {
 
 TUpdateCheckerData::TUpdateCheckerData() :
-	enabled(false),
-	days_to_check(7) {
+    enabled(false),
+    days_to_check(7) {
 }
 
 TUpdateCheckerData::~TUpdateCheckerData() {
@@ -33,22 +33,22 @@ TUpdateCheckerData::~TUpdateCheckerData() {
 
 void TUpdateCheckerData::save(QSettings* set) {
 
-	set->beginGroup("update_checker");
-	set->setValue("checked_date", last_checked);
-	set->setValue("enabled", enabled);
-	set->setValue("days_to_check", days_to_check);
-	set->setValue("last_known_version", last_known_version);
-	set->endGroup();
+    set->beginGroup("update_checker");
+    set->setValue("checked_date", last_checked);
+    set->setValue("enabled", enabled);
+    set->setValue("days_to_check", days_to_check);
+    set->setValue("last_known_version", last_known_version);
+    set->endGroup();
 }
 
 void TUpdateCheckerData::load(QSettings* set) {
 
-	set->beginGroup("update_checker");
-	last_checked = set->value("checked_date", 0).toDate();
-	enabled = set->value("enabled", enabled).toBool();
-	days_to_check = set->value("days_to_check", days_to_check).toInt();
-	last_known_version = set->value("last_known_version", TVersion::version).toString();
-	set->endGroup();
+    set->beginGroup("update_checker");
+    last_checked = set->value("checked_date", 0).toDate();
+    enabled = set->value("enabled", enabled).toBool();
+    days_to_check = set->value("days_to_check", days_to_check).toInt();
+    last_known_version = set->value("last_known_version", TVersion::version).toString();
+    set->endGroup();
 }
 
 } // namespace Settings

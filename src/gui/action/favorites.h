@@ -36,32 +36,32 @@ class TAction;
 
 class TFavorite {
 public:
-	TFavorite();
-	TFavorite(const QString& name,
-			  const QString& file,
-			  const QString& icon = QString::null,
-			  bool subentry = false);
-	virtual ~TFavorite();
+    TFavorite();
+    TFavorite(const QString& name,
+              const QString& file,
+              const QString& icon = QString::null,
+              bool subentry = false);
+    virtual ~TFavorite();
 
-	void setName(const QString& name) { _name = name; }
-	void setFile(const QString& file) { _file = file; }
-	void setIcon(QString file);
-	void setSubentry(bool b) { is_subentry = b; }
+    void setName(const QString& name) { _name = name; }
+    void setFile(const QString& file) { _file = file; }
+    void setIcon(QString file);
+    void setSubentry(bool b) { is_subentry = b; }
 
-	QString name() const { return _name; }
-	QString file() const { return _file; }
-	QString icon() const { return _icon; }
-	bool isSubentry() const { return is_subentry; }
+    QString name() const { return _name; }
+    QString file() const { return _file; }
+    QString icon() const { return _icon; }
+    bool isSubentry() const { return is_subentry; }
 
 protected:
-	QString _name, _file, _icon;
-	bool is_subentry; // Not a favorite file, but a new favorite list
+    QString _name, _file, _icon;
+    bool is_subentry; // Not a favorite file, but a new favorite list
 };
 
 typedef QList<TFavorite> TFavoriteList;
 
 class TFavorites : public Menu::TMenu {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
@@ -70,64 +70,64 @@ public:
                const QString& text,
                const QString& icon,
                const QString& filename);
-	virtual ~TFavorites();
+    virtual ~TFavorites();
 
-	TAction* editAct() { return edit_act; }
-	TAction* jumpAct() { return jump_act; }
-	TAction* nextAct() { return next_act; }
-	TAction* previousAct() { return previous_act; }
-	TAction* addCurrentAct() { return add_current_act; }
+    TAction* editAct() { return edit_act; }
+    TAction* jumpAct() { return jump_act; }
+    TAction* nextAct() { return next_act; }
+    TAction* previousAct() { return previous_act; }
+    TAction* addCurrentAct() { return add_current_act; }
 
 public slots:
-	void next();
-	void previous();
+    void next();
+    void previous();
 
-	void getCurrentMedia(const QString& filename, const QString& title);
+    void getCurrentMedia(const QString& filename, const QString& title);
 
 signals:
-	void activated(const QString& filemane);
-	//! Signal to resend the data to child
-	void sendCurrentMedia(const QString& filename, const QString& title);
+    void activated(const QString& filemane);
+    //! Signal to resend the data to child
+    void sendCurrentMedia(const QString& filename, const QString& title);
 
 protected:
-	virtual void save();
-	virtual void load();
-	virtual void updateMenu();
-	virtual void populateMenu();
-	virtual TFavorites* createNewObject(const QString& filename);
-	void delete_children();
+    virtual void save();
+    virtual void load();
+    virtual void updateMenu();
+    virtual void populateMenu();
+    virtual TFavorites* createNewObject(const QString& filename);
+    void delete_children();
 
-	int findFile(QString filename);
+    int findFile(QString filename);
 
-	// Mark current action in the menu
-	void markCurrent();
-	bool anyItemAvailable();
+    // Mark current action in the menu
+    void markCurrent();
+    bool anyItemAvailable();
 
 protected slots:
-	void triggered_slot(QAction* action);
-	virtual void edit();
-	virtual void jump();
+    void triggered_slot(QAction* action);
+    virtual void edit();
+    virtual void jump();
     virtual void addCurrentPlaying();
 
 protected:
-	TFavoriteList f_list;
-	QString _filename;
-	TAction* edit_act;
-	TAction* jump_act;
-	TAction* next_act;
-	TAction* previous_act;
-	TAction* add_current_act;
+    TFavoriteList f_list;
+    QString _filename;
+    TAction* edit_act;
+    TAction* jump_act;
+    TAction* next_act;
+    TAction* previous_act;
+    TAction* add_current_act;
 
     // Current or last file clicked
-	QString current_file;
+    QString current_file;
 
-	// Last item selected in the jump dialog
-	int last_item;
+    // Last item selected in the jump dialog
+    int last_item;
 
-	QString received_file_playing;
-	QString received_title;
+    QString received_file_playing;
+    QString received_title;
 
-	QList<TFavorites*> child;
+    QList<TFavorites*> child;
 }; // class TFavorites
 
 } // namespace Action

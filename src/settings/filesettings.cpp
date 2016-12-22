@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,19 +38,19 @@ TFileSettings::~TFileSettings() {
 
 QString TFileSettings::filenameToGroupname(const QString& filename) {
 
-	QString s = filename;
-	s = s.replace('/', '_');
-	s = s.replace('\\', '_');
-	s = s.replace(':', '_');
-	s = s.replace('.', '_');
-	s = s.replace(' ', '_');
+    QString s = filename;
+    s = s.replace('/', '_');
+    s = s.replace('\\', '_');
+    s = s.replace(':', '_');
+    s = s.replace('.', '_');
+    s = s.replace(' ', '_');
 
-	QFileInfo fi(filename);
-	if (fi.exists()) {
-		s += "_" + QString::number(fi.size());
-	}
+    QFileInfo fi(filename);
+    if (fi.exists()) {
+        s += "_" + QString::number(fi.size());
+    }
 
-	return s;	
+    return s;    
 }
 
 bool TFileSettings::existSettingsFor(const QString& filename) {
@@ -69,23 +69,23 @@ void TFileSettings::loadSettingsFor(const QString& filename,
                                     TMediaSettings& mset) {
     WZDEBUG("'" + filename + "'");
 
-	QString group_name = filenameToGroupname(filename);
+    QString group_name = filenameToGroupname(filename);
     WZDEBUG("group name: '" + group_name +"'");
-	beginGroup(group_name);
+    beginGroup(group_name);
     mset.load(this);
-	endGroup();
+    endGroup();
 }
 
 void TFileSettings::saveSettingsFor(const QString& filename,
                                     TMediaSettings& mset) {
     WZDEBUG("'" + filename + "'");
 
-	QString group_name = filenameToGroupname(filename);
+    QString group_name = filenameToGroupname(filename);
     WZDEBUG("group name: '" + group_name + "'");
-	beginGroup(group_name);
-	setValue("saved", true);
+    beginGroup(group_name);
+    setValue("saved", true);
     mset.save(this);
-	endGroup();
+    endGroup();
 }
 
 } // namespace Settings

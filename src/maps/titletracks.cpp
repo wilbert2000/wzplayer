@@ -24,33 +24,33 @@
 namespace Maps {
 
 TTitleData::TTitleData() :
-	TData(),
-	chapters(),
-	name(),
-	duration(-1),
-	vts(-1),
-	isTrack(false) {
+    TData(),
+    chapters(),
+    name(),
+    duration(-1),
+    vts(-1),
+    isTrack(false) {
 }
 
 QString TTitleData::getDisplayName(bool add_duration) const {
 
-	QString dname = QString::number(ID);
+    QString dname = QString::number(ID);
 
-	if (name.isEmpty()) {
-		if (isTrack) {
+    if (name.isEmpty()) {
+        if (isTrack) {
             dname = qApp->translate("TDiscName", "track %1").arg(dname);
-		} else {
+        } else {
             dname = qApp->translate("TDiscName", "title %1").arg(dname);
-		}
-	} else {
-		dname += " " + name;
-	}
+        }
+    } else {
+        dname += " " + name;
+    }
 
-	if (add_duration && duration >= 0) {
-		dname += " (" + Helper::formatTime(qRound(duration)) + ")";
-	}
+    if (add_duration && duration >= 0) {
+        dname += " (" + Helper::formatTime(qRound(duration)) + ")";
+    }
 
-	return dname;
+    return dname;
 }
 
 
@@ -61,44 +61,44 @@ TTitleTracks::~TTitleTracks() {
 }
 
 void TTitleTracks::addName(int ID, const QString &name) {
-	TTitleData& title = (*this)[ID];
-	title.setID(ID);
-	title.setName(name);
+    TTitleData& title = (*this)[ID];
+    title.setID(ID);
+    title.setName(name);
 }
 
 void TTitleTracks::addDuration(int ID, double duration, bool is_track) {
-	TTitleData& title = (*this)[ID];
-	title.setID(ID);
-	title.setDuration(duration);
-	title.setType(is_track);
+    TTitleData& title = (*this)[ID];
+    title.setID(ID);
+    title.setDuration(duration);
+    title.setType(is_track);
 }
 
 void TTitleTracks::addTrack(int ID, const QString &name, double duration) {
-	(*this)[ID].setTrack(ID, name, duration);
+    (*this)[ID].setTrack(ID, name, duration);
 }
 
 void TTitleTracks::setSelectedTitle(int title) {
-	(*this)[title].setVTS(selectedVTS);
-	selectedID = title;
+    (*this)[title].setVTS(selectedVTS);
+    selectedID = title;
 }
 
 int TTitleTracks::findTitleForVTS(int vts) {
 
-	// Look for a title marked with the requested VTS
-	TTitleTrackIterator i(*this);
-	while (i.hasNext()) {
-		i.next();
-		if (i.value().getVTS() == vts) {
-			return i.key();
-		}
-	}
+    // Look for a title marked with the requested VTS
+    TTitleTrackIterator i(*this);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value().getVTS() == vts) {
+            return i.key();
+        }
+    }
 
-	// Assume there are no empty title sets...
-	if (vtsCount == count()) {
-		return vts;
-	}
+    // Assume there are no empty title sets...
+    if (vtsCount == count()) {
+        return vts;
+    }
 
-	return -1;
+    return -1;
 }
 
 void TTitleTracks::list() const {
@@ -107,15 +107,15 @@ void TTitleTracks::list() const {
     logger->debug("list VTS count %1", vtsCount);
     logger->debug("list selected VTS %1", selectedVTS);
     logger->debug("list selected title ID %1", selectedID);
-	TTitleTrackIterator i(*this);
-	while (i.hasNext()) {
-		i.next();
-		TTitleData d = i.value();
+    TTitleTrackIterator i(*this);
+    while (i.hasNext()) {
+        i.next();
+        TTitleData d = i.value();
         logger->debug("list ID " + QString::number(d.getID())
                       + ", name '" + d.getName()
                       + "', duration " + QString::number(d.getDuration())
                       + ", chapters " + QString::number(d.chapters.count()));
-	}
+    }
 }
 
 } // namespace Maps

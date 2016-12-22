@@ -29,77 +29,77 @@ namespace Pref {
 
 
 class TInput : public TWidget, public Ui::TInput {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TInput();
+    TInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TInput();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
-	// Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    // Pass data to the dialog
+    void setData(Settings::TPreferences* pref);
 
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
-
-protected:
-	void createMouseCombos();
-
-	void setLeftClickFunction(const QString& f);
-	QString leftClickFunction();
-
-	void setRightClickFunction(const QString& f);
-	QString rightClickFunction();
-
-	void setDoubleClickFunction(const QString& f);
-	QString doubleClickFunction();
-
-	void setMiddleClickFunction(const QString& f);
-	QString middleClickFunction();
-
-	void setXButton1ClickFunction(const QString& f);
-	QString xButton1ClickFunction();
-
-	void setXButton2ClickFunction(const QString& f);
-	QString xButton2ClickFunction();
-
-	void setWheelFunction(int function);
-	int wheelFunction();
-
-	void setWheelFunctionCycle(Settings::TPreferences::TWheelFunctions flags);
-	Settings::TPreferences::TWheelFunctions wheelFunctionCycle();
-
-	void setWheelFunctionSeekingReverse(bool b);
-	bool wheelFunctionSeekingReverse();
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void retranslateStrings();
+    void createMouseCombos();
+
+    void setLeftClickFunction(const QString& f);
+    QString leftClickFunction();
+
+    void setRightClickFunction(const QString& f);
+    QString rightClickFunction();
+
+    void setDoubleClickFunction(const QString& f);
+    QString doubleClickFunction();
+
+    void setMiddleClickFunction(const QString& f);
+    QString middleClickFunction();
+
+    void setXButton1ClickFunction(const QString& f);
+    QString xButton1ClickFunction();
+
+    void setXButton2ClickFunction(const QString& f);
+    QString xButton2ClickFunction();
+
+    void setWheelFunction(int function);
+    int wheelFunction();
+
+    void setWheelFunctionCycle(Settings::TPreferences::TWheelFunctions flags);
+    Settings::TPreferences::TWheelFunctions wheelFunctionCycle();
+
+    void setWheelFunctionSeekingReverse(bool b);
+    bool wheelFunctionSeekingReverse();
+
+protected:
+    virtual void retranslateStrings();
 
 private:
-	void createHelp();
+    void createHelp();
 
-	void setSeeking1(int n);
-	int seeking1();
+    void setSeeking1(int n);
+    int seeking1();
 
-	void setSeeking2(int n);
-	int seeking2();
+    void setSeeking2(int n);
+    int seeking2();
 
-	void setSeeking3(int n);
-	int seeking3();
+    void setSeeking3(int n);
+    int seeking3();
 
-	void setSeeking4(int n);
-	int seeking4();
+    void setSeeking4(int n);
+    int seeking4();
 
-	void setUpdateWhileDragging(bool);
-	bool updateWhileDragging();
+    void setUpdateWhileDragging(bool);
+    bool updateWhileDragging();
 
-	void setRelativeSeeking(bool);
-	bool relativeSeeking();
+    void setRelativeSeeking(bool);
+    bool relativeSeeking();
 
-	void setPreciseSeeking(bool);
-	bool preciseSeeking();
+    void setPreciseSeeking(bool);
+    bool preciseSeeking();
 }; // class TInput
 
 } // namespace Pref

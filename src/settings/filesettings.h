@@ -28,14 +28,14 @@ namespace Settings {
 class TFileSettings : public TFileSettingsBase {
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-	TFileSettings();
-	virtual ~TFileSettings();
+    TFileSettings();
+    virtual ~TFileSettings();
 
-	virtual bool existSettingsFor(const QString& filename);
+    virtual bool existSettingsFor(const QString& filename);
     virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset);
     virtual void saveSettingsFor(const QString& filename, TMediaSettings& mset);
 
-	static QString filenameToGroupname(const QString& filename);
+    static QString filenameToGroupname(const QString& filename);
 };
 
 } // namespace Settings

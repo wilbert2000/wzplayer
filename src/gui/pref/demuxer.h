@@ -12,27 +12,27 @@ namespace Gui {
 namespace Pref {
 
 class TDemuxer : public TWidget, public Ui::TDemuxer {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TDemuxer(QWidget* parent);
-	virtual ~TDemuxer();
+    TDemuxer(QWidget* parent);
+    virtual ~TDemuxer();
 
-	// Return the name of the section
-	virtual QString sectionName();
-	// Return the icon of the section
-	virtual QPixmap sectionIcon();
+    // Return the name of the section
+    virtual QString sectionName();
+    // Return the icon of the section
+    virtual QPixmap sectionIcon();
 
-	// Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
-	// Apply changes
-	void getData(Settings::TPreferences* pref);
+    // Pass data to the dialog
+    void setData(Settings::TPreferences* pref);
+    // Apply changes
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	void createHelp();
+    void createHelp();
 };
 
 } // namespace Pref

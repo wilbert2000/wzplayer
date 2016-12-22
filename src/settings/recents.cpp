@@ -32,58 +32,58 @@ TRecents::~TRecents() {
 
 void TRecents::setMaxItems(int n_items) {
 
-	max_items = n_items;
-	while (count() > max_items) {
-		removeLast();
-	}
+    max_items = n_items;
+    while (count() > max_items) {
+        removeLast();
+    }
 }
 
 void TRecents::addItem(QString s, const QString& title) {
 
-	if (!title.isEmpty()) {
-		s += "|title]=" + title;
-	}
+    if (!title.isEmpty()) {
+        s += "|title]=" + title;
+    }
 
-	int pos = indexOf(s);
-	if (pos >= 0)
-		removeAt(pos);
-	prepend(s);
+    int pos = indexOf(s);
+    if (pos >= 0)
+        removeAt(pos);
+    prepend(s);
 
-	if (count() > max_items)
-		removeLast();
+    if (count() > max_items)
+        removeLast();
 }
 
 QString TRecents::item(int n) {
 
-	QString res;
-	QStringList s = (*this)[n].split("|title]=");
-	if (s.count() > 0)
-		res = s[0];
+    QString res;
+    QStringList s = (*this)[n].split("|title]=");
+    if (s.count() > 0)
+        res = s[0];
 
-	return res;
+    return res;
 }
 
 QString TRecents::title(int n) {
 
-	QString res;
-	QStringList s = (*this)[n].split("|title]=");
-	if (s.count() > 1)
-		res = s[1];
+    QString res;
+    QStringList s = (*this)[n].split("|title]=");
+    if (s.count() > 1)
+        res = s[1];
 
-	return res;
+    return res;
 }
 
 void TRecents::fromStringList(const QStringList& list) {
 
-	clear();
+    clear();
 
-	int max = list.count();
-	if (max > max_items)
-		max = max_items;
+    int max = list.count();
+    if (max > max_items)
+        max = max_items;
 
-	for (int n = 0; n < max; n++) {
-		append(list[n]);
-	}
+    for (int n = 0; n < max; n++) {
+        append(list[n]);
+    }
 }
 
 } // namespace Settings

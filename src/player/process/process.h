@@ -34,38 +34,38 @@ namespace Player {
 namespace Process {
 
 class TProcess : public QProcess {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
     TProcess(QObject* parent);
     virtual ~TProcess();
 
-	virtual void setExecutable(const QString& p) { program = p; }
-	QString executable() { return program; }
+    virtual void setExecutable(const QString& p) { program = p; }
+    QString executable() { return program; }
 
-	virtual void addArgument(const QString& a); 	//!< Add an argument
+    virtual void addArgument(const QString& a);     //!< Add an argument
 
-	void clearArguments(); 		//!< Clear the list of arguments
-	QStringList arguments(); 	//!< Return the list of arguments
+    void clearArguments();         //!< Clear the list of arguments
+    QStringList arguments();     //!< Return the list of arguments
 
-	void start();				//!< Start the process
+    void start();                //!< Start the process
 
-	static QStringList splitArguments(const QString& args);
+    static QStringList splitArguments(const QString& args);
 
 protected slots:
-	void readStdOut();			//!< Called for reading from standard output
-	void procFinished();		//!< Called when the process has finished
+    void readStdOut();            //!< Called for reading from standard output
+    void procFinished();        //!< Called when the process has finished
 
 protected:
-	//! Called from readStdOut() and readTmpFile() to do all the work
+    //! Called from readStdOut() and readTmpFile() to do all the work
     void genericRead(QByteArray buffer);
     virtual bool parseLine(QString& line) = 0;
 
 protected:
-	QString program;
+    QString program;
     QStringList args;
-	QByteArray remaining_output;
+    QByteArray remaining_output;
 
 private:
     int line_count;

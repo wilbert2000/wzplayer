@@ -23,25 +23,25 @@
 namespace Maps {
 
 TChapterData::TChapterData() :
-	TData(),
-	name(),
-	start(-1),
-	end(-1) {
+    TData(),
+    name(),
+    start(-1),
+    end(-1) {
 }
 
 QString TChapterData::getDisplayName() const {
 
-	QString dname = QString::number(ID + 1);
+    QString dname = QString::number(ID + 1);
 
-	if (!name.isEmpty()) {
-		dname += " " + name;
-	}
+    if (!name.isEmpty()) {
+        dname += " " + name;
+    }
 
-	if (start >= 0) {
-		dname += " (" + Helper::formatTime(qRound(start)) + ")";
-	}
+    if (start >= 0) {
+        dname += " (" + Helper::formatTime(qRound(start)) + ")";
+    }
 
-	return dname;
+    return dname;
 };
 
 
@@ -52,54 +52,54 @@ TChapters::~TChapters() {
 }
 
 void TChapters::addName(int id, const QString &name) {
-	TChapterData& chapter = (*this)[id];
-	chapter.setID(id);
-	chapter.setName(name);
+    TChapterData& chapter = (*this)[id];
+    chapter.setID(id);
+    chapter.setName(name);
 }
 
 void TChapters::addStart(int id, double start) {
-	TChapterData& chapter = (*this)[id];
-	chapter.setID(id);
-	chapter.setStart(start);
+    TChapterData& chapter = (*this)[id];
+    chapter.setID(id);
+    chapter.setStart(start);
 }
 
 void TChapters::addEnd(int id, double end) {
-	TChapterData& chapter = (*this)[id];
-	chapter.setID(id);
-	chapter.setEnd(end);
+    TChapterData& chapter = (*this)[id];
+    chapter.setID(id);
+    chapter.setEnd(end);
 }
 
 void TChapters::addChapter(int id, const QString &name, double start) {
-	TChapterData& chapter = (*this)[id];
-	chapter.setID(id);
-	chapter.setName(name);
-	chapter.setStart(start);
+    TChapterData& chapter = (*this)[id];
+    chapter.setID(id);
+    chapter.setName(name);
+    chapter.setStart(start);
 }
 
 int TChapters::idForTime(double sec, bool allow_gaps) const {
 
-	int id = -1;
+    int id = -1;
 
-	TChapterIterator i(*this);
-	while(i.hasNext()) {
-		i.next();
-		const TChapterData chapter = i.value();
-		if(sec < chapter.getStart()) {
-			// return previous id
-			return id;
-		}
-		id = chapter.getID();
-		if (sec < chapter.getEnd()) {
-			// return current id
-			return id;
-		}
-		// if chapter has end set reset id
-		if (allow_gaps && chapter.getEnd() != -1) {
-			id = -1;
-		}
-	}
+    TChapterIterator i(*this);
+    while(i.hasNext()) {
+        i.next();
+        const TChapterData chapter = i.value();
+        if(sec < chapter.getStart()) {
+            // return previous id
+            return id;
+        }
+        id = chapter.getID();
+        if (sec < chapter.getEnd()) {
+            // return current id
+            return id;
+        }
+        // if chapter has end set reset id
+        if (allow_gaps && chapter.getEnd() != -1) {
+            id = -1;
+        }
+    }
 
-	return id;
+    return id;
 }
 
 void TChapters::list() const {

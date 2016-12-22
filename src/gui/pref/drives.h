@@ -32,44 +32,44 @@ namespace Gui {
 namespace Pref {
 
 class TDrives : public TWidget, public Ui::TDrives {
-	Q_OBJECT
+    Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-	TDrives(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TDrives();
+    TDrives(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TDrives();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void createHelp();
+    virtual void createHelp();
 
-	void setDVDDevice(const QString& dir);
-	QString dvdDevice();
+    void setDVDDevice(const QString& dir);
+    QString dvdDevice();
 
-	void setBlurayDevice(const QString& dir);
-	QString blurayDevice();
+    void setBlurayDevice(const QString& dir);
+    QString blurayDevice();
 
-	void setCDRomDevice(const QString& dir);
-	QString cdromDevice();
+    void setCDRomDevice(const QString& dir);
+    QString cdromDevice();
 
-	void setUseDVDNav(bool b);
-	bool useDVDNav();
+    void setUseDVDNav(bool b);
+    bool useDVDNav();
 
-	void updateDriveCombos(bool detect_cd_devices = false);
+    void updateDriveCombos(bool detect_cd_devices = false);
 
 protected slots:
-	void on_check_drives_button_clicked();
+    void on_check_drives_button_clicked();
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 };
 
 } // namespace Pref

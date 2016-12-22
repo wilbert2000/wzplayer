@@ -24,26 +24,26 @@
 namespace Gui { namespace Pref {
 
 class TSelectColorButton : public QPushButton {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TSelectColorButton(QWidget* parent = 0);
-	virtual ~TSelectColorButton();
+    TSelectColorButton(QWidget* parent = 0);
+    virtual ~TSelectColorButton();
 
-	QColor color() const { return _color;}
+    QColor color() const { return _color;}
 
 public slots:
-	void setColor(QColor c);
+    void setColor(QColor c);
 
 protected:
-	virtual void changeEvent(QEvent* event) ;
+    virtual void changeEvent(QEvent* event) ;
 
 private:
-	QColor _color;
-	bool ignore_change_event;
-	
+    QColor _color;
+    bool ignore_change_event;
+    
 private slots:
-	void selectColor();
+    void selectColor();
 };
 
 }} // namespace Gui::Pref

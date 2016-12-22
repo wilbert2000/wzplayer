@@ -419,7 +419,7 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
     WZDEBUG("");
 
     QTreeWidgetItem* current = currentItem();
-    QList<QTreeWidgetItem*>	selection = selectedItems();
+    QList<QTreeWidgetItem*>    selection = selectedItems();
 
     for(int i = 0; i < selection.count(); i++) {
         setModified(static_cast<TPlaylistWidgetItem*>(

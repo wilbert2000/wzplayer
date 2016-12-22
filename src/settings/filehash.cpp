@@ -28,30 +28,30 @@ namespace Settings {
 // (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
 QString TFileHash::calculateHash(const QString& filename) {
 
-	QFile file(filename);
-	if (!file.exists()) {
+    QFile file(filename);
+    if (!file.exists()) {
         Log4Qt::Logger::logger("TFileHash")->error(
             "calculateHash error hashing file does not exist");
-		return QString();
-	}
+        return QString();
+    }
 
-	file.open(QIODevice::ReadOnly);
-	QDataStream in(&file);
-	in.setByteOrder(QDataStream::LittleEndian);
-	quint64 size = file.size ();
-	quint64 hash = size;
-	quint64 a;
-	for(int i = 0; i < 8192; i++) {
-		in >> a ; hash += a;
-	};
-	file.seek(size - 65536);
-	for(int i = 0; i < 8192; i++) {
-		in >> a ; hash += a;
-	};
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in.setByteOrder(QDataStream::LittleEndian);
+    quint64 size = file.size ();
+    quint64 hash = size;
+    quint64 a;
+    for(int i = 0; i < 8192; i++) {
+        in >> a ; hash += a;
+    };
+    file.seek(size - 65536);
+    for(int i = 0; i < 8192; i++) {
+        in >> a ; hash += a;
+    };
 
-	QString hexhash = QString("%1").arg(hash, 16, 16, QChar('0'));
+    QString hexhash = QString("%1").arg(hash, 16, 16, QChar('0'));
 
-	return hexhash;
+    return hexhash;
 }
 
 } // namespace Settings

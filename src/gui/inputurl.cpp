@@ -23,30 +23,30 @@
 namespace Gui {
 
 TInputURL::TInputURL(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f)
+    : QDialog(parent, f)
 {
-	setupUi(this);
+    setupUi(this);
 
-	setMinimumSize(QSize(500,140));
-	setMaximumSize(QSize(600,170));
-	//layout()->setSizeConstraint(QLayout::SetFixedSize);
+    setMinimumSize(QSize(500,140));
+    setMaximumSize(QSize(600,170));
+    //layout()->setSizeConstraint(QLayout::SetFixedSize);
 
-	url_icon->setPixmap(Images::icon("open_url_big", 48));
-	url_edit->setFocus();
+    url_icon->setPixmap(Images::icon("open_url_big", 48));
+    url_edit->setFocus();
 
-	TLineEdit* edit = new TLineEdit(this);
-	url_edit->setLineEdit(edit);
+    TLineEdit* edit = new TLineEdit(this);
+    url_edit->setLineEdit(edit);
 }
 
 TInputURL::~TInputURL() {
 }
 
 void TInputURL::setURL(QString url) {
-	url_edit->addItem(url);
+    url_edit->addItem(url);
 }
 
 QString TInputURL::url() {
-	return url_edit->currentText().trimmed();
+    return url_edit->currentText().trimmed();
 }
 
 } // namespace Gui

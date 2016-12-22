@@ -32,26 +32,26 @@ namespace Gui {
 namespace Pref {
 
 class TAdvanced : public TWidget, public Ui::TAdvanced {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TAdvanced(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	virtual ~TAdvanced();
+    TAdvanced(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TAdvanced();
 
-	virtual QString sectionName();
-	virtual QPixmap sectionIcon();
+    virtual QString sectionName();
+    virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-	void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-	void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref);
 
 protected:
-	virtual void retranslateStrings();
+    virtual void retranslateStrings();
 
 private:
-	void createHelp();
+    void createHelp();
 
     void setLogLevel(Log4Qt::Level level);
     Log4Qt::Level logLevel();
@@ -60,16 +60,16 @@ private:
     bool logVerbose();
 
     void setActionsToRun(QString actions);
-	QString actionsToRun();
+    QString actionsToRun();
 
-	void setPlayerAdditionalArguments(QString args);
-	QString playerAdditionalArguments();
+    void setPlayerAdditionalArguments(QString args);
+    QString playerAdditionalArguments();
 
-	void setPlayerAdditionalVideoFilters(QString s);
-	QString playerAdditionalVideoFilters();
+    void setPlayerAdditionalVideoFilters(QString s);
+    QString playerAdditionalVideoFilters();
 
-	void setPlayerAdditionalAudioFilters(QString s);
-	QString playerAdditionalAudioFilters();
+    void setPlayerAdditionalAudioFilters(QString s);
+    QString playerAdditionalAudioFilters();
 };
 
 } // namespace Pref

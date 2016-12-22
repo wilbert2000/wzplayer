@@ -30,19 +30,19 @@ namespace Action {
 
 
 class TSlider : public QSlider {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TSlider(QWidget* parent);
-	virtual ~TSlider();
+    TSlider(QWidget* parent);
+    virtual ~TSlider();
 
 protected:
-	void mousePressEvent(QMouseEvent* event);
-	// Copied from qslider.cpp
-	inline int pick(const QPoint &pt) const {
-		return orientation() == Qt::Horizontal ? pt.x() : pt.y();
-	}
-	int pixelPosToRangeValue(int pos) const;
+    void mousePressEvent(QMouseEvent* event);
+    // Copied from qslider.cpp
+    inline int pick(const QPoint &pt) const {
+        return orientation() == Qt::Horizontal ? pt.x() : pt.y();
+    }
+    int pixelPosToRangeValue(int pos) const;
 }; // class TSlider
 
 

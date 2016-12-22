@@ -27,52 +27,52 @@
 namespace Gui {
 
 class TVideoEqualizer : public QWidget, public Ui::TVideoEqualizer {
-	Q_OBJECT
+    Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-	TVideoEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
-	virtual ~TVideoEqualizer();
+    TVideoEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
+    virtual ~TVideoEqualizer();
 
 public slots:
-	void setContrast(int v) { contrast_slider->setValue(v); }
-	void setBrightness(int v) { brightness_slider->setValue(v); }
-	void setHue(int v) { hue_slider->setValue(v); }
-	void setSaturation(int v) { saturation_slider->setValue(v); }
-	void setGamma(int v) { gamma_slider->setValue(v); }
-	void setBySoftware(bool b) { bysoftware_check->setChecked(b); }
+    void setContrast(int v) { contrast_slider->setValue(v); }
+    void setBrightness(int v) { brightness_slider->setValue(v); }
+    void setHue(int v) { hue_slider->setValue(v); }
+    void setSaturation(int v) { saturation_slider->setValue(v); }
+    void setGamma(int v) { gamma_slider->setValue(v); }
+    void setBySoftware(bool b) { bysoftware_check->setChecked(b); }
 
-	void reset();
+    void reset();
 
 public:
-	int contrast() { return contrast_slider->value(); }
-	int brightness() { return brightness_slider->value(); }
-	int hue() { return hue_slider->value(); }
-	int saturation() { return saturation_slider->value(); }
-	int gamma() { return gamma_slider->value(); }
-	bool bySoftware() { return bysoftware_check->isChecked(); }
+    int contrast() { return contrast_slider->value(); }
+    int brightness() { return brightness_slider->value(); }
+    int hue() { return hue_slider->value(); }
+    int saturation() { return saturation_slider->value(); }
+    int gamma() { return gamma_slider->value(); }
+    bool bySoftware() { return bysoftware_check->isChecked(); }
 
 signals:
-	void contrastChanged(int);
-	void brightnessChanged(int);
-	void hueChanged(int);
-	void saturationChanged(int);
-	void gammaChanged(int);
+    void contrastChanged(int);
+    void brightnessChanged(int);
+    void hueChanged(int);
+    void saturationChanged(int);
+    void gammaChanged(int);
 
-	void visibilityChanged(bool visible);
-	void requestToChangeDefaultValues();
-	void bySoftwareChanged(bool);
+    void visibilityChanged(bool visible);
+    void requestToChangeDefaultValues();
+    void bySoftwareChanged(bool);
 
 protected slots:
-	void on_reset_button_clicked();
-	void on_bysoftware_check_stateChanged(int);
+    void on_reset_button_clicked();
+    void on_bysoftware_check_stateChanged(int);
 
-	virtual void hideEvent(QHideEvent*);
-	virtual void showEvent(QShowEvent*);
+    virtual void hideEvent(QHideEvent*);
+    virtual void showEvent(QShowEvent*);
 
 protected:
-	virtual void retranslateStrings();
-	virtual void changeEvent(QEvent* event);
+    virtual void retranslateStrings();
+    virtual void changeEvent(QEvent* event);
 };
 
 } // namespace Gui
