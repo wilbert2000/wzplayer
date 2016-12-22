@@ -48,25 +48,25 @@ namespace Gui {
 namespace Pref {
 
 TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f) {
+    : QDialog(parent, f) {
 
-	setupUi(this);
+    setupUi(this);
 
-	helpButton = buttonBox->button(QDialogButtonBox::Help);
-	connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
-	
-	setWindowIcon(Images::icon("logo"));
+    helpButton = buttonBox->button(QDialogButtonBox::Help);
+    connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
 
-	help_window = new QTextBrowser(this);
-	help_window->setWindowFlags(Qt::Window);
-	help_window->resize(300, 450);
-	help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
-	help_window->setWindowIcon(Images::icon("logo"));
-	help_window->setOpenExternalLinks(true);
+    setWindowIcon(Images::icon("logo"));
 
-	// Get VO and AO driver lists from TPlayerInfo:
+    help_window = new QTextBrowser(this);
+    help_window->setWindowFlags(Qt::Window);
+    help_window->resize(300, 450);
+    help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
+    help_window->setWindowIcon(Images::icon("logo"));
+    help_window->setOpenExternalLinks(true);
+
+    // Get VO and AO driver lists from TPlayerInfo:
     Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
-	i->getInfo();
+    i->getInfo();
 
     page_player = new TPlayerSection(this);
     addSection(page_player);
@@ -76,34 +76,34 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
                                     bool, const QString&)));
 
     page_demuxer = new TDemuxer(this);
-	addSection(page_demuxer);
+    addSection(page_demuxer);
 
     page_video = new TVideo(this, i->voList());
-	addSection(page_video);
+    addSection(page_video);
 
     page_audio = new TAudio(this, i->aoList());
-	addSection(page_audio);
+    addSection(page_audio);
 
     page_subtitles = new TSubtitles(this);
-	addSection(page_subtitles);
+    addSection(page_subtitles);
 
     page_interface = new TInterface(this);
-	addSection(page_interface);
+    addSection(page_interface);
 
     page_playlist = new TPlaylistSection(this);
     addSection(page_playlist);
 
     page_input = new TInput(this);
-	addSection(page_input);
+    addSection(page_input);
 
     page_drives = new TDrives(this);
-	addSection(page_drives);
+    addSection(page_drives);
 
     page_capture = new TCapture(this);
-	addSection(page_capture);
+    addSection(page_capture);
 
     page_performance = new TPerformance(this);
-	addSection(page_performance);
+    addSection(page_performance);
 
     page_network = new TNetwork(this);
     addSection(page_network);
@@ -125,107 +125,105 @@ TDialog::~TDialog() {
 }
 
 void TDialog::showSection(TSection section) {
-	logger()->debug("Gui::Pref::TDialog::showSection: %1", section);
-
-	sections->setCurrentRow(section);
+    sections->setCurrentRow(section);
 }
 
 void TDialog::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	for (int n = 0; n < pages->count(); n++) {
-		TWidget* w = (TWidget*) pages->widget(n);
-		sections->item(n)->setText(w->sectionName());
-		sections->item(n)->setIcon(w->sectionIcon());
-	}
+    for (int n = 0; n < pages->count(); n++) {
+        TWidget* w = (TWidget*) pages->widget(n);
+        sections->item(n)->setText(w->sectionName());
+        sections->item(n)->setIcon(w->sectionIcon());
+    }
 
-	if (help_window->isVisible()) {
-		// Makes the help to retranslate
-		showHelp();
-	}
+    if (help_window->isVisible()) {
+        // Makes the help to retranslate
+        showHelp();
+    }
 
-	help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
+    help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
 }
 
 void TDialog::accept() {
 
-	hide();
-	help_window->hide();
-	setResult(QDialog::Accepted);
-	emit applied();
+    hide();
+    help_window->hide();
+    setResult(QDialog::Accepted);
+    emit applied();
 }
 
 void TDialog::reject() {
 
-	hide();
-	help_window->hide();
-	setResult(QDialog::Rejected);
+    hide();
+    help_window->hide();
+    setResult(QDialog::Rejected);
 
-	setResult(QDialog::Accepted);
+    setResult(QDialog::Accepted);
 }
 
 void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
-						   bool keep_current_drivers,
-						   const QString& path) {
+                           bool keep_current_drivers,
+                           const QString& path) {
 
     Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
-	i->getInfo(path);
-	page_video->vo_list = i->voList();
-	page_video->updateDriverCombo(player_id, keep_current_drivers);
-	page_audio->ao_list = i->aoList();
-	page_audio->updateDriverCombo(player_id, keep_current_drivers);
+    i->getInfo(path);
+    page_video->vo_list = i->voList();
+    page_video->updateDriverCombo(player_id, keep_current_drivers);
+    page_audio->ao_list = i->aoList();
+    page_audio->updateDriverCombo(player_id, keep_current_drivers);
 }
 
 void TDialog::addSection(TWidget *w) {
 
-	QListWidgetItem *i = new QListWidgetItem(w->sectionIcon(), w->sectionName());
-	sections->addItem(i);
-	pages->addWidget(w);
+    QListWidgetItem *i = new QListWidgetItem(w->sectionIcon(), w->sectionName());
+    sections->addItem(i);
+    pages->addWidget(w);
 }
 
 void TDialog::setData(Settings::TPreferences* pref) {
 
     page_player->setData(pref);
-	page_demuxer->setData(pref);
-	page_video->setData(pref);
-	page_audio->setData(pref);
-	page_subtitles->setData(pref);
-	page_interface->setData(pref);
+    page_demuxer->setData(pref);
+    page_video->setData(pref);
+    page_audio->setData(pref);
+    page_subtitles->setData(pref);
+    page_interface->setData(pref);
     page_playlist->setData(pref);
     page_input->setData(pref);
-	page_drives->setData(pref);
-	page_capture->setData(pref);
-	page_performance->setData(pref);
-	page_network->setData(pref);
+    page_drives->setData(pref);
+    page_capture->setData(pref);
+    page_performance->setData(pref);
+    page_network->setData(pref);
 
 #if USE_ASSOCIATIONS
-	page_associations->setData(pref);
+    page_associations->setData(pref);
 #endif
 
-	page_advanced->setData(pref);
+    page_advanced->setData(pref);
 }
 
 void TDialog::getData(Settings::TPreferences* pref) {
 
     page_player->getData(pref);
-	page_demuxer->getData(pref);
-	page_video->getData(pref);
-	page_audio->getData(pref);
-	page_subtitles->getData(pref);
-	page_interface->getData(pref);
+    page_demuxer->getData(pref);
+    page_video->getData(pref);
+    page_audio->getData(pref);
+    page_subtitles->getData(pref);
+    page_interface->getData(pref);
     page_playlist->getData(pref);
     page_input->getData(pref);
-	page_drives->getData(pref);
-	page_capture->getData(pref);
-	page_performance->getData(pref);
-	page_network->getData(pref);
+    page_drives->getData(pref);
+    page_capture->getData(pref);
+    page_performance->getData(pref);
+    page_network->getData(pref);
 
 #if USE_ASSOCIATIONS
-	page_associations->getData(pref);
+    page_associations->getData(pref);
 #endif
 
-	page_advanced->getData(pref);
+    page_advanced->getData(pref);
 }
 
 bool TDialog::requiresRestart() {
@@ -244,25 +242,25 @@ bool TDialog::requiresRestart() {
                         || page_network->requiresRestart()
                         || page_advanced->requiresRestart();
 
-	return need_restart;
+    return need_restart;
 }
 
 void TDialog::showHelp() {
 
-	TWidget* w = (TWidget*) pages->currentWidget();
-	help_window->setHtml(w->help());
-	help_window->show();
-	help_window->raise();
+    TWidget* w = (TWidget*) pages->currentWidget();
+    help_window->setHtml(w->help());
+    help_window->show();
+    help_window->raise();
 }
 
 // Language change stuff
 void TDialog::changeEvent(QEvent *e) {
 
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QDialog::changeEvent(e);
-	}
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
+    } else {
+        QDialog::changeEvent(e);
+    }
 }
 
 } // namespace Pref

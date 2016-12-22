@@ -10,6 +10,7 @@
 #include "config.h"
 #include "helper.h"
 #include "extensions.h"
+#include "wzdebug.h"
 
 
 namespace Gui {
@@ -126,7 +127,7 @@ void TPlaylistItem::setState(TPlaylistItemState state) {
     if (state == PSTATE_PLAYING) {
         mPlayed = true;
         mPlayedTime = timeStamper.getStamp();
-        logger()->debug("setState: stamped %1 on '%2'", mPlayedTime, mFilename);
+        WZDEBUG(QString("stamped %1 on '%2'").arg(mPlayedTime).arg(mFilename));
     }
     mState = state;
 }
@@ -186,12 +187,12 @@ bool TPlaylistItem::whitelist(const QString& filename) {
     int i = mBlacklist.indexOf(QRegExp(filename, caseSensitiveFileNames,
                                        QRegExp::FixedString));
     if (i >= 0) {
-        logger()->debug("whitelist: removing '%1' from blacklist", filename);
+        WZDEBUG("removing '" + filename + "' from blacklist");
         mBlacklist.removeAt(i);
         return true;
     }
 
-    logger()->warn("whitelist: '%1' not found in blacklist", filename);
+    WZWARN("'" + filename + "' not found in blacklist");
     return false;
 }
 

@@ -105,15 +105,15 @@ int TChapters::idForTime(double sec, bool allow_gaps) const {
 void TChapters::list() const {
 
     Log4Qt::Logger* logger = Log4Qt::Logger::logger("Maps::TChapters");
-    logger->debug("list: selected ID: %1", selectedID);
+    logger->debug("list selected id %1", selectedID);
     TChapterIterator i(*this);
     while (i.hasNext()) {
         i.next();
         const TChapterData d = i.value();
-        logger->debug("list: ID: " + QString::number(d.getID())
-                      + " name: '" + d.getName()
-                      + "' start: " + QString::number(d.getStart())
-                      + " end: " + QString::number(d.getEnd()));
+        logger->debug("list ID " + QString::number(d.getID())
+                      + ", name '" + d.getName()
+                      + "', start " + QString::number(d.getStart())
+                      + ", end " + QString::number(d.getEnd()));
     }
 }
 

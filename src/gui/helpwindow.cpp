@@ -24,6 +24,7 @@
 #include "gui/desktop.h"
 #include "images.h"
 #include "settings/preferences.h"
+#include "wzdebug.h"
 
 
 using namespace Settings;
@@ -58,7 +59,7 @@ void THelpWindow::retranslateStrings() {
 }
 
 void THelpWindow::loadConfig() {
-	logger()->debug("Gui::THelpWindow::loadConfig");
+    WZDEBUG("");
 
 	pref->beginGroup(objectName());
 	QPoint p = pref->value("pos", QPoint()).toPoint();
@@ -75,7 +76,7 @@ void THelpWindow::loadConfig() {
 }
 
 void THelpWindow::saveConfig() {
-	logger()->debug("Gui::THelpWindow::saveConfig");
+    WZDEBUG("");
 
 	pref->beginGroup(objectName());
 	pref->setValue("pos", pos());
@@ -85,19 +86,20 @@ void THelpWindow::saveConfig() {
 }
 
 void THelpWindow::showEvent(QShowEvent*) {
-	logger()->debug("Gui::THelpWindow::showEvent");
+    WZDEBUG("");
     emit visibilityChanged(true);
 }
 
 void THelpWindow::hideEvent(QShowEvent*) {
-	logger()->debug("Gui::THelpWindow::hideEvent");
-	clear();
+    WZDEBUG("");
+
+    clear();
 	emit visibilityChanged(false);
 }
 
 // Fix hideEvent() not called on close
 void THelpWindow::closeEvent(QCloseEvent* event) {
-	logger()->debug("Gui::THelpWindow::closeEvent");
+    WZDEBUG("");
 
 	hideEvent(0);
 	event->accept();

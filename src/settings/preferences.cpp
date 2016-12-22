@@ -29,7 +29,7 @@
 #include <QSysInfo> // To get Windows version
 #endif
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "log4qt/logmanager.h"
 #include "settings/paths.h"
 #include "settings/assstyles.h"
@@ -377,7 +377,7 @@ void TPreferences::reset() {
 }
 
 void TPreferences::save() {
-    logger()->info("save");
+    WZDEBUG("");
 
     setValue("config_version", config_version);
 
@@ -776,7 +776,7 @@ QString TPreferences::getAbsolutePathPlayer(const QString& player) {
     if (!found_player.isEmpty()) {
         path = found_player;
     }
-    logger()->debug("getAbsolutePathPlayer: '%1'", path);
+    WZDEBUG("'" + path + "'");
     return path;
 }
 
@@ -834,14 +834,14 @@ void TPreferences::setPlayerBin(QString bin,
         }
 
         if (found_bin.isEmpty()) {
-            logger()->warn("setPlayerBin: failed to find player '%1'", bin);
+            WZWARN("failed to find player '" + bin + "'");
         } else if (allow_other_player || found_id == wanted_player) {
-            logger()->warn("setPlayerBin: failed to find player '%1',"
-                           " selecting '%2' instead", bin, found_bin);
+            WZWARN("failed to find player '" + bin
+                   + "', selecting '" + found_bin + "'");
             bin = found_bin;
         } else {
-            logger()->warn("setPlayerBin: failed to find player '%1'. Maybe you"
-                           " can try '%2' instead.", bin, found_bin);
+            WZWARN("failed to find player '" + bin
+                   + "'. Maybe try '" + found_bin + "' instead.");
         }
     } else {
         bin = found_bin;
@@ -865,11 +865,13 @@ void TPreferences::setPlayerBin(QString bin,
         }
     }
 
-    logger()->info("setPlayerBin: selected player '%1'", bin);
-    logger()->debug("setPlayerBin: mplayer vo '%1' ao '%2' options '%3'",
-                    mplayer_vo, mplayer_ao, mplayer_additional_options);
-    logger()->debug("setPlayerBin: mpv vo '%1' ao '%2' options '%3'",
-                    mpv_vo, mpv_ao, mpv_additional_options);
+    WZINFO("selected player '" + bin + "'");
+    WZDEBUG("mplayer vo '" + mplayer_vo
+            + "' ao '" + mplayer_ao
+            + "' options '" + mplayer_additional_options + "'");
+    WZDEBUG("mpv vo '" + mpv_vo
+            + "' ao '" + mpv_ao
+            + "' options '" + mpv_additional_options + "'");
 }
 
 
@@ -899,9 +901,9 @@ void TPreferences::load() {
     if (Log4Qt::LogManager::rootLogger()->level() == Log4Qt::Level::INFO_INT) {
         Log4Qt::LogManager::rootLogger()->setLevel(log_level);
         Log4Qt::LogManager::qtLogger()->setLevel(log_level);
-        logger()->info("load: log level set to " + log_level.toString());
+        WZINFO("log level set to " + log_level.toString());
     } else {
-        logger()->info("load: log level overriden by command line");
+        WZINFO("log level overriden by command line");
     }
 
 
@@ -1248,14 +1250,14 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    logger()->info("load: loaded config version %1, CURRENT_CONFIG_VERSION %2",
-                   config_version, CURRENT_CONFIG_VERSION);
+    WZINFO("loaded config version " + QString::number(config_version)
+           + ", CURRENT_CONFIG_VERSION "
+           + QString::number(CURRENT_CONFIG_VERSION));
 
     // Check config version
     if (config_version < CURRENT_CONFIG_VERSION) {
         if (config_version > 0) {
-            logger()->info("load: config is old, updating it from %1 to %2",
-                           config_version, CURRENT_CONFIG_VERSION);
+            WZINFO("config is old, updating it");
         }
         clean_config = true;
         config_version = CURRENT_CONFIG_VERSION;
@@ -1282,19 +1284,19 @@ double TPreferences::monitorAspectDouble() {
     if (exp.indexIn(monitor_aspect) >= 0) {
         int w = exp.cap(1).toInt();
         int h = exp.cap(2).toInt();
-        logger()->info("monitorAspectDouble: monitor aspect set to %1:%2", w, h);
+        WZINFO("monitor aspect set to " + QString::number(w)
+               + ":" + QString::number(h));
         return h <= 0.01 ? 0 : (double) w / h;
     }
 
     bool ok;
     double res = monitor_aspect.toDouble(&ok);
     if (ok) {
-        logger()->info("monitorAspectDouble: monitor aspect set to %1", res);
+        WZINFO("monitor aspect set to " + QString::number(res));
         return res;
     }
 
-    logger()->warn("monitorAspectDouble: failed to parse monitor aspect,"
-                 " reset to auto detect");
+    WZWARN("failed to parse monitor aspect ratio, reset to auto detect");
     return 0;
 }
 
@@ -1303,15 +1305,15 @@ void TPreferences::setupScreenshotFolder() {
     if (screenshot_directory.isEmpty()) {
         QString pdir = TPaths::location(TPaths::PicturesLocation);
         if (pdir.isEmpty()) {
-            logger()->debug("setupScreenshotFolder: no PicturesLocation");
+            WZDEBUG("no PicturesLocation");
             pdir = TPaths::location(TPaths::DocumentsLocation);
         }
         if (pdir.isEmpty()) {
-            logger()->debug("setupScreenshotFolder: no DocumentsLocation");
+            WZDEBUG("no DocumentsLocation");
             pdir = TPaths::location(TPaths::HomeLocation);
         }
         if (pdir.isEmpty()) {
-            logger()->debug("setupScreenshotFolder: no HomeLocation");
+            WZDEBUG("no HomeLocation");
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
@@ -1322,11 +1324,10 @@ void TPreferences::setupScreenshotFolder() {
     if (screenshot_directory.isEmpty()) {
         use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
-        logger()->info("setupScreenshotFolder: using folder '%1'",
-                       screenshot_directory);
+        WZINFO("using folder '" + screenshot_directory + "'");
     } else {
-        logger()->info("setupScreenshotFolder: folder '%1' not found, disabling"
-                       " screenshots", screenshot_directory);
+        WZINFO("folder '" + screenshot_directory
+               + "' not found, disabling screenshots");
         use_screenshot = false;
         screenshot_directory = "";
     }
@@ -1339,12 +1340,11 @@ void TPreferences::setTitleBlackList() {
         if (!s.isEmpty()) {
             QRegExp* rx = new QRegExp(s, Qt::CaseInsensitive);
             if (rx->isValid()) {
-                logger()->debug("setTitleBlacklist: adding '%1'", rx->pattern());
+                WZDEBUG("adding '" + rx->pattern() + "'");
                 rxTitleBlacklist << rx;
             } else {
+                WZERROR("failed to parse regular expression '" + s + "'");
                 delete rx;
-                logger()->error("setTitleBlacklist: failed to parse regular"
-                                " expression '%1'", s);
             }
         }
     }

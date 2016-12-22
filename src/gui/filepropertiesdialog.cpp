@@ -52,7 +52,7 @@ TFilePropertiesDialog::~TFilePropertiesDialog() {
 }
 
 void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {
-    logger()->debug("closeEvent");
+    WZDEBUG("");
 
     emit visibilityChanged(false);
     event->accept();
@@ -71,7 +71,7 @@ void TFilePropertiesDialog::retranslateStrings() {
 }
 
 void TFilePropertiesDialog::accept() {
-    logger()->debug("accept");
+    WZDEBUG("");
 
     setResult(QDialog::Accepted);
     hide();
@@ -80,7 +80,7 @@ void TFilePropertiesDialog::accept() {
 }
 
 void TFilePropertiesDialog::reject() {
-    logger()->debug("reject");
+    WZDEBUG("");
 
     setResult(QDialog::Rejected);
     hide();
@@ -88,7 +88,7 @@ void TFilePropertiesDialog::reject() {
 }
 
 void TFilePropertiesDialog::apply() {
-    logger()->debug("apply");
+    WZDEBUG("");
 
     setResult(QDialog::Accepted);
     emit applied();
@@ -142,7 +142,7 @@ void TFilePropertiesDialog::setDemuxer(const QString& demuxer, const QString& or
         demuxer_listbox->setCurrentRow(pos);
     }
 
-    logger()->debug("setDemuxer: '%1'", demuxer);
+    WZDEBUG("'" + demuxer + "'");
 }
 
 QString TFilePropertiesDialog::demuxer() {
@@ -169,7 +169,7 @@ void TFilePropertiesDialog::setVideoCodec(const QString& vc, const QString& orig
         vc_listbox->setCurrentRow(pos);
     }
 
-    logger()->debug("setVideoCodec: '%1'", vc);
+    WZDEBUG("'" + vc + "'");
 }
 
 QString TFilePropertiesDialog::videoCodec() {
@@ -195,7 +195,7 @@ void TFilePropertiesDialog::setAudioCodec(const QString& ac, const QString& orig
         ac_listbox->setCurrentRow(pos);
     }
 
-    logger()->debug("setAudioCodec: '%1'", ac);
+    WZDEBUG("'" + ac + "'");
 }
 
 QString TFilePropertiesDialog::audioCodec() {

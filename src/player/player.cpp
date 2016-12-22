@@ -160,7 +160,7 @@ TPlayer::~TPlayer() {
 }
 
 void TPlayer::onProcessError(QProcess::ProcessError error) {
-    logger()->error("onProcessError: %1", error);
+    WZERROR(QString::number(error));
 
     // Restore normal window background
     playerwindow->restoreNormalWindow(false);
@@ -168,8 +168,9 @@ void TPlayer::onProcessError(QProcess::ProcessError error) {
 }
 
 void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
-    logger()->debug("onProcessFinished: normal exit %1, exit code %2, eof %3",
-           normal_exit, exit_code, eof);
+    WZDEBUG("normal exit " + QString::number(normal_exit)
+            + ", exit code " + QString::number(exit_code)
+            + ", eof " + QString::number(eof));
 
     // Restore normal window background
     playerwindow->restoreNormalWindow(false);
@@ -178,14 +179,14 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
         return;
     }
 
-    logger()->debug("onProcessFinished: entering the stopped state");
+    WZDEBUG("entering the stopped state");
     setState(STATE_STOPPED);
 
     if (eof || exit_code == Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED) {
-        logger()->debug("onProcessFinished: emit mediaEOF()");
+        WZDEBUG("emit mediaEOF()");
         emit mediaEOF();
     } else if (!normal_exit) {
-        logger()->debug("onProcessFinished: emit playerError()");
+        WZDEBUG("emit playerError()");
         emit playerError(exit_code);
     }
 }
@@ -201,8 +202,8 @@ void TPlayer::setState(TState s) {
 
     if (s != _state) {
         _state = s;
-        logger()->debug("setState: state set to %1 at %2",
-                        stateToString(), QString::number(mset.current_sec));
+        WZDEBUG("state set to " + stateToString()
+                + " at " + QString::number(mset.current_sec));
         emit stateChanged(_state);
     }
 }
@@ -227,14 +228,14 @@ QString TPlayer::stateToString() const {
 void TPlayer::saveMediaSettings() {
 
     if (!pref->remember_media_settings) {
-        logger()->debug("saveMediaSettings: save settings per file is disabled");
+        WZDEBUG("save settings per file is disabled");
         return;
     }
     if (mdat.filename.isEmpty()) {
-        logger()->debug("saveMediaSettings: nothing to save");
+        WZDEBUG("nothing to save");
         return;
     }
-    logger()->info("saveMediaSettings: saving settings for " + mdat.filename);
+    WZINFO("saving settings for '" + mdat.filename + "'");
     Gui::msg(tr("Saving settings for %1").arg(mdat.filename), 0);
 
     if (mdat.selected_type == TMediaData::TYPE_FILE) {
@@ -254,7 +255,7 @@ void TPlayer::saveMediaSettings() {
 } // saveMediaSettings
 
 void TPlayer::clearOSD() {
-    logger()->debug("clearOSD");
+    WZDEBUG("");
     displayTextOnOSD("", 0, pref->osd_level);
 }
 
@@ -266,7 +267,7 @@ void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
 }
 
 void TPlayer::close(TState next_state) {
-    logger()->debug("close");
+    WZDEBUG("");
 
     stopPlayer();
     // Save data previous file:
@@ -275,12 +276,11 @@ void TPlayer::close(TState next_state) {
     setState(next_state);
     // Clear media data
     mdat = TMediaData();
-    logger()->debug("close: closed in state " + stateToString());
+    WZDEBUG("closed in state " + stateToString());
 }
 
 void TPlayer::openDisc(TDiscName disc, bool fast_open) {
-    logger()->debug("openDisc: " + disc.toString()
-                  + " fast open " + QString::number(fast_open));
+    WZDEBUG(disc.toString() + " fast open " + QString::number(fast_open));
 
     // Change title if already playing
     if (fast_open
@@ -290,7 +290,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         && mdat.disc.valid
         && mdat.disc.device == disc.device) {
         // If changeTitle fails, it will call again with fast_open set to false
-        logger()->debug("openDisc: trying changeTitle(%1)", disc.title);
+        WZDEBUG("trying changeTitle(" + QString::number(disc.title) + ")");
         changeTitle(disc.title);
         return;
     }
@@ -310,10 +310,10 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
 
     // Test access, correct missing /
     if (!QFileInfo(disc.device).exists()) {
-        logger()->warn("openDisc: could not access '%1'", disc.device);
+        WZWARN("could not access '" + disc.device + "'");
         // Forgot a /?
         if (QFileInfo("/" + disc.device).exists()) {
-            logger()->warn("openDisc: adding missing /");
+            WZWARN("adding missing /");
             disc.device = "/" + disc.device;
         } else {
             Gui::msg(tr("Device or file not found: '%1'").arg(disc.device), 0);
@@ -343,7 +343,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
 
 // Generic open, autodetect type
 void TPlayer::open(QString filename, bool loopImage) {
-    logger()->debug("open: " + filename);
+    WZDEBUG("'" + filename + "'");
 
     if (filename.isEmpty()) {
         filename = mdat.filename;
@@ -389,12 +389,12 @@ void TPlayer::open(QString filename, bool loopImage) {
 
         if (fi.isDir()) {
             if (Helper::directoryContainsDVD(filename)) {
-                logger()->debug("open: directory contains a dvd");
+                WZDEBUG("directory contains a dvd");
                 disc = TDiscName(filename, pref->useDVDNAV());
                 openDisc(disc);
                 return;
             }
-            logger()->error("open: file is a directory, use playlist to open it");
+            WZERROR("file is a directory, use playlist to open it");
             return;
         }
 
@@ -428,7 +428,7 @@ void TPlayer::setExternalSubs(const QString &filename) {
 }
 
 void TPlayer::loadSub(const QString & sub) {
-    logger()->debug("loadSub");
+    WZDEBUG("");
 
     if (!sub.isEmpty() && QFile::exists(sub)) {
         setExternalSubs(sub);
@@ -438,7 +438,7 @@ void TPlayer::loadSub(const QString & sub) {
             proc->setExternalSubtitleFile(sub);
         }
     } else {
-        logger()->warn("loadSub: file not found '" + sub + "'");
+        WZWARN("file not found '" + sub + "'");
     }
 }
 
@@ -473,7 +473,7 @@ void TPlayer::unloadAudioFile() {
 }
 
 void TPlayer::openTV(QString channel_id) {
-    logger()->debug("openTV: %1", channel_id);
+    WZDEBUG(channel_id);
 
     close(STATE_LOADING);
 
@@ -509,7 +509,7 @@ void TPlayer::openTV(QString channel_id) {
 }
 
 void TPlayer::openStream(const QString& name) {
-    logger()->debug("openStream: " + name);
+    WZDEBUG("'" + name + "'");
 
     close(STATE_LOADING);
     mdat.filename = name;
@@ -520,7 +520,7 @@ void TPlayer::openStream(const QString& name) {
 }
 
 void TPlayer::openFile(const QString& filename, bool loopImage) {
-    logger()->debug("openFile: '" + filename + "'");
+    WZDEBUG("'" + filename + "'");
 
     close(STATE_LOADING);
     mdat.filename = QDir::toNativeSeparators(filename);
@@ -544,7 +544,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
 
         if (!pref->remember_time_pos) {
             mset.current_sec = 0;
-            logger()->debug("openFile: Time pos reset to 0");
+            WZDEBUG("play position reset to 0");
         }
     }
 
@@ -552,33 +552,33 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
 }
 
 void TPlayer::restartPlay() {
-    logger()->debug("restartPlay");
+    WZDEBUG("");
 
     // Save state proc, currently only used by TMPlayerProcess for DVDNAV
     proc->save();
     stopPlayer();
 
-    logger()->debug("restartPlay: entering the restarting state");
+    WZDEBUG("entering the restarting state");
     setState(STATE_RESTARTING);
     initPlaying();
 }
 
 // Public restart
 void TPlayer::restart() {
-    logger()->debug("restart");
+    WZDEBUG("");
 
     if (proc->isReady()) {
         restartPlay();
     } else {
-        logger()->debug("restart: player not ready");
+        WZWARN("player not ready");
     }
 }
 
 void TPlayer::reload() {
-    logger()->debug("reload");
+    WZDEBUG("");
 
     stopPlayer();
-    logger()->debug("reload: entering the loading state");
+    WZDEBUG("entering the loading state");
     setState(STATE_LOADING);
     initPlaying();
 }
@@ -589,23 +589,23 @@ void TPlayer::initVolume() {
     // restore_volume is set to true by mset.reset and set
     // to false by mset.load
     if (mset.restore_volume) {
-        logger()->debug("initVolume: keeping current volume");
+        WZDEBUG("keeping current volume");
         mset.volume = mset.old_volume;
         mset.mute = mset.old_mute;
     } else if (!pref->global_volume) {
         if (mset.old_volume != mset.volume) {
-            logger()->debug("initVolume: emit volumeChanged()");
+            WZDEBUG("emit volumeChanged()");
             emit volumeChanged(mset.volume);
         }
         if (mset.old_mute != mset.mute) {
-            logger()->debug("initVolume: emit muteChanged()");
+            WZDEBUG("emit muteChanged()");
             emit muteChanged(mset.mute);
         }
     }
 }
 
 void TPlayer::initMediaSettings() {
-    logger()->debug("initMediaSettings");
+    WZDEBUG("");
 
     // Restore old volume or emit new volume
     initVolume();
@@ -618,7 +618,7 @@ void TPlayer::initMediaSettings() {
 }
 
 void TPlayer::initPlaying(bool loopImages) {
-    logger()->debug("initPlaying: starting time");
+    WZDEBUG("starting time");
 
     time.start();
 
@@ -632,7 +632,7 @@ void TPlayer::initPlaying(bool loopImages) {
 }
 
 void TPlayer::playingStartedNewMedia() {
-    logger()->debug("playingStartedNewMedia");
+    WZDEBUG("");
 
     mdat.list();
 
@@ -642,13 +642,13 @@ void TPlayer::playingStartedNewMedia() {
         mset.list();
     }
 
-    logger()->debug("playingStartedNewMedia: emit newMediaStartedPlaying()");
+    WZDEBUG("emit newMediaStartedPlaying()");
     emit newMediaStartedPlaying();
 }
 
 // Slot called when signal playerFullyLoaded arrives.
 void TPlayer::playingStarted() {
-    logger()->debug("playingStarted");
+    WZDEBUG("");
 
     if (forced_titles.contains(mdat.filename)) {
         mdat.title = forced_titles[mdat.filename];
@@ -660,47 +660,48 @@ void TPlayer::playingStarted() {
 
     setState(STATE_PLAYING);
 
-    logger()->debug("playingStarted: emit mediaInfoChanged()");
+    WZDEBUG("emit mediaInfoChanged()");
     emit mediaInfoChanged();
 
-    logger()->debug("playingStarted: done in %1 ms", time.elapsed());
+    WZDEBUG("done in " + QString::number(time.elapsed()) + " ms");
 }
 
 void TPlayer::stopPlayer() {
 
     if (proc->state() == QProcess::NotRunning) {
-        logger()->debug("stopPlayer: player not running");
+        WZDEBUG("player not running");
         return;
     }
 
-    logger()->debug("stopPlayer: entering the stopping state");
+    WZDEBUG("entering the stopping state");
     setState(STATE_STOPPING);
     proc->quit(0);
 
     // If set high enough the OS will detect the "not responding state" and
     // popup a dialog
     int timeout = pref->time_to_kill_player;
-    logger()->debug("stopPlayer: Waiting %1 ms for player to quit...", timeout);
+    WZDEBUG("waiting " + QString::number(timeout)
+            + " ms for player to quit...");
     if (!proc->waitForFinished(timeout)) {
-        logger()->warn("stopPlayer: player process did not finish in %1 ms."
-                       " Killing it...", timeout);
+        WZWARN("player process did not finish in " + QString::number(timeout)
+               + " ms, killing it...");
         proc->kill();
     }
 
-    logger()->debug("stopPlayer: done");
+    WZDEBUG("done");
 }
 
 void TPlayer::stop() {
-    logger()->debug("stop: current state: %1", stateToString());
+    WZDEBUG("current state " + stateToString());
 
     stopPlayer();
-    logger()->debug("stop: entering the stopped state");
+    WZDEBUG("entering the stopped state");
     setState(STATE_STOPPED);
     emit mediaStopped();
 }
 
 void TPlayer::play() {
-    logger()->debug("play: current state: %1", stateToString());
+    WZDEBUG("current state " + stateToString());
 
     switch (proc->state()) {
         case QProcess::Running:
@@ -724,7 +725,7 @@ void TPlayer::play() {
 }
 
 void TPlayer::pause() {
-    logger()->debug("pause: current state: %1", stateToString());
+    WZDEBUG("current state " + stateToString());
 
     if (proc->isRunning() && _state != STATE_PAUSED) {
         proc->setPause(true);
@@ -733,7 +734,7 @@ void TPlayer::pause() {
 }
 
 void TPlayer::playOrPause() {
-    logger()->debug("playOrPause: current state: %1", stateToString());
+    WZDEBUG("current state " + stateToString());
 
     if (_state == STATE_PLAYING) {
         pause();
@@ -743,7 +744,7 @@ void TPlayer::playOrPause() {
 }
 
 void TPlayer::frameStep() {
-    logger()->debug("frameStep at %1", mset.current_sec);
+    WZDEBUG("at " + QString::number(mset.current_sec));
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -755,7 +756,7 @@ void TPlayer::frameStep() {
 }
 
 void TPlayer::frameBackStep() {
-    logger()->debug("frameBackStep at %1", mset.current_sec);
+    WZDEBUG("at " + QString::number(mset.current_sec));
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -767,32 +768,32 @@ void TPlayer::frameBackStep() {
 }
 
 void TPlayer::screenshot() {
-    logger()->debug("screenshot");
+    WZDEBUG("");
 
     if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
         proc->takeScreenshot(Player::Process::TPlayerProcess::Single,
                              pref->subtitles_on_screenshots);
-        logger()->debug("screenshot: took screenshot");
+        WZDEBUG("took screenshot");
     } else {
-        logger()->warn("screenshot: directory for screenshots not valid or enabled");
+        WZWARN("directory for screenshots not valid or not enabled");
         Gui::msg(tr("Screenshot NOT taken, folder not configured or enabled"));
     }
 }
 
 void TPlayer::screenshots() {
-    logger()->debug("screenshots");
+    WZDEBUG("");
 
     if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
         proc->takeScreenshot(Player::Process::TPlayerProcess::Multiple,
                              pref->subtitles_on_screenshots);
     } else {
-        logger()->warn("screenshots: directory for screenshots not valid or enabled");
+        WZWARN("directory for screenshots not valid or enabled");
         Gui::msg(tr("Screenshots NOT taken, folder not configured or enabled"));
     }
 }
 
 void TPlayer::switchCapturing() {
-    logger()->debug("switchCapturing");
+    WZDEBUG("");
     proc->switchCapturing();
 }
 
@@ -839,7 +840,7 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
         }
 
         if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
-            logger()->debug("videoFiltersEnabled: " + msg);
+            WZDEBUG(msg);
             Gui::msg(msg, 0);
         }
     }
@@ -849,18 +850,18 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
 #endif
 
 void TPlayer::startPlayer(QString file, bool loopImage) {
-    logger()->debug("startPlayer: '%1'", file);
 
     if (file.isEmpty()) {
-        logger()->warn("startPlayer: file is empty");
+        WZWARN("filename is empty");
         return;
     }
 
     if (proc->isRunning()) {
-        logger()->warn("startPlayer: Player still running");
+        WZWARN("player still running");
         return;
     }
 
+    WZDEBUG("'" + file + "'");
     Gui::msg(tr("Starting player..."), 0);
 
     // Check URL playlist
@@ -878,8 +879,7 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
                 file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
             }
             if (QFile::exists(file2)) {
-                logger()->debug("startPlayer: using external audio file '%1'",
-                                file2);
+                WZDEBUG("using external audio file '" + file2 + "'"),
                 mset.external_audio = file2;
             }
         }
@@ -931,7 +931,7 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
         if (hwdec != "no" && haveVideoFilters()) {
             hwdec = "no";
             QString msg = tr("Disabled hardware decoding for video filters");
-            logger()->debug("startPlayer: " + msg);
+            WZDEBUG(msg);
             Gui::msg(msg, 0);
         }
         mdat.video_hwdec = hwdec != "no";
@@ -1274,9 +1274,8 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
     } else {
         QFileInfo fi(pref->screenshot_directory);
         if (!fi.isDir() || !fi.isWritable()) {
-            logger()->warn("startPlayer: disabled screenshots and capturing,"
-                           " directory '" + pref->screenshot_directory
-                           + "' not writable");
+            WZWARN("disabled screenshots and capture, directory '"
+                   + pref->screenshot_directory + "' is not writable");
             pref->use_screenshot = false;
             // Need to clear to disable capture
             pref->screenshot_directory = "";
@@ -1436,7 +1435,7 @@ end_video_filters:
 
     // Volume
     if (pref->player_additional_options.contains("-volume")) {
-        logger()->debug("startPlayer: don't set volume since -volume is used");
+        WZDEBUG("don't set volume since -volume is used");
     } else {
         proc->setOption("volume", QString::number(getVolume()));
     }
@@ -1456,9 +1455,8 @@ end_video_filters:
 
     if (pref->use_hwac3) {
         proc->setOption("afm", "hwac3");
-        logger()->debug("startPlayer: audio filters are disabled when using the S/PDIF output");
+        WZDEBUG("audio filters are disabled when using the S/PDIF output");
     } else {
-
         // Audio filters
         if (mset.karaoke_filter) {
             proc->addAF("karaoke");
@@ -1505,7 +1503,7 @@ end_video_filters:
 #ifndef Q_OS_WIN
     if (pref->isMPV() && file.startsWith("dvb:")) {
         QString channels_file = Gui::Action::TTVList::findChannelsFile();
-        logger()->debug("startPlayer: channels_file: " + channels_file);
+        WZDEBUG("channels_file '" + channels_file + "'");
         if (!channels_file.isEmpty())
             proc->setChannelsFile(channels_file);
     }
@@ -1532,7 +1530,7 @@ end_video_filters:
         else if (QFile::exists(basename + ".EDL"))
             edl_f = basename + ".EDL";
 
-        logger()->debug("startPlayer: edl file: '" + edl_f + "'");
+        WZDEBUG("edl file: '" + edl_f + "'");
         if (!edl_f.isEmpty()) {
             proc->setOption("edl", edl_f);
         }
@@ -1545,8 +1543,7 @@ end_video_filters:
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
             if (!arg.isEmpty()) {
-                logger()->debug("startPlayer: adding file specific argument"
-                                " '%1'", arg);
+                WZDEBUG("adding file specific argument '" + arg + "'");
                 proc->addUserOption(arg);
             }
         }
@@ -1559,7 +1556,7 @@ end_video_filters:
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
             if (!arg.isEmpty()) {
-                logger()->debug("startPlayer: adding argument '%1'", arg);
+                WZDEBUG("adding argument '" + arg + "'");
                 proc->addUserOption(arg);
             }
         }
@@ -1591,14 +1588,13 @@ end_video_filters:
 
     if (!proc->startPlayer()) {
         // Error reported by onProcessError()
-        logger()->error("startPlayer: player process didn't start");
+        WZERROR("player process didn't start");
     }
 } //startPlayer()
 
 void TPlayer::seekCmd(double secs, int mode) {
-    logger()->debug("seekCmd: %1 secs, mode %2, at %3",
-                    QString::number(secs), mode,
-                    QString::number(mset.current_sec));
+    WZDEBUG(QString::number(secs) + " seconds, mode " + QString::number(mode)
+            + ", at " + QString::number(mset.current_sec));
 
     // seek <value> [type]
     // Seek to some place in the movie.
@@ -1614,9 +1610,8 @@ void TPlayer::seekCmd(double secs, int mode) {
                 secs = 100;
             }
         } else if (mode == 2 && mdat.duration > 0 && secs >= mdat.duration) {
-            logger()->warn("seekCmd: seek " + QString::number(secs)
-                           + " beyond end of video "
-                           + QString::number(mdat.duration));
+            WZWARN("seek " + QString::number(secs)
+                   + " beyond end of video " + QString::number(mdat.duration));
             // TODO: limit only when mdat.duration is proven reliable...
             // if (mdat.video_fps > 0)
             //    secs = mdat.duration - (1.0 / mdat.video_fps);
@@ -1627,81 +1622,81 @@ void TPlayer::seekCmd(double secs, int mode) {
     if (proc->isReady()) {
         proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
     } else {
-        logger()->warn("seekCmd: ignored seek, player not ready");
+        WZWARN("ignored seek, player not ready");
     }
 }
 
 void TPlayer::seekRelative(double secs) {
-    logger()->debug("seekRelative: %1 seconds", secs);
+    WZDEBUG(QString::number(secs) + " seconds");
     seekCmd(secs, 0);
 }
 
 void TPlayer::seekPercentage(double perc) {
-    logger()->debug("seekPercentage: %1 procent", perc);
+    WZDEBUG(QString::number(perc) + "%");
     seekCmd(perc, 1);
 }
 
 void TPlayer::seekTime(double sec) {
-    logger()->debug("seekTime: %1 seconds", sec);
+    WZDEBUG(QString::number(sec) + " seconds");
     seekCmd(sec, 2);
 }
 
 void TPlayer::sforward() {
-    logger()->debug("sforward");
+    WZDEBUG("");
     seekRelative(pref->seeking1); // +10s
 }
 
 void TPlayer::srewind() {
-    logger()->debug("srewind");
+    WZDEBUG("");
     seekRelative(-pref->seeking1); // -10s
 }
 
 
 void TPlayer::forward() {
-    logger()->debug("forward");
+    WZDEBUG("");
     seekRelative(pref->seeking2); // +1m
 }
 
 
 void TPlayer::rewind() {
-    logger()->debug("rewind");
+    WZDEBUG("");
     seekRelative(-pref->seeking2); // -1m
 }
 
 
 void TPlayer::fastforward() {
-    logger()->debug("fastforward");
+    WZDEBUG("");
     seekRelative(pref->seeking3); // +10m
 }
 
 
 void TPlayer::fastrewind() {
-    logger()->debug("fastrewind");
+    WZDEBUG("");
     seekRelative(-pref->seeking3); // -10m
 }
 
 void TPlayer::forward(int secs) {
-    logger()->debug("forward: %1", secs);
+    WZDEBUG(QString::number(secs));
     seekRelative(secs);
 }
 
 void TPlayer::rewind(int secs) {
-    logger()->debug("rewind: %1", secs);
+    WZDEBUG(QString::number(secs));
     seekRelative(-secs);
 }
 
 void TPlayer::seekToNextSub() {
-    logger()->debug("seekToNextSub");
+    WZDEBUG("");
     proc->seekSub(1);
 }
 
 void TPlayer::seekToPrevSub() {
-    logger()->debug("seekToPrevSub");
+    WZDEBUG("");
     proc->seekSub(-1);
 }
 
 void TPlayer::wheelUp(TPreferences::TWheelFunction function) {
-    logger()->debug("wheelUp");
+    WZDEBUG("");
 
     if (function == TPreferences::DoNothing) {
         function = (TPreferences::TWheelFunction) pref->wheel_function;
@@ -1716,7 +1711,7 @@ void TPlayer::wheelUp(TPreferences::TWheelFunction function) {
 }
 
 void TPlayer::wheelDown(TPreferences::TWheelFunction function) {
-    logger()->debug("wheelDown");
+    WZDEBUG("");
 
     if (function == TPreferences::DoNothing) {
         function = (TPreferences::TWheelFunction) pref->wheel_function;
@@ -1735,7 +1730,7 @@ void TPlayer::setInPoint() {
 }
 
 void TPlayer::setInPoint(double sec) {
-    logger()->debug("setInPoint: %1", sec);
+    WZDEBUG(QString::number(sec));
 
     mset.in_point = sec;
     if (mset.in_point < 0) {
@@ -1763,7 +1758,7 @@ void TPlayer::seekInPoint() {
 }
 
 void TPlayer::clearInPoint() {
-    logger()->debug("clearInPoint");
+    WZDEBUG("");
 
     mset.in_point = 0;
     emit InOutPointsChanged();
@@ -1775,7 +1770,7 @@ void TPlayer::setOutPoint() {
 }
 
 void TPlayer::setOutPoint(double sec) {
-    logger()->debug("setOutPoint: %1", sec);
+    WZDEBUG(QString::number(sec));
 
     if (sec <= 0) {
         clearOutPoint();
@@ -1815,7 +1810,7 @@ void TPlayer::seekOutPoint() {
 }
 
 void TPlayer::clearOutPoint() {
-    logger()->debug("clearOutPoint");
+    WZDEBUG("");
 
     mset.out_point = -1;
     mset.loop = false;
@@ -1826,7 +1821,7 @@ void TPlayer::clearOutPoint() {
 }
 
 void TPlayer::clearInOutPoints() {
-    logger()->debug("clearInOutPoints");
+    WZDEBUG("");
 
     mset.in_point = 0;
     mset.out_point = -1;
@@ -1847,7 +1842,7 @@ void TPlayer::updateLoop() {
 }
 
 void TPlayer::toggleRepeat(bool b) {
-    logger()->debug("toggleRepeat: %1", b);
+    WZDEBUG(QString::number(b));
 
     mset.loop = b;
     updateLoop();
@@ -1866,7 +1861,7 @@ void TPlayer::toggleKaraoke() {
 }
 
 void TPlayer::toggleKaraoke(bool b) {
-    logger()->debug("toggleKaraoke: %1", b);
+    WZDEBUG(QString::number(b));
     if (b != mset.karaoke_filter) {
         mset.karaoke_filter = b;
         proc->enableKaraoke(b);
@@ -1878,7 +1873,8 @@ void TPlayer::toggleExtrastereo() {
 }
 
 void TPlayer::toggleExtrastereo(bool b) {
-    logger()->debug("toggleExtrastereo: %1", b);
+    WZDEBUG(QString::number(b));
+
     if (b != mset.extrastereo_filter) {
         mset.extrastereo_filter = b;
         proc->enableExtrastereo(b);
@@ -1890,7 +1886,7 @@ void TPlayer::toggleVolnorm() {
 }
 
 void TPlayer::toggleVolnorm(bool b) {
-    logger()->debug("toggleVolnorm: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.volnorm_filter) {
         mset.volnorm_filter = b;
@@ -1900,7 +1896,7 @@ void TPlayer::toggleVolnorm(bool b) {
 }
 
 void TPlayer::setAudioChannels(int channels) {
-    logger()->debug("setAudioChannels:%1", channels);
+    WZDEBUG(QString::number(channels));
 
     if (channels != mset.audio_use_channels) {
         mset.audio_use_channels = channels;
@@ -1910,7 +1906,8 @@ void TPlayer::setAudioChannels(int channels) {
 }
 
 void TPlayer::setStereoMode(int mode) {
-    logger()->debug("setStereoMode:%1", mode);
+    WZDEBUG(QString::number(mode));
+
     if (mode != mset.stereo_mode) {
         mset.stereo_mode = mode;
         if (proc->isRunning())
@@ -1932,12 +1929,12 @@ void TPlayer::changeVF(const QString& filter, bool enable,
 }
 
 void TPlayer::toggleFlip() {
-    logger()->debug("toggleFlip");
+    WZDEBUG("");
     toggleFlip(!mset.flip);
 }
 
 void TPlayer::toggleFlip(bool b) {
-    logger()->debug("toggleFlip: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (mset.flip != b) {
         mset.flip = b;
@@ -1946,12 +1943,12 @@ void TPlayer::toggleFlip(bool b) {
 }
 
 void TPlayer::toggleMirror() {
-    logger()->debug("toggleMirror");
+    WZDEBUG("");
     toggleMirror(!mset.mirror);
 }
 
 void TPlayer::toggleMirror(bool b) {
-    logger()->debug("toggleMirror: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (mset.mirror != b) {
         mset.mirror = b;
@@ -1964,7 +1961,7 @@ void TPlayer::toggleAutophase() {
 }
 
 void TPlayer::toggleAutophase(bool b) {
-    logger()->debug("toggleAutophase: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.phase_filter) {
         mset.phase_filter = b;
@@ -1977,7 +1974,7 @@ void TPlayer::toggleDeblock() {
 }
 
 void TPlayer::toggleDeblock(bool b) {
-    logger()->debug("toggleDeblock: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.deblock_filter) {
         mset.deblock_filter = b;
@@ -1990,7 +1987,7 @@ void TPlayer::toggleDering() {
 }
 
 void TPlayer::toggleDering(bool b) {
-    logger()->debug("toggleDering: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.dering_filter) {
         mset.dering_filter = b;
@@ -2003,7 +2000,7 @@ void TPlayer::toggleGradfun() {
 }
 
 void TPlayer::toggleGradfun(bool b) {
-    logger()->debug("toggleGradfun: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.gradfun_filter) {
         mset.gradfun_filter = b;
@@ -2016,7 +2013,7 @@ void TPlayer::toggleNoise() {
 }
 
 void TPlayer::toggleNoise(bool b) {
-    logger()->debug("toggleNoise: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.noise_filter) {
         mset.noise_filter = b;
@@ -2029,7 +2026,7 @@ void TPlayer::togglePostprocessing() {
 }
 
 void TPlayer::togglePostprocessing(bool b) {
-    logger()->debug("togglePostprocessing: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != mset.postprocessing_filter) {
         mset.postprocessing_filter = b;
@@ -2038,7 +2035,7 @@ void TPlayer::togglePostprocessing(bool b) {
 }
 
 void TPlayer::changeDenoise(int id) {
-    logger()->debug("changeDenoise: %1", id);
+    WZDEBUG(QString::number(id));
 
     if (id != mset.current_denoiser) {
         if (pref->isMPlayer() || mdat.video_hwdec) {
@@ -2064,7 +2061,7 @@ void TPlayer::changeDenoise(int id) {
 }
 
 void TPlayer::changeUnsharp(int id) {
-    logger()->debug("changeUnsharp: %1", id);
+    WZDEBUG(QString::number(id));
 
     if (id != mset.current_unsharp) {
         if (pref->isMPlayer() || mdat.video_hwdec) {
@@ -2090,7 +2087,7 @@ void TPlayer::changeUnsharp(int id) {
 }
 
 void TPlayer::changeUpscale(bool b) {
-    logger()->debug("changeUpscale: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (mset.upscaling_filter != b) {
         mset.upscaling_filter = b;
@@ -2099,8 +2096,8 @@ void TPlayer::changeUpscale(bool b) {
     }
 }
 
-void TPlayer::changeStereo3d(const QString & in, const QString & out) {
-    logger()->debug("changeStereo3d: in: " + in + " out: " + out);
+void TPlayer::changeStereo3d(const QString& in, const QString& out) {
+    WZDEBUG("in '" + in + "' out: '" + out + "'");
 
     if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
         if (pref->isMPlayer() || mdat.video_hwdec) {
@@ -2126,7 +2123,7 @@ void TPlayer::changeStereo3d(const QString & in, const QString & out) {
 }
 
 void TPlayer::setBrightness(int value) {
-    logger()->debug("setBrightness: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value > 100) value = 100;
     if (value < -100) value = -100;
@@ -2140,7 +2137,7 @@ void TPlayer::setBrightness(int value) {
 }
 
 void TPlayer::setContrast(int value) {
-    logger()->debug("setContrast: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value > 100) value = 100;
     if (value < -100) value = -100;
@@ -2154,7 +2151,7 @@ void TPlayer::setContrast(int value) {
 }
 
 void TPlayer::setGamma(int value) {
-    logger()->debug("setGamma: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value > 100) value = 100;
     if (value < -100) value = -100;
@@ -2168,7 +2165,7 @@ void TPlayer::setGamma(int value) {
 }
 
 void TPlayer::setHue(int value) {
-    logger()->debug("setHue: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value > 100) value = 100;
     if (value < -100) value = -100;
@@ -2182,7 +2179,7 @@ void TPlayer::setHue(int value) {
 }
 
 void TPlayer::setSaturation(int value) {
-    logger()->debug("setSaturation: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value > 100) value = 100;
     if (value < -100) value = -100;
@@ -2236,7 +2233,7 @@ void TPlayer::decSaturation() {
 }
 
 void TPlayer::setSpeed(double value) {
-    logger()->debug("setSpeed: %1", value);
+    WZDEBUG(QString::number(value));
 
     // Min and max used by players
     if (value < 0.10) value = 0.10;
@@ -2249,42 +2246,34 @@ void TPlayer::setSpeed(double value) {
 }
 
 void TPlayer::incSpeed10() {
-    logger()->debug("incSpeed10");
     setSpeed((double) mset.speed + 0.1);
 }
 
 void TPlayer::decSpeed10() {
-    logger()->debug("decSpeed10");
     setSpeed((double) mset.speed - 0.1);
 }
 
 void TPlayer::incSpeed4() {
-    logger()->debug("incSpeed4");
     setSpeed((double) mset.speed + 0.04);
 }
 
 void TPlayer::decSpeed4() {
-    logger()->debug("decSpeed4");
     setSpeed((double) mset.speed - 0.04);
 }
 
 void TPlayer::incSpeed1() {
-    logger()->debug("incSpeed1");
     setSpeed((double) mset.speed + 0.01);
 }
 
 void TPlayer::decSpeed1() {
-    logger()->debug("decSpeed1");
     setSpeed((double) mset.speed - 0.01);
 }
 
 void TPlayer::doubleSpeed() {
-    logger()->debug("doubleSpeed");
     setSpeed((double) mset.speed * 2);
 }
 
 void TPlayer::halveSpeed() {
-    logger()->debug("halveSpeed");
     setSpeed((double) mset.speed / 2);
 }
 
@@ -2360,12 +2349,10 @@ void TPlayer::mute(bool b) {
 }
 
 void TPlayer::incVolume() {
-    logger()->debug("incVolume");
     setVolume(getVolume() + pref->min_step);
 }
 
 void TPlayer::decVolume() {
-    logger()->debug("incVolume");
     setVolume(getVolume() - pref->min_step);
 }
 
@@ -2375,7 +2362,7 @@ TAudioEqualizerList TPlayer::getAudioEqualizer() const {
 }
 
 void TPlayer::setSubDelay(int delay) {
-    logger()->debug("setSubDelay: %1", delay);
+    WZDEBUG(QString::number(delay));
 
     mset.sub_delay = delay;
     proc->setSubDelay((double) mset.sub_delay/1000);
@@ -2383,17 +2370,15 @@ void TPlayer::setSubDelay(int delay) {
 }
 
 void TPlayer::incSubDelay() {
-    logger()->debug("incSubDelay");
     setSubDelay(mset.sub_delay + 100);
 }
 
 void TPlayer::decSubDelay() {
-    logger()->debug("decSubDelay");
     setSubDelay(mset.sub_delay - 100);
 }
 
 void TPlayer::setAudioDelay(int delay) {
-    logger()->debug("setAudioDelay: %1", delay);
+    WZDEBUG(QString::number(delay));
 
     mset.audio_delay = delay;
     proc->setAudioDelay((double) mset.audio_delay/1000);
@@ -2401,17 +2386,15 @@ void TPlayer::setAudioDelay(int delay) {
 }
 
 void TPlayer::incAudioDelay() {
-    logger()->debug("incAudioDelay");
     setAudioDelay(mset.audio_delay + 100);
 }
 
 void TPlayer::decAudioDelay() {
-    logger()->debug("decAudioDelay");
     setAudioDelay(mset.audio_delay - 100);
 }
 
 void TPlayer::incSubPos() {
-    logger()->debug("incSubPos");
+    WZDEBUG("");
 
     mset.sub_pos++;
     if (mset.sub_pos > 100) mset.sub_pos = 100;
@@ -2419,7 +2402,7 @@ void TPlayer::incSubPos() {
 }
 
 void TPlayer::decSubPos() {
-    logger()->debug("decSubPos");
+    WZDEBUG("");
 
     mset.sub_pos--;
     if (mset.sub_pos < 0) mset.sub_pos = 0;
@@ -2427,7 +2410,7 @@ void TPlayer::decSubPos() {
 }
 
 void TPlayer::changeSubScale(double value) {
-    logger()->debug("changeSubScale: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value < 0) value = 0;
 
@@ -2476,7 +2459,7 @@ void TPlayer::decSubScale() {
 }
 
 void TPlayer::changeOSDScale(double value) {
-    logger()->debug("changeOSDScale: %1", value);
+    WZDEBUG(QString::number(value));
 
     if (value < 0) value = 0;
 
@@ -2514,17 +2497,15 @@ void TPlayer::decOSDScale() {
 }
 
 void TPlayer::incSubStep() {
-    logger()->debug("incSubStep");
-    proc->setSubStep(+1);
+    proc->setSubStep(1);
 }
 
 void TPlayer::decSubStep() {
-    logger()->debug("decSubStep");
     proc->setSubStep(-1);
 }
 
 void TPlayer::changeExternalSubFPS(int fps_id) {
-    logger()->debug("setExternalSubFPS: %1", fps_id);
+    WZDEBUG(QString::number(fps_id));
 
     mset.external_subtitles_fps = fps_id;
     if (hasExternalSubs()) {
@@ -2571,7 +2552,7 @@ void TPlayer::setAudioEqualizer(const TAudioEqualizerList& values,
 }
 
 void TPlayer::setAudioEq(int eq, int value) {
-    logger()->debug("setAudioEq: eq %1 value %1", eq, value);
+    WZDEBUG("eq " + QString::number(eq) + " value " + QString::number(value));
 
     if (pref->global_audio_equalizer) {
         pref->audio_equalizer[eq] = value;
@@ -2633,24 +2614,26 @@ void TPlayer::handleOutPoint() {
     if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
         if (mset.loop) {
             if (!seeking && mset.in_point < mset.out_point) {
-                debug << "handleOutPoint: position" << mset.current_sec
-                      << "reached out point" << mset.out_point
-                      << ", start seeking in point " << mset.in_point
-                      << debug;
+                WZDEBUG("position " + QString::number(mset.current_sec)
+                        + " reached out point "
+                        + QString::number(mset.out_point)
+                        + ", start seeking in point "
+                        + QString::number(mset.in_point));
                 seeking = true;
                 seekTime(mset.in_point);
             }
         } else {
-            debug << "handleOutPoint: position" << mset.current_sec
-                  << "reached out point" << mset.out_point
-                  << ", sending quit" << debug;
+            WZDEBUG("position " + QString::number(mset.current_sec)
+                    + " reached out point " + QString::number(mset.out_point)
+                    + ", sending quit");
 
             proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
-        debug << "handleOutPoint: done handling out point, position"
-              << mset.current_sec << "no longer after out point"
-              << mset.out_point << debug;
+        WZDEBUG("done handling out point, position "
+                + QString::number(mset.current_sec)
+                + " no longer after out point "
+                + QString::number(mset.out_point));
         seeking = false;
     }
 }
@@ -2694,22 +2677,19 @@ void TPlayer::onReceivedPosition(double sec) {
     int new_chapter_id = mdat.chapters.idForTime(sec);
     if (new_chapter_id != chapter_id) {
         mdat.chapters.setSelectedID(new_chapter_id);
-        logger()->debug("onReceivedPosition: emit chapterChanged(%1)",
-                        new_chapter_id);
+        WZDEBUG("emit chapterChanged(" + QString::number(new_chapter_id) + ")");
         emit chapterChanged(new_chapter_id);
     }
 }
 
 // MPlayer only
 void TPlayer::onReceivedPause() {
-    logger()->debug("onReceivedPause: at %1",
-                    QString::number(mset.current_sec));
-
+    WZDEBUG("at " + QString::number(mset.current_sec));
     setState(STATE_PAUSED);
 }
 
 void TPlayer::changeDeinterlace(int ID) {
-    logger()->debug("changeDeinterlace: %1", ID);
+    WZDEBUG(QString::number(ID));
 
     if (ID != mset.current_deinterlacer) {
         if (pref->isMPlayer()) {
@@ -2738,7 +2718,7 @@ void TPlayer::changeDeinterlace(int ID) {
 }
 
 void TPlayer::changeVideoTrack(int id) {
-    logger()->debug("changeVideoTrack: id: %1", id);
+    WZDEBUG(QString::number(id));
 
     // TODO: fix video tracks having different dimensions. The video out
     // dimension will be the dimension of the last selected video track.
@@ -2750,13 +2730,13 @@ void TPlayer::changeVideoTrack(int id) {
 }
 
 void TPlayer::nextVideoTrack() {
-    logger()->debug("nextVideoTrack");
+    WZDEBUG("");
 
     changeVideoTrack(mdat.videos.nextID(mdat.videos.getSelectedID()));
 }
 
 void TPlayer::changeAudioTrack(int id) {
-    logger()->debug("changeAudio: id: %1", id);
+    WZDEBUG(QString::number(id));
 
     mset.current_audio_id = id;
     if (id >= 0) {
@@ -2776,14 +2756,14 @@ void TPlayer::changeAudioTrack(int id) {
 }
 
 void TPlayer::nextAudioTrack() {
-    logger()->debug("nextAudioTrack");
+    WZDEBUG("");
 
     changeAudioTrack(mdat.audios.nextID(mdat.audios.getSelectedID()));
 }
 
 // Note: changeSubtitle is by index, not ID
 void TPlayer::changeSubtitle(int idx, bool selected_by_user) {
-    logger()->debug("changeSubtitle: idx %1", idx);
+    WZDEBUG("idx " + QString::number(idx));
 
     if (selected_by_user)
         mset.current_sub_set_by_user = true;
@@ -2804,13 +2784,11 @@ void TPlayer::changeSubtitle(int idx, bool selected_by_user) {
 }
 
 void TPlayer::nextSubtitle() {
-    logger()->debug("nextSubtitle");
-
     changeSubtitle(mdat.subs.nextID());
 }
 
 void TPlayer::changeSecondarySubtitle(int idx) {
-    logger()->debug("changeSecondarySubtitle: idx %1", idx);
+    WZDEBUG("idx " + QString::number(idx));
 
     bool clr = true;
 
@@ -2839,7 +2817,7 @@ void TPlayer::changeSecondarySubtitle(int idx) {
 }
 
 void TPlayer::changeTitle(int title) {
-    logger()->debug("changeTitle: %1", title);
+    WZDEBUG(QString::number(title));
 
     if (proc->isRunning()) {
         // Handle CDs with the chapter commands
@@ -2861,7 +2839,7 @@ void TPlayer::changeTitle(int title) {
 }
 
 void TPlayer::changeChapter(int id) {
-    logger()->debug("changeChapter: ID: %1", id);
+    WZDEBUG(QString::number(id));
 
     if (id >= mdat.chapters.firstID()) {
         proc->setChapter(id);
@@ -2869,24 +2847,22 @@ void TPlayer::changeChapter(int id) {
 }
 
 void TPlayer::prevChapter() {
-    logger()->debug("prevChapter");
     proc->nextChapter(-1);
 }
 
 void TPlayer::nextChapter() {
-    logger()->debug("nextChapter");
     proc->nextChapter(1);
 }
 
 void TPlayer::setAngle(int angle) {
-    logger()->debug("setAngle: angle: %1", angle);
+    WZDEBUG(QString::number(angle));
 
     mset.current_angle = angle;
     proc->setAngle(angle);
 }
 
 void TPlayer::nextAngle() {
-    logger()->debug("nextAngle");
+    WZDEBUG("");
 
     /*
     if (mdat.angle == mdat.angles) {
@@ -2908,7 +2884,7 @@ void TPlayer::nextAngle() {
 
 #if PROGRAM_SWITCH
 void TPlayer::changeProgram(int ID) {
-    logger()->debug("changeProgram: %1", ID);
+    WZDEBUG(QString::number(ID));
 
     if (ID != mset.current_program_id) {
         mset.current_program_id = ID;
@@ -2922,20 +2898,20 @@ void TPlayer::changeProgram(int ID) {
 }
 
 void TPlayer::nextProgram() {
-    logger()->debug("nextProgram");
+    WZDEBUG("");
     // Not implemented yet
 }
 #endif
 
 void TPlayer::clearKeepSize() {
-    logger()->debug("clearKeepSize: clearing keepSize");
+    WZDEBUG("");
 
     keepSizeTimer->stop();
     keepSize = false;
 }
 
 void TPlayer::setAspectRatio(int id) {
-    logger()->debug("setAspectRatio: %1", id);
+    WZDEBUG(QString::number(id));
 
     // Keep id in range
     TAspectRatio::TMenuID aspect_id;
@@ -2960,8 +2936,7 @@ void TPlayer::setAspectRatio(int id) {
             keepSizeTimer->start();
         }
     } else {
-        logger()->error("setAspectRatio: " + mset.aspect_ratio.toString()
-                        + ". No video player.");
+        WZERROR(mset.aspect_ratio.toString() + ". No video player.");
     }
 }
 
@@ -3005,7 +2980,7 @@ void TPlayer::nextWheelFunction() {
 }
 
 void TPlayer::changeLetterbox(bool b) {
-    logger()->debug("changeLetterbox: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (mset.add_letterbox != b) {
         mset.add_letterbox = b;
@@ -3014,12 +2989,12 @@ void TPlayer::changeLetterbox(bool b) {
 }
 
 void TPlayer::changeLetterboxOnFullscreen(bool b) {
-    logger()->debug("changeLetterboxOnFullscreen: %1", b);
+    WZDEBUG(QString::number(b));
     changeVF("letterbox", b, TDesktop::aspectRatio(playerwindow));
 }
 
 void TPlayer::changeOSDLevel(int level) {
-    logger()->debug("changeOSDLevel: %1", level);
+    WZDEBUG(QString::number(level));
 
     pref->osd_level = (TPreferences::TOSDLevel) level;
     if (proc->isRunning())
@@ -3039,7 +3014,7 @@ void TPlayer::nextOSDLevel() {
 }
 
 void TPlayer::changeRotate(int r) {
-    logger()->debug("changeRotate: %1", r);
+    WZDEBUG(QString::number(r));
 
     if (mset.rotate != r) {
         if (pref->isMPlayer()) {
@@ -3069,7 +3044,7 @@ void TPlayer::getPanFromPlayerWindow() {
 }
 
 void TPlayer::setZoom(double zoom) {
-    logger()->debug("setZoom: %1", zoom);
+    WZDEBUG(QString::number(zoom));
 
     if (mdat.hasVideo()) {
         if (zoom < TConfig::ZOOM_MIN)
@@ -3083,7 +3058,7 @@ void TPlayer::setZoom(double zoom) {
 }
 
 void TPlayer::resetZoomAndPan() {
-    logger()->debug("resetZoomAndPan");
+    WZDEBUG("");
 
     // Reset zoom and pan of video window
     playerwindow->resetZoomAndPan();
@@ -3094,7 +3069,7 @@ void TPlayer::resetZoomAndPan() {
 }
 
 void TPlayer::pan(int dx, int dy) {
-    logger()->debug("pan: dx %1, dy %2", dx, dy);
+    WZDEBUG("dx " + QString::number(dx) + ", dy " + QString::number(dy));
 
     if (mdat.hasVideo()) {
         playerwindow->moveVideo(dx, dy);
@@ -3139,7 +3114,7 @@ void TPlayer::toggleDeinterlace() {
 }
 
 void TPlayer::changeUseCustomSubStyle(bool b) {
-    logger()->debug("changeUseCustomSubStyle: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (pref->use_custom_ass_style != b) {
         pref->use_custom_ass_style = b;
@@ -3149,7 +3124,7 @@ void TPlayer::changeUseCustomSubStyle(bool b) {
 }
 
 void TPlayer::toggleForcedSubsOnly(bool b) {
-    logger()->debug("toggleForcedSubsOnly: %1", b);
+    WZDEBUG(QString::number(b));
 
     pref->use_forced_subs_only = b;
     if (proc->isRunning())
@@ -3157,7 +3132,7 @@ void TPlayer::toggleForcedSubsOnly(bool b) {
 }
 
 void TPlayer::changeClosedCaptionChannel(int c) {
-    logger()->debug("changeClosedCaptionChannel: %1", c);
+    WZDEBUG(QString::number(c));
 
     if (c != mset.closed_caption_channel) {
         mset.closed_caption_channel = c;
@@ -3168,44 +3143,38 @@ void TPlayer::changeClosedCaptionChannel(int c) {
 
 // dvdnav buttons
 void TPlayer::dvdnavUp() {
-    logger()->debug("dvdnavUp");
     if (proc->isReady())
         proc->discButtonPressed("up");
 }
 
 void TPlayer::dvdnavDown() {
-    logger()->debug("dvdnavDown");
     if (proc->isReady())
         proc->discButtonPressed("down");
 }
 
 void TPlayer::dvdnavLeft() {
-    logger()->debug("dvdnavLeft");
     if (proc->isReady())
         proc->discButtonPressed("left");
 }
 
 void TPlayer::dvdnavRight() {
-    logger()->debug("dvdnavRight");
     if (proc->isReady())
         proc->discButtonPressed("right");
 }
 
 void TPlayer::dvdnavMenu() {
-    logger()->debug("dvdnavMenu");
     if (proc->isReady())
         proc->discButtonPressed("menu");
 }
 
 void TPlayer::dvdnavPrev() {
-    logger()->debug("dvdnavPrev");
     if (proc->isReady())
         proc->discButtonPressed("prev");
 }
 
 // Slot called by action dvdnav_select
 void TPlayer::dvdnavSelect() {
-    logger()->debug("dvdnavSelect");
+    WZDEBUG("");
 
     if (proc->isReady() && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         if (_state == STATE_PAUSED) {
@@ -3220,7 +3189,7 @@ void TPlayer::dvdnavSelect() {
 // Slot called by action dvdnav_mouse and Gui::TPlayerWindow when left mouse
 // clicked
 void TPlayer::dvdnavMouse() {
-    logger()->debug("dvdnavMouse");
+    WZDEBUG("");
 
     if (proc->isReady()
         && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
@@ -3254,7 +3223,7 @@ void TPlayer::dvdnavUpdateMousePos(const QPoint& pos) {
 }
 
 void TPlayer::displayScreenshotName(const QString& filename) {
-    logger()->debug("displayScreenshotName: " + filename);
+    WZDEBUG("'" + filename + "'");
 
     QFileInfo fi(filename);
     QString text = tr("Screenshot saved as %1").arg(fi.fileName());
@@ -3262,7 +3231,7 @@ void TPlayer::displayScreenshotName(const QString& filename) {
 }
 
 void TPlayer::displayUpdatingFontCache() {
-    logger()->debug("displayUpdatingFontCache");
+    WZDEBUG("");
     Gui::msg(tr("Updating the font cache. This may take some seconds..."));
 }
 
@@ -3276,7 +3245,7 @@ void TPlayer::displayBufferingEnded() {
 }
 
 void TPlayer::onReceivedVideoOut() {
-    logger()->debug("onReceivedVideoOut");
+    WZDEBUG("");
 
     // w x h is output resolution selected by player with aspect and filters
     // applied
@@ -3311,20 +3280,20 @@ bool TPlayer::setPreferredAudio() {
         if (selected_id >= 0) {
             int wanted_id = mdat.audios.findLangID(pref->audio_lang);
             if (wanted_id >= 0 && wanted_id != selected_id) {
-                logger()->debug("setPreferredAudio: selecting preferred audio"
-                                " with id %1", wanted_id);
+                WZDEBUG("selecting preferred audio id "
+                        + QString::number(wanted_id));
                 changeAudioTrack(wanted_id);
                 return true;
             }
         }
     }
 
-    logger()->debug("setPreferredAudio: no player overrides");
+    WZDEBUG("no player overrides");
     return false;
 }
 
 void TPlayer::onAudioTracksChanged() {
-    logger()->debug("onAudioTracksChanged");
+    WZDEBUG("");
 
     // First update the track actions, so a possible track change by
     // setpreferredAudio() will arrive on defined actions
@@ -3354,18 +3323,17 @@ void TPlayer::selectPreferredSubtitles() {
     }
 
     if (wanted_idx < 0) {
-        logger()->debug("selectPreferredSubtitles: no player overrides");
+        WZDEBUG("no player overrides");
     } else if (wanted_idx == mset.current_sub_idx) {
-        logger()->debug("selectPreferredSubtitles: keeping selected subtitles");
+        WZDEBUG("keeping selected subtitles");
     } else {
-        logger()->debug("selectPreferredSubtitles: selecting preferred"
-                        " subtitles");
+        WZDEBUG("selecting preferred subtitles");
         changeSubtitle(wanted_idx, false);
     }
 }
 
 void TPlayer::onSubtitlesChanged() {
-    logger()->debug("onSubtitlesChanged");
+    WZDEBUG("");
 
     // Need to set current_sub_idx, the subtitle action group checks on it.
     mset.current_sub_idx = mdat.subs.findSelectedIdx();
@@ -3375,7 +3343,7 @@ void TPlayer::onSubtitlesChanged() {
     if (pref->isMPlayer()) {
         // MPlayer selected sub will not yet be updated, que the subtitle
         // selection
-        logger()->debug("onSubtitlesChanged: posting selectPreferredSubtitles()");
+        WZDEBUG("posting selectPreferredSubtitles()");
         QTimer::singleShot(1500, this, SLOT(selectPreferredSubtitles()));
     } else {
         selectPreferredSubtitles();
@@ -3384,7 +3352,7 @@ void TPlayer::onSubtitlesChanged() {
 
 // Called when player changed subtitle track
 void TPlayer::onSubtitleChanged() {
-    logger()->debug("onSubtitleChanged");
+    WZDEBUG("");
 
     // Need to set current_sub_idx, the subtitle group checks on it.
     int selected_idx = mdat.subs.findSelectedIdx();

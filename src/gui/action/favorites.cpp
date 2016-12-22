@@ -36,69 +36,69 @@ TFavorite::TFavorite() : is_subentry(false) {
 }
 
 TFavorite::TFavorite(const QString& name,
-					 const QString& file,
-					 const QString& icon,
-					 bool subentry)
-	: _name(name)
-	, _file(file)
-	, _icon(icon)
-	, is_subentry(subentry) {
+                     const QString& file,
+                     const QString& icon,
+                     bool subentry)
+    : _name(name)
+    , _file(file)
+    , _icon(icon)
+    , is_subentry(subentry) {
 }
 
 TFavorite::~TFavorite() {
 }
 
 void TFavorite::setIcon(QString file) {
-	_icon = file;
+    _icon = file;
 }
 
 
 TFavorites::TFavorites(TMainWindow* mw,
-					   const QString& name,
-					   const QString& text,
-					   const QString& icon,
-					   const QString& filename)
+                       const QString& name,
+                       const QString& text,
+                       const QString& icon,
+                       const QString& filename)
     : TMenu(mw, mw, name, text, icon)
-	, _filename(filename)
+    , _filename(filename)
     , last_item(1) {
 
     edit_act = new TAction(this, "", tr("&Edit..."), "noicon");
-	connect(edit_act, SIGNAL(triggered()), this, SLOT(edit()));
+    connect(edit_act, SIGNAL(triggered()), this, SLOT(edit()));
 
     jump_act = new TAction(this, "", tr("&Jump..."), "noicon", 0, false);
-	connect(jump_act, SIGNAL(triggered()), this, SLOT(jump()));
+    connect(jump_act, SIGNAL(triggered()), this, SLOT(jump()));
 
     next_act = new TAction(this, "", tr("&Next"), "noicon", 0, false);
-	connect(next_act, SIGNAL(triggered()), this, SLOT(next()));
+    connect(next_act, SIGNAL(triggered()), this, SLOT(next()));
 
     previous_act = new TAction(this, "", tr("&Previous"), "noicon", 0, false);
-	connect(previous_act, SIGNAL(triggered()), this, SLOT(previous()));
+    connect(previous_act, SIGNAL(triggered()), this, SLOT(previous()));
 
     add_current_act = new TAction(this, "", tr("&Add current media"), "noicon");
-	add_current_act->setEnabled(false);
-	connect(add_current_act, SIGNAL(triggered()), this, SLOT(addCurrentPlaying()));
+    add_current_act->setEnabled(false);
+    connect(add_current_act, SIGNAL(triggered()), this, SLOT(addCurrentPlaying()));
 
-	connect(this, SIGNAL(triggered(QAction *)),
-			this, SLOT(triggered_slot(QAction *)));
+    connect(this, SIGNAL(triggered(QAction *)),
+            this, SLOT(triggered_slot(QAction *)));
 
-	load();
+    load();
 
-	addSeparator();
-	populateMenu();
+    addSeparator();
+    populateMenu();
 }
 
 TFavorites::~TFavorites() {
-	save();
+    save();
 }
 
 void TFavorites::delete_children() {
 
-	for (int n = 0; n < child.count(); n++) {
-		if (child[n])
-			delete child[n];
-		child[n] = 0;
-	}
-	child.clear();
+    for (int n = 0; n < child.count(); n++) {
+        if (child[n])
+            delete child[n];
+        child[n] = 0;
+    }
+    child.clear();
 }
 
 TFavorites* TFavorites::createNewObject(const QString& filename) {
@@ -107,289 +107,286 @@ TFavorites* TFavorites::createNewObject(const QString& filename) {
 
 void TFavorites::populateMenu() {
 
-	for (int n = 0; n < f_list.count(); n++) {
-		QString i = QString::number(n+1);
-		QString name = QString("%1 - " + f_list[n].name()).arg(i.insert(i.size()-1, '&'), 3, ' ');
-		if (f_list[n].isSubentry()) {
+    for (int n = 0; n < f_list.count(); n++) {
+        QString i = QString::number(n+1);
+        QString name = QString("%1 - " + f_list[n].name()).arg(i.insert(i.size()-1, '&'), 3, ' ');
+        if (f_list[n].isSubentry()) {
 
-			if (f_list[n].file() == _filename) {
-                logger()->debug("populateMenu: infinite recursion detected. Ignoring item.");
-				break;
-			}
+            if (f_list[n].file() == _filename) {
+                WZWARN("infinite recursion detected. Ignoring item.");
+                break;
+            }
 
-			TFavorites* new_fav = createNewObject(f_list[n].file());
-			new_fav->getCurrentMedia(received_file_playing, received_title);
-			connect(this, SIGNAL(sendCurrentMedia(const QString&, const QString&)),
-					new_fav, SLOT(getCurrentMedia(const QString&, const QString&)));
-			/*
-			new_fav->editAct()->setText(editAct()->text());
-			new_fav->jumpAct()->setText(jumpAct()->text());
-			new_fav->nextAct()->setText(nextAct()->text());
-			new_fav->previousAct()->setText(previousAct()->text());
-			new_fav->addCurrentAct()->setText(addCurrentAct()->text());
-			*/
+            TFavorites* new_fav = createNewObject(f_list[n].file());
+            new_fav->getCurrentMedia(received_file_playing, received_title);
+            connect(this, SIGNAL(sendCurrentMedia(const QString&, const QString&)),
+                    new_fav, SLOT(getCurrentMedia(const QString&, const QString&)));
+            /*
+            new_fav->editAct()->setText(editAct()->text());
+            new_fav->jumpAct()->setText(jumpAct()->text());
+            new_fav->nextAct()->setText(nextAct()->text());
+            new_fav->previousAct()->setText(previousAct()->text());
+            new_fav->addCurrentAct()->setText(addCurrentAct()->text());
+            */
 
-			child.push_back(new_fav);
-			
-			QAction* a = addMenu(new_fav);
-			a->setText(name);
-			a->setIcon(QIcon(f_list[n].icon()));
-		} else {
-			QAction* a = addAction(name);
-			a->setData(f_list[n].file());
-			a->setIcon(QIcon(f_list[n].icon()));
-			a->setStatusTip(f_list[n].file());
-		}
-	}
+            child.push_back(new_fav);
 
-	// Enable actions
-	jump_act->setEnabled(f_list.count() > 0);
-	bool e = anyItemAvailable();
-	next_act->setEnabled(e);
-	previous_act->setEnabled(e);
+            QAction* a = addMenu(new_fav);
+            a->setText(name);
+            a->setIcon(QIcon(f_list[n].icon()));
+        } else {
+            QAction* a = addAction(name);
+            a->setData(f_list[n].file());
+            a->setIcon(QIcon(f_list[n].icon()));
+            a->setStatusTip(f_list[n].file());
+        }
+    }
+
+    // Enable actions
+    jump_act->setEnabled(f_list.count() > 0);
+    bool e = anyItemAvailable();
+    next_act->setEnabled(e);
+    previous_act->setEnabled(e);
 }
 
 void TFavorites::updateMenu() {
 
-	// Remove all except the first 2 items
-	while (actions().count() > FIRST_MENU_ENTRY) {
-		QAction* a = actions()[FIRST_MENU_ENTRY];
-		removeAction(a);
-		a->deleteLater();
-	}
+    // Remove all except the first 2 items
+    while (actions().count() > FIRST_MENU_ENTRY) {
+        QAction* a = actions()[FIRST_MENU_ENTRY];
+        removeAction(a);
+        a->deleteLater();
+    }
 
-	delete_children();
+    delete_children();
 
-	populateMenu();
-	markCurrent();
+    populateMenu();
+    markCurrent();
 }
 
 void TFavorites::triggered_slot(QAction* action) {
 
-	if (action->data().isValid()) {
-		QString file = action->data().toString();
-		emit activated(file);
-		current_file = file;;
-		markCurrent();
-	}
+    if (action->data().isValid()) {
+        QString file = action->data().toString();
+        emit activated(file);
+        current_file = file;;
+        markCurrent();
+    }
 }
 
 void TFavorites::markCurrent() {
 
-	for (int n = FIRST_MENU_ENTRY; n < actions().count(); n++) {
-		QAction* a = actions()[n];
-		QString file = a->data().toString();
-		QFont f = a->font();
+    for (int n = FIRST_MENU_ENTRY; n < actions().count(); n++) {
+        QAction* a = actions()[n];
+        QString file = a->data().toString();
+        QFont f = a->font();
 
-		if ((!file.isEmpty()) && (file == current_file)) {
-			f.setBold(true);
-			a->setFont(f);
-		} else {
-			f.setBold(false);
-			a->setFont(f);
-		}
-	}
+        if ((!file.isEmpty()) && (file == current_file)) {
+            f.setBold(true);
+            a->setFont(f);
+        } else {
+            f.setBold(false);
+            a->setFont(f);
+        }
+    }
 }
 
 int TFavorites::findFile(QString filename) {
 
-	for (int n = 0; n < f_list.count(); n++) {
-		if (f_list[n].file() == filename) return n;
-	}
-	return -1;
+    for (int n = 0; n < f_list.count(); n++) {
+        if (f_list[n].file() == filename) return n;
+    }
+    return -1;
 }
 
 bool TFavorites::anyItemAvailable() {
 
-	if (f_list.isEmpty())
-		return false;
+    if (f_list.isEmpty())
+        return false;
 
-	bool item_available = false;
-	for (int n = 0; n < f_list.count(); n++) {
-		if (!f_list[n].isSubentry()) {
-			item_available = true;
-			break;
-		}
-	}
+    bool item_available = false;
+    for (int n = 0; n < f_list.count(); n++) {
+        if (!f_list[n].isSubentry()) {
+            item_available = true;
+            break;
+        }
+    }
 
-	return item_available;
+    return item_available;
 }
 
 void TFavorites::next() {
-    logger()->debug("next");
 
-	if (!anyItemAvailable())
-		return;
+    if (!anyItemAvailable())
+        return;
 
-	int current = findFile(current_file);
+    int current = findFile(current_file);
 
-	int i = current;
-	if (current < 0)
-		current = 0;
+    int i = current;
+    if (current < 0)
+        current = 0;
 
-	do {
-		i++;
-		if (i == current)
-			break;
-		if (i >= f_list.count())
-			i = 0;
-	} while (f_list[i].isSubentry());
+    do {
+        i++;
+        if (i == current)
+            break;
+        if (i >= f_list.count())
+            i = 0;
+    } while (f_list[i].isSubentry());
 
-	QAction* a = actions()[i + FIRST_MENU_ENTRY]; // Skip "edit" and separator
-	if (a) {
-		a->trigger();
-	}
+    QAction* a = actions()[i + FIRST_MENU_ENTRY]; // Skip "edit" and separator
+    if (a) {
+        a->trigger();
+    }
 }
 
 void TFavorites::previous() {
-    logger()->debug("previous");
 
-	if (!anyItemAvailable())
-		return;
+    if (!anyItemAvailable())
+        return;
 
-	int current = findFile(current_file);
+    int current = findFile(current_file);
 
-	int i = current;
-	if (current < 0)
-		current = 0;
+    int i = current;
+    if (current < 0)
+        current = 0;
 
-	do {
-		i--;
-		if (i == current)
-			break;
-		if (i < 0)
-			i = f_list.count() - 1;
-	} while (f_list[i].isSubentry());
+    do {
+        i--;
+        if (i == current)
+            break;
+        if (i < 0)
+            i = f_list.count() - 1;
+    } while (f_list[i].isSubentry());
 
-	QAction* a = actions()[i + FIRST_MENU_ENTRY]; // Skip "edit" and separator
-	if (a) {
-		a->trigger();
-	}
+    QAction* a = actions()[i + FIRST_MENU_ENTRY]; // Skip "edit" and separator
+    if (a) {
+        a->trigger();
+    }
 }
 
 void TFavorites::getCurrentMedia(const QString& filename, const QString& title) {
 
-	if (!filename.isEmpty()) {
-		received_file_playing = filename;
-		received_title = title;
+    if (!filename.isEmpty()) {
+        received_file_playing = filename;
+        received_title = title;
 
-		emit sendCurrentMedia(filename, title);
+        emit sendCurrentMedia(filename, title);
 
-		add_current_act->setEnabled(true);
-	}
+        add_current_act->setEnabled(true);
+    }
 }
 
 void TFavorites::addCurrentPlaying() {
 
-	if (received_file_playing.isEmpty()) {
-        logger()->debug("addCurrentPlaying: received file is empty, doing nothing");
-	} else {
-		TFavorite fav;
-		fav.setName(received_title.replace(",", ""));
-		fav.setFile(received_file_playing);
-		f_list.append(fav);
-		save();
-		updateMenu();
-	}
+    if (received_file_playing.isEmpty()) {
+        WZWARN("received file is empty, doing nothing");
+    } else {
+        TFavorite fav;
+        fav.setName(received_title.replace(",", ""));
+        fav.setFile(received_file_playing);
+        f_list.append(fav);
+        save();
+        updateMenu();
+    }
 }
 
 void TFavorites::save() {
-    logger()->debug("save");
+    WZDEBUG("");
 
-	QFile f(_filename);
-	if (f.open(QIODevice::WriteOnly)) {
-		QTextStream stream(&f);
-		stream.setCodec("UTF-8");
+    QFile f(_filename);
+    if (f.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&f);
+        stream.setCodec("UTF-8");
 
-		stream << "#EXTM3U" << "\n";
-		for (int n = 0; n < f_list.count(); n++) {
-			stream << "#EXTINF:0,";
-			stream << f_list[n].name() << ",";
-			stream << f_list[n].icon() << ",";
-			stream << f_list[n].isSubentry() << "\n";
-			stream << f_list[n].file() << "\n";
-		}
+        stream << "#EXTM3U" << "\n";
+        for (int n = 0; n < f_list.count(); n++) {
+            stream << "#EXTINF:0,";
+            stream << f_list[n].name() << ",";
+            stream << f_list[n].icon() << ",";
+            stream << f_list[n].isSubentry() << "\n";
+            stream << f_list[n].file() << "\n";
+        }
         f.close();
-	}
+    }
 }
 
 void TFavorites::load() {
-    logger()->debug("load");
+    WZDEBUG("");
 
-	QRegExp m3u_id("^#EXTM3U|^#M3U");
-	QRegExp info1("^#EXTINF:(.*),(.*),(.*)");
-	QRegExp info2("^#EXTINF:(.*),(.*),(.*),(.*)");
+    QRegExp m3u_id("^#EXTM3U|^#M3U");
+    QRegExp info1("^#EXTINF:(.*),(.*),(.*)");
+    QRegExp info2("^#EXTINF:(.*),(.*),(.*),(.*)");
 
-	QFile f(_filename);
-	if (f.open(QIODevice::ReadOnly)) {
+    QFile f(_filename);
+    if (f.open(QIODevice::ReadOnly)) {
 
-		f_list.clear();
+        f_list.clear();
 
-		TFavorite fav;
+        TFavorite fav;
 
-		QTextStream stream(&f);
-		stream.setCodec("UTF-8");
+        QTextStream stream(&f);
+        stream.setCodec("UTF-8");
 
-		QString line;
-		while (!stream.atEnd()) {
-			line = stream.readLine().trimmed();
-			if (line.isEmpty()) continue; // Ignore empty lines
-			if (m3u_id.indexIn(line)!=-1) {
-				//#EXTM3U
-				// Ignore line
-			}
-			else
-			if (info2.indexIn(line) != -1) {
-				fav.setName(info2.cap(2));
-				fav.setIcon(info2.cap(3));
-				fav.setSubentry(info2.cap(4).toInt() == 1);
-			} 
-			else
-			// Compatibility with old files
-			if (info1.indexIn(line) != -1) {
-				fav.setName(info1.cap(2));
-				fav.setIcon(info1.cap(3));
-				fav.setSubentry(false);
-			} 
-			else
-			if (line.startsWith("#")) {
-				// Comment
-				// Ignore
-			} else {
-				fav.setFile(line);
-				if (fav.name().isEmpty()) fav.setName(line);
-				f_list.append(fav);
+        QString line;
+        while (!stream.atEnd()) {
+            line = stream.readLine().trimmed();
+            if (line.isEmpty()) continue; // Ignore empty lines
+            if (m3u_id.indexIn(line)!=-1) {
+                //#EXTM3U
+                // Ignore line
+            }
+            else
+            if (info2.indexIn(line) != -1) {
+                fav.setName(info2.cap(2));
+                fav.setIcon(info2.cap(3));
+                fav.setSubentry(info2.cap(4).toInt() == 1);
+            }
+            else
+            // Compatibility with old files
+            if (info1.indexIn(line) != -1) {
+                fav.setName(info1.cap(2));
+                fav.setIcon(info1.cap(3));
+                fav.setSubentry(false);
+            }
+            else
+            if (line.startsWith("#")) {
+                // Comment
+                // Ignore
+            } else {
+                fav.setFile(line);
+                if (fav.name().isEmpty()) fav.setName(line);
+                f_list.append(fav);
 
-				// Clear data
-				fav.setName("");
-				fav.setFile("");
-				fav.setIcon("");
-				fav.setSubentry(false);
-			}
-		}
-		f.close();
-	}
+                // Clear data
+                fav.setName("");
+                fav.setFile("");
+                fav.setIcon("");
+                fav.setSubentry(false);
+            }
+        }
+        f.close();
+    }
 }
 
 void TFavorites::edit() {
-    logger()->debug("edit");
+    WZDEBUG("");
 
     TFavoriteEditor e(main_window);
 
-	e.setData(f_list);
-	e.setStorePath(QFileInfo(_filename).absolutePath());
+    e.setData(f_list);
+    e.setStorePath(QFileInfo(_filename).absolutePath());
 
-	if (e.exec() == QDialog::Accepted) {
-		f_list = e.data();
-		save();
-		updateMenu();
-	}
+    if (e.exec() == QDialog::Accepted) {
+        f_list = e.data();
+        save();
+        updateMenu();
+    }
 }
 
 void TFavorites::jump() {
-    logger()->debug("jump");
 
-	bool ok;
+    bool ok;
 #if QT_VERSION >= 0x050000
     int item = QInputDialog::getInt(main_window, tr("Jump to item"),
                           tr("Enter the number of the item in the list to jump:"), 
@@ -399,11 +396,11 @@ void TFavorites::jump() {
                           tr("Enter the number of the item in the list to jump:"), 
                           last_item, 1, f_list.count(), 1, &ok);
 #endif
-	if (ok) {
-		last_item = item;
-		item--;
-		actions()[item + FIRST_MENU_ENTRY]->trigger();
-	}
+    if (ok) {
+        last_item = item;
+        item--;
+        actions()[item + FIRST_MENU_ENTRY]->trigger();
+    }
 } // class TFavorites::jump()
 
 } // namespace Action

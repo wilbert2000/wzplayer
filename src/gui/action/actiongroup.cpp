@@ -36,53 +36,52 @@ TActionGroupItem::TActionGroupItem(QObject* parent,
                                    const QKeySequence& shortCut)
     : TAction(parent, name, text, icon ? "" : "noicon", shortCut, autoadd) {
 
-	setData(data);
-	setCheckable(true);
+    setData(data);
+    setCheckable(true);
     group->addAction(this);
 }
 
 
 TActionGroup::TActionGroup(QObject* parent, const QString& name)
-	: QActionGroup(parent) {
+    : QActionGroup(parent) {
 
-	setObjectName(name);
-	setExclusive(true);
-	connect(this, SIGNAL(triggered(QAction*)),
-			this, SLOT(itemTriggered(QAction*)));
+    setObjectName(name);
+    setExclusive(true);
+    connect(this, SIGNAL(triggered(QAction*)),
+            this, SLOT(itemTriggered(QAction*)));
 }
 
 QAction* TActionGroup::setChecked(int ID) {
-    //logger()->debug("Gui::Action::TActionGroup::setChecked: ID: %1", ID);
 
-	QList <QAction *> l = actions();
-	for (int n = 0; n < l.count(); n++) {
-		QAction* action = l[n];
-		if (!action->isSeparator() && action->data().toInt() == ID) {
-			action->setChecked(true);
-			return action;
-		}
-	}
+    QList <QAction *> l = actions();
+    for (int n = 0; n < l.count(); n++) {
+        QAction* action = l[n];
+        if (!action->isSeparator() && action->data().toInt() == ID) {
+            action->setChecked(true);
+            return action;
+        }
+    }
 
-	return 0;
+    return 0;
 }
 
 void TActionGroup::clear() {
 
-	QList <QAction*> acts = actions();
-	for (int i = acts.count() - 1; i >= 0; i--) {
-		QAction* action = acts[i];
-		removeAction(action);
-		action->deleteLater();
-	}
+    QList <QAction*> acts = actions();
+    for (int i = acts.count() - 1; i >= 0; i--) {
+        QAction* action = acts[i];
+        removeAction(action);
+        action->deleteLater();
+    }
 }
 
 void TActionGroup::itemTriggered(QAction* a) {
 
-	int value = a->data().toInt();
+    int value = a->data().toInt();
     Log4Qt::Logger::logger("Gui::Action::TActionGroup")->debug(
-                "itemTriggered: '%1' ID: %2", a->objectName(), value);
+                "itemTriggered '%1' ID: %2", a->objectName(), value);
 
-	emit activated(value);
+    emit activated(value);
 }
 
 } // namespace Action

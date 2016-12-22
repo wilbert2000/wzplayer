@@ -69,8 +69,8 @@ void TAdvanced::setData(TPreferences* pref) {
 
 void TAdvanced::getData(TPreferences* pref) {
 
-	requires_restart = false;
-	pref->actions_to_run = actionsToRun();
+    requires_restart = false;
+    pref->actions_to_run = actionsToRun();
 
     restartIfStringChanged(pref->player_additional_options,
                            playerAdditionalArguments(),
@@ -142,35 +142,35 @@ bool TAdvanced::logVerbose() {
 }
 
 void TAdvanced::setPlayerAdditionalArguments(QString args) {
-	player_args_edit->setText(args);
+    player_args_edit->setText(args);
 }
 
 QString TAdvanced::playerAdditionalArguments() {
-	return player_args_edit->text();
+    return player_args_edit->text();
 }
 
 void TAdvanced::setPlayerAdditionalVideoFilters(QString s) {
-	player_vfilters_edit->setText(s);
+    player_vfilters_edit->setText(s);
 }
 
 QString TAdvanced::playerAdditionalVideoFilters() {
-	return player_vfilters_edit->text();
+    return player_vfilters_edit->text();
 }
 
 void TAdvanced::setPlayerAdditionalAudioFilters(QString s) {
-	player_afilters_edit->setText(s);
+    player_afilters_edit->setText(s);
 }
 
 QString TAdvanced::playerAdditionalAudioFilters() {
-	return player_afilters_edit->text();
+    return player_afilters_edit->text();
 }
 
 void TAdvanced::setActionsToRun(QString actions) {
-	actions_to_run_edit->setText(actions);
+    actions_to_run_edit->setText(actions);
 }
 
 QString TAdvanced::actionsToRun() {
-	return actions_to_run_edit->text();
+    return actions_to_run_edit->text();
 }
 
 void TAdvanced::createHelp() {

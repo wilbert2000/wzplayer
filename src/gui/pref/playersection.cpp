@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,27 +34,27 @@ namespace Gui {
 namespace Pref {
 
 TPlayerSection::TPlayerSection(QWidget* parent)
-	: TWidget(parent, 0) {
+    : TWidget(parent, 0) {
 
-	setupUi(this);
+    setupUi(this);
 
-	mplayer_edit->setDialogType(TFileChooser::GetFileName);
-	mpv_edit->setDialogType(TFileChooser::GetFileName);
+    mplayer_edit->setDialogType(TFileChooser::GetFileName);
+    mpv_edit->setDialogType(TFileChooser::GetFileName);
 
-	connect(mplayer_edit, SIGNAL(fileChanged(QString)),
-			this, SLOT(onMPlayerFileChanged(QString)));
-	connect(mpv_edit, SIGNAL(fileChanged(QString)),
-			this, SLOT(onMPVFileChanged(QString)));
-	connect(mplayer_radio, SIGNAL(clicked(bool)),
-			this, SLOT(onPlayerRadioClicked(bool)));
-	connect(mpv_radio, SIGNAL(clicked(bool)),
-			this, SLOT(onPlayerRadioClicked(bool)));
+    connect(mplayer_edit, SIGNAL(fileChanged(QString)),
+            this, SLOT(onMPlayerFileChanged(QString)));
+    connect(mpv_edit, SIGNAL(fileChanged(QString)),
+            this, SLOT(onMPVFileChanged(QString)));
+    connect(mplayer_radio, SIGNAL(clicked(bool)),
+            this, SLOT(onPlayerRadioClicked(bool)));
+    connect(mpv_radio, SIGNAL(clicked(bool)),
+            this, SLOT(onPlayerRadioClicked(bool)));
 
 #ifdef Q_OS_WIN
-	radio_tv_group->hide();
+    radio_tv_group->hide();
 #endif
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TPlayerSection::~TPlayerSection() {
@@ -70,54 +70,54 @@ QPixmap TPlayerSection::sectionIcon() {
 
 void TPlayerSection::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	// Player
-	mplayer_icon_label->setPixmap(Images::icon("mplayer"));
-	mpv_icon_label->setPixmap(Images::icon("mpv"));
+    // Player
+    mplayer_icon_label->setPixmap(Images::icon("mplayer"));
+    mpv_icon_label->setPixmap(Images::icon("mpv"));
 
-	mplayer_edit->setCaption(tr("Select the MPlayer executable"));
-	mpv_edit->setCaption(tr("Select the MPV executable"));
+    mplayer_edit->setCaption(tr("Select the MPlayer executable"));
+    mpv_edit->setCaption(tr("Select the MPV executable"));
 
 #if defined(Q_OS_WIN)
-	mplayer_edit->setFilter(tr("Executables") +" (*.exe)");
-	mpv_edit->setFilter(tr("Executables") +" (*.exe)");
+    mplayer_edit->setFilter(tr("Executables") +" (*.exe)");
+    mpv_edit->setFilter(tr("Executables") +" (*.exe)");
 #else
-	mplayer_edit->setFilter(tr("All files") +" (*)");
-	mpv_edit->setFilter(tr("All files") +" (*)");
+    mplayer_edit->setFilter(tr("All files") +" (*)");
+    mpv_edit->setFilter(tr("All files") +" (*)");
 #endif
 
-	// Media settings
-	int filesettings_method_item = filesettings_method_combo->currentIndex();
-	filesettings_method_combo->clear();
-	filesettings_method_combo->addItem(tr("one ini file"), "normal");
-	filesettings_method_combo->addItem(tr("multiple ini files"), "hash");
-	filesettings_method_combo->setCurrentIndex(filesettings_method_item);
+    // Media settings
+    int filesettings_method_item = filesettings_method_combo->currentIndex();
+    filesettings_method_combo->clear();
+    filesettings_method_combo->addItem(tr("one ini file"), "normal");
+    filesettings_method_combo->addItem(tr("multiple ini files"), "hash");
+    filesettings_method_combo->setCurrentIndex(filesettings_method_item);
 
-	// Radio and TV
-	radio_tv_icon_label->setPixmap(Images::icon("pref_radio_tv"));
+    // Radio and TV
+    radio_tv_icon_label->setPixmap(Images::icon("pref_radio_tv"));
 
-	createHelp();
+    createHelp();
 }
 
 void TPlayerSection::setData(TPreferences* pref) {
 
-	// Player
-	setPlayerID(pref->player_id);
-	setPlayerPath(pref->mplayer_bin, pref->mpv_bin);
-	report_player_crashes_check->setChecked(pref->report_player_crashes);
+    // Player
+    setPlayerID(pref->player_id);
+    setPlayerPath(pref->mplayer_bin, pref->mpv_bin);
+    report_player_crashes_check->setChecked(pref->report_player_crashes);
 
-	// Media settings group
-	setRememberSettings(pref->remember_media_settings);
-	setRememberTimePos(!pref->remember_time_pos);
-	setGlobalVolume(pref->global_volume);
-	remember_audio_eq_check->setChecked(!pref->global_audio_equalizer);
-	setFileSettingsMethod(pref->file_settings_method);
+    // Media settings group
+    setRememberSettings(pref->remember_media_settings);
+    setRememberTimePos(!pref->remember_time_pos);
+    setGlobalVolume(pref->global_volume);
+    remember_audio_eq_check->setChecked(!pref->global_audio_equalizer);
+    setFileSettingsMethod(pref->file_settings_method);
 
-	// Radio and TV
-	radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
+    // Radio and TV
+    radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
 
-	requires_restart = false;
+    requires_restart = false;
 }
 
 void TPlayerSection::getData(TPreferences* pref) {
@@ -149,123 +149,123 @@ void TPlayerSection::getData(TPreferences* pref) {
 
 void TPlayerSection::setPlayerID(Settings::TPreferences::TPlayerID id) {
 
-	if (id == Settings::TPreferences::ID_MPLAYER) {
-		mplayer_radio->setChecked(true);
-		mpv_radio->setChecked(false);
-	} else {
-		mplayer_radio->setChecked(false);
-		mpv_radio->setChecked(true);
-	}
+    if (id == Settings::TPreferences::ID_MPLAYER) {
+        mplayer_radio->setChecked(true);
+        mpv_radio->setChecked(false);
+    } else {
+        mplayer_radio->setChecked(false);
+        mpv_radio->setChecked(true);
+    }
 }
 
 Settings::TPreferences::TPlayerID TPlayerSection::playerID() {
 
-	if (mplayer_radio->isChecked()) {
-		return Settings::TPreferences::ID_MPLAYER;
-	}
-	return Settings::TPreferences::ID_MPV;
+    if (mplayer_radio->isChecked()) {
+        return Settings::TPreferences::ID_MPLAYER;
+    }
+    return Settings::TPreferences::ID_MPV;
 }
 
 void TPlayerSection::setPlayerPath(const QString& mplayer, const QString& mpv) {
 
-	mplayer_edit->setText(mplayer);
-	mpv_edit->setText(mpv);
+    mplayer_edit->setText(mplayer);
+    mpv_edit->setText(mpv);
 }
 
 void TPlayerSection::onMPlayerFileChanged(QString file) {
 
-	if (mplayer_radio->isChecked()) {
-		emit binChanged(TPreferences::ID_MPLAYER, true, pref->getAbsolutePathPlayer(file));
-	}
+    if (mplayer_radio->isChecked()) {
+        emit binChanged(TPreferences::ID_MPLAYER, true, pref->getAbsolutePathPlayer(file));
+    }
 }
 
 void TPlayerSection::onMPVFileChanged(QString file) {
 
-	if (mpv_radio->isChecked()) {
-		emit binChanged(TPreferences::ID_MPV, true, pref->getAbsolutePathPlayer(file));
-	}
+    if (mpv_radio->isChecked()) {
+        emit binChanged(TPreferences::ID_MPV, true, pref->getAbsolutePathPlayer(file));
+    }
 }
 
 void TPlayerSection::onPlayerRadioClicked(bool) {
 
-	TPreferences::TPlayerID player_id;
-	QString file;
-	if (mplayer_radio->isChecked()) {
-		player_id = TPreferences::ID_MPLAYER;
-		file = mplayer_edit->text();
-	} else {
-		player_id = TPreferences::ID_MPV;
-		file = mpv_edit->text();
-	}
-	emit binChanged(player_id, false, pref->getAbsolutePathPlayer(file));
+    TPreferences::TPlayerID player_id;
+    QString file;
+    if (mplayer_radio->isChecked()) {
+        player_id = TPreferences::ID_MPLAYER;
+        file = mplayer_edit->text();
+    } else {
+        player_id = TPreferences::ID_MPV;
+        file = mpv_edit->text();
+    }
+    emit binChanged(player_id, false, pref->getAbsolutePathPlayer(file));
 }
 
 void TPlayerSection::setRememberSettings(bool b) {
-	settings_group->setChecked(b);
+    settings_group->setChecked(b);
 }
 
 bool TPlayerSection::rememberSettings() {
-	return settings_group->isChecked();
+    return settings_group->isChecked();
 }
 
 void TPlayerSection::setRememberTimePos(bool b) {
-	remember_time_check->setChecked(b);
+    remember_time_check->setChecked(b);
 }
 
 bool TPlayerSection::rememberTimePos() {
-	return remember_time_check->isChecked();
+    return remember_time_check->isChecked();
 }
 
 void TPlayerSection::setGlobalVolume(bool b) {
-	remember_volume_check->setChecked(!b);
+    remember_volume_check->setChecked(!b);
 }
 
 bool TPlayerSection::globalVolume() {
-	return !remember_volume_check->isChecked();
+    return !remember_volume_check->isChecked();
 }
 
 void TPlayerSection::setFileSettingsMethod(const QString& method) {
 
-	int index = filesettings_method_combo->findData(method);
-	if (index < 0)
-		index = 0;
-	filesettings_method_combo->setCurrentIndex(index);
+    int index = filesettings_method_combo->findData(method);
+    if (index < 0)
+        index = 0;
+    filesettings_method_combo->setCurrentIndex(index);
 }
 
 QString TPlayerSection::fileSettingsMethod() {
-	return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
+    return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
 }
 
 void TPlayerSection::createHelp() {
 
-	clearHelp();
+    clearHelp();
 
     addSectionTitle(tr("Media player"));
 
-	setWhatsThis(mplayer_radio, tr("MPlayer"),
+    setWhatsThis(mplayer_radio, tr("MPlayer"),
         tr("Select MPlayer as the media player to use by WZPlayer."));
 
-	setWhatsThis(mplayer_edit, tr("MPlayer executable"),
-		tr("The path to the MPlayer executable file.")
-		+ "<br><b>"
+    setWhatsThis(mplayer_edit, tr("MPlayer executable"),
+        tr("The path to the MPlayer executable file.")
+        + "<br><b>"
         + tr("If this setting is wrong, WZPlayer won't be able to play"
              " anything!")
-		+ "</b>");
+        + "</b>");
 
-	setWhatsThis(mpv_radio, tr("MPV"),
+    setWhatsThis(mpv_radio, tr("MPV"),
         tr("Select MPV as the media player to use by WZPlayer."));
 
-	setWhatsThis(mpv_edit, tr("MPV executable"),
-		tr("The path to the MPV executable file.")
-		+ "<br><b>"
+    setWhatsThis(mpv_edit, tr("MPV executable"),
+        tr("The path to the MPV executable file.")
+        + "<br><b>"
         + tr("If this setting is wrong, WZPlayer won't be able to play"
              " anything!")
-		+ "</b>");
+        + "</b>");
 
-	setWhatsThis(report_player_crashes_check,
-		tr("Report player errors in a messagebox"),
-		tr("Shows a messagebox when the player reports errors or crashes."
-		   " Errors will always be shown in the statusbar."));
+    setWhatsThis(report_player_crashes_check,
+        tr("Report player errors in a messagebox"),
+        tr("Shows a messagebox when the player reports errors or crashes."
+           " Errors will always be shown in the statusbar."));
 
 
     addSectionTitle(tr("Remember player settings for every file"));
@@ -274,7 +274,7 @@ void TPlayerSection::createHelp() {
         tr("If checked WZPlayer will remember the settings you make for every"
            " file and reload them when you play the file again."));
 
-	setWhatsThis(remember_time_check, tr("Remember time position"),
+    setWhatsThis(remember_time_check, tr("Remember time position"),
         tr("If checked, WZPlayer will remember the last position "
            "of the file when you open it again. This option works only with "
            "regular files (not with DVDs, CDs, URLs...)."));
@@ -285,7 +285,7 @@ void TPlayerSection::createHelp() {
         + "<br>"
         + tr("This option also applies to the mute state."));
 
-	setWhatsThis(remember_audio_eq_check, tr("Remember audio equalizer"),
+    setWhatsThis(remember_audio_eq_check, tr("Remember audio equalizer"),
         tr("If this option is not checked, all media files share the same audio"
            " equalizer.") + " " +
         tr("If it is checked, the audio equalizer values are saved along each"
@@ -293,13 +293,13 @@ void TPlayerSection::createHelp() {
 
     setWhatsThis(filesettings_method_combo,
                  tr("Method to store the file settings"),
-		tr("This option allows to change the way the file settings will be "
-		   "stored. The following options are available:")
-		+ "<ul><li>"
-		+ tr("<b>one ini file</b>: the settings for all played files will be "
-			 "saved in a single ini file (%1)")
-			.arg(QString("<i>" + TPaths::configPath() + "/file_settings.ini</i>"))
-		+ "</li><li>"
+        tr("This option allows to change the way the file settings will be "
+           "stored. The following options are available:")
+        + "<ul><li>"
+        + tr("<b>one ini file</b>: the settings for all played files will be "
+             "saved in a single ini file (%1)")
+            .arg(QString("<i>" + TPaths::configPath() + "/file_settings.ini</i>"))
+        + "</li><li>"
         + tr("<b>multiple ini files</b>: one ini file will be used for each"
              " played file. Those ini files will be saved in the folder %1")
             .arg(QString("<i>"+TPaths::configPath()+"/file_settings</i>"))
@@ -312,7 +312,7 @@ void TPlayerSection::createHelp() {
     setWhatsThis(radio_tv_rescan_check,
                  tr("Check for new radio and TV channels on startup"),
         tr("If this option is checked, WZPlayer will look for new radio and TV"
-		   " channels in ~/.mplayer/channels.conf.ter "
+           " channels in ~/.mplayer/channels.conf.ter "
            " and ~/.mplayer/channels.conf."));
 #endif
 

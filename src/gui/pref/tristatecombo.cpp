@@ -23,38 +23,38 @@ namespace Gui { namespace Pref {
 
 TTristateCombo::TTristateCombo(QWidget* parent) : QComboBox(parent) 
 {
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TTristateCombo::~TTristateCombo() {
 }
 
 void TTristateCombo::retranslateStrings() {
-	int i = currentIndex();
+    int i = currentIndex();
 
-	clear();
-	addItem(tr("Auto"), Settings::TPreferences::Detect);
-	addItem(tr("Yes"), Settings::TPreferences::Enabled);
-	addItem(tr("No"), Settings::TPreferences::Disabled);
+    clear();
+    addItem(tr("Auto"), Settings::TPreferences::Detect);
+    addItem(tr("Yes"), Settings::TPreferences::Enabled);
+    addItem(tr("No"), Settings::TPreferences::Disabled);
 
-	setCurrentIndex(i);
+    setCurrentIndex(i);
 }
 
 void TTristateCombo::setState(Settings::TPreferences::TOptionState v) {
-	setCurrentIndex(findData(v));
+    setCurrentIndex(findData(v));
 }
 
 Settings::TPreferences::TOptionState TTristateCombo::state() {
-	return (Settings::TPreferences::TOptionState) itemData(currentIndex()).toInt();
+    return (Settings::TPreferences::TOptionState) itemData(currentIndex()).toInt();
 }
 
 // Language change stuff
 void TTristateCombo::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QComboBox::changeEvent(e);
-	}
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
+    } else {
+        QComboBox::changeEvent(e);
+    }
 }
 
 }} // namespace Gui::Pref

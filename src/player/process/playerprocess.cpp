@@ -38,7 +38,6 @@ const int waiting_for_answers_safe_guard_init = 100;
 
 TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
     TProcess(parent),
-    debug(logger()),
     md(mdata),
     notified_player_is_running(false),
     received_end_of_file(false),
@@ -56,7 +55,7 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
 void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
 
     if (log) {
-        logger()->debug("writeToPlayer: %1", text);
+        WZDEBUG(text);
     }
 
     if (isRunning() && !received_end_of_file) {
@@ -68,7 +67,7 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
 #endif
 
     } else {
-        logger()->warn("writeToPlayer: process not running");
+        WZWARN("process not running");
     }
 }
 
@@ -79,10 +78,10 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
     Log4Qt::Logger* logger = Log4Qt::Logger::logger(
                                  "Player::Process::TPlayerProcess");
     if (Settings::pref->isMPlayer()) {
-        logger->debug("createPlayerProcess: creating TMPlayerProcess");
+        logger->debug("createPlayerProcess creating TMPlayerProcess");
         process = new TMPlayerProcess(parent, md);
     } else {
-        logger->debug("createPlayerProcess: creating TMPVProcess");
+        logger->debug("createPlayerProcess creating TMPVProcess");
         process = new TMPVProcess(parent, md);
     }
 
@@ -112,8 +111,9 @@ bool TPlayerProcess::startPlayer() {
 
 // Slot called when the process is finished
 void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    logger()->debug("onFinished: exitCode: %1, override: %2, status: %3",
-                    exitCode, exit_code_override, exitStatus);
+    WZDEBUG("exitCode " + QString::number(exitCode)
+            + ", override " + QString::number(exit_code_override)
+            + ", status " + QString::number(exitStatus));
 
     if (exit_code_override) {
         exitCode = exit_code_override;
@@ -127,7 +127,7 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 }
 
 void TPlayerProcess::playingStarted() {
-    logger()->debug("playingStarted");
+    WZDEBUG("");
 
     notified_player_is_running = true;
 
@@ -137,7 +137,7 @@ void TPlayerProcess::playingStarted() {
     emit receivedSubtitleTracks();
     emit receivedTitleTracks();
 
-    logger()->debug("playingStarted: emit playerFullyLoaded()");
+    WZDEBUG("emit playerFullyLoaded()");
     emit playerFullyLoaded();
 }
 
@@ -145,17 +145,15 @@ void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
 
     int selected = md->titles.getSelectedID();
     if (new_title != selected) {
-        logger()->debug("notifyTitleTrackChanged: title changed from %1 to %2",
-                        selected, new_title);
+        WZDEBUG("title changed from " + QString::number(selected)
+                + " to " + QString::number(new_title));
         md->titles.setSelectedID(new_title);
         if (notified_player_is_running) {
-            logger()->debug("notifyTitleTrackChanged: emit"
-                            " receivedTitleTrackChanged()");
+            WZDEBUG("emit receivedTitleTrackChanged()");
             emit receivedTitleTrackChanged(new_title);
         }
     } else {
-        logger()->debug("notifyTitleTrackChanged: current title already set to"
-                        " %1", new_title);
+        WZDEBUG("current title already set to " + QString::number(new_title));
     }
 }
 
@@ -163,9 +161,8 @@ void TPlayerProcess::notifyDuration(double duration) {
 
     // Duration changed?
     if (qAbs(duration - md->duration) > 0.001) {
-        logger()->debug("notifyDuration: duration changed from %1 to %2",
-                        QString::number(md->duration),
-                        QString::number(duration));
+        WZDEBUG("duration changed from " + QString::number(md->duration)
+                + " to " + QString::number(duration));
         md->duration = duration;
         emit durationChanged(md->duration);
     }
@@ -225,8 +222,7 @@ bool TPlayerProcess::waitForAnswers() {
         if (waiting_for_answers_safe_guard > 0)
             return true;
 
-        logger()->warn("waitForAnswers: did not receive answers in time."
-                       " Stopped waitng.");
+        WZWARN("did not receive answers in time, stopped waitng");
         waiting_for_answers = 0;
         waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
     }
@@ -235,7 +231,7 @@ bool TPlayerProcess::waitForAnswers() {
 }
 
 void TPlayerProcess::quit(int exit_code) {
-    logger()->debug("quit");
+    WZDEBUG("");
 
     if (!quit_send) {
         quit_send = true;
@@ -249,10 +245,10 @@ bool TPlayerProcess::parseLine(QString& line) {
     static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
     static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
-    logger()->debug("parseLine: '%1'", line);
+    WZDEBUG("'" + line + "'");
 
     if (quit_send) {
-        logger()->debug("parseLine: ignored, waiting for quit to arrive");
+        WZDEBUG("ignored, waiting for quit to arrive");
         return true;
     }
 
@@ -264,14 +260,14 @@ bool TPlayerProcess::parseLine(QString& line) {
     }
 
     if (rx_no_disk.indexIn(line) >= 0) {
-        logger()->warn("parseLine: no disc in device");
+        WZWARN("no disc in device");
         quit(TExitMsg::ERR_NO_DISC);
         return true;
     }
 
     // End of file
     if (rx_eof.indexIn(line) >= 0)  {
-        logger()->debug("parseLine: detected end of file");
+        WZDEBUG("detected end of file");
         received_end_of_file = true;
         return true;
     }
@@ -293,9 +289,9 @@ bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) 
         md->video_out_height = dh;
     }
 
-    logger()->debug(QString("parseVO: VO '%1' %2 x %3 => %4 x %5")
-                    .arg(md->vo).arg(md->video_width).arg(md->video_height)
-                    .arg(md->video_out_width).arg(md->video_out_height));
+    WZDEBUG(QString("parseVO: VO '%1' %2 x %3 => %4 x %5")
+            .arg(md->vo).arg(md->video_width).arg(md->video_height)
+            .arg(md->video_out_width).arg(md->video_out_height));
 
     if (notified_player_is_running) {
         emit receivedVideoOut();
@@ -308,20 +304,17 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 
     if (name == "ASPECT") {
         md->video_aspect = value;
-        logger()->debug("parseVideoProperty: video aspect ratio set to '%1'",
-                        md->video_aspect);
+        WZDEBUG("video aspect ratio set to '" + md->video_aspect + "'");
         return true;
     }
     if (name == "FPS") {
         md->video_fps = value.toDouble();
-        logger()->debug("parseVideoProperty: video_fps set to %1",
-                        md->video_fps);
+        WZDEBUG("video_fps set to " + QString::number(md->video_fps));
         return true;
     }
     if (name == "BITRATE") {
         md->video_bitrate = value.toInt();
-        logger()->debug("parseVideoProperty: video_bitrate set to %1",
-                        md->video_bitrate);
+        WZDEBUG("video_bitrate set to " + QString::number(md->video_bitrate));
         if (notified_player_is_running) {
             emit videoBitRateChanged(md->video_bitrate);
         }
@@ -329,14 +322,12 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
     }
     if (name == "FORMAT") {
         md->video_format = value;
-        logger()->debug("parseVideoProperty: video_format set to '%1'",
-                        md->video_format);
+        WZDEBUG("video_format set to '" + md->video_format + "'");
         return true;
     }
     if (name == "CODEC") {
         md->video_codec = value;
-        logger()->debug("parseVideoProperty: video_codec set to '%1'",
-                        md->video_codec);
+        WZDEBUG("video_codec set to '" + md->video_codec + "'");
         return true;
     }
 
@@ -347,8 +338,7 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 
     if (name == "BITRATE") {
         md->audio_bitrate = value.toInt();
-        logger()->debug("parseAudioProperty: audio_bitrate set to %1",
-                        md->audio_bitrate);
+        WZDEBUG("audio_bitrate set to " + QString::number(md->audio_bitrate));
         if (notified_player_is_running) {
             emit audioBitRateChanged(md->audio_bitrate);
         }
@@ -356,26 +346,22 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
     }
     if (name == "FORMAT") {
         md->audio_format = value;
-        logger()->debug("parseAudioProperty: audio_format set to '%1'",
-                        md->audio_format);
+        WZDEBUG("audio_format set to '" + md->audio_format + "'");
         return true;
     }
     if (name == "RATE") {
         md->audio_rate = value.toInt();
-        logger()->debug("parseAudioProperty: audio_rate set to %1",
-                        md->audio_rate);
+        WZDEBUG("audio_rate set to " + QString::number(md->audio_rate));
         return true;
     }
     if (name == "NCH") {
         md->audio_nch = value.toInt();
-        logger()->debug("parseAudioProperty: audio_nch set to %1",
-                        md->audio_nch);
+        WZDEBUG("audio_nch set to " + QString::number(md->audio_nch));
         return true;
     }
     if (name == "CODEC") {
         md->audio_codec = value;
-        logger()->debug("parseAudioProperty: audio_codec set to '%1'",
-                        md->audio_codec);
+        WZDEBUG("audio_codec set to '" + md->audio_codec + "'");
         return true;
     }
 
@@ -396,11 +382,10 @@ bool TPlayerProcess::parseAngle(const QString& value) {
         md->angle = 0;
         md->angles = 0;
     }
-    logger()->debug("parseAngle: selected angle %1/%2",
-           md->angle, md->angles);
+    WZDEBUG(QString("selected angle %1/%2").arg(md->angle).arg(md->angles));
 
     if (notified_player_is_running) {
-        logger()->debug("parseAngle: emit receivedAngles()");
+        WZDEBUG("emit receivedAngles()");
         emit receivedAngles();
     }
 
@@ -411,15 +396,15 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "START_TIME") {
         if (value.isEmpty() || value == "unknown") {
-            logger()->debug("parseProperty: start time not set");
+            WZDEBUG("start time not set");
         } else {
             md->start_sec_player = value.toDouble();
             if (Settings::pref->isMPV()) {
                 md->start_sec_set = true;
                 md->start_sec = md->start_sec_player;
             }
-            logger()->debug("parseProperty: start time set to %1",
-                            md->start_sec_player);
+            WZDEBUG("start time set to "
+                    + QString::number(md->start_sec_player));
         }
         return true;
     }
@@ -429,11 +414,11 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
     }
     if (name == "DEMUXER") {
         md->demuxer = value;
-        logger()->debug("parseProperty: demuxer set to '%1'", md->demuxer);
-        // TODO: mpeg TS detection
+        WZDEBUG("demuxer set to '" + md->demuxer + "'");
+        // TODO: better mpeg TS detection
         if (md->demuxer == "mpegts") {
             md->mpegts = true;
-            logger()->debug("parseProperty: detected mpegts");
+            WZDEBUG("detected mpegts");
         }
         return true;
     }
@@ -449,7 +434,7 @@ bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
     name = name.trimmed();
     value = value.trimmed();
     md->meta_data[name] = value;
-    logger()->debug("parseMetaDataProperty: '%1' set to '%2'", name, value);
+    WZDEBUG(QString("'%1' set to '%2'").arg(name).arg(value));
     return true;
 }
 
@@ -481,8 +466,8 @@ void TPlayerProcess::setImageDuration(int duration) {
 
     int frames = duration * fps;
 
-    logger()->debug("setImageDuration: duration %1, frames %2, fps %3",
-                    duration, frames, fps);
+    WZDEBUG(QString("duration %1, frames %2, fps %3")
+            .arg(duration).arg(frames).arg(fps));
     if (temp_file.open()) {
         temp_file_name = temp_file.fileName();
         temp_file.resize(0);

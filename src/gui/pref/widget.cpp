@@ -19,93 +19,91 @@
 #include "gui/pref/widget.h"
 #include <QEvent>
 #include "settings/assstyles.h"
+#include "wzdebug.h"
+
 
 namespace Gui {
 namespace Pref {
 
 TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f)
-	, requires_restart(false)
-	, icon_size(32) {
+    : QWidget(parent, f)
+    , requires_restart(false)
+    , icon_size(32) {
 }
 
 TWidget::~TWidget() {
 }
 
 QString TWidget::sectionName() {
-	return QString();
+    return QString();
 }
 
 QPixmap TWidget::sectionIcon() {
-	return QPixmap();
+    return QPixmap();
 }
 
 void TWidget::addSectionTitle(const QString& title) {
-	help_message += "<h2>" + title + "</h2>";
+    help_message += "<h2>" + title + "</h2>";
 }
 
 void TWidget::addSectionGroup(const QString& title) {
-	help_message += "<h3>" + title + "</h3>";
+    help_message += "<h3>" + title + "</h3>";
 }
 
 void TWidget::restartIfBoolChanged(bool& old_value, bool new_value,
                                    const QString& name) {
 
-	if (old_value != new_value) {
-        logger()->debug("restartIfBoolChanged: need restart, %1 changed from %2"
-                        " to %3", name, QString::number(old_value),
-                        QString::number(new_value));
-		old_value = new_value;
-		requires_restart = true;
-	}
+    if (old_value != new_value) {
+        WZDEBUG(QString("need restart, %1 changed from %2 to %3")
+                .arg(name).arg(old_value).arg(new_value));
+        old_value = new_value;
+        requires_restart = true;
+    }
 }
 
 void TWidget::restartIfIntChanged(int& old_value, int new_value, const QString& name) {
 
-	if (old_value != new_value) {
-        logger()->debug("restartIfIntChanged: need restart, %1 changed from %2"
-                        " to %3", name, QString::number(old_value),
-                        QString::number(new_value));
+    if (old_value != new_value) {
+        WZDEBUG(QString("need restart, %1 changed from %2 to %3")
+                .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-		requires_restart = true;
-	}
+        requires_restart = true;
+    }
 }
 
 void TWidget::restartIfUIntChanged(unsigned int& old_value,
                                    unsigned int new_value,
                                    const QString& name) {
 
-	if (old_value != new_value) {
-        logger()->debug("restartIfUIntChanged: need restart, %1 changed from %2"
-                        " to %3", name, QString::number(old_value),
-                        QString::number(new_value));
+    if (old_value != new_value) {
+        WZDEBUG(QString("need restart, %1 changed from %2 to %3")
+                .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-		requires_restart = true;
-	}
+        requires_restart = true;
+    }
 }
 
 void TWidget::restartIfDoubleChanged(double& old_value, const double& new_value,
                                      const QString& name) {
 
-	if (old_value != new_value) {
-        logger()->debug("restartIfDoubleChanged: need restart, %1 changed from"
-                        " %2 to %3", name, QString::number(old_value),
-                        QString::number(new_value));
+    if (old_value != new_value) {
+        WZDEBUG(QString("need restart, %1 changed from %2 to %3")
+                .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-		requires_restart = true;
-	}
+        requires_restart = true;
+    }
 }
 
 void TWidget::restartIfStringChanged(QString& old_value,
                                      const QString& new_value,
                                      const QString& name) {
 
-	if (old_value != new_value) {
-        logger()->debug("restartIfStringChanged: need restart, %1 changed from"
-                        " %2 to %3", name, old_value, new_value);
+    if (old_value != new_value) {
+        WZDEBUG(QString("need restart, %1 changed from %2 to %3")
+                .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-		requires_restart = true;
-	}
+        requires_restart = true;
+    }
 }
 
 void TWidget::setWhatsThis(QWidget* w,
@@ -113,24 +111,24 @@ void TWidget::setWhatsThis(QWidget* w,
                            const QString& text,
                            bool set_tooltip) {
 
-	w->setWhatsThis(text);
-	help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
+    w->setWhatsThis(text);
+    help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
     if (set_tooltip) {
         w->setToolTip("<qt>"+ text +"</qt>");
     }
 }
 
 void TWidget::clearHelp() {
-	help_message = "<h1>" + sectionName() + "</h1>";
+    help_message = "<h1>" + sectionName() + "</h1>";
 }
 
 // Language change stuff
 void TWidget::changeEvent(QEvent *e) {
-	if (e->type() == QEvent::LanguageChange) {
-		retranslateStrings();
-	} else {
-		QWidget::changeEvent(e);
-	}
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
+    } else {
+        QWidget::changeEvent(e);
+    }
 }
 
 void TWidget::retranslateStrings() {

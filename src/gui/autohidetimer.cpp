@@ -152,7 +152,7 @@ void TAutoHideTimer::onActionToggled(bool visible) {
     QString actioName = QObject::sender()->objectName();
     TItemMap::const_iterator i = items.find(actioName);
     if (i == items.end()) {
-        logger()->warn("onActionToggled: action '" + actioName + "' not found");
+        WZWARN("action '" + actioName + "' not found");
         return;
     }
 

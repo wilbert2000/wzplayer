@@ -21,11 +21,11 @@ public:
     explicit TMenuOSD(TMainWindow* mw);
 protected:
     virtual void enableActions();
-	virtual void onAboutToShow();
+    virtual void onAboutToShow();
 private:
     TActionGroup* group;
-	TAction* showFilenameAct;
-	TAction* showTimeAct;
+    TAction* showFilenameAct;
+    TAction* showTimeAct;
 };
 
 TMenuOSD::TMenuOSD(TMainWindow* mw)
@@ -36,7 +36,7 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
 
     addSeparator();
     group = new TActionGroup(this, "osd");
-	// Always enabled
+    // Always enabled
     new TActionGroupItem(this, group, "osd_none", tr("Subtitles onl&y"),
         Settings::TPreferences::None, true, false, Qt::SHIFT | Qt::Key_O);
     new TActionGroupItem(this, group, "osd_seek", tr("Volume + &Seek"),
@@ -45,17 +45,17 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
         Settings::TPreferences::SeekTimer, true, false, Qt::ALT | Qt::Key_O);
     new TActionGroupItem(this, group, "osd_total", tr("Volume + Seek + Timer + T&otal time"),
         Settings::TPreferences::SeekTimerTotal, true, false, Qt::META | Qt::Key_O);
-	group->setChecked(pref->osd_level);
+    group->setChecked(pref->osd_level);
     connect(group, SIGNAL(activated(int)), player, SLOT(changeOSDLevel(int)));
     connect(player, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
 
-	addSeparator();
+    addSeparator();
     a = new TAction(this, "inc_osd_scale", tr("Size &+"), "", QKeySequence(")"));
     connect(a, SIGNAL(triggered()), player, SLOT(incOSDScale()));
     a = new TAction(this, "dec_osd_scale", tr("Size &-"), "", QKeySequence("("));
     connect(a, SIGNAL(triggered()), player, SLOT(decOSDScale()));
 
-	addSeparator();
+    addSeparator();
     showFilenameAct = new TAction(this, "show_filename", tr("Show filename on OSD"));
     connect(showFilenameAct, SIGNAL(triggered()), player, SLOT(showFilenameOnOSD()));
 
@@ -68,12 +68,12 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
 void TMenuOSD::enableActions() {
 
     bool enabled = player->statePOP() && player->hasVideo();
-	showFilenameAct->setEnabled(enabled);
-	showTimeAct->setEnabled(enabled);
+    showFilenameAct->setEnabled(enabled);
+    showTimeAct->setEnabled(enabled);
 }
 
 void TMenuOSD::onAboutToShow() {
-	group->setChecked((int) pref->osd_level);
+    group->setChecked((int) pref->osd_level);
 }
 
 static QString stayOnTopToIconString(int stay_on_top) {
@@ -108,7 +108,7 @@ TMenuStayOnTop::TMenuStayOnTop(TMainWindow* mw) :
         Settings::TPreferences::AlwaysOnTop, true, true, Qt::CTRL | Qt::Key_T);
     new TActionGroupItem(this, group, "stay_on_top_playing", tr("While &playing"),
         Settings::TPreferences::WhilePlayingOnTop, true, true, Qt::ALT | Qt::Key_T);
-	group->setChecked((int) pref->stay_on_top);
+    group->setChecked((int) pref->stay_on_top);
     connect(group , SIGNAL(activated(int)), main_window, SLOT(changeStayOnTop(int)));
     connect(main_window , SIGNAL(stayOnTopChanged(int)), group, SLOT(setChecked(int)));
 
@@ -133,7 +133,7 @@ void TMenuStayOnTop::onTriggered(QAction* action) {
 }
 
 void TMenuStayOnTop::onAboutToShow() {
-	group->setChecked((int) pref->stay_on_top);
+    group->setChecked((int) pref->stay_on_top);
 }
 
 TMenuWindow::TMenuWindow(TMainWindow* mw,
@@ -142,38 +142,38 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
                          QWidget* logWindow)
     : TMenu(mw, mw, "window_menu", tr("&Window"), "noicon") {
 
-	// OSD
+    // OSD
     addMenu(new TMenuOSD(main_window));
-	// Toolbars
-	addMenu(toolBarMenu);
-	// Ontop submenu
+    // Toolbars
+    addMenu(toolBarMenu);
+    // Ontop submenu
     addMenu(new TMenuStayOnTop(main_window));
 
-	addSeparator();
+    addSeparator();
     // Show properties
     addAction(main_window->findChild<TAction*>("view_properties"));
 
     // Show playlist
     TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."),
                              "playlist", Qt::Key_P);
-	a->setCheckable(true);
+    a->setCheckable(true);
     main_window->addAction(a);
     connect(a, SIGNAL(triggered(bool)),
             main_window, SLOT(showPlaylist(bool)));
     connect(playlist, SIGNAL(visibilityChanged(bool)),
             a, SLOT(setChecked(bool)));
 
-	// Show log
+    // Show log
     a = new TAction(this, "show_log", tr("View &log..."), "log",
                     QKeySequence("Ctrl+L"));
-	a->setCheckable(true);
+    a->setCheckable(true);
     main_window->addAction(a);
     connect(a, SIGNAL(triggered(bool)), main_window, SLOT(showLog(bool)));
     connect(logWindow, SIGNAL(visibilityChanged(bool)),
             a, SLOT(setChecked(bool)));
 
-	// Preferences
-	addSeparator();
+    // Preferences
+    addSeparator();
     a = new TAction(this, "show_config", tr("Open &configuration folder..."));
     main_window->addAction(a);
     connect(a, SIGNAL(triggered()), main_window, SLOT(showConfigFolder()));

@@ -34,7 +34,7 @@ namespace Process {
 
 class TMPlayerProcess : public TPlayerProcess {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TMPlayerProcess(QObject* parent, TMediaData* mdata);

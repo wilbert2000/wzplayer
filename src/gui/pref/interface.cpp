@@ -47,12 +47,12 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
 
     // User
     QDir icon_dir = Settings::TPaths::configPath() + "/themes";
-    logger()->debug("TInterface: user icon dir: " + icon_dir.absolutePath());
+    WZDEBUG("user icon dir '" + icon_dir.absolutePath() + "'");
     QStringList iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     // Global
     icon_dir = Settings::TPaths::themesPath();
-    logger()->debug("TInterface: global icon dir: " + icon_dir.absolutePath());
+    WZDEBUG("global icon dir '" + icon_dir.absolutePath() + "'");
     iconsets = icon_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     for (int n = 0; n < iconsets.count(); n++) {
         if (iconset_combo->findText(iconsets[n]) == -1) {
@@ -151,7 +151,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
     if (pref->language != language()) {
         pref->language = language();
         language_changed = true;
-        logger()->debug("getData: chosen language '%1'", pref->language);
     }
     if (pref->iconset != iconSet()) {
         pref->iconset = iconSet();
@@ -177,13 +176,11 @@ void TInterface::getData(Settings::TPreferences* pref) {
     if (pref->history_recents.maxItems() != recentsMaxItems()) {
         pref->history_recents.setMaxItems(recentsMaxItems());
         recents_changed = true;
-        logger()->debug("getData: need restart, history max items changed");
     }
 
     if (pref->history_urls.maxItems() != urlMaxItems()) {
         pref->history_urls.setMaxItems(urlMaxItems());
         url_max_changed = true;
-        logger()->debug("getData: need restart, urls max items changed");
     }
 
     pref->save_dirs = rememberDirs();

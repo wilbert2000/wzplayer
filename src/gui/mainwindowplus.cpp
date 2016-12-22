@@ -187,7 +187,7 @@ void TMainWindowPlus::switchToTray() {
 }
 
 void TMainWindowPlus::closeWindow() {
-    logger()->debug("closeWindow");
+    WZDEBUG("");
 
     if (tray->isVisible()) {
         switchToTray();
@@ -197,14 +197,14 @@ void TMainWindowPlus::closeWindow() {
 }
 
 void TMainWindowPlus::quit() {
-    logger()->debug("quit");
+    WZDEBUG("");
 
     // Bypass switch to tray
     TMainWindow::closeWindow();
 }
 
 void TMainWindowPlus::saveConfig() {
-    logger()->debug("saveConfig");
+    WZDEBUG("");
 
     TMainWindow::saveConfig();
 
@@ -215,7 +215,7 @@ void TMainWindowPlus::saveConfig() {
 }
 
 void TMainWindowPlus::loadConfig() {
-    logger()->debug("loadConfig");
+    WZDEBUG("");
 
     TMainWindow::loadConfig();
 
@@ -232,7 +232,7 @@ void TMainWindowPlus::loadConfig() {
 }
 
 void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
-    logger()->debug("trayIconActivated: %1", reason);
+    WZDEBUG(QString::number(reason));
 
 	updateShowAllAct();
 
@@ -276,7 +276,7 @@ void TMainWindowPlus::showAll(bool b) {
 }
 
 void TMainWindowPlus::onMediaInfoChanged() {
-    logger()->debug("onMediaInfoChanged");
+    WZDEBUG("");
 
     TMainWindow::onMediaInfoChanged();
     tray->setToolTip(windowTitle());
@@ -288,7 +288,7 @@ void TMainWindowPlus::onOptimizeSizeTimeout() {
     if (QApplication::mouseButtons()) {
         optimizeSizeTimer->start();
     } else {
-        logger()->debug("onOptimizeSizeTimeout");
+        WZDEBUG("");
         saved_size = 0;
         if (reqOptSize) {
             reqOptSize = false;
@@ -300,43 +300,39 @@ void TMainWindowPlus::onOptimizeSizeTimeout() {
 void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
 
     if (pref->fullscreen || switching_fullscreen || !pref->resize_on_load) {
-        logger()->debug("onDockVisibilityChanged: visible %1, canceling resize",
-                        visible);
+        WZDEBUG("visible " + QString::number(visible) + ", canceling resize");
         reqOptSize = false;
         saved_size = 0;
         return;
     }
 
     if (reqOptSize) {
-        logger()->debug(QString("onDockVisibilityChanged: req, visible %1,"
-                                " size %2, saved size %3")
-                        .arg(visible).arg(pref->size_factor).arg(saved_size));
+        WZDEBUG(QString("req, visible %1, size %2, saved size %3")
+                .arg(visible).arg(pref->size_factor).arg(saved_size));
         // When showing dock restore saved size
         if (visible && saved_size != 0) {
             pref->size_factor = saved_size;
         }
     } else if (playlistdock->isFloating()) {
-        logger()->debug(QString("onDockVisibilityChanged: floating, visible %1,"
-                                " size %2")
-                        .arg(visible).arg(pref->size_factor));
+        WZDEBUG(QString("floating, visible %1, size %2")
+                .arg(visible).arg(pref->size_factor));
         if (visible) {
             TDesktop::keepInsideDesktop(playlistdock);
         }
     } else {
         if (visible){
             if (saved_size == 0) {
-                logger()->debug("onDockVisibilityChanged: show, size %1,"
-                                " no saved size", pref->size_factor);
+                WZDEBUG("show, size " + QString::number(pref->size_factor)
+                        + ", no saved size");
             } else {
-                logger()->debug(QString("onDockVisibilityChanged: show, size"
-                                        " %1, restoring saved size %2")
-                                .arg(pref->size_factor).arg(saved_size));
+                WZDEBUG(QString("onDockVisibilityChanged: show, size"
+                                " %1, restoring saved size %2")
+                        .arg(pref->size_factor).arg(saved_size));
                 pref->size_factor = saved_size;
                 reqOptSize = true;
             }
         } else {
-            logger()->debug("onDockVisibilityChanged: hide, saving size %1",
-                            pref->size_factor);
+            WZDEBUG("hide, saving size " + QString::number(pref->size_factor));
             saved_size = pref->size_factor;
             reqOptSize = true;
         }
@@ -344,21 +340,21 @@ void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
 
     // Post optimizeSizeFactor
     if (reqOptSize) {
-        logger()->debug("onDockVisibilityChanged: posting optimizeSizeFactor");
+        WZDEBUG("posting optimizeSizeFactor");
         optimizeSizeTimer->start();
     }
 }
 
 void TMainWindowPlus::showPlaylist(bool visible) {
-    logger()->debug("showPlaylist: visible %1", visible);
+    WZDEBUG("visible " + QString::number(visible));
 
     restore_playlist = visible && playlistdock->isFloating();
 
     if (pref->resize_on_load
         && !pref->fullscreen
         && !playlistdock->isFloating()) {
-        logger()->debug("showPlaylist: saving size %1, requesting optimize",
-                        pref->size_factor);
+        WZDEBUG("saving size " + QString::number(pref->size_factor)
+                + ", requesting optimize");
         saved_size = pref->size_factor;
         reqOptSize = true;
     } else {

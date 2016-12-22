@@ -143,14 +143,19 @@ namespace Log4Qt
 		QString pattern;
 		
 		pattern += QLatin1String("%d{") +  mDateFormat + QLatin1String("}");
-		if (mThreadPrinting)
+        if (mThreadPrinting) {
 			pattern += QLatin1String(" [%t]");
+        }
 		pattern += QLatin1String(" %-5p");
-		if (mCategoryPrefixing)
-			pattern += QLatin1String(" %c");
-		if (mContextPrinting)
-			pattern += QLatin1String(" %x");
-		pattern += QLatin1String(" - %m%n");
+        if (mCategoryPrefixing) {
+            pattern += QLatin1String(" %c");
+        }
+        if (mContextPrinting) {
+            // pattern += QLatin1String(" %x");
+            pattern += QLatin1String(".%x");
+        }
+        // pattern += QLatin1String(" - %m%n");
+        pattern += QLatin1String("%m%n");
 	
 		delete mpPatternFormatter;
 		mpPatternFormatter = new PatternFormatter(pattern);

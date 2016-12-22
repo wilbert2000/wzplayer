@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QDir>
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "iconprovider.h"
 #include "helper.h"
 #include "config.h"
@@ -164,8 +164,8 @@ void TPlaylistWidgetItem::setStateIcon() {
 }
 
 void TPlaylistWidgetItem::setState(TPlaylistItemState state) {
-    logger()->debug("setState: '%1' to %2", filename(),
-                    TPlaylistItem::playlistItemState(state));
+    WZDEBUG("'" + filename() + "' to "
+            + TPlaylistItem::playlistItemState(state));
 
     playlistItem.setState(state);
     setStateIcon();
@@ -202,8 +202,8 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
 void TPlaylistWidgetItem::setModified(bool modified,
                                       bool recurse,
                                       bool markParents) {
-    logger()->debug("setModified: set modified to %1 for '%2'",
-                    modified, filename());
+    WZDEBUG(QString("set modified to %1 for '%2'")
+            .arg(modified).arg(filename()));
 
     mModified = modified;
     setNameText(true);

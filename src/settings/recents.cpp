@@ -39,8 +39,6 @@ void TRecents::setMaxItems(int n_items) {
 }
 
 void TRecents::addItem(QString s, const QString& title) {
-    Log4Qt::Logger::logger("Settings::TRecents")->debug(
-        "addItem: '" + s + "' '" + title + "'");
 
 	if (!title.isEmpty()) {
 		s += "|title]=" + title;

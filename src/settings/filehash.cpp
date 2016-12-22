@@ -30,8 +30,8 @@ QString TFileHash::calculateHash(const QString& filename) {
 
 	QFile file(filename);
 	if (!file.exists()) {
-        Log4Qt::Logger::logger("TFileHash")->warn(
-            "OSParser:calculateHash: error hashing file. File doesn't exist.");
+        Log4Qt::Logger::logger("TFileHash")->error(
+            "calculateHash error hashing file does not exist");
 		return QString();
 	}
 

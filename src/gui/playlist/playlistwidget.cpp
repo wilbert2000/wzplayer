@@ -12,6 +12,7 @@
 #include "images.h"
 #include "iconprovider.h"
 #include "gui/msg.h"
+#include "wzdebug.h"
 
 
 namespace Gui {
@@ -269,7 +270,7 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
 
 void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item,
                                      TPlaylistItemState state) {
-    logger()->debug("setPlayingItem");
+    WZDEBUG("");
 
     bool setCurrent = true;
     if (playing_item) {
@@ -415,7 +416,7 @@ TPlaylistWidgetItem* TPlaylistWidget::findPreviousPlayedTime(
 }
 
 void TPlaylistWidget::dropEvent(QDropEvent *e) {
-    logger()->debug("dropEvent");
+    WZDEBUG("");
 
     QTreeWidgetItem* current = currentItem();
     QList<QTreeWidgetItem*>	selection = selectedItems();
@@ -485,7 +486,6 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
 void TPlaylistWidget::resizeRows() {
 
     gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
-    logger()->debug("resizeRows: width name %1", gNameColumnWidth);
     resizeRows(root(), gRootNodeLevel);
 }
 
@@ -498,8 +498,7 @@ void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 }
 
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
-    logger()->debug("onItemExpanded: '%1'",
-                    w->text(TPlaylistWidgetItem::COL_NAME));
+    WZDEBUG("'" + w->text(TPlaylistWidgetItem::COL_NAME) + "'");
 
     TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
     if (i == 0) {
@@ -534,7 +533,7 @@ TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
 
 TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
                                           TPlaylistWidgetItem* target) {
-    logger()->debug("add");
+    WZDEBUG("");
 
     // Save current sort settings
     int sortIndicator = header()->sortIndicatorSection();
@@ -570,7 +569,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     if (parent == 0 || (parent == root() && parent->childCount() == 0)) {
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
-            logger()->debug("add: removing single folder in root");
+            WZDEBUG("removing single folder in root");
             TPlaylistWidgetItem* old = item;
             item = static_cast<TPlaylistWidgetItem*>(item->takeChild(0));
             delete old;

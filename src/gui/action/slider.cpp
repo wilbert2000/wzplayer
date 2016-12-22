@@ -33,14 +33,14 @@ namespace Action {
 
 TSlider::TSlider(QWidget* parent) : QSlider(parent) {
 
-	QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
-	if (toolbar) {
-		setOrientation(toolbar->orientation());
-		connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
-				this, SLOT(setOrientation(Qt::Orientation)));
-	} else {
-		setOrientation(Qt::Horizontal);
-	}
+    QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
+    if (toolbar) {
+        setOrientation(toolbar->orientation());
+        connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
+                this, SLOT(setOrientation(Qt::Orientation)));
+    } else {
+        setOrientation(Qt::Horizontal);
+    }
 }
 
 TSlider::~TSlider() {
@@ -49,23 +49,23 @@ TSlider::~TSlider() {
 // Copied from qslider.cpp and modified to make it compile
 int TSlider::pixelPosToRangeValue(int pos) const
 {
-	QStyleOptionSlider opt;
-	initStyleOption(&opt);
-	QRect gr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
-	QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-	int sliderMin, sliderMax, sliderLength;
+    QStyleOptionSlider opt;
+    initStyleOption(&opt);
+    QRect gr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
+    QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+    int sliderMin, sliderMax, sliderLength;
 
-	if (orientation() == Qt::Horizontal) {
-		sliderLength = sr.width();
-		sliderMin = gr.x();
-		sliderMax = gr.right() - sliderLength + 1;
-	} else {
-		sliderLength = sr.height();
-		sliderMin = gr.y();
-		sliderMax = gr.bottom() - sliderLength + 1;
-	}
-	return QStyle::sliderValueFromPosition(minimum(), maximum(), pos - sliderMin,
-										   sliderMax - sliderMin, opt.upsideDown);
+    if (orientation() == Qt::Horizontal) {
+        sliderLength = sr.width();
+        sliderMin = gr.x();
+        sliderMax = gr.right() - sliderLength + 1;
+    } else {
+        sliderLength = sr.height();
+        sliderMin = gr.y();
+        sliderMax = gr.bottom() - sliderLength + 1;
+    }
+    return QStyle::sliderValueFromPosition(minimum(), maximum(), pos - sliderMin,
+                                           sliderMax - sliderMin, opt.upsideDown);
 }
 
 // Based on code from qslider.cpp
@@ -73,21 +73,21 @@ void TSlider::mousePressEvent(QMouseEvent* event) {
 
     // Change QSlider PgUp/PgDown behaviour to directly jumping to clicked pos
     if (event->button() == Qt::LeftButton) {
-		QStyleOptionSlider opt;
-		initStyleOption(&opt);
-		const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-		if (sliderRect.contains(event->pos())) {
-			QSlider::mousePressEvent(event);
-		} else {
-			event->accept();
-			const QPoint center = sliderRect.center() - sliderRect.topLeft();
-			setSliderPosition(pixelPosToRangeValue(pick(event->pos() - center)));
-			triggerAction(SliderMove);
-			setRepeatAction(SliderNoAction);
-		}
-	} else {
-		QSlider::mousePressEvent(event);
-	}
+        QStyleOptionSlider opt;
+        initStyleOption(&opt);
+        const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+        if (sliderRect.contains(event->pos())) {
+            QSlider::mousePressEvent(event);
+        } else {
+            event->accept();
+            const QPoint center = sliderRect.center() - sliderRect.topLeft();
+            setSliderPosition(pixelPosToRangeValue(pick(event->pos() - center)));
+            triggerAction(SliderMove);
+            setRepeatAction(SliderNoAction);
+        }
+    } else {
+        QSlider::mousePressEvent(event);
+    }
 }
 
 } // namespace Action

@@ -35,7 +35,7 @@
 ** version 2 as published by the Free Software Foundation and appearing in the
 ** file GPL.txt included in the packaging of this file.
 **
-** Notes :	Parts of the project are derivative work of Trolltech's QSA library
+** Notes : Parts of the project are derivative work of Trolltech's QSA library
 ** or Trolltech's Qt4 framework but, unless notified, every single line of code
 ** is the work of the Edyuk team or a contributor. 
 **
@@ -72,34 +72,34 @@ TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
 
     setWindowTitle(tr("Modify shortcuts"));
 
-	QVBoxLayout *vbox = new QVBoxLayout(this);
+    QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setSpacing(10);
 
-	list = new QListWidget(this);
-	connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(rowChanged(int)));
-	vbox->addWidget(list);
+    list = new QListWidget(this);
+    connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(rowChanged(int)));
+    vbox->addWidget(list);
 
-	QHBoxLayout *hbox = new QHBoxLayout;
-	addItem = new QPushButton(Images::icon("plus"), "", this);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    addItem = new QPushButton(Images::icon("plus"), "", this);
     addItem->setToolTip(tr("Add shortcut to list"));
-	connect(addItem, SIGNAL(clicked()), this, SLOT(addItemClicked()));
+    connect(addItem, SIGNAL(clicked()), this, SLOT(addItemClicked()));
 
-	removeItem = new QPushButton(Images::icon("minus"), "", this);
+    removeItem = new QPushButton(Images::icon("minus"), "", this);
     removeItem->setToolTip(tr("Remove shortcut from list"));
-	connect(removeItem, SIGNAL(clicked()), this, SLOT(removeItemClicked()));
+    connect(removeItem, SIGNAL(clicked()), this, SLOT(removeItemClicked()));
 
-	hbox->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
-	hbox->addWidget(addItem);
-	hbox->addWidget(removeItem);
+    hbox->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
+    hbox->addWidget(addItem);
+    hbox->addWidget(removeItem);
 
-	vbox->addLayout(hbox);
+    vbox->addLayout(hbox);
 
-	QLabel *l = new QLabel(this);
-	l->setText(tr("Press the key combination you want to assign"));
-	vbox->addWidget(l);
+    QLabel *l = new QLabel(this);
+    l->setText(tr("Press the key combination you want to assign"));
+    vbox->addWidget(l);
 
-	leKey = new QLineEdit(this);
-	vbox->addWidget(leKey);
+    leKey = new QLineEdit(this);
+    vbox->addWidget(leKey);
 
     assignedToLabel = new QLabel(this);
     assignedToLabel->setText(parent->findShortcutsAction(""));
@@ -113,22 +113,22 @@ TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
 
     QDialogButtonBox* buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok
         | QDialogButtonBox::Cancel | QDialogButtonBox::Reset);
-	QPushButton* clearbutton = buttonbox->button(QDialogButtonBox::Reset);
-	clearbutton->setText(tr("Clear"));
+    QPushButton* clearbutton = buttonbox->button(QDialogButtonBox::Reset);
+    clearbutton->setText(tr("Clear"));
 
-	QPushButton* captureButton = new QPushButton(tr("Capture"), this);
-	captureButton->setToolTip(tr("Capture keystrokes"));
-	captureButton->setCheckable(captureKeyboard());
-	captureButton->setChecked(captureKeyboard());
-	connect(captureButton, SIGNAL(toggled(bool)), 
+    QPushButton* captureButton = new QPushButton(tr("Capture"), this);
+    captureButton->setToolTip(tr("Capture keystrokes"));
+    captureButton->setCheckable(captureKeyboard());
+    captureButton->setChecked(captureKeyboard());
+    connect(captureButton, SIGNAL(toggled(bool)),
             this, SLOT(setCaptureKeyboard(bool)));
 
-	buttonbox->addButton(captureButton, QDialogButtonBox::ActionRole);
+    buttonbox->addButton(captureButton, QDialogButtonBox::ActionRole);
 
-	connect(buttonbox, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttonbox, SIGNAL(rejected()), this, SLOT(reject()));
-	connect(clearbutton, SIGNAL(clicked()), leKey, SLOT(clear()));
-	vbox->addWidget(buttonbox);
+    connect(buttonbox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonbox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(clearbutton, SIGNAL(clicked()), leKey, SLOT(clear()));
+    vbox->addWidget(buttonbox);
 }
 
 void TShortcutGetter::setCaptureKeyboard(bool b) { 
@@ -139,7 +139,6 @@ void TShortcutGetter::setCaptureKeyboard(bool b) {
 }
 
 void TShortcutGetter::rowChanged(int row) {
-    logger()->debug("rowChanged: %1", row);
 
     QString s = list->item(row)->text();
     leKey->setText(s);
@@ -147,7 +146,6 @@ void TShortcutGetter::rowChanged(int row) {
 }
 
 void TShortcutGetter::textChanged(const QString& text) {
-    logger()->debug("textChanged: '%1'", text);
 
     list->item(list->currentRow())->setText(text);
     assignedToLabel->setText(editor->findShortcutsAction(text));
@@ -161,36 +159,36 @@ void TShortcutGetter::addItemClicked() {
 
 void TShortcutGetter::removeItemClicked() {
 
-	if (list->count() > 1) {
+    if (list->count() > 1) {
         delete list->takeItem(list->currentRow());
-	} else {
-		list->setCurrentRow(0);
-		leKey->setText("");
-	}
+    } else {
+        list->setCurrentRow(0);
+        leKey->setText("");
+    }
 }
 
 QString TShortcutGetter::exec(const QString& s) {
 
     QStringList shortcuts = s.split(", ");
     foreach(const QString shortcut, shortcuts) {
-		list->addItem(shortcut.trimmed());
-	}
-	list->setCurrentRow(0);
+        list->addItem(shortcut.trimmed());
+    }
+    list->setCurrentRow(0);
 
-	bStop = false;
+    bStop = false;
 
-	if (QDialog::exec() == QDialog::Accepted) {
-		QStringList l;
-		for (int n = 0; n < list->count(); n++) {
-			QString shortcut = list->item(n)->text();
-			if (!shortcut.isEmpty()) {
-				l << shortcut;
-			}
-		}
+    if (QDialog::exec() == QDialog::Accepted) {
+        QStringList l;
+        for (int n = 0; n < list->count(); n++) {
+            QString shortcut = list->item(n)->text();
+            if (!shortcut.isEmpty()) {
+                l << shortcut;
+            }
+        }
         return l.join(", ");
-	}
+    }
 
-	return QString();
+    return QString();
 }
 
 static QString keyToString(int k) {

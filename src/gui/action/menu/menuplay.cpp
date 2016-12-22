@@ -220,9 +220,9 @@ private:
 TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     : TMenu(mw, mw, "speed_menu", tr("Spee&d"), "speed") {
 
-	group = new QActionGroup(this);
-	group->setExclusive(false);
-	group->setEnabled(false);
+    group = new QActionGroup(this);
+    group->setExclusive(false);
+    group->setEnabled(false);
 
 
     TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "",
@@ -250,31 +250,31 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(incSpeed10()));
 
-	addSeparator();
+    addSeparator();
     a = new TAction(this, "dec_speed_4", tr("Speed -&4%"), "",
                     Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(decSpeed4()));
     a = new TAction(this, "inc_speed_4", tr("&Speed +4%"), "",
                     Qt::ALT | Qt::CTRL | Qt::Key_Z);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(incSpeed4()));
 
-	addSeparator();
+    addSeparator();
     a = new TAction(this, "dec_speed_1", tr("Speed -&1%"), "",
                     Qt::SHIFT | Qt::META | Qt::Key_Z);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(decSpeed1()));
     a = new TAction(this, "inc_speed_1", tr("S&peed +1%"), "",
                     Qt::CTRL | Qt::META | Qt::Key_Z);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(incSpeed1()));
 
     addActionsTo(main_window);
 }
 
 void TMenuPlaySpeed::enableActions() {
-	// Using mset, so useless to set if stopped
+    // Using mset, so useless to set if stopped
     group->setEnabled(player->statePOP());
 }
 
@@ -286,7 +286,7 @@ TMenuPlay::TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist)
     addAction(playlist->findChild<TAction*>("play_or_pause"));
     addAction(playlist->findChild<TAction*>("stop"));
 
-	addSeparator();
+    addSeparator();
 
     // Forward menu
     QMenu* forward_menu = new TMenuSeekForward(this, main_window, playlist);

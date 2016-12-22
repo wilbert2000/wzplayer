@@ -34,110 +34,110 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TAudio::TAudio(QWidget* parent, const Player::Info::InfoList& aol)
-	: TWidget(parent, 0)
-	, ao_list(aol),
-	  player_id(pref->player_id),
-	  mplayer_ao(pref->mplayer_ao),
-	  mpv_ao(pref->mpv_ao)  {
+    : TWidget(parent, 0)
+    , ao_list(aol),
+      player_id(pref->player_id),
+      mplayer_ao(pref->mplayer_ao),
+      mpv_ao(pref->mpv_ao)  {
 
-	setupUi(this);
+    setupUi(this);
 
 #if USE_ALSA_DEVICES
-	alsa_devices = TDeviceInfo::alsaDevices();
+    alsa_devices = TDeviceInfo::alsaDevices();
 #endif
 
-	// Channels combo
-	channels_combo->addItem("2", TMediaSettings::ChStereo);
-	channels_combo->addItem("4", TMediaSettings::ChSurround);
-	channels_combo->addItem("6", TMediaSettings::ChFull51);
-	channels_combo->addItem("7", TMediaSettings::ChFull61);
-	channels_combo->addItem("8", TMediaSettings::ChFull71);
+    // Channels combo
+    channels_combo->addItem("2", TMediaSettings::ChStereo);
+    channels_combo->addItem("4", TMediaSettings::ChSurround);
+    channels_combo->addItem("6", TMediaSettings::ChFull51);
+    channels_combo->addItem("7", TMediaSettings::ChFull61);
+    channels_combo->addItem("8", TMediaSettings::ChFull71);
 
-	connect(ao_combo, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(onAOComboChanged(int)));
+    connect(ao_combo, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(onAOComboChanged(int)));
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TAudio::~TAudio() {
 }
 
 QString TAudio::sectionName() {
-	return tr("Audio");
+    return tr("Audio");
 }
 
 QPixmap TAudio::sectionIcon() {
-	return Images::icon("speaker", icon_size);
+    return Images::icon("speaker", icon_size);
 }
 
 void TAudio::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	icon_label->setPixmap(Images::icon("speaker"));
+    icon_label->setPixmap(Images::icon("speaker"));
 
-	updateDriverCombo(player_id, false);
+    updateDriverCombo(player_id, false);
 
-	channels_combo->setItemText(0, tr("2 (Stereo)"));
-	channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
-	channels_combo->setItemText(2, tr("6 (5.1 Surround)"));
-	channels_combo->setItemText(3, tr("7 (6.1 Surround)"));
-	channels_combo->setItemText(4, tr("8 (7.1 Surround)"));
+    channels_combo->setItemText(0, tr("2 (Stereo)"));
+    channels_combo->setItemText(1, tr("4 (4.0 Surround)"));
+    channels_combo->setItemText(2, tr("6 (5.1 Surround)"));
+    channels_combo->setItemText(3, tr("7 (6.1 Surround)"));
+    channels_combo->setItemText(4, tr("8 (7.1 Surround)"));
 
-	createHelp();
+    createHelp();
 }
 
 void TAudio::setData(TPreferences* pref) {
 
-	player_id = pref->player_id;
-	mplayer_ao = pref->mplayer_ao;
-	mpv_ao = pref->mpv_ao;
-	setAO(pref->ao);
+    player_id = pref->player_id;
+    mplayer_ao = pref->mplayer_ao;
+    mpv_ao = pref->mpv_ao;
+    setAO(pref->ao);
 
-	setAudioChannels(pref->initial_audio_channels);
-	setUseAudioEqualizer(pref->use_audio_equalizer);
-	setAc3DTSPassthrough(pref->use_hwac3);
-	setScaleTempoFilter(pref->use_scaletempo);
+    setAudioChannels(pref->initial_audio_channels);
+    setUseAudioEqualizer(pref->use_audio_equalizer);
+    setAc3DTSPassthrough(pref->use_hwac3);
+    setScaleTempoFilter(pref->use_scaletempo);
 
-	// Volume
+    // Volume
     setInitialVolNorm(pref->initial_volnorm);
 
-	// Synchronization
-	setAutoSyncActivated(pref->autosync);
-	setAutoSyncFactor(pref->autosync_factor);
+    // Synchronization
+    setAutoSyncActivated(pref->autosync);
+    setAutoSyncFactor(pref->autosync_factor);
 
-	setMcActivated(pref->use_mc);
-	setMc(pref->mc_value);
+    setMcActivated(pref->use_mc);
+    setMc(pref->mc_value);
 
-	// Language
-	setAudioLang(pref->audio_lang);
+    // Language
+    setAudioLang(pref->audio_lang);
 }
 
 void TAudio::getData(TPreferences* pref) {
 
-	requires_restart = false;
+    requires_restart = false;
 
     restartIfStringChanged(pref->ao, AO(), "ao");
-	if (pref->isMPlayer()) {
-		pref->mplayer_ao = pref->ao;
-		pref->mpv_ao = mpv_ao;
-	} else {
-		pref->mplayer_ao = mplayer_ao;
-		pref->mpv_ao = pref->ao;
-	}
+    if (pref->isMPlayer()) {
+        pref->mplayer_ao = pref->ao;
+        pref->mpv_ao = mpv_ao;
+    } else {
+        pref->mplayer_ao = mplayer_ao;
+        pref->mpv_ao = pref->ao;
+    }
 
     restartIfBoolChanged(pref->use_audio_equalizer, useAudioEqualizer(),
                          "use_audio_equalizer");
     restartIfBoolChanged(pref->use_hwac3, Ac3DTSPassthrough(), "use_hwac3");
-	pref->initial_audio_channels = audioChannels();
-	TPreferences::TOptionState scale = scaleTempoFilter();
-	if (scale != pref->use_scaletempo) {
+    pref->initial_audio_channels = audioChannels();
+    TPreferences::TOptionState scale = scaleTempoFilter();
+    if (scale != pref->use_scaletempo) {
         logger()->debug("getData: need restart, use_scaletemp changed from %1"
                         " to %2", QString::number(scale),
                         QString::number(pref->use_scaletempo));
         pref->use_scaletempo = scale;
-		requires_restart = true;
-	}
+        requires_restart = true;
+    }
 
     pref->initial_volnorm = initialVolNorm();
 
@@ -148,233 +148,233 @@ void TAudio::getData(TPreferences* pref) {
     restartIfBoolChanged(pref->use_mc, mcActivated(), "use_mc");
     restartIfDoubleChanged(pref->mc_value, mc(), "mc_value");
 
-	pref->audio_lang = audioLang();
+    pref->audio_lang = audioLang();
 }
 
 void TAudio::updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
-							   bool keep_current_drivers) {
+                               bool keep_current_drivers) {
 
 
-	this->player_id = player_id;
-	QString wanted_ao;
-	if (keep_current_drivers) {
-		wanted_ao = AO();
-	} else if (player_id == TPreferences::ID_MPLAYER) {
-		wanted_ao = mplayer_ao;
-	} else {
-		wanted_ao = mpv_ao;
-	}
-	ao_combo->clear();
-	ao_combo->addItem(tr("players default"), "");
+    this->player_id = player_id;
+    QString wanted_ao;
+    if (keep_current_drivers) {
+        wanted_ao = AO();
+    } else if (player_id == TPreferences::ID_MPLAYER) {
+        wanted_ao = mplayer_ao;
+    } else {
+        wanted_ao = mpv_ao;
+    }
+    ao_combo->clear();
+    ao_combo->addItem(tr("players default"), "");
 
-	QString ao;
-	for (int n = 0; n < ao_list.count(); n++) {
-		ao = ao_list[n].name();
-		ao_combo->addItem(ao, ao);
+    QString ao;
+    for (int n = 0; n < ao_list.count(); n++) {
+        ao = ao_list[n].name();
+        ao_combo->addItem(ao, ao);
 #if USE_ALSA_DEVICES
-		if ((ao == "alsa") && (!alsa_devices.isEmpty())) {
-			for (int n=0; n < alsa_devices.count(); n++) {
-				ao_combo->addItem("alsa (" + alsa_devices[n].ID().toString() + " - " + alsa_devices[n].desc() + ")", 
+        if ((ao == "alsa") && (!alsa_devices.isEmpty())) {
+            for (int n=0; n < alsa_devices.count(); n++) {
+                ao_combo->addItem("alsa (" + alsa_devices[n].ID().toString() + " - " + alsa_devices[n].desc() + ")",
                                    "alsa:device=hw=" + alsa_devices[n].ID().toString());
-			}
-		}
+            }
+        }
 #endif
-	}
+    }
 
-	ao_combo->addItem(tr("User defined..."), "user_defined");
-	// Set selected AO
-	setAO(wanted_ao);
+    ao_combo->addItem(tr("User defined..."), "user_defined");
+    // Set selected AO
+    setAO(wanted_ao);
 }
 
 void TAudio::setAO(const QString& ao_driver) {
 
-	int idx = ao_combo->findData(ao_driver);
-	if (idx >= 0) {
-		ao_combo->setCurrentIndex(idx);
-	} else {
-		ao_combo->setCurrentIndex(ao_combo->findData("user_defined"));
-		ao_user_defined_edit->setText(ao_driver);
-	}
+    int idx = ao_combo->findData(ao_driver);
+    if (idx >= 0) {
+        ao_combo->setCurrentIndex(idx);
+    } else {
+        ao_combo->setCurrentIndex(ao_combo->findData("user_defined"));
+        ao_user_defined_edit->setText(ao_driver);
+    }
 }
 
 QString TAudio::AO() {
-	
-	QString ao = ao_combo->itemData(ao_combo->currentIndex()).toString();
-	if (ao == "user_defined") {
-		ao = ao_user_defined_edit->text();
-	}
-	return ao;
+
+    QString ao = ao_combo->itemData(ao_combo->currentIndex()).toString();
+    if (ao == "user_defined") {
+        ao = ao_user_defined_edit->text();
+    }
+    return ao;
 }
 
 void TAudio::setAutoSyncFactor(int factor) {
-	autosync_spin->setValue(factor);
+    autosync_spin->setValue(factor);
 }
 
 int TAudio::autoSyncFactor() {
-	return autosync_spin->value();
+    return autosync_spin->value();
 }
 
 void TAudio::setAutoSyncActivated(bool b) {
-	autosync_check->setChecked(b);
+    autosync_check->setChecked(b);
 }
 
 bool TAudio::autoSyncActivated() {
-	return autosync_check->isChecked();
+    return autosync_check->isChecked();
 }
 
 void TAudio::setMc(double value) {
-	mc_spin->setValue(value);
+    mc_spin->setValue(value);
 }
 
 double TAudio::mc() {
-	return mc_spin->value();
+    return mc_spin->value();
 }
 
 void TAudio::setMcActivated(bool b) {
-	use_mc_check->setChecked(b);
+    use_mc_check->setChecked(b);
 }
 
 bool TAudio::mcActivated() {
-	return use_mc_check->isChecked();
+    return use_mc_check->isChecked();
 }
 
 void TAudio::setUseAudioEqualizer(bool b) {
-	audio_equalizer_check->setChecked(b);
+    audio_equalizer_check->setChecked(b);
 }
 
 bool TAudio::useAudioEqualizer() {
-	return audio_equalizer_check->isChecked();
+    return audio_equalizer_check->isChecked();
 }
 
 void TAudio::setAc3DTSPassthrough(bool b) {
-	hwac3_check->setChecked(b);
+    hwac3_check->setChecked(b);
 }
 
 bool TAudio::Ac3DTSPassthrough() {
-	return hwac3_check->isChecked();
+    return hwac3_check->isChecked();
 }
 
 void TAudio::setInitialVolNorm(bool b) {
-	volnorm_check->setChecked(b);
+    volnorm_check->setChecked(b);
 }
 
 bool TAudio::initialVolNorm() {
-	return volnorm_check->isChecked();
+    return volnorm_check->isChecked();
 }
 
 void TAudio::setAudioChannels(int ID) {
 
-	int i = channels_combo->findData(ID);
-	if (i < 0)
-		i = 0;
-	channels_combo->setCurrentIndex(i);
+    int i = channels_combo->findData(ID);
+    if (i < 0)
+        i = 0;
+    channels_combo->setCurrentIndex(i);
 }
 
 int TAudio::audioChannels() {
-	
-	int i = channels_combo->currentIndex();
-	if (i < 0)
-		i = 0;
-	return channels_combo->itemData(i).toInt();
+
+    int i = channels_combo->currentIndex();
+    if (i < 0)
+        i = 0;
+    return channels_combo->itemData(i).toInt();
 }
 
 void TAudio::setScaleTempoFilter(TPreferences::TOptionState value) {
-	scaletempo_combo->setState(value);
+    scaletempo_combo->setState(value);
 }
 
 TPreferences::TOptionState TAudio::scaleTempoFilter() {
-	return scaletempo_combo->state();
+    return scaletempo_combo->state();
 }
 
 void TAudio::setAudioLang(const QString& lang) {
-	language_edit->setText(lang);
+    language_edit->setText(lang);
 }
 
 QString TAudio::audioLang() {
-	return language_edit->text();
+    return language_edit->text();
 }
 
 
 void TAudio::onAOComboChanged(int idx) {
 
-	// Update VOs
-	if (idx >= 0) {
-		if (player_id == TPreferences::ID_MPLAYER) {
-			mplayer_ao = AO();
-		} else {
-			mpv_ao = AO();
-		}
-	}
+    // Update VOs
+    if (idx >= 0) {
+        if (player_id == TPreferences::ID_MPLAYER) {
+            mplayer_ao = AO();
+        } else {
+            mpv_ao = AO();
+        }
+    }
 
-	// Handle user defined VO
-	bool visible = ao_combo->itemData(idx).toString() == "user_defined";
-	ao_user_defined_edit->setVisible(visible);
-	ao_user_defined_edit->setFocus();
+    // Handle user defined VO
+    bool visible = ao_combo->itemData(idx).toString() == "user_defined";
+    ao_user_defined_edit->setVisible(visible);
+    ao_user_defined_edit->setFocus();
 }
 
 void TAudio::createHelp() {
 
-	clearHelp();
+    clearHelp();
 
-	// Audio tab
-	addSectionTitle(tr("Audio"));
+    // Audio tab
+    addSectionTitle(tr("Audio"));
 
-	setWhatsThis(ao_combo, tr("Audio output driver"),
-		tr("Select the audio output driver.") 
+    setWhatsThis(ao_combo, tr("Audio output driver"),
+        tr("Select the audio output driver.")
 #ifndef Q_OS_WIN
-		+ " " +
-		tr("%1 and %2 are the most commonly used drivers.")
+        + " " +
+        tr("%1 and %2 are the most commonly used drivers.")
            .arg("<b><i>pulse</i></b>").arg("<b><i>alsa</i></b>")
 #endif
-		+ " " +
+        + " " +
         tr("Select <b><i>players default</i></b> to let the player select the"
            " audio driver.")
-		);
+        );
 
-	setWhatsThis(channels_combo, tr("Channels"),
-		tr("Requests the number of playback channels. The player will "
-		   "asks the decoder to decode the audio into as many channels as "
-		   "specified. Then it is up to the decoder to fulfill the "
-		   "requirement. This is usually only important when playing "
-		   "videos with AC3 audio (like DVDs). In that case liba52 does "
-		   "the decoding by default and correctly downmixes the audio "
-		   "into the requested number of channels. "
-		   "<b>Note</b>: This option is honored by codecs (AC3 only), "
-		   "filters (surround) and audio output drivers (OSS at least)."));
+    setWhatsThis(channels_combo, tr("Channels"),
+        tr("Requests the number of playback channels. The player will "
+           "asks the decoder to decode the audio into as many channels as "
+           "specified. Then it is up to the decoder to fulfill the "
+           "requirement. This is usually only important when playing "
+           "videos with AC3 audio (like DVDs). In that case liba52 does "
+           "the decoding by default and correctly downmixes the audio "
+           "into the requested number of channels. "
+           "<b>Note</b>: This option is honored by codecs (AC3 only), "
+           "filters (surround) and audio output drivers (OSS at least)."));
 
-	setWhatsThis(hwac3_check, tr("AC3/DTS pass-through S/PDIF"),
-		tr("Uses hardware AC3 passthrough.") + "<br>" +
-		tr("<b>Note:</b> audio filters will be disabled when this "
-		   "option is enabled."));
+    setWhatsThis(hwac3_check, tr("AC3/DTS pass-through S/PDIF"),
+        tr("Uses hardware AC3 passthrough.") + "<br>" +
+        tr("<b>Note:</b> audio filters will be disabled when this "
+           "option is enabled."));
 
-	setWhatsThis(audio_equalizer_check, tr("Enable the audio equalizer"),
-		tr("Check this option if you want to use the audio equalizer."));
+    setWhatsThis(audio_equalizer_check, tr("Enable the audio equalizer"),
+        tr("Check this option if you want to use the audio equalizer."));
 
-	setWhatsThis(scaletempo_combo, tr("High speed playback without altering pitch"),
-		tr("Allows to change the playback speed without altering pitch. "
+    setWhatsThis(scaletempo_combo, tr("High speed playback without altering pitch"),
+        tr("Allows to change the playback speed without altering pitch. "
            "Requires at least MPlayer dev-SVN-r24924."));
 
-	setWhatsThis(volnorm_check, tr("Volume normalization by default"),
-		tr("Maximizes the volume without distorting the sound."));
+    setWhatsThis(volnorm_check, tr("Volume normalization by default"),
+        tr("Maximizes the volume without distorting the sound."));
 
-	setWhatsThis(autosync_check, tr("Audio/video auto synchronization"),
-		tr("Gradually adjusts the A/V sync based on audio delay "
+    setWhatsThis(autosync_check, tr("Audio/video auto synchronization"),
+        tr("Gradually adjusts the A/V sync based on audio delay "
            "measurements."));
 
-	setWhatsThis(mc_spin, tr("A-V sync correction"),
-		tr("Maximum A-V sync correction per frame (in seconds)"));
+    setWhatsThis(mc_spin, tr("A-V sync correction"),
+        tr("Maximum A-V sync correction per frame (in seconds)"));
 
-	setWhatsThis(language_edit, tr("Language"),
-		tr("Here you can select your preferred language for the audio streams. "
-		   "When media has multiple audio streams, WZPlayer will "
-		   "try to use your preferred language.<br>"
-		   "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
-		   "will select the audio track if it matches with <i>es</i>, "
-		   "<i>esp</i> or <i>spa</i>.") + "<br><br>"
-		+ tr("<b>Note:</b> WZPlayer will select the first matching track,"
-			 " which might not be the best track for your setup."
-			 " Normally the player will already select tracks in the language"
-			 " of your system and overriding it should not be needed."));
+    setWhatsThis(language_edit, tr("Language"),
+        tr("Here you can select your preferred language for the audio streams. "
+           "When media has multiple audio streams, WZPlayer will "
+           "try to use your preferred language.<br>"
+           "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
+           "will select the audio track if it matches with <i>es</i>, "
+           "<i>esp</i> or <i>spa</i>.") + "<br><br>"
+        + tr("<b>Note:</b> WZPlayer will select the first matching track,"
+             " which might not be the best track for your setup."
+             " Normally the player will already select tracks in the language"
+             " of your system and overriding it should not be needed."));
 }
 
 }} // namespace Gui::Pref

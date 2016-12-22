@@ -19,7 +19,7 @@ namespace Menu {
 
 class TMenuDisc : public TMenu {
 public:
-	explicit TMenuDisc(TMainWindow* parent);
+    explicit TMenuDisc(TMainWindow* parent);
 };
 
 TMenuDisc::TMenuDisc(TMainWindow* parent)

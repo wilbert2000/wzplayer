@@ -29,7 +29,8 @@ TURLHistory::~TURLHistory() {
 }
 
 void TURLHistory::addUrl(const QString& url) {
-    Log4Qt::Logger::logger("Settings::TURLHistory")->debug("addItem: " + url);
+    Log4Qt::Logger::logger("Settings::TURLHistory")->debug("addUrl '" + url
+                                                           + "'");
 
 	// Delete duplicates
 	QStringList::iterator iterator = begin();

@@ -20,7 +20,7 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
     // Put in group to enable/disable together, if we disable the menu users
     // cannot discover the menu because it won't open.
     group = new QActionGroup(this);
-	group->setExclusive(false);
+    group->setExclusive(false);
     group->setEnabled(false);
 
     TAction* a = new TAction(this, "clear_in_out_points",
@@ -31,7 +31,7 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
     addSeparator();
     a  = new TAction(this, "set_in_point", tr("Set &in point"), "",
                               QKeySequence("["));
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(setInPoint()));
 
     a = new TAction(this, "set_out_point", tr("Set &out point and repeat"), "",

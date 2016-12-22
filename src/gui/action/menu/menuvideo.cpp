@@ -26,19 +26,19 @@ public:
     explicit TMenuDeinterlace(TMainWindow* mw);
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-	virtual void onAboutToShow();
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    virtual void onAboutToShow();
 private:
     TActionGroup* group;
-	TAction* toggleDeinterlaceAct;
+    TAction* toggleDeinterlaceAct;
 };
 
 
 TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
     : TMenu(mw, mw, "deinterlace_menu", tr("&Deinterlace"), "deinterlace") {
 
-	group = new TActionGroup(this, "deinterlace");
-	group->setEnabled(false);
+    group = new TActionGroup(this, "deinterlace");
+    group->setEnabled(false);
     new TActionGroupItem(this, group, "deinterlace_none", tr("&None"), TMediaSettings::NoDeinterlace);
     new TActionGroupItem(this, group, "deinterlace_l5", tr("&Lowpass5"), TMediaSettings::L5);
     new TActionGroupItem(this, group, "deinterlace_yadif0", tr("&Yadif (normal)"), TMediaSettings::Yadif);
@@ -47,9 +47,9 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
     new TActionGroupItem(this, group, "deinterlace_kern", tr("&Kerndeint"), TMediaSettings::Kerndeint);
     group->setChecked(player->mset.current_deinterlacer);
     connect(group, SIGNAL(activated(int)), player, SLOT(changeDeinterlace(int)));
-	// No one else sets it
+    // No one else sets it
 
-	addSeparator();
+    addSeparator();
     toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", tr("Toggle deinterlacing"), "deinterlace", Qt::Key_I);
     toggleDeinterlaceAct->setCheckable(true);
     connect(toggleDeinterlaceAct, SIGNAL(triggered()), player, SLOT(toggleDeinterlace()));
@@ -59,15 +59,15 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
 
 void TMenuDeinterlace::enableActions() {
 
-	// Using mset, so useless to set if stopped or no video
+    // Using mset, so useless to set if stopped or no video
     bool enabled = player->statePOP() && player->hasVideo()
                    && player->videoFiltersEnabled();
-	group->setEnabled(enabled);
-	toggleDeinterlaceAct->setEnabled(enabled);
+    group->setEnabled(enabled);
+    toggleDeinterlaceAct->setEnabled(enabled);
 }
 
 void TMenuDeinterlace::onMediaSettingsChanged(TMediaSettings* mset) {
-	group->setChecked(mset->current_deinterlacer);
+    group->setChecked(mset->current_deinterlacer);
 }
 
 void TMenuDeinterlace::onAboutToShow() {
@@ -80,12 +80,12 @@ public:
     explicit TMenuTransform(TMainWindow* mw);
 protected:
     virtual void enableActions();
-	virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-	virtual void onAboutToShow();
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
+    virtual void onAboutToShow();
 private:
     TAction* flipAct;
     TAction* mirrorAct;
-	TActionGroup* group;
+    TActionGroup* group;
 };
 
 
@@ -101,8 +101,8 @@ TMenuTransform::TMenuTransform(TMainWindow* mw)
     connect(mirrorAct, SIGNAL(triggered(bool)), player, SLOT(toggleMirror(bool)));
 
     addSeparator();
-	group = new TActionGroup(this, "rotate");
-	group->setEnabled(false);
+    group = new TActionGroup(this, "rotate");
+    group->setEnabled(false);
     new TActionGroupItem(this, group, "rotate_none", tr("&No rotation"), 0);
     new TActionGroupItem(this, group, "rotate_90", trUtf8("&Rotate 90° clockwise"), 90, true, true);
     new TActionGroupItem(this, group, "rotate_270", trUtf8("Rotate 90° &counter-clockwise"), 270, true, true);
@@ -145,45 +145,45 @@ public:
 protected:
     virtual void enableActions();
 private:
-	QActionGroup* group;
+    QActionGroup* group;
 };
 
 
 TMenuZoomAndPan::TMenuZoomAndPan(TMainWindow* mw)
     : TMenu(mw, mw, "zoom_and_pan_menu", tr("&Zoom and pan"), "zoom_and_pan") {
 
-	group = new QActionGroup(this);
-	group->setExclusive(false);
-	group->setEnabled(false);
+    group = new QActionGroup(this);
+    group->setExclusive(false);
+    group->setEnabled(false);
 
-	// Zoom
+    // Zoom
     TAction* a = new TAction(this, "reset_zoom_and_pan",
                              tr("&Reset zoom and pan"), "", Qt::Key_5);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(resetZoomAndPan()));
 
     // Zoom
-	addSeparator();
+    addSeparator();
     a = new TAction(this, "dec_zoom", tr("Zoom &-"), "", Qt::Key_1);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(decZoom()));
     a = new TAction(this, "inc_zoom", tr("Zoom &+"), "", Qt::Key_9);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(incZoom()));
 
-	// Pan
-	addSeparator();
+    // Pan
+    addSeparator();
     a = new TAction(this, "move_left", tr("Move &left"), "", Qt::Key_4);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(panRight()));
     a = new TAction(this, "move_right", tr("Move &right"), "", Qt::Key_6);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(panLeft()));
     a = new TAction(this, "move_up", tr("Move &up"), "", Qt::Key_8);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(panDown()));
     a = new TAction(this, "move_down", tr("Move &down"), "", Qt::Key_2);
-	group->addAction(a);
+    group->addAction(a);
     connect(a, SIGNAL(triggered()), player, SLOT(panUp()));
 
     addActionsTo(main_window);
@@ -202,14 +202,14 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     fullscreenAct = new TAction(this, "fullscreen", tr("&Fullscreen"), "",
                                 Qt::Key_F);
     //fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
-	fullscreenAct->setCheckable(true);
+    fullscreenAct->setCheckable(true);
     connect(fullscreenAct, SIGNAL(triggered(bool)),
             main_window, SLOT(toggleFullscreen(bool)));
 
     exitFullscreenAct = new TAction(this, "exit_fullscreen",
                                     tr("Exit fullscreen"), "", Qt::Key_Escape,
                                     false);
-	exitFullscreenAct->setEnabled(false);
+    exitFullscreenAct->setEnabled(false);
     main_window->addAction(exitFullscreenAct);
     connect(exitFullscreenAct, SIGNAL(triggered()),
             main_window, SLOT(exitFullscreen()));
@@ -218,26 +218,26 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
             this, SLOT(onFullscreenChanged()),
             Qt::QueuedConnection);
 
-	// Aspect submenu
-	addSeparator();
+    // Aspect submenu
+    addSeparator();
     addMenu(new TMenuAspect(main_window));
-	// Size submenu
+    // Size submenu
     addMenu(new TMenuVideoSize(main_window, playerwindow));
-	// Zoom and pan submenu
+    // Zoom and pan submenu
     addMenu(new TMenuZoomAndPan(main_window));
 
-	// Equalizer
-	addSeparator();
+    // Equalizer
+    addSeparator();
     equalizerAct = new TAction(this, "video_equalizer", tr("&Equalizer"), "", QKeySequence("E"));
-	equalizerAct->setCheckable(true);
-	equalizerAct->setChecked(videoEqualizer->isVisible());
-	connect(equalizerAct, SIGNAL(triggered(bool)), videoEqualizer, SLOT(setVisible(bool)));
-	connect(videoEqualizer, SIGNAL(visibilityChanged(bool)), equalizerAct, SLOT(setChecked(bool)));
+    equalizerAct->setCheckable(true);
+    equalizerAct->setChecked(videoEqualizer->isVisible());
+    connect(equalizerAct, SIGNAL(triggered(bool)), videoEqualizer, SLOT(setVisible(bool)));
+    connect(videoEqualizer, SIGNAL(visibilityChanged(bool)), equalizerAct, SLOT(setChecked(bool)));
 
     resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", tr("Reset video equalizer"), "", QKeySequence("Shift+E"));
-	connect(resetVideoEqualizerAct, SIGNAL(triggered()), videoEqualizer, SLOT(reset()));
+    connect(resetVideoEqualizerAct, SIGNAL(triggered()), videoEqualizer, SLOT(reset()));
 
-	// Short cuts equalizer (not in menu)
+    // Short cuts equalizer (not in menu)
     decContrastAct = new TAction(this, "dec_contrast", tr("Dec contrast"), "", Qt::ALT | Qt::Key_1, false);
     main_window->addAction(decContrastAct);
     connect(decContrastAct, SIGNAL(triggered()), player, SLOT(decContrast()));
@@ -278,25 +278,25 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     main_window->addAction(incGammaAct);
     connect(incGammaAct, SIGNAL(triggered()), player, SLOT(incGamma()));
 
-	// Deinterlace submenu
-	addSeparator();
+    // Deinterlace submenu
+    addSeparator();
     addMenu(new TMenuDeinterlace(main_window));
     // Transform submenu
     addMenu(new TMenuTransform(main_window));
     // Video filter submenu
     addMenu(new TMenuVideoFilter(main_window));
 
-	// Stereo 3D
+    // Stereo 3D
     stereo3DAct = new TAction(this, "stereo_3d_filter", tr("Stereo &3D filter..."), "stereo3d");
     connect(stereo3DAct, SIGNAL(triggered()), main_window, SLOT(showStereo3dDialog()));
 
-	// Video tracks
-	addSeparator();
+    // Video tracks
+    addSeparator();
     addMenu(new TMenuVideoTracks(main_window));
 
-	// Screenshots
-	addSeparator();
-	// Single
+    // Screenshots
+    addSeparator();
+    // Single
     screenshotAct = new TAction(this, "screenshot", tr("S&creenshot"), "", Qt::Key_R);
     connect(screenshotAct, SIGNAL(triggered()), player, SLOT(screenshot()));
 
@@ -346,8 +346,8 @@ void TMenuVideo::enableActions() {
 
 void TMenuVideo::onFullscreenChanged() {
 
-	fullscreenAct->setChecked(pref->fullscreen);
-	exitFullscreenAct->setEnabled(pref->fullscreen);
+    fullscreenAct->setChecked(pref->fullscreen);
+    exitFullscreenAct->setEnabled(pref->fullscreen);
 }
 
 } // namespace Menu

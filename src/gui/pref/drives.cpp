@@ -40,15 +40,15 @@ bool isCDDevice(QString drive) {
 TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
     : TWidget(parent, f),
       debug(logger()) {
-	setupUi(this);
+    setupUi(this);
 
 #ifndef Q_OS_WIN
-	check_drives_button->hide();
+    check_drives_button->hide();
 #endif
 
-	updateDriveCombos();
+    updateDriveCombos();
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TDrives::~TDrives()
@@ -56,7 +56,7 @@ TDrives::~TDrives()
 }
 
 QString TDrives::sectionName() {
-	return tr("Drives");
+    return tr("Drives");
 }
 
 QPixmap TDrives::sectionIcon() {
@@ -65,130 +65,129 @@ QPixmap TDrives::sectionIcon() {
 
 
 void TDrives::retranslateStrings() {
-	retranslateUi(this);
+    retranslateUi(this);
 
-	cdrom_drive_icon->setPixmap(Images::icon("cdrom_drive"));
-	dvd_drive_icon->setPixmap(Images::icon("dvd_drive"));
-	bluray_drive_icon->setPixmap(Images::icon("bluray_drive"));
+    cdrom_drive_icon->setPixmap(Images::icon("cdrom_drive"));
+    dvd_drive_icon->setPixmap(Images::icon("dvd_drive"));
+    bluray_drive_icon->setPixmap(Images::icon("bluray_drive"));
 
-	createHelp();
+    createHelp();
 }
 
 void TDrives::updateDriveCombos(bool detect_cd_devices) {
     logger()->debug("updateDriveCombos: detect_cd_device " + detect_cd_devices);
 
-	// Save current values
-	QString current_dvd_device = dvdDevice();
-	QString current_cd_device = cdromDevice();
-	QString current_bluray_device = blurayDevice();
+    // Save current values
+    QString current_dvd_device = dvdDevice();
+    QString current_cd_device = cdromDevice();
+    QString current_bluray_device = blurayDevice();
 
-	dvd_device_combo->clear();
-	cdrom_device_combo->clear();
-	bluray_device_combo->clear();
+    dvd_device_combo->clear();
+    cdrom_device_combo->clear();
+    bluray_device_combo->clear();
 
-	// DVD device combo
-	// In windows, insert the drives letters
+    // DVD device combo
+    // In windows, insert the drives letters
 #if defined(Q_OS_WIN)
-	QFileInfoList list = QDir::drives();
-	for (int n = 0; n < list.size(); n++) {
-		QString s = list[n].filePath();
-		bool is_cd_device = true;
-		if (detect_cd_devices) is_cd_device = isCDDevice(s);
-		if (is_cd_device) {
-			if (s.endsWith("/")) s = s.remove(s.length()-1,1);
-			dvd_device_combo->addItem(s);
-			cdrom_device_combo->addItem(s);
-			bluray_device_combo->addItem(s);
-		}
-	}
+    QFileInfoList list = QDir::drives();
+    for (int n = 0; n < list.size(); n++) {
+        QString s = list[n].filePath();
+        bool is_cd_device = true;
+        if (detect_cd_devices) is_cd_device = isCDDevice(s);
+        if (is_cd_device) {
+            if (s.endsWith("/")) s = s.remove(s.length()-1,1);
+            dvd_device_combo->addItem(s);
+            cdrom_device_combo->addItem(s);
+            bluray_device_combo->addItem(s);
+        }
+    }
 #else
-	QDir dev_dir("/dev");
-	QStringList devices = dev_dir.entryList(QStringList() << "dvd*" << "cdrom*" << "cdrw*" << "sr*" << "cdrecorder*" << "acd[0-9]*" << "cd[0-9]*", 
+    QDir dev_dir("/dev");
+    QStringList devices = dev_dir.entryList(QStringList() << "dvd*" << "cdrom*" << "cdrw*" << "sr*" << "cdrecorder*" << "acd[0-9]*" << "cd[0-9]*",
                                              QDir::Files | QDir::System | QDir::Readable);
-	for (int n=0; n < devices.count(); n++) {
-		QString device_name = "/dev/" + devices[n];
-        logger()->debug("updateDriveCombos: device found: '" + device_name + "'");
-		dvd_device_combo->addItem(device_name);
-		cdrom_device_combo->addItem(device_name);
-		bluray_device_combo->addItem(device_name);
-	}
+    for (int n=0; n < devices.count(); n++) {
+        QString device_name = "/dev/" + devices[n];
+        WZDEBUG("device found: '" + device_name + "'");
+        dvd_device_combo->addItem(device_name);
+        cdrom_device_combo->addItem(device_name);
+        bluray_device_combo->addItem(device_name);
+    }
 #endif
 
-	// Restore previous values
-	setDVDDevice(current_dvd_device);
-	setCDRomDevice(current_cd_device);
-	setBlurayDevice(current_bluray_device);
+    // Restore previous values
+    setDVDDevice(current_dvd_device);
+    setCDRomDevice(current_cd_device);
+    setBlurayDevice(current_bluray_device);
 }
 
 void TDrives::setData(Settings::TPreferences* pref) {
-	setDVDDevice(pref->dvd_device);
-	setCDRomDevice(pref->cdrom_device);
-	setBlurayDevice(pref->bluray_device);
-	setUseDVDNav(pref->use_dvdnav);
+    setDVDDevice(pref->dvd_device);
+    setCDRomDevice(pref->cdrom_device);
+    setBlurayDevice(pref->bluray_device);
+    setUseDVDNav(pref->use_dvdnav);
 }
 
 void TDrives::getData(Settings::TPreferences* pref) {
-	requires_restart = false;
+    requires_restart = false;
 
-	pref->dvd_device = dvdDevice();
-	pref->cdrom_device = cdromDevice();
-	pref->bluray_device = blurayDevice();
-	pref->use_dvdnav = useDVDNav();
+    pref->dvd_device = dvdDevice();
+    pref->cdrom_device = cdromDevice();
+    pref->bluray_device = blurayDevice();
+    pref->use_dvdnav = useDVDNav();
 }
 
 void TDrives::setDVDDevice(const QString& dir) {
-	dvd_device_combo->setCurrentText(dir);
+    dvd_device_combo->setCurrentText(dir);
 }
 
 QString TDrives::dvdDevice() {
-	return dvd_device_combo->currentText();
+    return dvd_device_combo->currentText();
 }
 
 void TDrives::setBlurayDevice(const QString& dir) {
-	bluray_device_combo->setCurrentText(dir);
+    bluray_device_combo->setCurrentText(dir);
 }
 
 QString TDrives::blurayDevice() {
-	return bluray_device_combo->currentText();
+    return bluray_device_combo->currentText();
 }
 
 void TDrives::setCDRomDevice(const QString& dir) {
-	cdrom_device_combo->setCurrentText(dir);
+    cdrom_device_combo->setCurrentText(dir);
 }
 
 QString TDrives::cdromDevice() {
-	return cdrom_device_combo->currentText();
+    return cdrom_device_combo->currentText();
 }
 
 void TDrives::setUseDVDNav(bool b) {
-	use_dvdnav_check->setChecked(b);
+    use_dvdnav_check->setChecked(b);
 }
 
 bool TDrives::useDVDNav() {
-	return use_dvdnav_check->isChecked();
+    return use_dvdnav_check->isChecked();
 }
 
 void TDrives::on_check_drives_button_clicked() {
-    logger()->debug("on_check_drives_button_clicked");
-	updateDriveCombos(true);
+    updateDriveCombos(true);
 }
 
 void TDrives::createHelp() {
-	clearHelp();
+    clearHelp();
 
-	setWhatsThis(cdrom_device_combo, tr("CD device"),
-		tr("Choose your CDROM device. It will be used to play "
-		   "VCDs and Audio CDs."));
+    setWhatsThis(cdrom_device_combo, tr("CD device"),
+        tr("Choose your CDROM device. It will be used to play "
+           "VCDs and Audio CDs."));
 
-	setWhatsThis(dvd_device_combo, tr("DVD device"),
-		tr("Choose your DVD device. It will be used to play DVDs."));
+    setWhatsThis(dvd_device_combo, tr("DVD device"),
+        tr("Choose your DVD device. It will be used to play DVDs."));
 
-	setWhatsThis(use_dvdnav_check, tr("Enable DVD menus (MPlayer only)"),
-		tr("When checked, WZPlayer will play DVDs using the DVDNAV library enabling DVD menus."
-		   " MPV does not support DVD menus."));
+    setWhatsThis(use_dvdnav_check, tr("Enable DVD menus (MPlayer only)"),
+        tr("When checked, WZPlayer will play DVDs using the DVDNAV library enabling DVD menus."
+           " MPV does not support DVD menus."));
 
-	setWhatsThis(bluray_device_combo, tr("Blu-ray device"),
-		tr("Choose your Blu-ray device. It will be used to play Blu-ray discs."));
+    setWhatsThis(bluray_device_combo, tr("Blu-ray device"),
+        tr("Choose your Blu-ray device. It will be used to play Blu-ray discs."));
 }
 
 }} // namespace Gui::Pref

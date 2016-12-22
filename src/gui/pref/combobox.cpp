@@ -32,17 +32,17 @@ TComboBox::~TComboBox()
 }
 
 void TComboBox::setCurrentText(const QString & text) {
-	int i = findText(text);
-	if (i != -1)
-		setCurrentIndex(i);
-	else if (isEditable())
-		setEditText(text);
-	else
-		setItemText(currentIndex(), text);
+    int i = findText(text);
+    if (i != -1)
+        setCurrentIndex(i);
+    else if (isEditable())
+        setEditText(text);
+    else
+        setItemText(currentIndex(), text);
 }
 
 void TComboBox::insertStringList(const QStringList & list, int index) {
-	insertItems((index < 0 ? count() : index), list);
+    insertItems((index < 0 ? count() : index), list);
 }
 
 
@@ -56,38 +56,38 @@ TFontComboBox::~TFontComboBox()
 }
 
 void TFontComboBox::setCurrentText(const QString & text) {
-	int i = findText(text);
-	if (i != -1)
-		setCurrentIndex(i);
-	else if (isEditable())
-		setEditText(text);
-	else
-		setItemText(currentIndex(), text);
+    int i = findText(text);
+    if (i != -1)
+        setCurrentIndex(i);
+    else if (isEditable())
+        setEditText(text);
+    else
+        setItemText(currentIndex(), text);
 }
 
 void TFontComboBox::setFontsFromDir(const QString & fontdir) {
-	QString current_text = currentText();
+    QString current_text = currentText();
 
-	if (fontdir.isEmpty()) {
-		QFontDatabase::removeAllApplicationFonts();
-		clear();
-		setWritingSystem(QFontDatabase::Any);
-	} else {
-		QFontDatabase fdb;
-		QStringList fontnames;
-		QStringList fontfiles = QDir(fontdir).entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
-		for (int n=0; n < fontfiles.count(); n++) {
-			int id = fdb.addApplicationFont(fontdir +"/"+ fontfiles[n]);
-			fontnames << fdb.applicationFontFamilies(id);
-		}
-		//fdb.removeAllApplicationFonts();
-		fontnames.removeDuplicates();
-		clear();
-		QStringListModel *m = qobject_cast<QStringListModel *>(model());
-		if (m) m->setStringList(fontnames);
-	}
+    if (fontdir.isEmpty()) {
+        QFontDatabase::removeAllApplicationFonts();
+        clear();
+        setWritingSystem(QFontDatabase::Any);
+    } else {
+        QFontDatabase fdb;
+        QStringList fontnames;
+        QStringList fontfiles = QDir(fontdir).entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
+        for (int n=0; n < fontfiles.count(); n++) {
+            int id = fdb.addApplicationFont(fontdir +"/"+ fontfiles[n]);
+            fontnames << fdb.applicationFontFamilies(id);
+        }
+        //fdb.removeAllApplicationFonts();
+        fontnames.removeDuplicates();
+        clear();
+        QStringListModel *m = qobject_cast<QStringListModel *>(model());
+        if (m) m->setStringList(fontnames);
+    }
 
-	setCurrentText(current_text);
+    setCurrentText(current_text);
 }
 
 }} // namespace Gui::Pref

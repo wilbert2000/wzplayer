@@ -63,13 +63,13 @@ void TNetwork::setData(Settings::TPreferences* pref) {
         ip_prefer_auto_radiobutton->setChecked(true);
     }
 
-	proxy_group->setChecked(pref->use_proxy);
-	proxy_hostname_edit->setText(pref->proxy_host);
-	proxy_port_spin->setValue(pref->proxy_port);
-	proxy_username_edit->setText(pref->proxy_username);
-	proxy_password_edit->setText(pref->proxy_password);
+    proxy_group->setChecked(pref->use_proxy);
+    proxy_hostname_edit->setText(pref->proxy_host);
+    proxy_port_spin->setValue(pref->proxy_port);
+    proxy_username_edit->setText(pref->proxy_username);
+    proxy_password_edit->setText(pref->proxy_password);
 
-	setProxyType(pref->proxy_type);
+    setProxyType(pref->proxy_type);
 
     update_group->setChecked(pref->update_checker_data.enabled);
     days_spin->setValue(pref->update_checker_data.days_to_check);
@@ -77,7 +77,7 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 
 void TNetwork::getData(Settings::TPreferences* pref) {
 
-	requires_restart = false;
+    requires_restart = false;
 
     if (ip_prefer_4_radiobutton->isChecked()) {
         pref->ipPrefer = Settings::TPreferences::IP_PREFER_4;
@@ -87,13 +87,13 @@ void TNetwork::getData(Settings::TPreferences* pref) {
         pref->ipPrefer = Settings::TPreferences::IP_PREFER_AUTO;
     }
 
-	pref->use_proxy = proxy_group->isChecked();
-	pref->proxy_host = proxy_hostname_edit->text();
-	pref->proxy_port = proxy_port_spin->value();
-	pref->proxy_username = proxy_username_edit->text();
-	pref->proxy_password = proxy_password_edit->text();
+    pref->use_proxy = proxy_group->isChecked();
+    pref->proxy_host = proxy_hostname_edit->text();
+    pref->proxy_port = proxy_port_spin->value();
+    pref->proxy_username = proxy_username_edit->text();
+    pref->proxy_password = proxy_password_edit->text();
 
-	pref->proxy_type = proxyType();
+    pref->proxy_type = proxyType();
 
     pref->update_checker_data.enabled = update_group->isChecked();
     pref->update_checker_data.days_to_check = days_spin->value();
@@ -101,41 +101,41 @@ void TNetwork::getData(Settings::TPreferences* pref) {
 
 void TNetwork::setProxyType(int type) {
 
-	int index = proxy_type_combo->findData(type);
-	if (index == -1) index = 0;
-	proxy_type_combo->setCurrentIndex(index);
+    int index = proxy_type_combo->findData(type);
+    if (index == -1) index = 0;
+    proxy_type_combo->setCurrentIndex(index);
 }
 
 int TNetwork::proxyType() {
 
-	int index = proxy_type_combo->currentIndex();
-	return proxy_type_combo->itemData(index).toInt();
+    int index = proxy_type_combo->currentIndex();
+    return proxy_type_combo->itemData(index).toInt();
 }
 
 void TNetwork::createHelp() {
 
-	clearHelp();
+    clearHelp();
 
-	addSectionTitle(tr("Proxy"));
+    addSectionTitle(tr("Proxy"));
 
-	setWhatsThis(proxy_group, tr("Enable proxy"),
-		tr("Enable/disable the use of the proxy."));
+    setWhatsThis(proxy_group, tr("Enable proxy"),
+        tr("Enable/disable the use of the proxy."));
 
-	setWhatsThis(proxy_hostname_edit, tr("Host"),
-		tr("The host name of the proxy."));
+    setWhatsThis(proxy_hostname_edit, tr("Host"),
+        tr("The host name of the proxy."));
 
-	setWhatsThis(proxy_port_spin, tr("Port"),
-		tr("The port of the proxy."));
+    setWhatsThis(proxy_port_spin, tr("Port"),
+        tr("The port of the proxy."));
 
-	setWhatsThis(proxy_username_edit, tr("Username"),
-		tr("If the proxy requires authentication, this sets the username."));
+    setWhatsThis(proxy_username_edit, tr("Username"),
+        tr("If the proxy requires authentication, this sets the username."));
 
-	setWhatsThis(proxy_password_edit, tr("Password"),
-		tr("The password for the proxy. <b>Warning:</b> the password will be saved "
+    setWhatsThis(proxy_password_edit, tr("Password"),
+        tr("The password for the proxy. <b>Warning:</b> the password will be saved "
            "as plain text in the configuration file."));
 
-	setWhatsThis(proxy_type_combo, tr("Type"),
-		tr("Select the proxy type to be used."));
+    setWhatsThis(proxy_type_combo, tr("Type"),
+        tr("Select the proxy type to be used."));
 
     addSectionTitle(tr("Proxy"));
 

@@ -96,9 +96,9 @@ void TEditableToolbar::addMenu(QAction* action) {
     addWidget(button);
 }
 
-void TEditableToolbar::setActionsFromStringList(
-        const QStringList& acts, const TActionList& all_actions) {
-    logger()->trace("setActionsFromStringList: updating '%1'", objectName());
+void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
+                                                const TActionList& all_actions) {
+    WZTRACE("updating '" + objectName() + "'");
 
     clear();
     space_eater = 0;
@@ -113,10 +113,9 @@ void TEditableToolbar::setActionsFromStringList(
         bool ns, fs;
         TToolbarEditor::stringToAction(actions[i], action_name, ns, fs);
         if (action_name.isEmpty()) {
-            logger()->warn("setActionsFromStringList: malformed action '%1'",
-                           actions[i]);
+            WZWARN("malformed action '" + actions[i] + "'");
             actions.removeAt(i);
-		} else {
+        } else {
             if (Settings::pref->fullscreen ? fs : ns) {
                 if (action_name == "separator") {
                     addAction(TToolbarEditor::newSeparator(this));
@@ -134,8 +133,7 @@ void TEditableToolbar::setActionsFromStringList(
                             }
                         }
                     } else {
-                        logger()->warn("setActionsFromStringList: action '%1'"
-                                       " not found", action_name);
+                        WZWARN("action '" + action_name + " not found");
                         actions.removeAt(i);
                         i--;
                     }
@@ -157,7 +155,7 @@ QStringList TEditableToolbar::actionsToStringList(bool remove_size_grip) {
 }
 
 void TEditableToolbar::edit() {
-    logger()->debug("edit");
+    WZDEBUG("");
 
     // Create toolbar editor dialog
     TActionList all_actions = main_window->getAllNamedActions();
@@ -230,13 +228,13 @@ void TEditableToolbar::resizeEvent(QResizeEvent* event) {
     if (isFloating() && space_eater && !fixing_size) {
         if (orientation() == Qt::Horizontal) {
             if (height() > iconSize().height() + fix_size) {
-                logger()->debug("resizeEvent: fixing height");
+                WZDEBUG("fixing height");
                 fixing_size = true;
                 resize(width(), iconSize().height() + fix_size);
                 fixing_size = false;
             }
         } else if (width() > iconSize().width() + fix_size) {
-            logger()->debug("resizeEvent: fixing width");
+            WZDEBUG("fixing width");
             fixing_size = true;
             resize(iconSize().width() + fix_size, height());
             fixing_size = false;

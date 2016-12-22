@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -45,19 +45,19 @@ QPixmap TPlaylistSection::sectionIcon() {
 
 void TPlaylistSection::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	// Playlist
-	int index = media_to_add_combo->currentIndex();
-	media_to_add_combo->clear();
-	media_to_add_combo->addItem(tr("None"), Settings::TPreferences::NoFiles);
-	media_to_add_combo->addItem(tr("Video files"), Settings::TPreferences::VideoFiles);
-	media_to_add_combo->addItem(tr("Audio files"), Settings::TPreferences::AudioFiles);
-	media_to_add_combo->addItem(tr("Video and audio files"), Settings::TPreferences::MultimediaFiles);
-	media_to_add_combo->addItem(tr("Consecutive files"), Settings::TPreferences::ConsecutiveFiles);
-	media_to_add_combo->setCurrentIndex(index);
+    // Playlist
+    int index = media_to_add_combo->currentIndex();
+    media_to_add_combo->clear();
+    media_to_add_combo->addItem(tr("None"), Settings::TPreferences::NoFiles);
+    media_to_add_combo->addItem(tr("Video files"), Settings::TPreferences::VideoFiles);
+    media_to_add_combo->addItem(tr("Audio files"), Settings::TPreferences::AudioFiles);
+    media_to_add_combo->addItem(tr("Video and audio files"), Settings::TPreferences::MultimediaFiles);
+    media_to_add_combo->addItem(tr("Consecutive files"), Settings::TPreferences::ConsecutiveFiles);
+    media_to_add_combo->setCurrentIndex(index);
 
-	createHelp();
+    createHelp();
 }
 
 void TPlaylistSection::setData(Settings::TPreferences* pref) {
@@ -103,7 +103,7 @@ void TPlaylistSection::setMediaToAddToPlaylist(Settings::TPreferences::TAddToPla
     int i = media_to_add_combo->findData(type);
     if (i < 0)
         i = 0;
-	media_to_add_combo->setCurrentIndex(i);
+    media_to_add_combo->setCurrentIndex(i);
 }
 
 Settings::TPreferences::TAddToPlaylist TPlaylistSection::mediaToAddToPlaylist() {
@@ -112,30 +112,30 @@ Settings::TPreferences::TAddToPlaylist TPlaylistSection::mediaToAddToPlaylist() 
 }
 
 void TPlaylistSection::setDirectoryRecursion(bool b) {
-	recursive_check->setChecked(b);
+    recursive_check->setChecked(b);
 }
 
 bool TPlaylistSection::directoryRecursion() {
-	return recursive_check->isChecked();
+    return recursive_check->isChecked();
 }
 
 void TPlaylistSection::createHelp() {
-	clearHelp();
+    clearHelp();
 
-	addSectionTitle(tr("Playlist"));
+    addSectionTitle(tr("Playlist"));
 
-	setWhatsThis(media_to_add_combo, tr("Add files from folder"),
-		tr("This option allows to add files automatically to the playlist:") +"<br>"+
-		tr("<b>None</b>: no files will be added") +"<br>"+
-		tr("<b>Video files</b>: all video files found in the folder will be added") +"<br>"+
-		tr("<b>Audio files</b>: all audio files found in the folder will be added") +"<br>"+
-		tr("<b>Video and audio files</b>: all video and audio files found in the folder will be added") +"<br>"+
-		tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added"));
+    setWhatsThis(media_to_add_combo, tr("Add files from folder"),
+        tr("This option allows to add files automatically to the playlist:") +"<br>"+
+        tr("<b>None</b>: no files will be added") +"<br>"+
+        tr("<b>Video files</b>: all video files found in the folder will be added") +"<br>"+
+        tr("<b>Audio files</b>: all audio files found in the folder will be added") +"<br>"+
+        tr("<b>Video and audio files</b>: all video and audio files found in the folder will be added") +"<br>"+
+        tr("<b>Consecutive files</b>: consecutive files (like video_1.avi, video_2.avi) will be added"));
 
-	setWhatsThis(recursive_check, tr("Add files in directories recursively"),
-		tr("Check this option if you want that adding a directory will also "
-		"add the files in subdirectories recursively. Otherwise only the "
-		"files in the selected directory will be added."));
+    setWhatsThis(recursive_check, tr("Add files in directories recursively"),
+        tr("Check this option if you want that adding a directory will also "
+        "add the files in subdirectories recursively. Otherwise only the "
+        "files in the selected directory will be added."));
 }
 
 }} // namespace Gui::Pref

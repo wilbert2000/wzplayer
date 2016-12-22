@@ -566,13 +566,13 @@ void TApp::showInfo() {
     WZINFO(s);
     WZINFO(QString("Compiled with Qt version " QT_VERSION_STR
            ", running on Qt version ") + qVersion());
-    WZINFO("application path '" + applicationDirPath() + "'");
-    WZINFO("data path '" + Settings::TPaths::dataPath() + "'");
-    WZINFO("translation path '" + Settings::TPaths::translationPath() + "'");
-    WZINFO("doc path '" + Settings::TPaths::docPath() + "'");
-    WZINFO("themes path '" + Settings::TPaths::themesPath() + "'");
-    WZINFO("shortcuts path '" + Settings::TPaths::shortcutsPath() + "'");
-    WZINFO("config path '" + Settings::TPaths::configPath() + "'");
+    WZINFO("application '" + applicationDirPath() + "'");
+    WZINFO("data '" + Settings::TPaths::dataPath() + "'");
+    WZINFO("translation '" + Settings::TPaths::translationPath() + "'");
+    WZINFO("doc '" + Settings::TPaths::docPath() + "'");
+    WZINFO("themes '" + Settings::TPaths::themesPath() + "'");
+    WZINFO("shortcuts '" + Settings::TPaths::shortcutsPath() + "'");
+    WZINFO("config '" + Settings::TPaths::configPath() + "'");
     WZINFO("subtitle styles '" + Settings::TPaths::subtitleStyleFile() + "'");
     WZINFO("current directory '" + QDir::currentPath() + "'");
 #ifdef Q_OS_WIN

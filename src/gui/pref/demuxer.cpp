@@ -7,11 +7,11 @@ namespace Gui {
 namespace Pref {
 
 TDemuxer::TDemuxer(QWidget* parent) :
-	TWidget(parent, 0) {
+    TWidget(parent, 0) {
 
-	setupUi(this);
+    setupUi(this);
 
-	retranslateStrings();
+    retranslateStrings();
 }
 
 TDemuxer::~TDemuxer() {
@@ -19,35 +19,35 @@ TDemuxer::~TDemuxer() {
 
 void TDemuxer::retranslateStrings() {
 
-	retranslateUi(this);
+    retranslateUi(this);
 
-	icon1_label->setPixmap(Images::icon("logo", 64));
-	icon2_label->setPixmap(Images::icon("mirror"));
-	icon3_label->setPixmap(Images::icon("pref_video"));
-	icon4_label->setPixmap(Images::icon("speaker"));
-	//icon5_label->setPixmap(Images::icon("pref_subtitles"));
-	icon5_label->setPixmap(Images::icon("sub"));
+    icon1_label->setPixmap(Images::icon("logo", 64));
+    icon2_label->setPixmap(Images::icon("mirror"));
+    icon3_label->setPixmap(Images::icon("pref_video"));
+    icon4_label->setPixmap(Images::icon("speaker"));
+    //icon5_label->setPixmap(Images::icon("pref_subtitles"));
+    icon5_label->setPixmap(Images::icon("sub"));
 
-	createHelp();
+    createHelp();
 }
 
 QString TDemuxer::sectionName() {
-	return tr("Demuxer");
+    return tr("Demuxer");
 }
 
 QPixmap TDemuxer::sectionIcon() {
-	return Images::icon("pref_demuxer", icon_size);
+    return Images::icon("pref_demuxer", icon_size);
 }
 
 void TDemuxer::setData(Settings::TPreferences* pref) {
 
-	lavf_demuxer_check->setChecked(pref->use_lavf_demuxer);
-	idx_check->setChecked(pref->use_idx);
+    lavf_demuxer_check->setChecked(pref->use_lavf_demuxer);
+    idx_check->setChecked(pref->use_idx);
 }
 
 void TDemuxer::getData(Settings::TPreferences* pref) {
 
-	requires_restart = false;
+    requires_restart = false;
 
     restartIfBoolChanged(pref->use_lavf_demuxer,
                          lavf_demuxer_check->isChecked(),
@@ -57,19 +57,19 @@ void TDemuxer::getData(Settings::TPreferences* pref) {
 
 void TDemuxer::createHelp() {
 
-	addSectionTitle(tr("Demuxer"));
+    addSectionTitle(tr("Demuxer"));
 
-	setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
-		tr("If checked, the lavf demuxer will be used for all formats."
-		   " Note: you can set the demuxer for the current container through"
-		   " the demuxer tab of the properties dialog."));
+    setWhatsThis(lavf_demuxer_check, tr("Use the lavf demuxer by default"),
+        tr("If checked, the lavf demuxer will be used for all formats."
+           " Note: you can set the demuxer for the current container through"
+           " the demuxer tab of the properties dialog."));
 
-	setWhatsThis(idx_check, tr("Rebuild index if needed"),
-		tr("Rebuilds index of files if no index was found, allowing seeking. "
-		   "Useful with broken/incomplete downloads, or badly created files. "
-		   "This option only works if the underlying media supports "
-		   "seeking (i.e. not with stdin, pipe, etc).<br> "
-		   "<b>Note:</b> the creation of the index may take some time."));
+    setWhatsThis(idx_check, tr("Rebuild index if needed"),
+        tr("Rebuilds index of files if no index was found, allowing seeking. "
+           "Useful with broken/incomplete downloads, or badly created files. "
+           "This option only works if the underlying media supports "
+           "seeking (i.e. not with stdin, pipe, etc).<br> "
+           "<b>Note:</b> the creation of the index may take some time."));
 }
 
 } // namespace Pref

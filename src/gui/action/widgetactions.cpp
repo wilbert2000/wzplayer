@@ -29,28 +29,28 @@ namespace Gui {
 namespace Action {
 
 TWidgetAction::TWidgetAction(QWidget* parent)
-	: QWidgetAction(parent)
-	, custom_style(0) {
+    : QWidgetAction(parent)
+    , custom_style(0) {
 }
 
 TWidgetAction::~TWidgetAction() {
 }
 
 void TWidgetAction::enable(bool e) {
-	propagate_enabled(e);
+    propagate_enabled(e);
 }
 
 void TWidgetAction::disable() {
-	propagate_enabled(false);
+    propagate_enabled(false);
 }
 
 void TWidgetAction::propagate_enabled(bool b) {
 
-	QList<QWidget*> l = createdWidgets();
-	for (int n = 0; n < l.count(); n++) {
-		l[n]->setEnabled(b);;
-	}
-	setEnabled(b);
+    QList<QWidget*> l = createdWidgets();
+    for (int n = 0; n < l.count(); n++) {
+        l[n]->setEnabled(b);;
+    }
+    setEnabled(b);
 }
 
 
@@ -71,8 +71,8 @@ void TTimeSliderAction::setPos() {
         TTimeSlider* s = (TTimeSlider*) l[n];
         bool was_blocked = s->blockSignals(true);
         s->setPos(pos);
-		s->blockSignals(was_blocked);
-	}
+        s->blockSignals(was_blocked);
+    }
 }
 
 void TTimeSliderAction::setPosition(double sec) {
@@ -93,12 +93,12 @@ void TTimeSliderAction::setPosition(double sec) {
 
 void TTimeSliderAction::setDuration(double t) {
 
-	duration = t;
-	QList<QWidget*> l = createdWidgets();
-	for (int n = 0; n < l.count(); n++) {
-		TTimeSlider* s = (TTimeSlider*) l[n];
-		s->setDuration(t);
-	}
+    duration = t;
+    QList<QWidget*> l = createdWidgets();
+    for (int n = 0; n < l.count(); n++) {
+        TTimeSlider* s = (TTimeSlider*) l[n];
+        s->setDuration(t);
+    }
 }
 
 // Slider pos changed
@@ -132,33 +132,33 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
     TTimeSlider* slider = new TTimeSlider(parent, pos, max_pos, duration,
         Settings::pref->time_slider_drag_delay);
-	slider->setEnabled(isEnabled());
+    slider->setEnabled(isEnabled());
 
-	if (custom_style)
-		slider->setStyle(custom_style);
-	if (!custom_stylesheet.isEmpty())
-		slider->setStyleSheet(custom_stylesheet);
+    if (custom_style)
+        slider->setStyle(custom_style);
+    if (!custom_stylesheet.isEmpty())
+        slider->setStyleSheet(custom_stylesheet);
 
     connect(slider, SIGNAL(posChanged(int)),
             this, SLOT(onPosChanged(int)));
     connect(slider, SIGNAL(draggingPosChanged(int)),
             this, SLOT(onDraggingPosChanged(int)));
-	connect(slider, SIGNAL(delayedDraggingPos(int)),
+    connect(slider, SIGNAL(delayedDraggingPos(int)),
             this, SLOT(onDelayedDraggingPos(int)));
 
-	connect(slider, SIGNAL(wheelUp()),
-			this, SIGNAL(wheelUp()));
-	connect(slider, SIGNAL(wheelDown()),
-			this, SIGNAL(wheelDown()));
+    connect(slider, SIGNAL(wheelUp()),
+            this, SIGNAL(wheelUp()));
+    connect(slider, SIGNAL(wheelDown()),
+            this, SIGNAL(wheelDown()));
 
-	return slider;
+    return slider;
 }
 
 
 TVolumeSliderAction::TVolumeSliderAction(QWidget* parent, int vol)
-	: TWidgetAction(parent)
-	, volume(vol)
-	, tick_position(QSlider::TicksBelow) {
+    : TWidgetAction(parent)
+    , volume(vol)
+    , tick_position(QSlider::TicksBelow) {
 }
 
 TVolumeSliderAction::~TVolumeSliderAction() {
@@ -166,63 +166,63 @@ TVolumeSliderAction::~TVolumeSliderAction() {
 
 void TVolumeSliderAction::setValue(int v) {
 
-	volume = v;
-	QList<QWidget*> l = createdWidgets();
-	for (int n = 0; n < l.count(); n++) {
-		TSlider* s = (TSlider*) l[n];
-		bool was_blocked = s->blockSignals(true);
-		s->setValue(v);
-		s->blockSignals(was_blocked);
-	}
+    volume = v;
+    QList<QWidget*> l = createdWidgets();
+    for (int n = 0; n < l.count(); n++) {
+        TSlider* s = (TSlider*) l[n];
+        bool was_blocked = s->blockSignals(true);
+        s->setValue(v);
+        s->blockSignals(was_blocked);
+    }
 }
 
 int TVolumeSliderAction::value() {
-	return volume;
+    return volume;
 }
 
 void TVolumeSliderAction::setTickPosition(QSlider::TickPosition position) {
 
-	// For new widgets
-	tick_position = position; 
+    // For new widgets
+    tick_position = position;
 
-	// Propagate changes to all existing widgets
-	QList<QWidget*> l = createdWidgets();
-	for (int n = 0; n < l.count(); n++) {
-		TSlider* s = (TSlider*) l[n];
-		s->setTickPosition(tick_position);
-	}
+    // Propagate changes to all existing widgets
+    QList<QWidget*> l = createdWidgets();
+    for (int n = 0; n < l.count(); n++) {
+        TSlider* s = (TSlider*) l[n];
+        s->setTickPosition(tick_position);
+    }
 }
 
 void TVolumeSliderAction::valueSliderChanged(int value) {
 
-	volume = value;
-	emit valueChanged(value);
+    volume = value;
+    emit valueChanged(value);
 }
 
 QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 
-	TSlider* slider = new TSlider(parent);
+    TSlider* slider = new TSlider(parent);
 
-	if (custom_style) slider->setStyle(custom_style);
-	if (!custom_stylesheet.isEmpty()) slider->setStyleSheet(custom_stylesheet);
-	if (fixed_size.isValid()) slider->setFixedSize(fixed_size);
+    if (custom_style) slider->setStyle(custom_style);
+    if (!custom_stylesheet.isEmpty()) slider->setStyleSheet(custom_stylesheet);
+    if (fixed_size.isValid()) slider->setFixedSize(fixed_size);
 
-	slider->setMinimum(0);
-	slider->setMaximum(100);
-	slider->setValue(volume);
-	slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	slider->setFocusPolicy(Qt::NoFocus);
-	slider->setTickPosition(tick_position);
-	slider->setTickInterval(10);
-	slider->setSingleStep(1);
-	slider->setPageStep(10);
-	slider->setToolTip(tr("Volume"));
-	slider->setEnabled(isEnabled());
-	slider->setAttribute(Qt::WA_NoMousePropagation);
+    slider->setMinimum(0);
+    slider->setMaximum(100);
+    slider->setValue(volume);
+    slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    slider->setFocusPolicy(Qt::NoFocus);
+    slider->setTickPosition(tick_position);
+    slider->setTickInterval(10);
+    slider->setSingleStep(1);
+    slider->setPageStep(10);
+    slider->setToolTip(tr("Volume"));
+    slider->setEnabled(isEnabled());
+    slider->setAttribute(Qt::WA_NoMousePropagation);
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
 
-	return slider;
+    return slider;
 }
 
 } // namespace Action

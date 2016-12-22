@@ -69,7 +69,7 @@ void TLogWindowAppender::setEdit(QPlainTextEdit* edit) {
         }
         edit->clear();
         Log4Qt::Logger::logger("Gui::TLogWindowAppender")->debug(
-                    "disconnected from log window");
+                    "setEdit disconnected from log window");
     }
 }
 

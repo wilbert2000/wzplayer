@@ -85,7 +85,7 @@ void TPlayerInfo::clearInfo() {
 }
 
 void TPlayerInfo::getInfo(const QString& path) {
-    logger()->debug("getInfo: '%1'", path);
+    WZDEBUG("'" + path + "'");
 
     // Player not existing
     QFileInfo fi(path);
@@ -93,14 +93,14 @@ void TPlayerInfo::getInfo(const QString& path) {
         bin = path;
         bin_size = 0;
         clearInfo();
-        logger()->warn("getInfo: player '%1' not found", path);
+        WZWARN("player '" + path + "' not found");
         return;
     }
 
     // Already loaded info
     qint64 size = fi.size();
     if (path == bin && size == bin_size) {
-        logger()->debug("getInfo: reusing player info from memory");
+        WZDEBUG("reusing player info from memory");
         return;
     }
 
@@ -122,7 +122,7 @@ void TPlayerInfo::getInfo(const QString& path) {
         vf_list = set.value("vf_list").toStringList();
         option_list = set.value("option_list").toStringList();
 
-        logger()->debug("getInfo: loaded player info from '%1'", inifile);
+        WZDEBUG("loaded player info from '" + inifile + "'");
         return;
     }
 
@@ -149,7 +149,7 @@ void TPlayerInfo::getInfo(const QString& path) {
         option_list = ir.optionList();
     }
 
-    logger()->info("getInfo: saving player info to '%1'", inifile);
+    WZINFO("saving player info to '" + inifile + "'");
     set.setValue("size", bin_size);
     set.setValue("date", fi.lastModified());
     set.setValue("vo_list", convertInfoListToList(vo_list));

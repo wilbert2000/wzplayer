@@ -6,15 +6,14 @@
 #include "log4qt/level.h"
 
 
-#define WZTRACE(s) logger()->trace(QString(__FUNCTION__) + ": " + (s))
-#define WZDEBUG(s) logger()->debug(QString(__FUNCTION__) + ": " + (s))
-#define WZINFO(s) logger()->info(QString(__FUNCTION__) + ": " + (s))
-#define WZWARN(s) logger()->warn(QString(__FUNCTION__) + ": " + (s))
-#define WZERROR(s) logger()->error(QString(__FUNCTION__) + ": " + (s))
+#define WZTRACE(s) logger()->trace(QString(__FUNCTION__) + " " + (s))
+#define WZDEBUG(s) logger()->debug(QString(__FUNCTION__) + " " + (s))
+#define WZINFO(s) logger()->info(QString(__FUNCTION__) + " " + (s))
+#define WZWARN(s) logger()->warn(QString(__FUNCTION__) + " " + (s))
+#define WZERROR(s) logger()->error(QString(__FUNCTION__) + " " + (s))
 
 /*
  * TODO: logger()->debug() << msg;
- * Out of despair this kludge is born.
  *
  * Usage:
  * in header add:

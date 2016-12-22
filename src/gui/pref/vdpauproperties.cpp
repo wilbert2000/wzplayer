@@ -21,62 +21,62 @@
 namespace Gui { namespace Pref {
 
 TVDPAUProperties::TVDPAUProperties(QWidget* parent, Qt::WindowFlags f)
-	: QDialog(parent, f) 
+    : QDialog(parent, f)
 {
-	setupUi(this);
+    setupUi(this);
 
-	layout()->setSizeConstraint(QLayout::SetFixedSize);
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 TVDPAUProperties::~TVDPAUProperties() {
 }
 
 void TVDPAUProperties::setffh264vdpau(bool b) {
-	ffh264vdpau_check->setChecked(b);
+    ffh264vdpau_check->setChecked(b);
 }
 
 void TVDPAUProperties::setffmpeg12vdpau(bool b) {
-	ffmpeg12vdpau_check->setChecked(b);
+    ffmpeg12vdpau_check->setChecked(b);
 }
 
 void TVDPAUProperties::setffwmv3vdpau(bool b) {
-	ffwmv3vdpau_check->setChecked(b);
+    ffwmv3vdpau_check->setChecked(b);
 }
 
 void TVDPAUProperties::setffvc1vdpau(bool b) {
-	ffvc1vdpau_check->setChecked(b);
+    ffvc1vdpau_check->setChecked(b);
 }
 
 void TVDPAUProperties::setffodivxvdpau(bool b) {
-	ffodivxvdpau_check->setChecked(b);
+    ffodivxvdpau_check->setChecked(b);
 }
 
 void TVDPAUProperties::setDisableFilters(bool b) {
-	disable_filters_check->setChecked(b);
+    disable_filters_check->setChecked(b);
 }
 
 bool TVDPAUProperties::ffh264vdpau() {
-	return ffh264vdpau_check->isChecked();
+    return ffh264vdpau_check->isChecked();
 }
 
 bool TVDPAUProperties::ffmpeg12vdpau() {
-	return ffmpeg12vdpau_check->isChecked();
+    return ffmpeg12vdpau_check->isChecked();
 }
 
 bool TVDPAUProperties::ffwmv3vdpau() {
-	return ffwmv3vdpau_check->isChecked();
+    return ffwmv3vdpau_check->isChecked();
 }
 
 bool TVDPAUProperties::ffvc1vdpau() {
-	return ffvc1vdpau_check->isChecked();
+    return ffvc1vdpau_check->isChecked();
 }
 
 bool TVDPAUProperties::ffodivxvdpau() {
-	return ffodivxvdpau_check->isChecked();
+    return ffodivxvdpau_check->isChecked();
 }
 
 bool TVDPAUProperties::disableFilters() {
-	return disable_filters_check->isChecked();
+    return disable_filters_check->isChecked();
 }
 
 }} // namespace Gui::Pref

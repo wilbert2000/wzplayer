@@ -25,7 +25,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "config.h"
 #include "gui/desktop.h"
 #include "images.h"
@@ -61,7 +61,7 @@ TLogWindow::TLogWindow(QWidget* parent)
 }
 
 TLogWindow::~TLogWindow() {
-    logger()->debug("~TLogWindow");
+    WZDEBUG("");
     appender->setEdit(0);
 }
 
@@ -79,14 +79,12 @@ void TLogWindow::retranslateStrings() {
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
-    logger()->debug("showEvent");
 
     appender->setEdit(edit);
     emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
-    logger()->debug("hideEvent");
 
     appender->setEdit(0);
     emit visibilityChanged(false);
@@ -94,14 +92,14 @@ void TLogWindow::hideEvent(QShowEvent*) {
 
 // Call hideEvent() and accept close
 void TLogWindow::closeEvent(QCloseEvent* event) {
-    logger()->debug("closeEvent");
+    WZDEBUG("");
 
     hideEvent(0);
     event->accept();
 }
 
 void TLogWindow::loadConfig() {
-    logger()->debug("loadConfig");
+    WZDEBUG("");
 
     pref->beginGroup(objectName());
     QPoint p = pref->value("pos", QPoint()).toPoint();
@@ -118,7 +116,7 @@ void TLogWindow::loadConfig() {
 }
 
 void TLogWindow::saveConfig() {
-    logger()->debug("saveConfig");
+    WZDEBUG("");
 
     pref->beginGroup(objectName());
     pref->setValue("pos", pos());
@@ -153,8 +151,7 @@ void TLogWindow::onSaveButtonClicked() {
             stream << edit->toPlainText();
             file.close();
         } else {
-            // Error opening file
-            logger()->debug("save: error saving file");
+            WZERROR("failed to save file '" + s + "'");
             QMessageBox::warning (this,
                 tr("Error saving file"),
                 tr("The log couldn't be saved"),

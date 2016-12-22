@@ -68,7 +68,7 @@ void TVideoWindow::paintEvent(QPaintEvent* e) {
 }
 
 void TVideoWindow::setFastBackground() {
-    logger()->debug("setFastBackground");
+    WZDEBUG("");
 
     normal_background = false;
     // Disable restore background by system
@@ -84,7 +84,7 @@ void TVideoWindow::setFastBackground() {
 }
 
 void TVideoWindow::restoreNormalBackground() {
-    logger()->debug("restoreNormalBackground");
+    WZDEBUG("");
 
     normal_background = true;
     // Enable restore background by system
@@ -135,7 +135,7 @@ TPlayerWindow::~TPlayerWindow() {
 }
 
 void TPlayerWindow::setResolution(int width, int height) {
-    logger()->debug("setResolution: %1 x %2", width, height);
+    WZDEBUG(QString("%1 x %2").arg(width).arg(height));
 
     video_size = QSize(width, height);
     if (height == 0) {
@@ -181,8 +181,8 @@ void TPlayerWindow::updateSizeFactor() {
     if (!video_size.isEmpty()) {
         double old_factor = pref->size_factor;
         pref->size_factor = getSizeFactor();
-        logger()->trace(QString("updateSizeFactor: updating size from %1 to %2")
-                        .arg(old_factor).arg(pref->size_factor));
+        WZTRACE(QString("updating size from %1 to %2")
+                .arg(old_factor).arg(pref->size_factor));
         // Need to emit if old == new to detect changes by user
         emit videoSizeFactorChanged(old_factor, pref->size_factor);
     }
@@ -190,7 +190,7 @@ void TPlayerWindow::updateSizeFactor() {
 
 void TPlayerWindow::updateVideoWindow() {
     /*
-    debug << "updateVideoWindow: in vsize" << video_size
+    debug << "updateVideoWindow in vsize" << video_size
           << "wsize" << size()
           << "dsize" << TDesktop::size(this)
           << "zoom" << zoom()
@@ -251,7 +251,7 @@ void TPlayerWindow::updateVideoWindow() {
         emit videoOutChanged(vsize);
     }
 
-    //debug << "updateVideoWindow: out window" << vwin
+    //debug << "updateVideoWindow out window" << vwin
     //      << "video size" << vsize;
     //debug << debug;
 }
@@ -333,7 +333,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::onLeftClicked() {
-    logger()->debug("onLeftClicked");
+    WZDEBUG("");
 
     if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
         && video_window->underMouse()) {
@@ -352,11 +352,11 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
         if (dragging) {
             stopDragging();
         } else if (event->modifiers() != Qt::NoModifier) {
-            logger()->debug("mouseReleaseEvent: ignoring modified event");
+            WZDEBUG("ignoring modified event");
         } else if (left_button_pressed_time.elapsed()
                    >= QApplication::startDragTime()) {
-            logger()->debug("mouseReleaseEvent: canceled release event taking"
-                   " longer as %1 ms", QApplication::startDragTime());
+            WZDEBUG("canceled release event taking longer as " +
+                    QString::number(QApplication::startDragTime()) + " ms");
         } else if (delay_left_click) {
             if (!double_clicked) {
                 // Delay left click until double click has chance to arrive
@@ -401,7 +401,7 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
         else
             player->wheelDown();
     } else {
-        logger()->debug("wheelEvent: ignoring horizontal event");
+        WZDEBUG("ignoring horizontal event");
     }
 }
 
@@ -433,7 +433,7 @@ double TPlayerWindow::zoom() const {
 }
 
 void TPlayerWindow::setPan(const QPoint& pan, const QPoint& pan_fullscreen) {
-    debug << "setPan: pan" << pan << "pan full screen" << pan_fullscreen;
+    debug << "setPan pan" << pan << "pan full screen" << pan_fullscreen;
     debug << debug;
 
     pan_offset = pan;
@@ -479,12 +479,12 @@ void TPlayerWindow::setColorKey() {
 }
 
 void TPlayerWindow::setFastWindow() {
-    logger()->debug("setFastWindow");
+    WZDEBUG("");
     video_window->setFastBackground();
 }
 
 void TPlayerWindow::restoreNormalWindow(bool clrScreen) {
-    logger()->debug("restoreNormalWindow: repaint %1", clrScreen);
+    WZDEBUG("repaint " + QString::number(clrScreen));
 
     video_window->restoreNormalBackground();
     if (clrScreen) {

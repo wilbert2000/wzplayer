@@ -89,7 +89,7 @@ void TAssStyles::load(QSettings* set) {
 }
 
 bool TAssStyles::exportStyles(const QString& filename) const {
-    logger->debug("exportStyles: " + filename);
+    logger->debug("exportStyles '" + filename + "'");
 
 	QFile f(filename);
 	if (f.open(QFile::WriteOnly)) {

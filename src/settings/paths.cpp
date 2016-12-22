@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #endif
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "config.h"
 
 namespace Settings {
@@ -68,8 +68,7 @@ QString TPaths::location(TLocation type) {
 #endif
 #endif
 
-    logger()->debug("location: returning '%1' for %2",
-                    path, QString::number(type));
+    WZDEBUG("returning '" +path + "' for " + QString::number(type));
     return path;
 }
 
@@ -96,14 +95,13 @@ void TPaths::setConfigPath(const QString& path) {
     } else {
         config_path = path;
     }
-    logger()->info("setConfigPath: configuration path set to '%1'",
-                   config_path);
+    WZINFO("config path set to '" + config_path + "'");
 
     // Create config directory
 #ifndef PORTABLE_APP
     QDir dir(config_path);
     if (!dir.mkpath(config_path)) {
-        logger()->error("setConfigPath: failed to create '%1'", config_path);
+        WZERROR("failed to create '" + config_path + "'");
     }
 #endif
 
@@ -208,7 +206,7 @@ QString TPaths::fontPathPlayer(const QString& bin) {
 }
 
 QStringList TPaths::fonts(const QString& font_dir) {
-    logger()->debug("fonts: retrieving '%1'", font_dir);
+    WZDEBUG("retrieving '" + font_dir + "'");
 
     QDir dir(font_dir);
     return dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
@@ -237,7 +235,7 @@ QString TPaths::fontConfigFilename() {
 }
 
 void TPaths::createFontFile() {
-    logger()->debug("createFontFile");
+    WZDEBUG("");
 
     QString output = fontConfigFilename();
     QString fontDir = fontPath();
@@ -260,7 +258,7 @@ void TPaths::createFontFile() {
     // Use the font file from the selected font dir
     QString input = fontDir + "/fonts.conf";
     if (!QFile::exists(input)) {
-        logger()->warn("createFontFile: font.conf '%1' not found", input);
+        WZWARN("fonts.conf '" + input + "' not found");
         return;
     }
 
@@ -270,14 +268,14 @@ void TPaths::createFontFile() {
         text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
         text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
 
-        logger()->info("createFontFile: saving '%1'", output);
+        WZINFO("saving '" + output + "'");
         QFile outfile(output);
         if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
             outfile.write(text.toUtf8());
             outfile.close();
         }
     } else {
-       logger()->warn("createFontFile: failed to open '%1'", input);
+       WZWARN("failed to open '" + input + "'");
     }
 }
 #endif // Q_OS_WIN

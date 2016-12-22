@@ -66,7 +66,7 @@ QStringList TProcess::arguments() {
 
 void TProcess::start() {
     debug.level = Log4Qt::Level::INFO_INT;
-    debug << "start: program:" << program << "args:" << args;
+    debug << "start program:" << program << "args:" << args;
     debug << debug;
     debug.level = Log4Qt::Level::DEBUG_INT;
 
@@ -78,15 +78,14 @@ void TProcess::start() {
 void TProcess::handleLine(QString& line) {
 
     if (!parseLine(line)) {
-        logger()->trace("handleLine: ignored");
+        WZTRACE("ignored");
     }
 
     line_count++;
     if (line_count % 10000 == 0) {
-        logger()->debug("handleLine: parsed %1 lines at %2 lines per second",
-                        QString::number(line_count),
-                        QString::number((line_count * 1000.0)
-                                        / line_time.elapsed()));
+        WZDEBUG("parsed " + QString::number(line_count) +" lines at "
+                + QString::number((line_count * 1000.0) / line_time.elapsed())
+                + " lines per second");
     }
 }
 
@@ -139,8 +138,7 @@ void TProcess::readStdOut() {
 Do some clean up, and be sure that all output has been read.
 */
 void TProcess::procFinished() {
-    logger()->debug("procFinished: bytes available: %1",
-                    QString::number(bytesAvailable()));
+    WZDEBUG("bytes available " + QString::number(bytesAvailable()));
     if (bytesAvailable() > 0) {
         readStdOut();
     }

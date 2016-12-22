@@ -59,7 +59,7 @@ void TPlayerInfoMPV::getInfo() {
 }
 
 QList<QByteArray> TPlayerInfoMPV::run(QString options) {
-    logger()->debug("run: bin '" + bin + "' options '" + options + "'");
+    WZDEBUG("bin '" + bin + "', options '" + options + "'");
 
 	QList<QByteArray> r;
 
@@ -68,13 +68,13 @@ QList<QByteArray> TPlayerInfoMPV::run(QString options) {
 	proc.setProcessChannelMode(QProcess::MergedChannels);
 	proc.start(bin, args);
 	if (!proc.waitForStarted()) {
-        logger()->warn("run: process can't start!");
+        WZWARN("process can not start");
 		return r;
 	}
 
 	//Wait until finish
 	if (!proc.waitForFinished()) {
-        logger()->warn("run: process didn't finish. Killing it...");
+        WZWARN("process did not finish. Killing it...");
 		proc.kill();
 	}
 

@@ -104,17 +104,17 @@ int TTitleTracks::findTitleForVTS(int vts) {
 void TTitleTracks::list() const {
 
     Log4Qt::Logger* logger = Log4Qt::Logger::logger("Maps::TTitleTracks");
-    logger->debug("list: VTS count: %1", vtsCount);
-    logger->debug("list: selected VTS: %1", selectedVTS);
-    logger->debug("list: selected title ID: %1", selectedID);
+    logger->debug("list VTS count %1", vtsCount);
+    logger->debug("list selected VTS %1", selectedVTS);
+    logger->debug("list selected title ID %1", selectedID);
 	TTitleTrackIterator i(*this);
 	while (i.hasNext()) {
 		i.next();
 		TTitleData d = i.value();
-        logger->debug("list: ID: " + QString::number(d.getID())
-                      + " name: '" + d.getName()
-                      + "' duration: " + QString::number(d.getDuration())
-                      + " chapters: " + QString::number(d.chapters.count()));
+        logger->debug("list ID " + QString::number(d.getID())
+                      + ", name '" + d.getName()
+                      + "', duration " + QString::number(d.getDuration())
+                      + ", chapters " + QString::number(d.chapters.count()));
 	}
 }
 

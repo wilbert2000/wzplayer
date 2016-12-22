@@ -96,7 +96,7 @@ public:
     void runActionsLater(const QString& actions, bool postCheck);
 
 public slots:
-    virtual void open(const QString& file); // Generic open, autodetect type.
+    virtual void open(const QString& fileName); // Generic open, autodetect type.
     virtual void openFile();
     virtual void openURL();
     virtual void openVCD();

@@ -78,13 +78,11 @@ void TVideoEqualizer::reset() {
 }
 
 void TVideoEqualizer::on_reset_button_clicked() {
-	logger()->debug("TVideoEqualizer::on_reset_button_clicked");
-	reset();
+    reset();
 }
 
 void TVideoEqualizer::on_bysoftware_check_stateChanged(int state) {
-	logger()->debug("TVideoEqualizer::on_bysoftware_check_stateChanged");
-	emit bySoftwareChanged(state == Qt::Checked);
+    emit bySoftwareChanged(state == Qt::Checked);
 }
 
 void TVideoEqualizer::hideEvent(QHideEvent*) {

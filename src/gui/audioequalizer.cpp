@@ -27,6 +27,7 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "gui/eqslider.h"
+#include "wzdebug.h"
 
 
 using namespace Settings;
@@ -260,13 +261,14 @@ void TAudioEqualizer::setEqualizer(const TAudioEqualizerList& l) {
 	if (index >= 0) {
 		presets_combo->setCurrentIndex(index);
 	} else {
-		logger()->warn("TAudioEqualizer::setEqualizer: preset not found");
+        WZWARN("preset not found");
 	}
 	setValues(l, false);
 }
 
-void TAudioEqualizer::setValues(const TAudioEqualizerList& l, bool emitValuesChanged) {
-	logger()->debug("TAudioEqualizer::setValues");
+void TAudioEqualizer::setValues(const TAudioEqualizerList& l,
+                                bool emitValuesChanged) {
+    WZDEBUG("");
 
 	for (int n = 0; n < 10; n++) {
 		eq[n]->blockSignals(true);
@@ -279,7 +281,8 @@ void TAudioEqualizer::setValues(const TAudioEqualizerList& l, bool emitValuesCha
 }
 
 void TAudioEqualizer::presetChanged(int index) {
-	logger()->debug("TAudioEqualizer::presetChanged: %1", index);
+    WZDEBUG(QString::number(index));
+
 	int p = presets_combo->itemData(index).toInt();
 	if (p != User_defined) {
 		setValues(preset_list[p]);
@@ -306,7 +309,7 @@ void TAudioEqualizer::applyButtonClicked() {
 }
 
 void TAudioEqualizer::updatePresetCombo() {
-	logger()->debug("TAudioEqualizer::updatePresetCombo");
+    WZDEBUG("");
 
 	TAudioEqualizerList l;
 	for (int n = 0; n < 10; n++) {

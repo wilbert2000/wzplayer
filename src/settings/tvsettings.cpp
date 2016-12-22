@@ -21,7 +21,7 @@
 #include <QSettings>
 #include <QFileInfo>
 
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 #include "settings/mediasettings.h"
 #include "settings/paths.h"
 
@@ -53,26 +53,25 @@ bool TTVSettings::existSettingsFor(const QString& filename) {
     bool saved = value("saved", false).toBool();
     endGroup();
 
-    logger()->info("existSettingsFor: '" + filename
-                    + "' " + QString::number(saved));
+    WZINFO("'" + filename + "' " + QString::number(saved));
     return saved;
 }
 
 void TTVSettings::loadSettingsFor(const QString& filename, TMediaSettings& mset) {
-    logger()->info("loadSettingsFor: '" + filename + "'");
+    WZINFO("'" + filename + "'");
 
 	QString group_name = filenameToGroupname(filename);
-    logger()->debug("loadSettingsFor: group name: '" + group_name);
+    WZDEBUG("group name '" + group_name + "'");
 	beginGroup(group_name);
     mset.load(this);
 	endGroup();
 }
 
 void TTVSettings::saveSettingsFor(const QString& filename, TMediaSettings& mset) {
-    logger()->info("saveSettingsFor: '" + filename + "'");
+    WZINFO("'" + filename + "'");
 
 	QString group_name = filenameToGroupname(filename);
-    logger()->debug("saveSettingsFor: group name: '" + group_name + "'");
+    WZDEBUG("group name '" + group_name + "'");
 	beginGroup(group_name);
 	setValue("saved", true);
     mset.save(this);

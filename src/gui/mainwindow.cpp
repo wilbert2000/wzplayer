@@ -183,7 +183,7 @@ QString TMainWindow::settingsGroupName() {
 }
 
 void TMainWindow::createStatusBar() {
-    logger()->debug("createStatusBar");
+    WZDEBUG("");
 
     setMessageHandler(statusBar());
     msgSlot = new TMsgSlot(this);
@@ -228,7 +228,7 @@ void TMainWindow::createStatusBar() {
 }
 
 void TMainWindow::createPanel() {
-    logger()->debug("createPanel");
+    WZDEBUG("");
 
     panel = new QWidget(this);
     panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -237,7 +237,7 @@ void TMainWindow::createPanel() {
 }
 
 void TMainWindow::createPlayerWindow() {
-    logger()->debug("createPlayerWindow");
+    WZDEBUG("");
 
     playerwindow = new TPlayerWindow(panel);
     playerwindow->setObjectName("playerwindow");
@@ -308,7 +308,7 @@ void TMainWindow::createPlayer() {
 }
 
 void TMainWindow::createPlaylist() {
-    logger()->debug("createPlaylist");
+    WZDEBUG("");
 
     playlist = new Playlist::TPlaylist(this);
     connect(playlist, SIGNAL(playlistFinished()),
@@ -376,7 +376,7 @@ void TMainWindow::createAudioEqualizer() {
 }
 
 void TMainWindow::createActions() {
-    logger()->debug("createActions");
+    WZDEBUG("createActions");
 
     showContextMenuAct = new Action::TAction(this, "show_context_menu",
                                              tr("Show context menu"));
@@ -474,7 +474,7 @@ void TMainWindow::createActions() {
 } // createActions
 
 void TMainWindow::createMenus() {
-    logger()->debug("createMenus");
+    WZDEBUG("");
 
     // MENUS
     fileMenu = new Menu::TMenuFile(this);
@@ -520,7 +520,7 @@ void TMainWindow::createMenus() {
 } // createMenus()
 
 QMenu* TMainWindow::createToolbarMenu() {
-    logger()->debug("createToolbarMenu");
+    WZDEBUG("");
 
     // Use name "toolbar_menu" only for first
     QString name = toolbar_menu ? "" : "toolbar_menu";
@@ -558,7 +558,7 @@ void TMainWindow::showStatusBarPopup(const QPoint& pos) {
 }
 
 void TMainWindow::createToolbars() {
-    logger()->debug("createToolbars");
+    WZDEBUG("");
 
     menuBar()->setObjectName("menubar");
 
@@ -656,28 +656,27 @@ void TMainWindow::setupNetworkProxy() {
             proxy.setUser(pref->proxy_username);
             proxy.setPassword(pref->proxy_password);
         }
-        logger()->debug("setupNetworkProxy: using proxy: host: %1, port: %2,"
-                        " type: %3",
-               pref->proxy_host, pref->proxy_port, pref->proxy_type);
+        WZINFO("using proxy " + pref->proxy_host
+               + ":" + QString::number(pref->proxy_port)
+               + " type " + QString::number(pref->proxy_type));
     } else {
         // No proxy
         proxy.setType(QNetworkProxy::NoProxy);
-        logger()->debug("setupNetworkProxy: no proxy");
+        WZDEBUG("no proxy");
     }
 
     QNetworkProxy::setApplicationProxy(proxy);
 }
 
 void TMainWindow::sendEnableActions() {
-    logger()->debug("sendEnableActions: state " + player->stateToString());
+    WZDEBUG("state " + player->stateToString());
 
     timeslider_action->enable(player->statePOP());
-
     emit enableActions();
 }
 
 void TMainWindow::retranslateStrings() {
-    logger()->debug("retranslateStrings");
+    WZDEBUG("");
 
     setWindowIcon(Images::icon("logo", 64));
 
@@ -782,7 +781,7 @@ void TMainWindow::setFloatingToolbarsVisible(bool visible) {
 }
 
 void TMainWindow::showEvent(QShowEvent* event) {
-    logger()->debug("showEvent");
+    WZDEBUG("");
 
     if (event) {
         QMainWindow::showEvent(event);
@@ -791,7 +790,7 @@ void TMainWindow::showEvent(QShowEvent* event) {
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PAUSED
         && !ignore_show_hide_events) {
-        logger()->debug("showEvent: unpausing");
+        WZDEBUG("unpausing");
         player->play();
     }
 
@@ -799,7 +798,7 @@ void TMainWindow::showEvent(QShowEvent* event) {
 }
 
 void TMainWindow::hideEvent(QHideEvent* event) {
-    logger()->debug("hideEvent");
+    WZDEBUG("");
 
     if (event) {
         QMainWindow::hideEvent(event);
@@ -808,7 +807,7 @@ void TMainWindow::hideEvent(QHideEvent* event) {
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PLAYING
         && !ignore_show_hide_events) {
-        logger()->debug("hideEvent: pausing");
+        WZDEBUG("pausing");
         player->pause();
     }
 
@@ -856,7 +855,7 @@ void TMainWindow::createPreferencesDialog() {
 }
 
 void TMainWindow::createFilePropertiesDialog() {
-    logger()->debug("createFilePropertiesDialog");
+    WZDEBUG("");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -878,41 +877,28 @@ void TMainWindow::createFilePropertiesDialog() {
 }
 
 void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
-    logger()->debug("handleMessageFromOtherInstances: '%1'", message);
+    WZDEBUG("msg + '" + message + "'");
 
     int pos = message.indexOf(' ');
     if (pos > -1) {
         QString command = message.left(pos);
         QString arg = message.mid(pos+1);
-        logger()->debug("command: '%1'", command);
-        logger()->debug("arg: '%1'", arg);
-
         if (command == "open_file") {
             emit openFileRequested();
             open(arg);
-        }
-        else
-        if (command == "open_files") {
+        } else if (command == "open_files") {
             QStringList file_list = arg.split(" <<sep>> ");
             emit openFileRequested();
             openFiles(file_list);
-        }
-        else
-        if (command == "add_to_playlist") {
+        } else if (command == "add_to_playlist") {
             QStringList file_list = arg.split(" <<sep>> ");
             playlist->addFiles(file_list);
-        }
-        else
-        if (command == "media_title") {
+        } else if (command == "media_title") {
             QStringList list = arg.split(" <<sep>> ");
             player->addForcedTitle(list[0], list[1]);
-        }
-        else
-        if (command == "action") {
+        } else if (command == "action") {
             processAction(arg);
-        }
-        else
-        if (command == "load_sub") {
+        } else if (command == "load_sub") {
             setInitialSubtitle(arg);
             if (player->statePOP()) {
                 player->loadSub(arg);
@@ -936,7 +922,7 @@ TActionList TMainWindow::getAllNamedActions() const {
 }
 
 void TMainWindow::loadConfig() {
-    logger()->debug("loadConfig");
+    WZDEBUG("");
 
     // Disable actions
     sendEnableActions();
@@ -1079,7 +1065,7 @@ void TMainWindow::save() {
 }
 
 void TMainWindow::closeEvent(QCloseEvent* e)  {
-    logger()->debug("closeEvent");
+    WZDEBUG("");
 
     if (playlist->maybeSave()) {
         playlist->abortThread();
@@ -1093,7 +1079,7 @@ void TMainWindow::closeEvent(QCloseEvent* e)  {
 }
 
 void TMainWindow::closeWindow() {
-    logger()->debug("closeWindow");
+    WZDEBUG("");
 
     close();
 }
@@ -1113,7 +1099,7 @@ void TMainWindow::showLog(bool b) {
 }
 
 void TMainWindow::showPreferencesDialog() {
-    logger()->debug("showPreferencesDialog");
+    WZDEBUG("");
 
     if (!pref_dialog) {
         createPreferencesDialog();
@@ -1128,7 +1114,7 @@ void TMainWindow::showPreferencesDialog() {
 }
 
 void TMainWindow::restartApplication() {
-    logger()->debug("restartApplication");
+    WZDEBUG("");
 
     emit requestRestart();
 
@@ -1139,18 +1125,17 @@ void TMainWindow::restartApplication() {
 
     // Close and restart with the new settings
     if (close()) {
-        logger()->debug("restartApplication: closed main window");
+        WZDEBUG("closed main window");
         qApp->exit(TApp::NoExit);
     } else {
-        // TODO: messagebox...
-        logger()->warn("restartApplication: close canceled...");
+        WZWARN("close canceled");
     }
     return;
 }
 
 // The user has pressed OK in preferences dialog
 void TMainWindow::applyNewPreferences() {
-    logger()->debug("applyNewPreferences");
+    WZDEBUG("");
 
     QString old_player_bin = pref->player_bin;
 
@@ -1226,7 +1211,7 @@ void TMainWindow::applyNewPreferences() {
 } // TMainWindow::applyNewPreferences()
 
 void TMainWindow::showFilePropertiesDialog(bool checked) {
-    logger()->debug("showFilePropertiesDialog");
+    WZDEBUG("");
 
     if (checked) {
         if (!file_properties_dialog) {
@@ -1240,7 +1225,7 @@ void TMainWindow::showFilePropertiesDialog(bool checked) {
 }
 
 void TMainWindow::setDataToFileProperties() {
-    logger()->debug("setDataToFileProperties");
+    WZDEBUG("");
 
     Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
     i->getInfo();
@@ -1283,7 +1268,7 @@ void TMainWindow::setDataToFileProperties() {
 }
 
 void TMainWindow::applyFileProperties() {
-    logger()->debug("applyFileProperties");
+    WZDEBUG("");
 
     bool need_restart = false;
     bool demuxer_changed = false;
@@ -1357,7 +1342,7 @@ void TMainWindow::applyFileProperties() {
 }
 
 void TMainWindow::onMediaInfoChanged() {
-    logger()->debug("onMediaInfoChanged");
+    WZDEBUG("");
 
     if (file_properties_dialog && file_properties_dialog->isVisible()) {
         setDataToFileProperties();
@@ -1371,7 +1356,7 @@ void TMainWindow::onMediaInfoChanged() {
 }
 
 void TMainWindow::onNewMediaStartedPlaying() {
-    logger()->debug("onNewMediaStartedPlaying");
+    WZDEBUG("");
 
     enterFullscreenOnPlay();
 
@@ -1384,7 +1369,7 @@ void TMainWindow::onNewMediaStartedPlaying() {
 }
 
 void TMainWindow::updateVideoEqualizer() {
-    logger()->debug("updateVideoEqualizer");
+    WZDEBUG("");
 
     video_equalizer->setContrast(player->mset.contrast);
     video_equalizer->setBrightness(player->mset.brightness);
@@ -1394,13 +1379,13 @@ void TMainWindow::updateVideoEqualizer() {
 }
 
 void TMainWindow::updateAudioEqualizer() {
-    logger()->debug("updateAudioEqualizer");
+    WZDEBUG("");
 
     audio_equalizer->setEqualizer(player->getAudioEqualizer());
 }
 
 void TMainWindow::setDefaultValuesFromVideoEqualizer() {
-    logger()->debug("setDefaultValuesFromVideoEqualizer");
+    WZDEBUG("");
 
     pref->initial_contrast = video_equalizer->contrast();
     pref->initial_brightness = video_equalizer->brightness();
@@ -1414,7 +1399,7 @@ void TMainWindow::setDefaultValuesFromVideoEqualizer() {
 }
 
 void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
-    logger()->debug("changeVideoEqualizerBySoftware: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b != pref->use_soft_video_eq) {
         pref->use_soft_video_eq = b;
@@ -1423,7 +1408,7 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
 }
 
 void TMainWindow::openDirectory() {
-    logger()->debug("openDirectory");
+    WZDEBUG("");
 
     QString s = TFileDialog::getExistingDirectory(
                     this, tr("Choose a directory"),
@@ -1434,21 +1419,21 @@ void TMainWindow::openDirectory() {
     }
 }
 
-void TMainWindow::open(const QString &file) {
-    logger()->debug("open: " + file);
+void TMainWindow::open(const QString &fileName) {
+    WZDEBUG("'" + fileName + "'");
 
-    if (file.isEmpty()) {
-        logger()->warn("open: filename is empty");
+    if (fileName.isEmpty()) {
+        WZERROR("filename is empty");
         return;
     }
     if (!playlist->maybeSave()) {
         return;
     }
 
-    QFileInfo fi(file);
+    QFileInfo fi(fileName);
     if (fi.exists()) {
         if (fi.isDir()) {
-            playlist->playDirectory(file);
+            playlist->playDirectory(fileName);
             return;
         }
         QString ext = fi.suffix().toLower();
@@ -1459,15 +1444,15 @@ void TMainWindow::open(const QString &file) {
         pref->latest_dir = fi.absolutePath();
     }
 
-    player->open(file);
-    logger()->debug("open: done");
+    player->open(fileName);
+    WZDEBUG("done");
 }
 
 void TMainWindow::openFiles(const QStringList& files, const QString& current) {
-    logger()->debug("openFiles");
+    WZDEBUG("");
 
     if (files.empty()) {
-        logger()->debug("openFiles: no files in list to open");
+        WZDEBUG("no files in list to open");
         return;
     }
 
@@ -1478,7 +1463,7 @@ void TMainWindow::openFiles(const QStringList& files, const QString& current) {
 }
 
 void TMainWindow::openFile() {
-    logger()->debug("openFile");
+    WZDEBUG("");
 
     QString s = TFileDialog::getOpenFileName(
         this,
@@ -1497,7 +1482,7 @@ void TMainWindow::openFile() {
 }
 
 void TMainWindow::openRecent() {
-    logger()->debug("openRecent");
+    WZDEBUG("");
 
     QAction *a = qobject_cast<QAction *> (sender());
     if (a) {
@@ -1509,7 +1494,7 @@ void TMainWindow::openRecent() {
 }
 
 void TMainWindow::openURL() {
-    logger()->debug("openURL");
+    WZDEBUG("");
 
     TInputURL d(this);
 
@@ -1549,7 +1534,7 @@ void TMainWindow::configureDiscDevices() {
 }
 
 void TMainWindow::openVCD() {
-    logger()->debug("openVCD");
+    WZDEBUG("");
 
     if (pref->cdrom_device.isEmpty()) {
         configureDiscDevices();
@@ -1560,7 +1545,7 @@ void TMainWindow::openVCD() {
 }
 
 void TMainWindow::openAudioCD() {
-    logger()->debug("openAudioCD");
+    WZDEBUG("");
 
     if (pref->cdrom_device.isEmpty()) {
         configureDiscDevices();
@@ -1570,7 +1555,7 @@ void TMainWindow::openAudioCD() {
 }
 
 void TMainWindow::openDVD() {
-    logger()->debug("openDVD");
+    WZDEBUG("");
 
     if (pref->dvd_device.isEmpty()) {
         configureDiscDevices();
@@ -1580,17 +1565,14 @@ void TMainWindow::openDVD() {
 }
 
 void TMainWindow::openDVDFromFolder() {
-    logger()->debug("openDVDFromFolder");
+    WZDEBUG("");
 
     if (playlist->maybeSave()) {
-        TInputDVDDirectory *d = new TInputDVDDirectory(this);
-        d->setFolder(pref->last_dvd_directory);
-        if (d->exec() == QDialog::Accepted) {
-            logger()->debug("openDVDFromFolder: accepted");
-            openDVDFromFolder(d->folder());
+        TInputDVDDirectory d(this);
+        d.setFolder(pref->last_dvd_directory);
+        if (d.exec() == QDialog::Accepted) {
+            openDVDFromFolder(d.folder());
         }
-
-        delete d;
     }
 }
 
@@ -1601,7 +1583,7 @@ void TMainWindow::openDVDFromFolder(const QString &directory) {
 }
 
 void TMainWindow::openBluRay() {
-    logger()->debug("openBluRay");
+    WZDEBUG("");
 
     if (pref->bluray_device.isEmpty()) {
         configureDiscDevices();
@@ -1611,7 +1593,7 @@ void TMainWindow::openBluRay() {
 }
 
 void TMainWindow::openBluRayFromFolder() {
-    logger()->debug("openBluRayFromFolder");
+    WZDEBUG("");
 
     if (playlist->maybeSave()) {
         QString dir = QFileDialog::getExistingDirectory(this,
@@ -1626,7 +1608,7 @@ void TMainWindow::openBluRayFromFolder() {
 }
 
 void TMainWindow::loadSub() {
-    logger()->debug("loadSub");
+    WZDEBUG("");
 
     QString s = TFileDialog::getOpenFileName(
         this, tr("Choose a file"),
@@ -1639,13 +1621,13 @@ void TMainWindow::loadSub() {
 }
 
 void TMainWindow::setInitialSubtitle(const QString & subtitle_file) {
-    logger()->debug("setInitialSubtitle: '%1'", subtitle_file);
+    WZDEBUG("'" + subtitle_file + "'");
 
     player->setInitialSubtitle(subtitle_file);
 }
 
 void TMainWindow::loadAudioFile() {
-    logger()->debug("loadAudioFile");
+    WZDEBUG("");
 
     QString s = TFileDialog::getOpenFileName(
         this, tr("Choose a file"),
@@ -1680,6 +1662,7 @@ void TMainWindow::showConfigFolder() {
 }
 
 void TMainWindow::helpAbout() {
+
     TAbout d(this);
     d.exec();
 }
@@ -1732,6 +1715,7 @@ void TMainWindow::showSubDelayDialog() {
 }
 
 void TMainWindow::showStereo3dDialog() {
+
     TStereo3dDialog d(this);
     d.setInputFormat(player->mset.stereo3d_in);
     d.setOutputFormat(player->mset.stereo3d_out);
@@ -1749,16 +1733,16 @@ void TMainWindow::exitFullscreen() {
 }
 
 void TMainWindow::toggleFullscreen() {
-    logger()->debug("toggleFullscreen");
+    WZDEBUG("");
 
     toggleFullscreen(!pref->fullscreen);
 }
 
 void TMainWindow::toggleFullscreen(bool b) {
-    logger()->debug("toggleFullscreen: %1", b);
+    WZDEBUG(QString::number(b));
 
     if (b == pref->fullscreen) {
-        logger()->debug("toggleFullscreen: nothing to do");
+        WZDEBUG("nothing to do");
         return;
     }
 
@@ -1781,7 +1765,6 @@ void TMainWindow::toggleFullscreen(bool b) {
 }
 
 void TMainWindow::aboutToEnterFullscreen() {
-    //logger()->debug("aboutToEnterFullscreen");
 
     emit aboutToEnterFullscreenSignal();
 
@@ -1796,7 +1779,6 @@ void TMainWindow::aboutToEnterFullscreen() {
 }
 
 void TMainWindow::didEnterFullscreen() {
-    //logger()->debug("didEnterFullscreen");
 
     // Restore fullscreen state
     viewMenuBarAct->setChecked(fullscreen_menubar_visible);
@@ -1819,7 +1801,6 @@ void TMainWindow::didEnterFullscreen() {
 }
 
 void TMainWindow::aboutToExitFullscreen() {
-    //logger()->debug("aboutToExitFullscreen");
 
     auto_hide_timer->stop();
 
@@ -1833,7 +1814,6 @@ void TMainWindow::aboutToExitFullscreen() {
 }
 
 void TMainWindow::didExitFullscreen() {
-    //logger()->debug("didExitFullscreen");
 
     viewMenuBarAct->setChecked(menubar_visible);
     viewStatusBarAct->setChecked(statusbar_visible);
@@ -1855,7 +1835,7 @@ void TMainWindow::didExitFullscreen() {
 }
 
 void TMainWindow::leftClickFunction() {
-    logger()->debug("leftClickFunction");
+    WZDEBUG("");
 
     if (!pref->mouse_left_click_function.isEmpty()) {
         processAction(pref->mouse_left_click_function);
@@ -1863,7 +1843,7 @@ void TMainWindow::leftClickFunction() {
 }
 
 void TMainWindow::rightClickFunction() {
-    logger()->debug("rightClickFunction");
+    WZDEBUG("");
 
     if (!pref->mouse_right_click_function.isEmpty()) {
         processAction(pref->mouse_right_click_function);
@@ -1871,7 +1851,7 @@ void TMainWindow::rightClickFunction() {
 }
 
 void TMainWindow::doubleClickFunction() {
-    logger()->debug("doubleClickFunction");
+    WZDEBUG("");
 
     if (!pref->mouse_double_click_function.isEmpty()) {
         processAction(pref->mouse_double_click_function);
@@ -1879,7 +1859,7 @@ void TMainWindow::doubleClickFunction() {
 }
 
 void TMainWindow::middleClickFunction() {
-    logger()->debug("middleClickFunction");
+    WZDEBUG("");
 
     if (!pref->mouse_middle_click_function.isEmpty()) {
         processAction(pref->mouse_middle_click_function);
@@ -1887,7 +1867,7 @@ void TMainWindow::middleClickFunction() {
 }
 
 void TMainWindow::xbutton1ClickFunction() {
-    logger()->debug("xbutton1ClickFunction");
+    WZDEBUG("");
 
     if (!pref->mouse_xbutton1_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton1_click_function);
@@ -1895,7 +1875,7 @@ void TMainWindow::xbutton1ClickFunction() {
 }
 
 void TMainWindow::xbutton2ClickFunction() {
-    logger()->debug("xbutton2ClickFunction");
+    WZDEBUG("");
 
     if (!pref->mouse_xbutton2_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton2_click_function);
@@ -1907,37 +1887,35 @@ void TMainWindow::processAction(QString action_name) {
     // Check name for checkable actions
     static QRegExp func_rx("(.*) (true|false)");
     bool value = false;
-    bool checkableFunction = false;
+    bool booleanFunction = false;
 
     if (func_rx.indexIn(action_name) >= 0) {
         action_name = func_rx.cap(1);
         value = func_rx.cap(2) == "true";
-        checkableFunction = true;
+        booleanFunction = true;
     }
 
     QAction* action = findChild<QAction*>(action_name);
     if (action) {
         if (action->isEnabled()) {
-            if (action->isCheckable() && checkableFunction) {
-                logger()->debug("processAction: setting checked action '%1'"
-                                " to %2", action_name, QString::number(value));
+            if (action->isCheckable() && booleanFunction) {
+                WZDEBUG("setting action '" + action_name + " to "
+                        + QString::number(value));
                 action->setChecked(value);
             } else {
-                logger()->debug("processAction: triggering action '%1'",
-                                action_name);
+                WZDEBUG("triggering action '" + action_name + "'");
                 action->trigger();
             }
         } else {
-            logger()->warn("processAction: canceling disabled action '%1'",
-                           action_name);
+            WZWARN("canceling disabled action '" + action_name + "'");
         }
     } else {
-        logger()->warn("processAction: action '%1' not found", action_name);
+        WZWARN("action '" + action_name + "' not found");
     }
 }
 
 void TMainWindow::runActions(QString actions) {
-    logger()->debug("runActions");
+    WZDEBUG("");
 
     actions = actions.simplified(); // Remove white space
 
@@ -1950,17 +1928,17 @@ void TMainWindow::runActions(QString actions) {
 
         //set par if the next word is a boolean value
         if (n + 1 < actionsList.count()) {
-            if (actionsList[n + 1].toLower() == "true"
-                || actionsList[n + 1].toLower() == "false") {
-                par = actionsList[n + 1].toLower();
+            par = actionsList[n + 1].toLower();
+            if (par == "true" || par == "false") {
                 n++;
+            } else {
+                par = "";
             }
         }
 
         action = findChild<QAction*>(actionStr);
         if (action) {
-            logger()->debug("runActions: running action '%1' (par '%2')",
-                            actionStr, par);
+            WZDEBUG("running action '" + actionStr + "' " + par);
 
             if (action->isCheckable()) {
                 if (par.isEmpty()) {
@@ -1972,7 +1950,7 @@ void TMainWindow::runActions(QString actions) {
                 action->trigger();
             }
         } else {
-            logger()->warn("runActions: action '%1' not found", actionStr);
+            WZWARN("action '" + actionStr + "' not found");
         }
     } //end for
 }
@@ -1991,11 +1969,8 @@ void TMainWindow::checkPendingActionsToRun() {
         }
     }
 
-    if (actions.isEmpty()) {
-        logger()->debug("checkPendingActionsToRun: no actions to run");
-    } else {
-        logger()->debug("checkPendingActionsToRun: running actions: '%1'",
-                        actions);
+    if (!actions.isEmpty()) {
+        WZDEBUG("running actions '" + actions + "'");
         runActions(actions);
     }
 }
@@ -2009,7 +1984,7 @@ void TMainWindow::runActionsLater(const QString& actions, bool postCheck) {
 }
 
 void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {
-    logger()->debug("dragEnterEvent");
+    WZDEBUG("");
 
     if (e->mimeData()->hasUrls()) {
         if (e->proposedAction() & Qt::CopyAction) {
@@ -2026,14 +2001,13 @@ void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {
 }
 
 void TMainWindow::dropEvent(QDropEvent *e) {
-    logger()->debug("dropEvent");
+    WZDEBUG("");
 
     if (e->mimeData()->hasUrls()) {
         QStringList files;
         foreach(const QUrl url, e->mimeData()->urls()) {
             files.append(url.toString());
         }
-        logger()->debug("dropEvent: number of files: %1", files.count());
         openFiles(files);
         e->accept();
         return;
@@ -2051,11 +2025,6 @@ void TMainWindow::showContextMenu() {
 
 // Called by onNewMediaStartedPlaying() when a video starts playing
 void TMainWindow::enterFullscreenOnPlay() {
-    logger()->debug("enterFullscreenOnPlay: app start fs %1"
-                    ", pref start fs %2, fs %3",
-                    TApp::start_in_fullscreen,
-                    pref->start_in_fullscreen,
-                    pref->fullscreen);
 
     if (TApp::start_in_fullscreen != TApp::FS_FALSE) {
         if (pref->start_in_fullscreen || TApp::start_in_fullscreen > 0) {
@@ -2080,7 +2049,7 @@ void TMainWindow::exitFullscreenOnStop() {
 }
 
 void TMainWindow::onPlaylistFinished() {
-    logger()->debug("onPlaylistFinished");
+    WZDEBUG("");
 
     player->stop();
 
@@ -2093,7 +2062,7 @@ void TMainWindow::onPlaylistFinished() {
 }
 
 void TMainWindow::onStateChanged(Player::TState state) {
-    logger()->debug("onStateChanged: new state " + player->stateToString());
+    WZDEBUG("new state " + player->stateToString());
 
     sendEnableActions();
     auto_hide_timer->setAutoHideMouse(state == Player::STATE_PLAYING);
@@ -2181,7 +2150,7 @@ void TMainWindow::onDurationChanged(double duration) {
 }
 
 void TMainWindow::setSize(double factor) {
-    logger()->debug("setSize: %1", factor);
+    WZDEBUG(QString::number(factor));
 
     if (player->mdat.noVideo()) {
         return;
@@ -2218,7 +2187,7 @@ void TMainWindow::setSize(double factor) {
 }
 
 void TMainWindow::setSize(int percentage) {
-    logger()->debug("setSize %1%", percentage);
+    WZDEBUG(QString::number(percentage) + "%");
     setSize((double) percentage / 100);
 }
 
@@ -2232,7 +2201,7 @@ void TMainWindow::toggleDoubleSize() {
 }
 
 void TMainWindow::hidePanel() {
-    logger()->debug("hidePanel");
+    WZDEBUG("");
 
     if (panel->isVisible()) {
         // Exit from fullscreen
@@ -2247,7 +2216,7 @@ void TMainWindow::hidePanel() {
 }
 
 double TMainWindow::optimizeSize(double size) const {
-    logger()->trace("optimizeSize: size in %1", size);
+    WZDEBUG("size in " + QString::number(size));
 
     QSize res = playerwindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
@@ -2262,15 +2231,15 @@ double TMainWindow::optimizeSize(double size) const {
         if (size_y < size) {
             size = size_y;
         }
-        logger()->trace("optimizeSize: returning size %1 for fullscreen", size);
+        WZTRACE("returning size " + QString::number(size) + " for fullscreen");
         return size;
     }
 
     // Return current size for VO size change caused by TPlayer::setAspectRatio
     if (player->keepSize) {
         player->clearKeepSize();
-        logger()->trace("optimizeSize: keepSize set, returning current size %1",
-                        pref->size_factor);
+        WZTRACE("keepSize set, returning current size "
+                + QString::number(pref->size_factor));
         return pref->size_factor;
     }
 
@@ -2281,14 +2250,14 @@ double TMainWindow::optimizeSize(double size) const {
     // Adjust width
     double max = f * available_size.width();
     if (video_size.width() > max) {
-        logger()->trace("optimizeSize: limiting width to %1", max);
+        WZTRACE("limiting width to " + QString::number(max));
         size = max / res.width();
         video_size = res * size;
     }
     // Adjust height
     max = f * available_size.height();
     if (video_size.height() > max) {
-        logger()->trace("optimizeSize: limiting height to %1", max);
+        WZTRACE("limiting height to " + QString::number(max));
         size = max / res.height();
         video_size = res * size;
     }
@@ -2297,22 +2266,21 @@ double TMainWindow::optimizeSize(double size) const {
     double min = available_size.height() / 4;
     if (video_size.height() < min) {
         if (size == 1.0) {
-            logger()->trace("optimzeSize: selecting size 2.0 for small video");
+            WZTRACE("selecting size 2.0 for small video");
             return 2.0;
         }
         size = min / res.height();
-        logger()->trace("optimzeSize: selecting size for minimal height %1",
-                          min);
+        WZTRACE("selecting size for minimal height " + QString::number(min));
     }
 
     // Round to predefined values
     int i = qRound(size * 100);
     if (i <= 0) {
-        logger()->warn("optimizeSize: selecting size 1 for invalid size");
+        WZWARN("optimizeSize: selecting size 1 for invalid size");
         return 1;
     }
     if (i < 13 || i > 450) {
-        logger()->trace("optimzeSize: selected size %1", size);
+        WZTRACE("selected size " + QString::number(size));
         return size;
     }
 
@@ -2341,12 +2309,12 @@ double TMainWindow::optimizeSize(double size) const {
     } else {
         i = 400;
     }
-    logger()->trace("optimzeSize: rounding size to %1", i);
+    WZTRACE("rounding size to " + QString::number(i));
     return (double) i / 100;
 }
 
 void TMainWindow::optimizeSizeFactor() {
-    logger()->debug("optimizeSizeFactor");
+    WZTRACE("");
 
     if (pref->fullscreen) {
         player->setZoom(1.0);
@@ -2360,7 +2328,7 @@ double TMainWindow::getDefaultSize() const {
 }
 
 void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
-    logger()->debug("onVideoOutResolutionChanged: %1 x %2", w, h);
+    WZTRACE(QString::number(w) + " x " + QString::number(h));
 
     if (w <= 0 || h <= 0) {
         // No video
@@ -2386,9 +2354,8 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
         } else {
             // Adjust the size factor to the current window size
             playerwindow->updateSizeFactor();
-            logger()->debug("onVideoOutResolutionChanged: adjusted size factor"
-                            " to %1 to match current window size",
-                            pref->size_factor);
+            WZDEBUG("adjusted size factor to "
+                    + QString::number(pref->size_factor));
         }
     }
 
@@ -2434,7 +2401,6 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
             stickx = false;
         } else {
             p.rx() = x;
-            logger()->trace("resizeStickyWindow: sticking to right side");
         }
     }
     if (sticky) {
@@ -2443,7 +2409,6 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
             sticky = false;
         } else {
             p.ry() = y;
-            logger()->trace("resizeStickyWindow: sticking to bottom");
         }
     }
     if (stickx || sticky) {
@@ -2453,13 +2418,13 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
 
 void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
                                    bool try_twice) {
-    logger()->debug(QString("resizeMainWindow: requested video size %1 x %2"
-                            " window size %3")
-                    .arg(w).arg(h).arg(pref->size_factor));
+    WZDEBUG("requested video size " + QString::number(w)
+            + " x " + QString::number(h)
+            + " window size " + QString::number(pref->size_factor));
 
     QSize panel_size = QSize(w, h) * size_factor;
     if (panel_size == panel->size()) {
-        logger()->debug("resizeMainWindow: panel has requested size");
+        WZTRACE("panel has requested size");
         return;
     }
 
@@ -2473,8 +2438,8 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
         if (try_twice) {
             resizeMainWindow(w, h, size_factor, false);
         } else {
-            logger()->debug(QString("resizeMainWindow: resize failed. Panel"
-                                    " size now %1 x %2. Wanted size %3 x %4")
+            WZDEBUG(QString("resizeMainWindow: resize failed. Panel"
+                            " size now %1 x %2. Wanted size %3 x %4")
                             .arg(panel->size().width())
                             .arg(panel->size().height())
                             .arg(panel_size.width())
@@ -2485,7 +2450,7 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
 
 // Slot called when media settings reset or loaded
 void TMainWindow::onMediaSettingsChanged() {
-    logger()->debug("onMediaSettingsChanged");
+    WZDEBUG("");
 
     emit mediaSettingsChanged(&player->mset);
 
@@ -2506,11 +2471,11 @@ void TMainWindow::onDragPositionChanged(double t) {
 }
 
 void TMainWindow::setStayOnTop(bool b) {
-    logger()->debug("setStayOnTop: %1", b);
+    WZDEBUG(QString::number(b));
 
     bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
     if (b == stay_on_top) {
-        logger()->debug("setStayOnTop: WindowStaysOnTopHint already uptodate");
+        WZDEBUG("already set");
         return;
     }
 
@@ -2532,7 +2497,7 @@ void TMainWindow::setStayOnTop(bool b) {
 }
 
 void TMainWindow::changeStayOnTop(int stay_on_top) {
-    logger()->debug("changeStayOnTop: %1", stay_on_top);
+    WZDEBUG(QString::number(stay_on_top));
 
     switch (stay_on_top) {
         case TPreferences::AlwaysOnTop : setStayOnTop(true); break;
@@ -2547,7 +2512,6 @@ void TMainWindow::changeStayOnTop(int stay_on_top) {
 }
 
 void TMainWindow::checkStayOnTop(Player::TState) {
-    logger()->debug("checkStayOnTop");
 
     if (pref->fullscreen
         || pref->stay_on_top != TPreferences::WhilePlayingOnTop) {
@@ -2577,7 +2541,7 @@ void TMainWindow::toggleStayOnTop() {
 }
 
 void TMainWindow::onPlayerError(int exit_code) {
-    logger()->error("onPlayerError: %1", exit_code);
+    WZDEBUG(QString::number(exit_code));
 
     QString s = Player::Process::TExitMsg::message(exit_code)
                 + " (" + player->mdat.filename + ")";

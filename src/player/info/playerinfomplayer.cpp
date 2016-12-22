@@ -80,61 +80,48 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
     if (line.isEmpty())
         return;
 
+    // TODO: check early exits
+
 	if (!waiting_for_key) {
 		if ((reading_type == VO) || (reading_type == AO)) {
             if (rx_driver.indexIn(line) >= 0) {
 				QString name = rx_driver.cap(1);
 				QString desc = rx_driver.cap(2);
-                logger()->debug("readLine: found driver: '" + name
-                                + "' '" + desc + "'");
-				if (reading_type==VO) {
+                WZDEBUG("found driver: '" + name + "' '" + desc + "'");
+                if (reading_type == VO) {
 					vo_list.append(InfoData(name, desc));
-				} 
-				else
-				if (reading_type==AO) {
+                } else if (reading_type == AO) {
 					ao_list.append(InfoData(name, desc));
 				}
 			} else {
-                logger()->debug("readLine: skipping line: '" + line + "'");
+                WZDEBUG("skipping line: '" + line + "'");
 			}
-		}
-		else
-		if (reading_type == DEMUXER) {
+        } else if (reading_type == DEMUXER) {
             if (rx_demuxer.indexIn(line) >= 0) {
 				QString name = rx_demuxer.cap(1);
 				QString desc = rx_demuxer.cap(3);
-                logger()->debug("readLine: found demuxer: '" + name
-                                + "' '" + desc + "'");
+                WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
 				demuxer_list.append(InfoData(name, desc));
-			}
-			else 
-            if (rx_demuxer2.indexIn(line) >= 0) {
+            } else if (rx_demuxer2.indexIn(line) >= 0) {
 				QString name = rx_demuxer2.cap(1);
 				QString desc = rx_demuxer2.cap(2);
-                logger()->debug("readLine: found demuxer: '" + name
-                                + "' '" + desc + "'");
+                WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
 				demuxer_list.append(InfoData(name, desc));
+            } else {
+                WZDEBUG("skipping line: '" + line + "'");
 			}
-			else {
-                logger()->debug("readLine: skipping line: '" + line + "'");
-			}
-		}
-		else
-		if ((reading_type == VC) || (reading_type == AC)) {
+        } else if ((reading_type == VC) || (reading_type == AC)) {
             if (rx_codec.indexIn(line) >= 0) {
 				QString name = rx_codec.cap(1);
 				QString desc = rx_codec.cap(4);
-                logger()->debug("readLine: found codec: '"
-                                + name + "' '" + desc + "'");
-				if (reading_type==VC) {
+                WZDEBUG("found codec '" + name + "' '" + desc + "'");
+                if (reading_type == VC) {
 					vc_list.append(InfoData(name, desc));
-				} 
-				else
-				if (reading_type==AC) {
+                } else if (reading_type == AC) {
 					ac_list.append(InfoData(name, desc));
 				}
 			} else {
-                logger()->debug("readLine: skipping line '" + line + "'");
+                WZDEBUG("skipping line '" + line + "'");
 			}
 		}
 	}
@@ -142,39 +129,39 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
     if (rx_vo_key.indexIn(line) >= 0) {
 		reading_type = VO;
 		waiting_for_key = false;
-        logger()->debug("readLine: found key: vo");
+        WZDEBUG("found key vo");
 	}
 
     if (rx_ao_key.indexIn(line) >= 0) {
 		reading_type = AO;
 		waiting_for_key = false;
-        logger()->debug("readLine: found key: ao");
+        WZDEBUG("found key ao");
 	}
 
     if (rx_demuxer_key.indexIn(line) >= 0) {
 		reading_type = DEMUXER;
 		waiting_for_key = false;
-        logger()->debug("readLine: found key: demuxer");
+        WZDEBUG("found key demuxer");
 	}
 
     if (rx_ac_key.indexIn(line) >= 0) {
 		reading_type = AC;
 		waiting_for_key = false;
-        logger()->debug("readLine: found key: ac");
+        WZDEBUG("found key ac");
 	}
 
     if (rx_vc_key.indexIn(line) >= 0) {
 		reading_type = VC;
 		waiting_for_key = false;
-        logger()->debug("readLines: found key: vc");
+        WZDEBUG("found key vc");
 	}
 }
 
 bool TPlayerInfoMplayer::run(QString options) {
-    logger()->debug("run: '" + options + "'");
+    WZDEBUG("'" + options + "'");
 
 	if (proc->state() == QProcess::Running) {
-        logger()->warn("run: process already running");
+        WZWARN("process already running");
 		return false;
 	}
 
@@ -182,17 +169,17 @@ bool TPlayerInfoMplayer::run(QString options) {
 
 	proc->start(bin, args);
 	if (!proc->waitForStarted()) {
-        logger()->warn("run: process can't start!");
+        WZWARN("process can't start!");
 		return false;
 	}
 
 	//Wait until finish
 	if (!proc->waitForFinished()) {
-        logger()->warn("run: process didn't finish. Killing it...");
+        WZWARN("process did not finish. Killing it...");
 		proc->kill();
 	}
 
-    logger()->debug("run : terminating");
+    WZDEBUG("terminating");
 
 	QByteArray ba;
 	while (proc->canReadLine()) {

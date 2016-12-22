@@ -14,13 +14,13 @@ namespace Menu {
 
 
 TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
-	: TActionGroup(parent, "size")
-	, size_percentage(qRound(pref->size_factor * 100))
-	, playerWindow(pw) {
+    : TActionGroup(parent, "size")
+    , size_percentage(qRound(pref->size_factor * 100))
+    , playerWindow(pw) {
 
-	setEnabled(false);
+    setEnabled(false);
 
-	TActionGroupItem* a;
+    TActionGroupItem* a;
     a = new TActionGroupItem(this, this, "size_25", tr("25%"), 25, false);
     a->setShortcut(Qt::CTRL | Qt::Key_1);
     a = new TActionGroupItem(this, this, "size_50", tr("5&0%"), 50, false);
@@ -42,49 +42,49 @@ TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
     a = new TActionGroupItem(this, this, "size_400", tr("&400%"), 400, false);
     a->setShortcut(Qt::CTRL | Qt::Key_0);
 
-	setChecked(size_percentage);
+    setChecked(size_percentage);
 }
 
 void TVideoSizeGroup::uncheck() {
 
-	QAction* current = checkedAction();
-	if (current)
-		current->setChecked(false);
+    QAction* current = checkedAction();
+    if (current)
+        current->setChecked(false);
 }
 
 void TVideoSizeGroup::updateVideoSizeGroup() {
 
-	uncheck();
-	QSize s = playerWindow->resolution();
-	if (s.isEmpty()) {
-		setEnabled(false);
-		size_percentage = 0;
-	} else {
-		setEnabled(true);
-		double factorX, factorY;
-		playerWindow->getSizeFactors(factorX, factorY);
+    uncheck();
+    QSize s = playerWindow->resolution();
+    if (s.isEmpty()) {
+        setEnabled(false);
+        size_percentage = 0;
+    } else {
+        setEnabled(true);
+        double factorX, factorY;
+        playerWindow->getSizeFactors(factorX, factorY);
 
-		// Set size factor for menu
-		if (factorX < factorY) {
-			size_percentage = qRound(factorX * 100);
-		} else {
-			size_percentage = qRound(factorY * 100);
-		}
-
-		// Only set check menu when x and y factor agree on +/- half a pixel
-		// TODO: fuzzy...
-		double diffX = 0.5 / s.width() / factorX;
-		double diffY = 0.5 / s.height() / factorY;
-		if (diffY < diffX) {
-			diffX = diffY;
-		}
-		// Multiply allowed diff with zoom...
-		diffX *= playerWindow->zoom();
-		diffY = qAbs(factorX - factorY);
-		if (diffY < diffX) {
-			setChecked(size_percentage);
+        // Set size factor for menu
+        if (factorX < factorY) {
+            size_percentage = qRound(factorX * 100);
+        } else {
+            size_percentage = qRound(factorY * 100);
         }
-	}
+
+        // Only set check menu when x and y factor agree on +/- half a pixel
+        // TODO: fuzzy...
+        double diffX = 0.5 / s.width() / factorX;
+        double diffY = 0.5 / s.height() / factorY;
+        if (diffY < diffX) {
+            diffX = diffY;
+        }
+        // Multiply allowed diff with zoom...
+        diffX *= playerWindow->zoom();
+        diffY = qAbs(factorX - factorY);
+        if (diffY < diffX) {
+            setChecked(size_percentage);
+        }
+    }
 }
 
 
@@ -124,41 +124,41 @@ TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
 void TMenuVideoSize::enableActions() {
 
     bool enable = player->statePOP() && player->hasVideo();
-	group->setEnabled(enable);
-	doubleSizeAct->setEnabled(enable);
-	currentSizeAct->setEnabled(enable);
+    group->setEnabled(enable);
+    doubleSizeAct->setEnabled(enable);
+    currentSizeAct->setEnabled(enable);
     // Resize on load always enabled
 }
 
 void TMenuVideoSize::upd() {
 
-	group->updateVideoSizeGroup();
-	doubleSizeAct->setEnabled(group->isEnabled());
+    group->updateVideoSizeGroup();
+    doubleSizeAct->setEnabled(group->isEnabled());
     resizeOnLoadAct->setChecked(pref->resize_on_load);
-	currentSizeAct->setEnabled(group->isEnabled());
+    currentSizeAct->setEnabled(group->isEnabled());
 
-	// Update text and tips
+    // Update text and tips
     QString txt = tr("&Optimize (current size %1%)").arg(group->size_percentage);
-	currentSizeAct->setTextAndTip(txt);
+    currentSizeAct->setTextAndTip(txt);
 
     txt = tr("Size %1%").arg(group->size_percentage);
-	QString scut = menuAction()->shortcut().toString();
-	if (!scut.isEmpty()) {
-		txt += " (" + scut + ")";
-	}
-	menuAction()->setToolTip(txt);
+    QString scut = menuAction()->shortcut().toString();
+    if (!scut.isEmpty()) {
+        txt += " (" + scut + ")";
+    }
+    menuAction()->setToolTip(txt);
 }
 
 void TMenuVideoSize::onAboutToShow() {
-	upd();
+    upd();
 }
 
 void TMenuVideoSize::onVideoSizeFactorChanged() {
-	upd();
+    upd();
 }
 
 void TMenuVideoSize::onResizeOnLoadTriggered(bool b) {
-    logger()->info("onResizeOnLoadTriggered: setting resize on load to %1", b);
+    WZINFO("setting resize on load to " + QString::number(b));
 
     pref->resize_on_load = b;
 }
