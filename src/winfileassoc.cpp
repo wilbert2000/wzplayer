@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,25 +15,25 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-	Winfileassoc.cpp
+    Winfileassoc.cpp
 
-	Handles file associations in Windows 7/Vista/XP/2000.
-	We assume that the code is run without administrator privileges, so the associations are done for current user only.
-	System-wide associations require writing to HKEY_CLASSES_ROOT and we don't want to get our hands dirty with that.
-	Each user on the computer can configure his own set of file associations for WZPlayer, which is extremely cool.
+    Handles file associations in Windows 7/Vista/XP/2000.
+    We assume that the code is run without administrator privileges, so the associations are done for current user only.
+    System-wide associations require writing to HKEY_CLASSES_ROOT and we don't want to get our hands dirty with that.
+    Each user on the computer can configure his own set of file associations for WZPlayer, which is extremely cool.
 
-	Optionally, during uninstall, it would be a good idea to call RestoreFileAssociations for all media types so
-	that we can clean up the registry and restore the old associations for current user.
+    Optionally, during uninstall, it would be a good idea to call RestoreFileAssociations for all media types so
+    that we can clean up the registry and restore the old associations for current user.
 
-	Vista:
-	The code can only register the app as default program for selected extensions and check if it is the default.
-	It cannot restore 'old' default application, since this doesn't seem to be possible with the current Vista API.
+    Vista:
+    The code can only register the app as default program for selected extensions and check if it is the default.
+    It cannot restore 'old' default application, since this doesn't seem to be possible with the current Vista API.
 
-	Add libole32.a library if compiling with MinGW. In wzplayer.pro, under 'win32 {': LIBS += libole32
+    Add libole32.a library if compiling with MinGW. In wzplayer.pro, under 'win32 {': LIBS += libole32
 
-	Tested on: WinXP, Vista, Win7.
+    Tested on: WinXP, Vista, Win7.
 
-	Author: Florin Braghis (florin@libertv.ro)
+    Author: Florin Braghis (florin@libertv.ro)
 */
 
 #include "winfileassoc.h"
@@ -69,7 +69,7 @@ int WinFileAssoc::CreateFileAssociations(const QStringList &fileExtensions)
     // Check if classId exists in the registry
     if (!RegCR.contains(m_ClassId) && !RegCU.contains("Software/Classes/" + m_ClassId)) {
         // If doesn't exist (user didn't run the setup program), try to create the ClassId for current user.
-		if (!CreateClassId(QApplication::applicationFilePath(), "WZPlayer Media Player"))
+        if (!CreateClassId(QApplication::applicationFilePath(), "WZPlayer Media Player"))
             return 0;
     }
 
@@ -105,8 +105,8 @@ int WinFileAssoc::CreateFileAssociations(const QStringList &fileExtensions)
             RegCU.setValue(ExtKeyName + "/MPlayer_Backup_Application", KeyVal);
 
         // Create the associations
-        RegCU.setValue(CUKeyName + "/.", m_ClassId); 		// Extension class
-        RegCU.setValue(ExtKeyName + "/Progid", m_ClassId);	// Explorer FileExt association
+        RegCU.setValue(CUKeyName + "/.", m_ClassId);         // Extension class
+        RegCU.setValue(ExtKeyName + "/Progid", m_ClassId);    // Explorer FileExt association
 
         if (RegCU.status() == QSettings::NoError && RegCR.status() == QSettings::NoError)
             count++;
@@ -143,10 +143,10 @@ bool WinFileAssoc::GetRegisteredExtensions(const QStringList &extensionsToCheck,
         QString CurClassId = RegCU.value(FileExtsKey + "/Progid").toString();
         QString CurAppId = RegCU.value(FileExtsKey + "/Application").toString();
 
-        if (CurClassId.size()) {	// Registered with Open With... / ProgId ?
+        if (CurClassId.size()) {    // Registered with Open With... / ProgId ?
             bRegistered = (CurClassId == m_ClassId) || (0 == CurClassId.compare(m_ClassId2, Qt::CaseInsensitive));
         } else if (CurAppId.size()) {
-			// If user uses Open With..., explorer creates it's own ClassId under Application, usually "wzplayer.exe"
+            // If user uses Open With..., explorer creates it's own ClassId under Application, usually "wzplayer.exe"
             bRegistered = (CurAppId == m_ClassId) || (0 == CurAppId.compare(m_ClassId2, Qt::CaseInsensitive));
         } else {
             // No classId means that no associations exists in Default Programs or Explorer
@@ -251,7 +251,7 @@ bool WinFileAssoc::CreateClassId(const QString &executablePath, const QString &f
     Reg.setValue(classId + "/DefaultIcon/.", QString("\"%1\",1").arg(appPath));
 
     // Add "Enqueue" command
-	Reg.setValue(classId + "/shell/enqueue/.", QObject::tr("Enqueue in WZPlayer"));
+    Reg.setValue(classId + "/shell/enqueue/.", QObject::tr("Enqueue in WZPlayer"));
     Reg.setValue(classId + "/shell/enqueue/command/.", QString("\"%1\" -add-to-playlist \"%2\"").arg(appPath, "%1"));
     return true;
 }
@@ -323,7 +323,7 @@ int WinFileAssoc::VistaSetAppsAsDefault(const QStringList &fileExtensions)
 {
     IApplicationAssociationRegistration *pAAR;
     HRESULT hr = CoCreateInstance(CLSID_ApplicationAssociationReg,
-                                  NULL, CLSCTX_INPROC, IID_IApplicationAssociationReg,	(void **)&pAAR);
+                                  NULL, CLSCTX_INPROC, IID_IApplicationAssociationReg,    (void **)&pAAR);
 
     int count = 0;
 
@@ -347,7 +347,7 @@ bool WinFileAssoc::VistaGetDefaultApps(const QStringList &extensions, QStringLis
     IApplicationAssociationRegistration *pAAR;
 
     HRESULT hr = CoCreateInstance(CLSID_ApplicationAssociationReg,
-                                  NULL, CLSCTX_INPROC, IID_IApplicationAssociationReg,	(void **)&pAAR);
+                                  NULL, CLSCTX_INPROC, IID_IApplicationAssociationReg,    (void **)&pAAR);
 
     if (SUCCEEDED(hr) && (pAAR != NULL)) {
         foreach(const QString & fileExtension, extensions) {

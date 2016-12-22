@@ -1,5 +1,5 @@
 /*  WZPlayer, GUI front-end for mplayer and MPV.
-	Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
+    Parts copyright (C) 2006-2015 Ricardo Villalba <rvm@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-	Winfileassoc.h
-	Handles file associations in Windows
-	Author: Florin Braghis (florin@libertv.ro)
+    Winfileassoc.h
+    Handles file associations in Windows
+    Author: Florin Braghis (florin@libertv.ro)
 */
 
 #ifndef WINFILEASSOC_H
@@ -27,25 +27,29 @@
 #include <QString>
 #include <QStringList>
 
-class WinFileAssoc
-{
-protected:
-	QString m_ClassId; //Application ClassId
-	QString m_ClassId2; //The ClassId created by explorer if user selects 'Open With...', usually wzplayer.exe
-	QString m_AppName;
-
-protected:
-	bool CreateClassId(const QString& executablePath, const QString& friendlyName); 
-	bool RemoveClassId();
-	bool VistaGetDefaultApps(const QStringList &extensions, QStringList& registeredExt);
-	int  VistaSetAppsAsDefault(const QStringList& extensions);
+class WinFileAssoc {
 public:
-	WinFileAssoc(const QString ClassId = "MPlayerFileVideo", const QString AppName="WZPlayer");
-	//Checks the registry to see which extensions are registered with WZPlayer
-	bool GetRegisteredExtensions(const QStringList& extensionsToCheck, QStringList& registeredExtensions);
+    WinFileAssoc(const QString ClassId = "MPlayerFileVideo",
+                 const QString AppName="WZPlayer");
+    //Checks the registry to see which extensions are registered with WZPlayer
+    bool GetRegisteredExtensions(const QStringList& extensionsToCheck,
+                                 QStringList& registeredExtensions);
 
-	int CreateFileAssociations(const QStringList& fileExtensions); 
-	int RestoreFileAssociations(const QStringList& fileExtensions);
+    int CreateFileAssociations(const QStringList& fileExtensions);
+    int RestoreFileAssociations(const QStringList& fileExtensions);
+
+protected:
+    QString m_ClassId; // Application ClassId
+    QString m_ClassId2; // The ClassId created by explorer if user selects
+                        // 'Open With...', usually wzplayer.exe
+    QString m_AppName;
+
+    bool CreateClassId(const QString& executablePath,
+                       const QString& friendlyName);
+    bool RemoveClassId();
+    bool VistaGetDefaultApps(const QStringList &extensions,
+                             QStringList& registeredExt);
+    int  VistaSetAppsAsDefault(const QStringList& extensions);
 };
 
 #endif
