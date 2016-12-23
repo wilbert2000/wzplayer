@@ -178,10 +178,6 @@ TMainWindow::~TMainWindow() {
     setMessageHandler(0);
 }
 
-QString TMainWindow::settingsGroupName() {
-    return "mainwindow";
-}
-
 void TMainWindow::createStatusBar() {
     WZDEBUG("");
 
@@ -548,7 +544,7 @@ QMenu* TMainWindow::createToolbarMenu() {
 } // createToolbarMenu
 
 // Called by main window to show context popup.
-// Main window takes ownership of menu.
+// The main window takes ownership of the returned menu.
 QMenu* TMainWindow::createPopupMenu() {
     return createToolbarMenu();
 }
@@ -668,11 +664,298 @@ void TMainWindow::setupNetworkProxy() {
     QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void TMainWindow::sendEnableActions() {
-    WZDEBUG("state " + player->stateToString());
+void TMainWindow::createPreferencesDialog() {
 
-    timeslider_action->enable(player->statePOP());
-    emit enableActions();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    pref_dialog = new Pref::TDialog(this);
+    pref_dialog->setModal(false);
+    connect(pref_dialog, SIGNAL(applied()), this, SLOT(applyNewPreferences()));
+
+    QApplication::restoreOverrideCursor();
+}
+
+void TMainWindow::showPreferencesDialog() {
+    WZDEBUG("");
+
+    if (!pref_dialog) {
+        createPreferencesDialog();
+    }
+
+    pref_dialog->setData(pref);
+
+    pref_dialog->mod_input()->actions_editor->clear();
+    pref_dialog->mod_input()->actions_editor->addActions(this);
+
+    pref_dialog->show();
+}
+
+void TMainWindow::restartApplication() {
+    WZDEBUG("");
+
+    emit requestRestart();
+
+    // TODO:
+    // When fullscreen the window size will not yet be updated by the time it is
+    // saved by saveConfig. Block saving...
+    save_size = !pref->fullscreen;
+
+    // Close and restart with the new settings
+    if (close()) {
+        WZDEBUG("closed main window");
+        qApp->exit(TApp::NoExit);
+    } else {
+        WZWARN("close canceled");
+    }
+    return;
+}
+
+// The user has pressed OK in preferences dialog
+void TMainWindow::applyNewPreferences() {
+    WZDEBUG("");
+
+    QString old_player_bin = pref->player_bin;
+
+    // Update pref from dialog
+    pref_dialog->getData(pref);
+
+    // Save playlist preferences repeat and shuffle
+    playlist->saveSettings();
+
+    // Update and save actions
+    pref_dialog->mod_input()->actions_editor->applyChanges();
+    Action::TActionsEditor::saveToConfig(pref, this);
+
+    // Commit changes
+    pref->save();
+
+    // Player bin, style, icon set or language change need restart TApp
+    Pref::TInterface* mod_interface = pref_dialog->mod_interface();
+    if (pref->player_bin != old_player_bin
+        || mod_interface->styleChanged()
+        || mod_interface->iconsetChanged()
+        || mod_interface->languageChanged()) {
+        restartApplication();
+        return;
+    }
+
+    // Keeping the current main window
+
+    // Set color key, depends on VO
+    playerwindow->setColorKey();
+
+    // Forced demuxer
+    player->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
+
+    // Video equalizer
+    video_equalizer->setBySoftware(pref->use_soft_video_eq);
+
+    // Subtitles
+    subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
+
+    // Interface continued
+    // Show panel
+    if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+        resize(width(), height() + 200);
+        panel->show();
+    }
+    // Hide toolbars delay
+    auto_hide_timer->setInterval(pref->floating_hide_delay);
+    // Recents
+    if (mod_interface->recentsChanged()) {
+        fileMenu->updateRecents();
+    }
+
+    // Keyboard and mouse
+    playerwindow->setDelayLeftClick(pref->delay_left_click);
+
+    // Network
+    setupNetworkProxy();
+
+    // Update log window edit control
+    log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
+
+    // Reenable actions to reflect changes
+    sendEnableActions();
+
+    // TODO: move code above to preferencesChanged() signal
+    emit preferencesChanged();
+
+    // Restart video if needed
+    if (pref_dialog->requiresRestart()) {
+        player->restart();
+    }
+} // TMainWindow::applyNewPreferences()
+
+void TMainWindow::createFilePropertiesDialog() {
+    WZDEBUG("");
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    file_properties_dialog = new TFilePropertiesDialog(this, &player->mdat);
+    file_properties_dialog->setModal(false);
+    connect(file_properties_dialog, SIGNAL(applied()),
+            this, SLOT(applyFileProperties()));
+    connect(player, SIGNAL(videoBitRateChanged(int)),
+            file_properties_dialog, SLOT(showInfo()));
+    connect(player, SIGNAL(audioBitRateChanged(int)),
+            file_properties_dialog, SLOT(showInfo()));
+    TAction* action = findChild<TAction*>("view_properties");
+    if (action) {
+        connect(file_properties_dialog, SIGNAL(visibilityChanged(bool)),
+                action, SLOT(setChecked(bool)));
+    }
+
+    QApplication::restoreOverrideCursor();
+}
+
+void TMainWindow::setDataToFileProperties() {
+    WZDEBUG("");
+
+    Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
+    i->getInfo();
+    file_properties_dialog->setCodecs(i->vcList(), i->acList(),
+                                      i->demuxerList());
+
+    // Save a copy of the demuxer, video and audio codec
+    if (player->mset.original_demuxer.isEmpty())
+        player->mset.original_demuxer = player->mdat.demuxer;
+    if (player->mset.original_video_codec.isEmpty())
+        player->mset.original_video_codec = player->mdat.video_codec;
+    if (player->mset.original_audio_codec.isEmpty())
+        player->mset.original_audio_codec = player->mdat.audio_codec;
+
+    // Set demuxer, video and audio codec
+    QString demuxer = player->mset.forced_demuxer;
+    if (demuxer.isEmpty())
+        demuxer = player->mdat.demuxer;
+    QString vc = player->mset.forced_video_codec;
+    if (vc.isEmpty())
+        vc = player->mdat.video_codec;
+    QString ac = player->mset.forced_audio_codec;
+    if (ac.isEmpty())
+        ac = player->mdat.audio_codec;
+
+    file_properties_dialog->setDemuxer(demuxer, player->mset.original_demuxer);
+    file_properties_dialog->setVideoCodec(vc,
+                                          player->mset.original_video_codec);
+    file_properties_dialog->setAudioCodec(ac,
+                                          player->mset.original_audio_codec);
+
+    file_properties_dialog->setPlayerAdditionalArguments(
+                player->mset.player_additional_options);
+    file_properties_dialog->setPlayerAdditionalVideoFilters(
+                player->mset.player_additional_video_filters);
+    file_properties_dialog->setPlayerAdditionalAudioFilters(
+                player->mset.player_additional_audio_filters);
+
+    file_properties_dialog->showInfo();
+}
+
+void TMainWindow::applyFileProperties() {
+    WZDEBUG("");
+
+    bool need_restart = false;
+    bool demuxer_changed = false;
+
+    // Demuxer
+    QString prev_demuxer = player->mset.forced_demuxer;
+    QString s = file_properties_dialog->demuxer();
+    if (s == player->mset.original_demuxer) {
+        s = "";
+    }
+    if (s != player->mset.forced_demuxer) {
+        player->mset.forced_demuxer = s;
+        need_restart = true;
+    }
+    if (prev_demuxer != player->mset.forced_demuxer) {
+        // Demuxer changed
+        demuxer_changed = true;
+        player->mset.current_audio_id = TMediaSettings::NoneSelected;
+        player->mset.current_sub_idx = TMediaSettings::NoneSelected;
+    }
+
+    // Video codec
+    s = file_properties_dialog->videoCodec();
+    if (s == player->mset.original_video_codec) {
+        s = "";
+    }
+    if (s != player->mset.forced_video_codec) {
+        player->mset.forced_video_codec = s;
+        need_restart = true;
+    }
+
+    // Audio codec
+    s = file_properties_dialog->audioCodec();
+    if (s == player->mset.original_audio_codec) {
+        s = "";
+    }
+    if (s != player->mset.forced_audio_codec) {
+        player->mset.forced_audio_codec = s;
+        need_restart = true;
+    }
+
+    // Additional options
+    s = file_properties_dialog->playerAdditionalArguments();
+    if (s != player->mset.player_additional_options) {
+        player->mset.player_additional_options = s;
+        need_restart = true;
+    }
+
+    // Additional video filters
+    s = file_properties_dialog->playerAdditionalVideoFilters();
+    if (s != player->mset.player_additional_video_filters) {
+        player->mset.player_additional_video_filters = s;
+        need_restart = true;
+    }
+
+    // Additional audio filters
+    s = file_properties_dialog->playerAdditionalAudioFilters();
+    if (s != player->mset.player_additional_audio_filters) {
+        player->mset.player_additional_audio_filters = s;
+        need_restart = true;
+    }
+
+    // Restart the video to apply
+    if (need_restart) {
+        if (demuxer_changed) {
+            player->reload();
+        } else {
+            player->restart();
+        }
+    }
+}
+
+void TMainWindow::showFilePropertiesDialog(bool checked) {
+    WZDEBUG("");
+
+    if (checked) {
+        if (!file_properties_dialog) {
+            createFilePropertiesDialog();
+        }
+        setDataToFileProperties();
+        file_properties_dialog->show();
+    } else {
+        file_properties_dialog->hide();
+    }
+}
+
+void TMainWindow::showPlaylist(bool) {
+    // Overriden by TMainWindowPlus
+    // playlist->setVisible(b);
+}
+
+void TMainWindow::showLog(bool b) {
+
+    log_window->setVisible(b);
+    if (b) {
+        log_window->raise();
+        log_window->activateWindow();
+    }
+}
+
+void TMainWindow::setWindowCaption(const QString& title) {
+    setWindowTitle(title);
 }
 
 void TMainWindow::retranslateStrings() {
@@ -718,194 +1001,10 @@ void TMainWindow::retranslateStrings() {
     // Update actions view in preferences
     // It has to be done, here. The actions are translated after the
     // preferences dialog.
-    if (pref_dialog)
+    if (pref_dialog) {
         pref_dialog->mod_input()->actions_editor->updateView();
+    }
 } // retranslateStrings()
-
-void TMainWindow::displayVideoInfo() {
-
-    if (player->mdat.noVideo()) {
-        video_info_label->setText("");
-    } else {
-        QSize video_out_size = playerwindow->lastVideoOutSize();
-        video_info_label->setText(tr("%1x%2", "video source width x height")
-            .arg(player->mdat.video_width)
-            .arg(player->mdat.video_height)
-            + " " + QString::fromUtf8("\u279F") + " "
-            + tr("%1x%2 %3 fps", "video out width x height and fps")
-            .arg(video_out_size.width())
-            .arg(video_out_size.height())
-            .arg(player->mdat.video_fps));
-    }
-}
-
-void TMainWindow::displayInOutPoints() {
-
-    QString s;
-    int secs = qRound(player->mset.in_point);
-    if (secs > 0)
-        s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
-
-    secs = qRound(player->mset.out_point);
-    if (secs > 0) {
-        if (!s.isEmpty()) s += " ";
-        s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
-    }
-
-    if (player->mset.loop) {
-        if (!s.isEmpty()) s += " ";
-        s += tr("R", "Symbol for repeat in-out in statusbar");
-    }
-
-    in_out_points_label->setText(s);
-}
-
-void TMainWindow::displayFrames(bool b) {
-
-    pref->show_frames = b;
-    onDurationChanged(player->mdat.duration);
-}
-
-
-void TMainWindow::setFloatingToolbarsVisible(bool visible) {
-
-    if (toolbar->isFloating()) {
-        toolbar->setVisible(visible);
-    }
-    if (toolbar2->isFloating()) {
-        toolbar2->setVisible(visible);
-    }
-    if (controlbar->isFloating()) {
-        controlbar->setVisible(visible);
-    }
-}
-
-void TMainWindow::showEvent(QShowEvent* event) {
-    WZDEBUG("");
-
-    if (event) {
-        QMainWindow::showEvent(event);
-    }
-
-    if (pref->pause_when_hidden
-        && player->state() == Player::STATE_PAUSED
-        && !ignore_show_hide_events) {
-        WZDEBUG("unpausing");
-        player->play();
-    }
-
-    setFloatingToolbarsVisible(true);
-}
-
-void TMainWindow::hideEvent(QHideEvent* event) {
-    WZDEBUG("");
-
-    if (event) {
-        QMainWindow::hideEvent(event);
-    }
-
-    if (pref->pause_when_hidden
-        && player->state() == Player::STATE_PLAYING
-        && !ignore_show_hide_events) {
-        WZDEBUG("pausing");
-        player->pause();
-    }
-
-    setFloatingToolbarsVisible(false);
-}
-
-void TMainWindow::changeEvent(QEvent* e) {
-
-    if (e->type() == QEvent::LanguageChange) {
-        retranslateStrings();
-    } else {
-        QMainWindow::changeEvent(e);
-
-#if QT_VERSION_MAJOR >= 5
-        // Emulate show/hide events for Qt >= 5
-        if(e->type() == QEvent::WindowStateChange) {
-            bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState()
-                           == Qt::WindowMinimized;
-            if (was_min) {
-                if (!isMinimized()) {
-                    showEvent(0);
-                }
-            } else if (isMinimized()) {
-                hideEvent(0);
-            }
-        }
-#endif
-
-    }
-}
-
-void TMainWindow::setWindowCaption(const QString& title) {
-    setWindowTitle(title);
-}
-
-void TMainWindow::createPreferencesDialog() {
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    pref_dialog = new Pref::TDialog(this);
-    pref_dialog->setModal(false);
-    connect(pref_dialog, SIGNAL(applied()), this, SLOT(applyNewPreferences()));
-
-    QApplication::restoreOverrideCursor();
-}
-
-void TMainWindow::createFilePropertiesDialog() {
-    WZDEBUG("");
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    file_properties_dialog = new TFilePropertiesDialog(this, &player->mdat);
-    file_properties_dialog->setModal(false);
-    connect(file_properties_dialog, SIGNAL(applied()),
-            this, SLOT(applyFileProperties()));
-    connect(player, SIGNAL(videoBitRateChanged(int)),
-            file_properties_dialog, SLOT(showInfo()));
-    connect(player, SIGNAL(audioBitRateChanged(int)),
-            file_properties_dialog, SLOT(showInfo()));
-    TAction* action = findChild<TAction*>("view_properties");
-    if (action) {
-        connect(file_properties_dialog, SIGNAL(visibilityChanged(bool)),
-                action, SLOT(setChecked(bool)));
-    }
-
-    QApplication::restoreOverrideCursor();
-}
-
-void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
-    WZDEBUG("msg + '" + message + "'");
-
-    int pos = message.indexOf(' ');
-    if (pos > -1) {
-        QString command = message.left(pos);
-        QString arg = message.mid(pos+1);
-        if (command == "open_file") {
-            emit openFileRequested();
-            open(arg);
-        } else if (command == "open_files") {
-            QStringList file_list = arg.split(" <<sep>> ");
-            emit openFileRequested();
-            openFiles(file_list);
-        } else if (command == "add_to_playlist") {
-            QStringList file_list = arg.split(" <<sep>> ");
-            playlist->addFiles(file_list);
-        } else if (command == "media_title") {
-            QStringList list = arg.split(" <<sep>> ");
-            player->addForcedTitle(list[0], list[1]);
-        } else if (command == "action") {
-            processAction(arg);
-        } else if (command == "load_sub") {
-            setInitialSubtitle(arg);
-            if (player->statePOP()) {
-                player->loadSub(arg);
-            }
-        }
-    }
-}
 
 TActionList TMainWindow::getAllNamedActions() const {
 
@@ -919,6 +1018,10 @@ TActionList TMainWindow::getAllNamedActions() const {
     }
 
     return all_actions;
+}
+
+QString TMainWindow::settingsGroupName() {
+    return "mainwindow";
 }
 
 void TMainWindow::loadConfig() {
@@ -1064,281 +1167,179 @@ void TMainWindow::save() {
     pref->save();
 }
 
-void TMainWindow::closeEvent(QCloseEvent* e)  {
-    WZDEBUG("");
+void TMainWindow::displayVideoInfo() {
 
-    if (playlist->maybeSave()) {
-        playlist->abortThread();
-        player->close(Player::STATE_STOPPING);
-        exitFullscreen();
-        save();
-        e->accept();
+    if (player->mdat.noVideo()) {
+        video_info_label->setText("");
     } else {
-        e->ignore();
+        QSize video_out_size = playerwindow->lastVideoOutSize();
+        video_info_label->setText(tr("%1x%2", "video source width x height")
+            .arg(player->mdat.video_width)
+            .arg(player->mdat.video_height)
+            + " " + QString::fromUtf8("\u279F") + " "
+            + tr("%1x%2 %3 fps", "video out width x height and fps")
+            .arg(video_out_size.width())
+            .arg(video_out_size.height())
+            .arg(player->mdat.video_fps));
     }
 }
 
-void TMainWindow::closeWindow() {
-    WZDEBUG("");
+void TMainWindow::displayInOutPoints() {
 
-    close();
+    QString s;
+    int secs = qRound(player->mset.in_point);
+    if (secs > 0)
+        s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
+
+    secs = qRound(player->mset.out_point);
+    if (secs > 0) {
+        if (!s.isEmpty()) s += " ";
+        s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
+    }
+
+    if (player->mset.loop) {
+        if (!s.isEmpty()) s += " ";
+        s += tr("R", "Symbol for repeat in-out in statusbar");
+    }
+
+    in_out_points_label->setText(s);
 }
 
-void TMainWindow::showPlaylist(bool) {
-    // Overriden by TMainWindowPlus
-    // playlist->setVisible(b);
+void TMainWindow::displayFrames(bool b) {
+
+    pref->show_frames = b;
+    onDurationChanged(player->mdat.duration);
 }
 
-void TMainWindow::showLog(bool b) {
 
-    log_window->setVisible(b);
-    if (b) {
-        log_window->raise();
-        log_window->activateWindow();
+void TMainWindow::setFloatingToolbarsVisible(bool visible) {
+
+    if (toolbar->isFloating()) {
+        toolbar->setVisible(visible);
+    }
+    if (toolbar2->isFloating()) {
+        toolbar2->setVisible(visible);
+    }
+    if (controlbar->isFloating()) {
+        controlbar->setVisible(visible);
     }
 }
 
-void TMainWindow::showPreferencesDialog() {
+void TMainWindow::showEvent(QShowEvent* event) {
     WZDEBUG("");
 
-    if (!pref_dialog) {
-        createPreferencesDialog();
+    if (event) {
+        QMainWindow::showEvent(event);
     }
 
-    pref_dialog->setData(pref);
+    if (pref->pause_when_hidden
+        && player->state() == Player::STATE_PAUSED
+        && !ignore_show_hide_events) {
+        WZDEBUG("unpausing");
+        player->play();
+    }
 
-    pref_dialog->mod_input()->actions_editor->clear();
-    pref_dialog->mod_input()->actions_editor->addActions(this);
-
-    pref_dialog->show();
+    setFloatingToolbarsVisible(true);
 }
 
-void TMainWindow::restartApplication() {
+void TMainWindow::hideEvent(QHideEvent* event) {
     WZDEBUG("");
 
-    emit requestRestart();
+    if (event) {
+        QMainWindow::hideEvent(event);
+    }
 
-    // TODO:
-    // When fullscreen the window size will not yet be updated by the time it is
-    // saved by saveConfig. Block saving...
-    save_size = !pref->fullscreen;
+    if (pref->pause_when_hidden
+        && player->state() == Player::STATE_PLAYING
+        && !ignore_show_hide_events) {
+        WZDEBUG("pausing");
+        player->pause();
+    }
 
-    // Close and restart with the new settings
-    if (close()) {
-        WZDEBUG("closed main window");
-        qApp->exit(TApp::NoExit);
+    setFloatingToolbarsVisible(false);
+}
+
+void TMainWindow::changeEvent(QEvent* e) {
+
+    if (e->type() == QEvent::LanguageChange) {
+        retranslateStrings();
     } else {
-        WZWARN("close canceled");
+        QMainWindow::changeEvent(e);
+
+#if QT_VERSION_MAJOR >= 5
+        // Emulate show/hide events for Qt >= 5
+        if(e->type() == QEvent::WindowStateChange) {
+            bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState()
+                           == Qt::WindowMinimized;
+            if (was_min) {
+                if (!isMinimized()) {
+                    showEvent(0);
+                }
+            } else if (isMinimized()) {
+                hideEvent(0);
+            }
+        }
+#endif
+
     }
-    return;
 }
 
-// The user has pressed OK in preferences dialog
-void TMainWindow::applyNewPreferences() {
+void TMainWindow::showContextMenu(QPoint p) {
+    Menu::execPopup(this, contextMenu, p);
+}
+
+void TMainWindow::showContextMenu() {
+    showContextMenu(QCursor::pos());
+}
+
+void TMainWindow::setDefaultValuesFromVideoEqualizer() {
     WZDEBUG("");
 
-    QString old_player_bin = pref->player_bin;
+    pref->initial_contrast = video_equalizer->contrast();
+    pref->initial_brightness = video_equalizer->brightness();
+    pref->initial_hue = video_equalizer->hue();
+    pref->initial_saturation = video_equalizer->saturation();
+    pref->initial_gamma = video_equalizer->gamma();
 
-    // Update pref from dialog
-    pref_dialog->getData(pref);
+    QMessageBox::information(this, tr("Information"),
+                             tr("The current values have been stored to be "
+                                "used as default."));
+}
 
-    // Save playlist preferences repeat and shuffle
-    playlist->saveSettings();
+void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
+    WZDEBUG(QString::number(b));
 
-    // Update and save actions
-    pref_dialog->mod_input()->actions_editor->applyChanges();
-    Action::TActionsEditor::saveToConfig(pref, this);
-
-    // Commit changes
-    pref->save();
-
-    // Player bin, style, icon set or language change need restart TApp
-    Pref::TInterface* mod_interface = pref_dialog->mod_interface();
-    if (pref->player_bin != old_player_bin
-        || mod_interface->styleChanged()
-        || mod_interface->iconsetChanged()
-        || mod_interface->languageChanged()) {
-        restartApplication();
-        return;
-    }
-
-    // Keeping the current main window
-
-    // Set color key, depends on VO
-    playerwindow->setColorKey();
-
-    // Forced demuxer
-    player->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
-
-    // Video equalizer
-    video_equalizer->setBySoftware(pref->use_soft_video_eq);
-
-    // Subtitles
-    subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
-
-    // Interface continued
-    // Show panel
-    if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
-        resize(width(), height() + 200);
-        panel->show();
-    }
-    // Hide toolbars delay
-    auto_hide_timer->setInterval(pref->floating_hide_delay);
-    // Recents
-    if (mod_interface->recentsChanged()) {
-        fileMenu->updateRecents();
-    }
-
-    // Keyboard and mouse
-    playerwindow->setDelayLeftClick(pref->delay_left_click);
-
-    // Network
-    setupNetworkProxy();
-
-    // Update log window edit control
-    log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
-
-    // Reenable actions to reflect changes
-    sendEnableActions();
-
-    // TODO: move code above to preferencesChanged() signal
-    emit preferencesChanged();
-
-    // Restart video if needed
-    if (pref_dialog->requiresRestart()) {
+    if (b != pref->use_soft_video_eq) {
+        pref->use_soft_video_eq = b;
         player->restart();
     }
-} // TMainWindow::applyNewPreferences()
-
-void TMainWindow::showFilePropertiesDialog(bool checked) {
-    WZDEBUG("");
-
-    if (checked) {
-        if (!file_properties_dialog) {
-            createFilePropertiesDialog();
-        }
-        setDataToFileProperties();
-        file_properties_dialog->show();
-    } else {
-        file_properties_dialog->hide();
-    }
 }
 
-void TMainWindow::setDataToFileProperties() {
+void TMainWindow::updateVideoEqualizer() {
     WZDEBUG("");
 
-    Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
-    i->getInfo();
-    file_properties_dialog->setCodecs(i->vcList(), i->acList(),
-                                      i->demuxerList());
-
-    // Save a copy of the demuxer, video and audio codec
-    if (player->mset.original_demuxer.isEmpty())
-        player->mset.original_demuxer = player->mdat.demuxer;
-    if (player->mset.original_video_codec.isEmpty())
-        player->mset.original_video_codec = player->mdat.video_codec;
-    if (player->mset.original_audio_codec.isEmpty())
-        player->mset.original_audio_codec = player->mdat.audio_codec;
-
-    // Set demuxer, video and audio codec
-    QString demuxer = player->mset.forced_demuxer;
-    if (demuxer.isEmpty())
-        demuxer = player->mdat.demuxer;
-    QString vc = player->mset.forced_video_codec;
-    if (vc.isEmpty())
-        vc = player->mdat.video_codec;
-    QString ac = player->mset.forced_audio_codec;
-    if (ac.isEmpty())
-        ac = player->mdat.audio_codec;
-
-    file_properties_dialog->setDemuxer(demuxer, player->mset.original_demuxer);
-    file_properties_dialog->setVideoCodec(vc,
-                                          player->mset.original_video_codec);
-    file_properties_dialog->setAudioCodec(ac,
-                                          player->mset.original_audio_codec);
-
-    file_properties_dialog->setPlayerAdditionalArguments(
-                player->mset.player_additional_options);
-    file_properties_dialog->setPlayerAdditionalVideoFilters(
-                player->mset.player_additional_video_filters);
-    file_properties_dialog->setPlayerAdditionalAudioFilters(
-                player->mset.player_additional_audio_filters);
-
-    file_properties_dialog->showInfo();
+    video_equalizer->setContrast(player->mset.contrast);
+    video_equalizer->setBrightness(player->mset.brightness);
+    video_equalizer->setHue(player->mset.hue);
+    video_equalizer->setSaturation(player->mset.saturation);
+    video_equalizer->setGamma(player->mset.gamma);
 }
 
-void TMainWindow::applyFileProperties() {
+void TMainWindow::updateAudioEqualizer() {
+    WZDEBUG("");
+    audio_equalizer->setEqualizer(player->getAudioEqualizer());
+}
+
+// Slot called when media settings reset or loaded
+void TMainWindow::onMediaSettingsChanged() {
     WZDEBUG("");
 
-    bool need_restart = false;
-    bool demuxer_changed = false;
+    emit mediaSettingsChanged(&player->mset);
 
-    // Demuxer
-    QString prev_demuxer = player->mset.forced_demuxer;
-    QString s = file_properties_dialog->demuxer();
-    if (s == player->mset.original_demuxer) {
-        s = "";
-    }
-    if (s != player->mset.forced_demuxer) {
-        player->mset.forced_demuxer = s;
-        need_restart = true;
-    }
-    if (prev_demuxer != player->mset.forced_demuxer) {
-        // Demuxer changed
-        demuxer_changed = true;
-        player->mset.current_audio_id = TMediaSettings::NoneSelected;
-        player->mset.current_sub_idx = TMediaSettings::NoneSelected;
-    }
+    updateVideoEqualizer();
+    updateAudioEqualizer();
 
-    // Video codec
-    s = file_properties_dialog->videoCodec();
-    if (s == player->mset.original_video_codec) {
-        s = "";
-    }
-    if (s != player->mset.forced_video_codec) {
-        player->mset.forced_video_codec = s;
-        need_restart = true;
-    }
-
-    // Audio codec
-    s = file_properties_dialog->audioCodec();
-    if (s == player->mset.original_audio_codec) {
-        s = "";
-    }
-    if (s != player->mset.forced_audio_codec) {
-        player->mset.forced_audio_codec = s;
-        need_restart = true;
-    }
-
-    // Additional options
-    s = file_properties_dialog->playerAdditionalArguments();
-    if (s != player->mset.player_additional_options) {
-        player->mset.player_additional_options = s;
-        need_restart = true;
-    }
-
-    // Additional video filters
-    s = file_properties_dialog->playerAdditionalVideoFilters();
-    if (s != player->mset.player_additional_video_filters) {
-        player->mset.player_additional_video_filters = s;
-        need_restart = true;
-    }
-
-    // Additional audio filters
-    s = file_properties_dialog->playerAdditionalAudioFilters();
-    if (s != player->mset.player_additional_audio_filters) {
-        player->mset.player_additional_audio_filters = s;
-        need_restart = true;
-    }
-
-    // Restart the video to apply
-    if (need_restart) {
-        if (demuxer_changed) {
-            player->reload();
-        } else {
-            player->restart();
-        }
-    }
+    displayInOutPoints();
 }
 
 void TMainWindow::onMediaInfoChanged() {
@@ -1368,43 +1369,193 @@ void TMainWindow::onNewMediaStartedPlaying() {
     checkPendingActionsToRun();
 }
 
-void TMainWindow::updateVideoEqualizer() {
+void TMainWindow::onPlaylistFinished() {
     WZDEBUG("");
 
-    video_equalizer->setContrast(player->mset.contrast);
-    video_equalizer->setBrightness(player->mset.brightness);
-    video_equalizer->setHue(player->mset.hue);
-    video_equalizer->setSaturation(player->mset.saturation);
-    video_equalizer->setGamma(player->mset.gamma);
-}
+    player->stop();
 
-void TMainWindow::updateAudioEqualizer() {
-    WZDEBUG("");
-
-    audio_equalizer->setEqualizer(player->getAudioEqualizer());
-}
-
-void TMainWindow::setDefaultValuesFromVideoEqualizer() {
-    WZDEBUG("");
-
-    pref->initial_contrast = video_equalizer->contrast();
-    pref->initial_brightness = video_equalizer->brightness();
-    pref->initial_hue = video_equalizer->hue();
-    pref->initial_saturation = video_equalizer->saturation();
-    pref->initial_gamma = video_equalizer->gamma();
-
-    QMessageBox::information(this, tr("Information"),
-                             tr("The current values have been stored to be "
-                                "used as default."));
-}
-
-void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
-    WZDEBUG(QString::number(b));
-
-    if (b != pref->use_soft_video_eq) {
-        pref->use_soft_video_eq = b;
-        player->restart();
+    // Handle "Close on end of playlist" option
+    if (arg_close_on_finish != 0) {
+        if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
+            close();
+        }
     }
+}
+
+void TMainWindow::onPlayerError(int exit_code) {
+    WZERROR(QString::number(exit_code));
+
+    QString s = Player::Process::TExitMsg::message(exit_code)
+                + " (" + player->mdat.filename + ")";
+    msg(s, 0);
+
+    static bool busy = false;
+    if (pref->report_player_crashes
+        && !busy
+        && player->state() != Player::STATE_STOPPING) {
+        busy = true;
+        QMessageBox::warning(this,
+            tr("%1 process error").arg(pref->playerName()),
+            s + " \n"
+            + tr("See menu Window -> View log for details."),
+            QMessageBox::Ok);
+        busy = false;
+    }
+}
+
+void TMainWindow::onStateChanged(Player::TState state) {
+    WZDEBUG("new state " + player->stateToString());
+
+    sendEnableActions();
+    auto_hide_timer->setAutoHideMouse(state == Player::STATE_PLAYING);
+    switch (state) {
+        case Player::STATE_STOPPED:
+            setWindowCaption(TConfig::PROGRAM_NAME);
+            msg(tr("Ready"));
+            break;
+        case Player::STATE_PLAYING:
+            msg(tr("Playing %1").arg(player->mdat.displayName()));
+            break;
+        case Player::STATE_PAUSED:
+            msg(tr("Paused"));
+            break;
+        case Player::STATE_STOPPING:
+            msg(tr("Stopping..."));
+            break;
+        case Player::STATE_RESTARTING:
+            msg(tr("Restarting..."));
+            break;
+        case Player::STATE_LOADING:
+            msg(tr("Loading..."));
+            break;
+    }
+}
+
+void TMainWindow::onPositionChanged(double sec, bool changed) {
+
+    static int lastSec = -1111;
+
+    // TODO: <-1..0> looses sign
+    int s = sec;
+
+    if (s != lastSec) {
+        lastSec = s;
+        positionText = Helper::formatTime(s);
+        changed = true;
+    }
+
+    QString frames;
+    if (pref->show_frames) {
+        double fps = player->mdat.video_fps;
+        if (fps > 0) {
+            sec -= s;
+            if (sec < 0) {
+                sec = -sec;
+            }
+            sec *= fps;
+            // Fix floats. Example 0.84 * 25 = 20 if floored instead of 21
+            sec += 0.0001;
+            s = sec;
+            if (s < 10) {
+                frames = ".0" + QString::number(s);
+            } else {
+                frames = "."  + QString::number(s);
+            }
+            frames += player->mdat.fuzzy_time;
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        QString time = positionText + frames + durationText;
+        emit timeChanged(time);
+    }
+}
+
+void TMainWindow::onDurationChanged(double duration) {
+
+    durationText = " / " + Helper::formatTime(qRound(duration));
+
+    if (pref->show_frames) {
+        double fps = player->mdat.video_fps;
+        if (fps > 0) {
+            duration -= (int) duration;
+            QString frames = QString::number(qRound(duration * fps));
+            if (frames.length() < 2) {
+                frames = "0" + frames;
+            }
+            durationText += "." + frames;
+        }
+    }
+
+    onPositionChanged(player->mset.current_sec, true);
+}
+
+void TMainWindow::onDragPositionChanged(double t) {
+
+    QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
+    msg(s, 1000);
+
+    if (pref->fullscreen) {
+        player->displayTextOnOSD(s);
+    }
+}
+
+void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
+    WZDEBUG("msg + '" + message + "'");
+
+    int pos = message.indexOf(' ');
+    if (pos > -1) {
+        QString command = message.left(pos);
+        QString arg = message.mid(pos+1);
+        if (command == "open_file") {
+            emit openFileRequested();
+            open(arg);
+        } else if (command == "open_files") {
+            QStringList file_list = arg.split(" <<sep>> ");
+            emit openFileRequested();
+            openFiles(file_list);
+        } else if (command == "add_to_playlist") {
+            QStringList file_list = arg.split(" <<sep>> ");
+            playlist->addFiles(file_list);
+        } else if (command == "media_title") {
+            QStringList list = arg.split(" <<sep>> ");
+            player->addForcedTitle(list[0], list[1]);
+        } else if (command == "action") {
+            processAction(arg);
+        } else if (command == "load_sub") {
+            setInitialSubtitle(arg);
+            if (player->statePOP()) {
+                player->loadSub(arg);
+            }
+        }
+    }
+}
+
+void TMainWindow::closeEvent(QCloseEvent* e)  {
+    WZDEBUG("");
+
+    if (playlist->maybeSave()) {
+        playlist->abortThread();
+        player->close(Player::STATE_STOPPING);
+        exitFullscreen();
+        save();
+        e->accept();
+    } else {
+        e->ignore();
+    }
+}
+
+void TMainWindow::closeWindow() {
+    WZDEBUG("");
+    close();
+}
+
+void TMainWindow::sendEnableActions() {
+    WZDEBUG("state " + player->stateToString());
+
+    timeslider_action->enable(player->statePOP());
+    emit enableActions();
 }
 
 void TMainWindow::openDirectory() {
@@ -1733,8 +1884,6 @@ void TMainWindow::exitFullscreen() {
 }
 
 void TMainWindow::toggleFullscreen() {
-    WZDEBUG("");
-
     toggleFullscreen(!pref->fullscreen);
 }
 
@@ -1834,152 +1983,28 @@ void TMainWindow::didExitFullscreen() {
     emit didExitFullscreenSignal();
 }
 
-void TMainWindow::leftClickFunction() {
-    WZDEBUG("");
+// Called by onNewMediaStartedPlaying() when a video starts playing
+void TMainWindow::enterFullscreenOnPlay() {
 
-    if (!pref->mouse_left_click_function.isEmpty()) {
-        processAction(pref->mouse_left_click_function);
-    }
-}
-
-void TMainWindow::rightClickFunction() {
-    WZDEBUG("");
-
-    if (!pref->mouse_right_click_function.isEmpty()) {
-        processAction(pref->mouse_right_click_function);
-    }
-}
-
-void TMainWindow::doubleClickFunction() {
-    WZDEBUG("");
-
-    if (!pref->mouse_double_click_function.isEmpty()) {
-        processAction(pref->mouse_double_click_function);
-    }
-}
-
-void TMainWindow::middleClickFunction() {
-    WZDEBUG("");
-
-    if (!pref->mouse_middle_click_function.isEmpty()) {
-        processAction(pref->mouse_middle_click_function);
-    }
-}
-
-void TMainWindow::xbutton1ClickFunction() {
-    WZDEBUG("");
-
-    if (!pref->mouse_xbutton1_click_function.isEmpty()) {
-        processAction(pref->mouse_xbutton1_click_function);
-    }
-}
-
-void TMainWindow::xbutton2ClickFunction() {
-    WZDEBUG("");
-
-    if (!pref->mouse_xbutton2_click_function.isEmpty()) {
-        processAction(pref->mouse_xbutton2_click_function);
-    }
-}
-
-void TMainWindow::processAction(QString action_name) {
-
-    // Check name for checkable actions
-    static QRegExp func_rx("(.*) (true|false)");
-    bool value = false;
-    bool booleanFunction = false;
-
-    if (func_rx.indexIn(action_name) >= 0) {
-        action_name = func_rx.cap(1);
-        value = func_rx.cap(2) == "true";
-        booleanFunction = true;
-    }
-
-    QAction* action = findChild<QAction*>(action_name);
-    if (action) {
-        if (action->isEnabled()) {
-            if (action->isCheckable() && booleanFunction) {
-                WZDEBUG("setting action '" + action_name + " to "
-                        + QString::number(value));
-                action->setChecked(value);
-            } else {
-                WZDEBUG("triggering action '" + action_name + "'");
-                action->trigger();
+    if (TApp::start_in_fullscreen != TApp::FS_FALSE) {
+        if (pref->start_in_fullscreen || TApp::start_in_fullscreen > 0) {
+            if (!pref->fullscreen) {
+                toggleFullscreen(true);
             }
-        } else {
-            WZWARN("canceling disabled action '" + action_name + "'");
-        }
-    } else {
-        WZWARN("action '" + action_name + "' not found");
-    }
-}
 
-void TMainWindow::runActions(QString actions) {
-    WZDEBUG("");
-
-    actions = actions.simplified(); // Remove white space
-
-    QAction* action;
-    QStringList actionsList = actions.split(" ");
-
-    for (int n = 0; n < actionsList.count(); n++) {
-        QString actionStr = actionsList[n];
-        QString par = ""; //the parameter which the action takes
-
-        //set par if the next word is a boolean value
-        if (n + 1 < actionsList.count()) {
-            par = actionsList[n + 1].toLower();
-            if (par == "true" || par == "false") {
-                n++;
-            } else {
-                par = "";
+            // Clear TApp::start_in_fullscreen
+            if (TApp::start_in_fullscreen == TApp::FS_RESTART) {
+                TApp::start_in_fullscreen = TApp::FS_NOT_SET;
             }
         }
-
-        action = findChild<QAction*>(actionStr);
-        if (action) {
-            WZDEBUG("running action '" + actionStr + "' " + par);
-
-            if (action->isCheckable()) {
-                if (par.isEmpty()) {
-                    action->trigger();
-                } else {
-                    action->setChecked(par == "true");
-                }
-            } else {
-                action->trigger();
-            }
-        } else {
-            WZWARN("action '" + actionStr + "' not found");
-        }
-    } //end for
-}
-
-// Called by timer and onNewMediaStartedPlaying
-void TMainWindow::checkPendingActionsToRun() {
-
-    QString actions;
-    if (pending_actions_to_run.isEmpty()) {
-        actions = pref->actions_to_run;
-    } else {
-        actions = pending_actions_to_run;
-        pending_actions_to_run.clear();
-        if (!pref->actions_to_run.isEmpty()) {
-            actions = pref->actions_to_run + " " + actions;
-        }
-    }
-
-    if (!actions.isEmpty()) {
-        WZDEBUG("running actions '" + actions + "'");
-        runActions(actions);
     }
 }
 
-void TMainWindow::runActionsLater(const QString& actions, bool postCheck) {
+// Called when the playlist has stopped
+void TMainWindow::exitFullscreenOnStop() {
 
-    pending_actions_to_run = actions;
-    if (!pending_actions_to_run.isEmpty() && postCheck) {
-        QTimer::singleShot(100, this, SLOT(checkPendingActionsToRun()));
+    if (pref->fullscreen) {
+        toggleFullscreen(false);
     }
 }
 
@@ -2013,140 +2038,6 @@ void TMainWindow::dropEvent(QDropEvent *e) {
         return;
     }
     QMainWindow::dropEvent(e);
-}
-
-void TMainWindow::showContextMenu(QPoint p) {
-    Menu::execPopup(this, contextMenu, p);
-}
-
-void TMainWindow::showContextMenu() {
-    showContextMenu(QCursor::pos());
-}
-
-// Called by onNewMediaStartedPlaying() when a video starts playing
-void TMainWindow::enterFullscreenOnPlay() {
-
-    if (TApp::start_in_fullscreen != TApp::FS_FALSE) {
-        if (pref->start_in_fullscreen || TApp::start_in_fullscreen > 0) {
-            if (!pref->fullscreen) {
-                toggleFullscreen(true);
-            }
-
-            // Clear TApp::start_in_fullscreen
-            if (TApp::start_in_fullscreen == TApp::FS_RESTART) {
-                TApp::start_in_fullscreen = TApp::FS_NOT_SET;
-            }
-        }
-    }
-}
-
-// Called when the playlist has stopped
-void TMainWindow::exitFullscreenOnStop() {
-
-    if (pref->fullscreen) {
-        toggleFullscreen(false);
-    }
-}
-
-void TMainWindow::onPlaylistFinished() {
-    WZDEBUG("");
-
-    player->stop();
-
-    // Handle "Close on end of playlist" option
-    if (arg_close_on_finish != 0) {
-        if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
-            close();
-        }
-    }
-}
-
-void TMainWindow::onStateChanged(Player::TState state) {
-    WZDEBUG("new state " + player->stateToString());
-
-    sendEnableActions();
-    auto_hide_timer->setAutoHideMouse(state == Player::STATE_PLAYING);
-    switch (state) {
-        case Player::STATE_STOPPED:
-            setWindowCaption(TConfig::PROGRAM_NAME);
-            msg(tr("Ready"));
-            break;
-        case Player::STATE_PLAYING:
-            msg(tr("Playing %1").arg(player->mdat.displayName()));
-            break;
-        case Player::STATE_PAUSED:
-            msg(tr("Paused"));
-            break;
-        case Player::STATE_STOPPING:
-            msg(tr("Stopping..."));
-            break;
-        case Player::STATE_RESTARTING:
-            msg(tr("Restarting..."));
-            break;
-        case Player::STATE_LOADING:
-            msg(tr("Loading..."));
-            break;
-    }
-}
-
-void TMainWindow::onPositionChanged(double sec, bool changed) {
-
-    static int lastSec = -1111;
-
-    // TODO: <-1..0> looses sign
-    int s = sec;
-
-    if (s != lastSec) {
-        lastSec = s;
-        positionText = Helper::formatTime(s);
-        changed = true;
-    }
-
-    QString frames;
-    if (pref->show_frames) {
-        double fps = player->mdat.video_fps;
-        if (fps > 0) {
-            sec -= s;
-            if (sec < 0) {
-                sec = -sec;
-            }
-            sec *= fps;
-            // Fix floats. Example 0.84 * 25 = 20 if floored instead of 21
-            sec += 0.0001;
-            s = sec;
-            if (s < 10) {
-                frames = ".0" + QString::number(s);
-            } else {
-                frames = "."  + QString::number(s);
-            }
-            frames += player->mdat.fuzzy_time;
-            changed = true;
-        }
-    }
-
-    if (changed) {
-        QString time = positionText + frames + durationText;
-        emit timeChanged(time);
-    }
-}
-
-void TMainWindow::onDurationChanged(double duration) {
-
-    durationText = " / " + Helper::formatTime(qRound(duration));
-
-    if (pref->show_frames) {
-        double fps = player->mdat.video_fps;
-        if (fps > 0) {
-            duration -= (int) duration;
-            QString frames = QString::number(qRound(duration * fps));
-            if (frames.length() < 2) {
-                frames = "0" + frames;
-            }
-            durationText += "." + frames;
-        }
-    }
-
-    onPositionChanged(player->mset.current_sec, true);
 }
 
 void TMainWindow::setSize(double factor) {
@@ -2447,28 +2338,6 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
     }
 }
 
-// Slot called when media settings reset or loaded
-void TMainWindow::onMediaSettingsChanged() {
-    WZDEBUG("");
-
-    emit mediaSettingsChanged(&player->mset);
-
-    updateVideoEqualizer();
-    updateAudioEqualizer();
-
-    displayInOutPoints();
-}
-
-void TMainWindow::onDragPositionChanged(double t) {
-
-    QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
-    msg(s, 1000);
-
-    if (pref->fullscreen) {
-        player->displayTextOnOSD(s);
-    }
-}
-
 void TMainWindow::setStayOnTop(bool b) {
     WZDEBUG(QString::number(b));
 
@@ -2539,27 +2408,6 @@ void TMainWindow::toggleStayOnTop() {
         changeStayOnTop(TPreferences::NeverOnTop);
 }
 
-void TMainWindow::onPlayerError(int exit_code) {
-    WZDEBUG(QString::number(exit_code));
-
-    QString s = Player::Process::TExitMsg::message(exit_code)
-                + " (" + player->mdat.filename + ")";
-    msg(s, 0);
-
-    static bool busy = false;
-    if (pref->report_player_crashes
-        && !busy
-        && player->state() != Player::STATE_STOPPING) {
-        busy = true;
-        QMessageBox::warning(this,
-            tr("%1 process error").arg(pref->playerName()),
-            s + " \n"
-            + tr("See menu Window -> View log for details."),
-            QMessageBox::Ok);
-        busy = false;
-    }
-}
-
 #if defined(Q_OS_WIN)
 bool TMainWindow::winEvent (MSG* m, long* result) {
 
@@ -2580,6 +2428,155 @@ bool TMainWindow::winEvent (MSG* m, long* result) {
     return false;
 }
 #endif // defined(Q_OS_WIN)
+
+void TMainWindow::processAction(QString action_name) {
+
+    // Check name for checkable actions
+    static QRegExp func_rx("(.*) (true|false)");
+    bool value = false;
+    bool booleanFunction = false;
+
+    if (func_rx.indexIn(action_name) >= 0) {
+        action_name = func_rx.cap(1);
+        value = func_rx.cap(2) == "true";
+        booleanFunction = true;
+    }
+
+    QAction* action = findChild<QAction*>(action_name);
+    if (action) {
+        if (action->isEnabled()) {
+            if (action->isCheckable() && booleanFunction) {
+                WZDEBUG("setting action '" + action_name + " to "
+                        + QString::number(value));
+                action->setChecked(value);
+            } else {
+                WZDEBUG("triggering action '" + action_name + "'");
+                action->trigger();
+            }
+        } else {
+            WZWARN("canceling disabled action '" + action_name + "'");
+        }
+    } else {
+        WZWARN("action '" + action_name + "' not found");
+    }
+}
+
+void TMainWindow::runActions(QString actions) {
+    WZDEBUG("");
+
+    actions = actions.simplified(); // Remove white space
+
+    QAction* action;
+    QStringList actionsList = actions.split(" ");
+
+    for (int n = 0; n < actionsList.count(); n++) {
+        QString actionStr = actionsList[n];
+        QString par = ""; //the parameter which the action takes
+
+        //set par if the next word is a boolean value
+        if (n + 1 < actionsList.count()) {
+            par = actionsList[n + 1].toLower();
+            if (par == "true" || par == "false") {
+                n++;
+            } else {
+                par = "";
+            }
+        }
+
+        action = findChild<QAction*>(actionStr);
+        if (action) {
+            WZDEBUG("running action '" + actionStr + "' " + par);
+
+            if (action->isCheckable()) {
+                if (par.isEmpty()) {
+                    action->trigger();
+                } else {
+                    action->setChecked(par == "true");
+                }
+            } else {
+                action->trigger();
+            }
+        } else {
+            WZWARN("action '" + actionStr + "' not found");
+        }
+    } //end for
+}
+
+// Called by timer and onNewMediaStartedPlaying
+void TMainWindow::checkPendingActionsToRun() {
+
+    QString actions;
+    if (pending_actions_to_run.isEmpty()) {
+        actions = pref->actions_to_run;
+    } else {
+        actions = pending_actions_to_run;
+        pending_actions_to_run.clear();
+        if (!pref->actions_to_run.isEmpty()) {
+            actions = pref->actions_to_run + " " + actions;
+        }
+    }
+
+    if (!actions.isEmpty()) {
+        WZDEBUG("running actions '" + actions + "'");
+        runActions(actions);
+    }
+}
+
+void TMainWindow::runActionsLater(const QString& actions, bool postCheck) {
+
+    pending_actions_to_run = actions;
+    if (!pending_actions_to_run.isEmpty() && postCheck) {
+        QTimer::singleShot(100, this, SLOT(checkPendingActionsToRun()));
+    }
+}
+
+void TMainWindow::leftClickFunction() {
+    WZDEBUG("");
+
+    if (!pref->mouse_left_click_function.isEmpty()) {
+        processAction(pref->mouse_left_click_function);
+    }
+}
+
+void TMainWindow::rightClickFunction() {
+    WZDEBUG("");
+
+    if (!pref->mouse_right_click_function.isEmpty()) {
+        processAction(pref->mouse_right_click_function);
+    }
+}
+
+void TMainWindow::doubleClickFunction() {
+    WZDEBUG("");
+
+    if (!pref->mouse_double_click_function.isEmpty()) {
+        processAction(pref->mouse_double_click_function);
+    }
+}
+
+void TMainWindow::middleClickFunction() {
+    WZDEBUG("");
+
+    if (!pref->mouse_middle_click_function.isEmpty()) {
+        processAction(pref->mouse_middle_click_function);
+    }
+}
+
+void TMainWindow::xbutton1ClickFunction() {
+    WZDEBUG("");
+
+    if (!pref->mouse_xbutton1_click_function.isEmpty()) {
+        processAction(pref->mouse_xbutton1_click_function);
+    }
+}
+
+void TMainWindow::xbutton2ClickFunction() {
+    WZDEBUG("");
+
+    if (!pref->mouse_xbutton2_click_function.isEmpty()) {
+        processAction(pref->mouse_xbutton2_click_function);
+    }
+}
 
 } // namespace Gui
 
