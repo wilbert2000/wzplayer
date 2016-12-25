@@ -19,13 +19,13 @@
 #ifndef SETTINGS_FILESETTINGS_BASE_H
 #define SETTINGS_FILESETTINGS_BASE_H
 
-#include "settings/playersettings.h"
+#include <QSettings>
 #include "settings/mediasettings.h"
 
 
 namespace Settings {
 
-class TFileSettingsBase : public TPlayerSettings {
+class TFileSettingsBase : public QSettings {
 public:
     TFileSettingsBase(const QString& filename);
     virtual ~TFileSettingsBase();

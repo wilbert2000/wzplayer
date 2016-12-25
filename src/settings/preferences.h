@@ -22,11 +22,11 @@
 
 #include <QSize>
 #include <QString>
+#include <QSettings>
 
 #include "log4qt/level.h"
 #include "filters.h"
 #include "settings/updatecheckerdata.h"
-#include "settings/playersettings.h"
 #include "settings/assstyles.h"
 #include "settings/recents.h"
 #include "settings/urlhistory.h"
@@ -37,7 +37,7 @@ namespace Settings {
 typedef QList<QVariant> TAudioEqualizerList;
 
 
-class TPreferences : public TPlayerSettings {
+class TPreferences : public QSettings {
 public:
     enum TPlayerID { ID_MPLAYER = 0, ID_MPV = 1 };
     enum TOSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };

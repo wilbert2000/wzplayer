@@ -62,7 +62,6 @@ HEADERS += wzdebug.h \
     settings/aspectratio.h \
     settings/mediasettings.h \
     settings/filters.h \
-    settings/playersettings.h \
     settings/preferences.h \
     settings/filesettingsbase.h \
     settings/filesettings.h \
@@ -189,7 +188,6 @@ SOURCES += wzdebug.cpp \
     settings/aspectratio.cpp \
     settings/mediasettings.cpp \
     settings/filters.cpp \
-    settings/playersettings.cpp \
     settings/preferences.cpp \
     settings/filesettingsbase.cpp \
     settings/filesettings.cpp \

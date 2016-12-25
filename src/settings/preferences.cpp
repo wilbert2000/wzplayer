@@ -50,7 +50,7 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TPreferences)
 
 
 TPreferences::TPreferences() :
-    TPlayerSettings(TPaths::iniPath()) {
+    QSettings(TPaths::iniPath(), QSettings::IniFormat) {
 
     reset();
 }
