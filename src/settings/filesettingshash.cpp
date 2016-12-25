@@ -23,15 +23,44 @@
 
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
-#include "filehash.h" // hash function
 #include "wzdebug.h"
 
 
 namespace Settings {
 
+// From the patch by Kamil Dziobek turbos11(at)gmail.com
+// (c) Kamil Dziobek turbos11(at)gmail.com | BSD or GPL or public domain
+QString TFileSettingsHash::calculateHash(const QString& filename) {
+
+    QFile file(filename);
+    if (!file.exists()) {
+        Log4Qt::Logger::logger("Settings::TFileSettingsHash")->error(
+            "calculateHash file '" + filename + "' does not exist");
+        return QString();
+    }
+
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in.setByteOrder(QDataStream::LittleEndian);
+    quint64 size = file.size ();
+    quint64 hash = size;
+    quint64 a;
+    for(int i = 0; i < 8192; i++) {
+        in >> a ; hash += a;
+    };
+    file.seek(size - 65536);
+    for(int i = 0; i < 8192; i++) {
+        in >> a ; hash += a;
+    };
+
+    QString hexhash = QString("%1").arg(hash, 16, 16, QChar('0'));
+
+    return hexhash;
+}
+
 QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
 
-    QString hash = TFileHash::calculateHash(filename);
+    QString hash = calculateHash(filename);
     if (hash.isEmpty()) {
         return QString();
     }

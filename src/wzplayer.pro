@@ -65,7 +65,6 @@ HEADERS += wzdebug.h \
     settings/preferences.h \
     settings/filesettingsbase.h \
     settings/filesettings.h \
-    settings/filehash.h \
     settings/filesettingshash.h \
     settings/tvsettings.h \
     settings/recents.h \
@@ -191,7 +190,6 @@ SOURCES += wzdebug.cpp \
     settings/preferences.cpp \
     settings/filesettingsbase.cpp \
     settings/filesettings.cpp \
-    settings/filehash.cpp \
     settings/filesettingshash.cpp \
     settings/tvsettings.cpp \
     settings/recents.cpp \

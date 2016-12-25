@@ -37,6 +37,8 @@ public:
 
 private:
     static QString iniFilenameFor(const QString& filename);
+    static QString calculateHash(const QString& filename);
+
 };
 
 } // namespace Settings
