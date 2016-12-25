@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/action/favorites.h"
+#include "gui/action/menu/favorites.h"
 #include <QAction>
 #include <QSettings>
 #include <QFile>
@@ -24,13 +24,14 @@
 #include <QInputDialog>
 #include <QFileInfo>
 #include "gui/action/action.h"
-#include "gui/action/favoriteeditor.h"
+#include "gui/action/menu/favoriteeditor.h"
 #include "gui/mainwindow.h"
 
 #define FIRST_MENU_ENTRY 3
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 TFavorite::TFavorite() : is_subentry(false) {
 }
@@ -121,14 +122,6 @@ void TFavorites::populateMenu() {
             new_fav->getCurrentMedia(received_file_playing, received_title);
             connect(this, SIGNAL(sendCurrentMedia(const QString&, const QString&)),
                     new_fav, SLOT(getCurrentMedia(const QString&, const QString&)));
-            /*
-            new_fav->editAct()->setText(editAct()->text());
-            new_fav->jumpAct()->setText(jumpAct()->text());
-            new_fav->nextAct()->setText(nextAct()->text());
-            new_fav->previousAct()->setText(previousAct()->text());
-            new_fav->addCurrentAct()->setText(addCurrentAct()->text());
-            */
-
             child.push_back(new_fav);
 
             QAction* a = addMenu(new_fav);
@@ -403,6 +396,7 @@ void TFavorites::jump() {
     }
 } // class TFavorites::jump()
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

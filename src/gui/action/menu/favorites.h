@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_ACTION_FAVORITES_H
-#define GUI_ACTION_FAVORITES_H
+#ifndef GUI_ACTION_MENU_FAVORITES_H
+#define GUI_ACTION_MENU_FAVORITES_H
 
 #include "gui/action/menu/menu.h"
 #include <QString>
@@ -31,8 +31,9 @@ class QWidget;
 namespace Gui {
 namespace Action {
 
-
 class TAction;
+
+namespace Menu {
 
 class TFavorite {
 public:
@@ -130,8 +131,9 @@ protected:
     QList<TFavorites*> child;
 }; // class TFavorites
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_FAVORITES_H
+#endif // GUI_ACTION_MENU_FAVORITES_H
 

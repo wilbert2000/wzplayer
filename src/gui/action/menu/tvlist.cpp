@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/action/tvlist.h"
+#include "gui/action/menu/tvlist.h"
 
 #include <QFile>
 #include <QDir>
@@ -24,12 +24,13 @@
 
 #include "log4qt/log4qt.h"
 #include "gui/mainwindow.h"
-#include "gui/action/favoriteeditor.h"
+#include "gui/action/menu/favoriteeditor.h"
 #include "images.h"
 
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 TTVList::TTVList(TMainWindow* mw,
@@ -144,6 +145,7 @@ void TTVList::edit() {
     }
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

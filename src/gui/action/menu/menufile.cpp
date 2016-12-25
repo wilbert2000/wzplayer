@@ -4,8 +4,8 @@
 
 #include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
-#include "gui/action/favorites.h"
-#include "gui/action/tvlist.h"
+#include "gui/action/menu/favorites.h"
+#include "gui/action/menu/tvlist.h"
 #include "gui/action/action.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"

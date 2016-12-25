@@ -45,7 +45,7 @@
 
 #include "gui/desktop.h"
 #include "gui/msg.h"
-#include "gui/action/tvlist.h"
+#include "gui/action/menu/tvlist.h"
 
 
 using namespace Settings;
@@ -1502,7 +1502,7 @@ end_video_filters:
 
 #ifndef Q_OS_WIN
     if (pref->isMPV() && file.startsWith("dvb:")) {
-        QString channels_file = Gui::Action::TTVList::findChannelsFile();
+        QString channels_file = Gui::Action::Menu::TTVList::findChannelsFile();
         WZDEBUG("channels_file '" + channels_file + "'");
         if (!channels_file.isEmpty())
             proc->setChannelsFile(channels_file);

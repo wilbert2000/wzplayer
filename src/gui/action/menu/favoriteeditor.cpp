@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/action/favoriteeditor.h"
+#include "gui/action/menu/favoriteeditor.h"
 
 #include <QDebug>
 #include <QHeaderView>
@@ -78,6 +78,7 @@ void FEDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const 
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 QString TFavoriteEditor::last_dir;
 
@@ -358,6 +359,7 @@ void TFavoriteEditor::edit_icon(int row, int column) {
     }
 }
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 

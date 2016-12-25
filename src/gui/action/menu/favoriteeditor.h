@@ -16,11 +16,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_FAVORITEEDITOR_H
-#define GUI_FAVORITEEDITOR_H
+#ifndef GUI_ACTION_MENU_FAVORITEEDITOR_H
+#define GUI_ACTION_MENU_FAVORITEEDITOR_H
 
 #include "ui_favoriteeditor.h"
-#include "gui/action/favorites.h"
+#include "gui/action/menu/favorites.h"
 #include "log4qt/logger.h"
 
 
@@ -28,6 +28,7 @@ class QPixmap;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 class TFavoriteEditor : public QDialog, public Ui::TFavoriteEditor {
@@ -75,7 +76,8 @@ protected:
     QString store_path;
 };
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_FAVORITEEDITOR_H
+#endif // GUI_ACTION_MENU_FAVORITEEDITOR_H

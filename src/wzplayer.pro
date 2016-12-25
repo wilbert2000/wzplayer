@@ -85,9 +85,6 @@ HEADERS += wzdebug.h \
     gui/action/toolbareditor.h \
     gui/action/sizegrip.h \
     gui/action/editabletoolbar.h \
-    gui/action/favoriteeditor.h \
-    gui/action/favorites.h \
-    gui/action/tvlist.h \
     gui/action/menu/menu.h \
     gui/action/menu/menufile.h \
     gui/action/menu/menuplay.h \
@@ -103,6 +100,9 @@ HEADERS += wzdebug.h \
     gui/action/menu/menubrowse.h \
     gui/action/menu/menuwindow.h \
     gui/action/menu/menuhelp.h \
+    gui/action/menu/favorites.h \
+    gui/action/menu/tvlist.h \
+    gui/action/menu/favoriteeditor.h \
     gui/deviceinfo.h \
     gui/pref/languages.h \
     gui/pref/vdpauproperties.h \
@@ -209,9 +209,6 @@ SOURCES += wzdebug.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/sizegrip.cpp \
     gui/action/editabletoolbar.cpp \
-    gui/action/favoriteeditor.cpp \
-    gui/action/favorites.cpp \
-    gui/action/tvlist.cpp \
     gui/action/menu/menu.cpp \
     gui/action/menu/menufile.cpp \
     gui/action/menu/menuplay.cpp \
@@ -227,6 +224,9 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menubrowse.cpp \
     gui/action/menu/menuwindow.cpp \
     gui/action/menu/menuhelp.cpp \
+    gui/action/menu/favorites.cpp \
+    gui/action/menu/tvlist.cpp \
+    gui/action/menu/favoriteeditor.cpp \
     gui/deviceinfo.cpp \
     gui/pref/languages.cpp \
     gui/pref/vdpauproperties.cpp \
@@ -301,7 +301,7 @@ FORMS = gui/inputdvddirectory.ui \
     gui/stereo3ddialog.ui \
     gui/multilineinputdialog.ui \
     gui/action/toolbareditor.ui \
-    gui/action/favoriteeditor.ui \
+    gui/action/menu/favoriteeditor.ui \
     gui/pref/vdpauproperties.ui \
     gui/pref/dialog.ui \
     gui/pref/playersection.ui \

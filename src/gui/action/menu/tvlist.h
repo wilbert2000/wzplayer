@@ -16,10 +16,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_TVLIST_H
-#define GUI_TVLIST_H
+#ifndef GUI_ACTION_MENU_TVLIST_H
+#define GUI_ACTION_MENU_TVLIST_H
 
-#include "gui/action/favorites.h"
+#include "gui/action/menu/favorites.h"
 #include "log4qt/logger.h"
 
 
@@ -27,6 +27,7 @@ class QWidget;
 
 namespace Gui {
 namespace Action {
+namespace Menu {
 
 
 class TTVList : public TFavorites {
@@ -62,10 +63,11 @@ protected slots:
     virtual void edit();
 }; // class TTVList
 
+} // namespace Menu
 } // namespace Action
 } // namespace Gui
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::Action::TTVList::Services)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::Action::Menu::TTVList::Services)
 
-#endif // GUI_TVLIST_H
+#endif // GUI_ACTION_MENU_TVLIST_H
 
