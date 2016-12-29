@@ -76,7 +76,7 @@ void TTVList::parseChannelsConf(Services services) {
 
     QFile f(file);
     if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        WZDEBUG("can not open '" + file + "'");
+        WZDEBUG("cannot open '" + file + "'");
         return;
     }
 
