@@ -45,9 +45,13 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 
     info->setText(
         "<b>" + TConfig::PROGRAM_NAME
-        +"</b> &copy; 2015-2016 Wilbert Hengst.<br>"
-        + tr("Based on %1 by Ricardo Villalba.").arg("<a href=\""
-        + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
+        +"</b> &copy; 2015-2016 Wilbert Hengst.<br><br>"
+        + tr("WZPlayer is a graphical user interface for %1 and %2"
+             " based on %3 by Ricardo Villalba.")
+            .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">"
+                 "MPlayer</a>")
+            .arg("<a href=\"http://www.mpv.io\">MPV</a>")
+            .arg("<a href=\""  + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
         + "<br><br><b>" + tr("Version: %1").arg(TVersion::version) + "</b>"
 #if PORTABLE_APP
                 + " (" + tr("Portable Edition") + ")"
@@ -56,19 +60,12 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
                    .arg(qVersion()).arg(QT_VERSION_STR)
         + "<br><br><b>"+ tr("Links:") +"</b><br>"
         + tr("Website:") + " " + link(TConfig::URL_HOMEPAGE) + "<br>"
-        + tr("Issues:") +" "+  link(TConfig::URL_ISSUES) + "<br>"
-        + "<br>"
-        + tr("WZPlayer is a graphical user interface for %1 and %2.")
-            .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">"
-                 "MPlayer</a>").arg("<a href=\"http://www.mpv.io\">MPV</a>")
-        + "<br><br>" + tr("Subtitles service powered by %1")
-            .arg("<a href=\"http://www.opensubtitles.org\">"
-                 "www.OpenSubtitles.org</a>"));
+        + tr("Issues:") +" "+  link(TConfig::URL_ISSUES));
 
     QString license_text =
         "<i>This program is free software; you can redistribute it and/or"
-        "modify it under the terms of the GNU General Public License as"
-        "published by the Free Software Foundation; either version 2 of the"
+        " modify it under the terms of the GNU General Public License as"
+        " published by the Free Software Foundation; either version 2 of the"
         " license, or (at your option) any later version.</i><br><br>";
         
     QString license_file = TPaths::doc("gpl.html", "en");
