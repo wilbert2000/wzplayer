@@ -37,66 +37,78 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
     setupUi(this);
     setWindowIcon(Images::icon("logo", 64));
 
-    logo->setPixmap(QPixmap(":/default-theme/logo.png").scaledToHeight(64, Qt::SmoothTransformation));
+    logo->setPixmap(QPixmap(":/default-theme/logo.png")
+                    .scaledToHeight(64, Qt::SmoothTransformation));
     contrib_icon->setPixmap(Images::icon("contributors"));
     translators_icon->setPixmap(Images::icon("translators"));
     license_icon->setPixmap(Images::icon("license"));
 
     info->setText(
-        "<b>" + TConfig::PROGRAM_NAME +"</b> &copy; 2015-2016 Wilbert Hengst.<br>"
-        + tr("Based on %1 by Ricardo Villalba.").arg("<a href=\"" + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
-        + "<br><br>"
-        "<b>" + tr("Version: %1").arg(TVersion::version) + "</b>" +
+        "<b>" + TConfig::PROGRAM_NAME
+        +"</b> &copy; 2015-2016 Wilbert Hengst.<br>"
+        + tr("Based on %1 by Ricardo Villalba.").arg("<a href=\""
+        + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
+        + "<br><br><b>" + tr("Version: %1").arg(TVersion::version) + "</b>"
 #if PORTABLE_APP
-                " (" + tr("Portable Edition") + ")" +
+                + " (" + tr("Portable Edition") + ")"
 #endif
-        "<br>" +
-        tr("Using Qt %1 (compiled with Qt %2)").arg(qVersion()).arg(QT_VERSION_STR)
-        + "<br><br>"
-        + "<b>"+ tr("Links:") +"</b><br>"
+        + "<br>" + tr("Using Qt %1 (compiled with Qt %2)")
+                   .arg(qVersion()).arg(QT_VERSION_STR)
+        + "<br><br><b>"+ tr("Links:") +"</b><br>"
         + tr("Website:") + " " + link(TConfig::URL_HOMEPAGE) + "<br>"
         + tr("Issues:") +" "+  link(TConfig::URL_ISSUES) + "<br>"
         + "<br>"
-        + tr("WZPlayer is a graphical interface for %1 and %2.")
-            .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">MPlayer</a>")
-            .arg("<a href=\"http://www.mpv.io\">MPV</a>")
-        + "<br><br>"
-        + tr("Subtitles service powered by %1").arg("<a href=\"http://www.opensubtitles.org\">www.OpenSubtitles.org</a>"));
+        + tr("WZPlayer is a graphical user interface for %1 and %2.")
+            .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">"
+                 "MPlayer</a>").arg("<a href=\"http://www.mpv.io\">MPV</a>")
+        + "<br><br>" + tr("Subtitles service powered by %1")
+            .arg("<a href=\"http://www.opensubtitles.org\">"
+                 "www.OpenSubtitles.org</a>"));
 
     QString license_text =
-        "<i>"
-        "This program is free software; you can redistribute it and/or modify "
-        "it under the terms of the GNU General Public License as published by "
-        "the Free Software Foundation; either version 2 of the License, or "
-        "(at your option) any later version."  "</i><br><br>";
+        "<i>This program is free software; you can redistribute it and/or"
+        "modify it under the terms of the GNU General Public License as"
+        "published by the Free Software Foundation; either version 2 of the"
+        " license, or (at your option) any later version.</i><br><br>";
         
     QString license_file = TPaths::doc("gpl.html", "en");
     if (QFile::exists(license_file)) {
         license_file = QUrl::fromLocalFile(license_file).toString();
-        license_text += QString("<a href=\"%1\">%2</a>").arg(license_file).arg(tr("Read the entire license"));
+        license_text += QString("<a href=\"%1\">%2</a>")
+                        .arg(license_file).arg(tr("Read the entire license"));
     }
 
     if ((pref->language != "en") && (pref->language != "en_US")) {
-        QString license_trans_file = TPaths::doc("gpl.html", pref->language, false);
+        QString license_trans_file = TPaths::doc("gpl.html", pref->language,
+                                                 false);
         if (QFile::exists(license_trans_file)) {
-            license_trans_file = QUrl::fromLocalFile(license_trans_file).toString();
-            license_text += QString("<br><a href=\"%1\">%2</a>").arg(license_trans_file).arg(tr("Read a translation"));
+            license_trans_file = QUrl::fromLocalFile(license_trans_file)
+                                 .toString();
+            license_text += QString("<br><a href=\"%1\">%2</a>")
+                            .arg(license_trans_file)
+                            .arg(tr("Read a translation"));
         }
     }
     license->setText(license_text);
     license->setOpenLinks(false);
     license->setOpenExternalLinks(false);
-    connect(license, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(openLink(const QUrl&)));
+    connect(license, SIGNAL(anchorClicked(const QUrl &)),
+            this, SLOT(openLink(const QUrl&)));
 
     translators->setHtml(getTranslators());
 
     contributions->setText(
-        tr("WZPlayer logo by %1").arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;") + "<br><br>"
-        + tr("Packages for Windows created by %1").arg("redxii &lt;redxii@users.sourceforge.net&gt;") + "<br><br>"
-        + tr("Many other people contributed with patches. See the Changelog and Readme.txt for details."));
+        tr("WZPlayer logo by %1")
+            .arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;")
+        + "<br><br>" + tr("Packages for Windows created by %1")
+            .arg("redxii &lt;redxii@users.sourceforge.net&gt;")
+        + "<br><br>" + tr("Many other people contributed with patches."
+                          " See the Changelog and Readme.txt for details."));
 
-    // Copy the background color ("window") of the tab widget to the "base" color of the qtextbrowsers
-    // Problem, it doesn't work with some styles, so first we change the "window" color of the tab widgets.
+    // Copy the background color ("window") of the tab widget to the "base"
+    // color of the qtextbrowsers
+    // Problem, it doesn't work with some styles,
+    // so first we change the "window" color of the tab widgets.
     info_tab->setAutoFillBackground(true);
     contributions_tab->setAutoFillBackground(true);
     translations_tab->setAutoFillBackground(true);
@@ -130,11 +142,13 @@ TAbout::~TAbout() {
 QString TAbout::getTranslators() {
     return QString(
          tr("Many people contributed with translations.") +" "+
-         tr("You can also help to translate WZPlayer into your own language.") +"<p>"+
-         tr("Visit %1 and join a translation team.").arg("<a href=\"http://www.transifex.com/projects/p/wzplayer/\">http://www.transifex.com/projects/p/wzplayer/</a>") +
-        "<p><a href=\"" + TConfig::URL_TRANSLATORS + "\">" +
-         tr("Click here to know the translators from the transifex teams") +
-        "</a>");
+         tr("You can also help to translate WZPlayer into your own language.")
+         + "<p>" + tr("Visit %1 and join a translation team.")
+         .arg("<a href=\"http://www.transifex.com/projects/p/wzplayer/\">"
+              "http://www.transifex.com/projects/p/wzplayer/</a>")
+         + "<p><a href=\"" + TConfig::URL_TRANSLATORS + "\">"
+         + tr("Click here for the translators from the transifex teams")
+         + "</a>");
 }
 
 QString TAbout::trad(const QString & lang, const QString & author) {
