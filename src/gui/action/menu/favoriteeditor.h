@@ -45,7 +45,7 @@ public:
     void setIntro(const QString & intro);
     QString intro();
 
-    void setData(TFavoriteList list);
+    void setData(const TFavoriteList& list);
     TFavoriteList data();
 
     void setDialogIcon(const QPixmap& icon);

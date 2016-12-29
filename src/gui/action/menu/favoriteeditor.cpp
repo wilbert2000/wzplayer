@@ -170,42 +170,42 @@ const QPixmap* TFavoriteEditor::dialogIcon() const {
     return dialog_icon->pixmap();
 }
 
-void TFavoriteEditor::setData(TFavoriteList list) {
+void TFavoriteEditor::setData(const TFavoriteList& list) {
+
     table->setRowCount(list.count());
 
-    for (int n = 0; n < list.count(); n++) {
-        QTableWidgetItem* icon_item = new QTableWidgetItem;
-        icon_item->setIcon(QIcon(list[n].icon()));
-        icon_item->setData(Qt::UserRole, list[n].icon());
-        icon_item->setData(Qt::ToolTipRole, list[n].icon());
-        icon_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    int row = 0;
+    foreach(const TFavorite& fav, list) {
+        QTableWidgetItem* item = new QTableWidgetItem;
+        item->setIcon(QIcon(fav.icon()));
+        item->setData(Qt::UserRole, fav.icon());
+        item->setData(Qt::ToolTipRole, fav.icon());
+        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        table->setItem(row, COL_ICON, item);
 
-        QTableWidgetItem* name_item = new QTableWidgetItem;
-        name_item->setText(list[n].name());
+        item = new QTableWidgetItem;
+        item->setText(fav.name());
+        table->setItem(row, COL_NAME, item);
 
-        QTableWidgetItem* file_item = new QTableWidgetItem;
-        file_item->setData(Qt::ToolTipRole, list[n].file());
-        file_item->setData(Qt::UserRole, list[n].isSubentry());
-        if (list[n].isSubentry()) {
-            file_item->setFlags(Qt::ItemIsSelectable);
-            file_item->setData(Qt::UserRole + 1, list[n].file());
-            file_item->setText(tr("Favorite list"));
+        item = new QTableWidgetItem;
+        item->setData(Qt::ToolTipRole, fav.file());
+        item->setData(Qt::UserRole, fav.isSubentry());
+        if (fav.isSubentry()) {
+            item->setFlags(Qt::ItemIsSelectable);
+            item->setData(Qt::UserRole + 1, fav.file());
+            item->setText(tr("Favorite list"));
         } else {
-            file_item->setText(list[n].file());
+            item->setText(fav.file());
         }
-
-        table->setItem(n, COL_ICON, icon_item);
-        table->setItem(n, COL_NAME, name_item);
-        table->setItem(n, COL_FILE, file_item);
+        table->setItem(row, COL_FILE, item);
+        row++;
     }
 
-    //table->resizeColumnsToContents();
-
-    //table->setCurrentCell(0, 0);
     table->setCurrentCell(table->rowCount()-1, 0);
 }
 
 TFavoriteList TFavoriteEditor::data() {
+
     TFavoriteList list;
 
     for (int n = 0; n < table->rowCount(); n++) {
