@@ -136,7 +136,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 TAbout::~TAbout() {
 }
 
-QString TAbout::getTranslators() {
+QString TAbout::getTranslators() const {
     return QString(
          tr("Many people contributed with translations.") +" "+
          tr("You can also help to translate WZPlayer into your own language.")
@@ -148,27 +148,31 @@ QString TAbout::getTranslators() {
          + "</a>");
 }
 
-QString TAbout::trad(const QString & lang, const QString & author) {
+QString TAbout::trad(const QString & lang, const QString & author) const {
     return trad(lang, QStringList() << author);
 }
 
-QString TAbout::trad(const QString & lang, const QStringList & authors) {
+QString TAbout::trad(const QString& lang, const QStringList& authors) const {
+
     QString s;
     for (int n = 0; n < authors.count(); n++) {
         QString author = authors[n];
         s += author.replace("<", "&lt;").replace(">", "&gt;");
-        if (n < (authors.count()-1)) s += ", ";
+        if (n < authors.count() - 1) {
+            s += ", ";
+        }
     }
-    //return QString("<h3>%1:</h3><h4>%2</h4><hr>").arg(lang).arg(s);
     return QString("<p><b>%1</b>: %2</p>").arg(lang).arg(s);
 }
 
-QString TAbout::link(const QString & url, QString name) {
-    if (name.isEmpty()) name = url;
+QString TAbout::link(const QString& url, QString name) const {
+
+    if (name.isEmpty())
+        name = url;
     return QString("<a href=\"" + url + "\">" + name +"</a>");
 }
 
-QString TAbout::contr(const QString & author, const QString & thing) {
+QString TAbout::contr(const QString& author, const QString& thing) const {
     return "<li>"+ tr("<b>%1</b> (%2)").arg(author).arg(thing) +"</li>";
 }
 

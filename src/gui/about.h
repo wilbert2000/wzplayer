@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_ABOUT_H_
-#define _GUI_ABOUT_H_
+#ifndef GUI_ABOUT_H
+#define GUI_ABOUT_H
 
 #include "ui_about.h"
 
@@ -33,8 +33,7 @@ class QUrl;
 
 namespace Gui {
 
-class TAbout : public QDialog, public Ui::TAbout
-{
+class TAbout : public QDialog, public Ui::TAbout {
     Q_OBJECT
 
 public:
@@ -44,17 +43,17 @@ public:
     virtual QSize sizeHint () const;
 
 protected:
-    QString getTranslators();
+    QString getTranslators() const;
 
     //! Return a formatted string with the translator and language
-    QString trad(const QString & lang, const QString & author);
+    QString trad(const QString& lang, const QString& author) const;
 
-    QString trad(const QString & lang, const QStringList & authors);
+    QString trad(const QString& lang, const QStringList& authors) const;
 
-    QString link(const QString & url, QString name = "");
+    QString link(const QString& url, QString name = "") const;
 
     //! Return a formatted string with the contributor and what he did
-    QString contr(const QString & author, const QString & thing);
+    QString contr(const QString& author, const QString & thing) const;
 
 protected slots:
     void openLink(const QUrl & link);
@@ -62,4 +61,4 @@ protected slots:
 
 } // namespace Gui
 
-#endif // _GUI_ABOUT_H_
+#endif // GUI_ABOUT_H
