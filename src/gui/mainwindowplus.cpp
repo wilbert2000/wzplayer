@@ -136,10 +136,9 @@ void TMainWindowPlus::retranslateStrings() {
 
 void TMainWindowPlus::changeEvent(QEvent* e) {
 
+    TMainWindow::changeEvent(e);
     if (e->type() == QEvent::LanguageChange) {
         retranslateStrings();
-    } else {
-        QMainWindow::changeEvent(e);
     }
 }
 
