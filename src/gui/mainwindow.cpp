@@ -700,7 +700,7 @@ void TMainWindow::restartApplication() {
 
     // Close and restart with the new settings
     if (close()) {
-        WZDEBUG("closed main window");
+        WZDEBUG("closed main window, calling qApp->exit()");
         qApp->exit(TApp::NoExit);
     } else {
         WZWARN("close canceled");
