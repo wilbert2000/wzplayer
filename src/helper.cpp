@@ -86,7 +86,6 @@ int Helper::qtVersion() {
     QString v(qVersion());
 
     int r = 0;
-
     if (rx.indexIn(v) >= 0) {
         int n1 = rx.cap(1).toInt();
         int n2 = rx.cap(2).toInt();
@@ -94,7 +93,6 @@ int Helper::qtVersion() {
         r = n1 * 1000 + n2 * 100 + n3;
     }
 
-    WZTRACE("Qt runtime version " + v + " counting as " + QString::number(r));
     return r;
 }
 
