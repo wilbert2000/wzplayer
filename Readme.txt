@@ -1,5 +1,4 @@
-    WZPlayer, GUI front-end for MPlayer and MPV.
-    Based on SMPlayer by Ricardo Villalba
+    WZPlayer, graphical user interface for MPlayer and MPV.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,13 +16,16 @@
 
     -------------------------------------------------------------------------
 
-    WZPlayer is a graphical user interface for MPV and MPlayer based upon
-    SMPlayer, http://www.smplayer.info, by Ricardo Villalba.
+    WZPlayer is a graphical user interface for MPV and MPlayer based on
+    SMPlayer, http://www.smplayer.info. It offers menus, buttons and controls to
+    conveniently play the media supported by MPV and MPlayer.
 
-    With improved performance, zoom and pan by mouse, improved DVDNAV support,
-    no setup needed, lots of setup available and lots of source...
+    WZPlayer uses Qt (https://www.qt.io) for its user interface, promising to
+    run on any platform supported by Qt. It has only been properly tested on
+    Linux, so, unless you have a special interest in WZPlayer, it is probably
+    Linux only.
 
-    To compile and install WZPlayer please read Install.txt.
+    To build and install WZPlayer please read Install.txt.
 
     Visit the web for updates:
     https://github.com/wilbert2000/wzplayer
