@@ -1,50 +1,59 @@
-This document explains how to compile and install wzplayer.
+This document explains how to build and install wzplayer.
 
-1) Compilation
-2) Changing the installation path
-3) Compiling under Windows
-4) How to create a deb package
-5) How to create a rpm package
+1) Build
+2) Install
+3) Build on Windows
 
-1) Compilation
+Note: WZPlayer should build and run on Windows, but lacks extensive testing on
+Windows. Unless you have a special interest in WZPlayer you are probably better
+of with a Windows specific media player. If you want to try it anyway, see
+"3) Build on Windows" for guidelines.
+
+
+1) Build
 --------------
-For Windows see "Compiling under Windows"
-
 Be sure you have installed the Qt 4.6 or higher development packages. Its name
-maybe qt4-devel, libqt4-dev, the higher the version the better. Issue the
-following commands from the directory under which you want to install the
-source:
+maybe qt4-devel, libqt4-dev, the higher the version the better.
+
+From a shell, issue the following command inside the directory under which you
+want to install the WZPlayer source:
 
 git clone 'https://github.com/wilbert2000/wzplayer.git' wzplayer
+
+This will checkout the WZPlayer source into the subdirectory wzplayer.
+To build the source:
+
 cd wzplayer
 make
 
-If building succeeded you can install WZPlayer into /usr/local with:
+
+2) Install
+--------------
+If the build succeeded, you can install WZPlayer into /usr/local with:
 sudo make install
 
-
-2) Changing the installation path
------------------------------
 By default wzplayer will be installed in /usr/local. You can change it by
 using PREFIX.
 
 make PREFIX=/usr
 sudo make PREFIX=/usr install
 
-Would install wzplayer under /usr.
+Will install wzplayer under /usr.
 
-DESTDIR can be useful for package maintainers.
+Package maintainers can have a look at create_deb.sh and create_rpm,sh.
+DESTDIR can be used to override PREFIX for the final install:
 
 make PREFIX=/usr
 make PREFIX=/usr DESTDIR=/tmp/ install
 
-Will build wzplayer for /usr and install it in /tmp/usr/
+Will build wzplayer for /usr, but will install it in /tmp/usr/
 
-3) Compiling under Windows
+
+3) Build on Windows
 ----------------------------
-You need to have git and at least Qt 4.6, but preferrable Qt 5.4 or later, with
-the MinGW compiler installed. You can get git from
-https://git-scm.com/downloads and Qt with MinGW from http://www.qt.io/.
+You need to have git and at least Qt 4.6, but preferrable Qt 5.4 or later,
+with the MinGW compiler installed. You can get git from
+https://git-scm.com/downloads and Qt with MinGW from http://www.qt.io/ .
 
 To install the WZPlayer source open a command line prompt in the directory
 under which you want to install the source. The source will be installed in the
@@ -54,26 +63,4 @@ git clone "https://github.com/wilbert2000/wzplayer.git" wzplayer
 Open Qt Creator and open the project file wzplayer/src/wzplayer.pro.
 Qt Creator will offer you to configure the project.
 Select "Configure project".
-You can now build, modify and run WZPlayer.
-
-4) How to create a deb package
-----------------------------
-Make sure you have installed the following packages: libqt4-dev, zlib1g-dev,
-fakeroot, build-essential, devscripts, debhelper, g++ and git.
-
-To install them:
-sudo apt-get install libqt4-dev zlib1g-dev fakeroot build-essential devscripts debhelper g++ git
-
-Run ./create_deb.sh from the directory where you installed the WZPlayer sources.
-
-5) How to create a rpm package
-----------------------------
-
-Make sure you have git installed.
-
-Run ./create_rpm.sh
-
-It will create a clean clone from the WZPlayer repository in the tmp directory,
-so, except for the create_rpm.sh file, you don't need the source to be checked out.
-It will copy the latest tar ball to the package dir and call rpmbuild to build
-the package.
+You can now build, run and modify WZPlayer.
