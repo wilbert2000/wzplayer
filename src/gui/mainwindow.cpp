@@ -938,11 +938,6 @@ void TMainWindow::showFilePropertiesDialog(bool checked) {
     }
 }
 
-void TMainWindow::showPlaylist(bool) {
-    // Overriden by TMainWindowPlus
-    // playlist->setVisible(b);
-}
-
 void TMainWindow::showLog(bool b) {
 
     log_window->setVisible(b);
