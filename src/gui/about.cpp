@@ -66,7 +66,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
         "<i>This program is free software; you can redistribute it and/or"
         " modify it under the terms of the GNU General Public License as"
         " published by the Free Software Foundation; either version 2 of the"
-        " license, or (at your option) any later version.</i><br><br>";
+        " License, or (at your option) any later version.</i><br><br>";
         
     QString license_file = TPaths::doc("gpl.html", "en");
     if (QFile::exists(license_file)) {
