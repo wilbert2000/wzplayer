@@ -151,8 +151,6 @@ TMainWindow::TMainWindow() :
     log_window = new TLogWindow(this);
 
     createPanel();
-    setCentralWidget(panel);
-
     createPlayerWindow();
     createPlayer();
     createPlaylist();
@@ -229,6 +227,7 @@ void TMainWindow::createPanel() {
     panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     panel->setMinimumSize(QSize(1, 1));
     panel->setFocusPolicy(Qt::StrongFocus);
+    setCentralWidget(panel);
 }
 
 void TMainWindow::createPlayerWindow() {
