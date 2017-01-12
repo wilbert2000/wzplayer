@@ -56,36 +56,6 @@ TMenuDisc::TMenuDisc(TMainWindow* parent)
 TMenuFile::TMenuFile(TMainWindow* mw) :
     TMenu(mw, mw, "file_menu", tr("&File"), "noicon") {
 
-    // Open URL
-    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "",
-                             QKeySequence("Ctrl+U"));
-    connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
-    main_window->addAction(a);
-
-    // Open file
-    a  = new TAction(this, "open_file", tr("&Open file..."), "open",
-                              Qt::CTRL | Qt::Key_F);
-    connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
-    main_window->addAction(a);
-
-    // Open dir
-    a = new TAction(this, "open_directory", tr("Open &directory..."),
-                             "", QKeySequence("Ctrl+D"));
-    connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
-    main_window->addAction(a);
-
-    // Disc submenu
-    addMenu(new TMenuDisc(main_window));
-
-    addSeparator();
-
-    // Playlist
-    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_open"));
-    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_save"));
-    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_saveas"));
-
-    addSeparator();
-
     // Favorites
     TFavorites* fav = new TFavorites(main_window, "favorites_menu",
                                      tr("Fa&vorites"), "open_favorites",
@@ -115,6 +85,37 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
     addMenu(recentfiles_menu);
     updateRecents();
+
+    addSeparator();
+
+
+    // Open URL
+    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "",
+                             QKeySequence("Ctrl+U"));
+    connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
+    main_window->addAction(a);
+
+    // Open file
+    a  = new TAction(this, "open_file", tr("&Open file..."), "open",
+                              Qt::CTRL | Qt::Key_F);
+    connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
+    main_window->addAction(a);
+
+    // Open dir
+    a = new TAction(this, "open_directory", tr("Open &directory..."),
+                             "", QKeySequence("Ctrl+D"));
+    connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
+    main_window->addAction(a);
+
+    // Disc submenu
+    addMenu(new TMenuDisc(main_window));
+
+    addSeparator();
+
+    // Playlist
+    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_open"));
+    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_save"));
+    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_saveas"));
 
     addSeparator();
 
@@ -164,6 +165,9 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     a = new TAction(this, "close", tr("&Close"));
     main_window->addAction(a);
     connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
+}
+
+TMenuFile::~TMenuFile() {
 }
 
 void TMenuFile::updateRecents() {

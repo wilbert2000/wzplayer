@@ -18,6 +18,7 @@ class TMenuFile : public TMenu {
     Q_OBJECT
 public:
     explicit TMenuFile(TMainWindow* mw);
+    virtual ~TMenuFile();
     void updateRecents();
 
 private:
