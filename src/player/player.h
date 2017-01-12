@@ -444,22 +444,21 @@ private slots:
     void playingStarted();
     void onProcessError(QProcess::ProcessError error);
     void onProcessFinished(bool normal_exit, int exit_code, bool eof);
-    void onReceivedMessage(const QString& s);
 
     void onReceivedPosition(double sec);
     void onReceivedPause();
     void onReceivedVideoOut();
+    void onAudioTracksChanged();
 
+    void onSubtitlesChanged();
+    void onSubtitleChanged();
+    void selectPreferredSubtitles();
+
+    void onReceivedMessage(const QString& s);
     void displayScreenshotName(const QString& filename);
     void displayUpdatingFontCache();
     void displayBuffering();
     void displayBufferingEnded();
-
-    void onAudioTracksChanged();
-
-    void selectPreferredSubtitles();
-    void onSubtitlesChanged();
-    void onSubtitleChanged();
 };
 
 } // namespace Player
