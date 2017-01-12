@@ -337,7 +337,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         mset.playing_single_track = true;
     }
 
-    initPlaying();
+    startPlayer();
     return;
 } // openDisc
 
@@ -505,7 +505,7 @@ void TPlayer::openTV(QString channel_id) {
         }
     }
 
-    initPlaying();
+    startPlayer();
 }
 
 void TPlayer::openStream(const QString& name) {
@@ -516,7 +516,7 @@ void TPlayer::openStream(const QString& name) {
     mdat.selected_type = TMediaData::TYPE_STREAM;
     mset.reset();
 
-    initPlaying();
+    startPlayer();
 }
 
 void TPlayer::openFile(const QString& filename, bool loopImage) {
@@ -548,7 +548,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
         }
     }
 
-    initPlaying(loopImage);
+    startPlayer(loopImage);
 }
 
 void TPlayer::restartPlay() {
@@ -560,7 +560,7 @@ void TPlayer::restartPlay() {
 
     WZDEBUG("entering the restarting state");
     setState(STATE_RESTARTING);
-    initPlaying();
+    startPlayer();
 }
 
 // Public restart
@@ -580,7 +580,7 @@ void TPlayer::reload() {
     stopPlayer();
     WZDEBUG("entering the loading state");
     setState(STATE_LOADING);
-    initPlaying();
+    startPlayer();
 }
 
 void TPlayer::initVolume() {
@@ -615,20 +615,6 @@ void TPlayer::initMediaSettings() {
     playerwindow->setPan(mset.pan_offset, mset.pan_offset_fullscreen);
 
     emit mediaSettingsChanged();
-}
-
-void TPlayer::initPlaying(bool loopImages) {
-    WZDEBUG("starting time");
-
-    time.start();
-
-    if (_state != STATE_RESTARTING) {
-        // Clear background
-        playerwindow->repaint();
-        initMediaSettings();
-    }
-
-    startPlayer(mdat.filename, loopImages);
 }
 
 void TPlayer::playingStartedNewMedia() {
@@ -849,10 +835,21 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
 }
 #endif
 
-void TPlayer::startPlayer(QString file, bool loopImage) {
+void TPlayer::startPlayer(bool loopImage) {
 
-    if (file.isEmpty()) {
-        WZWARN("filename is empty");
+    WZDEBUG("starting time");
+    time.start();
+
+    if (_state != STATE_RESTARTING) {
+        // Clear background
+        playerwindow->repaint();
+        // Reset media settings
+        initMediaSettings();
+    }
+
+    QString fileName = mdat.filename;
+    if (fileName.isEmpty()) {
+        WZWARN("file name is empty");
         return;
     }
 
@@ -861,17 +858,17 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
         return;
     }
 
-    WZDEBUG("'" + file + "'");
-    Gui::msg(tr("Starting player..."), 0);
+    WZDEBUG("'" + fileName + "'");
+    Gui::msg(tr("Starting %1...").arg(fileName), 0);
 
     // Check URL playlist
-    if (file.endsWith("|playlist")) {
-        file = file.remove("|playlist");
+    if (fileName.endsWith("|playlist")) {
+        fileName = fileName.remove("|playlist");
     }
 
     // Load m4a audio file with the same name as file
     if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
-        QFileInfo fi(file);
+        QFileInfo fi(fileName);
         if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
             QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
             if (!QFile::exists(file2)) {
@@ -897,30 +894,41 @@ void TPlayer::startPlayer(QString file, bool loopImage) {
 
     // Seek to in point, mset.current_sec or restartTime
     seeking = false;
-    if (mdat.selected_type == TMediaData::TYPE_FILE) {
-        if (mdat.image) {
-            proc->setImageDuration(pref->imageDuration);
-            if (loopImage) {
-                proc->setOption("loop", 0 /* loop forever */);
+    {
+        // Clear start time
+        double ss = 0;
+        if (mdat.selected_type == TMediaData::TYPE_FILE) {
+            if (mdat.image) {
+                proc->setImageDuration(pref->imageDuration);
+                if (loopImage) {
+                    proc->setOption("loop", 0 /* loop forever */);
+                }
+            }
+
+            if (mset.in_point > 0) {
+                ss = mset.in_point;
+            }
+
+            // current_sec may override in point, but cannot be beyond out point
+            if (mset.current_sec > 0
+                && (mset.out_point <= 0 || mset.current_sec < mset.out_point)) {
+                ss = mset.current_sec;
+            }
+
+            if (restartTime != 0) {
+                ss = restartTime;
+            }
+
+            if (ss != 0) {
+                proc->setOption("ss", ss);
             }
         }
 
-        double ss = 0;
-        if (mset.in_point > 0) {
-            ss = mset.in_point;
-        }
-        // current_sec may override in point, but cannot be beyond out point
-        if (mset.current_sec > 0
-            && (mset.out_point <= 0 || mset.current_sec < mset.out_point)) {
-            ss = mset.current_sec;
-        }
-        if (restartTime != 0) {
-            ss = restartTime;
-        }
-        if (ss != 0) {
-            proc->setOption("ss", ss);
-        }
+        // Set mset.current_sec
+        mset.current_sec = ss;
+        emit positionChanged(ss);
     }
+
     restartTime = 0;
 
     // Setup hardware decoding for MPV.
@@ -1501,7 +1509,7 @@ end_video_filters:
     }
 
 #ifndef Q_OS_WIN
-    if (pref->isMPV() && file.startsWith("dvb:")) {
+    if (pref->isMPV() && fileName.startsWith("dvb:")) {
         QString channels_file = Gui::Action::Menu::TTVList::findChannelsFile();
         WZDEBUG("channels_file '" + channels_file + "'");
         if (!channels_file.isEmpty())
@@ -1522,7 +1530,7 @@ end_video_filters:
     // Load edl file
     if (pref->use_edl_files) {
         QString edl_f;
-        QFileInfo f(file);
+        QFileInfo f(fileName);
         QString basename = f.path() + "/" + f.completeBaseName();
 
         if (QFile::exists(basename + ".edl"))
@@ -1563,7 +1571,7 @@ end_video_filters:
     }
 
     // Set file and playing msg
-    proc->setMedia(file);
+    proc->setMedia(fileName);
 
     // Setup environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();

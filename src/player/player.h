@@ -412,13 +412,12 @@ private:
 
     void initVolume();
     void initMediaSettings();
-    void initPlaying(bool loopImages = false);
 
     void openFile(const QString& filename, bool loopImage);
     void openStream(const QString& name);
     void openTV(QString channel_id);
 
-    void startPlayer(QString file, bool loopImage);
+    void startPlayer(bool loopImage = false);
     void stopPlayer();
     void restartPlay();
 
