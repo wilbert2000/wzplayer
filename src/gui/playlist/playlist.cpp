@@ -253,12 +253,14 @@ void TPlaylist::createActions() {
     // Next
     nextAct = new TAction(this, "pl_next", tr("Play &next"), "next",
                           QKeySequence(">"));
+    nextAct->addShortcut(QKeySequence("."));
     nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
     connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
 
     // Prev
     prevAct = new TAction(this, "pl_prev", tr("Play pre&vious"), "previous",
                           QKeySequence("<"));
+    prevAct->addShortcut(QKeySequence(","));
     prevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
     connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
 
