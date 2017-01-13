@@ -7,17 +7,16 @@ namespace Gui {
 
 static QStatusBar* statusbar = 0;
 
+void setMessageHandler(QStatusBar* bar) {
+    statusbar = bar;
+}
+
 void msg(const QString& msg, int timeout) {
 
     if (statusbar) {
         statusbar->showMessage(msg, timeout);
     }
 }
-
-void setMessageHandler(QStatusBar* bar) {
-    statusbar = bar;
-}
-
 
 void msgOSD(const QString& message, int timeout) {
 
@@ -45,11 +44,11 @@ TMsgSlot::TMsgSlot(QObject *parent) :
 TMsgSlot::~TMsgSlot() {
 }
 
-void TMsgSlot::msg(const QString &msg, int timeout) {
+void TMsgSlot::msg(const QString& msg, int timeout) {
     Gui::msg(msg, timeout);
 }
 
-void TMsgSlot::msgOSD(const QString &msg, int timeout) {
+void TMsgSlot::msgOSD(const QString& msg, int timeout) {
     Gui::msgOSD(msg, timeout);
 }
 

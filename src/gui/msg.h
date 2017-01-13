@@ -7,8 +7,8 @@
 
 namespace Gui {
 
-extern void msg(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);
 extern void setMessageHandler(QStatusBar* bar);
+extern void msg(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);
 
 extern void msgOSD(const QString& message,
                    int timeout = TConfig::MESSAGE_DURATION);
