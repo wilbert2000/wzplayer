@@ -408,6 +408,8 @@ void TPlayerWindow::wheelEvent(QWheelEvent* event) {
 void TPlayerWindow::setZoom(double factor,
                             double factor_fullscreen,
                             bool updateVideoWindow) {
+    WZTRACE(QString("%1 %2 %3")
+            .arg(factor).arg(factor_fullscreen).arg(updateVideoWindow));
 
     if (factor_fullscreen == 0) {
         // Set only current zoom
