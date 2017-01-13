@@ -35,7 +35,8 @@ TMenuCC::TMenuCC(TMainWindow* mw)
     new TActionGroupItem(this, group, "cc_ch_3", tr("&3"), 3);
     new TActionGroupItem(this, group, "cc_ch_4", tr("&4"), 4);
     group->setChecked(player->mset.closed_caption_channel);
-    connect(group, SIGNAL(activated(int)), player, SLOT(changeClosedCaptionChannel(int)));
+    connect(group, SIGNAL(activated(int)),
+            player, SLOT(setClosedCaptionChannel(int)));
     // Currently no one else sets it
     addActionsTo(main_window);
 }
@@ -135,7 +136,7 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     connect(nextSubtitleAct, SIGNAL(triggered()), player, SLOT(nextSubtitle()));
 
     subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
-    connect(subtitleTrackGroup, SIGNAL(activated(int)), player, SLOT(changeSubtitle(int)));
+    connect(subtitleTrackGroup, SIGNAL(activated(int)), player, SLOT(setSubtitle(int)));
     connect(player, SIGNAL(subtitlesChanged()), this, SLOT(updateSubtitles()));
     connect(player, SIGNAL(subtitleTrackChanged(int)), this, SLOT(updateSubtitles()));
 
@@ -146,7 +147,7 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
         addMenu(secondarySubtitleTrackMenu);
     secondarySubtitleTrackGroup = new TActionGroup(this, "secondarysubtitletrack");
     connect(secondarySubtitleTrackGroup, SIGNAL(activated(int)),
-            player, SLOT(changeSecondarySubtitle(int)));
+            player, SLOT(setSecondarySubtitle(int)));
     connect(player, SIGNAL(secondarySubtitleTrackChanged(int)),
             this, SLOT(updateSubtitles()));
 
@@ -173,7 +174,7 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     useCustomSubStyleAct->setCheckable(true);
     useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
     connect(useCustomSubStyleAct, SIGNAL(triggered(bool)),
-            player, SLOT(changeUseCustomSubStyle(bool)));
+            player, SLOT(setUseCustomSubStyle(bool)));
 
     addActionsTo(main_window);
 }

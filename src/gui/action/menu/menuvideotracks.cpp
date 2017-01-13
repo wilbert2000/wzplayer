@@ -20,7 +20,7 @@ TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
 
     addSeparator();
     videoTrackGroup = new TActionGroup(this, "videotrack");
-    connect(videoTrackGroup, SIGNAL(activated(int)), player, SLOT(changeVideoTrack(int)));
+    connect(videoTrackGroup, SIGNAL(activated(int)), player, SLOT(setVideoTrack(int)));
     connect(player, SIGNAL(videoTracksChanged()), this, SLOT(updateVideoTracks()));
     connect(player, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
 }

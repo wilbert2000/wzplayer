@@ -117,8 +117,6 @@ public slots:
     virtual void loadSub();
     virtual void loadAudioFile(); // Load external audio file
 
-    void setInitialSubtitle(const QString& subtitle_file);
-
     virtual void showPlaylist(bool) = 0;
     virtual void showLog(bool b);
     virtual void showPreferencesDialog();

@@ -28,7 +28,7 @@ private:
     TAction* gradfunAct;
     TAction* addNoiseAct;
     TAction* addLetterboxAct;
-    TAction* upscaleAct;
+    TAction* softwareScalingAct;
     TAction* phaseAct;
 
     // Denoise Action Group
@@ -38,8 +38,8 @@ private:
     TAction* denoiseSoftAct;
 
     // Blur-sharpen group
-    TActionGroup* unsharpGroup;
-    TAction* unsharpNoneAct;
+    TActionGroup* sharpenGroup;
+    TAction* sharpenNoneAct;
     TAction* blurAct;
     TAction* sharpenAct;
 

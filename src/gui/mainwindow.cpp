@@ -1517,7 +1517,7 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
         } else if (command == "action") {
             processAction(arg);
         } else if (command == "load_sub") {
-            setInitialSubtitle(arg);
+            player->setInitialSubtitle(arg);
             if (player->statePOP()) {
                 player->loadSub(arg);
             }
@@ -1764,12 +1764,6 @@ void TMainWindow::loadSub() {
         player->loadSub(s);
 }
 
-void TMainWindow::setInitialSubtitle(const QString & subtitle_file) {
-    WZDEBUG("'" + subtitle_file + "'");
-
-    player->setInitialSubtitle(subtitle_file);
-}
-
 void TMainWindow::loadAudioFile() {
     WZDEBUG("");
 
@@ -1865,7 +1859,7 @@ void TMainWindow::showStereo3dDialog() {
     d.setOutputFormat(player->mset.stereo3d_out);
 
     if (d.exec() == QDialog::Accepted) {
-        player->changeStereo3d(d.inputFormat(), d.outputFormat());
+        player->setStereo3D(d.inputFormat(), d.outputFormat());
     }
 }
 

@@ -97,8 +97,8 @@ public:
     void takeScreenshot(ScreenshotType t, bool include_subtitles = false);
     void switchCapturing();
     void setTitle(int ID);
-    void changeVF(const QString& filter, bool enable, const QVariant& option = QVariant());
-    void changeStereo3DFilter(bool enable, const QString& in, const QString& out);
+    void setVideoFilter(const QString& filter, bool enable, const QVariant& option = QVariant());
+    void setStereo3DFilter(bool enable, const QString& in, const QString& out);
 
     void discSetMousePos(int x, int y);
     void discButtonPressed(const QString& button_name);

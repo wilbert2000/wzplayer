@@ -1678,11 +1678,11 @@ void TMPlayerProcess::setOSDScale(double) {
     //writeToPlayer("set_property subfont-osd-scale " + QString::number(value));
 }
 
-void TMPlayerProcess::changeVF(const QString&, bool, const QVariant&) {
+void TMPlayerProcess::setVideoFilter(const QString&, bool, const QVariant&) {
     // not supported
 }
 
-void TMPlayerProcess::changeStereo3DFilter(bool,
+void TMPlayerProcess::setStereo3DFilter(bool,
                                            const QString&,
                                            const QString&) {
     // not supported

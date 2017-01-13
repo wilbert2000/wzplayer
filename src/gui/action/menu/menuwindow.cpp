@@ -46,7 +46,7 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
     new TActionGroupItem(this, group, "osd_total", tr("Volume + Seek + Timer + T&otal time"),
         Settings::TPreferences::SeekTimerTotal, true, false, Qt::META | Qt::Key_O);
     group->setChecked(pref->osd_level);
-    connect(group, SIGNAL(activated(int)), player, SLOT(changeOSDLevel(int)));
+    connect(group, SIGNAL(activated(int)), player, SLOT(setOSDLevel(int)));
     connect(player, SIGNAL(osdLevelChanged(int)), group, SLOT(setChecked(int)));
 
     addSeparator();

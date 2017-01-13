@@ -19,7 +19,7 @@ TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
 
     addSeparator();
     audioTrackGroup = new TActionGroup(this, "audiotrack");
-    connect(audioTrackGroup, SIGNAL(activated(int)), player, SLOT(changeAudioTrack(int)));
+    connect(audioTrackGroup, SIGNAL(activated(int)), player, SLOT(setAudioTrack(int)));
     connect(player, SIGNAL(audioTracksChanged()), this, SLOT(updateAudioTracks()));
     connect(player, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
 }

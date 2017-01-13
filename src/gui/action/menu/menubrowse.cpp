@@ -19,7 +19,7 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     titlesMenu = new TMenu(main_window, main_window, "titles_menu", tr("&Title"), "title");
     addMenu(titlesMenu);
     titleGroup = new TActionGroup(this, "title");
-    connect(titleGroup, SIGNAL(activated(int)), player, SLOT(changeTitle(int)));
+    connect(titleGroup, SIGNAL(activated(int)), player, SLOT(setTitle(int)));
     connect(player, SIGNAL(titleTrackChanged(int)), titleGroup, SLOT(setChecked(int)));
     connect(player, SIGNAL(titleTracksChanged()), this, SLOT(updateTitles()));
 
@@ -38,7 +38,7 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     addMenu(chaptersMenu);
 
     chapterGroup = new TActionGroup(this, "chapter");
-    connect(chapterGroup, SIGNAL(activated(int)), player, SLOT(changeChapter(int)));
+    connect(chapterGroup, SIGNAL(activated(int)), player, SLOT(setChapter(int)));
     connect(player, SIGNAL(chapterChanged(int)), chapterGroup, SLOT(setChecked(int)));
     // Update normally done by updateTitles. For DVDNAV only:
     connect(player, SIGNAL(chaptersChanged()), this, SLOT(updateChapters()));
@@ -59,7 +59,7 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     programMenu = new TMenu(parent, this, "program_menu", tr("P&rogram"), "program");
     addMenu(programMenu);
     programGroup = new TActionGroup(this, "program");
-    connect(programGroup, SIGNAL(activated(int)), player, SLOT(changeProgram(int)));
+    connect(programGroup, SIGNAL(activated(int)), player, SLOT(setProgram(int)));
     // TODO: update
 #endif
 

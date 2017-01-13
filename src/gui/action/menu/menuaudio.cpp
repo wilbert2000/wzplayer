@@ -154,12 +154,12 @@ TMenuAudio::TMenuAudio(TMainWindow* mw, TAudioEqualizer* audioEqualizer)
     volnormAct = new TAction(this, "volnorm_filter", tr("Volume &normalization"), "", 0, false);
     volnormAct->setCheckable(true);
     audioFilterMenu->addAction(volnormAct);
-    connect(volnormAct, SIGNAL(triggered(bool)), player, SLOT(toggleVolnorm(bool)));
+    connect(volnormAct, SIGNAL(triggered(bool)), player, SLOT(setVolnorm(bool)));
 
     extrastereoAct = new TAction(this, "extrastereo_filter", tr("&Extrastereo"), "", 0, false);
     extrastereoAct->setCheckable(true);
     audioFilterMenu->addAction(extrastereoAct);
-    connect(extrastereoAct, SIGNAL(triggered(bool)), player, SLOT(toggleExtrastereo(bool)));
+    connect(extrastereoAct, SIGNAL(triggered(bool)), player, SLOT(setExtrastereo(bool)));
 
     karaokeAct = new TAction(this, "karaoke_filter", tr("&Karaoke"), "", 0, false);
     karaokeAct->setCheckable(true);

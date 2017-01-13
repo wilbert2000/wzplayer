@@ -123,9 +123,9 @@ public:
                                 bool include_subtitles = false) = 0;
     virtual void switchCapturing() = 0;
     virtual void setTitle(int ID) = 0;
-    virtual void changeVF(const QString& filter, bool enable,
+    virtual void setVideoFilter(const QString& filter, bool enable,
                           const QVariant& option = QVariant()) = 0;
-    virtual void changeStereo3DFilter(bool enable, const QString& in,
+    virtual void setStereo3DFilter(bool enable, const QString& in,
                                       const QString& out) = 0;
 
     virtual void discSetMousePos(int x, int y) = 0;

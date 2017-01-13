@@ -96,10 +96,10 @@ public:
     void takeScreenshot(ScreenshotType t, bool include_subtitles = false);
     void switchCapturing();
     void setTitle(int ID);
-    void changeVF(const QString& filter,
+    void setVideoFilter(const QString& filter,
                   bool enable,
                   const QVariant& option = QVariant());
-    void changeStereo3DFilter(bool enable,
+    void setStereo3DFilter(bool enable,
                               const QString& in,
                               const QString& out);
 

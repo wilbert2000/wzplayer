@@ -495,7 +495,7 @@ void TApp::start() {
         }
     } else {
         if (!subtitle_file.isEmpty()) {
-            main_window->setInitialSubtitle(subtitle_file);
+            player->setInitialSubtitle(subtitle_file);
         }
         if (!media_title.isEmpty()) {
             player->addForcedTitle(files_to_play[0], media_title);

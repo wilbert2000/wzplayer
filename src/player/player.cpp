@@ -289,9 +289,9 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         && disc.title > 0
         && mdat.disc.valid
         && mdat.disc.device == disc.device) {
-        // If changeTitle fails, it will call again with fast_open set to false
-        WZDEBUG("trying changeTitle(" + QString::number(disc.title) + ")");
-        changeTitle(disc.title);
+        // If setTitle fails, it will call again with fast_open set to false
+        WZDEBUG("trying setTitle(" + QString::number(disc.title) + ")");
+        setTitle(disc.title);
         return;
     }
 
@@ -1864,23 +1864,17 @@ void TPlayer::toggleRepeat(bool b) {
 }
 
 // Audio filters
-void TPlayer::toggleKaraoke() {
-    toggleKaraoke(!mset.karaoke_filter);
-}
-
-void TPlayer::toggleKaraoke(bool b) {
+void TPlayer::setVolnorm(bool b) {
     WZDEBUG(QString::number(b));
-    if (b != mset.karaoke_filter) {
-        mset.karaoke_filter = b;
-        proc->enableKaraoke(b);
+
+    if (b != mset.volnorm_filter) {
+        mset.volnorm_filter = b;
+        QString f = pref->filters.item("volnorm").filter();
+        proc->enableVolnorm(b, pref->filters.item("volnorm").options());
     }
 }
 
-void TPlayer::toggleExtrastereo() {
-    toggleExtrastereo(!mset.extrastereo_filter);
-}
-
-void TPlayer::toggleExtrastereo(bool b) {
+void TPlayer::setExtrastereo(bool b) {
     WZDEBUG(QString::number(b));
 
     if (b != mset.extrastereo_filter) {
@@ -1889,17 +1883,11 @@ void TPlayer::toggleExtrastereo(bool b) {
     }
 }
 
-void TPlayer::toggleVolnorm() {
-    toggleVolnorm(!mset.volnorm_filter);
-}
-
-void TPlayer::toggleVolnorm(bool b) {
+void TPlayer::toggleKaraoke(bool b) {
     WZDEBUG(QString::number(b));
-
-    if (b != mset.volnorm_filter) {
-        mset.volnorm_filter = b;
-        QString f = pref->filters.item("volnorm").filter();
-        proc->enableVolnorm(b, pref->filters.item("volnorm").options());
+    if (b != mset.karaoke_filter) {
+        mset.karaoke_filter = b;
+        proc->enableKaraoke(b);
     }
 }
 
@@ -1926,123 +1914,89 @@ void TPlayer::setStereoMode(int mode) {
 
 // Video filters
 
-void TPlayer::changeVF(const QString& filter, bool enable,
+void TPlayer::setVideoFilter(const QString& filter, bool enable,
                        const QVariant& option) {
 
     if (pref->isMPV() && !mdat.video_hwdec) { \
-        proc->changeVF(filter, enable, option); \
+        proc->setVideoFilter(filter, enable, option); \
     } else { \
         restartPlay(); \
     }
 }
 
-void TPlayer::toggleFlip() {
-    WZDEBUG("");
-    toggleFlip(!mset.flip);
-}
-
-void TPlayer::toggleFlip(bool b) {
+void TPlayer::setFlip(bool b) {
     WZDEBUG(QString::number(b));
 
     if (mset.flip != b) {
         mset.flip = b;
-        changeVF("flip", b, QVariant());
+        setVideoFilter("flip", b, QVariant());
     }
 }
 
-void TPlayer::toggleMirror() {
-    WZDEBUG("");
-    toggleMirror(!mset.mirror);
-}
-
-void TPlayer::toggleMirror(bool b) {
+void TPlayer::setMirror(bool b) {
     WZDEBUG(QString::number(b));
 
     if (mset.mirror != b) {
         mset.mirror = b;
-        changeVF("mirror", b, QVariant());
+        setVideoFilter("mirror", b, QVariant());
     }
 }
 
-void TPlayer::toggleAutophase() {
-    toggleAutophase(!mset.phase_filter);
-}
-
-void TPlayer::toggleAutophase(bool b) {
-    WZDEBUG(QString::number(b));
-
-    if (b != mset.phase_filter) {
-        mset.phase_filter = b;
-        changeVF("phase", b, "A");
-    }
-}
-
-void TPlayer::toggleDeblock() {
-    toggleDeblock(!mset.deblock_filter);
-}
-
-void TPlayer::toggleDeblock(bool b) {
-    WZDEBUG(QString::number(b));
-
-    if (b != mset.deblock_filter) {
-        mset.deblock_filter = b;
-        changeVF("deblock", b, pref->filters.item("deblock").options());
-    }
-}
-
-void TPlayer::toggleDering() {
-    toggleDering(!mset.dering_filter);
-}
-
-void TPlayer::toggleDering(bool b) {
-    WZDEBUG(QString::number(b));
-
-    if (b != mset.dering_filter) {
-        mset.dering_filter = b;
-        changeVF("dering", b, QVariant());
-    }
-}
-
-void TPlayer::toggleGradfun() {
-    toggleGradfun(!mset.gradfun_filter);
-}
-
-void TPlayer::toggleGradfun(bool b) {
-    WZDEBUG(QString::number(b));
-
-    if (b != mset.gradfun_filter) {
-        mset.gradfun_filter = b;
-        changeVF("gradfun", b, pref->filters.item("gradfun").options());
-    }
-}
-
-void TPlayer::toggleNoise() {
-    toggleNoise(!mset.noise_filter);
-}
-
-void TPlayer::toggleNoise(bool b) {
-    WZDEBUG(QString::number(b));
-
-    if (b != mset.noise_filter) {
-        mset.noise_filter = b;
-        changeVF("noise", b, QVariant());
-    }
-}
-
-void TPlayer::togglePostprocessing() {
-    togglePostprocessing(!mset.postprocessing_filter);
-}
-
-void TPlayer::togglePostprocessing(bool b) {
+void TPlayer::setPostprocessing(bool b) {
     WZDEBUG(QString::number(b));
 
     if (b != mset.postprocessing_filter) {
         mset.postprocessing_filter = b;
-        changeVF("postprocessing", b, QVariant());
+        setVideoFilter("postprocessing", b, QVariant());
     }
 }
 
-void TPlayer::changeDenoise(int id) {
+void TPlayer::setDeblock(bool b) {
+    WZDEBUG(QString::number(b));
+
+    if (b != mset.deblock_filter) {
+        mset.deblock_filter = b;
+        setVideoFilter("deblock", b, pref->filters.item("deblock").options());
+    }
+}
+
+void TPlayer::setDering(bool b) {
+    WZDEBUG(QString::number(b));
+
+    if (b != mset.dering_filter) {
+        mset.dering_filter = b;
+        setVideoFilter("dering", b, QVariant());
+    }
+}
+
+void TPlayer::setGradfun(bool b) {
+    WZDEBUG(QString::number(b));
+
+    if (b != mset.gradfun_filter) {
+        mset.gradfun_filter = b;
+        setVideoFilter("gradfun", b, pref->filters.item("gradfun").options());
+    }
+}
+
+void TPlayer::setNoise(bool b) {
+    WZDEBUG(QString::number(b));
+
+    if (b != mset.noise_filter) {
+        mset.noise_filter = b;
+        setVideoFilter("noise", b, QVariant());
+    }
+}
+
+void TPlayer::setAutophase(bool b) {
+    WZDEBUG(QString::number(b));
+
+    if (b != mset.phase_filter) {
+        mset.phase_filter = b;
+        setVideoFilter("phase", b, "A");
+    }
+}
+
+void TPlayer::setDenoiser(int id) {
     WZDEBUG(QString::number(id));
 
     if (id != mset.current_denoiser) {
@@ -2055,20 +2009,20 @@ void TPlayer::changeDenoise(int id) {
             QString dnormal = pref->filters.item("denoise_normal").options();
             // Remove previous filter
             switch (mset.current_denoiser) {
-                case TMediaSettings::DenoiseSoft: proc->changeVF("hqdn3d", false, dsoft); break;
-                case TMediaSettings::DenoiseNormal: proc->changeVF("hqdn3d", false, dnormal); break;
+                case TMediaSettings::DenoiseSoft: proc->setVideoFilter("hqdn3d", false, dsoft); break;
+                case TMediaSettings::DenoiseNormal: proc->setVideoFilter("hqdn3d", false, dnormal); break;
             }
             // New filter
             mset.current_denoiser = id;
             switch (mset.current_denoiser) {
-                case TMediaSettings::DenoiseSoft: proc->changeVF("hqdn3d", true, dsoft); break;
-                case TMediaSettings::DenoiseNormal: proc->changeVF("hqdn3d", true, dnormal); break;
+                case TMediaSettings::DenoiseSoft: proc->setVideoFilter("hqdn3d", true, dsoft); break;
+                case TMediaSettings::DenoiseNormal: proc->setVideoFilter("hqdn3d", true, dnormal); break;
             }
         }
     }
 }
 
-void TPlayer::changeUnsharp(int id) {
+void TPlayer::setSharpen(int id) {
     WZDEBUG(QString::number(id));
 
     if (id != mset.current_unsharp) {
@@ -2079,32 +2033,30 @@ void TPlayer::changeUnsharp(int id) {
             // MPV
             // Remove previous filter
             switch (mset.current_unsharp) {
-                // Current is blur
-                case 1: proc->changeVF("blur", false); break;
-                // Current if sharpen
-                case 2: proc->changeVF("sharpen", false); break;
+                case 1: proc->setVideoFilter("blur", false); break;
+                case 2: proc->setVideoFilter("sharpen", false); break;
             }
-            // New filter
+            // Set new filter
             mset.current_unsharp = id;
             switch (mset.current_unsharp) {
-                case 1: proc->changeVF("blur", true); break;
-                case 2: proc->changeVF("sharpen", true); break;
+                case 1: proc->setVideoFilter("blur", true); break;
+                case 2: proc->setVideoFilter("sharpen", true); break;
             }
         }
     }
 }
 
-void TPlayer::changeUpscale(bool b) {
+void TPlayer::setSoftwareScaling(bool b) {
     WZDEBUG(QString::number(b));
 
     if (mset.upscaling_filter != b) {
         mset.upscaling_filter = b;
         int width = TDesktop::size(playerwindow).width();
-        changeVF("scale", b, QString::number(width) + ":-2");
+        setVideoFilter("scale", b, QString::number(width) + ":-2");
     }
 }
 
-void TPlayer::changeStereo3d(const QString& in, const QString& out) {
+void TPlayer::setStereo3D(const QString& in, const QString& out) {
     WZDEBUG("in '" + in + "' out: '" + out + "'");
 
     if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
@@ -2115,7 +2067,7 @@ void TPlayer::changeStereo3d(const QString& in, const QString& out) {
         } else {
             // Remove previous filter
             if (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty()) {
-                proc->changeStereo3DFilter(false, mset.stereo3d_in,
+                proc->setStereo3DFilter(false, mset.stereo3d_in,
                                            mset.stereo3d_out);
             }
 
@@ -2123,7 +2075,7 @@ void TPlayer::changeStereo3d(const QString& in, const QString& out) {
             mset.stereo3d_in = in;
             mset.stereo3d_out = out;
             if (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty()) {
-                proc->changeStereo3DFilter(true, mset.stereo3d_in,
+                proc->setStereo3DFilter(true, mset.stereo3d_in,
                                            mset.stereo3d_out);
             }
         }
@@ -2417,7 +2369,7 @@ void TPlayer::decSubPos() {
     proc->setSubPos(mset.sub_pos);
 }
 
-void TPlayer::changeSubScale(double value) {
+void TPlayer::setSubScale(double value) {
     WZDEBUG(QString::number(value));
 
     if (value < 0) value = 0;
@@ -2445,11 +2397,11 @@ void TPlayer::incSubScale() {
     double step = 0.20;
 
     if (pref->use_ass_subtitles) {
-        changeSubScale(mset.sub_scale_ass + step);
+        setSubScale(mset.sub_scale_ass + step);
     } else if (pref->isMPV()) {
-        changeSubScale(mset.sub_scale_mpv + step);
+        setSubScale(mset.sub_scale_mpv + step);
     } else {
-        changeSubScale(mset.sub_scale + step);
+        setSubScale(mset.sub_scale + step);
     }
 }
 
@@ -2458,15 +2410,15 @@ void TPlayer::decSubScale() {
     double step = 0.20;
 
     if (pref->use_ass_subtitles) {
-        changeSubScale(mset.sub_scale_ass - step);
+        setSubScale(mset.sub_scale_ass - step);
     } else if (pref->isMPV()) {
-        changeSubScale(mset.sub_scale_mpv - step);
+        setSubScale(mset.sub_scale_mpv - step);
     } else {
-        changeSubScale(mset.sub_scale - step);
+        setSubScale(mset.sub_scale - step);
     }
 }
 
-void TPlayer::changeOSDScale(double value) {
+void TPlayer::setOSDScale(double value) {
     WZDEBUG(QString::number(value));
 
     if (value < 0) value = 0;
@@ -2489,18 +2441,18 @@ void TPlayer::changeOSDScale(double value) {
 void TPlayer::incOSDScale() {
 
     if (pref->isMPlayer()) {
-        changeOSDScale(pref->subfont_osd_scale + 1);
+        setOSDScale(pref->subfont_osd_scale + 1);
     } else {
-        changeOSDScale(pref->osd_scale + 0.10);
+        setOSDScale(pref->osd_scale + 0.10);
     }
 }
 
 void TPlayer::decOSDScale() {
 
     if (pref->isMPlayer()) {
-        changeOSDScale(pref->subfont_osd_scale - 1);
+        setOSDScale(pref->subfont_osd_scale - 1);
     } else {
-        changeOSDScale(pref->osd_scale - 0.10);
+        setOSDScale(pref->osd_scale - 0.10);
     }
 }
 
@@ -2696,7 +2648,7 @@ void TPlayer::onReceivedPause() {
     setState(STATE_PAUSED);
 }
 
-void TPlayer::changeDeinterlace(int ID) {
+void TPlayer::setDeinterlace(int ID) {
     WZDEBUG(QString::number(ID));
 
     if (ID != mset.current_deinterlacer) {
@@ -2706,26 +2658,26 @@ void TPlayer::changeDeinterlace(int ID) {
         } else {
             // MPV: remove previous filter
             switch (mset.current_deinterlacer) {
-                case TMediaSettings::L5: proc->changeVF("l5", false); break;
-                case TMediaSettings::Yadif: proc->changeVF("yadif", false); break;
-                case TMediaSettings::LB: proc->changeVF("lb", false); break;
-                case TMediaSettings::Yadif_1: proc->changeVF("yadif", false, "1"); break;
-                case TMediaSettings::Kerndeint: proc->changeVF("kerndeint", false, "5"); break;
+                case TMediaSettings::L5: proc->setVideoFilter("l5", false); break;
+                case TMediaSettings::Yadif: proc->setVideoFilter("yadif", false); break;
+                case TMediaSettings::LB: proc->setVideoFilter("lb", false); break;
+                case TMediaSettings::Yadif_1: proc->setVideoFilter("yadif", false, "1"); break;
+                case TMediaSettings::Kerndeint: proc->setVideoFilter("kerndeint", false, "5"); break;
             }
             mset.current_deinterlacer = ID;
             // Add new filter
             switch (mset.current_deinterlacer) {
-                case TMediaSettings::L5: proc->changeVF("l5", true); break;
-                case TMediaSettings::Yadif: proc->changeVF("yadif", true); break;
-                case TMediaSettings::LB: proc->changeVF("lb", true); break;
-                case TMediaSettings::Yadif_1: proc->changeVF("yadif", true, "1"); break;
-                case TMediaSettings::Kerndeint: proc->changeVF("kerndeint", true, "5"); break;
+                case TMediaSettings::L5: proc->setVideoFilter("l5", true); break;
+                case TMediaSettings::Yadif: proc->setVideoFilter("yadif", true); break;
+                case TMediaSettings::LB: proc->setVideoFilter("lb", true); break;
+                case TMediaSettings::Yadif_1: proc->setVideoFilter("yadif", true, "1"); break;
+                case TMediaSettings::Kerndeint: proc->setVideoFilter("kerndeint", true, "5"); break;
             }
         }
     }
 }
 
-void TPlayer::changeVideoTrack(int id) {
+void TPlayer::setVideoTrack(int id) {
     WZDEBUG(QString::number(id));
 
     // TODO: fix video tracks having different dimensions. The video out
@@ -2740,10 +2692,10 @@ void TPlayer::changeVideoTrack(int id) {
 void TPlayer::nextVideoTrack() {
     WZDEBUG("");
 
-    changeVideoTrack(mdat.videos.nextID(mdat.videos.getSelectedID()));
+    setVideoTrack(mdat.videos.nextID(mdat.videos.getSelectedID()));
 }
 
-void TPlayer::changeAudioTrack(int id) {
+void TPlayer::setAudioTrack(int id) {
     WZDEBUG(QString::number(id));
 
     mset.current_audio_id = id;
@@ -2766,11 +2718,11 @@ void TPlayer::changeAudioTrack(int id) {
 void TPlayer::nextAudioTrack() {
     WZDEBUG("");
 
-    changeAudioTrack(mdat.audios.nextID(mdat.audios.getSelectedID()));
+    setAudioTrack(mdat.audios.nextID(mdat.audios.getSelectedID()));
 }
 
-// Note: changeSubtitle is by index, not ID
-void TPlayer::changeSubtitle(int idx, bool selected_by_user) {
+// Note: setSubtitle is by index, not ID
+void TPlayer::setSubtitle(int idx, bool selected_by_user) {
     WZDEBUG("idx " + QString::number(idx));
 
     if (selected_by_user)
@@ -2792,10 +2744,10 @@ void TPlayer::changeSubtitle(int idx, bool selected_by_user) {
 }
 
 void TPlayer::nextSubtitle() {
-    changeSubtitle(mdat.subs.nextID());
+    setSubtitle(mdat.subs.nextID());
 }
 
-void TPlayer::changeSecondarySubtitle(int idx) {
+void TPlayer::setSecondarySubtitle(int idx) {
     WZDEBUG("idx " + QString::number(idx));
 
     bool clr = true;
@@ -2824,13 +2776,13 @@ void TPlayer::changeSecondarySubtitle(int idx) {
     emit secondarySubtitleTrackChanged(mset.current_secondary_sub_idx);
 }
 
-void TPlayer::changeTitle(int title) {
+void TPlayer::setTitle(int title) {
     WZDEBUG(QString::number(title));
 
     if (proc->isRunning()) {
         // Handle CDs with the chapter commands
         if (TMediaData::isCD(mdat.detected_type)) {
-            changeChapter(title - mdat.titles.firstID()
+            setChapter(title - mdat.titles.firstID()
                           + mdat.chapters.firstID());
             return;
         }
@@ -2846,7 +2798,7 @@ void TPlayer::changeTitle(int title) {
     openDisc(mdat.disc, false);
 }
 
-void TPlayer::changeChapter(int id) {
+void TPlayer::setChapter(int id) {
     WZDEBUG(QString::number(id));
 
     if (id >= mdat.chapters.firstID()) {
@@ -2891,7 +2843,7 @@ void TPlayer::nextAngle() {
 }
 
 #if PROGRAM_SWITCH
-void TPlayer::changeProgram(int ID) {
+void TPlayer::setProgram(int ID) {
     WZDEBUG(QString::number(ID));
 
     if (ID != mset.current_program_id) {
@@ -2987,21 +2939,21 @@ void TPlayer::nextWheelFunction() {
     Gui::msgOSD(m);
 }
 
-void TPlayer::changeLetterbox(bool b) {
+void TPlayer::setetterbox(bool b) {
     WZDEBUG(QString::number(b));
 
     if (mset.add_letterbox != b) {
         mset.add_letterbox = b;
-        changeVF("letterbox", b, TDesktop::aspectRatio(playerwindow));
+        setVideoFilter("letterbox", b, TDesktop::aspectRatio(playerwindow));
     }
 }
 
-void TPlayer::changeLetterboxOnFullscreen(bool b) {
+void TPlayer::setetterboxOnFullscreen(bool b) {
     WZDEBUG(QString::number(b));
-    changeVF("letterbox", b, TDesktop::aspectRatio(playerwindow));
+    setVideoFilter("letterbox", b, TDesktop::aspectRatio(playerwindow));
 }
 
-void TPlayer::changeOSDLevel(int level) {
+void TPlayer::setOSDLevel(int level) {
     WZDEBUG(QString::number(level));
 
     pref->osd_level = (TPreferences::TOSDLevel) level;
@@ -3018,10 +2970,10 @@ void TPlayer::nextOSDLevel() {
     } else {
         level = pref->osd_level + 1;
     }
-    changeOSDLevel(level);
+    setOSDLevel(level);
 }
 
-void TPlayer::changeRotate(int r) {
+void TPlayer::setRotate(int r) {
     WZDEBUG(QString::number(r));
 
     if (mset.rotate != r) {
@@ -3031,12 +2983,14 @@ void TPlayer::changeRotate(int r) {
         } else {
             // MPV
             // Remove previous filter
-            if (mset.rotate)
-                proc->changeVF("rotate", false, mset.rotate);
-            mset.rotate = r;
+            if (mset.rotate) {
+                proc->setVideoFilter("rotate", false, mset.rotate);
+            }
             // Set new filter
-            if (mset.rotate)
-                proc->changeVF("rotate", true, mset.rotate);
+            mset.rotate = r;
+            if (mset.rotate) {
+                proc->setVideoFilter("rotate", true, mset.rotate);
+            }
         }
     }
 }
@@ -3121,7 +3075,7 @@ void TPlayer::toggleDeinterlace() {
     proc->toggleDeinterlace();
 }
 
-void TPlayer::changeUseCustomSubStyle(bool b) {
+void TPlayer::setUseCustomSubStyle(bool b) {
     WZDEBUG(QString::number(b));
 
     if (pref->use_custom_ass_style != b) {
@@ -3139,7 +3093,7 @@ void TPlayer::toggleForcedSubsOnly(bool b) {
         proc->setSubForcedOnly(b);
 }
 
-void TPlayer::changeClosedCaptionChannel(int c) {
+void TPlayer::setClosedCaptionChannel(int c) {
     WZDEBUG(QString::number(c));
 
     if (c != mset.closed_caption_channel) {
@@ -3290,7 +3244,7 @@ bool TPlayer::setPreferredAudio() {
             if (wanted_id >= 0 && wanted_id != selected_id) {
                 WZDEBUG("selecting preferred audio id "
                         + QString::number(wanted_id));
-                changeAudioTrack(wanted_id);
+                setAudioTrack(wanted_id);
                 return true;
             }
         }
@@ -3336,7 +3290,7 @@ void TPlayer::selectPreferredSubtitles() {
         WZDEBUG("keeping selected subtitles");
     } else {
         WZDEBUG("selecting preferred subtitles");
-        changeSubtitle(wanted_idx, false);
+        setSubtitle(wanted_idx, false);
     }
 }
 

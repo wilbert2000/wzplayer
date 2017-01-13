@@ -1326,7 +1326,7 @@ void TMPVProcess::setOSDScale(double value) {
     writeToPlayer("set osd-scale " + QString::number(value));
 }
 
-void TMPVProcess::changeVF(const QString& filter,
+void TMPVProcess::setVideoFilter(const QString& filter,
                            bool enable,
                            const QVariant& option) {
     WZDEBUG("filter '" + filter + "', enable " + QString::number(enable)
@@ -1381,7 +1381,7 @@ void TMPVProcess::changeVF(const QString& filter,
     }
 }
 
-void TMPVProcess::changeStereo3DFilter(bool enable,
+void TMPVProcess::setStereo3DFilter(bool enable,
                                        const QString& in,
                                        const QString& out) {
     QString filter = "stereo3d=" + in + ":" + out;

@@ -100,6 +100,12 @@ public:
         forced_titles[file] = title;
     }
 
+    // Force the use of the specified subtitle file.
+    // Used when the next video starts playing.
+    void setInitialSubtitle(const QString& subtitle_file) {
+        initial_subtitle = subtitle_file;
+    }
+
     void saveRestartTime() {
         restartTime = mset.current_sec;
     }
@@ -108,84 +114,17 @@ public:
 
 
 public slots:
-    void loadSub(const QString& sub);
-    void unloadSub();
-
-    //! Forces to use the specified subtitle file. It's not loaded immediately
-    //! but stored and will be used for the next video. After that the variable
-    //! is cleared.
-    void setInitialSubtitle(const QString& subtitle_file) {
-        initial_subtitle = subtitle_file;
-    }
-
-    void loadAudioFile(const QString& audiofile);
-    void unloadAudioFile();
-
-    void stop();
-    void play();
-    void playOrPause();
-    void pause();
-
-    void frameStep();
-    void frameBackStep();
-    void screenshot();    //!< Take a screenshot of current frame
-    void screenshots();    //!< Start/stop taking screenshot of each frame
-    void switchCapturing();
-
     //! Reopens the file (no restart)
     void reload();
 
-    void setInPoint(); //!< Set in point to current sec
-    void setInPoint(double sec);
-    void seekInPoint();
-    void clearInPoint();
-    void setOutPoint(); //!< Set out point to current sec
-    void setOutPoint(double sec);
-    void seekOutPoint();
-    void clearOutPoint();
-    void toggleRepeat(bool b);
-    void clearInOutPoints();
+    // Play
+    void play();
+    void playOrPause();
+    void pause();
+    void stop();
 
-    void toggleFlip();
-    void toggleFlip(bool b);
-
-    void toggleMirror();
-    void toggleMirror(bool b);
-
-    // Audio filters
-    void toggleKaraoke();
-    void toggleKaraoke(bool b);
-    void toggleExtrastereo();
-    void toggleExtrastereo(bool b);
-    void toggleVolnorm();
-    void toggleVolnorm(bool b);
-
-    void setAudioChannels(int channels);
-    void setStereoMode(int mode);
-
-    // Video filters
-    void toggleAutophase();
-    void toggleAutophase(bool b);
-    void toggleDeblock();
-    void toggleDeblock(bool b);
-    void toggleDering();
-    void toggleDering(bool b);
-    void toggleGradfun();
-    void toggleGradfun(bool b);
-    void toggleNoise();
-    void toggleNoise(bool b);
-    void togglePostprocessing();
-    void togglePostprocessing(bool b);
-    void changeDenoise(int);
-    void changeUnsharp(int);
-    void changeLetterbox(bool);
-    void changeLetterboxOnFullscreen(bool);
-    void changeUpscale(bool);
-    void changeStereo3d(const QString& in, const QString& out);
-
-    void seekRelative(double secs);
-    void seekPercentage(double perc);
-    void seekTime(double sec);
+    void frameStep();
+    void frameBackStep();
     void sforward();    // + 10 seconds
     void srewind();     // - 10 seconds
     void forward();     // + 1 minute
@@ -194,13 +133,10 @@ public slots:
     void fastrewind();  // - 10 minutes
     void forward(int secs);
     void rewind(int secs);
-    void seekToNextSub();
-    void seekToPrevSub();
 
-    void wheelUp(Settings::TPreferences::TWheelFunction function =
-        Settings::TPreferences::DoNothing);
-    void wheelDown(Settings::TPreferences::TWheelFunction function =
-        Settings::TPreferences::DoNothing);
+    void seekRelative(double secs);
+    void seekPercentage(double perc);
+    void seekTime(double sec);
 
     void setSpeed(double value);
     void incSpeed10(); //!< Inc speed 10%
@@ -213,62 +149,95 @@ public slots:
     void halveSpeed();
     void normalSpeed();
 
+    void setInPoint(); //!< Set in point to current sec
+    void setInPoint(double sec);
+    void seekInPoint();
+    void clearInPoint();
+    void setOutPoint(); //!< Set out point to current sec
+    void setOutPoint(double sec);
+    void seekOutPoint();
+    void clearOutPoint();
+    void toggleRepeat(bool b);
+    void clearInOutPoints();
+
+
+    // Video
+    void setAspectRatio(int id);
+    void nextAspectRatio();
+    void setZoom(double zoom); // Zoom on playerwindow
+    void incZoom();
+    void decZoom();
+
+    void panLeft();
+    void panRight();
+    void panUp();
+    void panDown();
+
+    void resetZoomAndPan();
+
+    void setBrightness(int value);
+    void incBrightness();
+    void decBrightness();
+    void setContrast(int value);
+    void incContrast();
+    void decContrast();
+    void setGamma(int value);
+    void incGamma();
+    void decGamma();
+    void setHue(int value);
+    void incHue();
+    void decHue();
+    void setSaturation(int value);
+    void incSaturation();
+    void decSaturation();
+
+    void setDeinterlace(int);
+    void toggleDeinterlace();
+
+    // Video transform
+    void setFlip(bool b);
+    void setMirror(bool b);
+    void setRotate(int r);
+
+    // Video filters
+    void setPostprocessing(bool b);
+    void setDeblock(bool b);
+    void setDering(bool b);
+    void setGradfun(bool b);
+    void setNoise(bool b);
+    void setAutophase(bool b);
+    void setDenoiser(int);
+    void setetterbox(bool);
+    void setetterboxOnFullscreen(bool);
+    void setSoftwareScaling(bool);
+    void setSharpen(int);
+    void setStereo3D(const QString& in, const QString& out);
+
+    void setVideoTrack(int id);
+    void nextVideoTrack();
+
+    // Screenshot
+    void screenshot();    //!< Take a screenshot of current frame
+    void screenshots();    //!< Start/stop taking screenshot of each frame
+    void switchCapturing();
+
+
+    // Audio
     void setVolume(int volume, bool unmute = true);
     void mute(bool b);
     void incVolume();
     void decVolume();
 
-    void setBrightness(int value);
-    void setContrast(int value);
-    void setGamma(int value);
-    void setHue(int value);
-    void setSaturation(int value);
-
-    void incBrightness();
-    void decBrightness();
-    void incContrast();
-    void decContrast();
-    void incGamma();
-    void decGamma();
-    void incHue();
-    void decHue();
-    void incSaturation();
-    void decSaturation();
-
-    void setSubDelay(int delay);
-    void incSubDelay();
-    void decSubDelay();
-
     void setAudioDelay(int delay);
     void incAudioDelay();
     void decAudioDelay();
 
-    void incSubPos();
-    void decSubPos();
-
-    void changeSubScale(double value);
-    void incSubScale();
-    void decSubScale();
-
-    void changeOSDScale(double value);
-    void incOSDScale();
-    void decOSDScale();
-
-    //! Select next line in subtitle file
-    void incSubStep();
-    //! Select previous line in subtitle file
-    void decSubStep();
-
-    void changeExternalSubFPS(int fps_id);
-
-    //! Audio equalizer
     void setAudioEqualizer(const Settings::TAudioEqualizerList& values,
                            bool restart = false);
-    void setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&
-                                       values) {
+    void setAudioAudioEqualizerRestart(
+            const Settings::TAudioEqualizerList& values) {
         setAudioEqualizer(values, true);
     }
-
     void setAudioEq(int eq, int value);
     void setAudioEq0(int value);
     void setAudioEq1(int value);
@@ -281,58 +250,64 @@ public slots:
     void setAudioEq8(int value);
     void setAudioEq9(int value);
 
-    void changeDeinterlace(int);
+    void setStereoMode(int mode);
+    void setAudioChannels(int channels);
 
-    void changeVideoTrack(int id);
-    void nextVideoTrack();
-    void changeAudioTrack(int id);
+    // Audio filters
+    void setVolnorm(bool b);
+    void setExtrastereo(bool b);
+    void toggleKaraoke(bool b);
+
+    void setAudioTrack(int id);
     void nextAudioTrack();
-    void changeSubtitle(int idx, bool selected_by_user = true);
+
+    void loadAudioFile(const QString& audiofile);
+    void unloadAudioFile();
+
+
+    // Subtitles
+    void incSubPos();
+    void decSubPos();
+    void setSubScale(double value);
+    void incSubScale();
+    void decSubScale();
+    void setSubDelay(int delay);
+    void incSubDelay();
+    void decSubDelay();
+
+    void incSubStep(); // Select next line in subtitle file
+    void decSubStep(); // Select previous line in subtitle file
+    void seekToNextSub();
+    void seekToPrevSub();
+
+    void setSubtitle(int idx, bool selected_by_user = true);
     void nextSubtitle();
-    void changeSecondarySubtitle(int idx);
-
-#if PROGRAM_SWITCH
-    void changeProgram(int ID);
-    void nextProgram();
-#endif
-    void changeTitle(int title);
-    void changeChapter(int id);
-    void prevChapter();
-    void nextChapter();
-    void setAngle(int);
-    void nextAngle();
-    void setAspectRatio(int id);
-    void nextAspectRatio();
-    void changeOSDLevel(int level);
-    void nextOSDLevel();
-    void nextWheelFunction();
-
-    void setZoom(double zoom); // Zoom on playerwindow
-
-    void changeRotate(int r);
-
-    void incZoom();
-    void decZoom();
-
-    void panLeft();
-    void panRight();
-    void panUp();
-    void panDown();
-
-    void resetZoomAndPan();
-
-    void showFilenameOnOSD();
-    void showTimeOnOSD();
-    void toggleDeinterlace();
-
-    void changeUseCustomSubStyle(bool);
-    void toggleForcedSubsOnly(bool);
-
-    void changeClosedCaptionChannel(int);
+    void setSecondarySubtitle(int idx);
+    void setClosedCaptionChannel(int);
     /*
     void nextClosedCaptionChannel();
     void prevClosedCaptionChannel();
     */
+    void toggleForcedSubsOnly(bool);
+
+    void loadSub(const QString& sub);
+    void unloadSub();
+    void changeExternalSubFPS(int fps_id);
+
+    void setUseCustomSubStyle(bool);
+
+    // Browse
+    void setTitle(int title);
+    void setChapter(int id);
+    void prevChapter();
+    void nextChapter();
+    void setAngle(int);
+    void nextAngle();
+
+#if PROGRAM_SWITCH
+    void setProgram(int ID);
+    void nextProgram();
+#endif
 
     // dvdnav buttons
     void dvdnavUp();
@@ -344,7 +319,23 @@ public slots:
     void dvdnavPrev();
     void dvdnavMouse();
 
-    //! Wrapper for the osd_show_text slave command
+
+    // Window
+    void setOSDLevel(int level);
+    void nextOSDLevel();
+    void setOSDScale(double value);
+    void incOSDScale();
+    void decOSDScale();
+    void showFilenameOnOSD();
+    void showTimeOnOSD();
+
+
+    void wheelUp(Settings::TPreferences::TWheelFunction function =
+        Settings::TPreferences::DoNothing);
+    void wheelDown(Settings::TPreferences::TWheelFunction function =
+        Settings::TPreferences::DoNothing);
+    void nextWheelFunction();
+
     void displayTextOnOSD(const QString& text,
                           int duration = TConfig::MESSAGE_DURATION,
                           int level = 1);
@@ -426,7 +417,8 @@ private:
     void playingStartedNewMedia();
 
     bool haveVideoFilters() const;
-    void changeVF(const QString& filter, bool enable, const QVariant& option);
+    void setVideoFilter(const QString& filter, bool enable,
+                        const QVariant& option);
 
     void setExternalSubs(const QString& filename);
     bool setPreferredAudio();

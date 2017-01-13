@@ -39,20 +39,30 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
 
     group = new TActionGroup(this, "deinterlace");
     group->setEnabled(false);
-    new TActionGroupItem(this, group, "deinterlace_none", tr("&None"), TMediaSettings::NoDeinterlace);
-    new TActionGroupItem(this, group, "deinterlace_l5", tr("&Lowpass5"), TMediaSettings::L5);
-    new TActionGroupItem(this, group, "deinterlace_yadif0", tr("&Yadif (normal)"), TMediaSettings::Yadif);
-    new TActionGroupItem(this, group, "deinterlace_yadif1", tr("Y&adif (double framerate)"), TMediaSettings::Yadif_1);
-    new TActionGroupItem(this, group, "deinterlace_lb", tr("Linear &Blend"), TMediaSettings::LB);
-    new TActionGroupItem(this, group, "deinterlace_kern", tr("&Kerndeint"), TMediaSettings::Kerndeint);
+    new TActionGroupItem(this, group, "deinterlace_none", tr("&None"),
+                         TMediaSettings::NoDeinterlace);
+    new TActionGroupItem(this, group, "deinterlace_l5", tr("&Lowpass5"),
+                         TMediaSettings::L5);
+    new TActionGroupItem(this, group, "deinterlace_yadif0",
+                         tr("&Yadif (normal)"), TMediaSettings::Yadif);
+    new TActionGroupItem(this, group, "deinterlace_yadif1",
+                         tr("Y&adif (double framerate)"),
+                         TMediaSettings::Yadif_1);
+    new TActionGroupItem(this, group, "deinterlace_lb", tr("Linear &Blend"),
+                         TMediaSettings::LB);
+    new TActionGroupItem(this, group, "deinterlace_kern", tr("&Kerndeint"),
+                         TMediaSettings::Kerndeint);
     group->setChecked(player->mset.current_deinterlacer);
-    connect(group, SIGNAL(activated(int)), player, SLOT(changeDeinterlace(int)));
+    connect(group, SIGNAL(activated(int)), player, SLOT(setDeinterlace(int)));
     // No one else sets it
 
     addSeparator();
-    toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing", tr("Toggle deinterlacing"), "deinterlace", Qt::Key_I);
+    toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing",
+                                       tr("Toggle deinterlacing"),
+                                       "deinterlace", Qt::Key_I);
     toggleDeinterlaceAct->setCheckable(true);
-    connect(toggleDeinterlaceAct, SIGNAL(triggered()), player, SLOT(toggleDeinterlace()));
+    connect(toggleDeinterlaceAct, SIGNAL(triggered()),
+            player, SLOT(toggleDeinterlace()));
 
     addActionsTo(main_window);
 }
@@ -94,11 +104,11 @@ TMenuTransform::TMenuTransform(TMainWindow* mw)
 
     flipAct = new TAction(this, "flip", tr("Fli&p image"));
     flipAct->setCheckable(true);
-    connect(flipAct, SIGNAL(triggered(bool)), player, SLOT(toggleFlip(bool)));
+    connect(flipAct, SIGNAL(triggered(bool)), player, SLOT(setFlip(bool)));
 
     mirrorAct = new TAction(this, "mirror", tr("&Mirror image"));
     mirrorAct->setCheckable(true);
-    connect(mirrorAct, SIGNAL(triggered(bool)), player, SLOT(toggleMirror(bool)));
+    connect(mirrorAct, SIGNAL(triggered(bool)), player, SLOT(setMirror(bool)));
 
     addSeparator();
     group = new TActionGroup(this, "rotate");
@@ -107,7 +117,7 @@ TMenuTransform::TMenuTransform(TMainWindow* mw)
     new TActionGroupItem(this, group, "rotate_90", trUtf8("&Rotate 90° clockwise"), 90, true, true);
     new TActionGroupItem(this, group, "rotate_270", trUtf8("Rotate 90° &counter-clockwise"), 270, true, true);
     group->setChecked(player->mset.rotate);
-    connect(group, SIGNAL(activated(int)), player, SLOT(changeRotate(int)));
+    connect(group, SIGNAL(activated(int)), player, SLOT(setRotate(int)));
     // No one changes it
 
     addActionsTo(main_window);

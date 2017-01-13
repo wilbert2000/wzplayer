@@ -20,70 +20,94 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
     group->setExclusive(false);
     group->setEnabled(false);
 
-    postProcessingAct = new TAction(this, "postprocessing", tr("&Postprocessing"));
+    postProcessingAct = new TAction(this, "postprocessing",
+                                    tr("&Postprocessing"));
     postProcessingAct->setCheckable(true);
     group->addAction(postProcessingAct);
-    connect(postProcessingAct, SIGNAL(triggered(bool)), player, SLOT(togglePostprocessing(bool)));
+    connect(postProcessingAct, SIGNAL(triggered(bool)),
+            player, SLOT(setPostprocessing(bool)));
 
     deblockAct = new TAction(this, "deblock", tr("&Deblock"));
     deblockAct->setCheckable(true);
     group->addAction(deblockAct);
-    connect(deblockAct, SIGNAL(triggered(bool)), player, SLOT(toggleDeblock(bool)));
+    connect(deblockAct, SIGNAL(triggered(bool)),
+            player, SLOT(setDeblock(bool)));
 
     deringAct = new TAction(this, "dering", tr("De&ring"));
     deringAct->setCheckable(true);
     group->addAction(deringAct);
-    connect(deringAct, SIGNAL(triggered(bool)), player, SLOT(toggleDering(bool)));
+    connect(deringAct, SIGNAL(triggered(bool)), player, SLOT(setDering(bool)));
 
     gradfunAct = new TAction(this, "gradfun", tr("Debanding (&gradfun)"));
     gradfunAct->setCheckable(true);
     group->addAction(gradfunAct);
-    connect(gradfunAct, SIGNAL(triggered(bool)), player, SLOT(toggleGradfun(bool)));
+    connect(gradfunAct, SIGNAL(triggered(bool)),
+            player, SLOT(setGradfun(bool)));
 
     addNoiseAct = new TAction(this, "add_noise", tr("Add n&oise"));
     addNoiseAct->setCheckable(true);
     group->addAction(addNoiseAct);
-    connect(addNoiseAct, SIGNAL(triggered(bool)), player, SLOT(toggleNoise(bool)));
+    connect(addNoiseAct, SIGNAL(triggered(bool)), player, SLOT(setNoise(bool)));
 
-    addLetterboxAct = new TAction(this, "add_letterbox", tr("Add &black borders"), "letterbox");
+    addLetterboxAct = new TAction(this, "add_letterbox",
+                                  tr("Add &black borders"), "letterbox");
     addLetterboxAct->setCheckable(true);
     group->addAction(addLetterboxAct);
-    connect(addLetterboxAct, SIGNAL(triggered(bool)), player, SLOT(changeLetterbox(bool)));
+    connect(addLetterboxAct, SIGNAL(triggered(bool)),
+            player, SLOT(setetterbox(bool)));
 
-    upscaleAct = new TAction(this, "upscaling", tr("Soft&ware scaling"));
-    upscaleAct->setCheckable(true);
-    group->addAction(upscaleAct);
-    connect(upscaleAct, SIGNAL(triggered(bool)), player, SLOT(changeUpscale(bool)));
+    softwareScalingAct = new TAction(this, "software_scaling",
+                                     tr("Soft&ware scaling"));
+    softwareScalingAct->setCheckable(true);
+    group->addAction(softwareScalingAct);
+    connect(softwareScalingAct, SIGNAL(triggered(bool)),
+            player, SLOT(setSoftwareScaling(bool)));
 
     phaseAct = new TAction(this, "autodetect_phase", tr("&Autodetect phase"));
     phaseAct->setCheckable(true);
     group->addAction(phaseAct);
-    connect(phaseAct, SIGNAL(triggered(bool)), player, SLOT(toggleAutophase(bool)));
+    connect(phaseAct, SIGNAL(triggered(bool)),
+            player, SLOT(setAutophase(bool)));
 
     // Denoise
-    TMenu* menu = new TMenu(this, main_window, "denoise_menu", tr("De&noise"), "denoise");
+    TMenu* menu = new TMenu(this, main_window, "denoise_menu", tr("De&noise"),
+                            "denoise");
     denoiseGroup = new TActionGroup(this, "denoise");
     denoiseGroup->setEnabled(false);
-    denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none", tr("&Off"), TMediaSettings::NoDenoise, false);
-    denoiseNormalAct = new TActionGroupItem(this, denoiseGroup, "denoise_normal", tr("&Normal"), TMediaSettings::DenoiseNormal, false);
-    denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft", tr("&Soft"), TMediaSettings::DenoiseSoft, false);
+    denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none",
+                                          tr("&Off"), TMediaSettings::NoDenoise,
+                                          false);
+    denoiseNormalAct = new TActionGroupItem(this, denoiseGroup,
+                                            "denoise_normal", tr("&Normal"),
+                                            TMediaSettings::DenoiseNormal,
+                                            false);
+    denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft",
+                                          tr("&Soft"),
+                                          TMediaSettings::DenoiseSoft, false);
     menu->addActions(denoiseGroup->actions());
     menu->addActionsTo(main_window);
     addMenu(menu);
-    connect(denoiseGroup, SIGNAL(activated(int)), player, SLOT(changeDenoise(int)));
-    connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowDenoise()));
+    connect(denoiseGroup, SIGNAL(activated(int)),
+            player, SLOT(setDenoiser(int)));
+    connect(menu, SIGNAL(aboutToShow()),
+            this, SLOT(onAboutToShowDenoise()));
 
     // Unsharp group
-    menu = new TMenu(this, main_window, "unsharp_menu", tr("Blur/S&harp"), "unsharp");
-    unsharpGroup = new TActionGroup(this, "unsharp");
-    unsharpGroup->setEnabled(false);
-    unsharpNoneAct = new TActionGroupItem(this, unsharpGroup, "unsharp_off", tr("&None"), 0, false);
-    blurAct = new TActionGroupItem(this, unsharpGroup, "blur", tr("&Blur"), 1, false);
-    sharpenAct = new TActionGroupItem(this, unsharpGroup, "sharpen", tr("&Sharpen"), 2, false);
-    menu->addActions(unsharpGroup->actions());
+    menu = new TMenu(this, main_window, "sharpen_menu", tr("S&harpen"),
+                     "sharpen");
+    sharpenGroup = new TActionGroup(this, "sharpen");
+    sharpenGroup->setEnabled(false);
+    sharpenNoneAct = new TActionGroupItem(this, sharpenGroup, "sharpen_off",
+                                          tr("&None"), 0, false);
+    blurAct = new TActionGroupItem(this, sharpenGroup, "blur", tr("&Blur"), 1,
+                                   false);
+    sharpenAct = new TActionGroupItem(this, sharpenGroup, "sharpen",
+                                      tr("&Sharpen"), 2, false);
+    menu->addActions(sharpenGroup->actions());
     menu->addActionsTo(main_window);
     addMenu(menu);
-    connect(unsharpGroup, SIGNAL(activated(int)), player, SLOT(changeUnsharp(int)));
+    connect(sharpenGroup, SIGNAL(activated(int)),
+            player, SLOT(setSharpen(int)));
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowUnSharp()));
 
     updateFilters();
@@ -97,20 +121,21 @@ void TMenuVideoFilter::updateFilters() {
     gradfunAct->setChecked(player->mset.gradfun_filter);
     addNoiseAct->setChecked(player->mset.noise_filter);
     addLetterboxAct->setChecked(player->mset.add_letterbox);
-    upscaleAct->setChecked(player->mset.upscaling_filter);
+    softwareScalingAct->setChecked(player->mset.upscaling_filter);
     phaseAct->setChecked(player->mset.phase_filter);
 
     denoiseGroup->setChecked(player->mset.current_denoiser);
-    unsharpGroup->setChecked(player->mset.current_unsharp);
+    sharpenGroup->setChecked(player->mset.current_unsharp);
 }
 
 void TMenuVideoFilter::enableActions() {
 
-    bool enable = player->statePOP() && player->hasVideo() && player->videoFiltersEnabled();
+    bool enable = player->statePOP() && player->hasVideo()
+                  && player->videoFiltersEnabled();
     group->setEnabled(enable);
     addLetterboxAct->setEnabled(enable && pref->isMPlayer());
     denoiseGroup->setEnabled(enable);
-    unsharpGroup->setEnabled(enable);
+    sharpenGroup->setEnabled(enable);
 }
 
 void TMenuVideoFilter::onMediaSettingsChanged(Settings::TMediaSettings*) {
@@ -126,7 +151,7 @@ void TMenuVideoFilter::onAboutToShowDenoise() {
 }
 
 void TMenuVideoFilter::onAboutToShowUnSharp() {
-    unsharpGroup->setChecked(player->mset.current_unsharp);
+    sharpenGroup->setChecked(player->mset.current_unsharp);
 }
 
 } // namespace Menu
