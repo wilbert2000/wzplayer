@@ -48,7 +48,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>MPlayer only. Setting a cache can improve performance on slow connections or devices.</string>
+            <string>Setting a cache can improve performance on slow devices or connections. When using MPV it may break handling of titles and tracks on media discs.</string>
            </property>
            <property name="textFormat">
             <enum>Qt::PlainText</enum>
