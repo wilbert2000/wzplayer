@@ -326,11 +326,11 @@ void TPreferences::reset() {
     cache_enabled = false;
     cache_for_files = 2048;
     cache_for_streams = 2048;
+    cache_for_tv = 3000;
+    cache_for_brs = 0;
     cache_for_dvds = 0; // not recommended to use cache for dvds
     cache_for_vcds = 1024;
     cache_for_audiocds = 1024;
-    cache_for_tv = 3000;
-
 
     // Network
     ipPrefer = IP_PREFER_AUTO;
@@ -689,10 +689,11 @@ void TPreferences::save() {
     setValue("cache_enabled", cache_enabled);
     setValue("cache_for_files", cache_for_files);
     setValue("cache_for_streams", cache_for_streams);
+    setValue("cache_for_tv", cache_for_tv);
+    setValue("cache_for_brs", cache_for_brs);
     setValue("cache_for_dvds", cache_for_dvds);
     setValue("cache_for_vcds", cache_for_vcds);
     setValue("cache_for_audiocds", cache_for_audiocds);
-    setValue("cache_for_tv", cache_for_tv);
     endGroup(); // performance
 
 
@@ -1191,10 +1192,11 @@ void TPreferences::load() {
     cache_enabled = value("cache_enabled", cache_enabled).toBool();
     cache_for_files = value("cache_for_files", cache_for_files).toInt();
     cache_for_streams = value("cache_for_streams", cache_for_streams).toInt();
+    cache_for_tv = value("cache_for_tv", cache_for_tv).toInt();
+    cache_for_brs = value("cache_for_brs", cache_for_brs).toInt();
     cache_for_dvds = value("cache_for_dvds", cache_for_dvds).toInt();
     cache_for_vcds = value("cache_for_vcds", cache_for_vcds).toInt();
     cache_for_audiocds = value("cache_for_audiocds", cache_for_audiocds).toInt();
-    cache_for_tv = value("cache_for_tv", cache_for_tv).toInt();
     endGroup(); // performance
 
 

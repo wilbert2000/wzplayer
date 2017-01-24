@@ -48,26 +48,6 @@ public:
 
 protected:
     virtual void createHelp();
-
-    void setCacheForFiles(int n);
-    int cacheForFiles();
-
-    void setCacheForStreams(int n);
-    int cacheForStreams();
-
-    void setCacheForDVDs(int n);
-    int cacheForDVDs();
-
-    void setCacheForAudioCDs(int n);
-    int cacheForAudioCDs();
-
-    void setCacheForVCDs(int n);
-    int cacheForVCDs();
-
-    void setCacheForTV(int n);
-    int cacheForTV();
-
-protected:
     virtual void retranslateStrings();
 };
 

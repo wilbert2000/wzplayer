@@ -11,16 +11,7 @@
    </rect>
   </property>
   <layout class="QVBoxLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -33,16 +24,7 @@
        <string>Performance</string>
       </attribute>
       <layout class="QVBoxLayout">
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>16</number>
        </property>
        <item>
@@ -66,7 +48,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Setting a cache may improve performance on slow devices or connections. When using MPV it also may break handling of titles and tracks on media discs.</string>
+            <string>MPlayer only. Setting a cache can improve performance on slow connections or devices.</string>
            </property>
            <property name="textFormat">
             <enum>Qt::PlainText</enum>
@@ -90,32 +72,8 @@
           <bool>true</bool>
          </property>
          <layout class="QGridLayout">
-          <item row="8" column="0">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>&amp;Video CDs:</string>
-            </property>
-            <property name="buddy">
-             <cstring>cache_vcds_spin</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="cache_streams_spin">
-            <property name="maximum">
-             <number>100000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QSpinBox" name="cache_vcds_spin">
-            <property name="maximum">
-             <number>100000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_14">
+          <item row="5" column="0">
+           <widget class="QLabel" name="cache_tv_label">
             <property name="text">
              <string>&amp;TV:</string>
             </property>
@@ -124,68 +82,101 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="1">
+          <item row="8" column="0">
+           <widget class="QLabel" name="cache_vcd_label">
+            <property name="text">
+             <string>&amp;Video CD:</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_vcd_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QSpinBox" name="cache_vcd_spin">
+            <property name="maximum">
+             <number>100000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
            <widget class="QSpinBox" name="cache_tv_spin">
             <property name="maximum">
              <number>100000</number>
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
-           <widget class="QSpinBox" name="cache_cds_spin">
+          <item row="5" column="2">
+           <widget class="QLabel" name="cache_tv_kb_label">
+            <property name="text">
+             <string>KB</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_tv_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="cache_stream_label">
+            <property name="text">
+             <string>&amp;Stream:</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_stream_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="cache_stream_spin">
             <property name="maximum">
              <number>100000</number>
             </property>
            </widget>
           </item>
-          <item row="8" column="2">
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>KB</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="2">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>KB</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>&amp;DVDs:</string>
-            </property>
-            <property name="buddy">
-             <cstring>cache_dvds_spin</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>KB</string>
+          <item row="9" column="1">
+           <widget class="QSpinBox" name="cache_cd_spin">
+            <property name="maximum">
+             <number>100000</number>
             </property>
            </widget>
           </item>
           <item row="7" column="0">
-           <widget class="QLabel" name="label_9">
+           <widget class="QLabel" name="cache_dvd_label">
             <property name="text">
-             <string>&amp;Audio CDs:</string>
+             <string>&amp;DVD:</string>
             </property>
             <property name="buddy">
-             <cstring>cache_cds_spin</cstring>
+             <cstring>cache_dvd_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="QLabel" name="cache_dvd_kb_label">
+            <property name="text">
+             <string>KB</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_dvd_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="cache_cd_label">
+            <property name="text">
+             <string>&amp;Audio CD:</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_cd_spin</cstring>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="cache_files_label">
+           <widget class="QLabel" name="cache_file_label">
             <property name="text">
              <string>&amp;Local files:</string>
             </property>
             <property name="buddy">
-             <cstring>cache_files_spin</cstring>
+             <cstring>cache_file_spin</cstring>
             </property>
            </widget>
           </item>
@@ -203,47 +194,83 @@
            </spacer>
           </item>
           <item row="2" column="2">
-           <widget class="QLabel" name="cache_files_kb_label">
+           <widget class="QLabel" name="cache_file_kb_label">
             <property name="text">
              <string>KB</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="2">
-           <widget class="QLabel" name="label_10">
-            <property name="text">
-             <string>KB</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="cache_streams_label">
-            <property name="text">
-             <string>&amp;Streams:</string>
             </property>
             <property name="buddy">
-             <cstring>cache_streams_spin</cstring>
+             <cstring>cache_file_spin</cstring>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="QSpinBox" name="cache_dvds_spin">
+          <item row="9" column="2">
+           <widget class="QLabel" name="cache_cd_kb_label">
+            <property name="text">
+             <string>KB</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_cd_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QSpinBox" name="cache_dvd_spin">
             <property name="maximum">
              <number>100000</number>
             </property>
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QLabel" name="label_5">
+           <widget class="QLabel" name="cache_stream_kb_label">
             <property name="text">
              <string>KB</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_stream_spin</cstring>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="cache_files_spin">
+           <widget class="QSpinBox" name="cache_file_spin">
             <property name="maximum">
              <number>100000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="2">
+           <widget class="QLabel" name="cache_vcd_kb_label">
+            <property name="text">
+             <string>KB</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_vcd_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="bluray_label">
+            <property name="text">
+             <string>&amp;Blu-ray:</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_bluray_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QSpinBox" name="cache_bluray_spin">
+            <property name="maximum">
+             <number>1000000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QLabel" name="cache_bluray_kb_label">
+            <property name="text">
+             <string>KB</string>
+            </property>
+            <property name="buddy">
+             <cstring>cache_bluray_spin</cstring>
             </property>
            </widget>
           </item>
@@ -271,12 +298,14 @@
  </widget>
  <tabstops>
   <tabstop>performance_tabwidget</tabstop>
-  <tabstop>cache_files_spin</tabstop>
-  <tabstop>cache_streams_spin</tabstop>
-  <tabstop>cache_dvds_spin</tabstop>
-  <tabstop>cache_cds_spin</tabstop>
-  <tabstop>cache_vcds_spin</tabstop>
+  <tabstop>cache_group</tabstop>
+  <tabstop>cache_file_spin</tabstop>
+  <tabstop>cache_stream_spin</tabstop>
   <tabstop>cache_tv_spin</tabstop>
+  <tabstop>cache_bluray_spin</tabstop>
+  <tabstop>cache_dvd_spin</tabstop>
+  <tabstop>cache_vcd_spin</tabstop>
+  <tabstop>cache_cd_spin</tabstop>
  </tabstops>
  <resources/>
  <connections/>

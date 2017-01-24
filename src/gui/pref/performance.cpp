@@ -55,12 +55,13 @@ void TPerformance::retranslateStrings() {
 void TPerformance::setData(TPreferences* pref) {
 
     cache_group->setChecked(pref->cache_enabled);
-    setCacheForFiles(pref->cache_for_files);
-    setCacheForStreams(pref->cache_for_streams);
-    setCacheForDVDs(pref->cache_for_dvds);
-    setCacheForAudioCDs(pref->cache_for_audiocds);
-    setCacheForVCDs(pref->cache_for_vcds);
-    setCacheForTV(pref->cache_for_tv);
+    cache_file_spin->setValue(pref->cache_for_files);
+    cache_stream_spin->setValue(pref->cache_for_streams);
+    cache_tv_spin->setValue(pref->cache_for_tv);
+    cache_bluray_spin->setValue(pref->cache_for_brs);
+    cache_dvd_spin->setValue(pref->cache_for_dvds);
+    cache_cd_spin->setValue(pref->cache_for_audiocds);
+    cache_vcd_spin->setValue(pref->cache_for_vcds);
 }
 
 void TPerformance::getData(TPreferences* pref) {
@@ -69,65 +70,20 @@ void TPerformance::getData(TPreferences* pref) {
 
     restartIfBoolChanged(pref->cache_enabled, cache_group->isChecked(),
                          "cache_enabled");
-    restartIfIntChanged(pref->cache_for_files, cacheForFiles(),
-                        "cache_for_files");
-    restartIfIntChanged(pref->cache_for_streams, cacheForStreams(),
-                        "cache_for_streams");
-    restartIfIntChanged(pref->cache_for_dvds, cacheForDVDs(),
-                        "cache_for_dvds");
-    restartIfIntChanged(pref->cache_for_audiocds, cacheForAudioCDs(),
-                        "cache_for_audiocds");
-    restartIfIntChanged(pref->cache_for_vcds, cacheForVCDs(),
-                        "cache_for_vcds");
-    restartIfIntChanged(pref->cache_for_tv, cacheForTV(), "cache_for_tv");
-}
-
-void TPerformance::setCacheForFiles(int n) {
-    cache_files_spin->setValue(n);
-}
-
-int TPerformance::cacheForFiles() {
-    return cache_files_spin->value();
-}
-
-void TPerformance::setCacheForStreams(int n) {
-    cache_streams_spin->setValue(n);
-}
-
-int TPerformance::cacheForStreams() {
-    return cache_streams_spin->value();
-}
-
-void TPerformance::setCacheForDVDs(int n) {
-    cache_dvds_spin->setValue(n);
-}
-
-int TPerformance::cacheForDVDs() {
-    return cache_dvds_spin->value();
-}
-
-void TPerformance::setCacheForAudioCDs(int n) {
-    cache_cds_spin->setValue(n);
-}
-
-int TPerformance::cacheForAudioCDs() {
-    return cache_cds_spin->value();
-}
-
-void TPerformance::setCacheForVCDs(int n) {
-    cache_vcds_spin->setValue(n);
-}
-
-int TPerformance::cacheForVCDs() {
-    return cache_vcds_spin->value();
-}
-
-void TPerformance::setCacheForTV(int n) {
-    cache_tv_spin->setValue(n);
-}
-
-int TPerformance::cacheForTV() {
-    return cache_tv_spin->value();
+    restartIfIntChanged(pref->cache_for_files, cache_file_spin->value(),
+                        "cache_file");
+    restartIfIntChanged(pref->cache_for_streams, cache_stream_spin->value(),
+                        "cache_stream");
+    restartIfIntChanged(pref->cache_for_tv, cache_tv_spin->value(),
+                        "cache_tv");
+    restartIfIntChanged(pref->cache_for_brs, cache_bluray_spin->value(),
+                        "cache_bluray");
+    restartIfIntChanged(pref->cache_for_dvds, cache_dvd_spin->value(),
+                        "cache_dvd");
+    restartIfIntChanged(pref->cache_for_vcds, cache_vcd_spin->value(),
+                        "cache_vcd");
+    restartIfIntChanged(pref->cache_for_audiocds, cache_cd_spin->value(),
+                        "cache_cd");
 }
 
 void TPerformance::createHelp() {
@@ -136,26 +92,28 @@ void TPerformance::createHelp() {
 
     addSectionTitle(tr("Cache"));
 
-    setWhatsThis(cache_files_spin, tr("Cache for files"),
-        tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a file."));
+    setWhatsThis(cache_file_spin, tr("Cache for files"),
+        tr("Specifies how many kilo bytes to use to cache a file."));
 
-    setWhatsThis(cache_streams_spin, tr("Cache for streams"),
-        tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a URL."));
+    setWhatsThis(cache_stream_spin, tr("Cache for streams"),
+        tr("Specifie how many kilo bytes to use to cache an URL."));
 
-    setWhatsThis(cache_dvds_spin, tr("Cache for DVDs"),
-        tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a DVD.<br><b>Warning:</b> Seeking might not work "
-           "properly (including chapter switching) when using a cache for DVDs."));
+    setWhatsThis(cache_bluray_spin, tr("Cache for Blu-ray"),
+        tr("Specifies how many kilo bytes to use to cache a Blu-ray.<br>"
+           "<b>Note:</b> Seeking might not work properly, including chapter"
+           " switching, when using a cache for Blu -rays."));
 
-    setWhatsThis(cache_cds_spin, tr("Cache for audio CDs"),
-        tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching an audio CD."));
+    setWhatsThis(cache_dvd_spin, tr("Cache for DVDs"),
+        tr("Specifies how much memory in kilo bytes to use when caching a DVD."
+           "<br><b>Note:</b> Seeking might not work properly, including chapter"
+           " switching, when using a cache for DVDs."));
 
-    setWhatsThis(cache_vcds_spin, tr("Cache for VCDs"),
-        tr("This option specifies how much memory (in kBytes) to use when "
-           "precaching a VCD."));
+    setWhatsThis(cache_vcd_spin, tr("Cache for VCDs"),
+        tr("Specifies how much memory to use when caching a VCD in kilo bytes"));
+
+    setWhatsThis(cache_cd_spin, tr("Cache for audio CDs"),
+        tr("Specifies how much memory to use when caching an audio CD in kilo"
+           " bytes."));
 }
 
 }} // namespace Gui::Pref

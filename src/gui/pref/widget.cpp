@@ -61,7 +61,9 @@ void TWidget::restartIfBoolChanged(bool& old_value, bool new_value,
     }
 }
 
-void TWidget::restartIfIntChanged(int& old_value, int new_value, const QString& name) {
+void TWidget::restartIfIntChanged(int& old_value,
+                                  int new_value,
+                                  const QString& name) {
 
     if (old_value != new_value) {
         WZDEBUG(QString("need restart, %1 changed from %2 to %3")

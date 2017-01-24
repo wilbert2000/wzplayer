@@ -364,10 +364,11 @@ public:
     bool cache_enabled;
     int cache_for_files;
     int cache_for_streams;
+    int cache_for_tv;
+    int cache_for_brs;
     int cache_for_dvds;
     int cache_for_vcds;
     int cache_for_audiocds;
-    int cache_for_tv;
 
 
     // Network section

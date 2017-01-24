@@ -1270,21 +1270,21 @@ void TPlayer::startPlayer(bool loopImage) {
             case TMediaData::TYPE_DVD:
                 cache_size = Settings::pref->cache_for_dvds;
                 break;
-            case TMediaData::TYPE_STREAM:
-                cache_size = Settings::pref->cache_for_streams;
-                break;
             case TMediaData::TYPE_VCD:
                 cache_size = Settings::pref->cache_for_vcds;
                 break;
             case TMediaData::TYPE_CDDA:
                 cache_size = Settings::pref->cache_for_audiocds;
                 break;
+            case TMediaData::TYPE_BLURAY:
+                cache_size = Settings::pref->cache_for_brs;
+                break;
+            case TMediaData::TYPE_STREAM:
+                cache_size = Settings::pref->cache_for_streams;
+                break;
             case TMediaData::TYPE_TV:
                 cache_size = Settings::pref->cache_for_tv;
                 break;
-            case TMediaData::TYPE_BLURAY:
-                cache_size = Settings::pref->cache_for_dvds;
-                break; // FIXME: cache for bluray?
             default: cache_size = 0;
         } // switch
     }
