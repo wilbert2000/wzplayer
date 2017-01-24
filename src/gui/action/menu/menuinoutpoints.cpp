@@ -66,7 +66,7 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
                                  "repeat", Qt::Key_Backslash);
     repeatInOutAct->setCheckable(true);
     group->addAction(repeatInOutAct);
-    connect(repeatInOutAct, SIGNAL(triggered(bool)), player, SLOT(toggleRepeat(bool)));
+    connect(repeatInOutAct, SIGNAL(triggered(bool)), player, SLOT(setRepeat(bool)));
     connect(player, SIGNAL(InOutPointsChanged()), this, SLOT(upd()));
 
     // Repeat playlist

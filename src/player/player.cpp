@@ -17,6 +17,29 @@
 */
 
 #include "player/player.h"
+#include "player/process/playerprocess.h"
+#include "player/process/exitmsg.h"
+
+#include "gui/playerwindow.h"
+#include "gui/action/menu/tvlist.h"
+#include "gui/msg.h"
+#include "gui/desktop.h"
+
+#include "settings/preferences.h"
+#include "settings/mediasettings.h"
+#include "settings/aspectratio.h"
+#include "settings/filesettingshash.h"
+#include "settings/filesettings.h"
+#include "settings/tvsettings.h"
+#include "settings/filters.h"
+#include "settings/paths.h"
+
+#include "helper.h"
+#include "discname.h"
+#include "mediadata.h"
+#include "extensions.h"
+#include "colorutils.h"
+
 #include <QDir>
 #include <QFileInfo>
 #include <QRegExp>
@@ -25,30 +48,6 @@
 #include <QNetworkProxy>
 #include <QTimer>
 
-#include "discname.h"
-#include "mediadata.h"
-#include "extensions.h"
-#include "colorutils.h"
-#include "helper.h"
-#include "settings/paths.h"
-#include "settings/aspectratio.h"
-#include "settings/mediasettings.h"
-#include "settings/preferences.h"
-#include "settings/filesettings.h"
-#include "settings/filesettingshash.h"
-#include "settings/tvsettings.h"
-#include "settings/filters.h"
-
-#include "player/process/playerprocess.h"
-#include "player/process/exitmsg.h"
-#include "gui/playerwindow.h"
-
-#include "gui/desktop.h"
-#include "gui/msg.h"
-#include "gui/action/menu/tvlist.h"
-
-
-using namespace Settings;
 
 Player::TPlayer* player = 0;
 
@@ -65,7 +64,6 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     playerwindow(pw),
     _state(STATE_LOADING) {
 
-    //qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
     qRegisterMetaType<TState>("Player::TState");
 
     player = this;
@@ -89,7 +87,7 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
             this, SLOT(onProcessFinished(bool, int, bool)));
 
     connect(proc, SIGNAL(playerFullyLoaded()),
-            this, SLOT(playingStarted()));
+            this, SLOT(onPlayingStarted()));
 
     connect(proc, SIGNAL(receivedPosition(double)),
             this, SLOT(onReceivedPosition(double)));
@@ -159,6 +157,33 @@ TPlayer::~TPlayer() {
     player = 0;
 }
 
+void TPlayer::setState(TState s) {
+
+    if (s != _state) {
+        _state = s;
+        WZDEBUG("state set to " + stateToString()
+                + " at " + QString::number(mset.current_sec));
+        emit stateChanged(_state);
+    }
+}
+
+QString TPlayer::stateToString(TState state) {
+
+    switch (state) {
+        case STATE_STOPPED: return tr("Stopped");
+        case STATE_PLAYING: return tr("Playing");
+        case STATE_PAUSED: return tr("Paused");
+        case STATE_STOPPING: return tr("Stopping");
+        case STATE_RESTARTING: return tr("Restarting");
+        case STATE_LOADING: return tr("Loading");
+        default: return tr("Undefined");
+    }
+}
+
+QString TPlayer::stateToString() const {
+    return stateToString(_state);
+}
+
 void TPlayer::onProcessError(QProcess::ProcessError error) {
     WZERROR(QString::number(error));
 
@@ -198,36 +223,9 @@ void TPlayer::onReceivedMessage(const QString& s) {
     }
 }
 
-void TPlayer::setState(TState s) {
-
-    if (s != _state) {
-        _state = s;
-        WZDEBUG("state set to " + stateToString()
-                + " at " + QString::number(mset.current_sec));
-        emit stateChanged(_state);
-    }
-}
-
-QString TPlayer::stateToString(TState state) {
-
-    switch (state) {
-        case STATE_STOPPED: return tr("Stopped");
-        case STATE_PLAYING: return tr("Playing");
-        case STATE_PAUSED: return tr("Paused");
-        case STATE_STOPPING: return tr("Stopping");
-        case STATE_RESTARTING: return tr("Restarting");
-        case STATE_LOADING: return tr("Loading");
-        default: return tr("Undefined");
-    }
-}
-
-QString TPlayer::stateToString() const {
-    return stateToString(_state);
-}
-
 void TPlayer::saveMediaSettings() {
 
-    if (!pref->remember_media_settings) {
+    if (!Settings::pref->remember_media_settings) {
         WZDEBUG("save settings per file is disabled");
         return;
     }
@@ -239,7 +237,7 @@ void TPlayer::saveMediaSettings() {
     Gui::msg(tr("Saving settings for %1").arg(mdat.filename), 0);
 
     if (mdat.selected_type == TMediaData::TYPE_FILE) {
-        if (pref->file_settings_method.toLower() == "hash") {
+        if (Settings::pref->file_settings_method.toLower() == "hash") {
             Settings::TFileSettingsHash settings(mdat.filename);
             settings.saveSettingsFor(mdat.filename, mset);
         } else {
@@ -253,18 +251,6 @@ void TPlayer::saveMediaSettings() {
 
     Gui::msg(tr("Saved settings for %1").arg(mdat.filename));
 } // saveMediaSettings
-
-void TPlayer::clearOSD() {
-    WZDEBUG("");
-    displayTextOnOSD("", 0, pref->osd_level);
-}
-
-void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
-
-    if (proc->isReady() && level <= pref->osd_level && mdat.hasVideo()) {
-        proc->showOSDText(text, duration, level);
-    }
-}
 
 void TPlayer::close(TState next_state) {
     WZDEBUG("");
@@ -300,11 +286,11 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
     // Add device from pref if none specified
     if (disc.device.isEmpty()) {
         if (disc.protocol == "vcd" || disc.protocol == "cdda") {
-            disc.device = pref->cdrom_device;
+            disc.device = Settings::pref->cdrom_device;
         } else if (disc.protocol == "br") {
-            disc.device = pref->bluray_device;
+            disc.device = Settings::pref->bluray_device;
         } else {
-            disc.device = pref->dvd_device;
+            disc.device = Settings::pref->dvd_device;
         }
     }
 
@@ -381,7 +367,8 @@ void TPlayer::open(QString filename, bool loopImage) {
         filename = fi.absoluteFilePath();
 
         // Subtitle file?
-        QRegExp ext_sub(extensions.subtitles().forRegExp(), Qt::CaseInsensitive);
+        QRegExp ext_sub(extensions.subtitles().forRegExp(),
+                        Qt::CaseInsensitive);
         if (ext_sub.indexIn(fi.suffix()) >= 0) {
             loadSub(filename);
             return;
@@ -390,7 +377,7 @@ void TPlayer::open(QString filename, bool loopImage) {
         if (fi.isDir()) {
             if (Helper::directoryContainsDVD(filename)) {
                 WZDEBUG("directory contains a dvd");
-                disc = TDiscName(filename, pref->useDVDNAV());
+                disc = TDiscName(filename, Settings::pref->useDVDNAV());
                 openDisc(disc);
                 return;
             }
@@ -411,14 +398,100 @@ void TPlayer::open(QString filename, bool loopImage) {
     }
 }
 
+void TPlayer::openFile(const QString& filename, bool loopImage) {
+    WZDEBUG("'" + filename + "'");
+
+    close(STATE_LOADING);
+    mdat.filename = QDir::toNativeSeparators(filename);
+    mdat.selected_type = TMediaData::TYPE_FILE;
+    mdat.image = extensions.isImage(mdat.filename);
+    mset.reset();
+
+    // Check if we have info about this file
+    if (Settings::pref->remember_media_settings) {
+        if (Settings::pref->file_settings_method.toLower() == "hash") {
+            Settings::TFileSettingsHash settings(mdat.filename);
+            if (settings.existSettingsFor(mdat.filename)) {
+                settings.loadSettingsFor(mdat.filename, mset);
+            }
+        } else {
+            Settings::TFileSettings settings;
+            if (settings.existSettingsFor(mdat.filename)) {
+                settings.loadSettingsFor(mdat.filename, mset);
+            }
+        }
+
+        if (!Settings::pref->remember_time_pos) {
+            mset.current_sec = 0;
+            WZDEBUG("play position reset to 0");
+        }
+    }
+
+    startPlayer(loopImage);
+}
+
+void TPlayer::openTV(QString channel_id) {
+    WZDEBUG(channel_id);
+
+    close(STATE_LOADING);
+
+    // Use last channel if the name is just "dvb://" or "tv://"
+    if (channel_id == "dvb://" && !Settings::pref->last_dvb_channel.isEmpty()) {
+        channel_id = Settings::pref->last_dvb_channel;
+    }
+    else
+    if (channel_id == "tv://" && !Settings::pref->last_tv_channel.isEmpty()) {
+        channel_id = Settings::pref->last_tv_channel;
+    }
+
+    // Save last channel
+    if (channel_id.startsWith("dvb://")) {
+        Settings::pref->last_dvb_channel = channel_id;
+    } else if (channel_id.startsWith("tv://")) {
+        Settings::pref->last_tv_channel = channel_id;
+    }
+
+    mdat.filename = channel_id;
+    mdat.selected_type = TMediaData::TYPE_TV;
+
+    mset.reset();
+    // Set the default deinterlacer for TV
+    mset.current_deinterlacer = Settings::pref->initial_tv_deinterlace;
+    // Load settings
+    if (Settings::pref->remember_media_settings) {
+        Settings::TTVSettings settings;
+        if (settings.existSettingsFor(channel_id)) {
+            settings.loadSettingsFor(channel_id, mset);
+        }
+    }
+
+    startPlayer();
+}
+
+void TPlayer::openStream(const QString& name) {
+    WZDEBUG("'" + name + "'");
+
+    close(STATE_LOADING);
+    mdat.filename = name;
+    mdat.selected_type = TMediaData::TYPE_STREAM;
+    mset.reset();
+
+    startPlayer();
+}
+
+bool TPlayer::hasExternalSubs() const {
+    return mdat.subs.hasFileSubs()
+        || (mset.sub.type() == SubData::Vob && !mset.sub.filename().isEmpty());
+}
+
 void TPlayer::setExternalSubs(const QString &filename) {
 
     mset.current_sub_set_by_user = true;
-    mset.current_sub_idx = TMediaSettings::NoneSelected;
-    mset.sub.setID(TMediaSettings::NoneSelected);
+    mset.current_sub_idx = Settings::TMediaSettings::NoneSelected;
+    mset.sub.setID(Settings::TMediaSettings::NoneSelected);
     mset.sub.setType(SubData::File);
     // For mplayer assume vob if file extension idx
-    if (pref->isMPlayer()) {
+    if (Settings::pref->isMPlayer()) {
         QFileInfo fi(filename);
         if (fi.suffix().toLower() == "idx") {
             mset.sub.setType(SubData::Vob);
@@ -432,7 +505,8 @@ void TPlayer::loadSub(const QString & sub) {
 
     if (!sub.isEmpty() && QFile::exists(sub)) {
         setExternalSubs(sub);
-        if (mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
+        if (mset.external_subtitles_fps
+            != Settings::TMediaSettings::SFPS_None) {
             restartPlay();
         } else {
             proc->setExternalSubtitleFile(sub);
@@ -442,15 +516,10 @@ void TPlayer::loadSub(const QString & sub) {
     }
 }
 
-bool TPlayer::hasExternalSubs() const {
-    return mdat.subs.hasFileSubs()
-        || (mset.sub.type() == SubData::Vob && !mset.sub.filename().isEmpty());
-}
-
 void TPlayer::unloadSub() {
 
     mset.current_sub_set_by_user = false;
-    mset.current_sub_idx = TMediaSettings::NoneSelected;
+    mset.current_sub_idx = Settings::TMediaSettings::NoneSelected;
     mset.sub = SubData();
 
     restartPlay();
@@ -472,186 +541,6 @@ void TPlayer::unloadAudioFile() {
     }
 }
 
-void TPlayer::openTV(QString channel_id) {
-    WZDEBUG(channel_id);
-
-    close(STATE_LOADING);
-
-    // Use last channel if the name is just "dvb://" or "tv://"
-    if ((channel_id == "dvb://") && (!pref->last_dvb_channel.isEmpty())) {
-        channel_id = pref->last_dvb_channel;
-    }
-    else
-    if ((channel_id == "tv://") && (!pref->last_tv_channel.isEmpty())) {
-        channel_id = pref->last_tv_channel;
-    }
-
-    // Save last channel
-    if (channel_id.startsWith("dvb://")) pref->last_dvb_channel = channel_id;
-    else
-    if (channel_id.startsWith("tv://")) pref->last_tv_channel = channel_id;
-
-    mdat.filename = channel_id;
-    mdat.selected_type = TMediaData::TYPE_TV;
-
-    mset.reset();
-    // Set the default deinterlacer for TV
-    mset.current_deinterlacer = pref->initial_tv_deinterlace;
-    // Load settings
-    if (pref->remember_media_settings) {
-        Settings::TTVSettings settings;
-        if (settings.existSettingsFor(channel_id)) {
-            settings.loadSettingsFor(channel_id, mset);
-        }
-    }
-
-    startPlayer();
-}
-
-void TPlayer::openStream(const QString& name) {
-    WZDEBUG("'" + name + "'");
-
-    close(STATE_LOADING);
-    mdat.filename = name;
-    mdat.selected_type = TMediaData::TYPE_STREAM;
-    mset.reset();
-
-    startPlayer();
-}
-
-void TPlayer::openFile(const QString& filename, bool loopImage) {
-    WZDEBUG("'" + filename + "'");
-
-    close(STATE_LOADING);
-    mdat.filename = QDir::toNativeSeparators(filename);
-    mdat.selected_type = TMediaData::TYPE_FILE;
-    mdat.image = extensions.isImage(mdat.filename);
-    mset.reset();
-
-    // Check if we have info about this file
-    if (pref->remember_media_settings) {
-        if (pref->file_settings_method.toLower() == "hash") {
-            Settings::TFileSettingsHash settings(mdat.filename);
-            if (settings.existSettingsFor(mdat.filename)) {
-                settings.loadSettingsFor(mdat.filename, mset);
-            }
-        } else {
-            Settings::TFileSettings settings;
-            if (settings.existSettingsFor(mdat.filename)) {
-                settings.loadSettingsFor(mdat.filename, mset);
-            }
-        }
-
-        if (!pref->remember_time_pos) {
-            mset.current_sec = 0;
-            WZDEBUG("play position reset to 0");
-        }
-    }
-
-    startPlayer(loopImage);
-}
-
-void TPlayer::restartPlay() {
-    WZDEBUG("");
-
-    // Save state proc, currently only used by TMPlayerProcess for DVDNAV
-    proc->save();
-    stopPlayer();
-
-    WZDEBUG("entering the restarting state");
-    setState(STATE_RESTARTING);
-    startPlayer();
-}
-
-// Public restart
-void TPlayer::restart() {
-    WZDEBUG("");
-
-    if (proc->isReady()) {
-        restartPlay();
-    } else {
-        WZWARN("player not ready");
-    }
-}
-
-void TPlayer::reload() {
-    WZDEBUG("");
-
-    stopPlayer();
-    WZDEBUG("entering the loading state");
-    setState(STATE_LOADING);
-    startPlayer();
-}
-
-void TPlayer::initVolume() {
-
-    // Keep currrent volume if no media settings are loaded.
-    // restore_volume is set to true by mset.reset and set
-    // to false by mset.load
-    if (mset.restore_volume) {
-        WZDEBUG("keeping current volume");
-        mset.volume = mset.old_volume;
-        mset.mute = mset.old_mute;
-    } else if (!pref->global_volume) {
-        if (mset.old_volume != mset.volume) {
-            WZDEBUG("emit volumeChanged()");
-            emit volumeChanged(mset.volume);
-        }
-        if (mset.old_mute != mset.mute) {
-            WZDEBUG("emit muteChanged()");
-            emit muteChanged(mset.mute);
-        }
-    }
-}
-
-void TPlayer::initMediaSettings() {
-    WZDEBUG("");
-
-    // Restore old volume or emit new volume
-    initVolume();
-
-    // Apply settings to playerwindow, false = do not update video window
-    playerwindow->setZoom(mset.zoom_factor, mset.zoom_factor_fullscreen, false);
-    playerwindow->setPan(mset.pan_offset, mset.pan_offset_fullscreen);
-
-    emit mediaSettingsChanged();
-}
-
-void TPlayer::playingStartedNewMedia() {
-    WZDEBUG("");
-
-    mdat.list();
-
-    // Copy the demuxer
-    mset.current_demuxer = mdat.demuxer;
-    if (pref->remember_media_settings) {
-        mset.list();
-    }
-
-    WZDEBUG("emit newMediaStartedPlaying()");
-    emit newMediaStartedPlaying();
-}
-
-// Slot called when signal playerFullyLoaded arrives.
-void TPlayer::playingStarted() {
-    WZDEBUG("");
-
-    if (forced_titles.contains(mdat.filename)) {
-        mdat.title = forced_titles[mdat.filename];
-    }
-
-    if (_state != STATE_RESTARTING) {
-        playingStartedNewMedia();
-    }
-
-    setState(STATE_PLAYING);
-
-    WZDEBUG("emit mediaInfoChanged()");
-    emit mediaInfoChanged();
-
-    WZDEBUG("done in " + QString::number(time.elapsed()) + " ms");
-}
-
 void TPlayer::stopPlayer() {
 
     if (proc->state() == QProcess::NotRunning) {
@@ -665,7 +554,7 @@ void TPlayer::stopPlayer() {
 
     // If set high enough the OS will detect the "not responding state" and
     // popup a dialog
-    int timeout = pref->time_to_kill_player;
+    int timeout = Settings::pref->time_to_kill_player;
     WZDEBUG("waiting " + QString::number(timeout)
             + " ms for player to quit...");
     if (!proc->waitForFinished(timeout)) {
@@ -729,6 +618,121 @@ void TPlayer::playOrPause() {
     }
 }
 
+// Save current state and restart player
+void TPlayer::restartPlay() {
+    WZDEBUG("");
+
+    // Save state proc, currently only used by TMPlayerProcess for DVDNAV
+    proc->save();
+    stopPlayer();
+
+    WZDEBUG("entering the restarting state");
+    setState(STATE_RESTARTING);
+    startPlayer();
+}
+
+// Public restart
+void TPlayer::restart() {
+    WZDEBUG("");
+
+    if (proc->isReady()) {
+        restartPlay();
+    } else {
+        WZWARN("player not ready");
+    }
+}
+
+void TPlayer::reload() {
+    WZDEBUG("");
+
+    stopPlayer();
+    WZDEBUG("entering the loading state");
+    setState(STATE_LOADING);
+    startPlayer();
+}
+
+void TPlayer::initVolume() {
+
+    // Keep currrent volume if no media settings are loaded.
+    // restore_volume is set to true by mset.reset and set
+    // to false by mset.load
+    if (mset.restore_volume) {
+        WZDEBUG("keeping current volume");
+        mset.volume = mset.old_volume;
+        mset.mute = mset.old_mute;
+    } else if (!Settings::pref->global_volume) {
+        if (mset.old_volume != mset.volume) {
+            WZDEBUG("emit volumeChanged()");
+            emit volumeChanged(mset.volume);
+        }
+        if (mset.old_mute != mset.mute) {
+            WZDEBUG("emit muteChanged()");
+            emit muteChanged(mset.mute);
+        }
+    }
+}
+
+void TPlayer::initMediaSettings() {
+    WZDEBUG("");
+
+    // Restore old volume or emit new volume
+    initVolume();
+
+    // Apply settings to playerwindow, false = do not update video window
+    playerwindow->setZoom(mset.zoom_factor, mset.zoom_factor_fullscreen, false);
+    playerwindow->setPan(mset.pan_offset, mset.pan_offset_fullscreen);
+
+    emit mediaSettingsChanged();
+}
+
+void TPlayer::onPlayingStartedNewMedia() {
+    WZDEBUG("");
+
+    mdat.list();
+
+    // Copy the demuxer
+    mset.current_demuxer = mdat.demuxer;
+    if (Settings::pref->remember_media_settings) {
+        mset.list();
+    }
+
+    WZDEBUG("emit newMediaStartedPlaying()");
+    emit newMediaStartedPlaying();
+}
+
+// Slot called when signal playerFullyLoaded arrives.
+void TPlayer::onPlayingStarted() {
+    WZDEBUG("");
+
+    if (forced_titles.contains(mdat.filename)) {
+        mdat.title = forced_titles[mdat.filename];
+    }
+
+    if (_state != STATE_RESTARTING) {
+        onPlayingStartedNewMedia();
+    }
+
+    setState(STATE_PLAYING);
+
+    WZDEBUG("emit mediaInfoChanged()");
+    emit mediaInfoChanged();
+
+    WZDEBUG("done in " + QString::number(time.elapsed()) + " ms");
+}
+
+void TPlayer::clearOSD() {
+    WZDEBUG("");
+    displayTextOnOSD("", 0, Settings::pref->osd_level);
+}
+
+void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
+
+    if (proc->isReady() && level <= Settings::pref->osd_level
+        && mdat.hasVideo()) {
+        proc->showOSDText(text, duration, level);
+    }
+}
+
 void TPlayer::frameStep() {
     WZDEBUG("at " + QString::number(mset.current_sec));
 
@@ -756,9 +760,10 @@ void TPlayer::frameBackStep() {
 void TPlayer::screenshot() {
     WZDEBUG("");
 
-    if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
+    if (Settings::pref->use_screenshot
+        && !Settings::pref->screenshot_directory.isEmpty()) {
         proc->takeScreenshot(Player::Process::TPlayerProcess::Single,
-                             pref->subtitles_on_screenshots);
+                             Settings::pref->subtitles_on_screenshots);
         WZDEBUG("took screenshot");
     } else {
         WZWARN("directory for screenshots not valid or not enabled");
@@ -769,9 +774,10 @@ void TPlayer::screenshot() {
 void TPlayer::screenshots() {
     WZDEBUG("");
 
-    if (pref->use_screenshot && !pref->screenshot_directory.isEmpty()) {
+    if (Settings::pref->use_screenshot
+        && !Settings::pref->screenshot_directory.isEmpty()) {
         proc->takeScreenshot(Player::Process::TPlayerProcess::Multiple,
-                             pref->subtitles_on_screenshots);
+                             Settings::pref->subtitles_on_screenshots);
     } else {
         WZWARN("directory for screenshots not valid or enabled");
         Gui::msg(tr("Screenshots NOT taken, folder not configured or enabled"));
@@ -786,9 +792,9 @@ void TPlayer::switchCapturing() {
 bool TPlayer::haveVideoFilters() const {
 
     return mset.phase_filter
-        || mset.current_deinterlacer != TMediaSettings::NoDeinterlace
+        || mset.current_deinterlacer != Settings::TMediaSettings::NoDeinterlace
         || (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty())
-        || mset.current_denoiser != TMediaSettings::NoDenoise
+        || mset.current_denoiser != Settings::TMediaSettings::NoDenoise
         || mset.current_unsharp
         || mset.deblock_filter
         || mset.dering_filter
@@ -797,9 +803,9 @@ bool TPlayer::haveVideoFilters() const {
         || mset.noise_filter
         || mset.postprocessing_filter
         || mset.add_letterbox
-        || pref->use_soft_video_eq
+        || Settings::pref->use_soft_video_eq
         || !mset.player_additional_video_filters.isEmpty()
-        || !pref->player_additional_video_filters.isEmpty()
+        || !Settings::pref->player_additional_video_filters.isEmpty()
         || mset.rotate
         || mset.flip
         || mset.mirror;
@@ -814,18 +820,19 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
 
     bool enabled = true;
 
-    if (pref->isMPlayer()) {
+    if (Settings::pref->isMPlayer()) {
         QString msg;
-        if (pref->vo.startsWith("vdpau")) {
-            enabled = !pref->vdpau.disable_video_filters;
+        if (Settings::pref->vo.startsWith("vdpau")) {
+            enabled = !Settings::pref->vdpau.disable_video_filters;
             if (enabled) {
-                msg = tr("The video driver settings for vdpau allow filters, this might not work...");
+                msg = tr("The video driver settings for vdpau allow video "
+                         " filters, this might not work...");
             } else {
-                msg = tr("Using vdpau, the video filters will be ignored");
+                msg = tr("Using vdpau, ignoring video filters");
             }
         }
 
-        if (displayMessage && !msg.isEmpty() && haveVideoFilters()) {
+        if (!msg.isEmpty() && displayMessage && haveVideoFilters()) {
             WZDEBUG(msg);
             Gui::msg(msg, 0);
         }
@@ -867,7 +874,7 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // Load m4a audio file with the same name as file
-    if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
+    if (Settings::pref->autoload_m4a && mset.external_audio.isEmpty()) {
         QFileInfo fi(fileName);
         if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
             QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
@@ -883,12 +890,12 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     proc->clearArguments();
-    proc->setExecutable(pref->player_bin);
+    proc->setExecutable(Settings::pref->player_bin);
     proc->setFixedOptions();
     proc->disableInput();
     proc->setOption("wid",
         QString::number((qint64) playerwindow->videoWindow()->winId()));
-    if (pref->log_verbose) {
+    if (Settings::pref->log_verbose) {
         proc->setOption("verbose");
     }
 
@@ -899,7 +906,7 @@ void TPlayer::startPlayer(bool loopImage) {
         double ss = 0;
         if (mdat.selected_type == TMediaData::TYPE_FILE) {
             if (mdat.image) {
-                proc->setImageDuration(pref->imageDuration);
+                proc->setImageDuration(Settings::pref->imageDuration);
                 if (loopImage) {
                     proc->setOption("loop", 0 /* loop forever */);
                 }
@@ -933,8 +940,8 @@ void TPlayer::startPlayer(bool loopImage) {
 
     // Setup hardware decoding for MPV.
     // First set mdat.video_hwdec, handle setting hwdec option later
-    QString hwdec = pref->hwdec;
-    if (pref->isMPV()) {
+    QString hwdec = Settings::pref->hwdec;
+    if (Settings::pref->isMPV()) {
         // Disable hardware decoding when there are filters in use
         if (hwdec != "no" && haveVideoFilters()) {
             hwdec = "no";
@@ -962,24 +969,24 @@ void TPlayer::startPlayer(bool loopImage) {
 
 #ifndef Q_OS_WIN
         // VDPAU codecs
-        if (pref->vo.startsWith("vdpau")) {
-            if (pref->isMPlayer()) {
+        if (Settings::pref->vo.startsWith("vdpau")) {
+            if (Settings::pref->isMPlayer()) {
                 QString c;
-                if (pref->vdpau.ffh264vdpau) c = "ffh264vdpau,";
-                if (pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
-                if (pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
-                if (pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
-                if (pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
+                if (Settings::pref->vdpau.ffh264vdpau) c = "ffh264vdpau,";
+                if (Settings::pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
+                if (Settings::pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
+                if (Settings::pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
+                if (Settings::pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
                 if (!c.isEmpty()) {
                     proc->setOption("vc", c);
                 }
             } else if (mdat.video_hwdec) {
                 QString c;
-                if (pref->vdpau.ffh264vdpau) c = ",h264";
-                if (pref->vdpau.ffmpeg12vdpau) c += ",mpeg1video,mpeg2video";
-                if (pref->vdpau.ffwmv3vdpau) c += ",wmv3";
-                if (pref->vdpau.ffvc1vdpau) c += ",vc1";
-                if (pref->vdpau.ffodivxvdpau) c += ",mpeg4";
+                if (Settings::pref->vdpau.ffh264vdpau) c = ",h264";
+                if (Settings::pref->vdpau.ffmpeg12vdpau) c += ",mpeg1video,mpeg2video";
+                if (Settings::pref->vdpau.ffwmv3vdpau) c += ",wmv3";
+                if (Settings::pref->vdpau.ffvc1vdpau) c += ",vc1";
+                if (Settings::pref->vdpau.ffodivxvdpau) c += ",mpeg4";
                 if (!c.isEmpty()) {
                     proc->setOption("hwdec-codecs", c.mid(1));
                 }
@@ -990,23 +997,23 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // MPV only
-    if (!hwdec.isEmpty() && pref->isMPV()) {
+    if (!hwdec.isEmpty() && Settings::pref->isMPV()) {
         proc->setOption("hwdec", hwdec);
     }
 
-    if (!pref->vo.isEmpty()) {
-        proc->setOption("vo", pref->vo);
+    if (!Settings::pref->vo.isEmpty()) {
+        proc->setOption("vo", Settings::pref->vo);
     }
 
     // Enable software scaling for vo x11
 #if !defined(Q_OS_WIN)
-    if (pref->vo.startsWith("x11")) {
+    if (Settings::pref->vo.startsWith("x11")) {
         proc->setOption("zoom");
     }
 #endif
 
-    if (!pref->ao.isEmpty()) {
-        proc->setOption("ao", pref->ao);
+    if (!Settings::pref->ao.isEmpty()) {
+        proc->setOption("ao", Settings::pref->ao);
     }
 
 #if PROGRAM_SWITCH
@@ -1043,80 +1050,82 @@ void TPlayer::startPlayer(bool loopImage) {
         proc->setOption("aspect", aspect_option);
     }
     // Aspect ratio monitor
-    double aspect = pref->monitorAspectDouble();
+    double aspect = Settings::pref->monitorAspectDouble();
     if (aspect > 0) {
         proc->setOption("monitorpixelaspect", aspect);
     }
 
     // Colorkey, only used by XP directx to set color key for overlay
-    if (pref->useColorKey()) {
-        proc->setOption("colorkey", TColorUtils::colorToRGB(pref->color_key));
+    if (Settings::pref->useColorKey()) {
+        proc->setOption("colorkey",
+                        TColorUtils::colorToRGB(Settings::pref->color_key));
     }
 
     // Synchronization
-    if (pref->frame_drop && pref->hard_frame_drop) {
+    if (Settings::pref->frame_drop && Settings::pref->hard_frame_drop) {
         proc->setOption("framedrop", "decoder+vo");
-    } else if (pref->frame_drop) {
+    } else if (Settings::pref->frame_drop) {
         proc->setOption("framedrop", "vo");
-    } else if (pref->hard_frame_drop) {
+    } else if (Settings::pref->hard_frame_drop) {
         proc->setOption("framedrop", "decoder");
     }
-    if (pref->autosync) {
-        proc->setOption("autosync", QString::number(pref->autosync_factor));
+    if (Settings::pref->autosync) {
+        proc->setOption("autosync",
+                        QString::number(Settings::pref->autosync_factor));
     }
-    if (pref->use_mc) {
-        proc->setOption("mc", QString::number(pref->mc_value));
+    if (Settings::pref->use_mc) {
+        proc->setOption("mc", QString::number(Settings::pref->mc_value));
     }
 
     // OSD
-    proc->setOption("osdlevel", pref->osd_level);
-    if (pref->isMPlayer()) {
-        proc->setOption("osd-scale", pref->subfont_osd_scale);
+    proc->setOption("osdlevel", Settings::pref->osd_level);
+    if (Settings::pref->isMPlayer()) {
+        proc->setOption("osd-scale", Settings::pref->subfont_osd_scale);
     } else {
-        proc->setOption("osd-scale", pref->osd_scale);
+        proc->setOption("osd-scale", Settings::pref->osd_scale);
         proc->setOption("osd-scale-by-window", "no");
     }
 
     // Subtitle search fuzziness
-    proc->setOption("sub-fuzziness", pref->subtitle_fuzziness);
+    proc->setOption("sub-fuzziness", Settings::pref->subtitle_fuzziness);
 
     // Subtitles fonts
-    if (pref->use_ass_subtitles && pref->freetype_support) {
+    if (Settings::pref->use_ass_subtitles && Settings::pref->freetype_support) {
         // Use ASS options
         proc->setOption("ass");
         proc->setOption("embeddedfonts");
         proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
         proc->setOption("ass-line-spacing",
-                        QString::number(pref->ass_line_spacing));
+                        QString::number(Settings::pref->ass_line_spacing));
 
         // Custom ASS style
-        if (pref->use_custom_ass_style) {
+        if (Settings::pref->use_custom_ass_style) {
             QString ass_force_style;
-            if (pref->user_forced_ass_style.isEmpty()) {
-                ass_force_style = pref->ass_styles.toString();
+            if (Settings::pref->user_forced_ass_style.isEmpty()) {
+                ass_force_style = Settings::pref->ass_styles.toString();
             } else {
-                ass_force_style = pref->user_forced_ass_style;
+                ass_force_style = Settings::pref->user_forced_ass_style;
             }
 
-            if (pref->isMPV()) {
-                proc->setSubStyles(pref->ass_styles);
-                if (pref->force_ass_styles) {
+            if (Settings::pref->isMPV()) {
+                proc->setSubStyles(Settings::pref->ass_styles);
+                if (Settings::pref->force_ass_styles) {
                     proc->setOption("ass-force-style", ass_force_style);
                 }
             } else {
-                if (pref->force_ass_styles) {
+                if (Settings::pref->force_ass_styles) {
                     proc->setOption("ass-force-style", ass_force_style);
                 } else {
-                    proc->setSubStyles(pref->ass_styles,
-                                       TPaths::subtitleStyleFile());
+                    proc->setSubStyles(Settings::pref->ass_styles,
+                                       Settings::TPaths::subtitleStyleFile());
                 }
             }
         }
     } else {
         // NO ASS
-        if (pref->freetype_support)
+        if (Settings::pref->freetype_support)
             proc->setOption("noass");
-        if (pref->isMPV()) {
+        if (Settings::pref->isMPV()) {
             proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
         } else {
             proc->setOption("subfont-text-scale",
@@ -1125,23 +1134,25 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // Subtitle encoding
-    if (pref->subtitle_enca_language.isEmpty()) {
+    if (Settings::pref->subtitle_enca_language.isEmpty()) {
         // No encoding language, set fallback code page
-        if (!pref->subtitle_encoding_fallback.isEmpty()) {
-            if (pref->isMPlayer()) {
-                proc->setOption("subcp", pref->subtitle_encoding_fallback);
-            } else if (pref->subtitle_encoding_fallback != "UTF-8") {
+        if (!Settings::pref->subtitle_encoding_fallback.isEmpty()) {
+            if (Settings::pref->isMPlayer()) {
+                proc->setOption("subcp",
+                                Settings::pref->subtitle_encoding_fallback);
+            } else if (Settings::pref->subtitle_encoding_fallback != "UTF-8") {
                 // Use pref->subtitle_encoding_fallback if encoding is not utf8
                 proc->setOption("subcp",
-                                "utf8:" + pref->subtitle_encoding_fallback);
+                                "utf8:"
+                                + Settings::pref->subtitle_encoding_fallback);
             }
         }
     } else {
         // Add subtitle encoding enca language
-        QString encoding = "enca:"+ pref->subtitle_enca_language;
+        QString encoding = "enca:"+ Settings::pref->subtitle_enca_language;
         // Add subtitle encoding fallback
-        if (!pref->subtitle_encoding_fallback.isEmpty()) {
-            encoding += ":"+ pref->subtitle_encoding_fallback;
+        if (!Settings::pref->subtitle_encoding_fallback.isEmpty()) {
+            encoding += ":"+ Settings::pref->subtitle_encoding_fallback;
         }
         proc->setOption("subcp", encoding);
     }
@@ -1150,7 +1161,7 @@ void TPlayer::startPlayer(bool loopImage) {
         proc->setOption("subcc", QString::number(mset.closed_caption_channel));
     }
 
-    if (pref->use_forced_subs_only) {
+    if (Settings::pref->use_forced_subs_only) {
         proc->setOption("forcedsubsonly");
     }
 
@@ -1193,16 +1204,20 @@ void TPlayer::startPlayer(bool loopImage) {
 
     // Set fps external file
     if (!mset.sub.filename().isEmpty()
-        && mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
+        && mset.external_subtitles_fps != Settings::TMediaSettings::SFPS_None) {
 
         QString fps;
         switch (mset.external_subtitles_fps) {
-            case TMediaSettings::SFPS_23: fps = "23"; break;
-            case TMediaSettings::SFPS_24: fps = "24"; break;
-            case TMediaSettings::SFPS_25: fps = "25"; break;
-            case TMediaSettings::SFPS_30: fps = "30"; break;
-            case TMediaSettings::SFPS_23976: fps = "24000/1001"; break;
-            case TMediaSettings::SFPS_29970: fps = "30000/1001"; break;
+            case Settings::TMediaSettings::SFPS_23: fps = "23"; break;
+            case Settings::TMediaSettings::SFPS_24: fps = "24"; break;
+            case Settings::TMediaSettings::SFPS_25: fps = "25"; break;
+            case Settings::TMediaSettings::SFPS_30: fps = "30"; break;
+            case Settings::TMediaSettings::SFPS_23976:
+                fps = "24000/1001";
+                break;
+            case Settings::TMediaSettings::SFPS_29970:
+                fps = "30000/1001";
+                break;
             default: fps = "25";
         }
         proc->setOption("subfps", fps);
@@ -1217,7 +1232,7 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // Contrast, brightness...
-    if (pref->change_video_equalizer_on_startup) {
+    if (Settings::pref->change_video_equalizer_on_startup) {
         if (mset.contrast != 0) {
             proc->setOption("contrast", QString::number(mset.contrast));
         }
@@ -1240,21 +1255,36 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // TODO: TMPVProcess title and track switch code does not run nicely when
-    // caching is set. Seeks inside cache don't notify track or title changes.
+    // caching is set. Seeks inside the cache don't notify track or title
+    // changes...
     cache_size = -1;
     if (mdat.selected_type == TMediaData::TYPE_DVDNAV) {
         // Always set no cache for DVDNAV
         cache_size = 0;
-    } else if (pref->cache_enabled) {
-        // Enabled set cache
+    } else if (Settings::pref->cache_enabled) {
+        // Enabled cache
         switch (mdat.selected_type) {
-            case TMediaData::TYPE_FILE  : cache_size = pref->cache_for_files; break;
-            case TMediaData::TYPE_DVD   : cache_size = pref->cache_for_dvds; break;
-            case TMediaData::TYPE_STREAM: cache_size = pref->cache_for_streams; break;
-            case TMediaData::TYPE_VCD   : cache_size = pref->cache_for_vcds; break;
-            case TMediaData::TYPE_CDDA  : cache_size = pref->cache_for_audiocds; break;
-            case TMediaData::TYPE_TV    : cache_size = pref->cache_for_tv; break;
-            case TMediaData::TYPE_BLURAY: cache_size = pref->cache_for_dvds; break; // FIXME: use cache for bluray?
+            case TMediaData::TYPE_FILE:
+                cache_size = Settings::pref->cache_for_files;
+                break;
+            case TMediaData::TYPE_DVD:
+                cache_size = Settings::pref->cache_for_dvds;
+                break;
+            case TMediaData::TYPE_STREAM:
+                cache_size = Settings::pref->cache_for_streams;
+                break;
+            case TMediaData::TYPE_VCD:
+                cache_size = Settings::pref->cache_for_vcds;
+                break;
+            case TMediaData::TYPE_CDDA:
+                cache_size = Settings::pref->cache_for_audiocds;
+                break;
+            case TMediaData::TYPE_TV:
+                cache_size = Settings::pref->cache_for_tv;
+                break;
+            case TMediaData::TYPE_BLURAY:
+                cache_size = Settings::pref->cache_for_dvds;
+                break; // FIXME: cache for bluray?
             default: cache_size = 0;
         } // switch
     }
@@ -1266,31 +1296,35 @@ void TPlayer::startPlayer(bool loopImage) {
         proc->setOption("speed", QString::number(mset.speed));
     }
 
-    if (pref->use_idx) {
+    if (Settings::pref->use_idx) {
         proc->setOption("idx");
     }
 
-    if (mdat.image || pref->use_correct_pts != TPreferences::Detect) {
-        proc->setOption("correct-pts", !mdat.image
-                        && pref->use_correct_pts == TPreferences::Enabled);
+    if (mdat.image
+        || Settings::pref->use_correct_pts != Settings::TPreferences::Detect) {
+        proc->setOption("correct-pts",
+                        !mdat.image
+                        && Settings::pref->use_correct_pts
+                           == Settings::TPreferences::Enabled);
     }
 
     // Setup screenshot directory.
     // Needs to be setup before the video filters below use it.
-    if (pref->screenshot_directory.isEmpty()) {
-        pref->use_screenshot = false;
+    if (Settings::pref->screenshot_directory.isEmpty()) {
+        Settings::pref->use_screenshot = false;
     } else {
-        QFileInfo fi(pref->screenshot_directory);
+        QFileInfo fi(Settings::pref->screenshot_directory);
         if (!fi.isDir() || !fi.isWritable()) {
             WZWARN("disabled screenshots and capture, directory '"
-                   + pref->screenshot_directory + "' is not writable");
-            pref->use_screenshot = false;
+                   + Settings::pref->screenshot_directory
+                   + "' is not writable");
+            Settings::pref->use_screenshot = false;
             // Need to clear to disable capture
-            pref->screenshot_directory = "";
+            Settings::pref->screenshot_directory = "";
         }
     }
-    if (pref->use_screenshot) {
-        proc->setScreenshotDirectory(pref->screenshot_directory);
+    if (Settings::pref->use_screenshot) {
+        proc->setScreenshotDirectory(Settings::pref->screenshot_directory);
     }
 
     if (!videoFiltersEnabled(true)) {
@@ -1304,13 +1338,17 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // Deinterlace
-    if (mset.current_deinterlacer != TMediaSettings::NoDeinterlace) {
+    if (mset.current_deinterlacer != Settings::TMediaSettings::NoDeinterlace) {
         switch (mset.current_deinterlacer) {
-            case TMediaSettings::L5:         proc->addVF("l5"); break;
-            case TMediaSettings::Yadif:     proc->addVF("yadif"); break;
-            case TMediaSettings::LB:        proc->addVF("lb"); break;
-            case TMediaSettings::Yadif_1:    proc->addVF("yadif", "1"); break;
-            case TMediaSettings::Kerndeint:    proc->addVF("kerndeint", "5"); break;
+            case Settings::TMediaSettings::L5: proc->addVF("l5"); break;
+            case Settings::TMediaSettings::Yadif: proc->addVF("yadif"); break;
+            case Settings::TMediaSettings::LB: proc->addVF("lb"); break;
+            case Settings::TMediaSettings::Yadif_1:
+                proc->addVF("yadif", "1");
+                break;
+            case Settings::TMediaSettings::Kerndeint:
+                proc->addVF("kerndeint", "5");
+                break;
         }
     }
 
@@ -1320,26 +1358,31 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // Denoise
-    if (mset.current_denoiser != TMediaSettings::NoDenoise) {
-        if (mset.current_denoiser==TMediaSettings::DenoiseSoft) {
-            proc->addVF("hqdn3d", pref->filters.item("denoise_soft").options());
+    if (mset.current_denoiser != Settings::TMediaSettings::NoDenoise) {
+        if (mset.current_denoiser == Settings::TMediaSettings::DenoiseSoft) {
+            proc->addVF("hqdn3d",
+                        Settings::pref->filters.item("denoise_soft").options());
         } else {
-            proc->addVF("hqdn3d", pref->filters.item("denoise_normal").options());
+            proc->addVF("hqdn3d",
+                        Settings::pref->filters.item("denoise_normal")
+                        .options());
         }
     }
 
     // Unsharp
     if (mset.current_unsharp != 0) {
         if (mset.current_unsharp == 1) {
-            proc->addVF("blur", pref->filters.item("blur").options());
+            proc->addVF("blur", Settings::pref->filters.item("blur").options());
         } else {
-            proc->addVF("sharpen", pref->filters.item("sharpen").options());
+            proc->addVF("sharpen",
+                        Settings::pref->filters.item("sharpen").options());
         }
     }
 
     // Deblock
     if (mset.deblock_filter) {
-        proc->addVF("deblock", pref->filters.item("deblock").options());
+        proc->addVF("deblock",
+                    Settings::pref->filters.item("deblock").options());
     }
 
     // Dering
@@ -1349,7 +1392,8 @@ void TPlayer::startPlayer(bool loopImage) {
 
     // Gradfun
     if (mset.gradfun_filter) {
-        proc->addVF("gradfun", pref->filters.item("gradfun").options());
+        proc->addVF("gradfun",
+                    Settings::pref->filters.item("gradfun").options());
     }
 
     // Upscale
@@ -1361,28 +1405,32 @@ void TPlayer::startPlayer(bool loopImage) {
 
     // Addnoise
     if (mset.noise_filter) {
-        proc->addVF("noise", pref->filters.item("noise").options());
+        proc->addVF("noise", Settings::pref->filters.item("noise").options());
     }
 
     // Postprocessing
     if (mset.postprocessing_filter) {
         proc->addVF("postprocessing");
-        proc->setOption("autoq", QString::number(pref->postprocessing_quality));
+        proc->setOption("autoq",
+            QString::number(Settings::pref->postprocessing_quality));
     }
 
     // Letterbox (expand)
     if (mset.add_letterbox) {
-        proc->addVF("expand", QString("aspect=%1").arg(TDesktop::aspectRatio(playerwindow)));
+        proc->addVF("expand", QString("aspect=%1")
+                    .arg(TDesktop::aspectRatio(playerwindow)));
     }
 
     // Software equalizer
-    if (pref->use_soft_video_eq) {
+    if (Settings::pref->use_soft_video_eq) {
         proc->addVF("eq2");
         proc->addVF("hue");
-        if (pref->vo == "gl" || pref->vo == "gl2" || pref->vo == "gl_tiled"
+        if (Settings::pref->vo == "gl"
+            || Settings::pref->vo == "gl2"
+            || Settings::pref->vo == "gl_tiled"
 
 #ifdef Q_OS_WIN
-            || pref->vo == "directx:noaccel"
+            || Settings::pref->vo == "directx:noaccel"
 #endif
 
             ) {
@@ -1396,13 +1444,15 @@ void TPlayer::startPlayer(bool loopImage) {
         proc->setOption("vf-add", mset.player_additional_video_filters);
     }
     // Global
-    if (!pref->player_additional_video_filters.isEmpty()) {
-        proc->setOption("vf-add", pref->player_additional_video_filters);
+    if (!Settings::pref->player_additional_video_filters.isEmpty()) {
+        proc->setOption("vf-add",
+                        Settings::pref->player_additional_video_filters);
     }
 
     // Filters for subtitles on screenshots
-    if (pref->use_screenshot && pref->subtitles_on_screenshots) {
-        if (pref->use_ass_subtitles) {
+    if (Settings::pref->use_screenshot
+        && Settings::pref->subtitles_on_screenshots) {
+        if (Settings::pref->use_ass_subtitles) {
             proc->addVF("subs_on_screenshots", "ass");
         } else {
             proc->addVF("subs_on_screenshots");
@@ -1425,24 +1475,26 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     // Screenshots
-    if (pref->use_screenshot) {
+    if (Settings::pref->use_screenshot) {
         proc->addVF("screenshot");
     }
 
 end_video_filters:
 
     // Template for screenshots (only works with mpv)
-    if (pref->isMPV() && pref->use_screenshot) {
-        if (!pref->screenshot_template.isEmpty()) {
-            proc->setOption("screenshot_template", pref->screenshot_template);
+    if (Settings::pref->isMPV() && Settings::pref->use_screenshot) {
+        if (!Settings::pref->screenshot_template.isEmpty()) {
+            proc->setOption("screenshot_template",
+                            Settings::pref->screenshot_template);
         }
-        if (!pref->screenshot_format.isEmpty()) {
-            proc->setOption("screenshot_format", pref->screenshot_format);
+        if (!Settings::pref->screenshot_format.isEmpty()) {
+            proc->setOption("screenshot_format",
+                            Settings::pref->screenshot_format);
         }
     }
 
     // Volume
-    if (pref->player_additional_options.contains("-volume")) {
+    if (Settings::pref->player_additional_options.contains("-volume")) {
         WZDEBUG("don't set volume since -volume is used");
     } else {
         proc->setOption("volume", QString::number(getVolume()));
@@ -1461,7 +1513,7 @@ end_video_filters:
         proc->setOption("delay", QString::number((double) mset.audio_delay/1000));
     }
 
-    if (pref->use_hwac3) {
+    if (Settings::pref->use_hwac3) {
         proc->setOption("afm", "hwac3");
         WZDEBUG("audio filters are disabled when using the S/PDIF output");
     } else {
@@ -1473,10 +1525,18 @@ end_video_filters:
         // Stereo mode
         if (mset.stereo_mode != 0) {
             switch (mset.stereo_mode) {
-                case TMediaSettings::Left: proc->addAF("channels", "2:2:0:1:0:0"); break;
-                case TMediaSettings::Right: proc->addAF("channels", "2:2:1:0:1:1"); break;
-                case TMediaSettings::Mono: proc->addAF("pan", "1:0.5:0.5"); break;
-                case TMediaSettings::Reverse: proc->addAF("channels", "2:2:0:1:1:0"); break;
+                case Settings::TMediaSettings::Left:
+                    proc->addAF("channels", "2:2:0:1:0:0");
+                    break;
+                case Settings::TMediaSettings::Right:
+                    proc->addAF("channels", "2:2:1:0:1:1");
+                    break;
+                case Settings::TMediaSettings::Mono:
+                    proc->addAF("pan", "1:0.5:0.5");
+                    break;
+                case Settings::TMediaSettings::Reverse:
+                    proc->addAF("channels", "2:2:0:1:1:0");
+                    break;
             }
         }
 
@@ -1485,22 +1545,24 @@ end_video_filters:
         }
 
         if (mset.volnorm_filter) {
-            proc->addAF("volnorm", pref->filters.item("volnorm").options());
+            proc->addAF("volnorm",
+                        Settings::pref->filters.item("volnorm").options());
         }
 
-        if (pref->use_scaletempo == TPreferences::Enabled) {
+        if (Settings::pref->use_scaletempo == Settings::TPreferences::Enabled) {
             proc->addAF("scaletempo");
         }
 
         // Audio equalizer
-        if (pref->use_audio_equalizer) {
+        if (Settings::pref->use_audio_equalizer) {
             proc->addAF("equalizer", equalizerListToString(getAudioEqualizer()));
         }
 
         // Additional audio filters
         // Global from pref
-        if (!pref->player_additional_audio_filters.isEmpty()) {
-            proc->setOption("af-add", pref->player_additional_audio_filters);
+        if (!Settings::pref->player_additional_audio_filters.isEmpty()) {
+            proc->setOption("af-add",
+                            Settings::pref->player_additional_audio_filters);
         }
         // This file from mset
         if (!mset.player_additional_audio_filters.isEmpty()) {
@@ -1509,7 +1571,7 @@ end_video_filters:
     }
 
 #ifndef Q_OS_WIN
-    if (pref->isMPV() && fileName.startsWith("dvb:")) {
+    if (Settings::pref->isMPV() && fileName.startsWith("dvb:")) {
         QString channels_file = Gui::Action::Menu::TTVList::findChannelsFile();
         WZDEBUG("channels_file '" + channels_file + "'");
         if (!channels_file.isEmpty())
@@ -1518,17 +1580,18 @@ end_video_filters:
 #endif
 
     // Set the capture directory
-    proc->setCaptureDirectory(pref->screenshot_directory);
+    proc->setCaptureDirectory(Settings::pref->screenshot_directory);
 
     // Set preferred ip version
-    if (pref->ipPrefer == Settings::TPreferences::IP_PREFER_4) {
+    if (Settings::pref->ipPrefer == Settings::TPreferences::IP_PREFER_4) {
         proc->setOption("prefer-ipv4");
-    } else if (pref->ipPrefer == Settings::TPreferences::IP_PREFER_6) {
+    } else if (Settings::pref->ipPrefer
+               == Settings::TPreferences::IP_PREFER_6) {
         proc->setOption("prefer-ipv6");
     }
 
     // Load edl file
-    if (pref->use_edl_files) {
+    if (Settings::pref->use_edl_files) {
         QString edl_f;
         QFileInfo f(fileName);
         QString basename = f.path() + "/" + f.completeBaseName();
@@ -1558,9 +1621,9 @@ end_video_filters:
     }
 
     // Global additional options
-    if (!pref->player_additional_options.isEmpty()) {
+    if (!Settings::pref->player_additional_options.isEmpty()) {
         QStringList args = Player::Process::TProcess::splitArguments(
-                               pref->player_additional_options);
+                                     Settings::pref->player_additional_options);
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
             if (!arg.isEmpty()) {
@@ -1575,20 +1638,20 @@ end_video_filters:
 
     // Setup environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    if (pref->use_proxy
-        && pref->proxy_type == QNetworkProxy::HttpProxy
-        && !pref->proxy_host.isEmpty()) {
+    if (Settings::pref->use_proxy
+        && Settings::pref->proxy_type == QNetworkProxy::HttpProxy
+        && !Settings::pref->proxy_host.isEmpty()) {
         QString proxy = QString("http://%1:%2@%3:%4")
-                        .arg(pref->proxy_username)
-                        .arg(pref->proxy_password)
-                        .arg(pref->proxy_host)
-                        .arg(pref->proxy_port);
+                        .arg(Settings::pref->proxy_username)
+                        .arg(Settings::pref->proxy_password)
+                        .arg(Settings::pref->proxy_host)
+                        .arg(Settings::pref->proxy_port);
         env.insert("http_proxy", proxy);
     }
 
 #ifdef Q_OS_WIN
-    if (!pref->use_windowsfontdir) {
-        env.insert("FONTCONFIG_FILE", TPaths::fontConfigFilename());
+    if (!Settings::pref->use_windowsfontdir) {
+        env.insert("FONTCONFIG_FILE", Settings::TPaths::fontConfigFilename());
     }
 #endif
 
@@ -1628,7 +1691,8 @@ void TPlayer::seekCmd(double secs, int mode) {
     }
 
     if (proc->isReady()) {
-        proc->seek(secs, mode, pref->precise_seeking, _state == STATE_PAUSED);
+        proc->seek(secs, mode, Settings::pref->precise_seeking,
+                   _state == STATE_PAUSED);
     } else {
         WZWARN("ignored seek, player not ready");
     }
@@ -1651,36 +1715,36 @@ void TPlayer::seekTime(double sec) {
 
 void TPlayer::sforward() {
     WZDEBUG("");
-    seekRelative(pref->seeking1); // +10s
+    seekRelative(Settings::pref->seeking1); // +10s
 }
 
 void TPlayer::srewind() {
     WZDEBUG("");
-    seekRelative(-pref->seeking1); // -10s
+    seekRelative(-Settings::pref->seeking1); // -10s
 }
 
 
 void TPlayer::forward() {
     WZDEBUG("");
-    seekRelative(pref->seeking2); // +1m
+    seekRelative(Settings::pref->seeking2); // +1m
 }
 
 
 void TPlayer::rewind() {
     WZDEBUG("");
-    seekRelative(-pref->seeking2); // -1m
+    seekRelative(-Settings::pref->seeking2); // -1m
 }
 
 
 void TPlayer::fastforward() {
     WZDEBUG("");
-    seekRelative(pref->seeking3); // +10m
+    seekRelative(Settings::pref->seeking3); // +10m
 }
 
 
 void TPlayer::fastrewind() {
     WZDEBUG("");
-    seekRelative(-pref->seeking3); // -10m
+    seekRelative(-Settings::pref->seeking3); // -10m
 }
 
 void TPlayer::forward(int secs) {
@@ -1703,32 +1767,42 @@ void TPlayer::seekToPrevSub() {
     proc->seekSub(-1);
 }
 
-void TPlayer::wheelUp(TPreferences::TWheelFunction function) {
+void TPlayer::wheelUp(Settings::TPreferences::TWheelFunction function) {
     WZDEBUG("");
 
-    if (function == TPreferences::DoNothing) {
-        function = (TPreferences::TWheelFunction) pref->wheel_function;
+    if (function == Settings::TPreferences::DoNothing) {
+        function = (Settings::TPreferences::TWheelFunction)
+                   Settings::pref->wheel_function;
     }
     switch (function) {
-        case TPreferences::Volume : incVolume(); break;
-        case TPreferences::Zoom : incZoom(); break;
-        case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? rewind(pref->seeking4) : forward(pref->seeking4); break;
-        case TPreferences::ChangeSpeed : incSpeed10(); break;
+        case Settings::TPreferences::Volume: incVolume(); break;
+        case Settings::TPreferences::Zoom: incZoom(); break;
+        case Settings::TPreferences::Seeking:
+            Settings::pref->wheel_function_seeking_reverse
+                    ? rewind(Settings::pref->seeking4)
+                    : forward(Settings::pref->seeking4);
+            break;
+        case Settings::TPreferences::ChangeSpeed : incSpeed10(); break;
         default : {} // do nothing
     }
 }
 
-void TPlayer::wheelDown(TPreferences::TWheelFunction function) {
+void TPlayer::wheelDown(Settings::TPreferences::TWheelFunction function) {
     WZDEBUG("");
 
-    if (function == TPreferences::DoNothing) {
-        function = (TPreferences::TWheelFunction) pref->wheel_function;
+    if (function == Settings::TPreferences::DoNothing) {
+        function = (Settings::TPreferences::TWheelFunction)
+                   Settings::pref->wheel_function;
     }
     switch (function) {
-        case TPreferences::Volume : decVolume(); break;
-        case TPreferences::Zoom : decZoom(); break;
-        case TPreferences::Seeking : pref->wheel_function_seeking_reverse ? forward(pref->seeking4) : rewind(pref->seeking4); break;
-        case TPreferences::ChangeSpeed : decSpeed10(); break;
+        case Settings::TPreferences::Volume: decVolume(); break;
+        case Settings::TPreferences::Zoom: decZoom(); break;
+        case Settings::TPreferences::Seeking:
+            Settings::pref->wheel_function_seeking_reverse
+                    ? forward(Settings::pref->seeking4)
+                    : rewind(Settings::pref->seeking4);
+            break;
+        case Settings::TPreferences::ChangeSpeed : decSpeed10(); break;
         default : {} // do nothing
     }
 }
@@ -1849,7 +1923,7 @@ void TPlayer::updateLoop() {
     }
 }
 
-void TPlayer::toggleRepeat(bool b) {
+void TPlayer::setRepeat(bool b) {
     WZDEBUG(QString::number(b));
 
     mset.loop = b;
@@ -1869,8 +1943,9 @@ void TPlayer::setVolnorm(bool b) {
 
     if (b != mset.volnorm_filter) {
         mset.volnorm_filter = b;
-        QString f = pref->filters.item("volnorm").filter();
-        proc->enableVolnorm(b, pref->filters.item("volnorm").options());
+        QString f = Settings::pref->filters.item("volnorm").filter();
+        proc->enableVolnorm(b,
+                            Settings::pref->filters.item("volnorm").options());
     }
 }
 
@@ -1917,7 +1992,7 @@ void TPlayer::setStereoMode(int mode) {
 void TPlayer::setVideoFilter(const QString& filter, bool enable,
                        const QVariant& option) {
 
-    if (pref->isMPV() && !mdat.video_hwdec) { \
+    if (Settings::pref->isMPV() && !mdat.video_hwdec) { \
         proc->setVideoFilter(filter, enable, option); \
     } else { \
         restartPlay(); \
@@ -1956,7 +2031,8 @@ void TPlayer::setDeblock(bool b) {
 
     if (b != mset.deblock_filter) {
         mset.deblock_filter = b;
-        setVideoFilter("deblock", b, pref->filters.item("deblock").options());
+        setVideoFilter("deblock", b,
+                       Settings::pref->filters.item("deblock").options());
     }
 }
 
@@ -1974,7 +2050,8 @@ void TPlayer::setGradfun(bool b) {
 
     if (b != mset.gradfun_filter) {
         mset.gradfun_filter = b;
-        setVideoFilter("gradfun", b, pref->filters.item("gradfun").options());
+        setVideoFilter("gradfun", b,
+                       Settings::pref->filters.item("gradfun").options());
     }
 }
 
@@ -2000,23 +2077,33 @@ void TPlayer::setDenoiser(int id) {
     WZDEBUG(QString::number(id));
 
     if (id != mset.current_denoiser) {
-        if (pref->isMPlayer() || mdat.video_hwdec) {
+        if (Settings::pref->isMPlayer() || mdat.video_hwdec) {
             mset.current_denoiser = id;
             restartPlay();
         } else {
             // MPV
-            QString dsoft = pref->filters.item("denoise_soft").options();
-            QString dnormal = pref->filters.item("denoise_normal").options();
+            QString dsoft = Settings::pref->filters.item("denoise_soft")
+                            .options();
+            QString dnormal =
+                    Settings::pref->filters.item("denoise_normal").options();
             // Remove previous filter
             switch (mset.current_denoiser) {
-                case TMediaSettings::DenoiseSoft: proc->setVideoFilter("hqdn3d", false, dsoft); break;
-                case TMediaSettings::DenoiseNormal: proc->setVideoFilter("hqdn3d", false, dnormal); break;
+                case Settings::TMediaSettings::DenoiseSoft:
+                    proc->setVideoFilter("hqdn3d", false, dsoft);
+                    break;
+                case Settings::TMediaSettings::DenoiseNormal:
+                    proc->setVideoFilter("hqdn3d", false, dnormal);
+                    break;
             }
             // New filter
             mset.current_denoiser = id;
             switch (mset.current_denoiser) {
-                case TMediaSettings::DenoiseSoft: proc->setVideoFilter("hqdn3d", true, dsoft); break;
-                case TMediaSettings::DenoiseNormal: proc->setVideoFilter("hqdn3d", true, dnormal); break;
+                case Settings::TMediaSettings::DenoiseSoft:
+                    proc->setVideoFilter("hqdn3d", true, dsoft);
+                    break;
+                case Settings::TMediaSettings::DenoiseNormal:
+                    proc->setVideoFilter("hqdn3d", true, dnormal);
+                    break;
             }
         }
     }
@@ -2026,7 +2113,7 @@ void TPlayer::setSharpen(int id) {
     WZDEBUG(QString::number(id));
 
     if (id != mset.current_unsharp) {
-        if (pref->isMPlayer() || mdat.video_hwdec) {
+        if (Settings::pref->isMPlayer() || mdat.video_hwdec) {
             mset.current_unsharp = id;
             restartPlay();
         } else {
@@ -2060,7 +2147,7 @@ void TPlayer::setStereo3D(const QString& in, const QString& out) {
     WZDEBUG("in '" + in + "' out: '" + out + "'");
 
     if ((mset.stereo3d_in != in) || (mset.stereo3d_out != out)) {
-        if (pref->isMPlayer() || mdat.video_hwdec) {
+        if (Settings::pref->isMPlayer() || mdat.video_hwdec) {
             mset.stereo3d_in = in;
             mset.stereo3d_out = out;
             restartPlay();
@@ -2153,43 +2240,43 @@ void TPlayer::setSaturation(int value) {
 }
 
 void TPlayer::incBrightness() {
-    setBrightness(mset.brightness + pref->min_step);
+    setBrightness(mset.brightness + Settings::pref->min_step);
 }
 
 void TPlayer::decBrightness() {
-    setBrightness(mset.brightness - pref->min_step);
+    setBrightness(mset.brightness - Settings::pref->min_step);
 }
 
 void TPlayer::incContrast() {
-    setContrast(mset.contrast + pref->min_step);
+    setContrast(mset.contrast + Settings::pref->min_step);
 }
 
 void TPlayer::decContrast() {
-    setContrast(mset.contrast - pref->min_step);
+    setContrast(mset.contrast - Settings::pref->min_step);
 }
 
 void TPlayer::incGamma() {
-    setGamma(mset.gamma + pref->min_step);
+    setGamma(mset.gamma + Settings::pref->min_step);
 }
 
 void TPlayer::decGamma() {
-    setGamma(mset.gamma - pref->min_step);
+    setGamma(mset.gamma - Settings::pref->min_step);
 }
 
 void TPlayer::incHue() {
-    setHue(mset.hue + pref->min_step);
+    setHue(mset.hue + Settings::pref->min_step);
 }
 
 void TPlayer::decHue() {
-    setHue(mset.hue - pref->min_step);
+    setHue(mset.hue - Settings::pref->min_step);
 }
 
 void TPlayer::incSaturation() {
-    setSaturation(mset.saturation + pref->min_step);
+    setSaturation(mset.saturation + Settings::pref->min_step);
 }
 
 void TPlayer::decSaturation() {
-    setSaturation(mset.saturation - pref->min_step);
+    setSaturation(mset.saturation - Settings::pref->min_step);
 }
 
 void TPlayer::setSpeed(double value) {
@@ -2242,7 +2329,7 @@ void TPlayer::normalSpeed() {
 }
 
 int TPlayer::getVolume() const {
-    return pref->global_volume ? pref->volume : mset.volume;
+    return Settings::pref->global_volume ? Settings::pref->volume : mset.volume;
 }
 
 /*
@@ -2267,9 +2354,9 @@ void TPlayer::setVolume(int volume, bool unmute) {
     }
 
     bool muted;
-    if (pref->global_volume) {
-        pref->volume = volume;
-        muted = pref->mute;
+    if (Settings::pref->global_volume) {
+        Settings::pref->volume = volume;
+        muted = Settings::pref->mute;
     } else {
         mset.volume = volume;
         muted = mset.mute;
@@ -2289,14 +2376,14 @@ void TPlayer::setVolume(int volume, bool unmute) {
 }
 
 bool TPlayer::getMute() const {
-    return pref->global_volume ? pref->mute : mset.mute;
+    return Settings::pref->global_volume ? Settings::pref->mute : mset.mute;
 }
 
 void TPlayer::mute(bool b) {
     logger()->debug("mute: %1", b);
 
-    if (pref->global_volume) {
-        pref->mute = b;
+    if (Settings::pref->global_volume) {
+        Settings::pref->mute = b;
     } else {
         mset.mute = b;
     }
@@ -2309,16 +2396,17 @@ void TPlayer::mute(bool b) {
 }
 
 void TPlayer::incVolume() {
-    setVolume(getVolume() + pref->min_step);
+    setVolume(getVolume() + Settings::pref->min_step);
 }
 
 void TPlayer::decVolume() {
-    setVolume(getVolume() - pref->min_step);
+    setVolume(getVolume() - Settings::pref->min_step);
 }
 
-TAudioEqualizerList TPlayer::getAudioEqualizer() const {
-    return pref->global_audio_equalizer ? pref->audio_equalizer
-                                        : mset.audio_equalizer;
+Settings::TAudioEqualizerList TPlayer::getAudioEqualizer() const {
+    return Settings::pref->global_audio_equalizer
+            ? Settings::pref->audio_equalizer
+            : mset.audio_equalizer;
 }
 
 void TPlayer::setSubDelay(int delay) {
@@ -2374,12 +2462,12 @@ void TPlayer::setSubScale(double value) {
 
     if (value < 0) value = 0;
 
-    if (pref->use_ass_subtitles) {
+    if (Settings::pref->use_ass_subtitles) {
         if (value != mset.sub_scale_ass) {
             mset.sub_scale_ass = value;
             proc->setSubScale(mset.sub_scale_ass);
         }
-    } else if (pref->isMPV()) {
+    } else if (Settings::pref->isMPV()) {
         if (value != mset.sub_scale_mpv) {
             mset.sub_scale_mpv = value;
             proc->setSubScale(value);
@@ -2396,9 +2484,9 @@ void TPlayer::incSubScale() {
 
     double step = 0.20;
 
-    if (pref->use_ass_subtitles) {
+    if (Settings::pref->use_ass_subtitles) {
         setSubScale(mset.sub_scale_ass + step);
-    } else if (pref->isMPV()) {
+    } else if (Settings::pref->isMPV()) {
         setSubScale(mset.sub_scale_mpv + step);
     } else {
         setSubScale(mset.sub_scale + step);
@@ -2409,9 +2497,9 @@ void TPlayer::decSubScale() {
 
     double step = 0.20;
 
-    if (pref->use_ass_subtitles) {
+    if (Settings::pref->use_ass_subtitles) {
         setSubScale(mset.sub_scale_ass - step);
-    } else if (pref->isMPV()) {
+    } else if (Settings::pref->isMPV()) {
         setSubScale(mset.sub_scale_mpv - step);
     } else {
         setSubScale(mset.sub_scale - step);
@@ -2423,36 +2511,36 @@ void TPlayer::setOSDScale(double value) {
 
     if (value < 0) value = 0;
 
-    if (pref->isMPlayer()) {
-        if (value != pref->subfont_osd_scale) {
-            pref->subfont_osd_scale = value;
+    if (Settings::pref->isMPlayer()) {
+        if (value != Settings::pref->subfont_osd_scale) {
+            Settings::pref->subfont_osd_scale = value;
             if (proc->isRunning())
                 restartPlay();
         }
     } else {
-        if (value != pref->osd_scale) {
-            pref->osd_scale = value;
+        if (value != Settings::pref->osd_scale) {
+            Settings::pref->osd_scale = value;
             if (proc->isRunning())
-                proc->setOSDScale(pref->osd_scale);
+                proc->setOSDScale(Settings::pref->osd_scale);
         }
     }
 }
 
 void TPlayer::incOSDScale() {
 
-    if (pref->isMPlayer()) {
-        setOSDScale(pref->subfont_osd_scale + 1);
+    if (Settings::pref->isMPlayer()) {
+        setOSDScale(Settings::pref->subfont_osd_scale + 1);
     } else {
-        setOSDScale(pref->osd_scale + 0.10);
+        setOSDScale(Settings::pref->osd_scale + 0.10);
     }
 }
 
 void TPlayer::decOSDScale() {
 
-    if (pref->isMPlayer()) {
-        setOSDScale(pref->subfont_osd_scale - 1);
+    if (Settings::pref->isMPlayer()) {
+        setOSDScale(Settings::pref->subfont_osd_scale - 1);
     } else {
-        setOSDScale(pref->osd_scale - 0.10);
+        setOSDScale(Settings::pref->osd_scale - 0.10);
     }
 }
 
@@ -2495,11 +2583,11 @@ QString TPlayer::equalizerListToString(const Settings::TAudioEqualizerList& valu
     return s;
 }
 
-void TPlayer::setAudioEqualizer(const TAudioEqualizerList& values,
+void TPlayer::setAudioEqualizer(const Settings::TAudioEqualizerList& values,
                                 bool restart) {
 
-    if (pref->global_audio_equalizer) {
-        pref->audio_equalizer = values;
+    if (Settings::pref->global_audio_equalizer) {
+        Settings::pref->audio_equalizer = values;
     } else {
         mset.audio_equalizer = values;
     }
@@ -2514,9 +2602,9 @@ void TPlayer::setAudioEqualizer(const TAudioEqualizerList& values,
 void TPlayer::setAudioEq(int eq, int value) {
     WZDEBUG("eq " + QString::number(eq) + " value " + QString::number(value));
 
-    if (pref->global_audio_equalizer) {
-        pref->audio_equalizer[eq] = value;
-        setAudioEqualizer(pref->audio_equalizer);
+    if (Settings::pref->global_audio_equalizer) {
+        Settings::pref->audio_equalizer[eq] = value;
+        setAudioEqualizer(Settings::pref->audio_equalizer);
     } else {
         mset.audio_equalizer[eq] = value;
         setAudioEqualizer(mset.audio_equalizer);
@@ -2652,26 +2740,46 @@ void TPlayer::setDeinterlace(int ID) {
     WZDEBUG(QString::number(ID));
 
     if (ID != mset.current_deinterlacer) {
-        if (pref->isMPlayer()) {
+        if (Settings::pref->isMPlayer()) {
             mset.current_deinterlacer = ID;
             restartPlay();
         } else {
             // MPV: remove previous filter
             switch (mset.current_deinterlacer) {
-                case TMediaSettings::L5: proc->setVideoFilter("l5", false); break;
-                case TMediaSettings::Yadif: proc->setVideoFilter("yadif", false); break;
-                case TMediaSettings::LB: proc->setVideoFilter("lb", false); break;
-                case TMediaSettings::Yadif_1: proc->setVideoFilter("yadif", false, "1"); break;
-                case TMediaSettings::Kerndeint: proc->setVideoFilter("kerndeint", false, "5"); break;
+                case Settings::TMediaSettings::L5:
+                    proc->setVideoFilter("l5", false);
+                    break;
+                case Settings::TMediaSettings::Yadif:
+                    proc->setVideoFilter("yadif", false);
+                    break;
+                case Settings::TMediaSettings::LB:
+                    proc->setVideoFilter("lb", false);
+                    break;
+                case Settings::TMediaSettings::Yadif_1:
+                    proc->setVideoFilter("yadif", false, "1");
+                    break;
+                case Settings::TMediaSettings::Kerndeint:
+                    proc->setVideoFilter("kerndeint", false, "5");
+                    break;
             }
             mset.current_deinterlacer = ID;
             // Add new filter
             switch (mset.current_deinterlacer) {
-                case TMediaSettings::L5: proc->setVideoFilter("l5", true); break;
-                case TMediaSettings::Yadif: proc->setVideoFilter("yadif", true); break;
-                case TMediaSettings::LB: proc->setVideoFilter("lb", true); break;
-                case TMediaSettings::Yadif_1: proc->setVideoFilter("yadif", true, "1"); break;
-                case TMediaSettings::Kerndeint: proc->setVideoFilter("kerndeint", true, "5"); break;
+                case Settings::TMediaSettings::L5:
+                    proc->setVideoFilter("l5", true);
+                    break;
+                case Settings::TMediaSettings::Yadif:
+                    proc->setVideoFilter("yadif", true);
+                    break;
+                case Settings::TMediaSettings::LB:
+                    proc->setVideoFilter("lb", true);
+                    break;
+                case Settings::TMediaSettings::Yadif_1:
+                    proc->setVideoFilter("yadif", true, "1");
+                    break;
+                case Settings::TMediaSettings::Kerndeint:
+                    proc->setVideoFilter("kerndeint", true, "5");
+                    break;
             }
         }
     }
@@ -2708,8 +2816,8 @@ void TPlayer::setAudioTrack(int id) {
         // volume is too loud after changing audio.
         // Workaround too for a mplayer problem in linux,
         // the volume is reduced if using -softvol-max.
-        if (pref->isMPlayer()
-            && !pref->player_additional_options.contains("-volume")) {
+        if (Settings::pref->isMPlayer()
+            && !Settings::pref->player_additional_options.contains("-volume")) {
             setVolume(getVolume(), false);
         }
     }
@@ -2736,7 +2844,7 @@ void TPlayer::setSubtitle(int idx, bool selected_by_user) {
             proc->setSubtitle(sub.type(), sub.ID());
         }
     } else {
-        mset.current_sub_idx = TMediaSettings::SubNone;
+        mset.current_sub_idx = Settings::TMediaSettings::SubNone;
         if (mdat.subs.selectedID() >= 0) {
             proc->disableSubtitles();
         }
@@ -2767,7 +2875,7 @@ void TPlayer::setSecondarySubtitle(int idx) {
     }
 
     if (clr) {
-        mset.current_secondary_sub_idx = TMediaSettings::SubNone;
+        mset.current_secondary_sub_idx = Settings::TMediaSettings::SubNone;
         if (mdat.subs.selectedSecondaryID() >= 0) {
             proc->disableSecondarySubtitles();
         }
@@ -2874,11 +2982,11 @@ void TPlayer::setAspectRatio(int id) {
     WZDEBUG(QString::number(id));
 
     // Keep id in range
-    TAspectRatio::TMenuID aspect_id;
-    if (id < 0 || id > TAspectRatio::MAX_MENU_ID)
-        aspect_id = TAspectRatio::AspectAuto;
+    Settings::TAspectRatio::TMenuID aspect_id;
+    if (id < 0 || id > Settings::TAspectRatio::MAX_MENU_ID)
+        aspect_id = Settings::TAspectRatio::AspectAuto;
     else
-        aspect_id = (TAspectRatio::TMenuID) id;
+        aspect_id = (Settings::TAspectRatio::TMenuID) id;
 
     if (proc->isReady() && mdat.hasVideo()) {
         mset.aspect_ratio.setID(aspect_id);
@@ -2906,33 +3014,37 @@ void TPlayer::nextAspectRatio() {
 
 void TPlayer::nextWheelFunction() {
 
-    int a = pref->wheel_function;
+    int a = Settings::pref->wheel_function;
 
     bool done = false;
-    if(((int) pref->wheel_function_cycle) == 0)
+    if (((int) Settings::pref->wheel_function_cycle) == 0) {
         return;
+    }
     while(!done){
         // get next a
         a = a * 2;
-        if(a == 32)
+        if (a == 32) {
             a = 2;
+        }
         // See if we are done
-        if (pref->wheel_function_cycle.testFlag((TPreferences::TWheelFunction)a))
+        if (Settings::pref->wheel_function_cycle.testFlag(
+                (Settings::TPreferences::TWheelFunction)a)) {
             done = true;
+        }
     }
-    pref->wheel_function = a;
+    Settings::pref->wheel_function = a;
     QString m = "";
     switch(a){
-    case TPreferences::Seeking:
+    case Settings::TPreferences::Seeking:
         m = tr("Mouse wheel seeks now");
         break;
-    case TPreferences::Volume:
+    case Settings::TPreferences::Volume:
         m = tr("Mouse wheel changes volume now");
         break;
-    case TPreferences::Zoom:
+    case Settings::TPreferences::Zoom:
         m = tr("Mouse wheel changes zoom level now");
         break;
-    case TPreferences::ChangeSpeed:
+    case Settings::TPreferences::ChangeSpeed:
         m = tr("Mouse wheel changes speed now");
         break;
     }
@@ -2956,7 +3068,7 @@ void TPlayer::setetterboxOnFullscreen(bool b) {
 void TPlayer::setOSDLevel(int level) {
     WZDEBUG(QString::number(level));
 
-    pref->osd_level = (TPreferences::TOSDLevel) level;
+    Settings::pref->osd_level = (Settings::TPreferences::TOSDLevel) level;
     if (proc->isRunning())
         proc->setOSDLevel(level);
     emit osdLevelChanged(level);
@@ -2965,10 +3077,10 @@ void TPlayer::setOSDLevel(int level) {
 void TPlayer::nextOSDLevel() {
 
     int level;
-    if (pref->osd_level >= TPreferences::SeekTimerTotal) {
-        level = TPreferences::None;
+    if (Settings::pref->osd_level >= Settings::TPreferences::SeekTimerTotal) {
+        level = Settings::TPreferences::None;
     } else {
-        level = pref->osd_level + 1;
+        level = Settings::pref->osd_level + 1;
     }
     setOSDLevel(level);
 }
@@ -2977,7 +3089,7 @@ void TPlayer::setRotate(int r) {
     WZDEBUG(QString::number(r));
 
     if (mset.rotate != r) {
-        if (pref->isMPlayer()) {
+        if (Settings::pref->isMPlayer()) {
             mset.rotate = r;
             restartPlay();
         } else {
@@ -3078,8 +3190,8 @@ void TPlayer::toggleDeinterlace() {
 void TPlayer::setUseCustomSubStyle(bool b) {
     WZDEBUG(QString::number(b));
 
-    if (pref->use_custom_ass_style != b) {
-        pref->use_custom_ass_style = b;
+    if (Settings::pref->use_custom_ass_style != b) {
+        Settings::pref->use_custom_ass_style = b;
         if (proc->isRunning())
             restartPlay();
     }
@@ -3088,7 +3200,7 @@ void TPlayer::setUseCustomSubStyle(bool b) {
 void TPlayer::toggleForcedSubsOnly(bool b) {
     WZDEBUG(QString::number(b));
 
-    pref->use_forced_subs_only = b;
+    Settings::pref->use_forced_subs_only = b;
     if (proc->isRunning())
         proc->setSubForcedOnly(b);
 }
@@ -3230,17 +3342,17 @@ void TPlayer::onReceivedVideoOut() {
     }
 
     // Update original aspect
-    if (mset.aspect_ratio.ID() == TAspectRatio::AspectAuto) {
+    if (mset.aspect_ratio.ID() == Settings::TAspectRatio::AspectAuto) {
         mdat.video_aspect_original = playerwindow->aspectRatio();
     }
 }
 
 bool TPlayer::setPreferredAudio() {
 
-    if (!pref->audio_lang.isEmpty()) {
+    if (!Settings::pref->audio_lang.isEmpty()) {
         int selected_id = mdat.audios.getSelectedID();
         if (selected_id >= 0) {
-            int wanted_id = mdat.audios.findLangID(pref->audio_lang);
+            int wanted_id = mdat.audios.findLangID(Settings::pref->audio_lang);
             if (wanted_id >= 0 && wanted_id != selected_id) {
                 WZDEBUG("selecting preferred audio id "
                         + QString::number(wanted_id));
@@ -3271,15 +3383,15 @@ void TPlayer::selectPreferredSubtitles() {
     int wanted_idx = -1;
     if (mdat.subs.count() > 0) {
         // Select subtitles with preferred language
-        if (!pref->language.isEmpty()) {
-            wanted_idx = mdat.subs.findLangIdx(pref->language);
+        if (!Settings::pref->language.isEmpty()) {
+            wanted_idx = mdat.subs.findLangIdx(Settings::pref->language);
         }
         // Keep subtitles selected by the player
         if (wanted_idx < 0 && mset.current_sub_idx >= 0) {
             wanted_idx = mset.current_sub_idx;
         }
         // Select first subtitles
-        if (wanted_idx < 0 && pref->select_first_subtitle) {
+        if (wanted_idx < 0 && Settings::pref->select_first_subtitle) {
             wanted_idx = 0;
         }
     }
@@ -3302,7 +3414,7 @@ void TPlayer::onSubtitlesChanged() {
     mset.current_secondary_sub_idx = mdat.subs.findSelectedSecondaryIdx();
     emit subtitlesChanged();
 
-    if (pref->isMPlayer()) {
+    if (Settings::pref->isMPlayer()) {
         // MPlayer selected sub will not yet be updated, que the subtitle
         // selection
         WZDEBUG("posting selectPreferredSubtitles()");

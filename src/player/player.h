@@ -52,7 +52,6 @@ public:
 
     TMediaData mdat;
     Settings::TMediaSettings mset;
-
     bool keepSize;
 
     //! Return the current state
@@ -157,7 +156,7 @@ public slots:
     void setOutPoint(double sec);
     void seekOutPoint();
     void clearOutPoint();
-    void toggleRepeat(bool b);
+    void setRepeat(bool b);
     void clearInOutPoints();
 
 
@@ -329,6 +328,10 @@ public slots:
     void showFilenameOnOSD();
     void showTimeOnOSD();
 
+    void clearOSD();
+    void displayTextOnOSD(const QString& text,
+                          int duration = TConfig::MESSAGE_DURATION,
+                          int level = 1);
 
     void wheelUp(Settings::TPreferences::TWheelFunction function =
         Settings::TPreferences::DoNothing);
@@ -336,10 +339,6 @@ public slots:
         Settings::TPreferences::DoNothing);
     void nextWheelFunction();
 
-    void displayTextOnOSD(const QString& text,
-                          int duration = TConfig::MESSAGE_DURATION,
-                          int level = 1);
-    void clearOSD();
     void clearKeepSize();
 
 signals:
@@ -400,10 +399,6 @@ private:
     static QString equalizerListToString(const Settings::TAudioEqualizerList&
                                          values);
 
-
-    void initVolume();
-    void initMediaSettings();
-
     void openFile(const QString& filename, bool loopImage);
     void openStream(const QString& name);
     void openTV(QString channel_id);
@@ -413,8 +408,9 @@ private:
     void restartPlay();
 
     void saveMediaSettings();
-
-    void playingStartedNewMedia();
+    void initVolume();
+    void initMediaSettings();
+    void onPlayingStartedNewMedia();
 
     bool haveVideoFilters() const;
     void setVideoFilter(const QString& filter, bool enable,
@@ -432,10 +428,12 @@ private:
     void updateLoop();
 
 private slots:
-    void playingStarted();
+    void onPlayingStarted();
+
     void onProcessError(QProcess::ProcessError error);
     void onProcessFinished(bool normal_exit, int exit_code, bool eof);
 
+    void onReceivedMessage(const QString& s);
     void onReceivedPosition(double sec);
     void onReceivedPause();
     void onReceivedVideoOut();
@@ -445,7 +443,6 @@ private slots:
     void onSubtitleChanged();
     void selectPreferredSubtitles();
 
-    void onReceivedMessage(const QString& s);
     void displayScreenshotName(const QString& filename);
     void displayUpdatingFontCache();
     void displayBuffering();
