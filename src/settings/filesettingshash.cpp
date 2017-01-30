@@ -17,13 +17,13 @@
 */
 
 #include "settings/filesettingshash.h"
-
-#include <QFile>
-#include <QDir>
-
 #include "settings/paths.h"
 #include "settings/mediasettings.h"
 #include "wzdebug.h"
+
+#include <QFile>
+#include <QDir>
+#include <QDataStream>
 
 
 namespace Settings {
