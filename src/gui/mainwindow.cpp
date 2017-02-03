@@ -213,7 +213,8 @@ void TMainWindow::createStatusBar() {
     TColorUtils::setForegroundColor(time_label, fgc);
     time_label->setFrameShape(QFrame::NoFrame);
     time_label->setContentsMargins(margins);
-    time_label->setText("00:00 / 00:00");
+    time_label->setFont(QFont("Monospace"));
+    time_label->setText("00:00/00:00");
     statusBar()->addPermanentWidget(time_label, 0);
     connect(this, SIGNAL(timeChanged(QString)),
             time_label, SLOT(setText(QString)));
@@ -1467,7 +1468,7 @@ void TMainWindow::onPositionChanged(double sec, bool changed) {
 
 void TMainWindow::onDurationChanged(double duration) {
 
-    durationText = " / " + Helper::formatTime(qRound(duration));
+    durationText = "/" + Helper::formatTime(qRound(duration));
 
     if (pref->show_frames) {
         double fps = player->mdat.video_fps;
