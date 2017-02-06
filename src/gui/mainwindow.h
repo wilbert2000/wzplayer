@@ -149,8 +149,6 @@ public slots:
 signals:
     void enableActions();
 
-    void timeChanged(QString time_ready_to_print);
-
     void preferencesChanged();
     void mediaSettingsChanged(Settings::TMediaSettings* mset);
     void mediaFileTitleChanged(const QString& filename, const QString& title);

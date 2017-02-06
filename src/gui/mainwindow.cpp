@@ -216,9 +216,6 @@ void TMainWindow::createStatusBar() {
     time_label->setFont(QFont("Monospace"));
     time_label->setText("00:00/00:00");
     statusBar()->addPermanentWidget(time_label, 0);
-    connect(this, SIGNAL(timeChanged(QString)),
-            time_label, SLOT(setText(QString)));
-
 }
 
 void TMainWindow::createPanel() {
@@ -1461,8 +1458,7 @@ void TMainWindow::onPositionChanged(double sec, bool changed) {
     }
 
     if (changed) {
-        QString time = positionText + frames + durationText;
-        emit timeChanged(time);
+        time_label->setText(positionText + frames + durationText);
     }
 }
 
