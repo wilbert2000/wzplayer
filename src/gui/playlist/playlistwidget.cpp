@@ -75,18 +75,10 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setColumnCount(TPlaylistWidgetItem::COL_COUNT);
     setHeaderLabels(QStringList() << tr("Name") << tr("Length"));
     header()->setStretchLastSection(false);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_NAME,
                                    QHeaderView::Stretch);
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_TIME,
                                    QHeaderView::ResizeToContents);
-#else
-    header()->setResizeMode(TPlaylistWidgetItem::COL_NAME,
-                            QHeaderView::Stretch);
-    header()->setResizeMode(TPlaylistWidgetItem::COL_TIME,
-                            QHeaderView::ResizeToContents);
-#endif
 
     // Icons
     setIconSize(iconProvider.iconSize);
@@ -449,13 +441,7 @@ void TPlaylistWidget::enableSort(bool enable) {
                                    Qt::AscendingOrder);
     } else {
         header()->setSortIndicator(-1, Qt::AscendingOrder);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         header()->setSectionsClickable(true);
-#else
-        header()->setClickable(true);
-#endif
-
     }
 }
 

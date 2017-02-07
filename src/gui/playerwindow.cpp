@@ -48,12 +48,7 @@ TVideoWindow::TVideoWindow(QWidget* parent) :
     setAutoFillBackground(false);
     // Don't erase background before paint
     setAttribute(Qt::WA_OpaquePaintEvent);
-
-#ifndef Q_OS_WIN
-#if QT_VERSION < 0x050000
-    setAttribute(Qt::WA_NativeWindow);
-#endif
-#endif
+    // setAttribute(Qt::WA_NativeWindow);
 }
 
 TVideoWindow::~TVideoWindow() {

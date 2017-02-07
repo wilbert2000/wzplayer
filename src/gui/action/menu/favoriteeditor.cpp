@@ -112,12 +112,8 @@ TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
                                      << tr("Media"));
 
     table->setAlternatingRowColors(true);
-#if QT_VERSION >= 0x050000
     table->horizontalHeader()->setSectionResizeMode(COL_FILE,
                                                     QHeaderView::Stretch);
-#else
-    table->horizontalHeader()->setResizeMode(COL_FILE, QHeaderView::Stretch);
-#endif
 
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::ExtendedSelection);

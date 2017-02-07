@@ -73,7 +73,8 @@ TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f) :
 
     connect(all_actions_list, SIGNAL(currentRowChanged(int)),
             this, SLOT(checkRowsAllList(int)));
-    connect(active_actions_table, SIGNAL(currentCellChanged(int, int, int, int)),
+    connect(active_actions_table,
+            SIGNAL(currentCellChanged(int, int, int, int)),
             this, SLOT(onCurrentCellChanged(int, int, int, int)));
 
     all_actions_list->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -91,18 +92,14 @@ TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f) :
     // //active_actions_list->setDragDropMode(QAbstractItemView::InternalMove);
 
     active_actions_table->setColumnCount(COL_COUNT);
-
-#if QT_VERSION_MAJOR >= 5
-    active_actions_table->horizontalHeader()->setSectionResizeMode(COL_NS, QHeaderView::Fixed);
-    active_actions_table->horizontalHeader()->setSectionResizeMode(COL_FS, QHeaderView::Fixed);
-    active_actions_table->horizontalHeader()->setSectionResizeMode(COL_ICON, QHeaderView::Fixed);
-#else
-    active_actions_table->horizontalHeader()->setResizeMode(COL_NS, QHeaderView::Fixed);
-    active_actions_table->horizontalHeader()->setResizeMode(COL_FS, QHeaderView::Fixed);
-    active_actions_table->horizontalHeader()->setResizeMode(COL_ICON, QHeaderView::Fixed);
-#endif
-
+    active_actions_table->horizontalHeader()->setSectionResizeMode(COL_NS,
+        QHeaderView::Fixed);
+    active_actions_table->horizontalHeader()->setSectionResizeMode(COL_FS,
+        QHeaderView::Fixed);
+    active_actions_table->horizontalHeader()->setSectionResizeMode(COL_ICON,
+        QHeaderView::Fixed);
     active_actions_table->horizontalHeader()->setStretchLastSection(true);
+
     retranslateStrings();
 }
 
@@ -143,15 +140,18 @@ int TToolbarEditor::iconSize() const {
     return iconsize_spin->value();
 }
 
-void TToolbarEditor::populateList(QListWidget* w, const TActionList& actions_list) {
+void TToolbarEditor::populateList(QListWidget* w,
+                                  const TActionList& actions_list) {
 
     w->clear();
 
     for (int n = 0; n < actions_list.count(); n++) {
         QAction* action = actions_list[n];
-        if (action && !action->objectName().isEmpty() && !action->isSeparator()) {
+        if (action && !action->objectName().isEmpty()
+            && !action->isSeparator()) {
             QListWidgetItem* i = new QListWidgetItem;
-            QString text = TActionsEditor::actionTextToDescription(action->text(), action->objectName());
+            QString text = TActionsEditor::actionTextToDescription(
+                               action->text(), action->objectName());
             i->setText(text + " ("+ action->objectName() +")");
             QIcon icon = action->icon();
             if (icon.isNull()) {
@@ -170,7 +170,10 @@ void TToolbarEditor::setAllActions(const TActionList& actions_list) {
     populateList(all_actions_list, actions_list);
 }
 
-void TToolbarEditor::insertRowFromAction(int row, QAction* action, bool ns, bool fs) {
+void TToolbarEditor::insertRowFromAction(int row,
+                                         QAction* action,
+                                         bool ns,
+                                         bool fs) {
 
     Qt::ItemFlags item_flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     active_actions_table->insertRow(row);
@@ -232,7 +235,10 @@ void TToolbarEditor::insertSeparator(int row, bool ns, bool fs) {
 }
 
 
-void TToolbarEditor::stringToAction(const QString& s, QString& action_name, bool& ns, bool&fs) {
+void TToolbarEditor::stringToAction(const QString& s,
+                                    QString& action_name,
+                                    bool& ns,
+                                    bool&fs) {
 
     // name|0|1
     static QRegExp rx("^([^|]+)(\\|(\\d+)\\|(\\d+))?");
@@ -426,17 +432,22 @@ QStringList TToolbarEditor::saveActions() {
                 if (action) {
                     item = active_actions_table->item(row, COL_DESC);
                     if (item) {
-                        QString action_icon_text = TActionsEditor::actionTextToDescription(
-                                                       item->text(), action_name).trimmed();
+                        QString action_icon_text =
+                            TActionsEditor::actionTextToDescription(
+                                item->text(), action_name).trimmed();
                         if (!action_icon_text.isEmpty()) {
-                            QString action_text = TActionsEditor::actionTextToDescription(action->text(), action_name);
+                            QString action_text =
+                                TActionsEditor::actionTextToDescription(
+                                    action->text(), action_name);
                             if (action_text != action_icon_text) {
                                 action->setIconText(action_icon_text);
                                 action->setProperty("modified", true);
                                 WZDEBUG("updated icon text '" + action_name
                                         + "' to '" + action_icon_text + "'");
                             } else {
-                                action_icon_text = TActionsEditor::actionTextToDescription(action->iconText(), action_name);
+                                action_icon_text =
+                                    TActionsEditor::actionTextToDescription(
+                                        action->iconText(), action_name);
                                 if (action_icon_text != action_text) {
                                     action->setIconText(action_text);
                                     WZDEBUG("cleared icon text " + action_name);
@@ -468,11 +479,13 @@ void TToolbarEditor::onCurrentCellChanged(int currentRow, int currentColumn,
         down_button->setEnabled(false);
     } else {
         up_button->setEnabled((currentRow > 0));
-        down_button->setEnabled(currentRow < active_actions_table->rowCount() - 1);
+        down_button->setEnabled(currentRow
+                                < active_actions_table->rowCount() - 1);
     }
 }
 
-QAction* TToolbarEditor::findAction(const QString& action_name, const TActionList& actions_list) {
+QAction* TToolbarEditor::findAction(const QString& action_name,
+                                    const TActionList& actions_list) {
 
     for (int n = 0; n < actions_list.count(); n++) {
         QAction* action = actions_list[n];

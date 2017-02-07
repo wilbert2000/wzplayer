@@ -28,12 +28,6 @@
 #include <QSettings>
 #include <QTranslator>
 
-#ifdef Q_OS_WIN
-#if QT_VERSION < 0x050000
-#define USE_WINEVENTFILTER
-#endif
-#endif
-
 
 namespace Gui {
 class TMainWindowPlus;
@@ -67,12 +61,8 @@ public:
     void start();
 
     // Process command line arguments.
-    // If returned ExitCode != NoExit ::main() should exit.
+    // Returning anything but TExitCode::NoExit makes ::main() exit.
     TExitCode processArgs();
-
-#ifdef USE_WINEVENTFILTER
-    virtual bool winEventFilter(MSG* msg, long* result);
-#endif
 
 private:
     static bool restarting;

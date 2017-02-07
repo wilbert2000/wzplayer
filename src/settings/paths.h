@@ -20,12 +20,7 @@
 #define SETTINGS_PATHS_H
 
 #include <QString>
-
-#if QT_VERSION_MAJOR >= 5
 #include <QStandardPaths>
-#else
-#include <QDesktopServices>
-#endif
 
 
 namespace Settings {
@@ -33,10 +28,9 @@ namespace Settings {
 class TPaths {
 public:
 
-    // Fix Qt locations
-#if QT_VERSION_MAJOR >= 5
     enum TLocation {
         DataLocation = QStandardPaths::DataLocation,
+
 #if QT_VERSION >= 0x050400
         AppDataLocation = QStandardPaths::AppDataLocation,
 #endif
@@ -44,14 +38,6 @@ public:
         DocumentsLocation = QStandardPaths::DocumentsLocation,
         HomeLocation = QStandardPaths::HomeLocation
     };
-#else
-    enum TLocation {
-        // DataLocation = QDesktopServices::DataLocation,
-        PicturesLocation = QDesktopServices::PicturesLocation,
-        DocumentsLocation = QDesktopServices::DocumentsLocation,
-        HomeLocation = QDesktopServices::HomeLocation
-    };
-#endif
 
     static QString location(TLocation type);
 

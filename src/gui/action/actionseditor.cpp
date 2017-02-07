@@ -110,13 +110,8 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
     actionsTable = new QTableWidget(0, COL_COUNT, this);
     actionsTable->verticalHeader()->hide();
     actionsTable->setColumnWidth(COL_CONFLICTS, WIDTH_CONFLICT_ICON + MARGINS);
-
-#if QT_VERSION_MAJOR >= 5
-    actionsTable->horizontalHeader()->setSectionResizeMode(COL_CONFLICTS, QHeaderView::Fixed);
-#else
-    actionsTable->horizontalHeader()->setResizeMode(COL_CONFLICTS, QHeaderView::Fixed);
-#endif
-
+    actionsTable->horizontalHeader()->setSectionResizeMode(COL_CONFLICTS,
+                                                           QHeaderView::Fixed);
     actionsTable->horizontalHeader()->setStretchLastSection(true);
 
     actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);

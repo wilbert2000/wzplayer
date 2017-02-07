@@ -50,10 +50,8 @@ QString TPaths::location(TLocation type) {
     path = qApp->applicationDirPath();
 #else
 
-#if QT_VERSION_MAJOR >= 5
-
-    // Switch to roaming on Windows
 #if QT_VERSION >= 0x050400
+    // Switch to roaming on Windows
     if (type == DataLocation) {
         type = AppDataLocation;
     }
@@ -61,11 +59,6 @@ QString TPaths::location(TLocation type) {
 
     path = QStandardPaths::writableLocation(
         static_cast<QStandardPaths::StandardLocation>(type));
-
-#else
-    path = QDesktopServices::storageLocation(
-        static_cast<QDesktopServices::StandardLocation>(type));
-#endif
 #endif
 
     WZDEBUG("returning '" +path + "' for " + QString::number(type));

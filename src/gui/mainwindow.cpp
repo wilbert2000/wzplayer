@@ -1257,8 +1257,8 @@ void TMainWindow::changeEvent(QEvent* e) {
     } else {
         QMainWindow::changeEvent(e);
 
-#if QT_VERSION_MAJOR >= 5
-        // Emulate show/hide events for Qt >= 5
+        // Qt 5 dropped show/hideEvent().
+        // Emulate them.
         if(e->type() == QEvent::WindowStateChange) {
             bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState()
                            == Qt::WindowMinimized;
@@ -1270,8 +1270,6 @@ void TMainWindow::changeEvent(QEvent* e) {
                 hideEvent(0);
             }
         }
-#endif
-
     }
 }
 
@@ -1814,36 +1812,24 @@ void TMainWindow::showSeekToDialog() {
 }
 
 void TMainWindow::showAudioDelayDialog() {
+
     bool ok;
-    #if QT_VERSION >= 0x050000
     int delay = QInputDialog::getInt(this,
         tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
         tr("Audio delay (in milliseconds):"), player->mset.audio_delay,
         -3600000, 3600000, 1, &ok);
-    #else
-    int delay = QInputDialog::getInteger(this,
-        tr("%1 - Audio delay").arg(TConfig::PROGRAM_NAME),
-        tr("Audio delay (in milliseconds):"), player->mset.audio_delay,
-        -3600000, 3600000, 1, &ok);
-    #endif
     if (ok) {
         player->setAudioDelay(delay);
     }
 }
 
 void TMainWindow::showSubDelayDialog() {
+
     bool ok;
-    #if QT_VERSION >= 0x050000
     int delay = QInputDialog::getInt(this,
         tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
         tr("Subtitle delay (in milliseconds):"), player->mset.sub_delay,
         -3600000, 3600000, 1, &ok);
-    #else
-    int delay = QInputDialog::getInteger(this,
-        tr("%1 - Subtitle delay").arg(TConfig::PROGRAM_NAME),
-        tr("Subtitle delay (in milliseconds):"), player->mset.sub_delay,
-        -3600000, 3600000, 1, &ok);
-    #endif
     if (ok) {
         player->setSubDelay(delay);
     }

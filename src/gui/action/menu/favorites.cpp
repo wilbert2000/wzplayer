@@ -380,15 +380,9 @@ void TFavorites::edit() {
 void TFavorites::jump() {
 
     bool ok;
-#if QT_VERSION >= 0x050000
     int item = QInputDialog::getInt(main_window, tr("Jump to item"),
-                          tr("Enter the number of the item in the list to jump:"), 
-                          last_item, 1, f_list.count(), 1, &ok);
-#else
-    int item = QInputDialog::getInteger(main_window, tr("Jump to item"),
-                          tr("Enter the number of the item in the list to jump:"), 
-                          last_item, 1, f_list.count(), 1, &ok);
-#endif
+        tr("Enter the number of the item in the list to jump:"),
+        last_item, 1, f_list.count(), 1, &ok);
     if (ok) {
         last_item = item;
         item--;

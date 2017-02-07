@@ -537,23 +537,23 @@ void TApp::showInfo() {
             break;
         case QSysInfo::WV_VISTA: win_ver = "Windows Vista/Server 2008"; break;
         case QSysInfo::WV_WINDOWS7: win_ver = "Windows 7/Server 2008 R2"; break;
-#if QT_VERSION >= 0x040803
         case QSysInfo::WV_WINDOWS8: win_ver = "Windows 8/Server 2012"; break;
-#endif
-#if ((QT_VERSION >= 0x040806 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050200))
+#if (QT_VERSION >= 0x050200)
         case QSysInfo::WV_WINDOWS8_1:
             win_ver = "Windows 8.1/Server 2012 R2";
             break;
 #endif
-#if ((QT_VERSION >= 0x040807 && QT_VERSION < 0x050000) || (QT_VERSION >= 0x050500))
+#if (QT_VERSION >= 0x050500)
         case QSysInfo::WV_WINDOWS10: win_ver = "Windows 10"; break;
 #endif
         case QSysInfo::WV_NT_based: win_ver = "NT-based Windows"; break;
         default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
     }
-#endif
+#endif // ifdef Q_OS_WIN
+
     QString s = tr("WZPlayer %1 running on %2")
                 .arg(TVersion::version)
+
 #ifdef Q_OS_LINUX
                 .arg("Linux");
 #else
@@ -580,152 +580,5 @@ void TApp::showInfo() {
     WZINFO("font path '" + Settings::TPaths::fontPath() + "'");
 #endif
 }
-
-#ifdef USE_WINEVENTFILTER
-#include <QKeyEvent>
-#include <QEvent>
-#include <QWidget>
-#include <windows.h>
-
-#ifndef WM_APPCOMMAND
-#define WM_APPCOMMAND 0x0319
-#endif
-
-#ifndef FAPPCOMMAND_MOUSE
-#define FAPPCOMMAND_MOUSE 0x8000
-#define FAPPCOMMAND_KEY   0
-#define FAPPCOMMAND_OEM   0x1000
-#define FAPPCOMMAND_MASK  0xF000
-#define GET_APPCOMMAND_LPARAM(lParam) ((short)(HIWORD(lParam) & ~FAPPCOMMAND_MASK))
-#define GET_DEVICE_LPARAM(lParam)     ((WORD)(HIWORD(lParam) & FAPPCOMMAND_MASK))
-#define GET_MOUSEORKEY_LPARAM         GET_DEVICE_LPARAM
-#define GET_FLAGS_LPARAM(lParam)      (LOWORD(lParam))
-#define GET_KEYSTATE_LPARAM(lParam)   GET_FLAGS_LPARAM(lParam)
-
-#define APPCOMMAND_BROWSER_BACKWARD       1
-#define APPCOMMAND_BROWSER_FORWARD        2
-#define APPCOMMAND_BROWSER_REFRESH        3
-#define APPCOMMAND_BROWSER_STOP           4
-#define APPCOMMAND_BROWSER_SEARCH         5
-#define APPCOMMAND_BROWSER_FAVORITES      6
-#define APPCOMMAND_BROWSER_HOME           7
-#define APPCOMMAND_VOLUME_MUTE            8
-#define APPCOMMAND_VOLUME_DOWN            9
-#define APPCOMMAND_VOLUME_UP              10
-#define APPCOMMAND_MEDIA_NEXTTRACK        11
-#define APPCOMMAND_MEDIA_PREVIOUSTRACK    12
-#define APPCOMMAND_MEDIA_STOP             13
-#define APPCOMMAND_MEDIA_PLAY_PAUSE       14
-#define APPCOMMAND_LAUNCH_MAIL            15
-#define APPCOMMAND_LAUNCH_MEDIA_SELECT    16
-#define APPCOMMAND_LAUNCH_APP1            17
-#define APPCOMMAND_LAUNCH_APP2            18
-#define APPCOMMAND_BASS_DOWN              19
-#define APPCOMMAND_BASS_BOOST             20
-#define APPCOMMAND_BASS_UP                21
-#define APPCOMMAND_TREBLE_DOWN            22
-#define APPCOMMAND_TREBLE_UP              23
-#endif // FAPPCOMMAND_MOUSE
-
-// New commands from Windows XP (some even Sp1)
-#ifndef APPCOMMAND_MICROPHONE_VOLUME_MUTE
-#define APPCOMMAND_MICROPHONE_VOLUME_MUTE 24
-#define APPCOMMAND_MICROPHONE_VOLUME_DOWN 25
-#define APPCOMMAND_MICROPHONE_VOLUME_UP   26
-#define APPCOMMAND_HELP                   27
-#define APPCOMMAND_FIND                   28
-#define APPCOMMAND_NEW                    29
-#define APPCOMMAND_OPEN                   30
-#define APPCOMMAND_CLOSE                  31
-#define APPCOMMAND_SAVE                   32
-#define APPCOMMAND_PRINT                  33
-#define APPCOMMAND_UNDO                   34
-#define APPCOMMAND_REDO                   35
-#define APPCOMMAND_COPY                   36
-#define APPCOMMAND_CUT                    37
-#define APPCOMMAND_PASTE                  38
-#define APPCOMMAND_REPLY_TO_MAIL          39
-#define APPCOMMAND_FORWARD_MAIL           40
-#define APPCOMMAND_SEND_MAIL              41
-#define APPCOMMAND_SPELL_CHECK            42
-#define APPCOMMAND_DICTATE_OR_COMMAND_CONTROL_TOGGLE    43
-#define APPCOMMAND_MIC_ON_OFF_TOGGLE      44
-#define APPCOMMAND_CORRECTION_LIST        45
-#define APPCOMMAND_MEDIA_PLAY             46
-#define APPCOMMAND_MEDIA_PAUSE            47
-#define APPCOMMAND_MEDIA_RECORD           48
-#define APPCOMMAND_MEDIA_FAST_FORWARD     49
-#define APPCOMMAND_MEDIA_REWIND           50
-#define APPCOMMAND_MEDIA_CHANNEL_UP       51
-#define APPCOMMAND_MEDIA_CHANNEL_DOWN     52
-#endif // APPCOMMAND_MICROPHONE_VOLUME_MUTE
-
-#define VK_MEDIA_NEXT_TRACK 0xB0
-#define VK_MEDIA_PREV_TRACK 0xB1
-#define VK_MEDIA_PLAY_PAUSE 0xB3
-#define VK_MEDIA_STOP 0xB2
-
-bool TApp::winEventFilter(MSG* msg, long* result) {
-
-    static uint last_appcommand = 0;
-
-    if (msg->message == WM_KEYDOWN) {
-        //logger()->debug("TApp::winEventFilter: WM_KEYDOWN: %X", msg->wParam);
-        bool eat_key = false;
-        if ((last_appcommand == APPCOMMAND_MEDIA_NEXTTRACK) && (msg->wParam == VK_MEDIA_NEXT_TRACK)) eat_key = true;
-        else
-        if ((last_appcommand == APPCOMMAND_MEDIA_PREVIOUSTRACK) && (msg->wParam == VK_MEDIA_PREV_TRACK)) eat_key = true;
-        else
-        if ((last_appcommand == APPCOMMAND_MEDIA_PLAY_PAUSE) && (msg->wParam == VK_MEDIA_PLAY_PAUSE)) eat_key = true;
-        else
-        if ((last_appcommand == APPCOMMAND_MEDIA_STOP) && (msg->wParam == VK_MEDIA_STOP)) eat_key = true;
-
-        if (eat_key) {
-            logger()->debug("TApp::winEventFilter: ignoring key %X", msg->wParam);
-            last_appcommand = 0;
-            *result = true;
-            return true;
-        }
-    }
-    else
-    if (msg->message == WM_APPCOMMAND) {
-
-        uint cmd  = GET_APPCOMMAND_LPARAM(msg->lParam);
-        uint uDevice = GET_DEVICE_LPARAM(msg->lParam);
-        uint dwKeys = GET_KEYSTATE_LPARAM(msg->lParam);
-
-        //if (uDevice == FAPPCOMMAND_KEY) {
-            int key = 0;
-            Qt::KeyboardModifiers modifier = Qt::NoModifier;
-            QString name;
-
-            switch (cmd) {
-                case APPCOMMAND_MEDIA_PAUSE: key = Qt::Key_MediaPause; name = "Media Pause"; break;
-                case APPCOMMAND_MEDIA_PLAY: key = Qt::Key_MediaPlay; name = "Media Play"; break;
-                case APPCOMMAND_MEDIA_STOP: key = Qt::Key_MediaStop; name = "Media Stop"; break;
-                case APPCOMMAND_MEDIA_PLAY_PAUSE: key = Qt::Key_MediaTogglePlayPause; name = "Toggle Media Play/Pause"; break;
-
-                case APPCOMMAND_MEDIA_NEXTTRACK: key = Qt::Key_MediaNext; name = "Media Next"; break;
-                case APPCOMMAND_MEDIA_PREVIOUSTRACK: key = Qt::Key_MediaPrevious; name = "Media Previous"; break;
-
-                case APPCOMMAND_MEDIA_FAST_FORWARD: key = Qt::Key_F; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
-                case APPCOMMAND_MEDIA_REWIND: key = Qt::Key_B; modifier = Qt::ShiftModifier | Qt::ControlModifier; break;
-            }
-
-            if (key != 0) {
-                last_appcommand = cmd;
-
-                QKeyEvent event(QEvent::KeyPress, key, modifier, name);
-                QWidget* w = QApplication::focusWidget();
-                if (w) QCoreApplication::sendEvent(w, &event);
-                *result = true;
-                return true;
-            }
-        //}
-    }
-
-    return false;
-}
-#endif // USE_WINEVENTFILTER
 
 #include "moc_app.cpp"

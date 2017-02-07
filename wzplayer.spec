@@ -9,21 +9,21 @@ URL:            https://github.com/wilbert2000/wzplayer
 Source0:        https://github.com/wilbert2000/wzplayer/archive/%{version}.tar.gz
 
 %if 0%{?suse_version}
-BuildRequires:  libqt4-devel
+BuildRequires:  libqt5-devel
 BuildRequires:  hicolor-icon-theme
 %else
-BuildRequires:  qt4-devel
+BuildRequires:  qt5-devel
 #BuildRequires:  qtwebkit-devel
 %endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 
 Requires:       (mplayer or mpv)
-%{?_qt4_version:Requires: qt4%{?_isa} >= %{_qt4_version}}
+%{?_qt5_version:Requires: qt5%{?_isa} >= %{_qt5_version}}
 
 %description
 WZPlayer is a video player based on SMPlayer, http://www.smplayer.info,
-by Ricardo Villalba. It simplifies playing videos with MPlayer or MPV.
+by Ricardo Villalba. It simplifies playing videos with MPlayer and MPV.
 
 %prep
 %setup -a3 -a4 -qn %{name}-%{version}
@@ -37,8 +37,8 @@ mv Changelog.utf8 Changelog
 %build
 make \
 %if !0%{?suse_version}
-	QMAKE=%{_qt4_qmake} \
-	LRELEASE=%{_bindir}/lrelease-qt4 \
+    QMAKE=%{_qt5_qmake} \
+    LRELEASE=%{_bindir}/lrelease-qt5 \
 %endif
 	PREFIX=%{_prefix} \
     DOC_PATH="\\\"%{_docdir}/%{name}/\\\""
@@ -73,6 +73,6 @@ update-desktop-database &> /dev/null || :
 
 %changelog
 * Mon Apr 11 2016 Wilbert Hengst <wplayer@xs4all.nl>
-- For the changelog see https://github.com/wilbert2000/wzplayer/commits/master
+- For changes see https://github.com/wilbert2000/wzplayer/commits/master
 * Thu Jun 14 2007 Sebastian Vahl <fedora@deadbabylon.de> - 0.5.7-1
 - Initial Release
