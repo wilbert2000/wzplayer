@@ -17,11 +17,13 @@
 */
 
 #include "app.h"
+
 #include "log4qt/logger.h"
 #include "log4qt/logmanager.h"
 #include "log4qt/consoleappender.h"
 #include "log4qt/ttcclayout.h"
 #include "log4qt/level.h"
+
 #include "gui/logwindow.h"
 #include "gui/logwindowappender.h"
 #include "wzdebug.h"
@@ -122,18 +124,18 @@ int main(int argc, char** argv) {
         TApp app(argc, argv);
         WZDEBUG("initializing application");
         exitCode = app.processArgs();
-        if (exitCode == TApp::NoExit) {
+        if (exitCode == TApp::START_APP) {
             WZDEBUG("starting application");
             app.start();
             WZDEBUG("executing application");
             exitCode = app.exec();
-            if (exitCode == TApp::NoExit) {
+            if (exitCode == TApp::START_APP) {
                 WZDEBUG("restarting application");
             } else {
                 WZDEBUG("exec() returned " + QString::number(exitCode));
             }
         }
-    } while (exitCode == TApp::NoExit);
+    } while (exitCode == TApp::START_APP);
 
     WZDEBUG("returning exit code " + QString::number(exitCode));
     return exitCode;

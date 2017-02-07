@@ -293,7 +293,7 @@ TApp::TExitCode TApp::processArgs() {
             WZINFO("configuration path set to '" + initial_config_path + "'");
         } else {
             WZERROR("expected path after option --config-path");
-            return ErrorInvalidArgument;
+            return ERROR_INVALID_ARGUMENT;
         }
     }
 
@@ -302,7 +302,7 @@ TApp::TExitCode TApp::processArgs() {
 
     if (processArgName("delete-config", args)) {
         Settings::TCleanConfig::clean();
-        return NoError;
+        return NO_ERROR;
     }
 
     showInfo();
@@ -323,7 +323,7 @@ TApp::TExitCode TApp::processArgs() {
                 send_action = args[n];
             } else {
                 WZERROR("expected action after option --send-action");
-                return ErrorInvalidArgument;
+                return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "actions") {
             if (n+1 < args.count()) {
@@ -331,7 +331,7 @@ TApp::TExitCode TApp::processArgs() {
                 actions = args[n];
             } else {
                 WZERROR("expected actions after option --actions");
-                return ErrorInvalidArgument;
+                return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "sub") {
             if (n + 1 < args.count()) {
@@ -344,7 +344,7 @@ TApp::TExitCode TApp::processArgs() {
                 }
             } else {
                 WZERROR("expected parameter after option --sub");
-                return ErrorInvalidArgument;
+                return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "media-title") {
             if (n + 1 < args.count()) {
@@ -372,7 +372,7 @@ TApp::TExitCode TApp::processArgs() {
                     if (ok_x && ok_y) move_gui = true;
                 } else {
                     WZERROR("expected x and y position after option --pos");
-                    return ErrorInvalidArgument;
+                    return ERROR_INVALID_ARGUMENT;
                 }
             } else if (name == "size") {
                 if (n + 2 < args.count()) {
@@ -384,7 +384,7 @@ TApp::TExitCode TApp::processArgs() {
                     if (ok_width && ok_height) resize_gui = true;
                 } else {
                     WZERROR("expected width and height after option --size");
-                    return ErrorInvalidArgument;
+                    return ERROR_INVALID_ARGUMENT;
                 }
             } else if (name == "fullscreen") {
                 start_in_fullscreen = FS_TRUE;
@@ -399,7 +399,7 @@ TApp::TExitCode TApp::processArgs() {
 
     if (show_help) {
         printf("%s\n", CLHelp::help().toLocal8Bit().data());
-        return NoError;
+        return NO_ERROR;
     }
 
     if (Settings::pref->use_single_window) {
@@ -428,11 +428,11 @@ TApp::TExitCode TApp::processArgs() {
                 }
             }
 
-            return NoError;
+            return NO_ERROR;
         }
     }
 
-    return TApp::NoExit;
+    return TApp::START_APP;
 }
 
 void TApp::createGUI() {

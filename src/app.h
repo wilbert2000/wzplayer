@@ -39,9 +39,9 @@ class TApp : public QtSingleApplication {
 
 public:
     enum TExitCode {
-             ErrorInvalidArgument = -1,
-             NoError = 0,
-             NoExit = 1111
+             ERROR_INVALID_ARGUMENT = -1,
+             NO_ERROR = 0,
+             START_APP = 1111
     };
 
     enum TStartFS {
