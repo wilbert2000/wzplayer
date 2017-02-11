@@ -33,7 +33,7 @@ namespace Gui {
 namespace Pref {
 
 TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
-    : TWidget(parent, f),
+    : TSection(parent, f),
     debug(logger()) {
 
     setupUi(this);
@@ -74,7 +74,7 @@ QString TInterface::sectionName() {
 }
 
 QPixmap TInterface::sectionIcon() {
-    return Images::icon("instance1", icon_size);
+    return Images::icon("instance1", iconSize);
 }
 
 void TInterface::createLanguageCombo() {
@@ -142,23 +142,20 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
 void TInterface::getData(Settings::TPreferences* pref) {
 
-    requires_restart = false;
-    language_changed = false;
-    iconset_changed = false;
-    style_changed = false;
+    TSection::getData(pref);
     recents_changed = false;
 
     if (pref->language != language()) {
         pref->language = language();
-        language_changed = true;
+        _requiresRestartApp = true;
     }
     if (pref->iconset != iconSet()) {
         pref->iconset = iconSet();
-        iconset_changed = true;
+        _requiresRestartApp = true;
     }
     if (pref->style != style()) {
         pref->style = style();
-        style_changed = true;
+        _requiresRestartApp = true;
     }
 
     // Main window

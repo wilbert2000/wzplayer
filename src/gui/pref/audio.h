@@ -20,7 +20,7 @@
 #define GUI_PREF_AUDIO_H
 
 #include "ui_audio.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "log4qt/logger.h"
 #include "player/info/playerinfo.h"
 #include "settings/preferences.h"
@@ -34,7 +34,7 @@
 namespace Gui {
 namespace Pref {
 
-class TAudio : public TWidget, public Ui::TAudio {
+class TAudio : public TSection, public Ui::TAudio {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
@@ -53,7 +53,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
     void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
                            bool keep_current_drivers);

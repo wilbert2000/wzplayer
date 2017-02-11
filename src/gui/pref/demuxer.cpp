@@ -7,7 +7,7 @@ namespace Gui {
 namespace Pref {
 
 TDemuxer::TDemuxer(QWidget* parent) :
-    TWidget(parent, 0) {
+    TSection(parent, 0) {
 
     setupUi(this);
 
@@ -36,7 +36,7 @@ QString TDemuxer::sectionName() {
 }
 
 QPixmap TDemuxer::sectionIcon() {
-    return Images::icon("pref_demuxer", icon_size);
+    return Images::icon("pref_demuxer", iconSize);
 }
 
 void TDemuxer::setData(Settings::TPreferences* pref) {
@@ -47,8 +47,7 @@ void TDemuxer::setData(Settings::TPreferences* pref) {
 
 void TDemuxer::getData(Settings::TPreferences* pref) {
 
-    requires_restart = false;
-
+    TSection::getData(pref);
     restartIfBoolChanged(pref->use_lavf_demuxer,
                          lavf_demuxer_check->isChecked(),
                          "use_lavf_demuxer");

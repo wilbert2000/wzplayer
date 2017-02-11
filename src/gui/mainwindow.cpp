@@ -710,27 +710,21 @@ void TMainWindow::restartApplication() {
 void TMainWindow::applyNewPreferences() {
     WZDEBUG("");
 
-    QString old_player_bin = pref->player_bin;
-
-    // Update pref from dialog
+    // Get pref from dialog
     pref_dialog->getData(pref);
 
     // Save playlist preferences repeat and shuffle
     playlist->saveSettings();
 
-    // Update and save actions
+    // Get and save actions
     pref_dialog->mod_input()->actions_editor->applyChanges();
     Action::TActionsEditor::saveToConfig(pref, this);
 
     // Commit changes
     pref->save();
 
-    // Player bin, style, icon set or language change need restart TApp
-    Pref::TInterface* mod_interface = pref_dialog->mod_interface();
-    if (pref->player_bin != old_player_bin
-        || mod_interface->styleChanged()
-        || mod_interface->iconsetChanged()
-        || mod_interface->languageChanged()) {
+    // Restart TApp
+    if (pref_dialog->requiresRestartApp()) {
         restartApplication();
         return;
     }
@@ -749,7 +743,7 @@ void TMainWindow::applyNewPreferences() {
     // Subtitles
     subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
-    // Interface continued
+    // Interface
     // Show panel
     if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
         resize(width(), height() + 200);
@@ -758,7 +752,7 @@ void TMainWindow::applyNewPreferences() {
     // Hide toolbars delay
     auto_hide_timer->setInterval(pref->floating_hide_delay);
     // Recents
-    if (mod_interface->recentsChanged()) {
+    if (pref_dialog->mod_interface()->recentsChanged()) {
         fileMenu->updateRecents();
     }
 
@@ -774,11 +768,11 @@ void TMainWindow::applyNewPreferences() {
     // Reenable actions to reflect changes
     sendEnableActions();
 
-    // TODO: move code above to preferencesChanged() signal
+    // TODO: move some of above code to preferencesChanged() signal
     emit preferencesChanged();
 
     // Restart video if needed
-    if (pref_dialog->requiresRestart()) {
+    if (pref_dialog->requiresRestartPlayer()) {
         player->restart();
     }
 } // TMainWindow::applyNewPreferences()

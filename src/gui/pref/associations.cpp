@@ -36,7 +36,7 @@ static Qt::CheckState CurItemCheckState = Qt::Unchecked;
 
 
 TAssociations::TAssociations(QWidget* parent, Qt::WindowFlags f)
-: TWidget(parent, f)
+: TSection(parent, f)
 {
     setupUi(this);
 
@@ -173,10 +173,13 @@ int TAssociations::ProcessAssociations(QStringList& current, QStringList& old)
     return RegAssoc.CreateFileAssociations(current);
 }
 
-void TAssociations::getData(Settings::TPreferences*)
-{
-    logger()->debug("Gui::Pref::TAssociations::getData: something_changed: %1", something_changed);
-    if (!something_changed) return;
+void TAssociations::getData(Settings::TPreferences*) {
+    logger()->debug("something_changed: %1", something_changed);
+
+    TSection::getData(pref);
+
+    if (!something_changed)
+        return;
 
     QStringList extensions;
 
@@ -206,7 +209,7 @@ QString TAssociations::sectionName() {
 }
 
 QPixmap TAssociations::sectionIcon() {
-    return Images::icon("pref_associations", icon_size);
+    return Images::icon("pref_associations", iconSize);
 }
 
 void TAssociations::retranslateStrings() {

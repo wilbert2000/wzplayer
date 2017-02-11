@@ -108,7 +108,7 @@ HEADERS += wzdebug.h \
     gui/pref/tristatecombo.h \
     gui/pref/combobox.h \
     gui/pref/dialog.h \
-    gui/pref/widget.h \
+    gui/pref/section.h \
     gui/pref/playersection.h \
     gui/pref/demuxer.h \
     gui/pref/video.h \
@@ -232,7 +232,7 @@ SOURCES += wzdebug.cpp \
     gui/pref/tristatecombo.cpp \
     gui/pref/combobox.cpp \
     gui/pref/dialog.cpp \
-    gui/pref/widget.cpp \
+    gui/pref/section.cpp \
     gui/pref/playersection.cpp \
     gui/pref/demuxer.cpp \
     gui/pref/video.cpp \

@@ -24,7 +24,7 @@ namespace Gui {
 namespace Pref {
 
 TPlaylistSection::TPlaylistSection(QWidget* parent, Qt::WindowFlags f)
-    : TWidget(parent, f),
+    : TSection(parent, f),
     debug(logger()) {
 
     setupUi(this);
@@ -40,7 +40,7 @@ QString TPlaylistSection::sectionName() {
 }
 
 QPixmap TPlaylistSection::sectionIcon() {
-    return Images::icon("playlist", icon_size);
+    return Images::icon("playlist", iconSize);
 }
 
 void TPlaylistSection::retranslateStrings() {
@@ -80,14 +80,15 @@ void TPlaylistSection::setData(Settings::TPreferences* pref) {
 
 void TPlaylistSection::getData(Settings::TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
 
     pref->mediaToAddToPlaylist = mediaToAddToPlaylist();
     pref->addDirectories = directoryRecursion();
     pref->addVideo = video_check->isChecked();
     pref->addAudio = audio_check->isChecked();
     pref->addPlaylists = playlists_check->isChecked();
-    pref->addImages = images_check->isChecked();
+    restartIfBoolChanged(pref->addImages, images_check->isChecked(),
+                         "addImages");
     pref->imageDuration = image_duration_spinbox->value();
     pref->useDirectoriePlaylists = directory_playlist_check->isChecked();
 

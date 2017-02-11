@@ -25,7 +25,7 @@
 namespace Gui { namespace Pref {
 
 TNetwork::TNetwork(QWidget* parent, Qt::WindowFlags f)
-    : TWidget(parent, f) {
+    : TSection(parent, f) {
 
     setupUi(this);
 
@@ -43,7 +43,7 @@ QString TNetwork::sectionName() {
 }
 
 QPixmap TNetwork::sectionIcon() {
-    return Images::icon("pref_network", icon_size);
+    return Images::icon("pref_network", iconSize);
 }
 
 void TNetwork::retranslateStrings() {
@@ -77,7 +77,7 @@ void TNetwork::setData(Settings::TPreferences* pref) {
 
 void TNetwork::getData(Settings::TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
 
     if (ip_prefer_4_radiobutton->isChecked()) {
         pref->ipPrefer = Settings::TPreferences::IP_PREFER_4;

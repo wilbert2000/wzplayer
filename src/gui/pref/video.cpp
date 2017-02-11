@@ -33,7 +33,7 @@ namespace Gui {
 namespace Pref {
 
 TVideo::TVideo(QWidget* parent, const Player::Info::InfoList& vol) :
-    TWidget(parent, 0),
+    TSection(parent, 0),
     debug(logger()),
     vo_list(vol),
     player_id(pref->player_id),
@@ -89,7 +89,7 @@ QString TVideo::sectionName() {
 }
 
 QPixmap TVideo::sectionIcon() {
-    return Images::icon("pref_video", icon_size);
+    return Images::icon("pref_video", iconSize);
 }
 
 void TVideo::retranslateStrings() {
@@ -164,6 +164,7 @@ void TVideo::setData(Settings::TPreferences* pref) {
 
 void TVideo::getData(Settings::TPreferences* pref) {
 
+    TSection::getData(pref);
     restartIfStringChanged(pref->vo, VO(), "vo");
     if (pref->isMPlayer()) {
         pref->mplayer_vo = pref->vo;
@@ -187,8 +188,8 @@ void TVideo::getData(Settings::TPreferences* pref) {
     TPreferences::TOptionState pts = correct_pts_combo->state();
     if (pts != pref->use_correct_pts) {
         pref->use_correct_pts = pts;
-        requires_restart = true;
-        logger()->debug("getData: restart needed, use_correct_pts changed");
+        _requiresRestartPlayer = true;
+        logger()->debug("restart needed, use_correct_pts changed");
     }
 
     pref->initial_postprocessing = initialPostprocessing();

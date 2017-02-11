@@ -20,7 +20,7 @@
 #define GUI_PREF_DRIVES_H
 
 #include "ui_drives.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "wzdebug.h"
 
 
@@ -31,7 +31,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TDrives : public TWidget, public Ui::TDrives {
+class TDrives : public TSection, public Ui::TDrives {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
@@ -46,7 +46,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     virtual void createHelp();

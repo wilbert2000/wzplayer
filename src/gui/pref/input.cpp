@@ -26,7 +26,7 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TInput::TInput(QWidget* parent, Qt::WindowFlags f)
-    : TWidget(parent, f) {
+    : TSection(parent, f) {
 
     setupUi(this);
     retranslateStrings();
@@ -40,7 +40,7 @@ QString TInput::sectionName() {
 }
 
 QPixmap TInput::sectionIcon() {
-    return Images::icon("pref_input", icon_size);
+    return Images::icon("pref_input", iconSize);
 }
 
 void TInput::createMouseCombos() {
@@ -191,7 +191,7 @@ void TInput::setData(Settings::TPreferences* pref) {
 
 void TInput::getData(Settings::TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
     pref->mouse_left_click_function = leftClickFunction();
     pref->mouse_right_click_function = rightClickFunction();
     pref->mouse_double_click_function = doubleClickFunction();

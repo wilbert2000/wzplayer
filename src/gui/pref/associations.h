@@ -25,7 +25,7 @@
 #define GUI_PREF_ASSOCIATIONS_H
 
 #include "ui_associations.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include <QStringList>
 
 class QWidget;
@@ -40,7 +40,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TAssociations : public TWidget, public Ui::TAssociations {
+class TAssociations : public TSection, public Ui::TAssociations {
     Q_OBJECT
 
 public:
@@ -54,7 +54,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
     void addItem(QString label); 
 

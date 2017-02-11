@@ -20,7 +20,7 @@
 #define GUI_PREF_PLAYLISTSECTION_H
 
 #include "ui_playlistsection.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "settings/preferences.h"
 #include "wzdebug.h"
 
@@ -31,7 +31,7 @@ class TPreferences;
 
 namespace Gui { namespace Pref {
 
-class TPlaylistSection : public TWidget, public Ui::TPlaylistSection {
+class TPlaylistSection : public TSection, public Ui::TPlaylistSection {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
@@ -46,7 +46,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     virtual void retranslateStrings();

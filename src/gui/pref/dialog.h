@@ -31,7 +31,7 @@ class QPushButton;
 namespace Gui {
 namespace Pref {
 
-class TWidget;
+class TSection;
 class TPlayerSection;
 class TDemuxer;
 class TVideo;
@@ -58,7 +58,7 @@ class TDialog : public QDialog, public Ui::TDialog {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    enum TSection {
+    enum TSectionNumber {
         SECTION_PLAYER = 0,
         SECTION_DEMUXER,
         SECTION_VIDEO,
@@ -85,14 +85,15 @@ public:
 
     // Pass data to the standard dialogs
     void setData(Settings::TPreferences* pref);
-
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
-    // Return true if the mplayer process should be restarted.
-    bool requiresRestart();
+    // Return true if the application should be restarted.
+    bool requiresRestartApp();
+    // Return true if the player process should be restarted.
+    bool requiresRestartPlayer();
 
-    void showSection(TSection section);
+    void showSection(TSectionNumber section);
 
 public slots:
     virtual void accept(); // Reimplemented to send a signal
@@ -103,7 +104,7 @@ signals:
 
 protected:
     virtual void retranslateStrings();
-    virtual void changeEvent (QEvent* event);
+    virtual void changeEvent(QEvent* event);
 
 private:
     TPlayerSection* page_player;
@@ -126,10 +127,9 @@ private:
     TAdvanced* page_advanced;
 
     QTextBrowser* help_window;
-
     QPushButton* helpButton;
 
-    void addSection(TWidget* w);
+    void addSection(TSection* s);
 
 private slots:
     void showHelp();

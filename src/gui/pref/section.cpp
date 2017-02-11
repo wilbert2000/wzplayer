@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include <QEvent>
 #include "settings/assstyles.h"
 #include "wzdebug.h"
@@ -25,43 +25,51 @@
 namespace Gui {
 namespace Pref {
 
-TWidget::TWidget(QWidget* parent, Qt::WindowFlags f)
-    : QWidget(parent, f)
-    , requires_restart(false)
-    , icon_size(32) {
+TSection::TSection(QWidget* parent, Qt::WindowFlags f) :
+    QWidget(parent, f),
+    _requiresRestartApp(false),
+    _requiresRestartPlayer(false),
+    iconSize(32) {
 }
 
-TWidget::~TWidget() {
+TSection::~TSection() {
 }
 
-QString TWidget::sectionName() {
+void TSection::getData(Settings::TPreferences* pref) {
+    Q_UNUSED(pref)
+
+    _requiresRestartApp = false;
+    _requiresRestartPlayer = false;
+}
+
+QString TSection::sectionName() {
     return QString();
 }
 
-QPixmap TWidget::sectionIcon() {
+QPixmap TSection::sectionIcon() {
     return QPixmap();
 }
 
-void TWidget::addSectionTitle(const QString& title) {
+void TSection::addSectionTitle(const QString& title) {
     help_message += "<h2>" + title + "</h2>";
 }
 
-void TWidget::addSectionGroup(const QString& title) {
+void TSection::addSectionGroup(const QString& title) {
     help_message += "<h3>" + title + "</h3>";
 }
 
-void TWidget::restartIfBoolChanged(bool& old_value, bool new_value,
+void TSection::restartIfBoolChanged(bool& old_value, bool new_value,
                                    const QString& name) {
 
     if (old_value != new_value) {
         WZDEBUG(QString("need restart, %1 changed from %2 to %3")
                 .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-        requires_restart = true;
+        _requiresRestartPlayer = true;
     }
 }
 
-void TWidget::restartIfIntChanged(int& old_value,
+void TSection::restartIfIntChanged(int& old_value,
                                   int new_value,
                                   const QString& name) {
 
@@ -69,11 +77,11 @@ void TWidget::restartIfIntChanged(int& old_value,
         WZDEBUG(QString("need restart, %1 changed from %2 to %3")
                 .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-        requires_restart = true;
+        _requiresRestartPlayer = true;
     }
 }
 
-void TWidget::restartIfUIntChanged(unsigned int& old_value,
+void TSection::restartIfUIntChanged(unsigned int& old_value,
                                    unsigned int new_value,
                                    const QString& name) {
 
@@ -81,22 +89,22 @@ void TWidget::restartIfUIntChanged(unsigned int& old_value,
         WZDEBUG(QString("need restart, %1 changed from %2 to %3")
                 .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-        requires_restart = true;
+        _requiresRestartPlayer = true;
     }
 }
 
-void TWidget::restartIfDoubleChanged(double& old_value, const double& new_value,
+void TSection::restartIfDoubleChanged(double& old_value, const double& new_value,
                                      const QString& name) {
 
     if (old_value != new_value) {
         WZDEBUG(QString("need restart, %1 changed from %2 to %3")
                 .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-        requires_restart = true;
+        _requiresRestartPlayer = true;
     }
 }
 
-void TWidget::restartIfStringChanged(QString& old_value,
+void TSection::restartIfStringChanged(QString& old_value,
                                      const QString& new_value,
                                      const QString& name) {
 
@@ -104,11 +112,11 @@ void TWidget::restartIfStringChanged(QString& old_value,
         WZDEBUG(QString("need restart, %1 changed from %2 to %3")
                 .arg(name).arg(old_value).arg(new_value));
         old_value = new_value;
-        requires_restart = true;
+        _requiresRestartPlayer = true;
     }
 }
 
-void TWidget::setWhatsThis(QWidget* w,
+void TSection::setWhatsThis(QWidget* w,
                            const QString& title,
                            const QString& text,
                            bool set_tooltip) {
@@ -120,12 +128,12 @@ void TWidget::setWhatsThis(QWidget* w,
     }
 }
 
-void TWidget::clearHelp() {
+void TSection::clearHelp() {
     help_message = "<h1>" + sectionName() + "</h1>";
 }
 
 // Language change stuff
-void TWidget::changeEvent(QEvent *e) {
+void TSection::changeEvent(QEvent *e) {
     if (e->type() == QEvent::LanguageChange) {
         retranslateStrings();
     } else {
@@ -133,7 +141,7 @@ void TWidget::changeEvent(QEvent *e) {
     }
 }
 
-void TWidget::retranslateStrings() {
+void TSection::retranslateStrings() {
 }
 
 } // namespace Pref

@@ -2,7 +2,7 @@
 #define GUI_PREF_DEMUXER_H
 
 #include "ui_demuxer.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 
 namespace Settings {
 class TPreferences;
@@ -11,7 +11,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TDemuxer : public TWidget, public Ui::TDemuxer {
+class TDemuxer : public TSection, public Ui::TDemuxer {
     Q_OBJECT
 
 public:
@@ -26,7 +26,7 @@ public:
     // Pass data to the dialog
     void setData(Settings::TPreferences* pref);
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     virtual void retranslateStrings();

@@ -20,7 +20,7 @@
 #define PREF_INTERFACE_H
 
 #include "ui_interface.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "wzdebug.h"
 
 namespace Settings {
@@ -29,7 +29,7 @@ class TPreferences;
 
 namespace Gui { namespace Pref {
 
-class TInterface : public TWidget, public Ui::TInterface {
+class TInterface : public TSection, public Ui::TInterface {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
@@ -44,11 +44,8 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
-    bool languageChanged() const { return language_changed; }
-    bool iconsetChanged() const { return iconset_changed; }
-    bool styleChanged() const { return style_changed; }
     bool recentsChanged() const { return recents_changed; }
     bool urlMaxChanged() const { return url_max_changed; }
 
@@ -89,9 +86,6 @@ protected slots:
     void changeInstanceImages();
 
 private:
-    bool language_changed;
-    bool iconset_changed;
-    bool style_changed;
     bool recents_changed;
     bool url_max_changed;
 

@@ -20,7 +20,7 @@
 #define PREF_NETWORK_H
 
 #include "ui_network.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 
 
 namespace Settings {
@@ -29,7 +29,7 @@ class TPreferences;
 
 namespace Gui { namespace Pref {
 
-class TNetwork : public TWidget, public Ui::TNetwork {
+class TNetwork : public TSection, public Ui::TNetwork {
     Q_OBJECT
 
 public:
@@ -43,7 +43,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     virtual void createHelp();

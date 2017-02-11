@@ -27,7 +27,7 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
-    : TWidget(parent, f) {
+    : TSection(parent, f) {
 
     setupUi(this);
     retranslateStrings();
@@ -41,8 +41,8 @@ QString TPerformance::sectionName() {
 }
 
 QPixmap TPerformance::sectionIcon() {
-    //return Images::icon("pref_performance", icon_size);
-    return Images::icon("pref_cache", icon_size);
+    //return Images::icon("pref_performance", iconSize);
+    return Images::icon("pref_cache", iconSize);
 }
 
 void TPerformance::retranslateStrings() {
@@ -66,7 +66,7 @@ void TPerformance::setData(TPreferences* pref) {
 
 void TPerformance::getData(TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
 
     restartIfBoolChanged(pref->cache_enabled, cache_group->isChecked(),
                          "cache_enabled");

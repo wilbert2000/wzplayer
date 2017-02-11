@@ -38,7 +38,7 @@ bool isCDDevice(QString drive) {
 #endif
 
 TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
-    : TWidget(parent, f),
+    : TSection(parent, f),
       debug(logger()) {
     setupUi(this);
 
@@ -60,7 +60,7 @@ QString TDrives::sectionName() {
 }
 
 QPixmap TDrives::sectionIcon() {
-    return Images::icon("pref_devices", icon_size);
+    return Images::icon("pref_devices", iconSize);
 }
 
 
@@ -128,7 +128,8 @@ void TDrives::setData(Settings::TPreferences* pref) {
 }
 
 void TDrives::getData(Settings::TPreferences* pref) {
-    requires_restart = false;
+
+    TSection::getData(pref);
 
     pref->dvd_device = dvdDevice();
     pref->cdrom_device = cdromDevice();

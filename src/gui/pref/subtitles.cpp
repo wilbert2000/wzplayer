@@ -34,7 +34,7 @@ namespace Gui {
 namespace Pref {
 
 TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f) :
-    TWidget(parent, f),
+    TSection(parent, f),
     enable_border_spins(false) {
 
     setupUi(this);
@@ -59,7 +59,7 @@ QString TSubtitles::sectionName() {
 }
 
 QPixmap TSubtitles::sectionIcon() {
-    return Images::icon("sub", icon_size);
+    return Images::icon("sub", iconSize);
 }
 
 void TSubtitles::retranslateStrings() {
@@ -178,7 +178,7 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
 
 void TSubtitles::getData(Settings::TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
 
     // Subtitles tab
     restartIfIntChanged(pref->subtitle_fuzziness, fuzziness(),

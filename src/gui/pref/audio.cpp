@@ -34,7 +34,7 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TAudio::TAudio(QWidget* parent, const Player::Info::InfoList& aol)
-    : TWidget(parent, 0)
+    : TSection(parent, 0)
     , ao_list(aol),
       player_id(pref->player_id),
       mplayer_ao(pref->mplayer_ao),
@@ -67,7 +67,7 @@ QString TAudio::sectionName() {
 }
 
 QPixmap TAudio::sectionIcon() {
-    return Images::icon("speaker", icon_size);
+    return Images::icon("speaker", iconSize);
 }
 
 void TAudio::retranslateStrings() {
@@ -115,7 +115,7 @@ void TAudio::setData(TPreferences* pref) {
 
 void TAudio::getData(TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
 
     restartIfStringChanged(pref->ao, AO(), "ao");
     if (pref->isMPlayer()) {
@@ -136,7 +136,7 @@ void TAudio::getData(TPreferences* pref) {
                         " to %2", QString::number(scale),
                         QString::number(pref->use_scaletempo));
         pref->use_scaletempo = scale;
-        requires_restart = true;
+        _requiresRestartPlayer = true;
     }
 
     pref->initial_volnorm = initialVolNorm();

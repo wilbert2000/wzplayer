@@ -20,14 +20,14 @@
 #define GUI_PREF_PLAYERSECTION_H
 
 #include "ui_playersection.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "settings/preferences.h"
 
 
 namespace Gui {
 namespace Pref {
 
-class TPlayerSection : public TWidget, public Ui::TPlayerSection {
+class TPlayerSection : public TSection, public Ui::TPlayerSection {
     Q_OBJECT
 
 public:
@@ -44,7 +44,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 signals:
     void binChanged(Settings::TPreferences::TPlayerID,

@@ -28,7 +28,7 @@ using namespace Settings;
 namespace Gui { namespace Pref {
 
 TAdvanced::TAdvanced(QWidget* parent, Qt::WindowFlags f) :
-    TWidget(parent, f) {
+    TSection(parent, f) {
 
     setupUi(this);
     retranslateStrings();
@@ -42,7 +42,7 @@ QString TAdvanced::sectionName() {
 }
 
 QPixmap TAdvanced::sectionIcon() {
-    return Images::icon("pref_advanced", icon_size);
+    return Images::icon("pref_advanced", iconSize);
 }
 
 void TAdvanced::retranslateStrings() {
@@ -69,7 +69,8 @@ void TAdvanced::setData(TPreferences* pref) {
 
 void TAdvanced::getData(TPreferences* pref) {
 
-    requires_restart = false;
+    TSection::getData(pref);
+
     pref->actions_to_run = actionsToRun();
 
     restartIfStringChanged(pref->player_additional_options,

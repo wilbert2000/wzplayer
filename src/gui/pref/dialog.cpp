@@ -24,7 +24,7 @@
 #include "config.h"
 #include "images.h"
 #include "settings/preferences.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "gui/pref/playersection.h"
 #include "gui/pref/demuxer.h"
 #include "gui/pref/video.h"
@@ -124,7 +124,7 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 TDialog::~TDialog() {
 }
 
-void TDialog::showSection(TSection section) {
+void TDialog::showSection(TSectionNumber section) {
     sections->setCurrentRow(section);
 }
 
@@ -133,7 +133,7 @@ void TDialog::retranslateStrings() {
     retranslateUi(this);
 
     for (int n = 0; n < pages->count(); n++) {
-        TWidget* w = (TWidget*) pages->widget(n);
+        TSection* w = (TSection*) pages->widget(n);
         sections->item(n)->setText(w->sectionName());
         sections->item(n)->setIcon(w->sectionIcon());
     }
@@ -175,11 +175,11 @@ void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
     page_audio->updateDriverCombo(player_id, keep_current_drivers);
 }
 
-void TDialog::addSection(TWidget *w) {
+void TDialog::addSection(TSection* s) {
 
-    QListWidgetItem *i = new QListWidgetItem(w->sectionIcon(), w->sectionName());
+    QListWidgetItem *i = new QListWidgetItem(s->sectionIcon(), s->sectionName());
     sections->addItem(i);
-    pages->addWidget(w);
+    pages->addWidget(s);
 }
 
 void TDialog::setData(Settings::TPreferences* pref) {
@@ -226,28 +226,43 @@ void TDialog::getData(Settings::TPreferences* pref) {
     page_advanced->getData(pref);
 }
 
-bool TDialog::requiresRestart() {
+bool TDialog::requiresRestartApp() {
 
-    bool need_restart = page_player->requiresRestart()
-                        || page_demuxer->requiresRestart()
-                        || page_video->requiresRestart()
-                        || page_audio->requiresRestart()
-                        || page_subtitles->requiresRestart()
-                        || page_interface->requiresRestart()
-                        || page_playlist->requiresRestart()
-                        || page_input->requiresRestart()
-                        || page_drives->requiresRestart()
-                        || page_capture->requiresRestart()
-                        || page_performance->requiresRestart()
-                        || page_network->requiresRestart()
-                        || page_advanced->requiresRestart();
+    return page_player->requiresRestartApp()
+            || page_demuxer->requiresRestartApp()
+            || page_video->requiresRestartApp()
+            || page_audio->requiresRestartApp()
+            || page_subtitles->requiresRestartApp()
+            || page_interface->requiresRestartApp()
+            || page_playlist->requiresRestartApp()
+            || page_input->requiresRestartApp()
+            || page_drives->requiresRestartApp()
+            || page_capture->requiresRestartApp()
+            || page_performance->requiresRestartApp()
+            || page_network->requiresRestartApp()
+            || page_advanced->requiresRestartApp();
+}
 
-    return need_restart;
+bool TDialog::requiresRestartPlayer() {
+
+    return page_player->requiresRestartPlayer()
+            || page_demuxer->requiresRestartPlayer()
+            || page_video->requiresRestartPlayer()
+            || page_audio->requiresRestartPlayer()
+            || page_subtitles->requiresRestartPlayer()
+            || page_interface->requiresRestartPlayer()
+            || page_playlist->requiresRestartPlayer()
+            || page_input->requiresRestartPlayer()
+            || page_drives->requiresRestartPlayer()
+            || page_capture->requiresRestartPlayer()
+            || page_performance->requiresRestartPlayer()
+            || page_network->requiresRestartPlayer()
+            || page_advanced->requiresRestartPlayer();
 }
 
 void TDialog::showHelp() {
 
-    TWidget* w = (TWidget*) pages->currentWidget();
+    TSection* w = (TSection*) pages->currentWidget();
     help_window->setHtml(w->help());
     help_window->show();
     help_window->raise();

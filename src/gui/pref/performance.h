@@ -20,7 +20,7 @@
 #define PREF_PERFORMANCE_H
 
 #include "ui_performance.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 
 
 namespace Settings {
@@ -30,7 +30,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TPerformance : public TWidget, public Ui::TPerformance {
+class TPerformance : public TSection, public Ui::TPerformance {
     Q_OBJECT
 
 public:
@@ -44,7 +44,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     virtual void createHelp();

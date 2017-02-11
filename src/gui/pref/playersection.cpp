@@ -34,7 +34,7 @@ namespace Gui {
 namespace Pref {
 
 TPlayerSection::TPlayerSection(QWidget* parent)
-    : TWidget(parent, 0) {
+    : TSection(parent, 0) {
 
     setupUi(this);
 
@@ -65,7 +65,7 @@ QString TPlayerSection::sectionName() {
 }
 
 QPixmap TPlayerSection::sectionIcon() {
-    return Images::icon("pref_player", icon_size);
+    return Images::icon("pref_player", iconSize);
 }
 
 void TPlayerSection::retranslateStrings() {
@@ -117,17 +117,22 @@ void TPlayerSection::setData(TPreferences* pref) {
     // Radio and TV
     radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
 
-    requires_restart = false;
+    _requiresRestartApp = false;
+    _requiresRestartPlayer = false;
 }
 
 void TPlayerSection::getData(TPreferences* pref) {
 
+    // Don't call ancestor
+
     // Update player
     pref->mplayer_bin = mplayer_edit->text();
     pref->mpv_bin = mpv_edit->text();
-    QString bin = mplayer_radio->isChecked() ? pref->mplayer_bin : pref->mpv_bin;
+    QString bin = mplayer_radio->isChecked()
+                  ? pref->mplayer_bin
+                  : pref->mpv_bin;
     if (bin != pref->player_bin) {
-        requires_restart = true;
+        _requiresRestartApp = true;
         pref->setPlayerBin(bin, false,
             mplayer_radio->isChecked() ? TPreferences::ID_MPLAYER
                                        : TPreferences::ID_MPV);

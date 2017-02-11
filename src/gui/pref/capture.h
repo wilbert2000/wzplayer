@@ -20,7 +20,7 @@
 #define GUI_PREF_CAPTURE_H
 
 #include "ui_capture.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "settings/preferences.h"
 
 
@@ -31,7 +31,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TCapture : public TWidget, public Ui::TCapture {
+class TCapture : public TSection, public Ui::TCapture {
     Q_OBJECT
 
 public:
@@ -45,7 +45,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     virtual void retranslateStrings();

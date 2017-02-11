@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_PREF_WIDGET_H
-#define GUI_PREF_WIDGET_H
+#ifndef GUI_PREF_SECTION_H
+#define GUI_PREF_SECTION_H
 
 #include <QWidget>
 #include <QString>
@@ -27,30 +27,37 @@
 
 class QEvent;
 
+namespace Settings {
+class TPreferences;
+}
+
 namespace Gui {
 namespace Pref {
 
-class TWidget : public QWidget {
+class TSection : public QWidget {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TWidget();
+    TSection(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    virtual ~TSection();
+
+    virtual void getData(Settings::TPreferences* pref);
 
     // Return the name of the section
     virtual QString sectionName();
-
     virtual QPixmap sectionIcon();
 
-    // Return true if the changes made require to restart the mplayer
-    // process. Should be call just after the changes have been applied.
-    virtual bool requiresRestart() { return requires_restart; }
+    // Return true if the changes made require restart of application
+    virtual bool requiresRestartApp() { return _requiresRestartApp; }
+    // Return true if the changes made require restart of player
+    virtual bool requiresRestartPlayer() { return _requiresRestartPlayer; }
 
     virtual QString help() { return help_message; }
 
 protected:
-    bool requires_restart;
-    int icon_size;
+    bool _requiresRestartApp;
+    bool _requiresRestartPlayer;
+    int iconSize;
 
     virtual void retranslateStrings();
     virtual void changeEvent (QEvent* event) ;
@@ -81,4 +88,4 @@ private:
 } // namespace Pref
 } // namespace Gui
 
-#endif // GUI_PREF_WIDGET_H
+#endif // GUI_PREF_SECTION_H

@@ -19,7 +19,7 @@
 #ifndef GUI_PREF_INPUT_H
 #define GUI_PREF_INPUT_H
 
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "settings/preferences.h"
 #include "ui_input.h"
 
@@ -28,7 +28,7 @@ namespace Gui {
 namespace Pref {
 
 
-class TInput : public TWidget, public Ui::TInput {
+class TInput : public TSection, public Ui::TInput {
     Q_OBJECT
 
 public:
@@ -42,7 +42,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     void createMouseCombos();

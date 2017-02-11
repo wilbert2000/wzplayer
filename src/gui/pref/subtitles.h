@@ -20,7 +20,7 @@
 #define GUI_PREF_SUBTITLES_H
 
 #include "ui_subtitles.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "log4qt/logger.h"
 
 class Encodings;
@@ -32,7 +32,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TSubtitles : public TWidget, public Ui::TSubtitles {
+class TSubtitles : public TSection, public Ui::TSubtitles {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
@@ -47,7 +47,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     void setForceAssStyles(bool b);

@@ -30,7 +30,7 @@ namespace Gui {
 namespace Pref {
 
 TCapture::TCapture(QWidget* parent)
-    : TWidget(parent, 0) {
+    : TSection(parent, 0) {
 
     setupUi(this);
     screenshot_edit->setDialogType(TFileChooser::GetDirectory);
@@ -46,7 +46,7 @@ QString TCapture::sectionName() {
 }
 
 QPixmap TCapture::sectionIcon() {
-    return Images::icon("screenshot", icon_size);
+    return Images::icon("screenshot", iconSize);
 }
 
 void TCapture::retranslateStrings() {
@@ -71,13 +71,15 @@ void TCapture::setData(Settings::TPreferences* pref) {
 
 void TCapture::getData(Settings::TPreferences* pref) {
 
+    TSection::getData(pref);
+
     // Screenshots
     bool enable = useScreenshots();
     QString dir = screenshotDir();
     if (dir.isEmpty()) {
         enable = false;
     } else if (!QDir().mkpath(dir)) {
-        Log4Qt::Logger::logger("Gui::Pref::Capture")->warn(
+        Log4Qt::Logger::logger("Gui::Pref::TCapture")->warn(
                     "getData: failed to create screenshot directory '"
                     + dir + "'");
         enable = false;

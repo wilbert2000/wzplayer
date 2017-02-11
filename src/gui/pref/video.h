@@ -21,7 +21,7 @@
 
 #include "ui_video.h"
 #include "wzdebug.h"
-#include "gui/pref/widget.h"
+#include "gui/pref/section.h"
 #include "gui/deviceinfo.h"
 #include "settings/preferences.h"
 #include "player/info/playerinfo.h"
@@ -38,7 +38,7 @@ class TPreferences;
 namespace Gui {
 namespace Pref {
 
-class TVideo : public TWidget, public Ui::TVideo {
+class TVideo : public TSection, public Ui::TVideo {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
@@ -55,7 +55,7 @@ public:
     void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref);
 
     void updateDriverCombo(Settings::TPreferences::TPlayerID player_id,
                            bool keep_driver);
