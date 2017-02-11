@@ -69,7 +69,8 @@ TMainWindowPlus::TMainWindowPlus() :
                                       tr("S&how icon in system tray"),
                                       "systray");
     showTrayAct->setCheckable(true);
-    connect(showTrayAct, SIGNAL(toggled(bool)), tray, SLOT(setVisible(bool)));
+    connect(showTrayAct, SIGNAL(toggled(bool)),
+            tray, SLOT(setVisible(bool)));
     connect(showTrayAct, SIGNAL(toggled(bool)),
             quitAct, SLOT(setVisible(bool)));
 
@@ -77,7 +78,8 @@ TMainWindowPlus::TMainWindowPlus() :
     windowMenu->addAction(showTrayAct);
 
     showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
-    connect(showAllAct, SIGNAL(triggered()), this, SLOT(toggleShowAll()));
+    connect(showAllAct, SIGNAL(triggered()),
+            this, SLOT(toggleShowAll()));
 
     context_menu = new QMenu(this);
     context_menu->addMenu(fileMenu);
