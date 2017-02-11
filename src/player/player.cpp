@@ -1649,12 +1649,6 @@ end_video_filters:
         env.insert("http_proxy", proxy);
     }
 
-#ifdef Q_OS_WIN
-    if (!Settings::pref->use_windowsfontdir) {
-        env.insert("FONTCONFIG_FILE", Settings::TPaths::fontConfigFilename());
-    }
-#endif
-
     proc->setProcessEnvironment(env);
 
     if (!proc->startPlayer()) {

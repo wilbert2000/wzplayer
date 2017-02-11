@@ -88,7 +88,6 @@ private:
     int assLineSpacing();
 
 private slots:
-    void onWindowsFontDirCheckToggled(bool b);
     void onUseCustomStyleToggled(bool b);
     void onBorderStyleCurrentIndexChanged(int index);
     void onAssCustomizeButtonClicked();

@@ -57,16 +57,8 @@ public:
     static QString doc(const QString& file, QString locale = QString::null, bool english_fallback = true);
     static QString subtitleStyleFile();
 
-#ifdef Q_OS_WIN
-    static QString fontPath();
-    static QString fontConfigFilename();
-    static void createFontFile();
-#endif
-
 private:
     static QString config_path;
-    static QStringList fonts(const QString& font_dir);
-    static QString fontPathPlayer(const QString& bin);
 };
 
 } // namespace Settings

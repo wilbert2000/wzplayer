@@ -209,11 +209,6 @@ void TApp::loadConfig() {
     // Install translations
     installTranslator(&app_trans);
     installTranslator(&qt_trans);
-
-    // Windows font file
-#ifdef Q_OS_WIN
-    Settings::TPaths::createFontFile();
-#endif
 }
 
 QString getArgName(const QString& arg) {
@@ -576,9 +571,6 @@ void TApp::showInfo() {
     WZINFO("config '" + Settings::TPaths::configPath() + "'");
     WZINFO("subtitle styles '" + Settings::TPaths::subtitleStyleFile() + "'");
     WZINFO("current directory '" + QDir::currentPath() + "'");
-#ifdef Q_OS_WIN
-    WZINFO("font path '" + Settings::TPaths::fontPath() + "'");
-#endif
 }
 
 #include "moc_app.cpp"

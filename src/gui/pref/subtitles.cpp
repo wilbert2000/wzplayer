@@ -44,10 +44,6 @@ TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f) :
     connect(style_border_style_combo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(onBorderStyleCurrentIndexChanged(int)));
 
-#ifndef Q_OS_WIN
-    windowsfontdir_check->hide();
-#endif
-
     retranslateStrings();
 }
 
@@ -130,12 +126,6 @@ void TSubtitles::setData(Settings::TPreferences* pref) {
     setEncaLang(pref->subtitle_enca_language);
     setEncodingFallback(pref->subtitle_encoding_fallback);
 
-#ifdef Q_OS_WIN
-    windowsfontdir_check->setChecked(pref->use_windowsfontdir);
-    if (!windowsfontdir_check->isChecked())
-        onWindowsFontDirCheckToggled(false);
-#endif
-
     // Libraries tab
     freetype_group->setChecked(pref->freetype_support);
     // Clear use ASS when freetype support is off
@@ -191,10 +181,6 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
                            "subtitle_enca_language");
     restartIfStringChanged(pref->subtitle_encoding_fallback, encodingFallback(),
                            "subtitle_encoding_fallback");
-
-#ifdef Q_OS_WIN
-    pref->use_windowsfontdir = windowsfontdir_check->isChecked();
-#endif
 
     // Library tab
     restartIfBoolChanged(pref->freetype_support, freetype_group->isChecked(),
@@ -401,30 +387,6 @@ void TSubtitles::onAssCustomizeButtonClicked() {
     }
 }
 
-void TSubtitles::onWindowsFontDirCheckToggled(bool b) {
-
-#ifdef Q_OS_WIN
-    if (b) {
-        style_font_combo->setFontsFromDir(QString::null);
-    } else {
-        QString fontdir = TPaths::fontPath();
-        //QString fontdir = "/tmp/fonts/";
-        style_font_combo->setFontsFromDir(fontdir);
-
-        // Calling setFontsFromDir resets the fonts in other comboboxes!
-        // So the font list is copied from the previous combobox
-        /*
-        QString current_text = fontCombo->currentText();
-        fontCombo->clear();
-        for (int n=0; n < style_font_combo->count(); n++) {
-            fontCombo->addItem(style_font_combo->itemText(n));
-        }
-        fontCombo->setCurrentText(current_text);
-        */
-    }
-#endif
-}
-
 void TSubtitles::createHelp() {
 
     clearHelp();
@@ -454,14 +416,6 @@ void TSubtitles::createHelp() {
         tr("Select the encoding which will be used for subtitle files "
            "by default."));
 
-#ifdef Q_OS_WIN
-    setWhatsThis(windowsfontdir_check, tr("Enable Windows fonts"),
-        tr("If this option is enabled the Windows system fonts will be "
-           "available for subtitles. There's an inconvenience: a font cache have "
-           "to be created which can take some time.") +"<br>"+
-        tr("If this option is not checked then only a few fonts bundled with WZPlayer "
-           "can be used, but this is faster."));
-#endif
 
     addSectionTitle(tr("Libraries"));
 

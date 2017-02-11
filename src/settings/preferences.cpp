@@ -197,10 +197,6 @@ void TPreferences::reset() {
     // subtitle_enca_language = QString(QLocale::system().name()).section("_" , 0, 0);
     subtitle_encoding_fallback = ""; // Auto detect subtitle encoding
 
-#ifdef Q_OS_WIN
-    use_windowsfontdir = false;
-#endif
-
     // Libraries tab
     freetype_support = true;
     use_ass_subtitles = true;
@@ -517,10 +513,6 @@ void TPreferences::save() {
 
     setValue("subtitle_enca_language", subtitle_enca_language);
     setValue("subtitle_encoding_fallback", subtitle_encoding_fallback);
-
-#ifdef Q_OS_WIN
-    setValue("use_windowsfontdir", use_windowsfontdir);
-#endif
 
     setValue("freetype_support", freetype_support);
     setValue("use_ass_subtitles", use_ass_subtitles);
@@ -1047,10 +1039,6 @@ void TPreferences::load() {
 
     subtitle_enca_language = value("subtitle_enca_language", subtitle_enca_language).toString();
     subtitle_encoding_fallback = value("subtitle_encoding_fallback", subtitle_encoding_fallback).toString();
-
-#ifdef Q_OS_WIN
-    use_windowsfontdir = value("use_windowsfontdir", use_windowsfontdir).toBool();
-#endif
 
     freetype_support = value("freetype_support", freetype_support).toBool();
     use_ass_subtitles = value("use_ass_subtitles", use_ass_subtitles).toBool();

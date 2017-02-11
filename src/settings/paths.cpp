@@ -17,6 +17,8 @@
 */
 
 #include "settings/paths.h"
+#include "wzdebug.h"
+#include "config.h"
 
 #include <QApplication>
 #include <QLibraryInfo>
@@ -25,15 +27,6 @@
 #include <QDir>
 #include <QRegExp>
 
-#ifdef Q_OS_WIN
-#include <QIODevice>
-#include "settings/preferences.h"
-#else
-#include <stdlib.h>
-#endif
-
-#include "wzdebug.h"
-#include "config.h"
 
 namespace Settings {
 
@@ -192,86 +185,6 @@ QString TPaths::iniPath() {
 QString TPaths::subtitleStyleFile() {
     return config_path + "/styles.ass";
 }
-
-#ifdef Q_OS_WIN
-QString TPaths::fontPathPlayer(const QString& bin) {
-    return QFileInfo(bin).absolutePath() + "/fonts";
-}
-
-QStringList TPaths::fonts(const QString& font_dir) {
-    WZDEBUG("retrieving '" + font_dir + "'");
-
-    QDir dir(font_dir);
-    return dir.entryList(QStringList() << "*.ttf" << "*.otf", QDir::Files);
-}
-
-QString TPaths::fontPath() {
-
-    QString path = fontPathPlayer(pref->player_bin);
-    if (fonts(path).count() > 0) {
-        return path;
-    }
-
-    if (pref->player_id == Settings::TPreferences::ID_MPLAYER) {
-        path = fontPathPlayer(pref->mpv_bin);
-    } else {
-        path = fontPathPlayer(pref->mplayer_bin);
-    }
-    if (fonts(path).count() > 0) {
-        return path;
-    }
-    return qApp->applicationDirPath() + "/open-fonts";
-}
-
-QString TPaths::fontConfigFilename() {
-    return configPath() + "/fonts.conf";
-}
-
-void TPaths::createFontFile() {
-    WZDEBUG("");
-
-    QString output = fontConfigFilename();
-    QString fontDir = fontPath();
-
-    // Check if the WZPlayer font config file already exists
-    // and uses the current font dir
-    if (QFile::exists(output)) {
-        QFile i(output);
-        if (i.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QString text = i.readAll();
-            if (text.contains("<dir>" + fontDir + "</dir>")) {
-                logger()->info("createFontFile: reusing existing font config"
-                             " file '%1' which uses font directory '%2'",
-                             output, fontDir);
-                return;
-            }
-        }
-    }
-
-    // Use the font file from the selected font dir
-    QString input = fontDir + "/fonts.conf";
-    if (!QFile::exists(input)) {
-        WZWARN("fonts.conf '" + input + "' not found");
-        return;
-    }
-
-    QFile infile(input);
-    if (infile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString text = infile.readAll();
-        text = text.replace("<!-- <dir>WINDOWSFONTDIR</dir> -->", "<dir>WINDOWSFONTDIR</dir>");
-        text = text.replace("<dir>WINDOWSFONTDIR</dir>", "<dir>" + fontPath() + "</dir>");
-
-        WZINFO("saving '" + output + "'");
-        QFile outfile(output);
-        if (outfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            outfile.write(text.toUtf8());
-            outfile.close();
-        }
-    } else {
-       WZWARN("failed to open '" + input + "'");
-    }
-}
-#endif // Q_OS_WIN
 
 } // namespace Settings
 

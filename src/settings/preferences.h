@@ -218,11 +218,6 @@ public:
     QString subtitle_enca_language;
     QString subtitle_encoding_fallback;
 
-    //! If false, options requiring freetype won't be used
-#ifdef Q_OS_WIN
-    bool use_windowsfontdir;
-#endif
-
     // Libraries tab
     bool freetype_support;
     bool use_ass_subtitles;

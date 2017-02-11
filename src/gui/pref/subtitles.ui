@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>600</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -330,13 +330,6 @@
            </layout>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="windowsfontdir_check">
-         <property name="text">
-          <string>Enable &amp;Windows fonts</string>
-         </property>
         </widget>
        </item>
        <item>
@@ -1027,7 +1020,6 @@
   <tabstop>select_first_subtitle_check</tabstop>
   <tabstop>enca_lang_combo</tabstop>
   <tabstop>encoding_fallback_combo</tabstop>
-  <tabstop>windowsfontdir_check</tabstop>
   <tabstop>freetype_group</tabstop>
   <tabstop>ass_group</tabstop>
   <tabstop>ass_font_scale_spin</tabstop>
