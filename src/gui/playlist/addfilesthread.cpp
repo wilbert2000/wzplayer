@@ -90,14 +90,15 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     root(0),
     abortRequested(false),
     stopRequested(false),
-    recurse(recurseSubDirs) {
+    recurse(recurseSubDirs),
+    addImages(images) {
 
     foreach(const QString& name, nameBlacklist) {
         if (!name.isEmpty()) {
             QRegExp* rx = new QRegExp(name, Qt::CaseInsensitive);
             if (rx->isValid()) {
                 WZINFO("precompiled '" + rx->pattern() + "' for blacklist");
-                rxNameBlacklist << rx;
+                rxNameBlacklist << *rx;
             } else {
                 delete rx;
                 WZERROR("failed to parse regular expression '" + name + "'");
@@ -115,7 +116,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     if (playlists) {
         exts.addList(extensions.playlists());
     }
-    if (images) {
+    if (addImages) {
         exts.addList(extensions.images());
     }
     nameFilterList = exts.forDirFilter();
@@ -157,9 +158,9 @@ void TAddFilesThread::run() {
 
 bool TAddFilesThread::nameBlackListed(const QString& name) {
 
-    foreach(QRegExp* rx, rxNameBlacklist) {
-        if (rx->indexIn(name) >= 0) {
-            WZINFO("skipping '" + name + "' on '" + rx->pattern() + "'");
+    foreach(const QRegExp& rx, rxNameBlacklist) {
+        if (rx.indexIn(name) >= 0) {
+            WZINFO("skipping '" + name + "' on '" + rx.pattern() + "'");
             return true;
         }
     }
@@ -696,6 +697,14 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
             if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
                 fi.setFile(fi.symLinkTarget());
             }
+
+            // Skip images
+            if (!addImages) {
+                if (extensions.isImage(fi)) {
+                    return 0;
+                }
+            }
+
             item = createPath(parent, fi, name, duration, protectName);
         }
     }

@@ -50,12 +50,13 @@ private:
     bool abortRequested;
     bool stopRequested;
     bool recurse;
+    bool addImages;
 
     QString playlistPath;
 
     QStringList lockedFiles;
     QStringList nameFilterList;
-    QList<QRegExp*> rxNameBlacklist;
+    QList<QRegExp> rxNameBlacklist;
 
     bool nameBlackListed(const QString& name);
 
