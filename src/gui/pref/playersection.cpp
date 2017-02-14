@@ -18,14 +18,12 @@
 
 
 #include "gui/pref/playersection.h"
-
-#include <QDebug>
-
 #include "gui/filedialog.h"
-#include "images.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "settings/mediasettings.h"
+#include "images.h"
+#include "wzdebug.h"
 
 
 using namespace Settings;
@@ -116,14 +114,11 @@ void TPlayerSection::setData(TPreferences* pref) {
 
     // Radio and TV
     radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
-
-    _requiresRestartApp = false;
-    _requiresRestartPlayer = false;
 }
 
 void TPlayerSection::getData(TPreferences* pref) {
 
-    // Don't call ancestor
+    TSection::getData(pref);
 
     // Update player
     pref->mplayer_bin = mplayer_edit->text();
@@ -132,6 +127,7 @@ void TPlayerSection::getData(TPreferences* pref) {
                   ? pref->mplayer_bin
                   : pref->mpv_bin;
     if (bin != pref->player_bin) {
+        WZDEBUG("player bin changed, restarting app");
         _requiresRestartApp = true;
         pref->setPlayerBin(bin, false,
             mplayer_radio->isChecked() ? TPreferences::ID_MPLAYER

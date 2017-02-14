@@ -146,14 +146,17 @@ void TInterface::getData(Settings::TPreferences* pref) {
     recents_changed = false;
 
     if (pref->language != language()) {
+        WZDEBUG("language changed, restarting app");
         pref->language = language();
         _requiresRestartApp = true;
     }
     if (pref->iconset != iconSet()) {
+        WZDEBUG("icon set changed, restarting app");
         pref->iconset = iconSet();
         _requiresRestartApp = true;
     }
     if (pref->style != style()) {
+        WZDEBUG("style changed, restarting app");
         pref->style = style();
         _requiresRestartApp = true;
     }
