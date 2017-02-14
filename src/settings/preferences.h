@@ -298,7 +298,7 @@ public:
 
     QStringList nameBlacklist;
     QStringList titleBlacklist;
-    QList<QRegExp*> rxTitleBlacklist;
+    QList<QRegExp> rxTitleBlacklist;
     void setTitleBlackList();
 
 

@@ -204,9 +204,9 @@ QString Helper::cleanName(const QString& name) {
 
 QString Helper::cleanTitle(const QString& title) {
 
-    foreach(QRegExp* rx, pref->rxTitleBlacklist) {
-        if (rx->indexIn(title) >= 0) {
-            WZINFO("'" + title + "' blacklisted on '" + rx->pattern() + "'");
+    foreach(const QRegExp& rx, pref->rxTitleBlacklist) {
+        if (rx.indexIn(title) >= 0) {
+            WZINFO("'" + title + "' blacklisted on '" + rx.pattern() + "'");
             return "";
         }
     }

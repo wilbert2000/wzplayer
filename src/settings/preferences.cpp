@@ -1331,7 +1331,7 @@ void TPreferences::setTitleBlackList() {
             QRegExp* rx = new QRegExp(s, Qt::CaseInsensitive);
             if (rx->isValid()) {
                 WZDEBUG("adding '" + rx->pattern() + "'");
-                rxTitleBlacklist << rx;
+                rxTitleBlacklist << *rx;
             } else {
                 WZERROR("failed to parse regular expression '" + s + "'");
                 delete rx;
