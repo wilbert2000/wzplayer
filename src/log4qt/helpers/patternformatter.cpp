@@ -369,242 +369,228 @@ namespace Log4Qt
 	}
 	
 	
-	void PatternFormatter::createConverter(const QChar &rChar, 
-	                                       const FormattingInfo &rFormattingInfo, 
-	                                       const QString &rOption)
-	{
-		Q_ASSERT_X(mConversionCharacters.indexOf(rChar) >= 0, "PatternFormatter::createConverter", "Unknown conversion character" );
-	
-	    LogError e("Creating Converter for character '%1' min %2, max %3, left %4 and option '%5'");
-	    e << QString(rChar)
-	      << FormattingInfo::intToString(rFormattingInfo.mMinLength) 
-	      << FormattingInfo::intToString(rFormattingInfo.mMaxLength) 
-	      << rFormattingInfo.mLeftAligned 
-	      << rOption;
-		logger()->trace(e);
-	
-		switch (rChar.toLatin1())
-		{
-			case 'c':
-				mPatternConverters << new LoggerPatternConverter(rFormattingInfo, 
-	                                                             parseIntegerOption(rOption));
-				break;
-			case 'd':
-			{
-				QString option = rOption;
-				if (rOption.isEmpty())
-	               option = QLatin1String("ISO8601");
-				mPatternConverters << new DatePatternConverter(rFormattingInfo, 
-	                                                           option); 
-				break;
-			}
-			case 'm':
-				mPatternConverters << new BasicPatternConverter(rFormattingInfo,
-	                                                            BasicPatternConverter::MESSAGE_CONVERTER); 
-				break;
-			case 'p':
-				mPatternConverters << new BasicPatternConverter(rFormattingInfo,
-	                                                            BasicPatternConverter::LEVEL_CONVERTER); 
-				break;
-			case 'r':
-				mPatternConverters << new DatePatternConverter(rFormattingInfo,
-	                                                           QLatin1String("RELATIVE")); 
-				break;
-			case 't':
-				mPatternConverters << new BasicPatternConverter(rFormattingInfo,
-	                                                            BasicPatternConverter::THREAD_CONVERTER); 
-				break;
-			case 'x':
-				mPatternConverters << new BasicPatternConverter(rFormattingInfo,
-	                                                            BasicPatternConverter::NDC_CONVERTER); 
-				break;
-			case 'X':
-				mPatternConverters << new MDCPatternConverter(rFormattingInfo, 
-	                                                          rOption); 
-				break;
-			default:
-				Q_ASSERT_X(false, "PatternFormatter::createConverter", "Unknown pattern character");
-		}
-	}
-	
-	
-	void PatternFormatter::createLiteralConverter(const QString &rLiteral)
-	{
-		logger()->trace("Creating literal LiteralConverter with Literal '%1'", 
-				        rLiteral);
-		mPatternConverters << new LiteralPatternConverter(rLiteral);
-	}
-	
-	
-	void PatternFormatter::parse()
-	{	
-		enum State {
-			LITERAL_STATE,
-			ESCAPE_STATE,
-			MIN_STATE,
-			DOT_STATE,
-			MAX_STATE,
-			CHARACTER_STATE,
-			POSSIBLEOPTION_STATE,
-			OPTION_STATE
-		};
-		
-		int i = 0;
-		QChar c;
-		char ch;
-		State state = LITERAL_STATE;
-		FormattingInfo formatting_info;
-		QString literal;
-		int converter_start;
-		int option_start;
-		while (i < mPattern.length())
-		{
-	        // i points to the current character
-			// c contains the current character
-			// ch contains the Latin1 equivalent of the current character
-			// i is incremented at the end of the loop to consume the character
-			// continue is used to change state without consuming the character
-			
-			c = mPattern.at(i);
-			ch = c.toLatin1();
-	        switch (state) 
-	        {
-	            case LITERAL_STATE:
-	            	if (ch == '%')
-	            	{
-	            		formatting_info.clear();
-	            		converter_start = i;
-	            		state = ESCAPE_STATE;
-	            	} else
+    void PatternFormatter::createConverter(const QChar& rChar,
+                                           const FormattingInfo& rFormattingInfo,
+                                           const QString& rOption) {
+        Q_ASSERT_X(mConversionCharacters.indexOf(rChar) >= 0,
+                   "PatternFormatter::createConverter",
+                   "Unknown conversion character" );
+
+        LogError e("Creating Converter for character '%1' min %2, max %3, left"
+                   " %4 and option '%5'");
+        e << QString(rChar)
+          << FormattingInfo::intToString(rFormattingInfo.mMinLength)
+          << FormattingInfo::intToString(rFormattingInfo.mMaxLength)
+          << rFormattingInfo.mLeftAligned
+          << rOption;
+        logger()->trace(e);
+
+        switch (rChar.toLatin1()) {
+            case 'c':
+                mPatternConverters
+                    << new LoggerPatternConverter(rFormattingInfo,
+                                                  parseIntegerOption(rOption));
+                break;
+            case 'd': {
+                QString option = rOption;
+                if (rOption.isEmpty()) {
+                    option = QLatin1String("ISO8601");
+                }
+                mPatternConverters << new DatePatternConverter(rFormattingInfo,
+                                                               option);
+                break;
+            }
+            case 'm':
+                mPatternConverters
+                        << new BasicPatternConverter(rFormattingInfo,
+                                      BasicPatternConverter::MESSAGE_CONVERTER);
+                break;
+            case 'p':
+                mPatternConverters
+                        << new BasicPatternConverter(rFormattingInfo,
+                                        BasicPatternConverter::LEVEL_CONVERTER);
+                break;
+            case 'r':
+                mPatternConverters << new DatePatternConverter(rFormattingInfo,
+                                                     QLatin1String("RELATIVE"));
+                break;
+            case 't':
+                mPatternConverters << new BasicPatternConverter(rFormattingInfo,
+                                       BasicPatternConverter::THREAD_CONVERTER);
+                break;
+            case 'x':
+                mPatternConverters << new BasicPatternConverter(rFormattingInfo,
+                                          BasicPatternConverter::NDC_CONVERTER);
+                break;
+            case 'X':
+                mPatternConverters << new MDCPatternConverter(rFormattingInfo,
+                                                              rOption);
+                break;
+            default:
+                Q_ASSERT_X(false, "PatternFormatter::createConverter",
+                           "Unknown pattern character");
+        }
+    }
+
+
+    void PatternFormatter::createLiteralConverter(const QString &rLiteral) {
+        logger()->trace("Creating literal LiteralConverter with Literal '%1'",
+                        rLiteral);
+        mPatternConverters << new LiteralPatternConverter(rLiteral);
+    }
+
+
+    void PatternFormatter::parse() {
+
+        enum State {
+            LITERAL_STATE,
+            ESCAPE_STATE,
+            MIN_STATE,
+            DOT_STATE,
+            MAX_STATE,
+            CHARACTER_STATE,
+            POSSIBLEOPTION_STATE,
+            OPTION_STATE
+        };
+
+        QString literal;
+        QChar c;
+        char ch;
+        FormattingInfo formatting_info;
+        State state = LITERAL_STATE;
+        int converter_start = 0;
+        int option_start = 0;
+        int i = 0;
+        while (i < mPattern.length()) {
+            // i points to the current character.
+            // i is incremented at the end of the loop to consume the character.
+            // Continue is used to change state without consuming the character.
+
+            // c contains the current character.
+            c = mPattern.at(i);
+            // ch contains the Latin1 equivalent of the current character.
+            ch = c.toLatin1();
+            switch (state) {
+                case LITERAL_STATE:
+                    if (ch == '%') {
+                        formatting_info.clear();
+                        converter_start = i;
+                        state = ESCAPE_STATE;
+                    } else {
 	            		literal += c;
+                    }
 	            	break;
 	            case ESCAPE_STATE:
-	            	if (ch == '%')
-	            	{
+                    if (ch == '%') {
 	            		literal += c;
-	            		state = LITERAL_STATE;
-	            	}
-	            	else if (ch == 'n') 
-	            	{
-	            		literal += Layout::endOfLine();
-	            		state = LITERAL_STATE;
-	            	}
-	            	else 
-	            	{
-		            	if (!literal.isEmpty())
-		            	{
-		            		createLiteralConverter(literal);
-		            		literal.clear();
+                        state = LITERAL_STATE;
+                    } else if (ch == 'n') {
+                        literal += Layout::endOfLine();
+                        state = LITERAL_STATE;
+                    } else {
+                        if (!literal.isEmpty()) {
+                            createLiteralConverter(literal);
+                            literal.clear();
 		            	}
-		            	if (ch == '-')
+                        if (ch == '-') {
 		            		formatting_info.mLeftAligned = true;
-		            	else if (c.isDigit())
-		            	{
-		        			formatting_info.mMinLength = c.digitValue(); 
-		            		state = MIN_STATE;
-		            	}
-		            	else if (ch == '.')
+                        } else if (c.isDigit()) {
+                            formatting_info.mMinLength = c.digitValue();
+                            state = MIN_STATE;
+                        } else if (ch == '.') {
 		            		state = DOT_STATE;
-		            	else
-		            	{
-		            		state = CHARACTER_STATE;
-		            		continue;
-		            	}
-	            	}
-	            	break;
+                        } else {
+                            state = CHARACTER_STATE;
+                            continue;
+                        }
+                    }
+                    break;
 	            case MIN_STATE:
-	            	if (!addDigit(c, formatting_info.mMinLength))
-	            	{
-	            		if (ch == '.')
+                    if (!addDigit(c, formatting_info.mMinLength)) {
+                        if (ch == '.') {
 	            			state = DOT_STATE;
-	            		else
-	            		{
+                        } else {
 	            			state = CHARACTER_STATE;
 	            			continue;
 	            		}
 	            	}
 	            	break;
 	            case DOT_STATE:
-	            	if (c.isDigit())
-	            	{
-	        			formatting_info.mMaxLength = c.digitValue(); 
-	            		state = MAX_STATE;
-	            	} 
-	            	else
-	            	{
-	                    LogError e = LOG4QT_ERROR(QT_TR_NOOP("Found character '%1' where digit was expected."),
-                                                  LAYOUT_EXPECTED_DIGIT_ERROR,
-                                                  "Log4Qt::PatternFormatter");
+                    if (c.isDigit()) {
+                        formatting_info.mMaxLength = c.digitValue();
+                        state = MAX_STATE;
+                    } else {
+                        LogError e = LOG4QT_ERROR(
+                            QT_TR_NOOP("Found character '%1' where digit was"
+                                       " expected."),
+                                         LAYOUT_EXPECTED_DIGIT_ERROR,
+                                         "Log4Qt::PatternFormatter");
 	                    e << QString(c);
 	                    logger()->error(e);
 	            	}
 	            	break;
 	            case MAX_STATE:
-	            	if (!addDigit(c, formatting_info.mMaxLength))
-	            	{
-	            		state = CHARACTER_STATE;
-	            		continue;
-	            	}
-	            	break;
-	            case CHARACTER_STATE:
-	            	if (mIgnoreCharacters.indexOf(c) >= 0)
+                    if (!addDigit(c, formatting_info.mMaxLength)) {
+                        state = CHARACTER_STATE;
+                        continue;
+                    }
+                    break;
+                case CHARACTER_STATE:
+                    if (mIgnoreCharacters.indexOf(c) >= 0){
 	            		state = LITERAL_STATE;
-	            	else if (mOptionCharacters.indexOf(c) >= 0)
-	            		state = POSSIBLEOPTION_STATE;
-	            	else if (mConversionCharacters.indexOf(c) >= 0)
-	            	{
+                    } else if (mOptionCharacters.indexOf(c) >= 0) {
+                        state = POSSIBLEOPTION_STATE;
+                    } else if (mConversionCharacters.indexOf(c) >= 0) {
 	            		createConverter(c, formatting_info);
 	            		state = LITERAL_STATE;
-	            	}	
-	            	else
-	            	{
-	            		logger()->warn("Invalid conversion character '%1' at %2 in pattern '%3'",
-	            				       c, i, mPattern);
-	            		createLiteralConverter(mPattern.mid(converter_start, i - converter_start + 1));
+                    } else {
+                        logger()->warn("Invalid conversion character '%1' at %2"
+                                       " in pattern '%3'", c, i, mPattern);
+                        createLiteralConverter(
+                            mPattern.mid(converter_start,
+                                         i - converter_start + 1));
 	            		state = LITERAL_STATE;
 	            	}
 	            	break;
 	            case POSSIBLEOPTION_STATE:
-	            	if (ch == '{')
-	            	{
-	                	option_start = i;
-	            		state = OPTION_STATE;
-	            	}
-	            	else
-	            	{
-	            		createConverter(mPattern.at(i - 1), 
-	                                    formatting_info);
+                    if (ch == '{') {
+                        option_start = i;
+                        state = OPTION_STATE;
+                    } else {
+                        createConverter(mPattern.at(i - 1), formatting_info);
 	            		state = LITERAL_STATE;
 	            		continue;
 	            	}
 	            	break;
 	            case OPTION_STATE:
-	            	if (ch == '}')
-	            	{	
-	            		createConverter(mPattern.at(option_start - 1), 
-	                                    formatting_info,
-	                                    mPattern.mid(option_start + 1, i - option_start - 1));
-	            		state = LITERAL_STATE;
+                    if (ch == '}') {
+                        createConverter(mPattern.at(option_start - 1),
+                                        formatting_info,
+                                        mPattern.mid(option_start + 1,
+                                                     i - option_start - 1));
+                        state = LITERAL_STATE;
 	            	}
 	                break;
 	            default:
-	            	Q_ASSERT_X(false, "PatternFormatter::parse()", "Unknown parsing state constant");
+                    Q_ASSERT_X(false, "PatternFormatter::parse()",
+                               "Unknown parsing state constant");
 	        		state = LITERAL_STATE;
 	        }
 			i++;
 		}
 	
-		if (state != LITERAL_STATE)
-		{
+        if (state != LITERAL_STATE) {
 			logger()->warn("Unexptected end of pattern '%1'", mPattern);
-			if (state == ESCAPE_STATE)
-				literal += c;
-			else
-				literal += mPattern.mid(converter_start);
+            if (state == ESCAPE_STATE) {
+                literal += c;
+            } else {
+                literal += mPattern.mid(converter_start);
+            }
 		}
 		
-		if (!literal.isEmpty())
+        if (!literal.isEmpty()) {
 			createLiteralConverter(literal);
+        }
 	}
 	
 	

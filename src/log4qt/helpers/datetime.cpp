@@ -154,148 +154,124 @@ namespace Log4Qt
 	}
 	
 	
-	QString DateTime::formatToken(const QString &rToken, bool am_pm) const
-	{
-	    if (rToken.isEmpty())
-	        return QString();
+    QString DateTime::formatToken(const QString& rToken, bool am_pm) const {
+
+        QString result;
+
+        if (rToken.isEmpty()) {
+            return result;
+        }
 	    
-	    const QChar c = rToken.at(0);
-	    QString result;
-	    int used;
+        int used = 0;
+        const QChar c = rToken.at(0);
 	    
 	    // Qt data format strings 
-	    if (rToken.startsWith(QLatin1String("dddd")))
-	    {
+        if (rToken.startsWith(QLatin1String("dddd"))) {
 	        result = QDate::longDayName(date().dayOfWeek());
 	        used = 4;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("ddd")))
-	    {
+        } else if (rToken.startsWith(QLatin1String("ddd"))) {
 	        result = QDate::shortDayName(date().dayOfWeek());
 	        used = 3;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("dd")))
-	    {
-	        result = QString::number(date().day()).rightJustified(2, QLatin1Char('0'), true);
+        } else if (rToken.startsWith(QLatin1String("dd"))) {
+            result = QString::number(date().day())
+                     .rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
-	    }
-	    else if (c == QLatin1Char('d')) 
-	    {
+        } else if (c == QLatin1Char('d')) {
 	        result = QString::number(date().day());
 	        used = 1;
-	    }
-	    else if (rToken.startsWith(QLatin1String("MMMM"))) 
-	    {
+        } else if (rToken.startsWith(QLatin1String("MMMM"))) {
 	        result = QDate::longMonthName(date().month());
 	        used = 4;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("MMM"))) 
-	    {
+        } else if (rToken.startsWith(QLatin1String("MMM"))) {
 	        result = QDate::shortMonthName(date().month());
 	        used = 3;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("MM"))) 
-	    {
-	        result = QString::number(date().month()).rightJustified(2, QLatin1Char('0'), true);
+        } else if (rToken.startsWith(QLatin1String("MM"))) {
+            result = QString::number(date().month())
+                     .rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
-	    } 
-	    else if (c == QLatin1Char('M')) 
-	    {
+        } else if (c == QLatin1Char('M')) {
 	        result = QString::number(date().month());
 	        used = 1;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("yyyy"))) 
-	    {
+        } else if (rToken.startsWith(QLatin1String("yyyy"))) {
 	        result = QString::number(date().year());
 	        used = 4;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("yy"))) 
-	    {
-	        result = QString::number(date().year() % 100).rightJustified(2, QLatin1Char('0'), true);
+        } else if (rToken.startsWith(QLatin1String("yy"))) {
+            result = QString::number(date().year() % 100)
+                     .rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
 	    }
 	
 	    // Qt time format strings 
-	    else if (rToken.startsWith(QLatin1String("hh")) || rToken.startsWith(QLatin1String("HH"))) 
-	    {
+        else if (rToken.startsWith(QLatin1String("hh"))
+                 || rToken.startsWith(QLatin1String("HH"))) {
 	        int hour = time().hour();
-	        if (am_pm && c == QLatin1Char('h') && hour > 12)
+            if (am_pm && c == QLatin1Char('h') && hour > 12) {
 	            hour -= 12;
-	        result = QString::number(hour).rightJustified(2, QLatin1Char('0'), true);
+            }
+            result = QString::number(hour)
+                     .rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
-	    } 
-	    else if (c == QLatin1Char('h') || c == QLatin1Char('H')) 
-	    {
+        } else if (c == QLatin1Char('h') || c == QLatin1Char('H')) {
 	        int hour = time().hour();
-	        if (am_pm && c == QLatin1Char('h') && hour > 12)
+            if (am_pm && c == QLatin1Char('h') && hour > 12) {
 	            hour -= 12;
+            }
 	        result = QString::number(hour);
 	        used = 2;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("mm")))
-	    {
-	        result = QString::number(time().minute()).rightJustified(2, QLatin1Char('0'), true);
+        } else if (rToken.startsWith(QLatin1String("mm"))) {
+            result = QString::number(time().minute())
+                     .rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
-	    } 
-	    else if (c == (QLatin1Char('m'))) 
-	    {
+        } else if (c == (QLatin1Char('m'))) {
 	        result = QString::number(time().minute());
 	        used = 1;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("ss"))) 
-	    {
+        } else if (rToken.startsWith(QLatin1String("ss"))) {
 	        result = QString::number(time().second()).rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
-	    }
-	    else if (c == QLatin1Char('s')) 
-	    {
+        } else if (c == QLatin1Char('s')) {
 	        result = QString::number(time().second());
 	        used = 1;
-	    } 
-	    else if (rToken.startsWith(QLatin1String("zzz"))) 
-	    {
+        } else if (rToken.startsWith(QLatin1String("zzz"))) {
 	        result = QString::number(time().msec()).rightJustified(3, QLatin1Char('0'), true);
 	        used = 3;
-	    } 
-	    else if (c == QLatin1Char('z')) 
-	    {
+        } else if (c == QLatin1Char('z')) {
 	        result = QString::number(time().msec());
 	        used = 1;
-	    }
-	    else if (c.toLower() == QLatin1Char('a'))
-	    {
+        } else if (c.toLower() == QLatin1Char('a')) {
 	        bool is_lower = c == QLatin1Char('a');
-	        if (time().hour() < 12)
+            if (time().hour() < 12) {
 	            result = QLatin1String("AM");
-	        else 
+            } else {
 	            result = QLatin1String("PM");
-	        if (is_lower)
+            }
+            if (is_lower) {
 	            result = result.toLower();
+            }
 	        if (rToken.size() > 1 && 
 	            ((is_lower && rToken.at(1) == QLatin1Char('p')) ||
 	             (!is_lower && rToken.at(1) == QLatin1Char('P')))
-	            )
+                ) {
 	            used = 2;
-	        else
+            } else {
 	            used = 1;
+            }
 	    }
 	
 	    // Extension for week number
-	    else if (rToken.startsWith(QLatin1String("ww"))) 
-	    {
-	        result = QString::number(date().weekNumber()).rightJustified(2, QLatin1Char('0'), true);
+        else if (rToken.startsWith(QLatin1String("ww"))) {
+            result = QString::number(date().weekNumber())
+                     .rightJustified(2, QLatin1Char('0'), true);
 	        used = 2;
-	    }
-	    else if (c == QLatin1Char('w')) 
-	    {
+        } else if (c == QLatin1Char('w')) {
 	        result = QString::number(date().weekNumber());
 	        used = 1;
 	    }
 	
-	    if (used)
-	        return result + formatToken(rToken.mid(used), am_pm);
-	    else
-	        return result;
+        if (used) {
+            result += formatToken(rToken.mid(used), am_pm);
+        }
+
+        return result;
 	}
 	
 	
