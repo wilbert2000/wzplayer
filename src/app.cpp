@@ -116,8 +116,8 @@ void TApp::changeStyleSheet(const QString& style) {
         QString qss_file = Settings::TPaths::configPath() + "/themes/"
                            + Settings::pref->iconset + "/main.css";
         if (!QFile::exists(qss_file)) {
-            qss_file = Settings::TPaths::themesPath() +"/"+ Settings::pref->iconset
-                       + "/main.css";
+            qss_file = Settings::TPaths::themesPath() + "/"
+                       + Settings::pref->iconset + "/main.css";
         }
 
         // Check style.qss
