@@ -54,7 +54,6 @@ TLogWindow::TLogWindow(QWidget* parent)
     connect(findNextButton, SIGNAL(clicked()),
             this, SLOT(onFindNextButtonClicked()));
 
-    edit->setFont(QFont("fixed"));
     edit->setMaximumBlockCount(pref->log_window_max_events);
 
     retranslateStrings();

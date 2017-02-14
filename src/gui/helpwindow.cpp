@@ -36,7 +36,6 @@ THelpWindow::THelpWindow(QWidget* parent, const QString& name)
 
     setupUi(this);
     setObjectName(name);
-    browser->setFont(QFont("fixed"));
     retranslateStrings();
 }
 
