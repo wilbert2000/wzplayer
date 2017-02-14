@@ -126,20 +126,20 @@ void TProcess::genericRead(QByteArray buffer) {
         pos = EOL(start, end);
     }
 
-    remaining_output = remaining_output.mid(start
-                                            - remaining_output.constData());
+    remaining_output = remaining_output.mid(
+        start - remaining_output.constData());
 }
 
 void TProcess::readStdOut() {
     genericRead(readAllStandardOutput());
 }
 
-/*!
-Do some clean up, and be sure that all output has been read.
-*/
 void TProcess::procFinished() {
-    WZDEBUG("bytes available " + QString::number(bytesAvailable()));
-    if (bytesAvailable() > 0) {
+
+    qint64 ba = bytesAvailable();
+    WZDEBUG("available bytes " + QString::number(ba));
+    // Read last output
+    if (ba > 0) {
         readStdOut();
     }
 }
