@@ -87,8 +87,11 @@ void TPlaylistSection::getData(Settings::TPreferences* pref) {
     pref->addVideo = video_check->isChecked();
     pref->addAudio = audio_check->isChecked();
     pref->addPlaylists = playlists_check->isChecked();
-    restartIfBoolChanged(pref->addImages, images_check->isChecked(),
-                         "addImages");
+    if (pref->addImages != images_check->isChecked()) {
+        pref->addImages = images_check->isChecked();
+        _requiresRestartApp = true;
+        WZDEBUG("playlist addImages changed, restarting app");
+    }
     pref->imageDuration = image_duration_spinbox->value();
     pref->useDirectoriePlaylists = directory_playlist_check->isChecked();
 
