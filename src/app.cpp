@@ -73,14 +73,9 @@ TApp::TApp(int& argc, char** argv) :
 
 TApp::~TApp() {
 
-    WZDEBUG("deleting pref");
     Settings::TPreferences* p = Settings::pref;
     Settings::pref = 0;
     delete p;
-}
-
-// virtual. Nothing to do, let the application close
-void TApp::commitData(QSessionManager& /*manager*/) {
 }
 
 QString TApp::loadStyleSheet(const QString& filename) {

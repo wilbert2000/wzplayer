@@ -56,8 +56,6 @@ public:
     TApp(int& argc, char** argv);
     virtual ~TApp();
 
-    virtual void commitData(QSessionManager&);
-
     void start();
 
     // Process command line arguments.
