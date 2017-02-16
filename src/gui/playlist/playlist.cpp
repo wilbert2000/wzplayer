@@ -437,7 +437,10 @@ void TPlaylist::getFilesToPlay(QStringList& files) const {
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        files.append(i->filename());
+        QString fn = i->filename();
+        if (!fn.isEmpty()) {
+            files.append(fn);
+        }
         it++;
     }
 }

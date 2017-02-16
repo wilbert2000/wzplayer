@@ -50,6 +50,7 @@
 
 // Statics that need to survive a restart
 bool TApp::restarting = false;
+bool TApp::addCommandLineFiles = true;
 TApp::TStartFS TApp::start_in_fullscreen = TApp::FS_NOT_SET;
 QString TApp::current_file;
 QStringList TApp::files_to_play;
@@ -298,7 +299,6 @@ TApp::TExitCode TApp::processArgs() {
     showInfo();
 
     QString send_action; // Action to be passed to running instance
-    bool show_help = false;
     bool add_to_playlist = false;
 
     for (int n = 1; n < args.count(); n++) {
@@ -349,47 +349,51 @@ TApp::TExitCode TApp::processArgs() {
             close_at_end = 0;
         } else if (name == "add-to-playlist") {
             add_to_playlist = true;
-        } else if (!restarting) {
-            if (name == "help" || name == "h" || name == "?") {
-                show_help = true;
-            } else if (name == "pos") {
-                if (n + 2 < args.count()) {
-                    bool ok_x, ok_y;
-                    n++;
-                    gui_position.setX(args[n].toInt(&ok_x));
-                    n++;
-                    gui_position.setY(args[n].toInt(&ok_y));
-                    if (ok_x && ok_y) move_gui = true;
-                } else {
-                    WZERROR("expected x and y position after option --pos");
-                    return ERROR_INVALID_ARGUMENT;
-                }
-            } else if (name == "size") {
-                if (n + 2 < args.count()) {
-                    bool ok_width, ok_height;
-                    n++;
-                    gui_size.setWidth(args[n].toInt(&ok_width));
-                    n++;
-                    gui_size.setHeight(args[n].toInt(&ok_height));
-                    if (ok_width && ok_height) resize_gui = true;
-                } else {
-                    WZERROR("expected width and height after option --size");
-                    return ERROR_INVALID_ARGUMENT;
-                }
-            } else if (name == "fullscreen") {
-                start_in_fullscreen = FS_TRUE;
-            } else if (name == "no-fullscreen") {
-                start_in_fullscreen = FS_FALSE;
-            } else {
-                WZDEBUG("adding '" + argument + "' to files to play");
-                files_to_play.append(argument);
+        } else if (name == "help" || name == "h" || name == "?") {
+            if (!restarting) {
+                printf("%s\n", CLHelp::help().toLocal8Bit().data());
+                return NO_ERROR;
             }
+        } else if (name == "pos") {
+            if (n + 2 < args.count()) {
+                bool ok_x, ok_y;
+                n++;
+                gui_position.setX(args[n].toInt(&ok_x));
+                n++;
+                gui_position.setY(args[n].toInt(&ok_y));
+                if (!restarting && ok_x && ok_y) {
+                    move_gui = true;
+                }
+            } else {
+                WZERROR("expected x and y position after option --pos");
+                return ERROR_INVALID_ARGUMENT;
+            }
+        } else if (name == "size") {
+            if (n + 2 < args.count()) {
+                bool ok_width, ok_height;
+                n++;
+                gui_size.setWidth(args[n].toInt(&ok_width));
+                n++;
+                gui_size.setHeight(args[n].toInt(&ok_height));
+                if (!restarting && ok_width && ok_height) {
+                    resize_gui = true;
+                }
+            } else {
+                WZERROR("expected width and height after option --size");
+                return ERROR_INVALID_ARGUMENT;
+            }
+        } else if (name == "fullscreen") {
+            if (!restarting) {
+                start_in_fullscreen = FS_TRUE;
+            }
+        } else if (name == "no-fullscreen") {
+            if (!restarting) {
+                start_in_fullscreen = FS_FALSE;
+            }
+        } else if (addCommandLineFiles) {
+            WZDEBUG("adding '" + argument + "' to files to play");
+            files_to_play.append(argument);
         }
-    }
-
-    if (show_help) {
-        printf("%s\n", CLHelp::help().toLocal8Bit().data());
-        return NO_ERROR;
     }
 
     if (Settings::pref->use_single_window) {
@@ -513,6 +517,7 @@ void TApp::onRequestRestart() {
     playlist->getFilesToPlay(files_to_play);
     current_file = playlist->playingFile();
     player->saveRestartTime();
+    addCommandLineFiles = files_to_play.count() == 0;
 }
 
 void TApp::showInfo() {

@@ -64,6 +64,7 @@ public:
 
 private:
     static bool restarting;
+    static bool addCommandLineFiles;
     static QString current_file;
     static QStringList files_to_play;
 
