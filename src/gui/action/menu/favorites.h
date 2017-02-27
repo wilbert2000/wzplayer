@@ -73,11 +73,11 @@ public:
                const QString& filename);
     virtual ~TFavorites();
 
-    TAction* editAct() { return edit_act; }
-    TAction* jumpAct() { return jump_act; }
-    TAction* nextAct() { return next_act; }
-    TAction* previousAct() { return previous_act; }
-    TAction* addCurrentAct() { return add_current_act; }
+    TAction* editAct() const { return edit_act; }
+    TAction* jumpAct() const { return jump_act; }
+    TAction* nextAct() const { return next_act; }
+    TAction* previousAct() const { return previous_act; }
+    TAction* addCurrentAct() const { return add_current_act; }
 
 public slots:
     void next();
@@ -98,7 +98,7 @@ protected:
     virtual TFavorites* createNewObject(const QString& filename);
     void delete_children();
 
-    int findFile(QString filename);
+    int findFile(const QString& filename) const;
 
     // Mark current action in the menu
     void markCurrent();

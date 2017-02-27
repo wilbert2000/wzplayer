@@ -184,10 +184,12 @@ void TFavorites::markCurrent() {
     }
 }
 
-int TFavorites::findFile(QString filename) {
+int TFavorites::findFile(const QString& filename) const {
 
     for (int n = 0; n < f_list.count(); n++) {
-        if (f_list[n].file() == filename) return n;
+        if (f_list[n].file() == filename) {
+            return n;
+        }
     }
     return -1;
 }
