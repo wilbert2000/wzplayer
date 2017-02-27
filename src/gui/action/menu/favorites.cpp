@@ -77,7 +77,8 @@ TFavorites::TFavorites(TMainWindow* mw,
 
     add_current_act = new TAction(this, "", tr("&Add current media"), "noicon");
     add_current_act->setEnabled(false);
-    connect(add_current_act, SIGNAL(triggered()), this, SLOT(addCurrentPlaying()));
+    connect(add_current_act, SIGNAL(triggered()),
+            this, SLOT(addCurrentPlaying()));
 
     connect(this, SIGNAL(triggered(QAction *)),
             this, SLOT(triggered_slot(QAction *)));
@@ -110,7 +111,8 @@ void TFavorites::populateMenu() {
 
     for (int n = 0; n < f_list.count(); n++) {
         QString i = QString::number(n+1);
-        QString name = QString("%1 - " + f_list[n].name()).arg(i.insert(i.size()-1, '&'), 3, ' ');
+        QString name = QString("%1 - " + f_list[n].name()).arg(
+                           i.insert(i.size()-1, '&'), 3, ' ');
         if (f_list[n].isSubentry()) {
 
             if (f_list[n].file() == _filename) {
@@ -120,8 +122,10 @@ void TFavorites::populateMenu() {
 
             TFavorites* new_fav = createNewObject(f_list[n].file());
             new_fav->getCurrentMedia(received_file_playing, received_title);
-            connect(this, SIGNAL(sendCurrentMedia(const QString&, const QString&)),
-                    new_fav, SLOT(getCurrentMedia(const QString&, const QString&)));
+            connect(this, SIGNAL(sendCurrentMedia(const QString&,
+                                                  const QString&)),
+                    new_fav, SLOT(getCurrentMedia(const QString&,
+                                                  const QString&)));
             child.push_back(new_fav);
 
             QAction* a = addMenu(new_fav);
@@ -260,7 +264,8 @@ void TFavorites::previous() {
     }
 }
 
-void TFavorites::getCurrentMedia(const QString& filename, const QString& title) {
+void TFavorites::getCurrentMedia(const QString& filename,
+                                 const QString& title) {
 
     if (!filename.isEmpty()) {
         received_file_playing = filename;
@@ -287,7 +292,7 @@ void TFavorites::addCurrentPlaying() {
 }
 
 void TFavorites::save() {
-    WZDEBUG("");
+    WZDEBUG(_filename);
 
     QFile f(_filename);
     if (f.open(QIODevice::WriteOnly)) {
@@ -295,14 +300,16 @@ void TFavorites::save() {
         stream.setCodec("UTF-8");
 
         stream << "#EXTM3U" << "\n";
-        for (int n = 0; n < f_list.count(); n++) {
+        foreach(const TFavorite& fav, f_list) {
             stream << "#EXTINF:0,";
-            stream << f_list[n].name() << ",";
-            stream << f_list[n].icon() << ",";
-            stream << f_list[n].isSubentry() << "\n";
-            stream << f_list[n].file() << "\n";
+            stream << fav.name() << ",";
+            stream << fav.icon() << ",";
+            stream << fav.isSubentry() << "\n";
+            stream << fav.file() << "\n";
         }
         f.close();
+    } else {
+        WZERROR(QString("failed to save '%1'").arg(_filename));
     }
 }
 
