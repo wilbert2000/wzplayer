@@ -544,7 +544,8 @@ void TPreferences::save() {
     setValue("default_size", default_size);
     setValue("save_window_size_on_exit", save_window_size_on_exit);
     setValue("resize_on_load", resize_on_load);
-    setValue("hide_video_window_on_audio_files", hide_video_window_on_audio_files);
+    setValue("hide_video_window_on_audio_files",
+             hide_video_window_on_audio_files);
     setValue("pause_when_hidden", pause_when_hidden);
     setValue("close_on_finish", close_on_finish);
 
@@ -583,8 +584,8 @@ void TPreferences::save() {
              "org.apache.log4j.TTCCLayout");
     setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout.dateFormat",
              "ABSOLUTE");
-    setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout.threadPrinting",
-             "false");
+    setValue("log4j.appender." + NAME_CONSOLE_APPENDER
+             + ".layout.threadPrinting", "false");
 
     // Set level and appender
     setValue("log4j.rootLogger", level + ", " + NAME_CONSOLE_APPENDER);
@@ -711,8 +712,10 @@ void TPreferences::save() {
     beginGroup("advanced");
     setValue("actions_to_run", actions_to_run);
 
-    setValue("player_additional_video_filters", player_additional_video_filters);
-    setValue("player_additional_audio_filters", player_additional_audio_filters);
+    setValue("player_additional_video_filters",
+             player_additional_video_filters);
+    setValue("player_additional_audio_filters",
+             player_additional_audio_filters);
 
     setValue("use_edl_files", use_edl_files);
     setValue("time_to_kill_player", time_to_kill_player);
@@ -720,7 +723,8 @@ void TPreferences::save() {
 
     setValue("balloon_count", balloon_count);
 
-    setValue("change_video_equalizer_on_startup", change_video_equalizer_on_startup);
+    setValue("change_video_equalizer_on_startup",
+             change_video_equalizer_on_startup);
 
     endGroup(); // advanced
 
@@ -950,35 +954,47 @@ void TPreferences::load() {
 
 #ifndef Q_OS_WIN
     vdpau.ffh264vdpau = value("vdpau_ffh264vdpau", vdpau.ffh264vdpau).toBool();
-    vdpau.ffmpeg12vdpau = value("vdpau_ffmpeg12vdpau", vdpau.ffmpeg12vdpau).toBool();
+    vdpau.ffmpeg12vdpau = value("vdpau_ffmpeg12vdpau", vdpau.ffmpeg12vdpau)
+                          .toBool();
     vdpau.ffwmv3vdpau = value("vdpau_ffwmv3vdpau", vdpau.ffwmv3vdpau).toBool();
     vdpau.ffvc1vdpau = value("vdpau_ffvc1vdpau", vdpau.ffvc1vdpau).toBool();
-    vdpau.ffodivxvdpau = value("vdpau_ffodivxvdpau", vdpau.ffodivxvdpau).toBool();
-    vdpau.disable_video_filters = value("vdpau_disable_video_filters", vdpau.disable_video_filters).toBool();
+    vdpau.ffodivxvdpau = value("vdpau_ffodivxvdpau", vdpau.ffodivxvdpau)
+                         .toBool();
+    vdpau.disable_video_filters = value("vdpau_disable_video_filters",
+                                        vdpau.disable_video_filters).toBool();
 #endif
 
     use_soft_video_eq = value("use_soft_video_eq", use_soft_video_eq).toBool();
 
     frame_drop = value("frame_drop", frame_drop).toBool();
     hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
-    use_correct_pts = (TOptionState) value("correct_pts", use_correct_pts).toInt();
+    use_correct_pts = (TOptionState) value("correct_pts", use_correct_pts)
+                      .toInt();
 
-    initial_postprocessing = value("initial_postprocessing", initial_postprocessing).toBool();
-    postprocessing_quality = value("postprocessing_quality", postprocessing_quality).toInt();
-    initial_deinterlace = value("initial_deinterlace", initial_deinterlace).toInt();
-    initial_tv_deinterlace = value("initial_tv_deinterlace", initial_tv_deinterlace).toInt();
-    initial_zoom_factor = value("initial_zoom_factor", initial_zoom_factor).toDouble();
+    initial_postprocessing = value("initial_postprocessing",
+                                   initial_postprocessing).toBool();
+    postprocessing_quality = value("postprocessing_quality",
+                                   postprocessing_quality).toInt();
+    initial_deinterlace = value("initial_deinterlace",
+                                initial_deinterlace).toInt();
+    initial_tv_deinterlace = value("initial_tv_deinterlace",
+                                   initial_tv_deinterlace).toInt();
+    initial_zoom_factor = value("initial_zoom_factor", initial_zoom_factor)
+                          .toDouble();
 
     monitor_aspect = value("monitor_aspect", monitor_aspect).toString();
 
     initial_contrast = value("initial_contrast", initial_contrast).toInt();
-    initial_brightness = value("initial_brightness", initial_brightness).toInt();
+    initial_brightness = value("initial_brightness", initial_brightness)
+                         .toInt();
     initial_hue = value("initial_hue", initial_hue).toInt();
-    initial_saturation = value("initial_saturation", initial_saturation).toInt();
+    initial_saturation = value("initial_saturation", initial_saturation)
+                         .toInt();
     initial_gamma = value("initial_gamma", initial_gamma).toInt();
 
     bool ok;
-    QString color = value("color_key", QString::number(color_key, 16)).toString();
+    QString color = value("color_key", QString::number(color_key, 16))
+                    .toString();
     unsigned int temp_color_key = color.toUInt(&ok, 16);
     if (ok) {
         color_key = temp_color_key;
@@ -989,17 +1005,22 @@ void TPreferences::load() {
     // OSD
     osd_level = (TOSDLevel) value("osd_level", (int) osd_level).toInt();
     osd_scale = value("osd_scale", osd_scale).toDouble();
-    subfont_osd_scale = value("subfont_osd_scale", subfont_osd_scale).toDouble();
+    subfont_osd_scale = value("subfont_osd_scale", subfont_osd_scale)
+                        .toDouble();
     endGroup();
 
     // Audio tab
     beginGroup("audio");
-    initial_audio_channels = value("initial_audio_channels", initial_audio_channels).toInt();
+    initial_audio_channels = value("initial_audio_channels",
+                                   initial_audio_channels).toInt();
     use_hwac3 = value("use_hwac3", use_hwac3).toBool();
-    use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer).toBool();
-    use_scaletempo = (TOptionState) value("use_scaletempo", use_scaletempo).toInt();
+    use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer)
+                          .toBool();
+    use_scaletempo = (TOptionState) value("use_scaletempo", use_scaletempo)
+                     .toInt();
 
-    initial_stereo_mode = value("initial_stereo_mode", initial_stereo_mode).toInt();
+    initial_stereo_mode = value("initial_stereo_mode", initial_stereo_mode)
+                          .toInt();
 
     global_volume = value("global_volume", global_volume).toBool();
     initial_volume = value("initial_volume", initial_volume).toInt();
@@ -1011,8 +1032,10 @@ void TPreferences::load() {
     if (volume > 100) volume = 100;
     mute = value("mute", mute).toBool();
 
-    global_audio_equalizer = value("global_audio_equalizer", global_audio_equalizer).toBool();
-    initial_audio_equalizer = value("initial_audio_equalizer", initial_audio_equalizer).toList();
+    global_audio_equalizer = value("global_audio_equalizer",
+                                   global_audio_equalizer).toBool();
+    initial_audio_equalizer = value("initial_audio_equalizer",
+                                    initial_audio_equalizer).toList();
     audio_equalizer = value("audio_equalizer", audio_equalizer).toList();
 
     initial_volnorm = value("initial_volnorm", initial_volnorm).toBool();
@@ -1033,30 +1056,41 @@ void TPreferences::load() {
     // Subtitles
     beginGroup("subtitles");
 
-    subtitle_fuzziness = value("subtitle_fuzziness", subtitle_fuzziness).toInt();
-    subtitle_language = value("subtitle_language", subtitle_language).toString();
-    select_first_subtitle = value("select_first_subtitle", select_first_subtitle).toBool();
+    subtitle_fuzziness = value("subtitle_fuzziness", subtitle_fuzziness)
+                         .toInt();
+    subtitle_language = value("subtitle_language", subtitle_language)
+                        .toString();
+    select_first_subtitle = value("select_first_subtitle",
+                                  select_first_subtitle).toBool();
 
-    subtitle_enca_language = value("subtitle_enca_language", subtitle_enca_language).toString();
-    subtitle_encoding_fallback = value("subtitle_encoding_fallback", subtitle_encoding_fallback).toString();
+    subtitle_enca_language = value("subtitle_enca_language",
+                                   subtitle_enca_language).toString();
+    subtitle_encoding_fallback = value("subtitle_encoding_fallback",
+                                       subtitle_encoding_fallback).toString();
 
     freetype_support = value("freetype_support", freetype_support).toBool();
     use_ass_subtitles = value("use_ass_subtitles", use_ass_subtitles).toBool();
-    initial_sub_scale_ass = value("initial_sub_scale_ass", initial_sub_scale_ass).toDouble();
+    initial_sub_scale_ass = value("initial_sub_scale_ass",
+                                  initial_sub_scale_ass).toDouble();
     ass_line_spacing = value("ass_line_spacing", ass_line_spacing).toInt();
 
     initial_sub_pos = value("initial_sub_pos", initial_sub_pos).toInt();
-    initial_sub_scale = value("initial_sub_scale", initial_sub_scale).toDouble();
-    initial_sub_scale_mpv = value("initial_sub_scale_mpv", initial_sub_scale_mpv).toDouble();
+    initial_sub_scale = value("initial_sub_scale", initial_sub_scale)
+                        .toDouble();
+    initial_sub_scale_mpv = value("initial_sub_scale_mpv",
+                                  initial_sub_scale_mpv).toDouble();
 
-    use_custom_ass_style = value("use_custom_ass_style", use_custom_ass_style).toBool();
+    use_custom_ass_style = value("use_custom_ass_style", use_custom_ass_style)
+                           .toBool();
     // ASS styles
     ass_styles.load(this);
 
     force_ass_styles = value("force_ass_styles", force_ass_styles).toBool();
-    user_forced_ass_style = value("user_forced_ass_style", user_forced_ass_style).toString();
+    user_forced_ass_style = value("user_forced_ass_style",
+                                  user_forced_ass_style).toString();
 
-    use_forced_subs_only = value("use_forced_subs_only", use_forced_subs_only).toBool();
+    use_forced_subs_only = value("use_forced_subs_only", use_forced_subs_only)
+                           .toBool();
 
     endGroup(); // subtitles
 
@@ -1068,32 +1102,41 @@ void TPreferences::load() {
 
     use_single_window = value("use_single_window", use_single_window).toBool();
     default_size = value("default_size", default_size).toSize();
-    save_window_size_on_exit = value("save_window_size_on_exit", save_window_size_on_exit).toBool();
+    save_window_size_on_exit = value("save_window_size_on_exit",
+                                     save_window_size_on_exit).toBool();
     resize_on_load = value("resize_on_load", resize_on_load).toBool();
-    hide_video_window_on_audio_files = value("hide_video_window_on_audio_files", hide_video_window_on_audio_files).toBool();
+    hide_video_window_on_audio_files = value("hide_video_window_on_audio_files",
+                                             hide_video_window_on_audio_files)
+                                       .toBool();
     pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
     close_on_finish = value("close_on_finish", close_on_finish).toBool();
 
-    stay_on_top = (TPreferences::TOnTop) value("stay_on_top", (int) stay_on_top).toInt();
+    stay_on_top = (TPreferences::TOnTop) value("stay_on_top",
+                                               (int) stay_on_top).toInt();
     size_factor = value("size_factor", size_factor).toDouble();
 
     floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
-    start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen).toBool();
+    start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen)
+                          .toBool();
 
     endGroup();
 
 
     beginGroup("history");
-    history_recents.setMaxItems(value("recents/max_items", history_recents.maxItems()).toInt());
-    history_recents.fromStringList(value("recents", history_recents).toStringList());
+    history_recents.setMaxItems(value("recents/max_items",
+                                      history_recents.maxItems()).toInt());
+    history_recents.fromStringList(value("recents", history_recents)
+                                   .toStringList());
 
-    history_urls.setMaxItems(value("urls/max_items", history_urls.maxItems()).toInt());
+    history_urls.setMaxItems(value("urls/max_items", history_urls.maxItems())
+                             .toInt());
     history_urls.fromStringList(value("urls", history_urls).toStringList());
 
     save_dirs = value("save_dirs", save_dirs).toBool();
     if (save_dirs) {
         latest_dir = value("latest_dir", latest_dir).toString();
-        last_dvd_directory = value("last_dvd_directory", last_dvd_directory).toString();
+        last_dvd_directory = value("last_dvd_directory", last_dvd_directory)
+                             .toString();
     }
 
     last_dvb_channel = value("last_dvb_channel", last_dvb_channel).toString();
@@ -1123,19 +1166,31 @@ void TPreferences::load() {
 
 
     beginGroup("mouse");
-    mouse_left_click_function = value("mouse_left_click_function", mouse_left_click_function).toString();
+    mouse_left_click_function = value("mouse_left_click_function",
+                                      mouse_left_click_function).toString();
     delay_left_click = value("delay_left_click", delay_left_click).toBool();
-    mouse_right_click_function = value("mouse_right_click_function", mouse_right_click_function).toString();
-    mouse_double_click_function = value("mouse_double_click_function", mouse_double_click_function).toString();
-    mouse_middle_click_function = value("mouse_middle_click_function", mouse_middle_click_function).toString();
-    mouse_xbutton1_click_function = value("mouse_xbutton1_click_function", mouse_xbutton1_click_function).toString();
-    mouse_xbutton2_click_function = value("mouse_xbutton2_click_function", mouse_xbutton2_click_function).toString();
+    mouse_right_click_function = value("mouse_right_click_function",
+                                       mouse_right_click_function).toString();
+    mouse_double_click_function = value("mouse_double_click_function",
+                                        mouse_double_click_function).toString();
+    mouse_middle_click_function = value("mouse_middle_click_function",
+                                        mouse_middle_click_function).toString();
+    mouse_xbutton1_click_function = value("mouse_xbutton1_click_function",
+                                          mouse_xbutton1_click_function)
+                                    .toString();
+    mouse_xbutton2_click_function = value("mouse_xbutton2_click_function",
+                                          mouse_xbutton2_click_function)
+                                    .toString();
     wheel_function = value("mouse_wheel_function", wheel_function).toInt();
     {
-        int wheel_function_cycle_int = value("wheel_function_cycle", (int) wheel_function_cycle).toInt();
+        int wheel_function_cycle_int = value("wheel_function_cycle",
+                                             (int) wheel_function_cycle)
+                                       .toInt();
         wheel_function_cycle = (TWheelFunctions) wheel_function_cycle_int;
     }
-    wheel_function_seeking_reverse = value("wheel_function_seeking_reverse", wheel_function_seeking_reverse).toBool();
+    wheel_function_seeking_reverse = value("wheel_function_seeking_reverse",
+                                           wheel_function_seeking_reverse)
+                                     .toBool();
     endGroup();
 
     beginGroup("seeking");
@@ -1146,8 +1201,10 @@ void TPreferences::load() {
     seeking_current_action = value("seeking_current_action",
                                    seeking_current_action).toInt();
 
-    update_while_seeking = value("update_while_seeking", update_while_seeking).toBool();
-    time_slider_drag_delay = value("time_slider_drag_delay", time_slider_drag_delay).toInt();
+    update_while_seeking = value("update_while_seeking", update_while_seeking)
+                           .toBool();
+    time_slider_drag_delay = value("time_slider_drag_delay",
+                                   time_slider_drag_delay).toInt();
     relative_seeking = value("relative_seeking", relative_seeking).toBool();
     precise_seeking = value("precise_seeking", precise_seeking).toBool();
     endGroup();
@@ -1184,7 +1241,8 @@ void TPreferences::load() {
     cache_for_brs = value("cache_for_brs", cache_for_brs).toInt();
     cache_for_dvds = value("cache_for_dvds", cache_for_dvds).toInt();
     cache_for_vcds = value("cache_for_vcds", cache_for_vcds).toInt();
-    cache_for_audiocds = value("cache_for_audiocds", cache_for_audiocds).toInt();
+    cache_for_audiocds = value("cache_for_audiocds", cache_for_audiocds)
+                         .toInt();
     endGroup(); // performance
 
 
@@ -1232,8 +1290,9 @@ void TPreferences::load() {
 
     balloon_count = value("balloon_count", balloon_count).toInt();
 
-    change_video_equalizer_on_startup = value("change_video_equalizer_on_startup",
-        change_video_equalizer_on_startup).toBool();
+    change_video_equalizer_on_startup = value(
+        "change_video_equalizer_on_startup", change_video_equalizer_on_startup)
+        .toBool();
 
     endGroup(); // advanced
 
