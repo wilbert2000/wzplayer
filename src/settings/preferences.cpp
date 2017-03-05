@@ -42,7 +42,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 20;
+static const int CURRENT_CONFIG_VERSION = 21;
 
 TPreferences* pref = 0;
 
@@ -415,8 +415,8 @@ void TPreferences::save() {
 
     setValue("report_player_crashes", report_player_crashes);
 
-    setValue("dont_remember_media_settings", !remember_media_settings);
-    setValue("dont_remember_time_pos", !remember_time_pos);
+    setValue("remember_media_settings", remember_media_settings);
+    setValue("remember_time_pos", remember_time_pos);
     setValue("file_settings_method", file_settings_method);
 
     setValue("check_channels_conf_on_startup", check_channels_conf_on_startup);
@@ -930,14 +930,19 @@ void TPreferences::load() {
 
     setPlayerBin(value("player_bin", player_bin).toString(), true, player_id);
 
-    report_player_crashes = value("report_player_crashes", report_player_crashes).toBool();
+    report_player_crashes = value("report_player_crashes",
+                                  report_player_crashes).toBool();
 
     // Media settings per file
-    remember_media_settings = !value("dont_remember_media_settings", !remember_media_settings).toBool();
-    remember_time_pos = !value("dont_remember_time_pos", !remember_time_pos).toBool();
-    file_settings_method = value("file_settings_method", file_settings_method).toString();
+    remember_media_settings = value("remember_media_settings",
+                                    remember_media_settings).toBool();
+    remember_time_pos = value("remember_time_pos", remember_time_pos).toBool();
+    file_settings_method = value("file_settings_method",
+                                 file_settings_method).toString();
 
-    check_channels_conf_on_startup = value("check_channels_conf_on_startup", check_channels_conf_on_startup).toBool();
+    check_channels_conf_on_startup = value("check_channels_conf_on_startup",
+                                           check_channels_conf_on_startup)
+                                     .toBool();
 
     endGroup(); // players
 
