@@ -50,7 +50,6 @@ TTVList::TTVList(TMainWindow* mw,
 
 #ifndef Q_OS_WIN
     if (check_channels_conf) {
-        /* f_list.clear(); */
         parseChannelsConf(services);
         updateMenu();
     }
@@ -99,8 +98,7 @@ void TTVList::parseChannelsConf(Services services) {
             if (findFile(channel_id) == -1) {
                 if ((services.testFlag(TTVList::TV) && is_tv) ||
                      (services.testFlag(TTVList::Radio) && is_radio) ||
-                     (services.testFlag(TTVList::Data) && is_data))
-                {
+                     (services.testFlag(TTVList::Data) && is_data)) {
                     f_list.append(TFavorite(channel, channel_id));
                 }
             }
