@@ -58,19 +58,7 @@ private:
     virtual void createHelp();
 
     void setPlayerID(Settings::TPreferences::TPlayerID id);
-    Settings::TPreferences::TPlayerID playerID();
-
     void setPlayerPath(const QString& mplayer, const QString& mpv);
-
-    // Media settings
-    void setRememberSettings(bool b);
-    bool rememberSettings();
-
-    void setRememberTimePos(bool b);
-    bool rememberTimePos();
-
-    void setGlobalVolume(bool b);
-    bool globalVolume();
 
     void setFileSettingsMethod(const QString& method);
     QString fileSettingsMethod();

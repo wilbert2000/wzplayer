@@ -106,9 +106,9 @@ void TPlayerSection::setData(TPreferences* pref) {
     report_player_crashes_check->setChecked(pref->report_player_crashes);
 
     // Media settings group
-    setRememberSettings(pref->remember_media_settings);
-    setRememberTimePos(!pref->remember_time_pos);
-    setGlobalVolume(pref->global_volume);
+    settings_group->setChecked(pref->remember_media_settings);
+    remember_time_check->setChecked(pref->remember_time_pos);
+    remember_volume_check->setChecked(!pref->global_volume);
     remember_audio_eq_check->setChecked(!pref->global_audio_equalizer);
     setFileSettingsMethod(pref->file_settings_method);
 
@@ -137,9 +137,10 @@ void TPlayerSection::getData(TPreferences* pref) {
     pref->report_player_crashes = report_player_crashes_check->isChecked();
 
     // Media settings
-    pref->remember_media_settings = rememberSettings();
-    pref->remember_time_pos = rememberTimePos();
-    pref->global_volume = !pref->remember_media_settings || globalVolume();
+    pref->remember_media_settings = settings_group->isChecked();
+    pref->remember_time_pos = remember_time_check->isChecked();
+    pref->global_volume = !pref->remember_media_settings
+                          || !remember_volume_check->isChecked();
     pref->global_audio_equalizer = !pref->remember_media_settings
                                    || !remember_audio_eq_check->isChecked();
     pref->file_settings_method = fileSettingsMethod();
@@ -157,14 +158,6 @@ void TPlayerSection::setPlayerID(Settings::TPreferences::TPlayerID id) {
         mplayer_radio->setChecked(false);
         mpv_radio->setChecked(true);
     }
-}
-
-Settings::TPreferences::TPlayerID TPlayerSection::playerID() {
-
-    if (mplayer_radio->isChecked()) {
-        return Settings::TPreferences::ID_MPLAYER;
-    }
-    return Settings::TPreferences::ID_MPV;
 }
 
 void TPlayerSection::setPlayerPath(const QString& mplayer, const QString& mpv) {
@@ -201,30 +194,6 @@ void TPlayerSection::onPlayerRadioClicked(bool) {
     emit binChanged(player_id, false, pref->getAbsolutePathPlayer(file));
 }
 
-void TPlayerSection::setRememberSettings(bool b) {
-    settings_group->setChecked(b);
-}
-
-bool TPlayerSection::rememberSettings() {
-    return settings_group->isChecked();
-}
-
-void TPlayerSection::setRememberTimePos(bool b) {
-    remember_time_check->setChecked(b);
-}
-
-bool TPlayerSection::rememberTimePos() {
-    return remember_time_check->isChecked();
-}
-
-void TPlayerSection::setGlobalVolume(bool b) {
-    remember_volume_check->setChecked(!b);
-}
-
-bool TPlayerSection::globalVolume() {
-    return !remember_volume_check->isChecked();
-}
-
 void TPlayerSection::setFileSettingsMethod(const QString& method) {
 
     int index = filesettings_method_combo->findData(method);
@@ -234,7 +203,8 @@ void TPlayerSection::setFileSettingsMethod(const QString& method) {
 }
 
 QString TPlayerSection::fileSettingsMethod() {
-    return filesettings_method_combo->itemData(filesettings_method_combo->currentIndex()).toString();
+    return filesettings_method_combo->itemData(
+                filesettings_method_combo->currentIndex()).toString();
 }
 
 void TPlayerSection::createHelp() {
