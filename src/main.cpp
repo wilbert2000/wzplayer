@@ -29,48 +29,47 @@
 #include "wzdebug.h"
 
 
-using namespace Log4Qt;
-
 class main;
 LOG4QT_DECLARE_STATIC_LOGGER(logger, ::)
 
-void initLog4Qt(Level level) {
+void initLog4Qt(Log4Qt::Level level) {
 
     Log4Qt::Layout* layout;
-    Appender* appender = LogManager::rootLogger()->appender("A1");
+    Log4Qt::Appender* appender =
+            Log4Qt::LogManager::rootLogger()->appender("A1");
     if (appender) {
         WZDEBUG("using existing appender A1");
-        if (level != Level::INFO_INT) {
-            LogManager::rootLogger()->setLevel(level);
+        if (level != Log4Qt::Level::INFO_INT) {
+            Log4Qt::LogManager::rootLogger()->setLevel(level);
         }
         layout = appender->layout();
     } else {
-        LogManager::rootLogger()->setLevel(level);
+        Log4Qt::LogManager::rootLogger()->setLevel(level);
 
         // Create console layout
-        TTCCLayout* tccLayout = new TTCCLayout();
+        Log4Qt::TTCCLayout* tccLayout = new Log4Qt::TTCCLayout();
         tccLayout->setName("Layout");
-        tccLayout->setDateFormat(TTCCLayout::ABSOLUTEDATE);
+        tccLayout->setDateFormat(Log4Qt::TTCCLayout::ABSOLUTEDATE);
         tccLayout->setThreadPrinting(false);
         tccLayout->activateOptions();
 
         // Create appender A1 for console if level set through cmd line option
-        if (level != Level::INFO_INT) {
-            ConsoleAppender* a = new ConsoleAppender(tccLayout,
-                ConsoleAppender::STDERR_TARGET);
+        if (level != Log4Qt::Level::INFO_INT) {
+            Log4Qt::ConsoleAppender* a = new Log4Qt::ConsoleAppender(tccLayout,
+                Log4Qt::ConsoleAppender::STDERR_TARGET);
             a->setName("A1");
             a->activateOptions();
 
             // Set appender on root logger
-            LogManager::rootLogger()->addAppender(a);
+            Log4Qt::LogManager::rootLogger()->addAppender(a);
         }
 
         layout = tccLayout;
     }
 
     // Let Log4Qt handle qDebug(), qWarning(), qCritical() and qFatal()
-    LogManager::setHandleQtMessages(true);
-    LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
+    Log4Qt::LogManager::setHandleQtMessages(true);
+    Log4Qt::LogManager::qtLogger()->setLevel(Log4Qt::Logger::rootLogger()->level());
 
     // Create appender A2 for log window
     Gui::TLogWindow::appender = new Gui::TLogWindowAppender(layout);
@@ -78,10 +77,10 @@ void initLog4Qt(Level level) {
     Gui::TLogWindow::appender->activateOptions();
 
     // Set log window appender on root logger
-    LogManager::rootLogger()->addAppender(Gui::TLogWindow::appender);
+    Log4Qt::LogManager::rootLogger()->addAppender(Gui::TLogWindow::appender);
 
     WZINFO("root logger initialized on level "
-           + LogManager::rootLogger()->level().toString());
+           + Log4Qt::LogManager::rootLogger()->level().toString());
 }
 
 bool isOption(const QString& arg, const QString& name) {
@@ -94,19 +93,19 @@ bool isOption(const QString& arg, const QString& name) {
     ;
 }
 
-void getLevelFromOption(const char* arg, Level& level) {
+void getLevelFromOption(const char* arg, Log4Qt::Level& level) {
 
     QString s(arg);
     if (isOption(s, "debug")) {
-        level = Level(Level::DEBUG_INT);
+        level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
     } else if (isOption(s, "trace")) {
-        level = Level(Level::TRACE_INT);
+        level = Log4Qt::Level(Log4Qt::Level::TRACE_INT);
     }
 }
 
-Level getLevel(int argc, char** argv) {
+Log4Qt::Level getLevel(int argc, char** argv) {
 
-    Level level(Level::INFO_INT);
+    Log4Qt::Level level(Log4Qt::Level::INFO_INT);
     for(int i = 0; i < argc; i++) {
         getLevelFromOption(argv[i], level);
     }
@@ -129,11 +128,6 @@ int main(int argc, char** argv) {
             app.start();
             WZDEBUG("executing application");
             exitCode = app.exec();
-            if (exitCode == TApp::START_APP) {
-                WZDEBUG("restarting application");
-            } else {
-                WZDEBUG("exec() returned " + QString::number(exitCode));
-            }
         }
     } while (exitCode == TApp::START_APP);
 
