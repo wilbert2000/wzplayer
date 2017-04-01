@@ -89,7 +89,6 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
 TPlaylistItem::TPlaylistItem(const QString &filename,
                              const QString &name,
                              double duration,
-                             bool isFolder,
                              bool protectName) :
     mFilename(filename),
     mBaseName(name),
@@ -97,7 +96,6 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mState(PSTATE_STOPPED),
     mPlayed(false),
     mEdited(protectName),
-    mFolder(isFolder),
     mPlayedTime(0) {
 
     if (mBaseName.isEmpty()) {
@@ -152,6 +150,7 @@ void TPlaylistItem::setFileInfo() {
     }
     if (fi.isDir()) {
         mExt = "";
+        mFolder = true;
         mWZPlaylist = false;
     } else {
         mExt = fi.suffix().toLower();
@@ -161,7 +160,7 @@ void TPlaylistItem::setFileInfo() {
             mBaseName = mBaseName.left(mBaseName.length() - mExt.length() - 1);
         }
 
-        // Handle WZPlaylist
+        mFolder = mPlaylist;
         mWZPlaylist = fi.fileName().compare(TConfig::WZPLAYLIST,
                                             caseSensitiveFileNames) == 0;
         if (mWZPlaylist) {

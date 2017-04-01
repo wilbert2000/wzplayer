@@ -60,9 +60,10 @@ private:
 
     bool nameBlackListed(const QString& name);
 
-    QDir::SortFlags getSortFlags();
+    static QDir::SortFlags getSortFlags();
 
-    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent, QFileInfo& fi);
+    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent,
+                                 const QFileInfo& fi);
 
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       QFileInfo& fi,
@@ -76,16 +77,14 @@ private:
                                     double duration,
                                     bool protectName);
 
-    void addNewItems(TPlaylistWidgetItem* playlistItem,
-                     const QFileInfo& playlistInfo);
+    void addNewItems(TPlaylistWidgetItem* playlistItem);
 
     bool openM3u(TPlaylistWidgetItem* playlistItem,
-                 const QFileInfo& fi,
-                 bool utf8);
+                 const QString& fileName);
     bool openPls(TPlaylistWidgetItem* playlistItem,
                  const QString& playlistFileName);
     TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
-                                      QFileInfo& fi,
+                                      const QFileInfo& fi,
                                       const QString& name,
                                       bool protectName,
                                       bool append = true);

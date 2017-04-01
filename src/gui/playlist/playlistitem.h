@@ -19,14 +19,12 @@ extern Qt::CaseSensitivity caseSensitiveFileNames;
 
 
 class TPlaylistItem {
-
 public:
     TPlaylistItem();
     TPlaylistItem(const TPlaylistItem& item);
     TPlaylistItem(const QString &filename,
                   const QString &name,
                   double duration,
-                  bool isFolder,
                   bool protectName);
     virtual ~TPlaylistItem();
 

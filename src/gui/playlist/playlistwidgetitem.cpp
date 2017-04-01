@@ -43,13 +43,11 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& filename,
                                          const QString& name,
                                          double duration,
-                                         bool isDir,
                                          bool protectName) :
     QTreeWidgetItem(parent),
     playlistItem(QDir::toNativeSeparators(filename),
                  name,
                  duration,
-                 isDir,
                  protectName),
     mModified(false) {
 

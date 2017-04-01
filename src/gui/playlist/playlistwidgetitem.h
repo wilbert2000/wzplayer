@@ -33,7 +33,6 @@ public:
                         const QString& filename,
                         const QString& name,
                         double duration,
-                        bool isDir,
                         bool protectName = false);
     virtual ~TPlaylistWidgetItem();
 
