@@ -143,7 +143,7 @@ void TPlayerWindow::setResolution(int width, int height) {
     }
 }
 
-void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
+void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) const {
 
     if (video_size.isEmpty()) {
         factorX = 0;
@@ -152,7 +152,8 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
         if (pref->fullscreen) {
             // Should both be the same...
             factorX = (double) last_video_out_size.width() / video_size.width();
-            factorY = (double) last_video_out_size.height() / video_size.height();
+            factorY = (double) last_video_out_size.height()
+                      / video_size.height();
         } else {
             factorX = (double) width() / video_size.width();
             factorY = (double) height() /  video_size.height();
@@ -161,7 +162,7 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) {
     }
 }
 
-double TPlayerWindow::getSizeFactor() {
+double TPlayerWindow::getSizeFactor() const {
 
     double factorX, factorY;
     getSizeFactors(factorX, factorY);
@@ -347,10 +348,10 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
         if (dragging) {
             stopDragging();
         } else if (event->modifiers() != Qt::NoModifier) {
-            WZDEBUG("ignoring modified event");
+            WZDEBUG("ignoring modified mouse release event");
         } else if (left_button_pressed_time.elapsed()
                    >= QApplication::startDragTime()) {
-            WZDEBUG("canceled release event taking longer as " +
+            WZTRACE("ignoring mouse release event taking longer as " +
                     QString::number(QApplication::startDragTime()) + " ms");
         } else if (delay_left_click) {
             if (!double_clicked) {

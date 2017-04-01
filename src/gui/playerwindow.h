@@ -63,7 +63,7 @@ public:
     explicit TPlayerWindow(QWidget* parent);
     virtual ~TPlayerWindow();
 
-    TVideoWindow* videoWindow() { return video_window; }
+    TVideoWindow* videoWindow() const { return video_window; }
 
     void setResolution(int width, int height);
     QSize resolution() const { return video_size; }
@@ -98,8 +98,8 @@ public:
     void setDelayLeftClick(bool b) { delay_left_click = b; }
 
     // Calculate size factor for current view
-    void getSizeFactors(double& factorX, double& factorY);
-    double getSizeFactor();
+    void getSizeFactors(double& factorX, double& factorY) const;
+    double getSizeFactor() const;
     void updateSizeFactor();
 
     void updateVideoWindow();
@@ -132,15 +132,19 @@ protected:
 private:
     TVideoWindow* video_window;
 
+    // Geometry
     QSize video_size;
     QSize last_video_out_size;
     double aspect;
 
+    // Zoom
     double zoom_factor;
     double zoom_factor_fullscreen;
+    // Pan
     QPoint pan_offset;
     QPoint pan_offset_fullscreen;
 
+    // Mouse state
     bool double_clicked;
     bool delay_left_click;
     QTimer* left_click_timer;
