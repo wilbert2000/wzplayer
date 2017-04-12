@@ -148,7 +148,7 @@ void TPlaylistItem::setFileInfo() {
     if (mSymLink) {
         fi.setFile(fi.symLinkTarget());
     }
-    if (fi.isDir()) {
+    if (mFilename.isEmpty() || fi.isDir()) {
         mExt = "";
         mFolder = true;
         mWZPlaylist = false;
