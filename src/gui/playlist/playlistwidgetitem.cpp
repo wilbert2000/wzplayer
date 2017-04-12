@@ -15,6 +15,7 @@ namespace Playlist {
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
 
+// Alignment text fields
 const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 const int TIME_TEXT_ALIGN = Qt::AlignRight | Qt::AlignVCenter;
 

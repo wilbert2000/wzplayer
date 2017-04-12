@@ -149,6 +149,7 @@ void TAddFilesThread::run() {
         delete root;
         root = 0;
     } else {
+        // TPlaylist uses empty filename to determine whether to save playlist
         root->setFilename("", "");
     }
 
