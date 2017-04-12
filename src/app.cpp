@@ -166,7 +166,7 @@ bool TApp::loadCatalog(QTranslator& translator,
     if (r) {
         WZINFO("loaded '" + loc + "' from '" + dir + "'");
     } else {
-        WZDEBUG("failed to load '" + loc + "' from '" + dir + "'");
+        WZDEBUG("skipped loading of '" + loc + "' from '" + dir + "'");
     }
     return r;
 }
