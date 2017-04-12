@@ -1304,8 +1304,8 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    WZINFO("loaded config version " + QString::number(config_version)
-           + ", CURRENT_CONFIG_VERSION "
+    WZINFO("loaded config file version " + QString::number(config_version)
+           + ", executable CURRENT_CONFIG_VERSION "
            + QString::number(CURRENT_CONFIG_VERSION));
 
     // Check config version
