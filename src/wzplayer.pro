@@ -98,6 +98,7 @@ HEADERS += wzdebug.h \
     gui/action/menu/menubrowse.h \
     gui/action/menu/menuwindow.h \
     gui/action/menu/menuhelp.h \
+    gui/action/menu/favorite.h \
     gui/action/menu/favorites.h \
     gui/action/menu/tvlist.h \
     gui/action/menu/favoriteeditor.h \
@@ -222,6 +223,7 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menubrowse.cpp \
     gui/action/menu/menuwindow.cpp \
     gui/action/menu/menuhelp.cpp \
+    gui/action/menu/favorite.cpp \
     gui/action/menu/favorites.cpp \
     gui/action/menu/tvlist.cpp \
     gui/action/menu/favoriteeditor.cpp \

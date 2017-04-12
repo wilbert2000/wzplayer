@@ -33,27 +33,6 @@ namespace Gui {
 namespace Action {
 namespace Menu {
 
-TFavorite::TFavorite() : is_subentry(false) {
-}
-
-TFavorite::TFavorite(const QString& name,
-                     const QString& file,
-                     const QString& icon,
-                     bool subentry)
-    : _name(name)
-    , _file(file)
-    , _icon(icon)
-    , is_subentry(subentry) {
-}
-
-TFavorite::~TFavorite() {
-}
-
-void TFavorite::setIcon(QString file) {
-    _icon = file;
-}
-
-
 TFavorites::TFavorites(TMainWindow* mw,
                        const QString& name,
                        const QString& text,

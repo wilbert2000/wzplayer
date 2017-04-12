@@ -20,9 +20,10 @@
 #define GUI_ACTION_MENU_FAVORITES_H
 
 #include "gui/action/menu/menu.h"
+#include "gui/action/menu/favorite.h"
+#include "log4qt/logger.h"
 #include <QString>
 #include <QList>
-#include "log4qt/logger.h"
 
 
 class QAction;
@@ -34,30 +35,6 @@ namespace Action {
 class TAction;
 
 namespace Menu {
-
-class TFavorite {
-public:
-    TFavorite();
-    TFavorite(const QString& name,
-              const QString& file,
-              const QString& icon = QString::null,
-              bool subentry = false);
-    virtual ~TFavorite();
-
-    void setName(const QString& name) { _name = name; }
-    void setFile(const QString& file) { _file = file; }
-    void setIcon(QString file);
-    void setSubentry(bool b) { is_subentry = b; }
-
-    QString name() const { return _name; }
-    QString file() const { return _file; }
-    QString icon() const { return _icon; }
-    bool isSubentry() const { return is_subentry; }
-
-protected:
-    QString _name, _file, _icon;
-    bool is_subentry; // Not a favorite file, but a new favorite list
-};
 
 typedef QList<TFavorite> TFavoriteList;
 
