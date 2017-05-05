@@ -22,8 +22,8 @@ class TPlaylistItem {
 public:
     TPlaylistItem();
     TPlaylistItem(const TPlaylistItem& item);
-    TPlaylistItem(const QString &filename,
-                  const QString &name,
+    TPlaylistItem(const QString& filename,
+                  const QString& name,
                   double duration,
                   bool protectName);
     virtual ~TPlaylistItem();
