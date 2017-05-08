@@ -40,25 +40,34 @@ void TRecents::setMaxItems(int n_items) {
 
 void TRecents::addItem(QString s, const QString& title) {
 
-    if (!title.isEmpty()) {
-        s += "|title]=" + title;
+    s += "|title]=";
+
+    // Remove existing item
+    {
+        QStringList::iterator iterator = begin();
+        while (iterator != end()) {
+            if ((*iterator).startsWith(s)) {
+                erase(iterator);
+                break;
+            }
+            iterator++;
+        }
     }
 
-    int pos = indexOf(s);
-    if (pos >= 0)
-        removeAt(pos);
-    prepend(s);
+    prepend(s + title);
 
-    if (count() > max_items)
+    if (count() > max_items) {
         removeLast();
+    }
 }
 
 QString TRecents::item(int n) {
 
     QString res;
     QStringList s = (*this)[n].split("|title]=");
-    if (s.count() > 0)
+    if (s.count() > 0) {
         res = s[0];
+    }
 
     return res;
 }
@@ -67,8 +76,9 @@ QString TRecents::title(int n) {
 
     QString res;
     QStringList s = (*this)[n].split("|title]=");
-    if (s.count() > 1)
+    if (s.count() > 1) {
         res = s[1];
+    }
 
     return res;
 }
