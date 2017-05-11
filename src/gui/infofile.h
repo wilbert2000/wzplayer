@@ -54,4 +54,4 @@ private:
 
 } // namespace Gui
 
-#endif // _GUI_INFOFILE_H_
+#endif // GUI_INFOFILE_H

@@ -99,4 +99,4 @@ private:
 
 } // namespace Gui
 
-#endif // _GUI_FILEPROPERTIESDIALOG_H_
+#endif // GUI_FILEPROPERTIESDIALOG_H

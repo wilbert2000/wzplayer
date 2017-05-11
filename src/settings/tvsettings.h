@@ -39,5 +39,5 @@ public:
 
 } // namespace Settings
 
-#endif // _SETTINGS_TVSETTINGS_H_
+#endif // SETTINGS_TVSETTINGS_H
 

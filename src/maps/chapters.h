@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _MAPS_CHAPTERS_H_
-#define _MAPS_CHAPTERS_H_
+#ifndef MAPS_CHAPTERS_H
+#define MAPS_CHAPTERS_H
 
 #include "map.h"
 
@@ -68,4 +68,4 @@ public:
 
 } // namespace Maps
 
-#endif // _MAPS_CHAPTERS_H_
+#endif // MAPS_CHAPTERS_H

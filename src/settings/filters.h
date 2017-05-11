@@ -18,8 +18,8 @@
 
 /* Default options for the video and audio filters */
 
-#ifndef _SETTINGS_FILTERS_H_
-#define _SETTINGS_FILTERS_H_
+#ifndef SETTINGS_FILTERS_H
+#define SETTINGS_FILTERS_H
 
 #include <QObject>
 #include <QString>
@@ -80,5 +80,5 @@ protected:
 
 } // namespace Settings
 
-#endif // _SETTINGS_FILTERS_H_
+#endif // SETTINGS_FILTERS_H
 

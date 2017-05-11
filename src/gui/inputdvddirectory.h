@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_INPUTDVDDIRECTORY_H_
-#define _GUI_INPUTDVDDIRECTORY_H_
+#ifndef GUI_INPUTDVDDIRECTORY_H
+#define GUI_INPUTDVDDIRECTORY_H
 
 #include "ui_inputdvddirectory.h"
 
@@ -40,4 +40,4 @@ protected slots:
 
 } // namespace Gui
 
-#endif // _GUI_INPUTDVDDIRECTORY_H_
+#endif // GUI_INPUTDVDDIRECTORY_H

@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_TIMEDIALOG_H_
-#define _GUI_TIMEDIALOG_H_
+#ifndef GUI_TIMEDIALOG_H
+#define GUI_TIMEDIALOG_H
 
 #include "ui_timedialog.h"
 
@@ -43,4 +43,4 @@ public slots:
 
 } // namespace Gui
 
-#endif // _GUI_TIMEDIALOG_H_
+#endif // GUI_TIMEDIALOG_H

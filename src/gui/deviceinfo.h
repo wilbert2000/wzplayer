@@ -16,8 +16,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _GUI_DEVICEINFO_H_
-#define _GUI_DEVICEINFO_H_
+#ifndef GUI_DEVICEINFO_H
+#define GUI_DEVICEINFO_H
 
 #include <QString>
 #include <QVariant>
@@ -60,5 +60,5 @@ public:
 
 } // namespace Gui
 
-#endif // _GUI_DEVICEINFO_H_
+#endif // GUI_DEVICEINFO_H
 
