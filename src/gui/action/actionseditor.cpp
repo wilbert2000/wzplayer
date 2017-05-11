@@ -105,7 +105,7 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     debug(logger()) {
 
-    latest_dir = Settings::TPaths::shortcutsPath();
+    last_dir = Settings::TPaths::shortcutsPath();
 
     actionsTable = new QTableWidget(0, COL_COUNT, this);
     actionsTable->verticalHeader()->hide();
@@ -357,7 +357,7 @@ void TActionsEditor::saveActionsTable() {
 
     QString s = TFileDialog::getSaveFileName(
                     this, tr("Choose a filename"),
-                    latest_dir,
+                    last_dir,
                     tr("Key files") +" (*.keys)");
 
     if (!s.isEmpty()) {
@@ -378,7 +378,7 @@ void TActionsEditor::saveActionsTable() {
             }
         }
 
-        latest_dir = QFileInfo(s).absolutePath();
+        last_dir = QFileInfo(s).absolutePath();
         bool r = saveActionsTable(s);
         if (!r) {
             QMessageBox::warning(this, tr("Error"),
@@ -409,10 +409,10 @@ bool TActionsEditor::saveActionsTable(const QString & filename) {
 void TActionsEditor::loadActionsTable() {
     QString s = TFileDialog::getOpenFileName(
                     this, tr("Choose a file"),
-                    latest_dir, tr("Key files") +" (*.keys)");
+                    last_dir, tr("Key files") +" (*.keys)");
 
     if (!s.isEmpty()) {
-        latest_dir = QFileInfo(s).absolutePath();
+        last_dir = QFileInfo(s).absolutePath();
         bool r = loadActionsTable(s);
         if (!r) {
             QMessageBox::warning(this, tr("Error"),

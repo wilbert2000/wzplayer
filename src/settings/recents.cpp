@@ -17,30 +17,21 @@
 */
 
 #include "settings/recents.h"
-#include <QDebug>
-#include "log4qt/logger.h"
 
 
 namespace Settings {
 
+const QString TITLE_SEP = "|title]=";
 
-TRecents::TRecents() : max_items(10) {
+TRecents::TRecents() {
 }
 
 TRecents::~TRecents() {
 }
 
-void TRecents::setMaxItems(int n_items) {
+void TRecents::addRecent(QString s, const QString& title) {
 
-    max_items = n_items;
-    while (count() > max_items) {
-        removeLast();
-    }
-}
-
-void TRecents::addItem(QString s, const QString& title) {
-
-    s += "|title]=";
+    s += TITLE_SEP;
 
     // Remove existing item
     {
@@ -56,15 +47,15 @@ void TRecents::addItem(QString s, const QString& title) {
 
     prepend(s + title);
 
-    if (count() > max_items) {
+    if (count() > getMaxItems()) {
         removeLast();
     }
 }
 
-QString TRecents::item(int n) {
+QString TRecents::getURL(int n) {
 
     QString res;
-    QStringList s = (*this)[n].split("|title]=");
+    QStringList s = (*this)[n].split(TITLE_SEP);
     if (s.count() > 0) {
         res = s[0];
     }
@@ -72,28 +63,15 @@ QString TRecents::item(int n) {
     return res;
 }
 
-QString TRecents::title(int n) {
+QString TRecents::getTitle(int n) {
 
     QString res;
-    QStringList s = (*this)[n].split("|title]=");
+    QStringList s = (*this)[n].split(TITLE_SEP);
     if (s.count() > 1) {
         res = s[1];
     }
 
     return res;
-}
-
-void TRecents::fromStringList(const QStringList& list) {
-
-    clear();
-
-    int max = list.count();
-    if (max > max_items)
-        max = max_items;
-
-    for (int n = 0; n < max; n++) {
-        append(list[n]);
-    }
 }
 
 } // namespace Settings

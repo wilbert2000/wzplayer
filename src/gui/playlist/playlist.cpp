@@ -466,7 +466,7 @@ void TPlaylist::onThreadFinished() {
     TPlaylistWidgetItem* root = thread->root;
     thread->root = 0;
     if (!thread->latestDir.isEmpty()) {
-        pref->latest_dir = thread->latestDir;
+        pref->last_dir = thread->latestDir;
     }
 
     // Clean up
@@ -589,7 +589,7 @@ void TPlaylist::addFiles(const QStringList& files,
 void TPlaylist::addFiles() {
 
     QStringList files = TFileDialog::getOpenFileNames(this,
-        tr("Select one or more files to add"), pref->latest_dir,
+        tr("Select one or more files to add"), pref->last_dir,
         tr("Multimedia") + extensions.allPlayable().forFilter() + ";;" +
         tr("All files") +" (*.*)");
 
@@ -617,7 +617,7 @@ void TPlaylist::addCurrentFile() {
 void TPlaylist::addDirectory() {
 
     QString s = TFileDialog::getExistingDirectory(this,
-                    tr("Choose a directory"), pref->latest_dir);
+                    tr("Choose a directory"), pref->last_dir);
 
     if (!s.isEmpty()) {
         addFiles(QStringList() << s, false, playlistWidget->currentItem());
@@ -1520,7 +1520,7 @@ void TPlaylist::showEvent(QShowEvent*) {
 
 void TPlaylist::openPlaylist(const QString& filename) {
 
-    pref->latest_dir = QFileInfo(filename).absolutePath();
+    pref->last_dir = QFileInfo(filename).absolutePath();
     addFiles(QStringList() << filename, true);
 }
 
@@ -1528,7 +1528,7 @@ void TPlaylist::open() {
 
     if (maybeSave()) {
         QString s = TFileDialog::getOpenFileName(this, tr("Choose a file"),
-            pref->latest_dir,
+            pref->last_dir,
             tr("Playlists") + extensions.playlists().forFilter() + ";;"
             + tr("All files") +" (*.*)");
 
@@ -1730,7 +1730,7 @@ bool TPlaylist::save() {
     TPlaylistWidgetItem* root = playlistWidget->root();
     root->setFilename(filename, fi.completeBaseName());
     setWinTitle();
-    pref->latest_dir = fi.absolutePath();
+    pref->last_dir = fi.absolutePath();
 
     bool result;
     if (fi.suffix().toLower() == "pls") {
@@ -1754,7 +1754,7 @@ bool TPlaylist::save() {
 bool TPlaylist::saveAs() {
 
     QString s = TFileDialog::getSaveFileName(this, tr("Choose a filename"),
-        pref->latest_dir, tr("Playlists") + extensions.playlists().forFilter());
+        pref->last_dir, tr("Playlists") + extensions.playlists().forFilter());
 
     if (s.isEmpty()) {
         return false;

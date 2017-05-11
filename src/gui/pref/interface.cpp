@@ -24,7 +24,6 @@
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
-#include "settings/urlhistory.h"
 #include "settings/paths.h"
 #include "gui/pref/languages.h"
 
@@ -135,8 +134,8 @@ void TInterface::setData(Settings::TPreferences* pref) {
     setStartInFullscreen(pref->start_in_fullscreen);
 
     // History
-    setRecentsMaxItems(pref->history_recents.maxItems());
-    setURLMaxItems(pref->history_urls.maxItems());
+    setRecentsMaxItems(pref->history_recents.getMaxItems());
+    setURLMaxItems(pref->history_urls.getMaxItems());
     setRememberDirs(pref->save_dirs);
 }
 
@@ -173,12 +172,12 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->start_in_fullscreen = startInFullscreen();
 
     // History
-    if (pref->history_recents.maxItems() != recentsMaxItems()) {
+    if (pref->history_recents.getMaxItems() != recentsMaxItems()) {
         pref->history_recents.setMaxItems(recentsMaxItems());
         recents_changed = true;
     }
 
-    if (pref->history_urls.maxItems() != urlMaxItems()) {
+    if (pref->history_urls.getMaxItems() != urlMaxItems()) {
         pref->history_urls.setMaxItems(urlMaxItems());
         url_max_changed = true;
     }

@@ -35,14 +35,13 @@
 #include "settings/assstyles.h"
 #include "settings/mediasettings.h"
 #include "settings/recents.h"
-#include "settings/urlhistory.h"
 #include "settings/filters.h"
 #include "helper.h"
 
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 21;
+static const int CURRENT_CONFIG_VERSION = 22;
 
 TPreferences* pref = 0;
 
@@ -262,12 +261,14 @@ void TPreferences::reset() {
     history_urls.clear();
 
     save_dirs = true;
-    latest_dir = QDir::homePath();
+    last_dir = QDir::homePath();
     last_dvd_directory = "";
 
     // TV (dvb)
     last_dvb_channel = "";
     last_tv_channel = "";
+
+    last_clipboard = "";
 
 
     // Actions section
@@ -563,55 +564,27 @@ void TPreferences::save() {
     setValue("log_window_max_events", log_window_max_events);
     endGroup();
 
-/*
-    beginGroup("Log4Qt");
-
-    // Note: using level from Log4Qt
-    // TODO: delivers a translated string
-    QString level = Log4Qt::Logger::rootLogger()->level().toString();
-
-    // Set level for Qt log
-    setValue("Debug", level);
-
-    beginGroup("Properties");
-
-    // Appender
-    setValue("log4j.appender." + NAME_CONSOLE_APPENDER,
-             "org.apache.log4j.ConsoleAppender");
-
-    // Layout
-    setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout",
-             "org.apache.log4j.TTCCLayout");
-    setValue("log4j.appender." + NAME_CONSOLE_APPENDER + ".layout.dateFormat",
-             "ABSOLUTE");
-    setValue("log4j.appender." + NAME_CONSOLE_APPENDER
-             + ".layout.threadPrinting", "false");
-
-    // Set level and appender
-    setValue("log4j.rootLogger", level + ", " + NAME_CONSOLE_APPENDER);
-    endGroup();
-
-    endGroup();
-*/
 
     beginGroup("history");
     setValue("recents", history_recents);
-    setValue("recents/max_items", history_recents.maxItems());
+    setValue("recents/max_items", history_recents.getMaxItems());
     setValue("urls", history_urls);
-    setValue("urls/max_items", history_urls.maxItems());
+    setValue("urls/max_items", history_urls.getMaxItems());
 
     setValue("save_dirs", save_dirs);
 
     if (save_dirs) {
-        setValue("latest_dir", latest_dir);
+        setValue("last_dir", last_dir);
         setValue("last_dvd_directory", last_dvd_directory);
     } else {
-        setValue("latest_dir", "");
+        setValue("last_dir", "");
         setValue("last_dvd_directory", "");
     }
 
     setValue("last_dvb_channel", last_dvb_channel);
     setValue("last_tv_channel", last_tv_channel);
+
+    setValue("last_clipboard", last_clipboard);
     endGroup(); // history
 
 
@@ -1129,23 +1102,25 @@ void TPreferences::load() {
 
     beginGroup("history");
     history_recents.setMaxItems(value("recents/max_items",
-                                      history_recents.maxItems()).toInt());
+                                      history_recents.getMaxItems()).toInt());
     history_recents.fromStringList(value("recents", history_recents)
                                    .toStringList());
 
-    history_urls.setMaxItems(value("urls/max_items", history_urls.maxItems())
+    history_urls.setMaxItems(value("urls/max_items", history_urls.getMaxItems())
                              .toInt());
     history_urls.fromStringList(value("urls", history_urls).toStringList());
 
     save_dirs = value("save_dirs", save_dirs).toBool();
     if (save_dirs) {
-        latest_dir = value("latest_dir", latest_dir).toString();
+        last_dir = value("last_dir", last_dir).toString();
         last_dvd_directory = value("last_dvd_directory", last_dvd_directory)
                              .toString();
     }
 
     last_dvb_channel = value("last_dvb_channel", last_dvb_channel).toString();
     last_tv_channel = value("last_tv_channel", last_tv_channel).toString();
+
+    last_clipboard = value("last_clipboard", last_clipboard).toString();
     endGroup(); // history
 
 

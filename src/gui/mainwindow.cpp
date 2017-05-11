@@ -58,7 +58,6 @@
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "settings/recents.h"
-#include "settings/urlhistory.h"
 
 #include "gui/action/action.h"
 #include "gui/action/actiongroup.h"
@@ -1345,8 +1344,8 @@ void TMainWindow::onNewMediaStartedPlaying() {
     enterFullscreenOnPlay();
 
     // Recents
-    pref->history_recents.addItem(player->mdat.filename,
-                                  player->mdat.displayName());
+    pref->history_recents.addRecent(player->mdat.filename,
+                                    player->mdat.displayName());
     fileMenu->updateRecents();
 
     checkPendingActionsToRun();
@@ -1545,7 +1544,7 @@ void TMainWindow::openDirectory() {
 
     QString s = TFileDialog::getExistingDirectory(
                     this, tr("Choose a directory"),
-                    pref->latest_dir);
+                    pref->last_dir);
 
     if (!s.isEmpty() && playlist->maybeSave()) {
         playlist->playDirectory(s);
@@ -1574,7 +1573,7 @@ void TMainWindow::open(const QString &fileName) {
             playlist->openPlaylist(fi.absoluteFilePath());
             return;
         }
-        pref->latest_dir = fi.absolutePath();
+        pref->last_dir = fi.absolutePath();
     }
 
     player->open(fileName);
@@ -1601,7 +1600,7 @@ void TMainWindow::openFile() {
     QString s = TFileDialog::getOpenFileName(
         this,
         tr("Choose a file"),
-        pref->latest_dir,
+        pref->last_dir,
         tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
         + tr("Video") + extensions.video().forFilter() + ";;"
         + tr("Audio") + extensions.audio().forFilter() + ";;"
@@ -1620,7 +1619,7 @@ void TMainWindow::openRecent() {
     QAction *a = qobject_cast<QAction *> (sender());
     if (a) {
         int item = a->data().toInt();
-        QString filename = pref->history_recents.item(item);
+        QString filename = pref->history_recents.getURL(item);
         if (!filename.isEmpty())
             open(filename);
     }
@@ -1629,28 +1628,23 @@ void TMainWindow::openRecent() {
 void TMainWindow::openURL() {
     WZDEBUG("");
 
-    TInputURL d(this);
+    TInputURL dialog(this);
 
     // Get url from clipboard
-    QString txt = QApplication::clipboard()->text();
-    if (!txt.contains("\x0a") && !txt.contains("\x0d")) {
-        if (txt.contains("/")
-#ifdef Q_OS_WIN
-        || txt.contains("\\")
-#endif
-        ) {
-            d.setURL(txt);
-        }
+    if (TApp::acceptClipboardAsURL()) {
+        QString txt = QApplication::clipboard()->text();
+        dialog.setURL(txt);
+        Settings::pref->last_clipboard = txt;
     }
 
     for (int n = 0; n < pref->history_urls.count(); n++) {
-        d.setURL(pref->history_urls.url(n));
+        dialog.setURL(pref->history_urls[n]);
     }
 
-    if (d.exec() == QDialog::Accepted) {
-        QString url = d.url();
+    if (dialog.exec() == QDialog::Accepted) {
+        QString url = dialog.url();
         if (!url.isEmpty()) {
-            pref->history_urls.addUrl(url);
+            pref->history_urls.add(url);
             open(url);
         }
     }
@@ -1745,7 +1739,7 @@ void TMainWindow::loadSub() {
 
     QString s = TFileDialog::getOpenFileName(
         this, tr("Choose a file"),
-        pref->latest_dir,
+        pref->last_dir,
         tr("Subtitles") + extensions.subtitles().forFilter()+ ";;" +
         tr("All files") +" (*.*)");
 
@@ -1758,7 +1752,7 @@ void TMainWindow::loadAudioFile() {
 
     QString s = TFileDialog::getOpenFileName(
         this, tr("Choose a file"),
-        pref->latest_dir,
+        pref->last_dir,
         tr("Audio") + extensions.audio().forFilter()+";;" +
         tr("All files") +" (*.*)");
 

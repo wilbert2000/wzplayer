@@ -456,17 +456,25 @@ void TApp::createGUI() {
     WZDEBUG("created main window");
 } // createGUI()
 
-bool TApp::acceptClipboard() const {
+bool TApp::acceptClipboardAsURL() {
 
-    // TODO: check extension local files
     const QString txt = QApplication::clipboard()->text();
-    return !txt.contains("\x0a")
-            && !txt.contains("\x0d")
-            && (txt.contains("/")
+    if (txt.contains("\x0a") || txt.contains("\x0d")) {
+        return false;
+    }
+    if (!txt.contains("/")
 #ifdef Q_OS_WIN
-                || txt.contains("\\")
+            && !txt.contains("\\")
 #endif
-               );
+        ) {
+        return false;
+    }
+
+    if (txt == Settings::pref->last_clipboard) {
+        return false;
+    }
+
+    return true;
 }
 
 void TApp::start() {
@@ -484,7 +492,7 @@ void TApp::start() {
         // Nothing to open
         player->setState(Player::STATE_STOPPED);
         // Check clipboard
-        if (actions.isEmpty() && acceptClipboard()) {
+        if (actions.isEmpty() && acceptClipboardAsURL()) {
             actions = "open_url";
         }
     } else {

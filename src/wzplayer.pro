@@ -65,8 +65,8 @@ HEADERS += wzdebug.h \
     settings/filesettings.h \
     settings/filesettingshash.h \
     settings/tvsettings.h \
+    settings/lrulist.h \
     settings/recents.h \
-    settings/urlhistory.h \
     settings/cleanconfig.h \
     settings/updatecheckerdata.h \
     iconprovider.h \
@@ -191,8 +191,8 @@ SOURCES += wzdebug.cpp \
     settings/filesettings.cpp \
     settings/filesettingshash.cpp \
     settings/tvsettings.cpp \
+    settings/lrulist.cpp \
     settings/recents.cpp \
-    settings/urlhistory.cpp \
     settings/cleanconfig.cpp \
     settings/updatecheckerdata.cpp \
     iconprovider.cpp \

@@ -16,33 +16,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef _SETTINGS_RECENTS_H_
-#define _SETTINGS_RECENTS_H_
+#ifndef SETTINGS_RECENTS_H
+#define SETTINGS_RECENTS_H
 
-#include <QStringList>
+#include "settings/lrulist.h"
+
 
 namespace Settings {
 
-class TRecents : public QStringList {
+class TRecents : public TLRUList {
 
 public:
     TRecents();
     virtual ~TRecents();
 
-    virtual void addItem(QString s, const QString& title);
+    virtual void addRecent(QString s, const QString& title);
 
-    virtual QString item(int n);
-    virtual QString title(int n);
-
-    virtual void setMaxItems(int n_items);
-    virtual int maxItems() { return max_items; }
-
-    virtual void fromStringList(const QStringList& list);
-
-protected:
-    int max_items;
+    virtual QString getURL(int n);
+    virtual QString getTitle(int n);
 };
 
 } // namespace Settings
 
-#endif // _SETTINGS_RECENTS_H_
+#endif // SETTINGS_RECENTS_H

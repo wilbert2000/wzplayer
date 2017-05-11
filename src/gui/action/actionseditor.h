@@ -92,7 +92,7 @@ private:
     QPushButton* saveButton;
     QPushButton* loadButton;
     QPushButton* editButton;
-    QString latest_dir;
+    QString last_dir;
 
     static QString keyToString(QKeySequence key);
     static QKeySequence stringToKey(QString s);

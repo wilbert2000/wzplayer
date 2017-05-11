@@ -29,7 +29,6 @@
 #include "settings/updatecheckerdata.h"
 #include "settings/assstyles.h"
 #include "settings/recents.h"
-#include "settings/urlhistory.h"
 
 
 namespace Settings {
@@ -272,15 +271,18 @@ public:
 
     // History
     TRecents history_recents;
-    TURLHistory history_urls;
+    TLRUList history_urls;
     bool save_dirs; // Save or not the latest dirs
 
-    QString latest_dir; //!< Directory of the latest file loaded
+    QString last_dir; //!< Directory of the latest file loaded
     QString last_dvd_directory;
 
     // TV (dvb)
     QString last_dvb_channel;
     QString last_tv_channel;
+
+    // Last clipboard checked by TMainWindow::openURL()
+    QString last_clipboard;
 
 
     // Playlist section

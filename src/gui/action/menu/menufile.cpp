@@ -179,7 +179,7 @@ void TMenuFile::updateRecents() {
     if (pref->history_recents.count() > 0) {
         for (int n = 0; n < pref->history_recents.count(); n++) {
             QString i = QString::number(n+1);
-            QString fullname = pref->history_recents.item(n);
+            QString fullname = pref->history_recents.getURL(n);
             QString filename = fullname;
             QFileInfo fi(fullname);
             // Let's see if it looks like a file (no dvd://1 or something)
@@ -191,7 +191,7 @@ void TMenuFile::updateRecents() {
             }
 
             QString show_name = filename;
-            QString title = pref->history_recents.title(n);
+            QString title = pref->history_recents.getTitle(n);
             if (!title.isEmpty())
                 show_name = title;
 
