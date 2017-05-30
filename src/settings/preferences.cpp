@@ -49,7 +49,8 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TPreferences)
 
 
 TPreferences::TPreferences() :
-    QSettings(TPaths::iniPath(), QSettings::IniFormat) {
+    QSettings(TPaths::iniPath(), QSettings::IniFormat),
+    switching_fullscreen(false) {
 
     reset();
 }

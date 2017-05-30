@@ -86,6 +86,7 @@
 #include "gui/inputurl.h"
 #include "gui/timedialog.h"
 #include "gui/playlist/playlist.h"
+#include "gui/dockwidget.h"
 #include "gui/videoequalizer.h"
 #include "gui/eqslider.h"
 #include "gui/audioequalizer.h"
@@ -114,7 +115,6 @@ using namespace Action;
 TMainWindow::TMainWindow() :
     QMainWindow(),
     debug(logger()),
-    switching_fullscreen(false),
     menubar_visible(true),
     statusbar_visible(true),
     fullscreen_menubar_visible(false),
@@ -132,6 +132,7 @@ TMainWindow::TMainWindow() :
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(TConfig::PROGRAM_NAME);
     setAcceptDrops(true);
+    setAnimated(false); // Disable animation docks
 
     createStatusBar();
 
@@ -146,13 +147,12 @@ TMainWindow::TMainWindow() :
     // Resize window to default size
     resize(pref->default_size);
 
-    // Create objects:
-    log_window = new TLogWindow(this);
-
     createPanel();
+    createLogDock();
     createPlayerWindow();
     createPlayer();
     createPlaylist();
+
     createVideoEqualizer();
     createAudioEqualizer();
 
@@ -172,6 +172,27 @@ TMainWindow::~TMainWindow() {
 
     msgSlot = 0;
     setMessageHandler(0);
+}
+
+void TMainWindow::createPanel() {
+    WZDEBUG("");
+
+    panel = new QWidget(this);
+    panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    panel->setMinimumSize(QSize(1, 1));
+    panel->setFocusPolicy(Qt::StrongFocus);
+    setCentralWidget(panel);
+}
+
+void TMainWindow::createLogDock() {
+    WZDEBUG("");
+
+    log_window = new TLogWindow(this);
+    logDock = new TDockWidget(this);
+    logDock->setObjectName("logdock");
+    logDock->setWidget(log_window);
+    logDock->hide();
+    addDockWidget(Qt::BottomDockWidgetArea, logDock);
 }
 
 void TMainWindow::createStatusBar() {
@@ -215,16 +236,6 @@ void TMainWindow::createStatusBar() {
     time_label->setFont(QFont("Monospace"));
     time_label->setText("00:00/00:00");
     statusBar()->addPermanentWidget(time_label, 0);
-}
-
-void TMainWindow::createPanel() {
-    WZDEBUG("");
-
-    panel = new QWidget(this);
-    panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    panel->setMinimumSize(QSize(1, 1));
-    panel->setFocusPolicy(Qt::StrongFocus);
-    setCentralWidget(panel);
 }
 
 void TMainWindow::createPlayerWindow() {
@@ -301,9 +312,17 @@ void TMainWindow::createPlayer() {
 void TMainWindow::createPlaylist() {
     WZDEBUG("");
 
-    playlist = new Playlist::TPlaylist(this);
+    playlist = new Playlist::TPlaylist(this, this);
+    playlistDock = new TDockWidget(this);
+    playlistDock->setObjectName("playlistdock");
+    playlistDock->setWidget(playlist);
+    playlistDock->hide();
+    addDockWidget(Qt::LeftDockWidgetArea, playlistDock);
+
     connect(playlist, SIGNAL(playlistFinished()),
             this, SLOT(onPlaylistFinished()));
+    connect(playlist, SIGNAL(windowTitleChanged()),
+            this, SLOT(onWindowTitleChanged()));
 }
 
 void TMainWindow::createVideoEqualizer() {
@@ -490,11 +509,9 @@ void TMainWindow::createMenus() {
 
     toolbar_menu = createToolbarMenu();
 
-    windowMenu = new Menu::TMenuWindow(this, toolbar_menu, playlist,
-                                       log_window);
+    windowMenu = new Menu::TMenuWindow(this, toolbar_menu, playlistDock,
+                                       logDock, auto_hide_timer);
     menuBar()->addMenu(windowMenu);
-    auto_hide_timer->add(windowMenu->findChild<TAction*>("show_playlist"),
-                         playlist);
 
     helpMenu = new Menu::TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
@@ -929,15 +946,6 @@ void TMainWindow::showFilePropertiesDialog(bool checked) {
     }
 }
 
-void TMainWindow::showLog(bool b) {
-
-    log_window->setVisible(b);
-    if (b) {
-        log_window->raise();
-        log_window->activateWindow();
-    }
-}
-
 void TMainWindow::setWindowCaption(const QString& title) {
     setWindowTitle(title);
 }
@@ -974,7 +982,8 @@ void TMainWindow::retranslateStrings() {
     // Playlist
     playlist->retranslateStrings();
 
-    // Log window
+    // Log
+    logDock->setWindowTitle(tr("%1 log").arg(TConfig::PROGRAM_NAME));
     log_window->retranslateStrings();
 
     // Help window
@@ -1086,8 +1095,11 @@ void TMainWindow::loadConfig() {
 
     pref->endGroup();
 
+    playlistDock->loadConfig();
     playlist->loadSettings();
-    log_window->loadConfig();
+    onWindowTitleChanged();
+
+    logDock->loadConfig();
 }
 
 void TMainWindow::saveConfig() {
@@ -1133,7 +1145,6 @@ void TMainWindow::saveConfig() {
     pref->endGroup();
 
     playlist->saveSettings();
-    log_window->saveConfig();
     if (help_window) {
         help_window->saveConfig();
     }
@@ -1224,10 +1235,13 @@ void TMainWindow::showEvent(QShowEvent* event) {
     }
 
     setFloatingToolbarsVisible(true);
+
+    playlistDock->onShowMainWindow();
+    logDock->onShowMainWindow();
 }
 
 void TMainWindow::hideEvent(QHideEvent* event) {
-    WZDEBUG("");
+   WZDEBUG("");
 
     if (event) {
         QMainWindow::hideEvent(event);
@@ -1241,6 +1255,9 @@ void TMainWindow::hideEvent(QHideEvent* event) {
     }
 
     setFloatingToolbarsVisible(false);
+
+    playlistDock->onHideMainWindow();
+    logDock->onHideMainWindow();
 }
 
 void TMainWindow::changeEvent(QEvent* e) {
@@ -1481,6 +1498,12 @@ void TMainWindow::onDragPositionChanged(double t) {
         player->displayTextOnOSD(s);
     }
 }
+
+void TMainWindow::onWindowTitleChanged() {
+
+    playlistDock->setWindowTitle(playlist->windowTitle());
+}
+
 
 void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
     WZDEBUG("msg + '" + message + "'");
@@ -1853,7 +1876,7 @@ void TMainWindow::toggleFullscreen(bool b) {
         return;
     }
 
-    switching_fullscreen = true;
+    pref->switching_fullscreen = true;
     pref->fullscreen = b;
     emit fullscreenChanged();
 
@@ -1868,7 +1891,7 @@ void TMainWindow::toggleFullscreen(bool b) {
     }
 
     setFocus(); // Fixes bug #2493415
-    switching_fullscreen = false;
+    pref->switching_fullscreen = false;
 }
 
 void TMainWindow::aboutToEnterFullscreen() {

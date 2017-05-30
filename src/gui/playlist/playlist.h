@@ -82,7 +82,7 @@ class TPlaylist : public QWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlaylist(TMainWindow* mw);
+    TPlaylist(QWidget* parent, TMainWindow* mw);
     virtual ~TPlaylist();
 
     void openPlaylist(const QString& filename);
@@ -125,14 +125,11 @@ public slots:
 signals:
     void playlistFinished();
     void enablePrevNextChanged();
-    void visibilityChanged(bool visible);
     void windowTitleChanged();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent*);
     virtual void dropEvent(QDropEvent*);
-    virtual void hideEvent (QHideEvent*);
-    virtual void showEvent (QShowEvent*);
 
 private:
     Action::Menu::TMenu* add_menu;

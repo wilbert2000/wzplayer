@@ -2,12 +2,14 @@
 
 #include <QDebug>
 
-#include "gui/action/actiongroup.h"
-#include "settings/preferences.h"
-#include "player/player.h"
-#include "images.h"
 #include "gui/mainwindow.h"
+#include "gui/dockwidget.h"
+#include "gui/autohidetimer.h"
+#include "gui/action/actiongroup.h"
 #include "gui/action/action.h"
+#include "player/player.h"
+#include "settings/preferences.h"
+#include "images.h"
 #include "images.h"
 
 using namespace Settings;
@@ -138,8 +140,9 @@ void TMenuStayOnTop::onAboutToShow() {
 
 TMenuWindow::TMenuWindow(TMainWindow* mw,
                          QMenu* toolBarMenu,
-                         QWidget* playlist,
-                         QWidget* logWindow)
+                         TDockWidget* playlistDock,
+                         TDockWidget* logDock,
+                         TAutoHideTimer* autoHideTimer)
     : TMenu(mw, mw, "window_menu", tr("&Window"), "noicon") {
 
     // OSD
@@ -154,27 +157,27 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     addAction(main_window->findChild<TAction*>("view_properties"));
 
     // Show playlist
-    TAction* a = new TAction(this, "show_playlist", tr("View &playlist..."),
-                             "playlist", Qt::Key_P);
-    a->setCheckable(true);
-    main_window->addAction(a);
-    connect(a, SIGNAL(triggered(bool)),
-            main_window, SLOT(showPlaylist(bool)));
-    connect(playlist, SIGNAL(visibilityChanged(bool)),
-            a, SLOT(setChecked(bool)));
+    QAction* q = playlistDock->toggleViewAction();
+    q->setObjectName("show_playlist");
+    q->setIcon(Images::icon("playlist"));
+    q->setShortcut(Qt::Key_P);
+    // TODO: setText(tr("View &playlist...") + setToolTip
+    addAction(q);
+    autoHideTimer->add(q, playlistDock);
 
     // Show log
-    a = new TAction(this, "show_log", tr("View &log..."), "log",
-                    QKeySequence("Ctrl+L"));
-    a->setCheckable(true);
-    main_window->addAction(a);
-    connect(a, SIGNAL(triggered(bool)), main_window, SLOT(showLog(bool)));
-    connect(logWindow, SIGNAL(visibilityChanged(bool)),
-            a, SLOT(setChecked(bool)));
+    q = logDock->toggleViewAction();
+    q->setObjectName("show_log");
+    q->setIcon(Images::icon("log"));
+    q->setShortcut(QKeySequence("Ctrl+L"));
+    // TODO: tr("View &playlist...") + setToolTip
+    addAction(q);
+    autoHideTimer->add(q, logDock);
 
     // Preferences
     addSeparator();
-    a = new TAction(this, "show_config", tr("Open &configuration folder..."));
+    TAction* a = new TAction(this, "show_config",
+                             tr("Open &configuration folder..."));
     main_window->addAction(a);
     connect(a, SIGNAL(triggered()), main_window, SLOT(showConfigFolder()));
 

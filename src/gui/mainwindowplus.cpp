@@ -18,17 +18,9 @@
 
 #include "gui/mainwindowplus.h"
 
-#include <QEvent>
 #include <QMenu>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QDockWidget>
-#include <QTimer>
 
-#include "gui/playerwindow.h"
-#include "config.h"
 #include "images.h"
-#include "gui/desktop.h"
 #include "player/player.h"
 #include "gui/action/action.h"
 #include "gui/action/menu/menufile.h"
@@ -38,7 +30,6 @@
 #include "gui/action/menu/menusubtitle.h"
 #include "gui/action/menu/menubrowse.h"
 #include "gui/action/menu/menuwindow.h"
-#include "gui/playlist/playlist.h"
 
 
 using namespace Settings;
@@ -48,10 +39,7 @@ namespace Gui {
 TMainWindowPlus::TMainWindowPlus() :
     TMainWindow(),
     debug(logger()),
-    hideMainWindowOnStartup(false),
-    restore_playlist(false),
-    reqOptSize(false),
-    saved_size(0) {
+    hideMainWindowOnStartup(false) {
 
     tray = new QSystemTrayIcon(this);
     tray->setIcon(Images::icon("logo", 22));
@@ -95,32 +83,8 @@ TMainWindowPlus::TMainWindowPlus() :
 
     tray->setContextMenu(context_menu);
 
-    // Playlistdock
-    setAnimated(false);
-    playlistdock = new QDockWidget(this);
-    playlistdock->setObjectName("playlistdock");
-    playlistdock->setWidget(playlist);
-    playlistdock->setFloating(true);
-    playlistdock->setAllowedAreas(Qt::TopDockWidgetArea
-                                  | Qt::BottomDockWidgetArea
-                                  | Qt::LeftDockWidgetArea
-                                  | Qt::RightDockWidgetArea);
-    playlistdock->setAcceptDrops(true);
-    addDockWidget(Qt::LeftDockWidgetArea, playlistdock);
-    playlistdock->hide();
-
-    connect(playlistdock, SIGNAL(visibilityChanged(bool)),
-            this, SLOT(onDockVisibilityChanged(bool)));
-    connect(playlist, SIGNAL(windowTitleChanged()),
-            this, SLOT(setWinTitle()));
     connect(this, SIGNAL(openFileRequested()),
             this, SLOT(showAll()));
-
-    optimizeSizeTimer = new QTimer(this);
-    optimizeSizeTimer->setSingleShot(true);
-    optimizeSizeTimer->setInterval(100);
-    connect(optimizeSizeTimer, SIGNAL(timeout()),
-            this, SLOT(onOptimizeSizeTimeout()));
 
     retranslateStrings();
 }
@@ -132,21 +96,7 @@ TMainWindowPlus::~TMainWindowPlus() {
 
 void TMainWindowPlus::retranslateStrings() {
 
-    setWinTitle();
     updateShowAllAct();
-}
-
-void TMainWindowPlus::changeEvent(QEvent* e) {
-
-    TMainWindow::changeEvent(e);
-    if (e->type() == QEvent::LanguageChange) {
-        retranslateStrings();
-    }
-}
-
-void TMainWindowPlus::setWinTitle() {
-
-    playlistdock->setWindowTitle(playlist->windowTitle());
 }
 
 void TMainWindowPlus::setWindowCaption(const QString& title) {
@@ -226,9 +176,6 @@ void TMainWindowPlus::loadConfig() {
                                           hideMainWindowOnStartup).toBool();
     pref->endGroup();
 
-    restore_playlist = playlistdock->isVisible() && playlistdock->isFloating();
-
-    setWinTitle();
     updateShowAllAct();
 }
 
@@ -262,15 +209,7 @@ void TMainWindowPlus::showAll(bool b) {
 
     if (b) {
         show();
-        if (restore_playlist) {
-            playlistdock->show();
-        }
     } else {
-        restore_playlist = playlistdock->isVisible()
-                           && playlistdock->isFloating();
-        if (restore_playlist) {
-            playlistdock->hide();
-        }
         hide();
     }
     updateShowAllAct();
@@ -281,89 +220,6 @@ void TMainWindowPlus::onMediaInfoChanged() {
 
     TMainWindow::onMediaInfoChanged();
     tray->setToolTip(windowTitle());
-}
-
-void TMainWindowPlus::onOptimizeSizeTimeout() {
-
-    // Wait for mouse release
-    if (QApplication::mouseButtons()) {
-        optimizeSizeTimer->start();
-    } else {
-        WZDEBUG("");
-        saved_size = 0;
-        if (reqOptSize) {
-            reqOptSize = false;
-            optimizeSizeFactor();
-        }
-    }
-}
-
-void TMainWindowPlus::onDockVisibilityChanged(bool visible) {
-
-    if (pref->fullscreen || switching_fullscreen || !pref->resize_on_load) {
-        WZDEBUG("visible " + QString::number(visible) + ", canceling resize");
-        reqOptSize = false;
-        saved_size = 0;
-        return;
-    }
-
-    if (reqOptSize) {
-        WZDEBUG(QString("req, visible %1, size %2, saved size %3")
-                .arg(visible).arg(pref->size_factor).arg(saved_size));
-        // When showing dock restore saved size
-        if (visible && saved_size != 0) {
-            pref->size_factor = saved_size;
-        }
-    } else if (playlistdock->isFloating()) {
-        WZDEBUG(QString("floating, visible %1, size %2")
-                .arg(visible).arg(pref->size_factor));
-        if (visible) {
-            TDesktop::keepInsideDesktop(playlistdock);
-        }
-    } else {
-        if (visible){
-            if (saved_size == 0) {
-                WZDEBUG("show, size " + QString::number(pref->size_factor)
-                        + ", no saved size");
-            } else {
-                WZDEBUG(QString("onDockVisibilityChanged: show, size"
-                                " %1, restoring saved size %2")
-                        .arg(pref->size_factor).arg(saved_size));
-                pref->size_factor = saved_size;
-                reqOptSize = true;
-            }
-        } else {
-            WZDEBUG("hide, saving size " + QString::number(pref->size_factor));
-            saved_size = pref->size_factor;
-            reqOptSize = true;
-        }
-    }
-
-    // Post optimizeSizeFactor
-    if (reqOptSize) {
-        WZDEBUG("posting optimizeSizeFactor");
-        optimizeSizeTimer->start();
-    }
-}
-
-void TMainWindowPlus::showPlaylist(bool visible) {
-    WZDEBUG("visible " + QString::number(visible));
-
-    restore_playlist = visible && playlistdock->isFloating();
-
-    if (pref->resize_on_load
-        && !pref->fullscreen
-        && !playlistdock->isFloating()) {
-        WZDEBUG("saving size " + QString::number(pref->size_factor)
-                + ", requesting optimize");
-        saved_size = pref->size_factor;
-        reqOptSize = true;
-    } else {
-        reqOptSize = false;
-    }
-
-    // Triggers onDockVisibilityChanged
-    playlistdock->setVisible(visible);
 }
 
 } // namespace Gui

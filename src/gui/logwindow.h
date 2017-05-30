@@ -35,9 +35,6 @@ public:
     TLogWindow(QWidget* parent);
     virtual ~TLogWindow();
 
-    virtual void loadConfig();
-    virtual void saveConfig();
-
     void retranslateStrings();
 
     static TLogWindowAppender* appender;

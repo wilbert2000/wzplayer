@@ -7,6 +7,8 @@
 namespace Gui {
 
 class TMainWindow;
+class TDockWidget;
+class TAutoHideTimer;
 
 namespace Action {
 
@@ -36,8 +38,9 @@ class TMenuWindow : public TMenu {
 public:
     TMenuWindow(TMainWindow* mw,
                 QMenu* toolBarMenu,
-                QWidget* playlist,
-                QWidget* logWindow);
+                TDockWidget* playlistDock,
+                TDockWidget* logDock,
+                TAutoHideTimer* autoHideTimer);
 };
 
 } // namespace Menu

@@ -22,12 +22,10 @@
 #include "gui/mainwindow.h"
 
 #include <QSystemTrayIcon>
-#include <QPoint>
 #include "wzdebug.h"
 
 
 class QMenu;
-class QDockWidget;
 
 namespace Gui {
 
@@ -44,14 +42,10 @@ public:
 
     bool startHidden() const;
 
-protected:
-    virtual void changeEvent(QEvent* event);
-
 protected slots:
     virtual void closeWindow();
     virtual void quit();
     virtual void setWindowCaption(const QString& title);
-    virtual void showPlaylist(bool visible);
     virtual void onMediaInfoChanged();
 
 private:
@@ -64,13 +58,6 @@ private:
 
     // To save state
     bool hideMainWindowOnStartup;
-    bool restore_playlist;
-
-    QDockWidget* playlistdock;
-
-    QTimer* optimizeSizeTimer;
-    bool reqOptSize;
-    double saved_size;
 
     void switchToTray();
     void retranslateStrings();
@@ -79,11 +66,8 @@ private:
 
 private slots:
     void trayIconActivated(QSystemTrayIcon::ActivationReason);
-    void onOptimizeSizeTimeout();
-    void onDockVisibilityChanged(bool visible);
     void showAll();
     void toggleShowAll();
-    void setWinTitle();
 };
 
 } // namespace Gui

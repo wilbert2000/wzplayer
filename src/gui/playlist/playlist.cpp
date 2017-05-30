@@ -129,8 +129,8 @@ void TAddRemovedMenu::onTriggered(QAction* action) {
 }
 
 
-TPlaylist::TPlaylist(TMainWindow* mw) :
-    QWidget(mw),
+TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
+    QWidget(parent),
     debug(logger()),
     main_window(mw),
     thread(0),
@@ -416,8 +416,6 @@ void TPlaylist::createToolbar() {
 
 void TPlaylist::retranslateStrings() {
 
-    // Icon
-    setWindowIcon(Images::icon("logo", 64));
     setWinTitle();
 }
 
@@ -1506,16 +1504,6 @@ void TPlaylist::dropEvent(QDropEvent *e) {
         return;
     }
     QWidget::dropEvent(e);
-}
-
-void TPlaylist::hideEvent(QHideEvent*) {
-    WZDEBUG("emit visibilityChanged(false)");
-    emit visibilityChanged(false);
-}
-
-void TPlaylist::showEvent(QShowEvent*) {
-    WZDEBUG("emit visibilityChanged(true)");
-    emit visibilityChanged(true);
 }
 
 void TPlaylist::openPlaylist(const QString& filename) {

@@ -67,6 +67,7 @@ class TPlaylist;
 
 class TPlayerWindow;
 class TAutoHideTimer;
+class TDockWidget;
 class TLogWindow;
 class THelpWindow;
 class TFilePropertiesDialog;
@@ -117,8 +118,6 @@ public slots:
     virtual void loadSub();
     virtual void loadAudioFile(); // Load external audio file
 
-    virtual void showPlaylist(bool) = 0;
-    virtual void showLog(bool b);
     virtual void showPreferencesDialog();
     virtual void showFilePropertiesDialog(bool checked);
 
@@ -165,8 +164,6 @@ signals:
     void requestRestart();
 
 protected:
-    Playlist::TPlaylist* playlist;
-
     Action::Menu::TMenuFile* fileMenu;
     Action::Menu::TMenuPlay* playMenu;
     Action::Menu::TMenuVideo* videoMenu;
@@ -174,8 +171,6 @@ protected:
     Action::Menu::TMenuSubtitle* subtitleMenu;
     Action::Menu::TMenuBrowse* browseMenu;
     QMenu* windowMenu;
-
-    bool switching_fullscreen;
 
     virtual void closeEvent(QCloseEvent* e);
     virtual void changeEvent(QEvent* event);
@@ -207,6 +202,10 @@ protected slots:
 private:
     QWidget* panel;
     TPlayerWindow* playerwindow;
+    TDockWidget* playlistDock;
+    Playlist::TPlaylist* playlist;
+    TDockWidget* logDock;
+    TLogWindow* log_window;
 
     Action::TAction* showContextMenuAct;
     Action::TAction* nextWheelFunctionAct;
@@ -259,7 +258,6 @@ private:
 
     // Windows
     TFilePropertiesDialog* file_properties_dialog;
-    TLogWindow* log_window;
     Pref::TDialog* pref_dialog;
     THelpWindow* help_window;
 
@@ -281,6 +279,7 @@ private:
 
     static QString settingsGroupName();
 
+    void createLogDock();
     void createPanel();
     void createPlayer();
     void createPlayerWindow();
@@ -360,6 +359,7 @@ private slots:
     void onMediaSettingsChanged();
     void onPlaylistFinished();
     void onDragPositionChanged(double);
+    void onWindowTitleChanged();
 };
 
 } // namespace Gui

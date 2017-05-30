@@ -40,7 +40,7 @@ namespace Gui {
 TLogWindowAppender* TLogWindow::appender = 0;
 
 TLogWindow::TLogWindow(QWidget* parent)
-    : QWidget(parent, Qt::Window) {
+    : QWidget(parent) {
 
     setupUi(this);
     setObjectName("logwindow");
@@ -69,9 +69,6 @@ void TLogWindow::retranslateStrings() {
 
     retranslateUi(this);
 
-    setWindowTitle(tr("%1 log").arg(TConfig::PROGRAM_NAME));
-    setWindowIcon(Images::icon("logo"));
-
     saveButton->setText("");
     saveButton->setIcon(Images::icon("save"));
     copyButton->setText("");
@@ -81,13 +78,11 @@ void TLogWindow::retranslateStrings() {
 void TLogWindow::showEvent(QShowEvent*) {
 
     appender->setEdit(edit);
-    emit visibilityChanged(true);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
 
     appender->setEdit(0);
-    emit visibilityChanged(false);
 }
 
 // Call hideEvent() and accept close
@@ -96,33 +91,6 @@ void TLogWindow::closeEvent(QCloseEvent* event) {
 
     hideEvent(0);
     event->accept();
-}
-
-void TLogWindow::loadConfig() {
-    WZDEBUG("");
-
-    pref->beginGroup(objectName());
-    QPoint p = pref->value("pos", QPoint()).toPoint();
-    QSize s = pref->value("size", QPoint()).toSize();
-    int state = pref->value("state", 0).toInt();
-    pref->endGroup();
-
-    if (s.width() > 200 && s.height() > 200) {
-        move(p);
-        resize(s);
-        setWindowState((Qt::WindowStates) state);
-        TDesktop::keepInsideDesktop(this);
-    }
-}
-
-void TLogWindow::saveConfig() {
-    WZDEBUG("");
-
-    pref->beginGroup(objectName());
-    pref->setValue("pos", pos());
-    pref->setValue("size", size());
-    pref->setValue("state", (int) windowState());
-    pref->endGroup();
 }
 
 void TLogWindow::onSaveButtonClicked() {
