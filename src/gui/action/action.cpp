@@ -26,6 +26,16 @@
 namespace Gui {
 namespace Action {
 
+void updateToolTip(QAction* action) {
+
+    QString shortcut = action->shortcut().toString();
+    if (!shortcut.isEmpty()) {
+        QString s = action->text();
+        s.replace("&", "");
+        action->setToolTip(s + " (" + shortcut + ")");
+    }
+}
+
 TAction::TAction (QObject* parent,
                   const QString& name,
                   const QString& text,
@@ -63,13 +73,7 @@ void TAction::addActionToParent() {
 void TAction::setTextAndTip(const QString& text) {
 
     setText(text);
-
-    QString accel_text = shortcut().toString();
-    if (!accel_text.isEmpty()) {
-        QString s = text;
-        s.replace("&", "");
-        setToolTip(s + " (" + accel_text + ")");
-    }
+    updateToolTip(this);
 }
 
 } // namespace Action

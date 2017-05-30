@@ -27,6 +27,8 @@
 namespace Gui {
 namespace Action {
 
+extern void updateToolTip(QAction* action);
+
 class TAction : public QAction {
 public:
     TAction(QObject* parent,
