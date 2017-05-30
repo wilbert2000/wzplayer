@@ -1876,7 +1876,6 @@ void TMainWindow::toggleFullscreen(bool b) {
         return;
     }
 
-    pref->switching_fullscreen = true;
     pref->fullscreen = b;
     emit fullscreenChanged();
 
@@ -1891,7 +1890,6 @@ void TMainWindow::toggleFullscreen(bool b) {
     }
 
     setFocus(); // Fixes bug #2493415
-    pref->switching_fullscreen = false;
 }
 
 void TMainWindow::aboutToEnterFullscreen() {

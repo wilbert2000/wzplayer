@@ -261,7 +261,6 @@ public:
 
     // Fullscreen
     bool fullscreen;
-    bool switching_fullscreen;
     int floating_hide_delay;
     bool start_in_fullscreen;
 
