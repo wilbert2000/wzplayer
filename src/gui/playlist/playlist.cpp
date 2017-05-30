@@ -1345,7 +1345,6 @@ void TPlaylist::cut() {
 void TPlaylist:: setWinTitle() {
 
     QString title;
-
     TPlaylistWidgetItem* root = playlistWidget->root();
     if (root) {
         title = root->baseName();
@@ -1354,7 +1353,7 @@ void TPlaylist:: setWinTitle() {
         }
     }
 
-    title = tr("WZPlaylist%1%2%3",
+    title = tr("Playlist%1%2%3",
                "1 optional white space,"
                " 2 optional playlist name,"
                " 3 optional playlist modified star")
@@ -1364,7 +1363,7 @@ void TPlaylist:: setWinTitle() {
     setWindowTitle(title);
 
     // Inform the playlist dock
-    emit windowTitleChanged();
+    emit playlistTitleChanged();
 }
 
 void TPlaylist::onModifiedChanged() {

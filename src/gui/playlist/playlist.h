@@ -125,7 +125,7 @@ public slots:
 signals:
     void playlistFinished();
     void enablePrevNextChanged();
-    void windowTitleChanged();
+    void playlistTitleChanged();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent*);

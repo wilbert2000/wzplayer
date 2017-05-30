@@ -321,8 +321,8 @@ void TMainWindow::createPlaylist() {
 
     connect(playlist, SIGNAL(playlistFinished()),
             this, SLOT(onPlaylistFinished()));
-    connect(playlist, SIGNAL(windowTitleChanged()),
-            this, SLOT(onWindowTitleChanged()));
+    connect(playlist, SIGNAL(playlistTitleChanged()),
+            this, SLOT(onPlaylistTitleChanged()));
 }
 
 void TMainWindow::createVideoEqualizer() {
@@ -1096,7 +1096,6 @@ void TMainWindow::loadConfig() {
 
     playlistDock->loadConfig();
     playlist->loadSettings();
-    onWindowTitleChanged();
 
     logDock->loadConfig();
 }
@@ -1498,7 +1497,7 @@ void TMainWindow::onDragPositionChanged(double t) {
     }
 }
 
-void TMainWindow::onWindowTitleChanged() {
+void TMainWindow::onPlaylistTitleChanged() {
 
     playlistDock->setWindowTitle(playlist->windowTitle());
 }

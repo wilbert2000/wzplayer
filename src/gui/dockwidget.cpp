@@ -27,7 +27,7 @@ void TDockWidget::onShowMainWindow() {
         WZDEBUG("showing dock " + objectName());
         show();
     } else {
-        WZDEBUG("not restoring dock " + objectName());
+        WZDEBUG("no restore dock " + objectName());
     }
 }
 
