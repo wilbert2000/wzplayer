@@ -188,7 +188,7 @@ void TMainWindow::createLogDock() {
     WZDEBUG("");
 
     log_window = new TLogWindow(this);
-    logDock = new TDockWidget(this);
+    logDock = new TDockWidget(tr("Log"), this);
     logDock->setObjectName("logdock");
     logDock->setWidget(log_window);
     logDock->hide();
@@ -313,7 +313,7 @@ void TMainWindow::createPlaylist() {
     WZDEBUG("");
 
     playlist = new Playlist::TPlaylist(this, this);
-    playlistDock = new TDockWidget(this);
+    playlistDock = new TDockWidget(tr("Playlist"), this);
     playlistDock->setObjectName("playlistdock");
     playlistDock->setWidget(playlist);
     playlistDock->hide();
@@ -983,7 +983,6 @@ void TMainWindow::retranslateStrings() {
     playlist->retranslateStrings();
 
     // Log
-    logDock->setWindowTitle(tr("%1 log").arg(TConfig::PROGRAM_NAME));
     log_window->retranslateStrings();
 
     // Help window

@@ -161,7 +161,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     q->setObjectName("show_playlist");
     q->setIcon(Images::icon("playlist"));
     q->setShortcut(Qt::Key_P);
-    // TODO: setText(tr("View &playlist...") + setToolTip
+    q->setToolTip(q->text() + " (P)");
     addAction(q);
     autoHideTimer->add(q, playlistDock);
 
@@ -170,7 +170,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     q->setObjectName("show_log");
     q->setIcon(Images::icon("log"));
     q->setShortcut(QKeySequence("Ctrl+L"));
-    // TODO: tr("View &playlist...") + setToolTip
+    q->setToolTip(q->text() + " (Ctrl+L)");
     addAction(q);
     autoHideTimer->add(q, logDock);
 

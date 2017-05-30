@@ -7,8 +7,8 @@ using namespace Settings;
 
 namespace Gui {
 
-TDockWidget::TDockWidget(QWidget* parent) :
-    QDockWidget(parent),
+TDockWidget::TDockWidget(const QString& title, QWidget* parent) :
+    QDockWidget(title, parent),
     restore(false) {
 
     setAcceptDrops(true);

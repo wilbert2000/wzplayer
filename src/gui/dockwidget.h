@@ -12,7 +12,7 @@ class TDockWidget : public QDockWidget {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TDockWidget(QWidget* parent);
+    TDockWidget(const QString& title, QWidget* parent);
     virtual ~TDockWidget();
 
     void loadConfig();
