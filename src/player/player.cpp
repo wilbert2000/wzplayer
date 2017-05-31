@@ -204,6 +204,15 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
         return;
     }
 
+    // Clear eof and catch unreported error when still loading
+    if (_state == STATE_LOADING) {
+        eof = false;
+        if (normal_exit) {
+            normal_exit = false;
+            exit_code = Player::Process::TExitMsg::ERR_CRASHED;
+        }
+    }
+
     WZDEBUG("entering the stopped state");
     setState(STATE_STOPPED);
 
