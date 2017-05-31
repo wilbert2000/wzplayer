@@ -173,7 +173,6 @@ protected:
     QMenu* windowMenu;
 
     virtual void closeEvent(QCloseEvent* e);
-    virtual void changeEvent(QEvent* event);
     virtual void hideEvent(QHideEvent* event);
     virtual void showEvent(QShowEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent*);
