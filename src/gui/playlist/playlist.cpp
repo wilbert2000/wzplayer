@@ -362,6 +362,7 @@ void TPlaylist::createActions() {
 void TPlaylist::createToolbar() {
 
     toolbar = new QToolBar(this);
+    toolbar->setObjectName("playlisttoolbar");
 
     toolbar->addAction(openAct);
     toolbar->addAction(saveAct);;
