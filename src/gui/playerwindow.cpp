@@ -351,8 +351,8 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
             WZDEBUG("ignoring modified mouse release event");
         } else if (left_button_pressed_time.elapsed()
                    >= QApplication::startDragTime()) {
-            WZTRACE("ignoring mouse release event taking longer as " +
-                    QString::number(QApplication::startDragTime()) + " ms");
+            // W ZTRACE("ignoring mouse release event taking longer as " +
+            //          QString::number(QApplication::startDragTime()) + " ms");
         } else if (delay_left_click) {
             if (!double_clicked) {
                 // Delay left click until double click has chance to arrive
