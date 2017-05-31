@@ -160,9 +160,11 @@ TPlayer::~TPlayer() {
 void TPlayer::setState(TState s) {
 
     if (s != _state) {
+        WZDEBUG(QString("state changed from %1 to %2 at %3")
+                .arg(stateToString())
+                .arg(stateToString(s))
+                .arg(mset.current_sec));
         _state = s;
-        WZDEBUG("state set to " + stateToString()
-                + " at " + QString::number(mset.current_sec));
         emit stateChanged(_state);
     }
 }
