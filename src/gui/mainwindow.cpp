@@ -321,8 +321,8 @@ void TMainWindow::createPlaylist() {
 
     connect(playlist, SIGNAL(playlistFinished()),
             this, SLOT(onPlaylistFinished()));
-    connect(playlist, SIGNAL(playlistTitleChanged()),
-            this, SLOT(onPlaylistTitleChanged()));
+    connect(playlist, SIGNAL(playlistTitleChanged(QString)),
+            this, SLOT(onPlaylistTitleChanged(QString)));
 }
 
 void TMainWindow::createVideoEqualizer() {
@@ -1497,9 +1497,10 @@ void TMainWindow::onDragPositionChanged(double t) {
     }
 }
 
-void TMainWindow::onPlaylistTitleChanged() {
+void TMainWindow::onPlaylistTitleChanged(QString title) {
+    WZDEBUG(title);
 
-    playlistDock->setWindowTitle(playlist->windowTitle());
+    playlistDock->setWindowTitle(title);
 }
 
 

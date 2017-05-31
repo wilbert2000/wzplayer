@@ -125,7 +125,7 @@ public slots:
 signals:
     void playlistFinished();
     void enablePrevNextChanged();
-    void playlistTitleChanged();
+    void playlistTitleChanged(QString title);
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent*);
@@ -197,7 +197,7 @@ private:
 
     void addFilesStartThread();
 
-    void setWinTitle();
+    void setPlaylistTitle();
 
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;

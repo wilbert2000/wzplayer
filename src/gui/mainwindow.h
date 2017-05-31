@@ -359,7 +359,7 @@ private slots:
     void onMediaSettingsChanged();
     void onPlaylistFinished();
     void onDragPositionChanged(double);
-    void onPlaylistTitleChanged();
+    void onPlaylistTitleChanged(QString title);
 };
 
 } // namespace Gui

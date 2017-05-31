@@ -416,7 +416,7 @@ void TPlaylist::createToolbar() {
 
 void TPlaylist::retranslateStrings() {
 
-    setWinTitle();
+    setPlaylistTitle();
 }
 
 void TPlaylist::getFilesToPlay(QStringList& files) const {
@@ -448,7 +448,7 @@ void TPlaylist::clear() {
     abortThread();
     playlistWidget->clr();
     filename = "";
-    setWinTitle();
+    setPlaylistTitle();
 }
 
 void TPlaylist::onThreadFinished() {
@@ -506,7 +506,7 @@ void TPlaylist::onThreadFinished() {
     if (root) {
         filename = root->filename();
         WZDEBUG("filename set to '" + filename + "'");
-        setWinTitle();
+        setPlaylistTitle();
 
         // Let the player have a go at a failed file name
         if (root->childCount() == 1
@@ -1250,7 +1250,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         }
     }
 
-    setWinTitle();
+    setPlaylistTitle();
     WZDEBUG("created new playlist for '" + filename + "'");
 }
 
@@ -1342,7 +1342,7 @@ void TPlaylist::cut() {
     removeSelected();
 }
 
-void TPlaylist:: setWinTitle() {
+void TPlaylist:: setPlaylistTitle() {
 
     QString title;
     TPlaylistWidgetItem* root = playlistWidget->root();
@@ -1360,14 +1360,12 @@ void TPlaylist:: setWinTitle() {
         .arg(title.isEmpty() ? "" : " ")
         .arg(title)
         .arg(playlistWidget->modified() ? "*" : "");
-    setWindowTitle(title);
 
-    // Inform the playlist dock
-    emit playlistTitleChanged();
+    emit playlistTitleChanged(title);
 }
 
 void TPlaylist::onModifiedChanged() {
-    setWinTitle();
+    setPlaylistTitle();
 }
 
 bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
@@ -1716,7 +1714,7 @@ bool TPlaylist::save() {
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
     root->setFilename(filename, fi.completeBaseName());
-    setWinTitle();
+    setPlaylistTitle();
     pref->last_dir = fi.absolutePath();
 
     bool result;
