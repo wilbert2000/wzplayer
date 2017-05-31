@@ -129,10 +129,13 @@ TMainWindow::TMainWindow() :
     center_window(false),
     update_checker(0) {
 
-    setAttribute(Qt::WA_DeleteOnClose);
+    setObjectName("mainwindow");
     setWindowTitle(TConfig::PROGRAM_NAME);
+    setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
-    setAnimated(false); // Disable animation docks
+
+    // QTBUG-54185 in Qt 5.6.1, fixed in 5.6.2
+    // setAnimated(false); // Disable animation of docks
 
     createStatusBar();
 
