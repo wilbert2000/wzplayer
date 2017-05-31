@@ -7,37 +7,17 @@ using namespace Settings;
 
 namespace Gui {
 
-TDockWidget::TDockWidget(const QString& title, QWidget* parent) :
-    QDockWidget(title, parent),
-    restore(false) {
+TDockWidget::TDockWidget(const QString& title,
+                         QWidget* parent,
+                         const QString& objectName) :
+    QDockWidget(title, parent) {
 
+    setObjectName(objectName);
     setAcceptDrops(true);
+    //setAllowedAreas(Qt::AllDockWidgetAreas); // default
 }
 
 TDockWidget::~TDockWidget() {
-}
-
-void TDockWidget::loadConfig() {
-    restore = isVisible() && isFloating();
-}
-
-void TDockWidget::onShowMainWindow() {
-
-    if (restore) {
-        WZDEBUG("showing dock " + objectName());
-        show();
-    } else {
-        WZDEBUG("no restore dock " + objectName());
-    }
-}
-
-void TDockWidget::onHideMainWindow() {
-    WZDEBUG("");
-
-    restore = isVisible() && isFloating();
-    if (restore) {
-        hide();
-    }
 }
 
 } // namespace Gui

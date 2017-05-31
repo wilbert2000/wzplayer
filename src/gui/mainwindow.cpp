@@ -187,11 +187,9 @@ void TMainWindow::createPanel() {
 void TMainWindow::createLogDock() {
     WZDEBUG("");
 
-    log_window = new TLogWindow(this);
-    logDock = new TDockWidget(tr("Log"), this);
-    logDock->setObjectName("logdock");
+    logDock = new TDockWidget(tr("Log"), this, "logdock");
+    log_window = new TLogWindow(logDock);
     logDock->setWidget(log_window);
-    logDock->hide();
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
 }
 
@@ -312,11 +310,9 @@ void TMainWindow::createPlayer() {
 void TMainWindow::createPlaylist() {
     WZDEBUG("");
 
-    playlist = new Playlist::TPlaylist(this, this);
-    playlistDock = new TDockWidget(tr("Playlist"), this);
-    playlistDock->setObjectName("playlistdock");
+    playlistDock = new TDockWidget(tr("Playlist"), this, "playlistdock");
+    playlist = new Playlist::TPlaylist(playlistDock, this);
     playlistDock->setWidget(playlist);
-    playlistDock->hide();
     addDockWidget(Qt::LeftDockWidgetArea, playlistDock);
 
     connect(playlist, SIGNAL(playlistFinished()),
@@ -1082,8 +1078,12 @@ void TMainWindow::loadConfig() {
     fullscreen_statusbar_visible = pref->value("fullscreen_statusbar_visible",
         fullscreen_statusbar_visible).toBool();
 
-    restoreState(pref->value("toolbars_state").toByteArray(),
-                 Helper::qtVersion());
+
+    if (!restoreState(pref->value("toolbars_state").toByteArray(),
+                      Helper::qtVersion())) {
+        playlistDock->hide();
+        logDock->hide();
+    }
 
     pref->beginGroup("statusbar");
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
@@ -1094,10 +1094,7 @@ void TMainWindow::loadConfig() {
 
     pref->endGroup();
 
-    playlistDock->loadConfig();
     playlist->loadSettings();
-
-    logDock->loadConfig();
 }
 
 void TMainWindow::saveConfig() {
@@ -1221,10 +1218,7 @@ void TMainWindow::setFloatingToolbarsVisible(bool visible) {
 void TMainWindow::showEvent(QShowEvent* event) {
     WZDEBUG("");
 
-    if (event) {
-        QMainWindow::showEvent(event);
-    }
-
+    QMainWindow::showEvent(event);
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PAUSED
         && !ignore_show_hide_events) {
@@ -1233,18 +1227,12 @@ void TMainWindow::showEvent(QShowEvent* event) {
     }
 
     setFloatingToolbarsVisible(true);
-
-    playlistDock->onShowMainWindow();
-    logDock->onShowMainWindow();
 }
 
 void TMainWindow::hideEvent(QHideEvent* event) {
-   WZDEBUG("");
+    WZDEBUG("");
 
-    if (event) {
-        QMainWindow::hideEvent(event);
-    }
-
+    QMainWindow::hideEvent(event);
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PLAYING
         && !ignore_show_hide_events) {
@@ -1253,32 +1241,6 @@ void TMainWindow::hideEvent(QHideEvent* event) {
     }
 
     setFloatingToolbarsVisible(false);
-
-    playlistDock->onHideMainWindow();
-    logDock->onHideMainWindow();
-}
-
-void TMainWindow::changeEvent(QEvent* e) {
-
-    if (e->type() == QEvent::LanguageChange) {
-        retranslateStrings();
-    } else {
-        QMainWindow::changeEvent(e);
-
-        // Qt 5 dropped show/hideEvent().
-        // Emulate them.
-        if(e->type() == QEvent::WindowStateChange) {
-            bool was_min = static_cast<QWindowStateChangeEvent*>(e)->oldState()
-                           == Qt::WindowMinimized;
-            if (was_min) {
-                if (!isMinimized()) {
-                    showEvent(0);
-                }
-            } else if (isMinimized()) {
-                hideEvent(0);
-            }
-        }
-    }
 }
 
 void TMainWindow::showContextMenu(QPoint p) {

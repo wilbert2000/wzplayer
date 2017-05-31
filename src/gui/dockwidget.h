@@ -12,15 +12,10 @@ class TDockWidget : public QDockWidget {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TDockWidget(const QString& title, QWidget* parent);
+    TDockWidget(const QString& title,
+                QWidget* parent,
+                const QString& objectName);
     virtual ~TDockWidget();
-
-    void loadConfig();
-    void onShowMainWindow();
-    void onHideMainWindow();
-
-private:
-    bool restore;
 };
 
 } // namespace Gui
