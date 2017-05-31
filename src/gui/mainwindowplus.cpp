@@ -207,11 +207,7 @@ void TMainWindowPlus::showAll() {
 
 void TMainWindowPlus::showAll(bool b) {
 
-    if (b) {
-        show();
-    } else {
-        hide();
-    }
+    setVisible(b);
     updateShowAllAct();
 }
 
