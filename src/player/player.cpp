@@ -211,7 +211,7 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
         eof = false;
         if (normal_exit) {
             normal_exit = false;
-            exit_code = Player::Process::TExitMsg::ERR_CRASHED;
+            exit_code = Player::Process::TExitMsg::ERR_QUIT_WITHOUT_PLAY;
         }
     }
 

@@ -28,6 +28,7 @@ QString TExitMsg::message(int id) {
         QT_TRANSLATE_NOOP(c, "HTTP 404: file not found on the server"),
         QT_TRANSLATE_NOOP(c, "No stream found at the given URL"),
         QT_TRANSLATE_NOOP(c, "Could not find the requested title"),
+        QT_TRANSLATE_NOOP(c, "The player quit without playing the source"),
         QT_TRANSLATE_NOOP(c, "Reached out point")
     };
 

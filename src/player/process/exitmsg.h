@@ -10,7 +10,7 @@ namespace Process {
 class TExitMsg {
 public:
     enum TExitMsgID {
-        EXIT_COUNT = 15,
+        EXIT_COUNT = 16,
         EXIT_LAST_ID = 255,
         ERR_FIRST_ID = EXIT_LAST_ID - EXIT_COUNT + 1,
         ERR_FAILED_TO_START = ERR_FIRST_ID,
@@ -26,6 +26,7 @@ public:
         ERR_HTTP_404,
         ERR_NO_STREAM_FOUND,
         ERR_TITLE_NOT_FOUND,
+        ERR_QUIT_WITHOUT_PLAY,
         EXIT_OUT_POINT_REACHED
     };
 
