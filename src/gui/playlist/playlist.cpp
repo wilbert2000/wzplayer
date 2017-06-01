@@ -551,6 +551,12 @@ void TPlaylist::addFilesStartThread() {
     } else {
         WZDEBUG("starting add files thread");
         restartThread = false;
+
+        // Allow single image
+        bool addImages = pref->addImages
+                         || ((addFilesFiles.count() == 1)
+                             && extensions.isImage(addFilesFiles.at(0)));
+
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
                                      pref->nameBlacklist,
@@ -558,7 +564,7 @@ void TPlaylist::addFilesStartThread() {
                                      pref->addVideo,
                                      pref->addAudio,
                                      pref->addPlaylists,
-                                     pref->addImages);
+                                     addImages);
 
         connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
         connect(thread, SIGNAL(displayMessage(QString, int)),
