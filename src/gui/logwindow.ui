@@ -16,11 +16,23 @@
   </property>
   <layout class="QVBoxLayout">
    <item>
+    <widget class="QPlainTextEdit" name="edit"/>
+   </item>
+   <item>
     <layout class="QHBoxLayout">
      <property name="spacing">
       <number>6</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -46,7 +58,7 @@
      <item>
       <widget class="QLabel" name="findLabel">
        <property name="text">
-        <string>Find:</string>
+        <string>Fi&amp;nd:</string>
        </property>
        <property name="buddy">
         <cstring>findEdit</cstring>
@@ -84,19 +96,16 @@
      </item>
     </layout>
    </item>
-   <item>
-    <widget class="QPlainTextEdit" name="edit"/>
-   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>findEdit</tabstop>
-  <tabstop>findPreviousButton</tabstop>
-  <tabstop>findNextButton</tabstop>
   <tabstop>edit</tabstop>
   <tabstop>saveButton</tabstop>
   <tabstop>copyButton</tabstop>
+  <tabstop>findEdit</tabstop>
+  <tabstop>findPreviousButton</tabstop>
+  <tabstop>findNextButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>
