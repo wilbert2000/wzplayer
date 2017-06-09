@@ -98,7 +98,7 @@ void TEditableToolbar::addMenu(QAction* action) {
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
                                                 const TActionList& all_actions) {
-    WZTRACE("updating '" + objectName() + "'");
+    // W ZTRACE("updating '" + objectName() + "'");
 
     clear();
     space_eater = 0;
