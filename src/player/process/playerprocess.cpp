@@ -441,15 +441,14 @@ bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
 
 void TPlayerProcess::setImageDuration(int duration) {
 
-    // Need at least 2 frames
-    if (duration < 2) {
-        duration = 2;
-    } else if (duration > 999) {
-        duration = 999;
-    }
-
-    int fps;
+    int fps, frames;
     if (Settings::pref->isMPlayer()) {
+        // Need at least 2 frames
+        if (duration < 2) {
+            duration = 2;
+        } else if (duration > 999) {
+            duration = 999;
+        }
         // When MPlayer runs on 1 fps it will only respond to events once a
         // second. So increasing the framerate...
         if (duration <= 20) {
@@ -459,13 +458,20 @@ void TPlayerProcess::setImageDuration(int duration) {
         } else {
             fps = 1;
         }
+        frames = duration * fps;
     } else {
-        // Select 1 frame per second for MPV
+        // Need at least 2 frames
+        if (duration < 1) {
+            duration = 1;
+        } else if (duration > 999) {
+            duration = 999;
+        }
+        // With fps > 1, the displayed duration is off by factor fps
+        // With 1 fps, the playtime is one frame too short
         // With fps < 1 the displayed time is off
         fps = 1;
+        frames = (duration * fps) + 1;
     }
-
-    int frames = duration * fps;
 
     WZDEBUG(QString("duration %1, frames %2, fps %3")
             .arg(duration).arg(frames).arg(fps));
