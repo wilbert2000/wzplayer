@@ -1359,7 +1359,7 @@ void TMainWindow::onPlayerError(int exit_code) {
         QMessageBox::warning(this,
             tr("%1 process error").arg(pref->playerName()),
             s + " \n"
-            + tr("See menu Window -> View log for details."),
+            + tr("See log for details."),
             QMessageBox::Ok);
         busy = false;
     }
