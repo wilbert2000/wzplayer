@@ -1353,8 +1353,8 @@ void TMainWindow::onPlayerError(int exit_code) {
 
     static bool busy = false;
     if (pref->report_player_crashes
-        && !busy
-        && player->state() != Player::STATE_STOPPING) {
+        && player->state() != Player::STATE_STOPPING
+        && !busy) {
         busy = true;
         QMessageBox::warning(this,
             tr("%1 process error").arg(pref->playerName()),
