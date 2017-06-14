@@ -529,7 +529,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         enableSort(false);
     }
 
-    // Set parent and child index into parent
+    // Get parent and child index into parent
     TPlaylistWidgetItem* parent;
     int idx = 0;
 
@@ -579,6 +579,9 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));
+
+            // call onItemExpanded on root (loads icons etc.)
+            onItemExpanded(item);
         }
 
         // Update modified field
