@@ -704,10 +704,8 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
             }
 
             // Skip images
-            if (!addImages) {
-                if (extensions.isImage(fi)) {
-                    return 0;
-                }
+            if (!addImages && extensions.isImage(fi)) {
+                return 0;
             }
 
             item = createPath(parent, fi, name, duration, protectName);
