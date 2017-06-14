@@ -135,7 +135,9 @@ TMainWindow::TMainWindow() :
     setAcceptDrops(true);
 
     // QTBUG-54185 in Qt 5.6.1, fixed in 5.6.2
-    // setAnimated(false); // Disable animation of docks
+    if (Helper::qtVersion() != 50601) {
+        setAnimated(false); // Disable animation of docks
+    }
 
     createStatusBar();
 
