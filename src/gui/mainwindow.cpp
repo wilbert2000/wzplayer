@@ -135,6 +135,7 @@ TMainWindow::TMainWindow() :
     setAcceptDrops(true);
 
     // QTBUG-54185 in Qt 5.6.1, fixed in 5.6.2
+    // Int Qt 5.6.1 docking is borked when setAninated(false)
     if (Helper::qtVersion() != 50601) {
         setAnimated(false); // Disable animation of docks
     }
