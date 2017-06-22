@@ -46,9 +46,6 @@ public:
     // Apply changes
     virtual void getData(Settings::TPreferences* pref);
 
-    bool recentsChanged() const { return recents_changed; }
-    bool urlMaxChanged() const { return url_max_changed; }
-
 protected:
     void createLanguageCombo();
 
@@ -86,9 +83,6 @@ protected slots:
     void changeInstanceImages();
 
 private:
-    bool recents_changed;
-    bool url_max_changed;
-
     void createHelp();
 
     void setPauseWhenHidden(bool b);

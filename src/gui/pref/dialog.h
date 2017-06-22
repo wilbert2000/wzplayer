@@ -80,7 +80,6 @@ public:
     TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
     virtual ~TDialog();
 
-    TInterface* mod_interface() const { return page_interface; }
     TInput* mod_input() const { return page_input; }
 
     // Pass data to the standard dialogs

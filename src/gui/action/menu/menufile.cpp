@@ -85,6 +85,8 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
     addMenu(recentfiles_menu);
     updateRecents();
+    connect(main_window, SIGNAL(preferencesChanged()),
+            this, SLOT(onPreferencesChanged()));
 
     addSeparator();
 
@@ -212,6 +214,11 @@ void TMenuFile::updateRecents() {
         recentfiles_menu->addSeparator();
         recentfiles_menu->addAction(clearRecentsAct);
     }
+}
+
+void TMenuFile::onPreferencesChanged() {
+    // Number of recent items might have changed
+    updateRecents();
 }
 
 void TMenuFile::clearRecentsList() {

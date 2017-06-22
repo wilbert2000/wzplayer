@@ -747,8 +747,6 @@ void TMainWindow::applyNewPreferences() {
         return;
     }
 
-    // Keeping the current main window
-
     // Set color key, depends on VO
     playerwindow->setColorKey();
 
@@ -758,9 +756,6 @@ void TMainWindow::applyNewPreferences() {
     // Video equalizer
     video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
-    // Subtitles
-    subtitleMenu->useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
-
     // Interface
     // Show panel
     if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
@@ -769,10 +764,6 @@ void TMainWindow::applyNewPreferences() {
     }
     // Hide toolbars delay
     auto_hide_timer->setInterval(pref->floating_hide_delay);
-    // Recents
-    if (pref_dialog->mod_interface()->recentsChanged()) {
-        fileMenu->updateRecents();
-    }
 
     // Keyboard and mouse
     playerwindow->setDelayLeftClick(pref->delay_left_click);
@@ -783,11 +774,10 @@ void TMainWindow::applyNewPreferences() {
     // Update log window edit control
     log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
 
-    // Reenable actions to reflect changes
-    sendEnableActions();
-
-    // TODO: move some of above code to preferencesChanged() signal
     emit preferencesChanged();
+
+    // Enable actions to reflect changes
+    sendEnableActions();
 
     // Restart video if needed
     if (pref_dialog->requiresRestartPlayer()) {

@@ -34,8 +34,6 @@ class TMenuSubtitle : public TMenu {
 
 public:
     TMenuSubtitle(TMainWindow* mw);
-    TAction* useForcedSubsOnlyAct;
-    TAction* useCustomSubStyleAct;
 
 protected:
     virtual void enableActions();
@@ -62,13 +60,17 @@ private:
     TActionGroup* subtitleTrackGroup;
     TMenu* secondarySubtitleTrackMenu;
     TActionGroup* secondarySubtitleTrackGroup;
+    TAction* useForcedSubsOnlyAct;
 
     TAction* loadSubsAct;
     TAction* unloadSubsAct;
     TMenuSubFPS* subFPSMenu;
 
+    TAction* useCustomSubStyleAct;
+
 private slots:
     void updateSubtitles();
+    void onPreferencesChanged();
 };
 
 } // namespace Menu

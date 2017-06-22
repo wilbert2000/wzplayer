@@ -142,7 +142,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 void TInterface::getData(Settings::TPreferences* pref) {
 
     TSection::getData(pref);
-    recents_changed = false;
 
     if (pref->language != language()) {
         WZDEBUG("language changed, restarting app");
@@ -174,12 +173,10 @@ void TInterface::getData(Settings::TPreferences* pref) {
     // History
     if (pref->history_recents.getMaxItems() != recentsMaxItems()) {
         pref->history_recents.setMaxItems(recentsMaxItems());
-        recents_changed = true;
     }
 
     if (pref->history_urls.getMaxItems() != urlMaxItems()) {
         pref->history_urls.setMaxItems(urlMaxItems());
-        url_max_changed = true;
     }
 
     pref->save_dirs = rememberDirs();

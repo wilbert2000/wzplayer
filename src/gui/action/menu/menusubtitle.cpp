@@ -175,6 +175,8 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
     connect(useCustomSubStyleAct, SIGNAL(triggered(bool)),
             player, SLOT(setUseCustomSubStyle(bool)));
+    connect(main_window, SIGNAL(preferencesChanged()),
+            this, SLOT(onPreferencesChanged()));
 
     addActionsTo(main_window);
 }
@@ -211,6 +213,11 @@ void TMenuSubtitle::enableActions() {
 
 void TMenuSubtitle::onMediaSettingsChanged(Settings::TMediaSettings*) {
     // Already handled by updateSubtitles
+}
+
+void TMenuSubtitle::onPreferencesChanged() {
+
+    useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 }
 
 void TMenuSubtitle::updateSubtitles() {

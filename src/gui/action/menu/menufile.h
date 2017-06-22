@@ -27,6 +27,7 @@ private:
 
 private slots:
     void clearRecentsList();
+    void onPreferencesChanged();
 };
 
 } // namespace Menu
