@@ -16,8 +16,9 @@ namespace Playlist {
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
 
 // Alignment text fields
-const int NAME_TEXT_ALIGN = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
-const int TIME_TEXT_ALIGN = Qt::AlignRight | Qt::AlignVCenter;
+const int TEXT_ALIGN_NAME = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
+const int TEXT_ALIGN_TYPE = Qt::AlignLeft | Qt::AlignVCenter;
+const int TEXT_ALIGN_TIME = Qt::AlignRight | Qt::AlignVCenter;
 
 // Level of the root node in the tree view, where level means the number of
 // icons indenting the item. With root decoration on, toplevel items appear on
@@ -36,8 +37,9 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
 
     playlistItem.setFolder(true);
     setFlags(ROOT_FLAGS);
-    setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
-    setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
+    setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
+    setTextAlignment(COL_TYPE, TEXT_ALIGN_TYPE);
+    setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
 }
 
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
@@ -63,7 +65,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
         setFlags(flags);
     }
 
-    setTextAlignment(COL_NAME, NAME_TEXT_ALIGN);
+    setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
     setNameText(false);
     if (isSymLink()) {
         setToolTip(COL_NAME, qApp->translate(
@@ -72,7 +74,9 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
         setToolTip(COL_NAME, this->filename());
     }
 
-    setTextAlignment(COL_TIME, TIME_TEXT_ALIGN);
+    setTextAlignment(COL_TYPE, TEXT_ALIGN_TYPE);
+    setExtensionText();
+    setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
     setDurationText();
 }
 
@@ -99,20 +103,22 @@ void TPlaylistWidgetItem::setFilename(const QString& fileName,
 void TPlaylistWidgetItem::setNameText(bool setSizeHint) {
 
     QString n = baseName();
-    QString ext = extension();
-    if (!ext.isEmpty()) {
-        n += " (" + ext + ")";
-    }
-
     if (mModified) {
         n += "*";
     }
-
     setText(COL_NAME, n);
-
     if (setSizeHint) {
         setSzHint(getLevel());
     }
+}
+
+void TPlaylistWidgetItem::setExtensionText() {
+
+    QString ext = extension();
+    if (ext.length() > 8) {
+        ext = ext.left(5) + "...";
+    }
+    setText(COL_TYPE, ext);
 }
 
 void TPlaylistWidgetItem::setName(const QString& baseName,
@@ -123,6 +129,7 @@ void TPlaylistWidgetItem::setName(const QString& baseName,
     playlistItem.setBaseName(baseName, protectName);
     playlistItem.setExtension(ext);
     setNameText(setSizeHint);
+    setExtensionText();
 }
 
 QIcon TPlaylistWidgetItem::getIcon() {
@@ -275,7 +282,7 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 
     int maxh = 4 * fm.lineSpacing();
     QRect r = QRect(QPoint(), QSize(w, maxh));
-    QRect br = fm.boundingRect(r, NAME_TEXT_ALIGN, text);
+    QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text);
 
     int h = br.height() + 2 * vm;
     if (h < iconSize.height()) {

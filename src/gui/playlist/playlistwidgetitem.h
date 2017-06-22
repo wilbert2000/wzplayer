@@ -24,8 +24,9 @@ class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
     enum TColID {
         COL_NAME = 0,
-        COL_TIME = 1,
-        COL_COUNT = 2
+        COL_TYPE = 1,
+        COL_TIME = 2,
+        COL_COUNT = 3
     };
 
     TPlaylistWidgetItem();
@@ -113,6 +114,7 @@ private:
     QIcon getIcon();
     void setStateIcon();
     void setNameText(bool setSizeHint);
+    void setExtensionText();
     void setDurationText();
 };
 

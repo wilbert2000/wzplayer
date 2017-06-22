@@ -73,10 +73,12 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     //setRootIsDecorated(false);
     setColumnCount(TPlaylistWidgetItem::COL_COUNT);
-    setHeaderLabels(QStringList() << tr("Name") << tr("Length"));
+    setHeaderLabels(QStringList() << tr("Name") << tr("Type") << tr("Length"));
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_NAME,
                                    QHeaderView::Stretch);
+    header()->setSectionResizeMode(TPlaylistWidgetItem::COL_TYPE,
+                                   QHeaderView::ResizeToContents);
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_TIME,
                                    QHeaderView::ResizeToContents);
 
