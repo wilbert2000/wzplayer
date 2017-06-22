@@ -72,7 +72,6 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
         }
 
         // Only set check menu when x and y factor agree on +/- half a pixel
-        // TODO: fuzzy...
         double diffX = 0.5 / s.width() / factorX;
         double diffY = 0.5 / s.height() / factorY;
         if (diffY < diffX) {
