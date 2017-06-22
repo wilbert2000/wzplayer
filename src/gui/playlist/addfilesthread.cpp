@@ -482,7 +482,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
                 parent->insertChild(i, playlistItem);
             }
         } else {
-            WZWARN("found no playable items in '" + sourceFileName + "'");
+            WZINFO("found no playable items in '" + sourceFileName + "'");
             delete playlistItem;
             playlistItem = 0;
         }
