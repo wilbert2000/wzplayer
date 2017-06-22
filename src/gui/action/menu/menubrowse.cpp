@@ -60,7 +60,6 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     addMenu(programMenu);
     programGroup = new TActionGroup(this, "program");
     connect(programGroup, SIGNAL(activated(int)), player, SLOT(setProgram(int)));
-    // TODO: update
 #endif
 
     addSeparator();
