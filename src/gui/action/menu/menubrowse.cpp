@@ -55,13 +55,6 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     // Update normally done by updateTitles. For DVDNAV only:
     connect(player, SIGNAL(anglesChanged()), this, SLOT(updateAngles()));
 
-#if PROGRAM_SWITCH
-    programMenu = new TMenu(parent, this, "program_menu", tr("P&rogram"), "program");
-    addMenu(programMenu);
-    programGroup = new TActionGroup(this, "program");
-    connect(programGroup, SIGNAL(activated(int)), player, SLOT(setProgram(int)));
-#endif
-
     addSeparator();
 
     // DVDNAV

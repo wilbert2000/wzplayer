@@ -303,11 +303,6 @@ public slots:
     void setAngle(int);
     void nextAngle();
 
-#if PROGRAM_SWITCH
-    void setProgram(int ID);
-    void nextProgram();
-#endif
-
     // dvdnav buttons
     void dvdnavUp();
     void dvdnavDown();

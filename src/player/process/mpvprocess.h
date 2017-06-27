@@ -108,9 +108,6 @@ public:
 
     void setAspect(double aspect);
 
-#if PROGRAM_SWITCH
-    void setTSProgram(int ID);
-#endif
     void toggleDeinterlace();
     void setOSDScale(double value);
     void setChannelsFile(const QString &);

@@ -257,11 +257,6 @@ void TMediaData::list() const {
     WZDEBUG("chapters:");
     chapters.list();
 
-#if PROGRAM_SWITCH
-    WZDEBUG("programs:");
-    programs.list();
-#endif
-
     WZDEBUG("title: '" + title + "'");
     WZDEBUG("meta data:");
     TMetaData::const_iterator i = meta_data.constBegin();

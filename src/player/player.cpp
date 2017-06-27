@@ -1027,14 +1027,6 @@ void TPlayer::startPlayer(bool loopImage) {
         proc->setOption("ao", Settings::pref->ao);
     }
 
-#if PROGRAM_SWITCH
-    if (mset.current_program_id != TMediaSettings::NoneSelected) {
-        proc->setOption("tsprog", QString::number(mset.current_program_id));
-    }
-    // Don't set video and audio track if using -tsprog
-    else {
-#endif
-
     if (mset.current_video_id >= 0) {
         proc->setOption("vid", QString::number(mset.current_video_id));
     }
@@ -1042,10 +1034,6 @@ void TPlayer::startPlayer(bool loopImage) {
     if (mset.external_audio.isEmpty() && mset.current_audio_id >= 0) {
         proc->setOption("aid", QString::number(mset.current_audio_id));
     }
-
-#if PROGRAM_SWITCH
-    }
-#endif
 
     if (!mset.external_audio.isEmpty()) {
         proc->setOption("audiofile", mset.external_audio);
@@ -2954,27 +2942,6 @@ void TPlayer::nextAngle() {
     }
     proc->nextAngle();
 }
-
-#if PROGRAM_SWITCH
-void TPlayer::setProgram(int ID) {
-    WZDEBUG(QString::number(ID));
-
-    if (ID != mset.current_program_id) {
-        mset.current_program_id = ID;
-        proc->setTSProgram(ID);
-
-        /*
-        mset.current_video_id = TMediaSettings::NoneSelected;
-        mset.current_audio_id = TMediaSettings::NoneSelected;
-        */
-    }
-}
-
-void TPlayer::nextProgram() {
-    WZDEBUG("");
-    // Not implemented yet
-}
-#endif
 
 void TPlayer::clearKeepSize() {
     WZDEBUG("");

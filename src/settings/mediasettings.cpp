@@ -69,10 +69,6 @@ void TMediaSettings::reset() {
     playing_single_track = false;
     current_angle = 0;
 
-#if PROGRAM_SWITCH
-    current_program_id = NoneSelected;
-#endif
-
     aspect_ratio.setID(TAspectRatio::AspectAuto);
 
     restore_volume = true;
@@ -181,10 +177,6 @@ void TMediaSettings::list() {
     WZDEBUG("current_secondary_sub_idx: "
             + QString::number(current_secondary_sub_idx));
 
-#if PROGRAM_SWITCH
-    WZDEBUG("current_program_id: " + QString::number(current_program_id));
-#endif
-
     WZDEBUG("current_angle: " + QString::number(current_angle));
     WZDEBUG("aspect_ratio: " + aspect_ratio.toString());
 
@@ -292,10 +284,6 @@ void TMediaSettings::save(QSettings* set) {
     set->setValue("current_audio_id", current_audio_id);
 
     set->setValue("current_secondary_sub_idx", current_secondary_sub_idx);
-
-#if PROGRAM_SWITCH
-    set->setValue("current_program_id", current_program_id);
-#endif
 
     set->endGroup();
 
@@ -431,10 +419,6 @@ void TMediaSettings::load(QSettings* set) {
     convertOldSelectedTrack(current_audio_id);
 
     current_secondary_sub_idx = set->value("current_secondary_sub_id", NoneSelected).toInt();
-
-#if PROGRAM_SWITCH
-    current_program_id = set->value("current_program_id", NoneSelected).toInt();
-#endif
 
     set->endGroup(); // demuxer
 

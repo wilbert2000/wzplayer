@@ -76,10 +76,6 @@ public:
     bool playing_single_track;
     int current_angle;
 
-#if PROGRAM_SWITCH
-    int current_program_id;
-#endif
-
     int volume;
     int old_volume;
     bool mute;

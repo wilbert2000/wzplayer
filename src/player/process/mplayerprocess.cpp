@@ -933,11 +933,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
     // Screen shot
     static QRegExp rx_screenshot("^\\*\\*\\* screenshot '(.*)'");
 
-    // Program switch
-#if PROGRAM_SWITCH
-    static QRegExp rx_program("^PROGRAM_ID=(\\d+)");
-#endif
-
     // Catch all props
     static QRegExp rx_prop("^ID_([A-Z_]+)\\s*=\\s*(.*)");
 
@@ -1140,16 +1135,6 @@ bool TMPlayerProcess::parseLine(QString& line) {
         emit receivedScreenshot(shot);
         return true;
     }
-
-#if PROGRAM_SWITCH
-    // Program switch
-    if (rx_program.indexIn(line) >= 0) {
-        int id = rx_program.cap(1).toInt();
-        md->programs.addID(id);
-        WZDEBUG("added program id " + QString::number(id));
-        return true;
-    }
-#endif
 
     // Catch all property ID_name = value
     if (rx_prop.indexIn(line) >= 0) {
@@ -1660,14 +1645,6 @@ void TMPlayerProcess::discButtonPressed(const QString& button_name) {
 void TMPlayerProcess::setAspect(double aspect) {
     writeToPlayer("switch_ratio " + QString::number(aspect));
 }
-
-#if PROGRAM_SWITCH
-void TMPlayerProcess::setTSProgram(int ID) {
-    writeToPlayer("set_property switch_program " + QString::number(ID));
-    // TODO: check
-    getSelectedTracks();
-}
-#endif
 
 void TMPlayerProcess::toggleDeinterlace() {
     writeToPlayer("step_property deinterlace");

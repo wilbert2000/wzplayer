@@ -126,10 +126,6 @@ public:
     Maps::TTitleTracks titles;
     Maps::TChapters chapters;
 
-#if PROGRAM_SWITCH
-    Tracks programs;
-#endif
-
     // Clip info
     QString title;
     // Meta data names and values

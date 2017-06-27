@@ -36,11 +36,6 @@ private:
     TMenu* anglesMenu;
     TActionGroup* angleGroup;
 
-#if PROGRAM_SWITCH
-    TMenu* programMenu;
-    TActionGroup* programGroup;
-#endif
-
     TAction* dvdnavUpAct;
     TAction* dvdnavDownAct;
     TAction* dvdnavLeftAct;
