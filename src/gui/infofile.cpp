@@ -59,6 +59,7 @@ void TInfoFile::setMetaData(const QString& filename) {
 QString TInfoFile::formatSize(qint64 size) {
 
     const qint64 MB = 1024 * 1024;
+    const qint64 GB = 1024 * MB;
 
     QLocale locale;
     if (size < MB) {
@@ -67,8 +68,14 @@ QString TInfoFile::formatSize(qint64 size) {
                                            locale.toString(size));
     }
 
-    double mb = (double) size / MB;
-    return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2),
+    if (size < GB) {
+        double mb = (double) size / MB;
+        return tr("%1 MiB (%2 bytes)").arg(locale.toString(mb, 'f', 2),
+                                           locale.toString(size));
+    }
+
+    double gb = (double) size / GB;
+    return tr("%1 GiB (%2 bytes)").arg(locale.toString(gb, 'f', 2),
                                        locale.toString(size));
 }
 
@@ -116,14 +123,14 @@ QString TInfoFile::getInfo(const TMediaData& md) {
                 icon = "type_video";
             }
             break;
-        case TMediaData::TYPE_DVD:        icon = "type_dvd"; break;
-        case TMediaData::TYPE_DVDNAV:    icon = "type_dvd"; break;
-        case TMediaData::TYPE_VCD:        icon = "type_vcd"; break;
-        case TMediaData::TYPE_CDDA:        icon = "type_vcd"; break;
-        case TMediaData::TYPE_TV:        icon = "type_tv"; break;
-        case TMediaData::TYPE_STREAM:    icon = "type_url"; break;
-        case TMediaData::TYPE_BLURAY:    icon = "type_bluray"; break;
-        default:                        icon = "type_unknown";
+        case TMediaData::TYPE_DVD: icon = "type_dvd"; break;
+        case TMediaData::TYPE_DVDNAV: icon = "type_dvd"; break;
+        case TMediaData::TYPE_VCD: icon = "type_vcd"; break;
+        case TMediaData::TYPE_CDDA: icon = "type_vcd"; break;
+        case TMediaData::TYPE_TV: icon = "type_tv"; break;
+        case TMediaData::TYPE_STREAM: icon = "type_url"; break;
+        case TMediaData::TYPE_BLURAY: icon = "type_bluray"; break;
+        default: icon = "type_unknown";
     }
 
     QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
