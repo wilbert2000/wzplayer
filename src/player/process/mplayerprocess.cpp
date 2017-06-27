@@ -912,13 +912,9 @@ bool TMPlayerProcess::parseLine(QString& line) {
         "^(rescaled coordinates"
         /* Emitted on DVDNAV menus when image not mpeg2 compliant */
         "|\\[mpeg2video .*Invalid horizontal or vertical size value"
-        "|\\[ASPECT\\] Warning: No suitable new res found)"
-
+        "|\\[ASPECT\\] Warning: No suitable new res found"
         /* TS Transport stream program ID */
-#ifndef PROGRAM_SWITCH
-        "|PROGRAM_ID="
-#endif
-        ")"
+        "|PROGRAM_ID=)"
     );
 
     // Clip info

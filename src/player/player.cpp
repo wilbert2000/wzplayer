@@ -819,7 +819,9 @@ bool TPlayer::haveVideoFilters() const {
         || !Settings::pref->player_additional_video_filters.isEmpty()
         || mset.rotate
         || mset.flip
-        || mset.mirror;
+        || mset.mirror
+        || mset.color_space
+           != Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO;
 }
 
 #ifdef Q_OS_WIN
@@ -1247,6 +1249,13 @@ void TPlayer::startPlayer(bool loopImage) {
         if (mset.gamma != 0) {
             proc->setOption("gamma", QString::number(mset.gamma));
         }
+    }
+
+    // Color space video filter
+    if (Settings::pref->isMPV() && mset.color_space
+        != Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO) {
+        proc->setOption("vf-add", "format=colormatrix="
+                        + mset.getColorSpaceOptionString());
     }
 
     if (mset.current_angle > 0) {
@@ -1985,10 +1994,10 @@ void TPlayer::setStereoMode(int mode) {
 void TPlayer::setVideoFilter(const QString& filter, bool enable,
                        const QVariant& option) {
 
-    if (Settings::pref->isMPV() && !mdat.video_hwdec) { \
-        proc->setVideoFilter(filter, enable, option); \
-    } else { \
-        restartPlay(); \
+    if (Settings::pref->isMPV() && !mdat.video_hwdec) {
+        proc->setVideoFilter(filter, enable, option);
+    } else {
+        restartPlay();
     }
 }
 
@@ -2270,6 +2279,43 @@ void TPlayer::incSaturation() {
 
 void TPlayer::decSaturation() {
     setSaturation(mset.saturation - Settings::pref->min_step);
+}
+
+void TPlayer::setColorSpace(int colorSpace) {
+    WZDEBUG(QString::number(colorSpace));
+
+    if (colorSpace < Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO
+        || colorSpace
+        > Settings::TMediaSettings::TColorSpace::COLORSPACE_MAX) {
+        colorSpace = Settings::TMediaSettings::COLORSPACE_AUTO;
+    }
+
+    if (Settings::pref->isMPV() && colorSpace != mset.color_space) {
+
+        // setVideoFilter can generate change of VO.
+        // Inform TMainWindow::getNewSizeFactor() to keep the current size
+        keepSize = true;
+
+        // Remove old filter
+        if (mset.color_space
+            != Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO) {
+            proc->setVideoFilter("format", false, "colormatrix="
+                                 + mset.getColorSpaceOptionString());
+        }
+
+        // Set new filter
+        mset.color_space = (Settings::TMediaSettings::TColorSpace) colorSpace;
+        if (mset.color_space
+            != Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO) {
+            setVideoFilter("format", true,
+                           "colormatrix=" + mset.getColorSpaceOptionString());
+        }
+
+        // Clear keepSize in case main window resize not arriving
+        if (keepSize) {
+            keepSizeTimer->start();
+        }
+    }
 }
 
 void TPlayer::setSpeed(double value) {

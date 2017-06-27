@@ -92,6 +92,8 @@ void TMediaSettings::reset() {
     hue = pref->initial_hue;
     saturation = pref->initial_saturation;
 
+    color_space = TColorSpace::COLORSPACE_AUTO;
+
     audio_equalizer = pref->initial_audio_equalizer;
 
     speed = 1.0;
@@ -163,11 +165,52 @@ double TMediaSettings::aspectToDouble() {
     return aspect;
 }
 
+QString TMediaSettings::getColorSpaceOptionString() {
+
+    switch (color_space) {
+        case TColorSpace::COLORSPACE_BT_601: return "bt.601";
+        case TColorSpace::COLORSPACE_BT_709: return "bt.709";
+        case TColorSpace::COLORSPACE_SMPTE_240M: return "smpte-240m";
+        case TColorSpace::COLORSPACE_BT_2020_NCL: return "bt.2020-ncl";
+        case TColorSpace::COLORSPACE_BT_2020_CL: return "bt.2020-cl";
+        case TColorSpace::COLORSPACE_RGB: return "rgb";
+        case TColorSpace::COLORSPACE_XYZ: return "xyz";
+        case TColorSpace::COLORSPACE_YCGCO: return "ycgco";
+        default: break;
+    }
+
+    return "auto";
+}
+
+// static
+QString TMediaSettings::getColorSpaceDescriptionString(TColorSpace colorSpace) {
+
+    // TODO: translate (tr) needs descent from QObject
+    switch (colorSpace) {
+        case TColorSpace::COLORSPACE_BT_601: return "ITU-R BT.601 (SD)";
+        case TColorSpace::COLORSPACE_BT_709: return "ITU-R BT.709 (HD)";
+        case TColorSpace::COLORSPACE_SMPTE_240M: return "SMPTE-240M";
+        case TColorSpace::COLORSPACE_BT_2020_NCL: return "BT.2020-NCL";
+        case TColorSpace::COLORSPACE_BT_2020_CL: return "BT.2020-CL";
+        case TColorSpace::COLORSPACE_RGB: return "RGB";
+        case TColorSpace::COLORSPACE_XYZ: return "XYZ";
+        case TColorSpace::COLORSPACE_YCGCO: return "YCgCo";
+        default: break;
+    }
+
+    return "automatic";
+}
+
+QString TMediaSettings::getColorSpaceDescriptionString() {
+    return getColorSpaceDescriptionString(color_space);
+}
+
 void TMediaSettings::list() {
 
     WZDEBUG("current_sec: " + QString::number(current_sec));
     WZDEBUG("current_video_id: " + QString::number(current_video_id));
     WZDEBUG("current_audio_id: " + QString::number(current_audio_id));
+
     WZDEBUG("current_sub_idx: " + QString::number(current_sub_idx));
     WZDEBUG("current_sub_set_by_user: "
             + QString::number(current_sub_set_by_user));
@@ -179,6 +222,7 @@ void TMediaSettings::list() {
 
     WZDEBUG("current_angle: " + QString::number(current_angle));
     WZDEBUG("aspect_ratio: " + aspect_ratio.toString());
+    WZDEBUG("color space: " + getColorSpaceDescriptionString());
 
     WZDEBUG("volume: " + QString::number(volume));
     WZDEBUG("mute: " + QString::number(mute));

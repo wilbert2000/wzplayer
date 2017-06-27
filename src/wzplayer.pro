@@ -91,6 +91,7 @@ HEADERS += wzdebug.h \
     gui/action/menu/menuvideofilter.h \
     gui/action/menu/menuvideosize.h \
     gui/action/menu/menuvideotracks.h \
+    gui/action/menu/menuvideocolorspace.h \
     gui/action/menu/menuvideo.h \
     gui/action/menu/menuaudiotracks.h \
     gui/action/menu/menuaudio.h \
@@ -217,6 +218,7 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menuvideofilter.cpp \
     gui/action/menu/menuvideosize.cpp \
     gui/action/menu/menuvideotracks.cpp \
+    gui/action/menu/menuvideocolorspace.cpp \
     gui/action/menu/menuvideo.cpp \
     gui/action/menu/menuaudiotracks.cpp \
     gui/action/menu/menuaudio.cpp \

@@ -48,10 +48,13 @@ public:
     enum StereoMode { Stereo = 0, Left = 1, Right = 2, Mono = 3, Reverse = 4 };
 
     // Must be < 0, any ID >= 0 can be valid
-    // SubNone must be -1, because that is used by the player process for SubNone
+    // SubNone must be -1, because that is used by the player process
     enum IDs { NoneSelected = -2, SubNone = -1 };
 
-    enum SubFPS { SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970 };
+    enum SubFPS {
+        SFPS_None, SFPS_23, SFPS_24, SFPS_25, SFPS_30, SFPS_23976, SFPS_29970
+    };
+
 
     TMediaSettings(TMediaData* mdat);
     virtual ~TMediaSettings();
@@ -83,6 +86,25 @@ public:
     bool restore_volume;
 
     int brightness, contrast, gamma, hue, saturation;
+
+    enum TColorSpace {
+        COLORSPACE_AUTO = 0,
+        COLORSPACE_BT_601,
+        COLORSPACE_BT_709,
+        COLORSPACE_SMPTE_240M,
+        COLORSPACE_BT_2020_NCL,
+        COLORSPACE_BT_2020_CL,
+        COLORSPACE_RGB,
+        COLORSPACE_XYZ,
+        COLORSPACE_YCGCO,
+        COLORSPACE_MAX = COLORSPACE_YCGCO
+    };
+
+    TColorSpace color_space;
+    static QString getColorSpaceDescriptionString(TColorSpace colorSpace);
+    QString getColorSpaceDescriptionString();
+    QString getColorSpaceOptionString();
+
 
     TAudioEqualizerList audio_equalizer;
 

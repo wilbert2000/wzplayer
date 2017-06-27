@@ -1,11 +1,11 @@
 #include "gui/action/menu/menuvideo.h"
-#include <QDebug>
 #include "player/player.h"
 #include "settings/mediasettings.h"
 #include "gui/action/menu/menuaspect.h"
 #include "gui/action/menu/menuvideofilter.h"
 #include "gui/action/menu/menuvideosize.h"
 #include "gui/action/menu/menuvideotracks.h"
+#include "gui/action/menu/menuvideocolorspace.h"
 #include "gui/videoequalizer.h"
 #include "gui/mainwindow.h"
 
@@ -287,6 +287,9 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     incGammaAct = new TAction(this, "inc_gamma", tr("Inc gamma"), "", Qt::ALT | Qt::Key_0, false);
     main_window->addAction(incGammaAct);
     connect(incGammaAct, SIGNAL(triggered()), player, SLOT(incGamma()));
+
+    // Color space
+    addMenu(new TMenuVideoColorSpace(main_window));
 
     // Deinterlace submenu
     addSeparator();

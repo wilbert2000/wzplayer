@@ -100,6 +100,8 @@ public:
     QString video_format;
     QString video_codec;
     QString video_codec_description;
+    QString video_colorspace;
+    QString video_out_colorspace;
     int video_bitrate;
     bool video_hwdec;
     Maps::TTracks videos;

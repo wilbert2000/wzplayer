@@ -693,6 +693,8 @@ void TMPVProcess::setMedia(const QString& media) {
 //      "VIDEO_BITRATE=${=video-bitrate}\n"
         "VIDEO_FORMAT=${=video-format}\n"
         "VIDEO_CODEC=${=video-codec}\n"
+        "VIDEO_COLORMATRIX=${=colormatrix}\n"
+        "VIDEO_OUTCOLORMATRIX=${=video-out-params/colormatrix}\n"
 
 //      "AUDIO_BITRATE=${=audio-bitrate}\n"
         "AUDIO_FORMAT=${=audio-codec-name}\n"
@@ -798,6 +800,7 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
         || name == "hue"
         || name == "saturation"
         || name == "gamma"
+        || name == "colormatrix"
         || name == "monitorpixelaspect"
         || name == "monitoraspect"
         || name == "mc"
@@ -1327,7 +1330,9 @@ void TMPVProcess::setVideoFilter(const QString& filter,
             + ", option " + option.toString());
 
     QString f;
-    if (filter == "letterbox") {
+    if (filter == "format") {
+        f = "format=" + option.toString();
+    } else if (filter == "letterbox") {
         f = QString("expand=aspect=%1").arg(option.toDouble());
     } else if (filter == "noise") {
         f = "lavfi=[noise=alls=9:allf=t]";

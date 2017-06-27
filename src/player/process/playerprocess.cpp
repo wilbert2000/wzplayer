@@ -331,6 +331,17 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
         WZDEBUG("video_codec set to '" + md->video_codec + "'");
         return true;
     }
+    // TODO: check MPlayer
+    if (name == "COLORMATRIX") {
+        md->video_colorspace = value;
+        WZDEBUG("video_colorspace set to '" + md->video_colorspace + "'");
+        return true;
+    }
+    if (name == "OUTCOLORMATRIX") {
+        md->video_out_colorspace = value;
+        WZDEBUG("video_out_colorspace set to '" + md->video_out_colorspace + "'");
+        return true;
+    }
 
     return false;
 }

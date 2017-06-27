@@ -230,6 +230,8 @@ void TMediaData::list() const {
     WZDEBUG("video_aspect: '" + video_aspect + "'");
     WZDEBUG("video_aspect_original: " + QString::number(video_aspect_original));
     WZDEBUG("video_fps: " + QString::number(video_fps));
+    WZDEBUG("video_colorspace: '" + video_colorspace + "'");
+    WZDEBUG("video_out_colorspace: '" + video_out_colorspace + "'");
 
     WZDEBUG("video_out_width: " + QString::number(video_out_width));
     WZDEBUG("video_out_height: " + QString::number(video_out_height));

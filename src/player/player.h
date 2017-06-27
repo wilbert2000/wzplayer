@@ -190,6 +190,8 @@ public slots:
     void incSaturation();
     void decSaturation();
 
+    void setColorSpace(int colorSpace);
+
     void setDeinterlace(int);
     void toggleDeinterlace();
 

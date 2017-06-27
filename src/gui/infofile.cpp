@@ -196,6 +196,13 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         }
         s += addItem(tr("Frames per second"), QString::number(md.video_fps));
         s += addItem(tr("Angle"), tr("%1/%2").arg(md.angle).arg(md.angles));
+        if (!md.video_colorspace.isEmpty()) {
+            s += addItem(tr("Colorspace"), md.video_colorspace);
+        }
+        if (!md.video_out_colorspace.isEmpty()) {
+            s += addItem(tr("Colorspace out"),
+                         tr("%1 (from last open)").arg(md.video_out_colorspace));
+        }
         s += addItem(tr("Number of tracks"),
                      QString::number(md.videos.count()));
         s += closePar();
