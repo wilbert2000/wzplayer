@@ -196,6 +196,7 @@ void TMainWindow::createLogDock() {
     logDock = new TDockWidget(tr("Log"), this, "logdock");
     log_window = new TLogWindow(logDock);
     logDock->setWidget(log_window);
+    logDock->setFloating(true);
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
 }
 
