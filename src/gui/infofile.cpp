@@ -193,7 +193,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
                          (double) md.video_out_width / md.video_out_height));
         if (md.video_bitrate == -1) {
             if (Settings::pref->isMPV() && !md.image) {
-                s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
+                s += addItem(tr("Bitrate"), tr("Waiting for estimate..."));
             } else {
                 s += addItem(tr("Bitrate"), tr("Not set"));
             }
@@ -208,7 +208,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         }
         if (!md.video_out_colorspace.isEmpty()) {
             s += addItem(tr("Colorspace out"),
-                         tr("%1 (from last open)").arg(md.video_out_colorspace));
+                         tr("%1 (from last open)")
+                         .arg(md.video_out_colorspace));
         }
         s += addItem(tr("Number of tracks"),
                      QString::number(md.videos.count()));
@@ -229,7 +230,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
         s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
         if (md.audio_bitrate == -1) {
             if (Settings::pref->isMPV() && !md.image) {
-                s += addItem(tr("Bitrate"), tr("Wait a few seconds..."));
+                s += addItem(tr("Bitrate"), tr("Waiting for estimate..."));
             } else {
                 s += addItem(tr("Bitrate"), tr("Not set"));
             }
