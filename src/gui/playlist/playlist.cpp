@@ -1395,6 +1395,8 @@ bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
     if (QFile::rename(item->filename(), nn)) {
         WZINFO("renamed file '" + item->filename() + "' to '" + nn + "'");
         item->setFilename(nn, QFileInfo(newName).completeBaseName());
+        // item->setNameText(true) will be done by setModified
+        item->setExtensionText();
     } else {
         WZERROR("failed to rename '" + item->filename() + "' to '" + nn + "'");
         QMessageBox::warning(this, tr("Error"),

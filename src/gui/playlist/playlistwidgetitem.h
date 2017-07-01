@@ -102,6 +102,7 @@ public:
     }
 
     void loadIcon();
+    void setExtensionText();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
     // TODO: override clone?
@@ -114,7 +115,6 @@ private:
     QIcon getIcon();
     void setStateIcon();
     void setNameText(bool setSizeHint);
-    void setExtensionText();
     void setDurationText();
 };
 
