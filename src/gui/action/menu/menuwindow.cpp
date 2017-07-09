@@ -163,6 +163,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     q->setShortcut(Qt::Key_P);
     updateToolTip(q);
     addAction(q);
+    main_window->addAction(q);
     autoHideTimer->add(q, playlistDock);
 
     // Show log
@@ -172,6 +173,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     q->setShortcut(QKeySequence("Ctrl+L"));
     updateToolTip(q);
     addAction(q);
+    main_window->addAction(q);
     autoHideTimer->add(q, logDock);
 
     // Preferences
