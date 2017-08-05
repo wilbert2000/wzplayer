@@ -14,7 +14,8 @@ TDockWidget::TDockWidget(const QString& title,
 
     setObjectName(objectName);
     setAcceptDrops(true);
-    //setAllowedAreas(Qt::AllDockWidgetAreas); // default
+    // QTBUG-48296 keeps panels inside desktop
+    // Use alt+left mouse button to override
 }
 
 TDockWidget::~TDockWidget() {
