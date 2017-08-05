@@ -194,6 +194,7 @@ private:
     void createTree();
     void createActions();
     void createToolbar();
+    void createPopupMenu();
 
     void addFilesStartThread();
 

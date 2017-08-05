@@ -142,6 +142,7 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
     createTree();
     createActions();
     createToolbar();
+    createPopupMenu();
 
     connect(player, SIGNAL(newMediaStartedPlaying()),
             this, SLOT(onNewMediaStartedPlaying()));
@@ -388,7 +389,14 @@ void TPlaylist::createToolbar() {
     toolbar->addAction(repeatAct);
     toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
 
-    // Popup menu
+    toolbar->addSeparator();
+    toolbar->addAction(playOrPauseAct);
+    toolbar->addAction(prevAct);
+    toolbar->addAction(nextAct);
+}
+
+void TPlaylist::createPopupMenu() {
+
     popup = new QMenu(this);
     popup->addAction(editAct);
     popup->addAction(findPlayingAct);
