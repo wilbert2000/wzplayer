@@ -278,14 +278,20 @@ void TPlayerWindow::stopDragging() {
 
 void TPlayerWindow::mousePressEvent(QMouseEvent* event) {
 
+    // Let parent handle dragging of main window, cancel menus etc.
+    event->ignore();
+
     if (event->button() == Qt::LeftButton && !double_clicked) {
         left_button_pressed_time.start();
         drag_pos = event->globalPos();
         dragging = false;
-    }
 
-    // Don't accept event to let parent handle dragging of main window
-    event->ignore();
+        if (pref->fullscreen) {
+            // Accept event to prevent dragging by OS, which might try to
+            // apply nice effects to the dragging, like KDE translucency etc.
+            event->accept();
+        }
+    }
 }
 
 void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
