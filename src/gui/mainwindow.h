@@ -308,7 +308,6 @@ private:
 
     void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
-    void showContextMenu(QPoint p);
 
     double optimizeSize(double size) const;
     double getDefaultSize() const;
@@ -334,6 +333,7 @@ private slots:
     void xbutton2ClickFunction();
 
     void showContextMenu();
+    void showCustomContextMenu(const QPoint& pos);
     void showStatusBarPopup(const QPoint& pos);
 
     void displayVideoInfo();

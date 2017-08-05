@@ -393,8 +393,7 @@ void TMainWindow::createActions() {
 
     showContextMenuAct = new Action::TAction(this, "show_context_menu",
                                              tr("Show context menu"));
-    connect(showContextMenuAct, SIGNAL(triggered()),
-            this, SLOT(showContextMenu()));
+    // see createMenu() for connect
 
     nextWheelFunctionAct = new TAction(this, "next_wheel_function",
                                        tr("Next wheel function"), 0, Qt::Key_W);
@@ -528,6 +527,12 @@ void TMainWindow::createMenus() {
     contextMenu->addMenu(subtitleMenu);
     contextMenu->addMenu(browseMenu);
     contextMenu->addMenu(windowMenu);
+
+    connect(showContextMenuAct, SIGNAL(triggered(bool)),
+            this, SLOT(showContextMenu()));
+    playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(playerwindow, SIGNAL(customContextMenuRequested(const QPoint &)),
+            this, SLOT(showCustomContextMenu(const QPoint &)));
 } // createMenus()
 
 QMenu* TMainWindow::createToolbarMenu() {
@@ -1240,12 +1245,25 @@ void TMainWindow::hideEvent(QHideEvent* event) {
     setFloatingToolbarsVisible(false);
 }
 
-void TMainWindow::showContextMenu(QPoint p) {
-    Menu::execPopup(this, contextMenu, p);
+void TMainWindow::showContextMenu() {
+    WZDEBUG("");
+
+    // Handle show_context_menu action not triggered by right click
+    if (!contextMenu->isVisible()) {
+        Menu::execPopup(this, contextMenu, QCursor::pos());
+    }
 }
 
-void TMainWindow::showContextMenu() {
-    showContextMenu(QCursor::pos());
+void TMainWindow::showCustomContextMenu(const QPoint& pos) {
+    WZDEBUG("");
+
+    // Using this event to make the context menu popup on right mouse button
+    // down event, instead of waiting for the button release event, which, if
+    // still assigned, would trigger the show_context_menu action.
+    if (!contextMenu->isVisible()
+        && pref->mouse_right_click_function == "show_context_menu") {
+        Menu::execPopup(this, contextMenu, playerwindow->mapToGlobal(pos));
+    }
 }
 
 void TMainWindow::setDefaultValuesFromVideoEqualizer() {
