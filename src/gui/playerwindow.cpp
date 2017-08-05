@@ -346,21 +346,22 @@ void TPlayerWindow::onLeftClicked() {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
+    WZDEBUG("");
 
-    // Show event to parent too
+    // Default: show event to parent
     event->ignore();
 
     if (event->button() == Qt::LeftButton) {
         if (dragging) {
             stopDragging();
+            event->accept();
         } else if (event->modifiers() != Qt::NoModifier) {
-            WZDEBUG("ignoring modified mouse release event");
         } else if (left_button_pressed_time.elapsed()
                    >= QApplication::startDragTime()) {
-            // W ZTRACE("ignoring mouse release event taking longer as " +
-            //          QString::number(QApplication::startDragTime()) + " ms");
         } else if (delay_left_click) {
-            if (!double_clicked) {
+            if (double_clicked) {
+                event->accept();
+            } else {
                 // Delay left click until double click has chance to arrive
                 left_click_timer->start();
             }
@@ -382,14 +383,14 @@ void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
 
-    // Show event to parent too
-    event->ignore();
-
     if (event->button() == Qt::LeftButton
         && event->modifiers() == Qt::NoModifier) {
         double_clicked = true;
         left_click_timer->stop();
         emit doubleClicked();
+        event->accept();
+    } else {
+        event->ignore();
     }
 }
 
