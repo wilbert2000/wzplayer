@@ -42,12 +42,12 @@ public:
     static QString findExecutable(const QString& name);
 
     static QString nameForURL(QString url, bool extension);
-    static QString clean(const QString& name);
     static QString cleanName(const QString& name);
     static QString cleanTitle(const QString& name);
 
 
 private:
+    static QString clean(const QString& name);
     static QStringList searchForConsecutiveFiles(const QString& initial_file);
     static QStringList filesInDirectory(const QString& initial_file,
                                         const QStringList& filter);

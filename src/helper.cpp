@@ -128,15 +128,7 @@ QString Helper::clean(const QString& name) {
         return "";
     }
 
-    QString s = QUrl(name).toString(QUrl::RemoveScheme
-                                    | QUrl::RemoveAuthority
-                                    | QUrl::RemoveQuery
-                                    | QUrl::RemoveFragment
-                                    | QUrl::StripTrailingSlash);
-    s = QFileInfo(s).fileName();
-    if (s.isEmpty()) {
-        s = name;
-    }
+    QString s = name;
 
     // \w Matches a word character (QChar::isLetterOrNumber(),
     //    QChar::isMark(), or '_')
