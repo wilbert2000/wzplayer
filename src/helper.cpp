@@ -111,7 +111,12 @@ QString Helper::nameForURL(QString url, bool extension) {
             name = url;
         } else {
             fi.setFile(name);
-            if (extension) {
+            if (fi.isDir()) {
+                name = fi.fileName();
+                if (name.isEmpty()) {
+                    name = QDir::separator();
+                }
+            } if (extension) {
                 name = fi.fileName();
             } else {
                 name = fi.completeBaseName();
