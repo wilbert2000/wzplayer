@@ -346,7 +346,6 @@ void TPlayerWindow::onLeftClicked() {
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
-    WZDEBUG("");
 
     // Default: show event to parent
     event->ignore();
