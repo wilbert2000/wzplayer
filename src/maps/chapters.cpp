@@ -18,7 +18,7 @@
 
 #include "maps/chapters.h"
 #include "log4qt/logger.h"
-#include "helper.h"
+#include "wztime.h"
 
 namespace Maps {
 
@@ -38,7 +38,7 @@ QString TChapterData::getDisplayName() const {
     }
 
     if (start >= 0) {
-        dname += " (" + Helper::formatTime(qRound(start)) + ")";
+        dname += " (" + TWZTime::formatTime(qRound(start)) + ")";
     }
 
     return dname;

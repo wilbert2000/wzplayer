@@ -27,9 +27,6 @@
 
 class Helper {
 public:
-    // Format time as hh:mm:ss
-    static QString formatTime(int secs);
-
     static bool directoryContainsDVD(QString directory);
 
     //! Returns an int with the version number of Qt at run-time.

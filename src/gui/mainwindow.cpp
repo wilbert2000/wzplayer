@@ -49,7 +49,7 @@
 #include "extensions.h"
 #include "colorutils.h"
 #include "images.h"
-#include "helper.h"
+#include "wztime.h"
 #include "mediadata.h"
 #include "gui/playerwindow.h"
 #include "clhelp.h"
@@ -1180,12 +1180,12 @@ void TMainWindow::displayInOutPoints() {
     QString s;
     int secs = qRound(player->mset.in_point);
     if (secs > 0)
-        s = tr("I: %1", "In point in statusbar").arg(Helper::formatTime(secs));
+        s = tr("I: %1", "In point in statusbar").arg(TWZTime::formatTime(secs));
 
     secs = qRound(player->mset.out_point);
     if (secs > 0) {
         if (!s.isEmpty()) s += " ";
-        s += tr("O: %1", "Out point in statusbar").arg(Helper::formatTime(secs));
+        s += tr("O: %1", "Out point in statusbar").arg(TWZTime::formatTime(secs));
     }
 
     if (player->mset.loop) {
@@ -1413,7 +1413,7 @@ void TMainWindow::onPositionChanged(double sec, bool changed) {
 
     if (s != lastSec) {
         lastSec = s;
-        positionText = Helper::formatTime(s);
+        positionText = TWZTime::formatTime(s);
         changed = true;
     }
 
@@ -1446,7 +1446,7 @@ void TMainWindow::onPositionChanged(double sec, bool changed) {
 
 void TMainWindow::onDurationChanged(double duration) {
 
-    durationText = "/" + Helper::formatTime(qRound(duration));
+    durationText = "/" + TWZTime::formatTime(qRound(duration));
 
     if (pref->show_frames) {
         double fps = player->mdat.video_fps;
@@ -1465,7 +1465,7 @@ void TMainWindow::onDurationChanged(double duration) {
 
 void TMainWindow::onDragPositionChanged(double t) {
 
-    QString s = tr("Jump to %1").arg(Helper::formatTime(qRound(t)));
+    QString s = tr("Jump to %1").arg(TWZTime::formatTime(qRound(t)));
     msg(s, 1000);
 
     if (pref->fullscreen) {

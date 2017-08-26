@@ -22,7 +22,7 @@
 #include <QToolTip>
 #include <QStyleOptionSlider>
 #include "wzdebug.h"
-#include "helper.h"
+#include "wztime.h"
 
 
 namespace Gui {
@@ -188,7 +188,7 @@ bool TTimeSlider::event(QEvent* event) {
 
         int val = pixelPosToRangeValue(pick(help_event->pos() - center));
         int time = qRound(val * _duration / maximum());
-        QToolTip::showText(help_event->globalPos(), Helper::formatTime(time),
+        QToolTip::showText(help_event->globalPos(), TWZTime::formatTime(time),
                            this);
         event->accept();
         return true;

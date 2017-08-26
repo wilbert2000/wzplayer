@@ -5,7 +5,7 @@
 
 #include "wzdebug.h"
 #include "iconprovider.h"
-#include "helper.h"
+#include "wztime.h"
 #include "config.h"
 
 
@@ -182,7 +182,7 @@ void TPlaylistWidgetItem::setDurationText() {
     QString s;
     double d = playlistItem.duration();
     if (d > 0) {
-        s = Helper::formatTime(qRound(d));
+        s = TWZTime::formatTime(qRound(d));
     }
     setText(COL_TIME, s);
 }

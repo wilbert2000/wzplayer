@@ -19,7 +19,7 @@
 #include "titletracks.h"
 #include <QApplication>
 #include "log4qt/logger.h"
-#include "helper.h"
+#include "wztime.h"
 
 namespace Maps {
 
@@ -47,7 +47,7 @@ QString TTitleData::getDisplayName(bool add_duration) const {
     }
 
     if (add_duration && duration >= 0) {
-        dname += " (" + Helper::formatTime(qRound(duration)) + ")";
+        dname += " (" + TWZTime::formatTime(qRound(duration)) + ")";
     }
 
     return dname;

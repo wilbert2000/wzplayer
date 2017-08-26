@@ -34,7 +34,7 @@
 #include "settings/filters.h"
 #include "settings/paths.h"
 
-#include "helper.h"
+#include "wztime.h"
 #include "discname.h"
 #include "mediadata.h"
 #include "extensions.h"
@@ -1821,7 +1821,7 @@ void TPlayer::setInPoint(double sec) {
         mset.in_point = 0;
     }
     QString msg = tr("In point set to %1")
-                  .arg(Helper::formatTime(qRound(mset.in_point)));
+                  .arg(TWZTime::formatTime(qRound(mset.in_point)));
 
     if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
         mset.out_point = -1;
@@ -1838,7 +1838,7 @@ void TPlayer::seekInPoint() {
 
     seekTime(mset.in_point);
     Gui::msgOSD(tr("Seeking to %1")
-                .arg(Helper::formatTime(qRound(mset.in_point))));
+                .arg(TWZTime::formatTime(qRound(mset.in_point))));
 }
 
 void TPlayer::clearInPoint() {
@@ -1866,7 +1866,7 @@ void TPlayer::setOutPoint(double sec) {
 
     QString msg;
     msg = tr("Out point set to %1, repeat set")
-          .arg(Helper::formatTime(qRound(mset.out_point)));
+          .arg(TWZTime::formatTime(qRound(mset.out_point)));
     if (mset.in_point >= mset.out_point) {
         mset.in_point = 0;
         msg += tr(" and cleared in point");
@@ -1890,7 +1890,7 @@ void TPlayer::seekOutPoint() {
         return;
     }
     seekTime(seek);
-    Gui::msgOSD(tr("Seeking to %1").arg(Helper::formatTime(qRound(seek))));
+    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatTime(qRound(seek))));
 }
 
 void TPlayer::clearOutPoint() {
@@ -3333,7 +3333,7 @@ void TPlayer::displayBuffering() {
 
 void TPlayer::displayBufferingEnded() {
     Gui::msg(tr("Playing from %1")
-        .arg(Helper::formatTime(qRound(mset.current_sec))));
+        .arg(TWZTime::formatTime(qRound(mset.current_sec))));
 }
 
 void TPlayer::onReceivedVideoOut() {

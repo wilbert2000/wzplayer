@@ -26,6 +26,8 @@
 #include "maps/tracks.h"
 #include "discname.h"
 #include "images.h"
+#include "wztime.h"
+
 
 namespace Gui {
 
@@ -149,9 +151,9 @@ QString TInfoFile::getInfo(const TMediaData& md) {
     if (!md.stream_url.isEmpty()) {
         s += addItem(tr("Stream URL"), md.stream_url);
     }
-    s += addItem(tr("Duration"), Helper::formatTime(qRound(md.duration)));
+    s += addItem(tr("Duration"), TWZTime::formatTime(qRound(md.duration)));
     s += addItem(tr("Start time"),
-                 Helper::formatTime(qRound(md.start_sec_player))
+                 TWZTime::formatTime(qRound(md.start_sec_player))
                  + tr(" (%1 seconds)")
                  .arg(QString::number(md.start_sec_player)));
     s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
