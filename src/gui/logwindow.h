@@ -48,11 +48,15 @@ protected:
     virtual void hideEvent(QShowEvent*);
     virtual void closeEvent(QCloseEvent* event);
 
-protected slots:
+private:
+    void find(const QString& s, QTextDocument::FindFlags options);
+
+private slots:
     void onSaveButtonClicked();
     void onCopyButtonClicked();
     void onFindPreviousButtonClicked();
     void onFindNextButtonClicked();
+    void onFindTextChanged();
 };
 
 } // namespace Gui

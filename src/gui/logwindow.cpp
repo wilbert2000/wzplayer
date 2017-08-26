@@ -49,6 +49,9 @@ TLogWindow::TLogWindow(QWidget* parent)
     connect(copyButton, SIGNAL(clicked()), this, SLOT(onCopyButtonClicked()));
     connect(findEdit, SIGNAL(returnPressed()),
             this, SLOT(onFindNextButtonClicked()));
+    connect(findEdit, SIGNAL(textChanged(QString)),
+            this, SLOT(onFindTextChanged()));
+
     connect(findPreviousButton, SIGNAL(clicked()),
             this, SLOT(onFindPreviousButtonClicked()));
     connect(findNextButton, SIGNAL(clicked()),
@@ -56,6 +59,8 @@ TLogWindow::TLogWindow(QWidget* parent)
 
     edit->setMaximumBlockCount(pref->log_window_max_events);
     edit->setFont(QFont("Monospace"));
+
+    findEdit->setClearButtonEnabled(true);
 
     retranslateStrings();
 }
@@ -137,17 +142,50 @@ void TLogWindow::onCopyButtonClicked() {
     edit->copy();
 }
 
+void TLogWindow::find(const QString& s, QTextDocument::FindFlags options) {
+
+    if (edit->find(s, options)) {
+        foundLabel->setText("");
+    } else {
+        foundLabel->setText(tr("Not found"));
+    }
+}
+
 void TLogWindow::onFindPreviousButtonClicked() {
 
-    edit->find(findEdit->text(), QTextDocument::FindBackward);
+    QString s = findEdit->text();
+    if (!s.isEmpty()) {
+        if (edit->textCursor().atStart()) {
+            edit->moveCursor(QTextCursor::End);
+        }
+        find(s, QTextDocument::FindBackward);
+    }
 }
 
 void TLogWindow::onFindNextButtonClicked() {
 
-    if (edit->textCursor().atEnd()) {
-        edit->moveCursor(QTextCursor::Start);
+    QString s = findEdit->text();
+    if (!s.isEmpty()) {
+        if (edit->textCursor().atEnd()) {
+            edit->moveCursor(QTextCursor::Start);
+        }
+        find(s, 0);
     }
-    edit->find(findEdit->text());
+}
+
+void TLogWindow::onFindTextChanged() {
+
+    QString s = findEdit->text();
+    if (s.isEmpty()) {
+        foundLabel->setText("");
+    } else {
+        if (edit->textCursor().atEnd()) {
+            edit->moveCursor(QTextCursor::Start);
+        } else {
+            edit->moveCursor(QTextCursor::PreviousCharacter);
+        }
+        find(s, 0);
+    }
 }
 
 } // namespace Gui

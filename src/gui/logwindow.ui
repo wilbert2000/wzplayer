@@ -69,15 +69,9 @@
       <widget class="QLineEdit" name="findEdit"/>
      </item>
      <item>
-      <widget class="QPushButton" name="findPreviousButton">
-       <property name="toolTip">
-        <string>Find previous (Shift+F3)</string>
-       </property>
+      <widget class="QLabel" name="foundLabel">
        <property name="text">
-        <string>&lt;</string>
-       </property>
-       <property name="shortcut">
-        <string>Shift+F3</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -94,6 +88,19 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="findPreviousButton">
+       <property name="toolTip">
+        <string>Find previous (Shift+F3)</string>
+       </property>
+       <property name="text">
+        <string>&lt;</string>
+       </property>
+       <property name="shortcut">
+        <string>Shift+F3</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -104,8 +111,8 @@
   <tabstop>saveButton</tabstop>
   <tabstop>copyButton</tabstop>
   <tabstop>findEdit</tabstop>
-  <tabstop>findPreviousButton</tabstop>
   <tabstop>findNextButton</tabstop>
+  <tabstop>findPreviousButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>
