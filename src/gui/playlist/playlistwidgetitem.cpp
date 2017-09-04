@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QDir>
+#include <QHeaderView>
 
 #include "wzdebug.h"
 #include "iconprovider.h"
@@ -19,6 +20,7 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
 const int TEXT_ALIGN_NAME = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 const int TEXT_ALIGN_TYPE = Qt::AlignLeft | Qt::AlignVCenter;
 const int TEXT_ALIGN_TIME = Qt::AlignRight | Qt::AlignVCenter;
+const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 
 // Level of the root node in the tree view, where level means the number of
 // icons indenting the item. With root decoration on, toplevel items appear on
@@ -40,6 +42,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
     setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
     setTextAlignment(COL_TYPE, TEXT_ALIGN_TYPE);
     setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
+    setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
 }
 
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
@@ -78,6 +81,8 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     setExtensionText();
     setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
     setDurationText();
+    setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
+    setOrderText();
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
@@ -193,6 +198,11 @@ void TPlaylistWidgetItem::setDuration(double d) {
     setDurationText();
 }
 
+void TPlaylistWidgetItem::setOrderText() {
+
+    setText(COL_ORDER, QString::number(order()));
+}
+
 void TPlaylistWidgetItem::setPlayed(bool played) {
 
     playlistItem.setPlayed(played);
@@ -218,7 +228,7 @@ void TPlaylistWidgetItem::setModified(bool modified,
         for(int c = 0; c < childCount(); c++) {
             TPlaylistWidgetItem* child = plChild(c);
             if (child->modified() != modified) {
-                plChild(c)->setModified(modified, recurse, false);
+                child->setModified(modified, recurse, false);
             }
         }
     }
@@ -334,10 +344,26 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
         return false;
     }
 
-    // Sort on name
-    return QString::localeAwareCompare(baseName(), o->baseName()) < 0;
-}
+    int section;
+    QTreeWidget* tree = treeWidget();
+    if (tree) {
+        section = tree->header()->sortIndicatorSection();
+    } else {
+        section = COL_ORDER;
+    }
 
+    if (section == COL_NAME) {
+        return QString::localeAwareCompare(baseName(), o->baseName()) < 0;
+    }
+    if (section == COL_TYPE) {
+        return QString::localeAwareCompare(extension(), o->extension()) < 0;
+    }
+    if (section == COL_TIME) {
+        return duration() < o->duration();
+    }
+
+    return order() < o->order();
+}
 
 } // namespace Playlist
 } // namespace Gui

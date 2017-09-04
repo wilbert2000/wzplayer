@@ -24,6 +24,7 @@ Qt::CaseSensitivity caseSensitiveFileNames =
                     Qt::CaseSensitive;
         #endif
 
+int itemOrder = 0;
 
 // Generate a timestamp for played items
 class TTimeStamp : public QTime {
@@ -56,6 +57,7 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistItem)
 
 // Default constructor
 TPlaylistItem::TPlaylistItem() :
+    mOrder(++itemOrder),
     mDuration(0),
     mState(PSTATE_STOPPED),
     mPlayed(false),
@@ -69,6 +71,7 @@ TPlaylistItem::TPlaylistItem() :
 
 // Copy constructor
 TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
+    mOrder(item.order()),
     mFilename(item.filename()),
     mBaseName(item.baseName()),
     mExt(item.extension()),
@@ -90,6 +93,7 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
                              const QString &name,
                              double duration,
                              bool protectName) :
+    mOrder(++itemOrder),
     mFilename(filename),
     mBaseName(name),
     mDuration(duration),

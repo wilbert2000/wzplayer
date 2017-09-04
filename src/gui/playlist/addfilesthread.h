@@ -68,8 +68,7 @@ private:
     TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
                                       QFileInfo& fi,
                                       QString name,
-                                      bool protectName,
-                                      bool append = true);
+                                      bool protectName);
 
     TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,
                                     const QFileInfo& fi,
@@ -86,8 +85,7 @@ private:
     TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
                                       const QFileInfo& fi,
                                       const QString& name,
-                                      bool protectName,
-                                      bool append = true);
+                                      bool protectName);
 
     TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
                                          const QString& filename,

@@ -16,7 +16,7 @@ enum TPlaylistItemState {
 };
 
 extern Qt::CaseSensitivity caseSensitiveFileNames;
-
+extern int itemOrder;
 
 class TPlaylistItem {
 public:
@@ -29,6 +29,8 @@ public:
     virtual ~TPlaylistItem();
 
     static QString playlistItemState(TPlaylistItemState state);
+
+    int order() const { return mOrder; }
 
     QString filename() const { return mFilename; }
     void setFilename(const QString& fileName, const QString& baseName);
@@ -71,6 +73,7 @@ public:
     bool operator == (const TPlaylistItem& item);
 
 private:
+    int mOrder;
     QString mFilename;
     QString mBaseName;
     QString mExt;

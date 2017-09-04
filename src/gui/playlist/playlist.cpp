@@ -826,7 +826,6 @@ void TPlaylist::playDirectory(const QString &dir) {
 
     if (Helper::directoryContainsDVD(dir)) {
         // onNewMediaStartedPlaying() will pickup the playlist
-        playlistWidget->enableSort(false);
         player->open(dir);
     } else {
         clear();
@@ -1222,8 +1221,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
     clear();
 
     if (md->disc.valid) {
-        // Add disc titles
-        playlistWidget->enableSort(false);
+        // Add disc titles without sorting
+        playlistWidget->setSort(-1, Qt::AscendingOrder);
         TDiscName disc = md->disc;
         foreach(const Maps::TTitleData title, md->titles) {
             disc.title = title.getID();

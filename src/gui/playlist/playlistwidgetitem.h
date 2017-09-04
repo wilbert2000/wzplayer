@@ -26,7 +26,8 @@ public:
         COL_NAME = 0,
         COL_TYPE = 1,
         COL_TIME = 2,
-        COL_COUNT = 3
+        COL_ORDER = 3,
+        COL_COUNT = 4
     };
 
     TPlaylistWidgetItem();
@@ -113,9 +114,11 @@ private:
     bool mModified;
 
     QIcon getIcon();
+    int order() const { return playlistItem.order(); }
     void setStateIcon();
     void setNameText(bool setSizeHint);
     void setDurationText();
+    void setOrderText();
 };
 
 } // namespace Playlist

@@ -65,6 +65,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     QTreeWidget(parent),
     debug(logger()),
     playing_item(0),
+    sortSection(-1),
+    sortOrder(Qt::AscendingOrder),
     mModified(false) {
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -73,13 +75,16 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     //setRootIsDecorated(false);
     setColumnCount(TPlaylistWidgetItem::COL_COUNT);
-    setHeaderLabels(QStringList() << tr("Name") << tr("Type") << tr("Length"));
+    setHeaderLabels(QStringList() << tr("Name") << tr("Type") << tr("Length")
+                    << tr("#"));
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_NAME,
                                    QHeaderView::Stretch);
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_TYPE,
                                    QHeaderView::ResizeToContents);
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_TIME,
+                                   QHeaderView::ResizeToContents);
+    header()->setSectionResizeMode(TPlaylistWidgetItem::COL_ORDER,
                                    QHeaderView::ResizeToContents);
 
     // Icons
@@ -90,9 +95,9 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setRootIndex(model()->index(0, 0));
 
     // Sort
-    enableSort(false);
     connect(header(), SIGNAL(sectionClicked(int)),
             this, SLOT(onSectionClicked(int)));
+    header()->setSectionsClickable(true);
 
     // Drag and drop
     setDragEnabled(true);
@@ -435,24 +440,34 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
     }
 }
 
-void TPlaylistWidget::enableSort(bool enable) {
+void TPlaylistWidget::setSort(int section, Qt::SortOrder order) {
 
-    setSortingEnabled(enable);
-    if (enable) {
-        header()->setSortIndicator(TPlaylistWidgetItem::COL_NAME,
-                                   Qt::AscendingOrder);
-    } else {
-        header()->setSortIndicator(-1, Qt::AscendingOrder);
-        header()->setSectionsClickable(true);
+    sortSection = section;
+    sortOrder = order;
+    header()->setSortIndicator(sortSection, sortOrder);
+    if (sortSection >= 0) {
+        if (!isSortingEnabled()) {
+            setSortingEnabled(true);
+        }
+    } else if (isSortingEnabled()) {
+        setSortingEnabled(false);
     }
 }
 
-void TPlaylistWidget::onSectionClicked(int) {
+void TPlaylistWidget::onSectionClicked(int section) {
 
-    // TODO: see sortItems/sortColumn
-    if (!isSortingEnabled()) {
-        enableSort(true);
+    if (section == sortSection) {
+        if (sortOrder == Qt::AscendingOrder) {
+            sortOrder = Qt::DescendingOrder;
+        } else {
+            sortOrder = Qt::AscendingOrder;
+        }
+    } else {
+        sortSection = section;
+        sortOrder = Qt::AscendingOrder;
     }
+
+    setSort(sortSection, sortOrder);
 }
 
 void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
@@ -523,14 +538,6 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
                                           TPlaylistWidgetItem* target) {
     WZDEBUG("");
 
-    // Save current sort settings
-    int sortIndicator = header()->sortIndicatorSection();
-    Qt::SortOrder sortorder = header()->sortIndicatorOrder();
-    // Disable sort
-    if (isSortingEnabled()) {
-        enableSort(false);
-    }
-
     // Get parent and child index into parent
     TPlaylistWidgetItem* parent;
     int idx = 0;
@@ -570,14 +577,23 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         setRootIndex(QModelIndex());
         delete takeTopLevelItem(0);
 
+        // Disable sort
+        setSortingEnabled(false);
+
         // Set item as root
         item->setFlags(ROOT_FLAGS);
         addTopLevelItem(item);
         setRootIndex(model()->index(0, 0));
 
+        // Sort
         if (item->isWZPlaylist() || !item->isPlaylist()) {
-            enableSort(true);
+            sortSection = TPlaylistWidgetItem::COL_NAME;
+            sortOrder = Qt::AscendingOrder;
+        } else {
+            sortSection = -1;
+            sortOrder = Qt::AscendingOrder;
         }
+        setSort(sortSection, sortOrder);
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));
@@ -604,12 +620,6 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         parent->insertChildren(idx, children);
 
         setCurrentItem(parent->child(idx));
-
-        // Restore sort order
-        if (sortIndicator >= 0) {
-            setSortingEnabled(true);
-            header()->setSortIndicator(sortIndicator, sortorder);
-        }
 
         if (modified) {
             parent->setModified();

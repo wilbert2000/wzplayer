@@ -52,7 +52,6 @@ public:
 
     void clearPlayed();
     void clr();
-    void enableSort(bool enable);
 
     bool modified() { return mModified; }
     void setModified(QTreeWidgetItem* item,
@@ -67,6 +66,8 @@ public:
     TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
                              TPlaylistWidgetItem* target);
 
+    void setSort(int section, Qt::SortOrder order);
+
 signals:
     void modifiedChanged();
 
@@ -74,6 +75,8 @@ protected:
     virtual void dropEvent(QDropEvent*);
 
 private:
+    int sortSection;
+    Qt::SortOrder sortOrder;
     bool mModified;
     QTimer* wordWrapTimer;
 
@@ -86,7 +89,7 @@ private:
     void resizeRows(QTreeWidgetItem* w, int level);
 
 private slots:
-    void onSectionClicked(int);
+    void onSectionClicked(int section);
     void onItemExpanded(QTreeWidgetItem*w);
     void onSectionResized(int, int, int);
     void resizeRows();

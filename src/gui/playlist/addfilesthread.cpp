@@ -70,7 +70,7 @@ QDir::Filters dirFilter = QDir::Dirs
                           | QDir::Drives
                           | QDir::NoDotAndDotDot
                           | QDir::Readable
-                          // for Windows ".lnk" files QDir::System is needed
+// for Windows ".lnk" files QDir::System is needed
 #ifdef Q_OS_WIN
                           | QDir::System
 #endif
@@ -307,21 +307,11 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem) {
         if (fi.isDir()) {
             if (recurse) {
                 WZINFO("adding folder '" + filename + "'");
-                w = addDirectory(playlistItem, fi, filename, false, false);
+                w = addDirectory(playlistItem, fi, filename, false);
             }
         } else {
             WZINFO("adding file '" + filename + "'");
             w = addFile(playlistItem, fi);
-
-            // Sort new item into place
-            if (w && playlistItem->childCount() > 1) {
-                playlistItem->takeChild(playlistItem->childCount() - 1);
-                int i = playlistItem->childCount();
-                while (i > 0 && *w < *(playlistItem->plChild(i - 1))) {
-                    i--;
-                }
-                playlistItem->insertChild(i, w);
-            }
         }
         if (w) {
             w->setModified();
@@ -428,8 +418,7 @@ bool TAddFilesThread::openPls(TPlaylistWidgetItem* playlistItem,
 TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
                                                    const QFileInfo& fi,
                                                    const QString& name,
-                                                   bool protectName,
-                                                   bool append) {
+                                                   bool protectName) {
     WZINFO("'" + fi.filePath() + "'");
 
     TFileLock lock(fi, lockedFiles);
@@ -472,17 +461,9 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
     if (result) {
         if (playlistItem->childCount()) {
             latestDir = playlistPath;
-            if (!append && parent->childCount() > 1) {
-                // Sort folder into place
-                parent->takeChild(parent->childCount() - 1);
-                int i = parent->childCount();
-                while (i > 0 && *playlistItem < *(parent->plChild(i - 1))) {
-                    i--;
-                }
-                parent->insertChild(i, playlistItem);
-            }
         } else {
             WZINFO("found no playable items in '" + sourceFileName + "'");
+            itemOrder--;
             delete playlistItem;
             playlistItem = 0;
         }
@@ -490,6 +471,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
         WZERROR("failed to open '" + sourceFileName + "'");
         emit displayMessage(tr("Failed to open '%1'").arg(sourceFileName),
                             TConfig::ERROR_MESSAGE_DURATION);
+        itemOrder--;
         delete playlistItem;
         playlistItem = 0;
     }
@@ -515,8 +497,8 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
         }
 
         if (extensions.isMultiMedia(target)) {
-            return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(),
-                                           name, 0);
+            return new TPlaylistWidgetItem(parent, fi.absoluteFilePath(), name,
+                                           0);
         }
 
         return 0;
@@ -526,20 +508,13 @@ TPlaylistWidgetItem* TAddFilesThread::addFile(TPlaylistWidgetItem* parent,
 }
 
 QDir::SortFlags TAddFilesThread::getSortFlags() {
-
-    return QDir::Name | QDir::DirsLast | QDir::LocaleAware;
-    // Note: QString::localeAwareCompare in TPlaylistWidgetItem::operator <
-    // has no IgnoreCase...
-    // if (!caseSensitiveNames) {
-    //    flags |= QDir::IgnoreCase;
-    // }
+    return QDir::NoSort;
 }
 
 TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
                                                    QFileInfo& fi,
                                                    QString name,
-                                                   bool protectName,
-                                                   bool append) {
+                                                   bool protectName) {
     WZDEBUG("'" + fi.absoluteFilePath() + "'");
 
     TFileLock lock(fi, lockedFiles);
@@ -557,7 +532,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     if (directory.exists(TConfig::WZPLAYLIST)) {
         fi.setFile(directory.path(), TConfig::WZPLAYLIST);
-        return openPlaylist(parent, fi, name, protectName, append);
+        return openPlaylist(parent, fi, name, protectName);
     }
 
     directory.setFilter(dirFilter);
@@ -567,7 +542,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
     QString path = QDir::toNativeSeparators(directory.path());
 
     TPlaylistWidgetItem* dirItem = new TPlaylistWidgetItem(parent, path, name,
-        0, protectName);
+                                                           0, protectName);
 
     if (!path.endsWith(QDir::separator())) {
         path += QDir::separator();
@@ -586,7 +561,7 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
         if (f.isDir()) {
             if (recurse) {
-                addDirectory(dirItem, f, f.fileName(), false, true);
+                addDirectory(dirItem, f, f.fileName(), false);
             } else {
                 WZTRACE("Skipping directory '" + f.fileName() + "'");
             }
@@ -597,17 +572,9 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
 
     if (dirItem->childCount()) {
         latestDir = directory.path();
-        if (!append && parent->childCount() > 1) {
-            // Sort folder into place
-            parent->takeChild(parent->childCount() - 1);
-            int i = parent->childCount();
-            while (i > 0 && *dirItem < *(parent->plChild(i - 1))) {
-                i--;
-            }
-            parent->insertChild(i, dirItem);
-        }
     } else {
         WZDEBUG("found no playable items in '" + dirItem->filename() + "'");
+        itemOrder--;
         delete dirItem;
         dirItem = 0;
     }
