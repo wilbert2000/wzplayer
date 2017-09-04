@@ -23,10 +23,10 @@
 TExtensions extensions;
 
 
-ExtensionList::ExtensionList() : QStringList() {
+TExtensionList::TExtensionList() : QStringList() {
 }
 
-void ExtensionList::addList(const ExtensionList& list) {
+void TExtensionList::addList(const TExtensionList& list) {
 
     foreach(const QString& ext, list) {
         if (!contains(ext)) {
@@ -37,7 +37,7 @@ void ExtensionList::addList(const ExtensionList& list) {
 }
 
 
-QString ExtensionList::forFilter() const {
+QString TExtensionList::forFilter() const {
 
     QString s;
     for (int n = 0; n < count(); n++) {
@@ -48,7 +48,7 @@ QString ExtensionList::forFilter() const {
     return s;
 }
 
-QStringList ExtensionList::forDirFilter() const {
+QStringList TExtensionList::forDirFilter() const {
 
     QStringList l;
     for (int n = 0; n < count(); n++) {
@@ -58,7 +58,7 @@ QStringList ExtensionList::forDirFilter() const {
     return l;
 }
 
-QString ExtensionList::forRegExp() const {
+QString TExtensionList::forRegExp() const {
 
     QString s;
     for (int n = 0; n < count(); n++) {

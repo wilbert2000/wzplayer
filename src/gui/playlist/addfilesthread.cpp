@@ -106,7 +106,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
         }
     }
 
-    ExtensionList exts;
+    TExtensionList exts;
     if (videoFiles) {
         exts = extensions.videoAndAudio();
     }

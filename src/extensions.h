@@ -23,15 +23,15 @@
 #include <QFileInfo>
 
 
-class ExtensionList : public QStringList {
+class TExtensionList : public QStringList {
 public:
-    ExtensionList();
+    TExtensionList();
 
     QString forFilter() const;
     QStringList forDirFilter() const;
     QString forRegExp() const;
 
-    void addList(const ExtensionList& list);
+    void addList(const TExtensionList& list);
 };
 
 class TExtensions {
@@ -39,13 +39,13 @@ public:
     TExtensions();
     virtual ~TExtensions();
 
-    ExtensionList video() const { return _video; }
-    ExtensionList audio() const { return _audio; }
-    ExtensionList playlists() const { return _playlists; }
-    ExtensionList subtitles() const { return _subtitles; }
-    ExtensionList images() const { return _images; }
-    ExtensionList videoAndAudio() const { return _videoAndAudio; }
-    ExtensionList allPlayable() const { return _all_playable; }
+    TExtensionList video() const { return _video; }
+    TExtensionList audio() const { return _audio; }
+    TExtensionList playlists() const { return _playlists; }
+    TExtensionList subtitles() const { return _subtitles; }
+    TExtensionList images() const { return _images; }
+    TExtensionList videoAndAudio() const { return _videoAndAudio; }
+    TExtensionList allPlayable() const { return _all_playable; }
 
     bool isMultiMedia(const QFileInfo& fi) const;
     bool isPlaylist(const QFileInfo& fi) const;
@@ -53,10 +53,10 @@ public:
     bool isImage(const QFileInfo& fi) const;
     bool isImage(const QString& filename) const;
 
-protected:
-    ExtensionList _video, _audio, _playlists, _subtitles, _images;
-    ExtensionList _videoAndAudio; //!< video and audio
-    ExtensionList _all_playable; //!< video, audio and playlist
+private:
+    TExtensionList _video, _audio, _playlists, _subtitles, _images;
+    TExtensionList _videoAndAudio; //!< video and audio
+    TExtensionList _all_playable; //!< video, audio and playlist
 };
 
 extern TExtensions extensions;
