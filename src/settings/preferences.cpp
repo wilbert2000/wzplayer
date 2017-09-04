@@ -36,7 +36,7 @@
 #include "settings/mediasettings.h"
 #include "settings/recents.h"
 #include "settings/filters.h"
-#include "helper.h"
+#include "wzfiles.h"
 
 
 namespace Settings {
@@ -742,7 +742,7 @@ QString TPreferences::playerIDToString(TPlayerID pid) {
 QString TPreferences::getAbsolutePathPlayer(const QString& player) {
 
     QString path = player;
-    QString found_player = Helper::findExecutable(path);
+    QString found_player = TWZFiles::findExecutable(path);
     if (!found_player.isEmpty()) {
         path = found_player;
     }
@@ -763,7 +763,7 @@ void TPreferences::setPlayerBin(QString bin,
         }
     }
 
-    QString found_bin = Helper::findExecutable(bin);
+    QString found_bin = TWZFiles::findExecutable(bin);
 
     // Try to find an alternative if not found
     if (found_bin.isEmpty()) {
@@ -772,7 +772,7 @@ void TPreferences::setPlayerBin(QString bin,
         if (wanted_player == ID_MPV || fi.baseName().startsWith("mpv")) {
             // Try default mpv first
             if (bin != default_mpv_bin) {
-                found_bin = Helper::findExecutable(default_mpv_bin);
+                found_bin = TWZFiles::findExecutable(default_mpv_bin);
                 if (!found_bin.isEmpty()) {
                     found_id = ID_MPV;
                 }
@@ -781,7 +781,7 @@ void TPreferences::setPlayerBin(QString bin,
                 if (bin != default_mplayer_bin
                     && (allow_other_player || wanted_player == ID_MPLAYER)) {
                     // Try default mplayer
-                    found_bin = Helper::findExecutable(default_mplayer_bin);
+                    found_bin = TWZFiles::findExecutable(default_mplayer_bin);
                 }
             } else {
                 found_id = ID_MPV;
@@ -790,13 +790,13 @@ void TPreferences::setPlayerBin(QString bin,
             // Try default mplayer
             if (bin != default_mplayer_bin
                 && (allow_other_player || wanted_player == ID_MPLAYER)) {
-                found_bin = Helper::findExecutable(default_mplayer_bin);
+                found_bin = TWZFiles::findExecutable(default_mplayer_bin);
             }
             if (found_bin.isEmpty()
                 && bin != default_mpv_bin
                 && (allow_other_player || wanted_player == ID_MPV)) {
                 // Try default mpv
-                found_bin = Helper::findExecutable(default_mpv_bin);
+                found_bin = TWZFiles::findExecutable(default_mpv_bin);
                 if (!found_bin.isEmpty()) {
                     found_id = ID_MPV;
                 }

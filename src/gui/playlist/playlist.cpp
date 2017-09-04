@@ -52,7 +52,7 @@
 #include "gui/action/action.h"
 #include "gui/msg.h"
 #include "images.h"
-#include "helper.h"
+#include "wzfiles.h"
 #include "gui/filedialog.h"
 #include "extensions.h"
 #include "version.h"
@@ -824,7 +824,7 @@ void TPlaylist::playPrev() {
 void TPlaylist::playDirectory(const QString &dir) {
     WZDEBUG("'" + dir + "'");
 
-    if (Helper::directoryContainsDVD(dir)) {
+    if (TWZFiles::directoryContainsDVD(dir)) {
         // onNewMediaStartedPlaying() will pickup the playlist
         player->open(dir);
     } else {
@@ -1248,13 +1248,13 @@ void TPlaylist::onNewMediaStartedPlaying() {
             false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
 
-        // TODO: remove from main thread
         // Add associated files to playlist
+        // TODO: remove from main thread
         if (md->selected_type == TMediaData::TYPE_FILE
             && pref->mediaToAddToPlaylist != TPreferences::NoFiles) {
             WZDEBUG("searching for files to add to playlist for '" + filename
                     + "'");
-            QStringList files_to_add = Helper::filesForPlaylist(filename,
+            QStringList files_to_add = TWZFiles::filesForPlaylist(filename,
                 pref->mediaToAddToPlaylist);
             if (files_to_add.isEmpty()) {
                 WZDEBUG("none found");

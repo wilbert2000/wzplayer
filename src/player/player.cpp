@@ -39,6 +39,7 @@
 #include "mediadata.h"
 #include "extensions.h"
 #include "colorutils.h"
+#include "wzfiles.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -386,7 +387,7 @@ void TPlayer::open(QString filename, bool loopImage) {
         }
 
         if (fi.isDir()) {
-            if (Helper::directoryContainsDVD(filename)) {
+            if (TWZFiles::directoryContainsDVD(filename)) {
                 WZDEBUG("directory contains a dvd");
                 disc = TDiscName(filename, Settings::pref->useDVDNAV());
                 openDisc(disc);

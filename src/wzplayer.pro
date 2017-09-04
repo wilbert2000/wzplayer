@@ -163,6 +163,7 @@ HEADERS += wzdebug.h \
     qtsingleapplication/qtsingleapplication.h \
     qtsingleapplication/qtlocalpeer.h \
     config.h \
+    wzfiles.h \
     wztime.h \
     app.h
 
@@ -291,6 +292,7 @@ SOURCES += wzdebug.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
     qtsingleapplication/qtlocalpeer.cpp \
     config.cpp \
+    wzfiles.cpp \
     wztime.cpp \
     app.cpp \
     main.cpp
