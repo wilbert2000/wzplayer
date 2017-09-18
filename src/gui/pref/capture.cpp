@@ -17,7 +17,6 @@
 */
 
 #include "gui/pref/capture.h"
-#include <QDebug>
 #include <log4qt/logger.h>
 #include "images.h"
 #include "settings/preferences.h"

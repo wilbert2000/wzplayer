@@ -19,7 +19,7 @@
 #include "gui/pref/combobox.h"
 #include <QDir>
 #include <QStringListModel>
-#include <QDebug>
+
 
 namespace Gui { namespace Pref {
 

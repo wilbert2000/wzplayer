@@ -17,7 +17,6 @@
 */
 
 #include "gui/pref/video.h"
-#include <QDebug>
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/mediasettings.h"

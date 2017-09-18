@@ -17,7 +17,6 @@
 */
 
 #include "gui/action/action.h"
-#include <QDebug>
 #include <QEvent>
 #include <QWidget>
 #include "images.h"

@@ -20,7 +20,6 @@
 */
 
 #include "gui/action/slider.h"
-#include <QDebug>
 #include <QMouseEvent>
 #include <QStyle>
 #include <QStyleOption>

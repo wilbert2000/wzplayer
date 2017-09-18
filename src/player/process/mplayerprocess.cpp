@@ -18,7 +18,6 @@
 
 #include "player/process/mplayerprocess.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QRegExp>
 #include <QStringList>

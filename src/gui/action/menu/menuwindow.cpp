@@ -1,7 +1,4 @@
 #include "gui/action/menu/menuwindow.h"
-
-#include <QDebug>
-
 #include "gui/mainwindow.h"
 #include "gui/dockwidget.h"
 #include "gui/autohidetimer.h"

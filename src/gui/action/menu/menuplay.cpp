@@ -1,6 +1,5 @@
 #include "gui/action/menu/menuplay.h"
 
-#include <QDebug>
 #include <QToolButton>
 
 #include "gui/mainwindow.h"

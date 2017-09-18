@@ -32,7 +32,7 @@
 #include <QDesktopServices>
 #include <QTemporaryFile>
 #include <QSettings>
-#include <QDebug>
+
 
 namespace Gui {
 

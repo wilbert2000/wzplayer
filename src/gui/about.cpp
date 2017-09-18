@@ -17,7 +17,6 @@
 */
 
 #include "gui/about.h"
-#include <QDebug>
 #include <QFile>
 #include <QDesktopServices>
 

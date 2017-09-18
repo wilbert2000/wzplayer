@@ -18,7 +18,6 @@
 
 
 #include "gui/pref/dialog.h"
-#include <QDebug>
 #include <QTextBrowser>
 
 #include "config.h"

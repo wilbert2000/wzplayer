@@ -1,6 +1,5 @@
 #include "gui/playlist/playlistwidget.h"
 
-#include <QDebug>
 #include <QHeaderView>
 #include <QTreeWidgetItemIterator>
 #include <QStyledItemDelegate>

@@ -17,7 +17,6 @@
 */
 
 #include "gui/action/widgetactions.h"
-#include <QDebug>
 #include <QLabel>
 #include <QToolButton>
 #include <QToolBar>

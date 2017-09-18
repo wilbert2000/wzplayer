@@ -19,7 +19,6 @@
 #include "gui/deviceinfo.h"
 #include <QProcess>
 #include <QFile>
-#include <QDebug>
 #include "log4qt/logger.h"
 
 

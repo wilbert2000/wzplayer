@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOptionToolBar>
-#include <QDebug>
+
 
 namespace Gui {
 namespace Action {

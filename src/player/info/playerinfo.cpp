@@ -21,7 +21,6 @@
 #include <QFileInfo>
 #include <QDateTime>
 #include <QSettings>
-#include <QDebug>
 
 #include "settings/preferences.h"
 #include "settings/paths.h"

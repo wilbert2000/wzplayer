@@ -18,7 +18,6 @@
 
 
 #include "gui/pref/audio.h"
-#include <QDebug>
 #include "images.h"
 #include "settings/preferences.h"
 #include "settings/mediasettings.h"

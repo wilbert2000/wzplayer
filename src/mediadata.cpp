@@ -19,7 +19,6 @@
 #include "mediadata.h"
 #include <QApplication>
 #include <QFileInfo>
-#include <QDebug>
 
 #include "wzdebug.h"
 #include "config.h"

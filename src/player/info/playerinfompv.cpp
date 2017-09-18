@@ -17,7 +17,6 @@
 */
 
 #include "player/info/playerinfompv.h"
-#include <QDebug>
 #include <QStringList>
 #include <QProcess>
 

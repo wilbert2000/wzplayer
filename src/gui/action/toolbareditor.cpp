@@ -18,7 +18,6 @@
 
 #include "gui/action/toolbareditor.h"
 
-#include <QDebug>
 #include <QToolBar>
 #include <QToolButton>
 #include <QScrollBar>

@@ -17,7 +17,6 @@
 */
 
 #include "gui/audioequalizer.h"
-#include <QDebug>
 #include <QLayout>
 #include <QPushButton>
 #include <QLabel>

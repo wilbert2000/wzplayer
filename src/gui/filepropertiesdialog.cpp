@@ -18,7 +18,6 @@
 
 #include "gui/filepropertiesdialog.h"
 
-#include <QDebug>
 #include <QListWidget>
 #include <QLineEdit>
 #include <QTextEdit>

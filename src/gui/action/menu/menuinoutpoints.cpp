@@ -1,7 +1,4 @@
 #include "gui/action/menu/menuinoutpoints.h"
-
-#include <QDebug>
-
 #include "gui/mainwindow.h"
 #include "player/player.h"
 #include "gui/action/action.h"

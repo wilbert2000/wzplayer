@@ -48,7 +48,6 @@
 #include "gui/action/shortcutgetter.h"
 #include "images.h"
 
-#include <QDebug>
 #include <QLayout>
 #include <QHash>
 #include <QLabel>

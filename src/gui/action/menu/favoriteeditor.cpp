@@ -18,7 +18,6 @@
 
 #include "gui/action/menu/favoriteeditor.h"
 
-#include <QDebug>
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QItemDelegate>

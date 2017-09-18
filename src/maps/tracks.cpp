@@ -18,7 +18,6 @@
 
 #include "tracks.h"
 
-#include <QDebug>
 #include <QString>
 #include <QRegExp>
 #include "log4qt/logger.h"

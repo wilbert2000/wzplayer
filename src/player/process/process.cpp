@@ -17,7 +17,6 @@
 */
 
 #include "player/process/process.h"
-#include <QDebug>
 #include "log4qt/logger.h"
 
 
