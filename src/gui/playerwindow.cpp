@@ -18,7 +18,6 @@
 
 #include "gui/playerwindow.h"
 
-#include <QDebug>
 #include <QTimer>
 #include <QCursor>
 #include <QEvent>
@@ -235,7 +234,11 @@ void TPlayerWindow::updateVideoWindow() {
 
     // Return to local coords in fullscreen
     if (pref->fullscreen) {
-        vwin.moveTo(mapFromGlobal(vwin.topLeft()));
+        vwin.moveTo(vwin.topLeft()
+                    - pos() // Could assume pos() player window always (0,0)
+                    // Put the docks on top of the video area:
+                    - ((QWidget*)parent())->pos() // pos() panel
+                    );
     }
 
     // Set geometry video window

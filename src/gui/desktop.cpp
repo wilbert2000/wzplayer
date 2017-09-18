@@ -17,9 +17,13 @@
 */
 
 #include "gui/desktop.h"
+#include "wzdebug.h"
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QDebug>
+
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TDesktop)
+
 
 QSize TDesktop::size(const QWidget* w) {
     return QApplication::desktop()->screenGeometry(w).size();
@@ -38,34 +42,45 @@ double TDesktop::aspectRatio(const QWidget* w) {
 void TDesktop::centerWindow(QWidget* w) {
 
     if (!w->isMaximized()) {
-        QSize center_pos = (TDesktop::availableSize(w) - w->frameGeometry().size()) / 2;
-        if (center_pos.isValid()) {
-            w->move(center_pos.width(), center_pos.height());
+        QRect available = QApplication::desktop()->availableGeometry(w);
+        QSize center = (available.size() - w->frameGeometry().size()) / 2;
+        if (center.isValid()) {
+            w->move(available.x() + center.width(),
+                    available.y() + center.height());
         }
     }
 }
 
 void TDesktop::keepInsideDesktop(QWidget* w) {
 
-    if (w->isMaximized())
+    if (w->isMaximized()) {
         return;
+    }
 
-    QSize desktop_size = availableSize(w);
+    QRect available = QApplication::desktop()->availableGeometry(w);
     QPoint p = w->pos();
     QSize s = w->frameGeometry().size();
-    int max = desktop_size.width() - s.width();
-    if (p.x() > max)
+    int max = available.x() + available.width() - s.width();
+    if (p.x() > max) {
         p.rx() = max;
-    if (p.x() < 0)
-        p.rx() = 0;
+    }
+    if (p.x() < available.x()) {
+        p.rx() = available.x();
+    }
 
-    max = desktop_size.height() - s.height();
-    if (p.y() > max)
+    max = available.y() + available.height() - s.height();
+    if (p.y() > max) {
         p.ry() = max;
-    if (p.y() < 0)
-        p.ry() = 0;
+    }
+    if (p.y() < available.y()) {
+        p.ry() = available.y();
+    }
 
     if (p != w->pos()) {
+        WZDEBUG("Moving from " + QString::number(w->pos().x())
+                + ", " + QString::number(w->pos().y())
+                + " to " + QString::number(p.x())
+                + ", " + QString::number(p.y()));
         w->move(p);
     }
 }

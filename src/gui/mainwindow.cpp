@@ -2226,21 +2226,24 @@ void TMainWindow::resizeWindow(int w, int h) {
 
 void TMainWindow::resizeStickyWindow(int w, int h) {
 
-    QSize desktop = TDesktop::availableSize(this);
+    QRect available = QApplication::desktop()->availableGeometry(this);
     bool stickx, sticky;
     if (pref->fullscreen) {
         stickx = false;
         sticky = false;
     } else {
-        stickx = pos().x() + frameGeometry().size().width() >= desktop.width();
-        sticky = pos().y() + frameGeometry().size().height() >= desktop.height();
+        stickx = pos().x() - available.x() + frameGeometry().size().width()
+                 >= available.width();
+        sticky = pos().y() -available.y() + frameGeometry().size().height()
+                 >= available.height();
     }
 
     resizeWindow(w, h);
 
     QPoint p = pos();
     if (stickx) {
-        int x = desktop.width() - frameGeometry().size().width();
+        int x = available.x() + available.width()
+                - frameGeometry().size().width();
         if (x < 0) {
             stickx = false;
         } else {
@@ -2248,7 +2251,8 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
         }
     }
     if (sticky) {
-        int y = desktop.height() - frameGeometry().size().height();
+        int y = available.y() + available.height()
+                - frameGeometry().size().height();
         if (y < 0) {
             sticky = false;
         } else {

@@ -1,8 +1,8 @@
 #include "gui/action/menu/menu.h"
-#include <QDebug>
 #include <QEvent>
+#include <QApplication>
+#include <QDesktopWidget>
 #include "gui/mainwindow.h"
-#include "gui/desktop.h"
 #include "settings/mediasettings.h"
 #include "images.h"
 
@@ -14,20 +14,22 @@ namespace Menu {
 void execPopup(QWidget* w, QMenu* popup, QPoint p) {
 
     // Keep inside desktop
+    QRect desktop = QApplication::desktop()->screenGeometry(w);
     QSize s = popup->sizeHint();
-    QSize desktop = TDesktop::size(w);
-    if (p.x() < 0) p.rx() = 0;
-    else if (p.x() + s.width() > desktop.width()) {
-        p.rx() = desktop.width() - s.width();
+    if (p.x() <= desktop.x()) {
+        p.rx() = desktop.x();
+    } else if (p.x() + s.width() > desktop.x() + desktop.width()) {
+        p.rx() = desktop.x() + desktop.width() - s.width();
     }
-    if (p.y() < 0) p.ry() = 0;
-    else if (p.y() + s.height() > desktop.height()) {
-        p.ry() = desktop.height() - s.height();
+    if (p.y() <= desktop.y()) {
+        p.ry() = desktop.y();
+    } else if (p.y() + s.height() > desktop.y() + desktop.height()) {
+        p.ry() = desktop.y() + desktop.height() - s.height();
     }
 
     // Evade mouse
     if (QCursor::pos().x() > p.x() && QCursor::pos().x() < p.x() + s.width()) {
-        if (QCursor::pos().x() >= desktop.width() - s.width()) {
+        if (QCursor::pos().x() >= desktop.x() + desktop.width() - s.width()) {
             // Place menu to the left of mouse
             p.rx() = QCursor::pos().x() - s.width();
         } else {
@@ -36,7 +38,7 @@ void execPopup(QWidget* w, QMenu* popup, QPoint p) {
         }
     }
     if (QCursor::pos().y() > p.y() && QCursor::pos().y() < p.y() + s.height()) {
-        if (QCursor::pos().y() >= desktop.height() - s.height()) {
+        if (QCursor::pos().y() >= desktop.y() + desktop.height() - s.height()) {
             // Place menu above mouse
             p.ry() = QCursor::pos().y() - s.height();
         } else {

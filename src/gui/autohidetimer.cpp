@@ -1,9 +1,10 @@
 #include "gui/autohidetimer.h"
-#include <QDebug>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QMouseEvent>
 #include "gui/desktop.h"
 #include "settings/preferences.h"
+
 
 const int MOUSE_MOVED_TRESHOLD = 4;
 
@@ -126,9 +127,14 @@ bool TAutoHideTimer::mouseInsideShowArea() const {
     const int margin = 100;
 
     // Check bottom of screen
-    if (pref->fullscreen
-        && QCursor::pos().y() > TDesktop::size(playerWindow).height() - margin) {
-        return true;
+    if (pref->fullscreen) {
+        QRect desktop = QApplication::desktop()->screenGeometry(playerWindow);
+        int b = desktop.y() + desktop.height();
+        QPoint p = QCursor::pos();
+        if (p.x() >= desktop.x() && p.x() < desktop.x() + desktop.width()
+            && p.y() > b - margin && p.y() <= b) {
+            return true;
+        }
     }
 
     // Check around widgets
