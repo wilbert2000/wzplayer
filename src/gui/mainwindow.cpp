@@ -1257,8 +1257,8 @@ void TMainWindow::showCustomContextMenu(const QPoint& pos) {
     WZDEBUG("");
 
     // Using this event to make the context menu popup on right mouse button
-    // down event, instead of waiting for the button release event, which, if
-    // still assigned, would trigger the show_context_menu action.
+    // down event, instead of waiting for the mouse button release event,
+    // which, if still assigned, would trigger the show_context_menu action.
     if (!contextMenu->isVisible()
         && pref->mouse_right_click_function == "show_context_menu") {
         Menu::execPopup(this, contextMenu, playerwindow->mapToGlobal(pos));
@@ -1891,8 +1891,7 @@ void TMainWindow::didEnterFullscreen() {
     if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
                       Helper::qtVersion())) {
         // First time there is no fullscreen toolbar state
-        logger()->debug("didEnterFullscreen: failed to restore fullscreen"
-                        " toolbar state");
+        WZDEBUG("fullscreen toolbar state not restored");
         toolbar->hide();
         toolbar2->hide();
     }
