@@ -138,10 +138,11 @@ bool TAutoHideTimer::mouseInsideShowArea() const {
     }
 
     // Check around widgets
+    QPoint o(-margin, -margin);
+    QSize s(2 * margin, 2 * margin);
     for (int i = 0; i < widgets.size(); i++) {
         QWidget* w = widgets[i];
-        QRect showArea(w->mapToGlobal(QPoint(0, 0)) - QPoint(margin, margin),
-                       w->size() + QSize(margin, margin));
+        QRect showArea(w->mapToGlobal(o), w->size() + s);
         if (showArea.contains(QCursor::pos())) {
             return true;
         }
