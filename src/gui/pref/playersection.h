@@ -63,26 +63,8 @@ private:
     void setFileSettingsMethod(const QString& method);
     QString fileSettingsMethod();
 
-
-    void setPlayerAdditionalArguments(QString args);
-    QString playerAdditionalArguments();
-
-    void setPlayerAdditionalVideoFilters(QString s);
-    QString playerAdditionalVideoFilters();
-
-    void setPlayerAdditionalAudioFilters(QString s);
-    QString playerAdditionalAudioFilters();
-
-    void setActionsToRun(QString actions);
-    QString actionsToRun();
-
-
     void setLogLevel(Log4Qt::Level level);
     Log4Qt::Level logLevel();
-
-    void setLogVerbose(bool b);
-    bool logVerbose();
-
 
 private slots:
     void onMPlayerFileChanged(QString file);

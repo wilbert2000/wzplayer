@@ -120,14 +120,14 @@ void TPlayerSection::setData(TPreferences* pref) {
     radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
 
     // Advanced tab
-    setPlayerAdditionalArguments(pref->player_additional_options);
-    setPlayerAdditionalVideoFilters(pref->player_additional_video_filters);
-    setPlayerAdditionalAudioFilters(pref->player_additional_audio_filters);
-    setActionsToRun(pref->actions_to_run);
+    player_args_edit->setText(pref->player_additional_options);
+    player_vfilters_edit->setText(pref->player_additional_video_filters);
+    player_afilters_edit->setText(pref->player_additional_audio_filters);
+    actions_to_run_edit->setText(pref->actions_to_run);
 
     // Log
     setLogLevel(Log4Qt::LogManager::rootLogger()->level());
-    setLogVerbose(pref->log_verbose);
+    log_verbose_check->setChecked(pref->log_verbose);
     log_window_max_events_spinbox->setValue(pref->log_window_max_events);
 }
 
@@ -165,7 +165,7 @@ void TPlayerSection::getData(TPreferences* pref) {
 
     // Advanced tab
     restartIfStringChanged(pref->player_additional_options,
-                           playerAdditionalArguments(),
+                           player_args_edit->text(),
                            "player_additional_options");
     if (pref->isMPlayer()) {
         pref->mplayer_additional_options = pref->player_additional_options;
@@ -173,19 +173,20 @@ void TPlayerSection::getData(TPreferences* pref) {
         pref->mpv_additional_options = pref->player_additional_options;
     }
     restartIfStringChanged(pref->player_additional_video_filters,
-                           playerAdditionalVideoFilters(),
+                           player_vfilters_edit->text(),
                            "player_additional_video_filters");
     restartIfStringChanged(pref->player_additional_audio_filters,
-                           playerAdditionalAudioFilters(),
+                           player_afilters_edit->text(),
                            "player_additional_audio_filters");
-    pref->actions_to_run = actionsToRun();
+    pref->actions_to_run = actions_to_run_edit->text();
 
     // Log tab
     pref->log_level = logLevel();
     Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
     Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
     restartIfBoolChanged(pref->log_verbose,
-        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose(),
+        pref->log_level <= Log4Qt::Level::DEBUG_INT
+        && log_verbose_check->isChecked(),
         "log_verbose");
     pref->log_window_max_events = log_window_max_events_spinbox->value();
 }
@@ -282,46 +283,6 @@ Log4Qt::Level TPlayerSection::logLevel() {
     }
 
     return level;
-}
-
-void TPlayerSection::setLogVerbose(bool b) {
-    log_verbose_check->setChecked(b);
-}
-
-bool TPlayerSection::logVerbose() {
-    return log_verbose_check->isChecked();
-}
-
-void TPlayerSection::setPlayerAdditionalArguments(QString args) {
-    player_args_edit->setText(args);
-}
-
-QString TPlayerSection::playerAdditionalArguments() {
-    return player_args_edit->text();
-}
-
-void TPlayerSection::setPlayerAdditionalVideoFilters(QString s) {
-    player_vfilters_edit->setText(s);
-}
-
-QString TPlayerSection::playerAdditionalVideoFilters() {
-    return player_vfilters_edit->text();
-}
-
-void TPlayerSection::setPlayerAdditionalAudioFilters(QString s) {
-    player_afilters_edit->setText(s);
-}
-
-QString TPlayerSection::playerAdditionalAudioFilters() {
-    return player_afilters_edit->text();
-}
-
-void TPlayerSection::setActionsToRun(QString actions) {
-    actions_to_run_edit->setText(actions);
-}
-
-QString TPlayerSection::actionsToRun() {
-    return actions_to_run_edit->text();
 }
 
 void TPlayerSection::createHelp() {
