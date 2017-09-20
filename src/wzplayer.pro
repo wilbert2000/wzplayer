@@ -123,7 +123,6 @@ HEADERS += wzdebug.h \
     gui/pref/capture.h \
     gui/pref/performance.h \
     gui/pref/network.h \
-    gui/pref/advanced.h \
     gui/msg.h \
     gui/multilineinputdialog.h \
     gui/infofile.h \
@@ -252,7 +251,6 @@ SOURCES += wzdebug.cpp \
     gui/pref/capture.cpp \
     gui/pref/performance.cpp \
     gui/pref/network.cpp \
-    gui/pref/advanced.cpp \
     gui/msg.cpp \
     gui/multilineinputdialog.cpp \
     gui/infofile.cpp \
@@ -323,8 +321,7 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/drives.ui \
     gui/pref/capture.ui \
     gui/pref/performance.ui \
-    gui/pref/network.ui \
-    gui/pref/advanced.ui
+    gui/pref/network.ui
 
 
 unix {

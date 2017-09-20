@@ -50,8 +50,6 @@ class TPerformance;
 class TAssociations;
 #endif
 
-class TAdvanced;
-
 
 class TDialog : public QDialog, public Ui::TDialog {
     Q_OBJECT
@@ -70,11 +68,10 @@ public:
         SECTION_DRIVES,
         SECTION_CAPTURE,
         SECTION_PERFORMANCE,
-        SECTION_NETWORK,
+        SECTION_NETWORK
 #if USE_ASSOCIATIONS
-        SECTION_ASSOCIATIONS,
+        ,SECTION_ASSOCIATIONS
 #endif
-        SECTION_ADVANCED
     };
 
     TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -123,7 +120,6 @@ private:
     TAssociations* page_associations;
 #endif
 
-    TAdvanced* page_advanced;
 
     QTextBrowser* help_window;
     QPushButton* helpButton;

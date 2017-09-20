@@ -96,7 +96,6 @@
 #include "gui/pref/dialog.h"
 #include "gui/pref/interface.h"
 #include "gui/pref/input.h"
-#include "gui/pref/advanced.h"
 #include "app.h"
 
 #ifdef Q_OS_WIN

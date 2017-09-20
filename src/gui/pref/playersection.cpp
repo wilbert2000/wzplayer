@@ -18,6 +18,7 @@
 
 
 #include "gui/pref/playersection.h"
+#include "log4qt/logmanager.h"
 #include "gui/filedialog.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
@@ -95,6 +96,9 @@ void TPlayerSection::retranslateStrings() {
     // Radio and TV
     radio_tv_icon_label->setPixmap(Images::icon("pref_radio_tv"));
 
+    // Tab advanced
+    advanced_icon_label->setPixmap(Images::icon("pref_advanced"));
+
     createHelp();
 }
 
@@ -114,6 +118,17 @@ void TPlayerSection::setData(TPreferences* pref) {
 
     // Radio and TV
     radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
+
+    // Advanced tab
+    setPlayerAdditionalArguments(pref->player_additional_options);
+    setPlayerAdditionalVideoFilters(pref->player_additional_video_filters);
+    setPlayerAdditionalAudioFilters(pref->player_additional_audio_filters);
+    setActionsToRun(pref->actions_to_run);
+
+    // Log
+    setLogLevel(Log4Qt::LogManager::rootLogger()->level());
+    setLogVerbose(pref->log_verbose);
+    log_window_max_events_spinbox->setValue(pref->log_window_max_events);
 }
 
 void TPlayerSection::getData(TPreferences* pref) {
@@ -147,6 +162,32 @@ void TPlayerSection::getData(TPreferences* pref) {
 
     // Radio and TV
     pref->check_channels_conf_on_startup = radio_tv_rescan_check->isChecked();
+
+    // Advanced tab
+    restartIfStringChanged(pref->player_additional_options,
+                           playerAdditionalArguments(),
+                           "player_additional_options");
+    if (pref->isMPlayer()) {
+        pref->mplayer_additional_options = pref->player_additional_options;
+    } else {
+        pref->mpv_additional_options = pref->player_additional_options;
+    }
+    restartIfStringChanged(pref->player_additional_video_filters,
+                           playerAdditionalVideoFilters(),
+                           "player_additional_video_filters");
+    restartIfStringChanged(pref->player_additional_audio_filters,
+                           playerAdditionalAudioFilters(),
+                           "player_additional_audio_filters");
+    pref->actions_to_run = actionsToRun();
+
+    // Log tab
+    pref->log_level = logLevel();
+    Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
+    Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
+    restartIfBoolChanged(pref->log_verbose,
+        pref->log_level <= Log4Qt::Level::DEBUG_INT && logVerbose(),
+        "log_verbose");
+    pref->log_window_max_events = log_window_max_events_spinbox->value();
 }
 
 void TPlayerSection::setPlayerID(Settings::TPreferences::TPlayerID id) {
@@ -205,6 +246,82 @@ void TPlayerSection::setFileSettingsMethod(const QString& method) {
 QString TPlayerSection::fileSettingsMethod() {
     return filesettings_method_combo->itemData(
                 filesettings_method_combo->currentIndex()).toString();
+}
+
+void TPlayerSection::setLogLevel(Log4Qt::Level level) {
+
+    int idx;
+    switch (level.toInt()) {
+        case Log4Qt::Level::NULL_INT:
+        case Log4Qt::Level::ALL_INT:
+        case Log4Qt::Level::TRACE_INT: idx = 0; break;
+        case Log4Qt::Level::DEBUG_INT: idx = 1; break;
+        case Log4Qt::Level::INFO_INT: idx = 2; break;
+        case Log4Qt::Level::WARN_INT: idx = 3; break;
+        case Log4Qt::Level::ERROR_INT: idx = 4; break;
+        case Log4Qt::Level::FATAL_INT: idx = 5; break;
+        case Log4Qt::Level::OFF_INT: idx = 6; break;
+        default: idx = 1;
+    }
+
+    log_level_combo->setCurrentIndex(idx);
+}
+
+Log4Qt::Level TPlayerSection::logLevel() {
+
+    Log4Qt::Level level;
+    switch (log_level_combo->currentIndex()) {
+        case 0: level = Log4Qt::Level::TRACE_INT; break;
+        case 1: level = Log4Qt::Level::DEBUG_INT; break;
+        case 2: level = Log4Qt::Level::INFO_INT; break;
+        case 3: level = Log4Qt::Level::WARN_INT;break;
+        case 4: level = Log4Qt::Level::ERROR_INT; break;
+        case 5: level = Log4Qt::Level::FATAL_INT; break;
+        case 6: level = Log4Qt::Level::OFF_INT; break;
+        default: level =Log4Qt::Level:: DEBUG_INT;
+    }
+
+    return level;
+}
+
+void TPlayerSection::setLogVerbose(bool b) {
+    log_verbose_check->setChecked(b);
+}
+
+bool TPlayerSection::logVerbose() {
+    return log_verbose_check->isChecked();
+}
+
+void TPlayerSection::setPlayerAdditionalArguments(QString args) {
+    player_args_edit->setText(args);
+}
+
+QString TPlayerSection::playerAdditionalArguments() {
+    return player_args_edit->text();
+}
+
+void TPlayerSection::setPlayerAdditionalVideoFilters(QString s) {
+    player_vfilters_edit->setText(s);
+}
+
+QString TPlayerSection::playerAdditionalVideoFilters() {
+    return player_vfilters_edit->text();
+}
+
+void TPlayerSection::setPlayerAdditionalAudioFilters(QString s) {
+    player_afilters_edit->setText(s);
+}
+
+QString TPlayerSection::playerAdditionalAudioFilters() {
+    return player_afilters_edit->text();
+}
+
+void TPlayerSection::setActionsToRun(QString actions) {
+    actions_to_run_edit->setText(actions);
+}
+
+QString TPlayerSection::actionsToRun() {
+    return actions_to_run_edit->text();
 }
 
 void TPlayerSection::createHelp() {
@@ -279,7 +396,6 @@ void TPlayerSection::createHelp() {
 
 #ifndef Q_OS_WIN
     addSectionTitle(tr("Radio and TV"));
-
     setWhatsThis(radio_tv_rescan_check,
                  tr("Check for new radio and TV channels on startup"),
         tr("If this option is checked, WZPlayer will look for new radio and TV"
@@ -287,6 +403,43 @@ void TPlayerSection::createHelp() {
            " and ~/.mplayer/channels.conf."));
 #endif
 
+
+    addSectionTitle(tr("Extra player options"));
+    setWhatsThis(player_args_edit, tr("Options"),
+        tr("Here you can pass extra command line options to the player."
+           " Write them separated by spaces. They are stored per player."));
+
+
+    addSectionTitle(tr("Extra filters"));
+    setWhatsThis(player_vfilters_edit, tr("Video filters"),
+        tr("Here you can add extra video filters. Write them separated by"
+           " commas. Don't use spaces!"));
+    setWhatsThis(player_afilters_edit, tr("Audio filters"),
+        tr("Here you can add extra audio filters. Write them separated by"
+           " commas. Don't use spaces!"));
+
+
+    addSectionTitle(tr("Actions to run"));
+    setWhatsThis(actions_to_run_edit, tr("Actions list"),
+        tr("Here you can specify a list of <i>actions</i> which will be"
+           " run every time a file is opened. You'll find all available"
+           " actions in the <b>Actions</b> section. The actions must be"
+           " separated by spaces. Checkable actions can be followed by"
+           " <i>true</i> or <i>false</i> to enable or disable the action.")
+        + "<br>" + tr("Example:") + " <i>auto_zoom fullscreen true</i><br>"
+        + tr("Limitation: the actions are run only when a file is opened and"
+             " not when the player process is restarted (e.g. you select an"
+             " audio or video filter needing a  player restart)."));
+
+
+    addSectionTitle(tr("Logs"));
+    setWhatsThis(log_level_combo, tr("Log level"),
+        tr("Select the level a message must have to be written to the log."
+           " You can view the log with menu <b><i>Window - View log</i></b>."));
+    setWhatsThis(log_verbose_check, tr("Verbose"),
+        tr("Request verbose messages from the player for troubleshooting."));
+    setWhatsThis(log_window_max_events_spinbox, tr("Log window events"),
+        tr("Specify the number of log events to remember for the log window."));
 }
 
 } // namespace Pref

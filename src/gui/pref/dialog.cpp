@@ -36,7 +36,6 @@
 #include "gui/pref/capture.h"
 #include "gui/pref/performance.h"
 #include "gui/pref/network.h"
-#include "gui/pref/advanced.h"
 
 #if USE_ASSOCIATIONS
 #include "gui/pref/associations.h"
@@ -111,9 +110,6 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
     page_associations = new TAssociations(this);
     addSection(page_associations);
 #endif
-
-    page_advanced = new TAdvanced(this);
-    addSection(page_advanced);
 
     sections->setCurrentRow(SECTION_PLAYER);
 
@@ -200,7 +196,6 @@ void TDialog::setData(Settings::TPreferences* pref) {
     page_associations->setData(pref);
 #endif
 
-    page_advanced->setData(pref);
 }
 
 void TDialog::getData(Settings::TPreferences* pref) {
@@ -222,7 +217,6 @@ void TDialog::getData(Settings::TPreferences* pref) {
     page_associations->getData(pref);
 #endif
 
-    page_advanced->getData(pref);
 }
 
 bool TDialog::requiresRestartApp() {
@@ -238,8 +232,7 @@ bool TDialog::requiresRestartApp() {
             || page_drives->requiresRestartApp()
             || page_capture->requiresRestartApp()
             || page_performance->requiresRestartApp()
-            || page_network->requiresRestartApp()
-            || page_advanced->requiresRestartApp();
+            || page_network->requiresRestartApp();
 }
 
 bool TDialog::requiresRestartPlayer() {
@@ -255,8 +248,7 @@ bool TDialog::requiresRestartPlayer() {
             || page_drives->requiresRestartPlayer()
             || page_capture->requiresRestartPlayer()
             || page_performance->requiresRestartPlayer()
-            || page_network->requiresRestartPlayer()
-            || page_advanced->requiresRestartPlayer();
+            || page_network->requiresRestartPlayer();
 }
 
 void TDialog::showHelp() {
