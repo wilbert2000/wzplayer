@@ -157,7 +157,6 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) const {
             factorX = (double) width() / video_size.width();
             factorY = (double) height() /  video_size.height();
         }
-        return;
     }
 }
 
