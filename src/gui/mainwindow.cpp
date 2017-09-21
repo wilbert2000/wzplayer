@@ -592,7 +592,6 @@ void TMainWindow::createToolbars() {
             << "videosize_menu|1|0"
             << "reset_zoom_and_pan|0|1"
             << "separator|0|1"
-            << "mute|0|1"
             << "volumeslider_action"
             << "separator|0|1"
             << "osd_menu|0|1"
