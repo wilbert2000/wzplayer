@@ -397,17 +397,17 @@ void TSubtitles::createHelp() {
         tr("Select the subtitle autoload method."));
 
     setWhatsThis(language_edit, tr("Language"),
-        tr("Here you can give your preferred language for the subtitle stream. "
-           "When media has multiple subtitle streams, WZPlayer will "
-           "try to use your preferred language.<br>"
-           "This only will work with media that offers info about the language "
-           "of the subtitle streams, like DVDs or mkv files.<br>"
-           "This field accepts regular expressions. Example: <b>es|esp|spa</b> "
-           "will select the subtitle stream if it matches with <i>es</i>, "
-           "<i>esp</i> or <i>spa</i>."));
+        tr("Language overrides the subtitles selected by the player. It selects"
+           " the first track matching the given regular expression. DVDs use"
+           " ISO 639-1 two letter language codes, Matroska uses ISO 639-2 three"
+           " letter language codes.<br>"
+           "Example: <b>es|esp|spa</b> selects the first track with language"
+           " <i>es</i>, <i>esp</i> or <i>spa</i>."));
 
-    setWhatsThis(select_first_subtitle_check, tr("Select first available subtitle"),
-        tr("If checked, selects the first subtitle track if no track matches <b>Language</b>."));
+    setWhatsThis(select_first_subtitle_check, tr("Select first available"
+                                                 " subtitle"),
+        tr("If checked, selects the first subtitle track if no track matches"
+           " <b>Language</b>."));
 
     setWhatsThis(enca_lang_combo, tr("Guess the encoding for language"),
         tr("Select the language for which you want the encoding to be guessed."));
