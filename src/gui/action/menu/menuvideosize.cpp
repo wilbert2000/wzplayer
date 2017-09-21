@@ -23,24 +23,25 @@ TVideoSizeGroup::TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw)
     TActionGroupItem* a;
     a = new TActionGroupItem(this, this, "size_25", tr("25%"), 25, false);
     a->setShortcut(Qt::CTRL | Qt::Key_1);
-    a = new TActionGroupItem(this, this, "size_50", tr("5&0%"), 50, false);
+    a = new TActionGroupItem(this, this, "size_33", tr("33%"), 33, false);
     a->setShortcut(Qt::CTRL | Qt::Key_2);
-    a = new TActionGroupItem(this, this, "size_75", tr("7&5%"), 75, false);
+    a = new TActionGroupItem(this, this, "size_50", tr("5&0%"), 50, false);
     a->setShortcut(Qt::CTRL | Qt::Key_3);
-    a = new TActionGroupItem(this, this, "size_100", tr("&100%"), 100, false);
+    a = new TActionGroupItem(this, this, "size_75", tr("7&5%"), 75, false);
     a->setShortcut(Qt::CTRL | Qt::Key_4);
-    a = new TActionGroupItem(this, this, "size_125", tr("125%"), 125, false);
+    a = new TActionGroupItem(this, this, "size_100", tr("&100%"), 100, false);
     a->setShortcut(Qt::CTRL | Qt::Key_5);
-    a = new TActionGroupItem(this, this, "size_150", tr("15&0%"), 150, false);
+    a = new TActionGroupItem(this, this, "size_125", tr("125%"), 125, false);
     a->setShortcut(Qt::CTRL | Qt::Key_6);
-    a = new TActionGroupItem(this, this, "size_175", tr("1&75%"), 175, false);
+    a = new TActionGroupItem(this, this, "size_150", tr("15&0%"), 150, false);
     a->setShortcut(Qt::CTRL | Qt::Key_7);
-    a = new TActionGroupItem(this, this, "size_200", tr("&200%"), 200, false);
+    a = new TActionGroupItem(this, this, "size_175", tr("1&75%"), 175, false);
     a->setShortcut(Qt::CTRL | Qt::Key_8);
-    a = new TActionGroupItem(this, this, "size_300", tr("&300%"), 300, false);
+    a = new TActionGroupItem(this, this, "size_200", tr("&200%"), 200, false);
     a->setShortcut(Qt::CTRL | Qt::Key_9);
-    a = new TActionGroupItem(this, this, "size_400", tr("&400%"), 400, false);
+    a = new TActionGroupItem(this, this, "size_300", tr("&300%"), 300, false);
     a->setShortcut(Qt::CTRL | Qt::Key_0);
+    a = new TActionGroupItem(this, this, "size_400", tr("&400%"), 400, false);
 
     setChecked(size_percentage);
 }
@@ -70,18 +71,21 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
         } else {
             size_percentage = qRound(factorY * 100);
         }
-
-        // Only set check menu when x and y factor agree on +/- half a pixel
-        double diffX = 0.5 / s.width() / factorX;
-        double diffY = 0.5 / s.height() / factorY;
-        if (diffY < diffX) {
-            diffX = diffY;
-        }
-        // Multiply allowed diff with zoom...
-        diffX *= playerWindow->zoom();
-        diffY = qAbs(factorX - factorY);
-        if (diffY < diffX) {
+        if (size_percentage == 33) {
             setChecked(size_percentage);
+        } else {
+            // Only set check menu when x and y factor agree on +/- half a pixel
+            double diffX = 0.5 / s.width() / factorX;
+            double diffY = 0.5 / s.height() / factorY;
+            if (diffY < diffX) {
+                diffX = diffY;
+            }
+            // Multiply allowed diff with zoom...
+            diffX *= playerWindow->zoom();
+            diffY = qAbs(factorX - factorY);
+            if (diffY < diffX) {
+                setChecked(size_percentage);
+            }
         }
     }
 }

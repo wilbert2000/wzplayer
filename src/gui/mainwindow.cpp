@@ -2031,7 +2031,12 @@ void TMainWindow::setSize(double factor) {
 
 void TMainWindow::setSize(int percentage) {
     WZDEBUG(QString::number(percentage) + "%");
-    setSize((double) percentage / 100);
+
+    if (percentage == 33) {
+        setSize((double) 1 / 3);
+    } else {
+        setSize((double) percentage / 100);
+    }
 }
 
 void TMainWindow::toggleDoubleSize() {
@@ -2074,15 +2079,12 @@ double TMainWindow::optimizeSize(double size) const {
         if (size_y < size) {
             size = size_y;
         }
-        WZTRACE("returning size " + QString::number(size) + " for fullscreen");
         return size;
     }
 
     // Return current size for VO size change caused by TPlayer::setAspectRatio
     if (player->keepSize) {
         player->clearKeepSize();
-        WZTRACE("keepSize set, returning current size "
-                + QString::number(pref->size_factor));
         return pref->size_factor;
     }
 
@@ -2093,14 +2095,12 @@ double TMainWindow::optimizeSize(double size) const {
     // Adjust width
     double max = f * available_size.width();
     if (video_size.width() > max) {
-        WZTRACE("limiting width to " + QString::number(max));
         size = max / res.width();
         video_size = res * size;
     }
     // Adjust height
     max = f * available_size.height();
     if (video_size.height() > max) {
-        WZTRACE("limiting height to " + QString::number(max));
         size = max / res.height();
         video_size = res * size;
     }
@@ -2109,11 +2109,9 @@ double TMainWindow::optimizeSize(double size) const {
     double min = available_size.height() / 4;
     if (video_size.height() < min) {
         if (size == 1.0) {
-            WZTRACE("selecting size 2.0 for small video");
             return 2.0;
         }
         size = min / res.height();
-        WZTRACE("selecting size for minimal height " + QString::number(min));
     }
 
     // Round to predefined values
@@ -2122,38 +2120,49 @@ double TMainWindow::optimizeSize(double size) const {
         WZWARN("optimizeSize: selecting size 1 for invalid size");
         return 1;
     }
-    if (i < 13 || i > 450) {
-        WZTRACE("selected size " + QString::number(size));
+    if (i < 13) {
         return size;
     }
-
-    if (i < 38) {
-        i = 25;
-    } else if (i < 63) {
-        i = 50;
-    } else if (i < 88) {
-        i = 75;
-    } else if (i < 113) {
-        i = 100;
-    } else if (i < 138) {
-        i = 125;
-    } else if (i < 168) {
-        i = 150;
-    } else if (i < 188) {
-        i = 175;
-    } else if (i < 225) {
-        i = 200;
-    } else if (i < 275) {
-        i = 250;
-    } else if (i < 325) {
-        i = 300;
-    } else if (i < 375) {
-        i = 350;
-    } else {
-        i = 400;
+    if (i < 29) {
+        return 0.25;
     }
-    WZTRACE("rounding size to " + QString::number(i));
-    return (double) i / 100;
+    if (i < 42) {
+        return (double) 1 / 3;
+    }
+    if (i < 63) {
+        return 0.5;
+    }
+    if (i < 88) {
+        return 0.75;
+    }
+    if (i < 113) {
+        return 1;
+    }
+    if (i < 138) {
+        return 1.25;
+    }
+    if (i < 168) {
+        return 1.5;
+    }
+    if (i < 188) {
+        return 1.75;
+    }
+    if (i < 225) {
+        return 2;
+    }
+    if (i < 275) {
+        return 2.5;
+    }
+    if (i < 325) {
+        return 3;
+    }
+    if (i < 375) {
+        return 3.5;
+    }
+    if (i < 450) {
+        return 4;
+    }
+    return size;
 }
 
 void TMainWindow::optimizeSizeFactor() {
