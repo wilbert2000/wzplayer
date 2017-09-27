@@ -352,7 +352,7 @@ void TPlayer::open(QString filename, bool loopImage) {
     }
 
     QUrl url(filename);
-    QString scheme = url.scheme().toLower();
+    QString scheme = url.scheme();
     if (scheme == "file") {
         filename = url.toLocalFile();
         scheme = "";

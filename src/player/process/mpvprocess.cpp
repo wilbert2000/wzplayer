@@ -30,6 +30,7 @@
 #include "colorutils.h"
 #include "player/info/playerinfo.h"
 #include "mediadata.h"
+#include "name.h"
 
 
 namespace Player {
@@ -187,7 +188,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
         if (md->image) {
             WZDEBUG("ignoring image title");
         } else {
-            QString name = Helper::nameForURL(md->filename, true).simplified();
+            QString name = TName::nameForURL(md->filename).simplified();
             QString title = value.simplified();
             if (name == title) {
                 WZDEBUG("ignoring title matching file name");

@@ -8,7 +8,7 @@
 #include <QTime>
 
 #include "config.h"
-#include "helper.h"
+#include "name.h"
 #include "extensions.h"
 #include "wzdebug.h"
 
@@ -103,7 +103,8 @@ TPlaylistItem::TPlaylistItem(const QString &filename,
     mPlayedTime(0) {
 
     if (mBaseName.isEmpty()) {
-        mBaseName = Helper::nameForURL(mFilename, false);
+        // setFileInfo removes the extension
+        mBaseName = TName::nameForURL(mFilename);
     }
 
     setFileInfo();

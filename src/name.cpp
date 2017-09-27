@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "helper.h"
+#include "name.h"
 
 #include <QFileInfo>
 #include <QDir>
@@ -31,84 +31,100 @@ using namespace Settings;
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Helper)
 
 
-int Helper::qtVersion() {
+QString removeTrailingSlash(const QString& url) {
 
-    QRegExp rx("(\\d+)\\.(\\d+)\\.(\\d+)");
-    QString v(qVersion());
-
-    int r = 0;
-    if (rx.indexIn(v) >= 0) {
-        int n1 = rx.cap(1).toInt();
-        int n2 = rx.cap(2).toInt();
-        int n3 = rx.cap(3).toInt();
-        r = n1 * 1000 + n2 * 100 + n3;
-    }
-
-    return r;
-}
-
-// Return base name for url
-QString Helper::nameForURL(QString url, bool extension) {
-
-    if (url.isEmpty()) {
-        return "";
-    }
-
-    QString name;
-    QUrl qUrl(url);
-    if (qUrl.scheme().toLower() == "file") {
-        url = qUrl.toLocalFile();
-    }
-
-    QFileInfo fi(url);
-    if (fi.exists()) {
-        if (fi.isDir()) {
-            name = fi.fileName(); // Returns "" when name ends with /
-            if (name.isEmpty()) {
-                name = fi.dir().dirName(); // Returns "" for root
-                if (name.isEmpty()) {
-                    name = QDir::separator();
-                }
+    QString s = url;
+    do {
+        QChar last = s.at(s.length() - 1);
+        if (last == '/') {
+            s = s.left(s.length() - 1);
+            if (!s.isEmpty()) {
+                continue;
             }
-        } else if (extension) {
-            name = fi.fileName();
-        } else {
-            name = fi.completeBaseName();
         }
-    } else {
 
 #ifdef Q_OS_WIN
-        // For non-existing local files on Windows qUrl will convert \ to %5C
-        qUrl.setUrl(url.replace('\\', '/'));
-#endif
-
-        name = qUrl.toString(QUrl::RemoveScheme
-                             | QUrl::RemoveAuthority
-                             | QUrl::RemoveQuery
-                             | QUrl::RemoveFragment
-                             | QUrl::StripTrailingSlash);
-        if (name.isEmpty()) {
-            name = url;
-        } else {
-            fi.setFile(name);
-            if (fi.isDir()) {
-                name = fi.fileName();
-                if (name.isEmpty()) {
-                    name = QDir::separator();
-                }
-            } if (extension) {
-                name = fi.fileName();
-            } else {
-                name = fi.completeBaseName();
+        else if (last == '\\') {
+            s = s.left(s.length() - 1);
+            if (!s.isEmpty()) {
+                continue;
             }
         }
-    }
+#endif
 
-    WZTRACE("'" + url + "' to '" + name + "'");
-    return name;
+    } while (false);
+
+    return s;
 }
 
-QString Helper::clean(const QString& name) {
+QString TName::nameForURL(const QString& url) {
+
+    if (url.isEmpty()) {
+        return url;
+    }
+
+    QString name = removeTrailingSlash(url);
+    if (name.isEmpty()) {
+        return url.right(1);
+    }
+
+    int i = name.lastIndexOf('/');
+
+#ifdef Q_OS_WIN
+    if (i < 0) {
+        i = name.lastIndexOf('\\');
+    }
+#endif
+
+    if (i < 0) {
+        // Remove scheme
+        QUrl u(url);
+        QString s = u.scheme();
+        if (s.isEmpty()) {
+            return name;
+        }
+        return name.mid(s.length() + 1);
+    }
+
+    // Remove path
+    return name.mid(i + 1);
+}
+
+QString TName::baseNameForURL(const QString& url) {
+
+    QString name = nameForURL(url);
+    if (name.isEmpty()) {
+        return name;
+    }
+
+    // Check url is dir.
+    QChar last = url.at(url.length() - 1);
+    if (last == '/') {
+        return name;
+    }
+
+#ifdef Q_OS_WIN
+    if (last == '\\') {
+        return name;
+    }
+#endif
+
+    QString dir = url;
+    QUrl qUrl(dir);
+    if (qUrl.scheme() == "file") {
+        dir = qUrl.toLocalFile();
+    }
+    QFileInfo fi(dir);
+    if (fi.isDir()) {
+        return name;
+    }
+
+    // Assume file. Not necessarily true...
+    fi.setFile(name);
+    return fi.completeBaseName();
+}
+
+QString TName::clean(const QString& name) {
 
     if (name.isEmpty()) {
         return "";
@@ -147,11 +163,7 @@ QString Helper::clean(const QString& name) {
     return s;
 }
 
-QString Helper::cleanName(const QString& name) {
-    return clean(name);
-}
-
-QString Helper::cleanTitle(const QString& title) {
+QString TName::cleanTitle(const QString& title) {
 
     foreach(const QRegExp& rx, pref->rxTitleBlacklist) {
         if (rx.indexIn(title) >= 0) {

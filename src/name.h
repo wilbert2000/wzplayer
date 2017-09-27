@@ -16,24 +16,20 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef HELPER_H
-#define HELPER_H
+#ifndef NAME_H
+#define NAME_H
 
 #include <QString>
 
 
-class Helper {
+class TName {
 public:
-    //! Returns an int with the version number of Qt at run-time.
-    //! If version is 4.3.2 it returns 40302.
-    static int qtVersion();
-
-    static QString nameForURL(QString url, bool extension);
-    static QString cleanName(const QString& name);
+    static QString nameForURL(const QString& url);
+    static QString baseNameForURL(const QString& url);
     static QString cleanTitle(const QString& name);
 
 private:
     static QString clean(const QString& name);
 };
 
-#endif // HELPER_H
+#endif // NAME_H

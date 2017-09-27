@@ -22,6 +22,7 @@
 
 #include "wzdebug.h"
 #include "config.h"
+#include "name.h"
 
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, TMediaData)
@@ -109,15 +110,15 @@ QString TMediaData::getTitle() const {
         return "";
     }
 
-    QString title = Helper::cleanTitle(this->title);
+    QString title = TName::cleanTitle(this->title);
     if (!title.isEmpty()) {
         return addTitleOrTrack(title);
     }
-    title = Helper::cleanTitle(meta_data.value("title"));
+    title = TName::cleanTitle(meta_data.value("title"));
     if (!title.isEmpty()) {
         return addTitleOrTrack(title);
     }
-    title = Helper::cleanTitle(meta_data.value("name"));
+    title = TName::cleanTitle(meta_data.value("name"));
     if (!title.isEmpty()) {
         return addTitleOrTrack(title);
     }
@@ -125,6 +126,7 @@ QString TMediaData::getTitle() const {
     return title;
 }
 
+// Return name field for playlist
 QString TMediaData::name() const {
 
     if (filename.isEmpty()) {
@@ -142,7 +144,7 @@ QString TMediaData::name() const {
         return disc.displayName();
     }
 
-    return Helper::nameForURL(filename, false);
+    return TName::baseNameForURL(filename);
 }
 
 QString TMediaData::displayName() const {
@@ -160,7 +162,7 @@ QString TMediaData::displayName() const {
         return disc.displayName();
     }
 
-    return Helper::cleanName(Helper::nameForURL(filename, true));
+    return TName::nameForURL(filename);
 }
 
 QString TMediaData::typeToString(Type type) {

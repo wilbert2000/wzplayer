@@ -12,7 +12,6 @@
 #include "discname.h"
 #include "extensions.h"
 #include "config.h"
-#include "helper.h"
 
 
 namespace Gui {

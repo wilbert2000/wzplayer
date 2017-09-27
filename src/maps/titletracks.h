@@ -20,7 +20,6 @@
 #define MAPS_TITLETRACKS_H
 
 #include <QMap>
-#include "helper.h"
 #include "map.h"
 #include "chapters.h"
 

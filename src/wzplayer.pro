@@ -39,7 +39,6 @@ isEqual(QT_MAJOR_VERSION, 5) {
 
 HEADERS += wzdebug.h \
     version.h \
-    helper.h \
     colorutils.h \
     subtracks.h \
     discname.h \
@@ -162,6 +161,7 @@ HEADERS += wzdebug.h \
     qtsingleapplication/qtsingleapplication.h \
     qtsingleapplication/qtlocalpeer.h \
     config.h \
+    name.h \
     wzfiles.h \
     wztime.h \
     app.h
@@ -169,7 +169,6 @@ HEADERS += wzdebug.h \
 
 SOURCES += wzdebug.cpp \
     version.cpp \
-    helper.cpp \
     colorutils.cpp \
     subtracks.cpp \
     discname.cpp \
@@ -290,6 +289,7 @@ SOURCES += wzdebug.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
     qtsingleapplication/qtlocalpeer.cpp \
     config.cpp \
+    name.cpp \
     wzfiles.cpp \
     wztime.cpp \
     app.cpp \

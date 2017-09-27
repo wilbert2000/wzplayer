@@ -1079,7 +1079,7 @@ void TMainWindow::loadConfig() {
 
 
     if (!restoreState(pref->value("toolbars_state").toByteArray(),
-                      Helper::qtVersion())) {
+                      TVersion::qtVersion())) {
         playlistDock->hide();
         logDock->hide();
     }
@@ -1128,7 +1128,7 @@ void TMainWindow::saveConfig() {
     pref->setValue("fullscreen_statusbar_visible",
                    fullscreen_statusbar_visible);
 
-    pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+    pref->setValue("toolbars_state", saveState(TVersion::qtVersion()));
 
     pref->beginGroup("statusbar");
     pref->setValue("video_info", viewVideoInfoAct->isChecked());
@@ -1875,7 +1875,7 @@ void TMainWindow::aboutToEnterFullscreen() {
     first_fullscreen_filename = player->mdat.filename;
 
     pref->beginGroup(settingsGroupName());
-    pref->setValue("toolbars_state", saveState(Helper::qtVersion()));
+    pref->setValue("toolbars_state", saveState(TVersion::qtVersion()));
     pref->endGroup();
 }
 
@@ -1887,7 +1887,7 @@ void TMainWindow::didEnterFullscreen() {
 
     pref->beginGroup(settingsGroupName());
     if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
-                      Helper::qtVersion())) {
+                      TVersion::qtVersion())) {
         // First time there is no fullscreen toolbar state
         WZDEBUG("fullscreen toolbar state not restored");
         toolbar->hide();
@@ -1909,7 +1909,7 @@ void TMainWindow::aboutToExitFullscreen() {
     fullscreen_statusbar_visible = !statusBar()->isHidden();
 
     pref->beginGroup(settingsGroupName());
-    pref->setValue("toolbars_state_fullscreen", saveState(Helper::qtVersion()));
+    pref->setValue("toolbars_state_fullscreen", saveState(TVersion::qtVersion()));
     pref->endGroup();
 }
 
@@ -1920,7 +1920,7 @@ void TMainWindow::didExitFullscreen() {
 
     pref->beginGroup(settingsGroupName());
     if (!restoreState(pref->value("toolbars_state").toByteArray(),
-                      Helper::qtVersion())) {
+                      TVersion::qtVersion())) {
         logger()->warn("didExitFullscreen: failed to restore toolbar state");
     }
     pref->endGroup();
