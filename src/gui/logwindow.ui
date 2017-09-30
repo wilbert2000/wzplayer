@@ -81,7 +81,7 @@
         <string>Find next (F3)</string>
        </property>
        <property name="text">
-        <string>&gt;</string>
+        <string>Find next</string>
        </property>
        <property name="shortcut">
         <string>F3</string>
@@ -94,7 +94,7 @@
         <string>Find previous (Shift+F3)</string>
        </property>
        <property name="text">
-        <string>&lt;</string>
+        <string>Find previous</string>
        </property>
        <property name="shortcut">
         <string>Shift+F3</string>
