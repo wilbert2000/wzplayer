@@ -60,30 +60,30 @@ void TDesktop::keepInsideDesktop(QWidget* w) {
     }
 
     QRect available = QApplication::desktop()->availableGeometry(w);
-    QPoint p = w->pos();
-    QSize s = w->frameGeometry().size();
-    int max = available.x() + available.width() - s.width();
-    if (p.x() > max) {
-        p.rx() = max;
+    QPoint pos = w->pos();
+    QSize size = w->frameGeometry().size();
+    int max = available.x() + available.width() - size.width();
+    if (pos.x() > max) {
+        pos.rx() = max;
     }
-    if (p.x() < available.x()) {
-        p.rx() = available.x();
-    }
-
-    max = available.y() + available.height() - s.height();
-    if (p.y() > max) {
-        p.ry() = max;
-    }
-    if (p.y() < available.y()) {
-        p.ry() = available.y();
+    if (pos.x() < available.x()) {
+        pos.rx() = available.x();
     }
 
-    if (p != w->pos()) {
+    max = available.y() + available.height() - size.height();
+    if (pos.y() > max) {
+        pos.ry() = max;
+    }
+    if (pos.y() < available.y()) {
+        pos.ry() = available.y();
+    }
+
+    if (pos != w->pos()) {
         WZDEBUG("Moving from " + QString::number(w->pos().x())
                 + ", " + QString::number(w->pos().y())
-                + " to " + QString::number(p.x())
-                + ", " + QString::number(p.y()));
-        w->move(p);
+                + " to " + QString::number(pos.x())
+                + ", " + QString::number(pos.y()));
+        w->move(pos);
     }
 }
 
