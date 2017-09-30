@@ -47,6 +47,8 @@ void TDesktop::centerWindow(QWidget* w) {
         if (center.isValid()) {
             w->move(available.x() + center.width(),
                     available.y() + center.height());
+        } else {
+            w->move(available.topLeft());
         }
     }
 }
