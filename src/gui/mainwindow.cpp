@@ -1032,8 +1032,9 @@ void TMainWindow::loadConfig() {
 
         if (p.isNull()) {
             TDesktop::centerWindow(this);
+        } else {
+            TDesktop::keepInsideDesktop(this);
         }
-        TDesktop::keepInsideDesktop(this);
     } else {
         TDesktop::centerWindow(this);
         // Need to center again after video loaded
@@ -2217,29 +2218,20 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
     force_resize = false;
 }
 
-void TMainWindow::resizeWindow(int w, int h) {
-
-    if (!pref->fullscreen && !isMaximized()) {
-        resizeMainWindow(w, h, pref->size_factor);
-        TDesktop::keepInsideDesktop(this);
-    }
-}
-
 void TMainWindow::resizeStickyWindow(int w, int h) {
 
-    QRect available = QApplication::desktop()->availableGeometry(this);
-    bool stickx, sticky;
-    if (pref->fullscreen) {
-        stickx = false;
-        sticky = false;
-    } else {
-        stickx = pos().x() - available.x() + frameGeometry().size().width()
-                 >= available.width();
-        sticky = pos().y() -available.y() + frameGeometry().size().height()
-                 >= available.height();
+    if (pref->fullscreen || isMaximized()) {
+        return;
     }
 
-    resizeWindow(w, h);
+    QRect available = QApplication::desktop()->availableGeometry(this);
+    bool stickx = pos().x() - available.x() + frameGeometry().size().width()
+                  >= available.width();
+    bool sticky = pos().y() - available.y() + frameGeometry().size().height()
+                  >= available.height();
+
+    resizeMainWindow(w, h, pref->size_factor);
+    TDesktop::keepInsideDesktop(this);
 
     QPoint p = pos();
     if (stickx) {

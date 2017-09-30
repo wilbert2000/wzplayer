@@ -311,7 +311,6 @@ private:
 
     double optimizeSize(double size) const;
     double getDefaultSize() const;
-    void resizeWindow(int w, int h);
     void resizeStickyWindow(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor,
                           bool try_twice = true);
