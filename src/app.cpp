@@ -166,7 +166,7 @@ bool TApp::loadCatalog(QTranslator& translator,
     if (r) {
         WZINFO("loaded '" + loc + "' from '" + dir + "'");
     } else {
-        WZDEBUG("skipped loading of '" + loc + "' from '" + dir + "'");
+        WZDEBUG("'" + loc + "' not found in '" + dir + "'");
     }
     return r;
 }
@@ -296,7 +296,7 @@ TApp::TExitCode TApp::processArgs() {
         return NO_ERROR;
     }
 
-    showInfo();
+    logInfo();
 
     QString send_action; // Action to be passed to running instance
     bool add_to_playlist = false;
@@ -528,7 +528,7 @@ void TApp::onRequestRestart() {
     addCommandLineFiles = files_to_play.count() == 0;
 }
 
-void TApp::showInfo() {
+void TApp::logInfo() {
 
 #ifdef Q_OS_WIN
     QString win_ver;
@@ -560,25 +560,24 @@ void TApp::showInfo() {
 #ifdef Q_OS_LINUX
                 .arg("Linux");
 #else
+
 #ifdef Q_OS_WIN
                 .arg("Windows (" + win_ver + ")");
 #else
-                .arg("a non-Linux, non-Windows OS");
+                .arg("an undetermined OS");
 #endif
+
 #endif
 
     WZINFO(s);
     WZINFO(QString("Compiled with Qt version " QT_VERSION_STR
            ", running on Qt version ") + qVersion());
     WZINFO("application '" + applicationDirPath() + "'");
-    WZINFO("data '" + Settings::TPaths::dataPath() + "'");
     WZINFO("translation '" + Settings::TPaths::translationPath() + "'");
-    WZINFO("doc '" + Settings::TPaths::docPath() + "'");
     WZINFO("themes '" + Settings::TPaths::themesPath() + "'");
     WZINFO("shortcuts '" + Settings::TPaths::shortcutsPath() + "'");
     WZINFO("config '" + Settings::TPaths::configPath() + "'");
-    WZINFO("subtitle styles '" + Settings::TPaths::subtitleStyleFile() + "'");
-    WZINFO("current directory '" + QDir::currentPath() + "'");
+    WZINFO("current '" + QDir::currentPath() + "'");
 }
 
 #include "moc_app.cpp"

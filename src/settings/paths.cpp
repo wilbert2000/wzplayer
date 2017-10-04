@@ -93,89 +93,53 @@ void TPaths::setConfigPath(const QString& path) {
 
 } // void TPaths::setConfigPath()
 
-QString TPaths::dataPath() {
+static QString getDataSubDir(const QString& subdir) {
 
-#ifdef DATA_PATH
-    QString path = QString(DATA_PATH);
-    if (!path.isEmpty()) {
+#if defined(Q_OS_WIN) || defined(PORTABLE_APP)
+    return qApp->applicationDirPath() + "/" + subdir;
+#else
+
+    QString share = "/" + TConfig::PROGRAM_ID + "/" + subdir;
+
+    // Try ~/.local
+    const char* XDG_DATA_HOME = getenv("XDG_DATA_HOME");
+    QString path;
+    if (XDG_DATA_HOME == NULL) {
+        path = QDir::homePath() + "/.local/share" + share;
+    } else {
+        path = QString(XDG_DATA_HOME) + share;
+    }
+    QFileInfo fi(path);
+    if (fi.isDir()) {
         return path;
     }
-#endif
 
-    return qApp->applicationDirPath();
+    // Try /usr/local
+    path = "/usr/local/share" + share;
+    fi.setFile(path);
+    if (fi.isDir()) {
+        return path;
+    }
+
+    // Return system wide dir
+    return "/usr/share" + share;
+#endif
 }
 
 QString TPaths::translationPath() {
-
-#ifdef TRANSLATION_PATH
-    QString path = QString(TRANSLATION_PATH);
-    if (!path.isEmpty())
-        return path;
-#endif
-
-    return qApp->applicationDirPath() + "/translations";
-}
-
-QString TPaths::docPath() {
-
-#ifdef DOC_PATH
-    QString path = QString(DOC_PATH);
-    if (!path.isEmpty())
-        return path;
-#endif
-
-    return qApp->applicationDirPath() + "/docs";
+    return getDataSubDir("translations");
 }
 
 QString TPaths::themesPath() {
-
-#ifdef THEMES_PATH
-    QString path = QString(THEMES_PATH);
-    if (!path.isEmpty())
-        return path;
-#endif
-
-    return qApp->applicationDirPath() + "/themes";
+    return getDataSubDir("themes");
 }
 
 QString TPaths::shortcutsPath() {
-
-#ifdef SHORTCUTS_PATH
-    QString path = QString(SHORTCUTS_PATH);
-    if (!path.isEmpty())
-        return path;
-#endif
-
-    return qApp->applicationDirPath() + "/shortcuts";
+    return getDataSubDir("shortcuts");
 }
 
 QString TPaths::qtTranslationPath() {
     return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
-}
-
-QString TPaths::doc(const QString& file, QString locale, bool english_fallback) {
-
-    if (locale.isEmpty()) {
-        locale = QLocale::system().name();
-    }
-
-    QString f = docPath() + "/" + locale + "/" + file;
-    if (QFile::exists(f))
-        return f;
-
-    if (locale.indexOf(QRegExp("_[A-Z]+")) >= 0) {
-        locale.replace(QRegExp("_[A-Z]+"), "");
-        f = docPath() + "/" + locale + "/" + file;
-        if (QFile::exists(f))
-            return f;
-    }
-
-    if (english_fallback) {
-        f = docPath() + "/en/" + file;
-        return f;
-    }
-
-    return QString::null;
 }
 
 QString TPaths::iniPath() {

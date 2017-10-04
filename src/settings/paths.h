@@ -48,13 +48,10 @@ public:
     // Ini file name
     static QString iniPath();
 
-    static QString dataPath();
     static QString translationPath();
-    static QString docPath();
     static QString themesPath();
     static QString shortcutsPath();
     static QString qtTranslationPath();
-    static QString doc(const QString& file, QString locale = QString::null, bool english_fallback = true);
     static QString subtitleStyleFile();
 
 private:

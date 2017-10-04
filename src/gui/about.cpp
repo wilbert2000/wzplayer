@@ -65,26 +65,8 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
         "<i>This program is free software; you can redistribute it and/or"
         " modify it under the terms of the GNU General Public License as"
         " published by the Free Software Foundation; either version 2 of the"
-        " License, or (at your option) any later version.</i><br><br>";
+        " License or any later version.</i>";
         
-    QString license_file = TPaths::doc("gpl.html", "en");
-    if (QFile::exists(license_file)) {
-        license_file = QUrl::fromLocalFile(license_file).toString();
-        license_text += QString("<a href=\"%1\">%2</a>")
-                        .arg(license_file).arg(tr("Read the entire license"));
-    }
-
-    if ((pref->language != "en") && (pref->language != "en_US")) {
-        QString license_trans_file = TPaths::doc("gpl.html", pref->language,
-                                                 false);
-        if (QFile::exists(license_trans_file)) {
-            license_trans_file = QUrl::fromLocalFile(license_trans_file)
-                                 .toString();
-            license_text += QString("<br><a href=\"%1\">%2</a>")
-                            .arg(license_trans_file)
-                            .arg(tr("Read a translation"));
-        }
-    }
     license->setText(license_text);
     license->setOpenLinks(false);
     license->setOpenExternalLinks(false);
@@ -96,10 +78,12 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
     contributions->setText(
         tr("WZPlayer logo by %1")
             .arg("Charles Barcza &lt;kbarcza@blackpanther.hu&gt;")
-        + "<br><br>" + tr("Packages for Windows created by %1")
+        + "<br><br>"
+        + tr("Packages for Windows created by %1")
             .arg("redxii &lt;redxii@users.sourceforge.net&gt;")
-        + "<br><br>" + tr("Many other people contributed with patches."
-                          " See the Changelog and Readme.txt for details."));
+        + "<br><br>"
+        + tr("Many other people contributed with patches. See the Readme.txt"
+             " file for details."));
 
     // Copy the background color ("window") of the tab widget to the "base"
     // color of the qtextbrowsers

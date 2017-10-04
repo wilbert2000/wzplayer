@@ -324,14 +324,6 @@ FORMS = gui/inputdvddirectory.ui \
     gui/pref/network.ui
 
 
-unix {
-    DEFINES += DATA_PATH=$(DATA_PATH)
-    DEFINES += DOC_PATH=$(DOC_PATH)
-    DEFINES += TRANSLATION_PATH=$(TRANSLATION_PATH)
-    DEFINES += THEMES_PATH=$(THEMES_PATH)
-    DEFINES += SHORTCUTS_PATH=$(SHORTCUTS_PATH)
-}
-
 win32 {
     !contains(DEFINES, PORTABLE_APP) {
         DEFINES += USE_ASSOCIATIONS
