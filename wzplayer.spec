@@ -30,9 +30,6 @@ by Ricardo Villalba. It simplifies playing videos with MPlayer and MPV.
 
 # correction for wrong-file-end-of-line-encoding
 %{__sed} -i 's/\r//' *.txt
-# fix files which are not UTF-8 
-iconv -f Latin1 -t UTF-8 -o Changelog.utf8 Changelog 
-mv Changelog.utf8 Changelog
 
 %build
 make \
