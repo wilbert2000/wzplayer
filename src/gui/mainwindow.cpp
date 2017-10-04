@@ -2257,11 +2257,12 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
     }
 }
 
-void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
+void TMainWindow::resizeMainWindow(int w,
+                                   int h,
+                                   double size_factor,
                                    bool try_twice) {
-    WZDEBUG("requested video size " + QString::number(w)
-            + " x " + QString::number(h)
-            + " window size " + QString::number(pref->size_factor));
+    WZDEBUG("video size " + QString::number(w) + " x " + QString::number(h)
+            + ", window size " + QString::number(pref->size_factor));
 
     QSize panel_size = QSize(w, h) * size_factor;
     if (panel_size == panel->size()) {
@@ -2273,9 +2274,9 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
     resize(new_size);
 
     if (panel->size() != panel_size) {
-        // Resizing the main window can change the height of the tool bars,
+        // Resizing the main window can change the height of the toolbars,
         // which will change the height of the panel during the resize.
-        // Often fixed by resizing once again, using the new panel height.
+        // Fix by resizing once again, using the new panel height.
         if (try_twice) {
             resizeMainWindow(w, h, size_factor, false);
         } else {
