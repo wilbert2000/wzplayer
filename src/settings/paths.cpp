@@ -22,10 +22,8 @@
 
 #include <QApplication>
 #include <QLibraryInfo>
-#include <QLocale>
 #include <QFile>
 #include <QDir>
-#include <QRegExp>
 
 
 namespace Settings {
