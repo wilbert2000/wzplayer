@@ -50,7 +50,6 @@ protected slots:
 
 private:
     QSystemTrayIcon* tray;
-    QMenu* context_menu;
 
     Action::TAction* quitAct;
     Action::TAction* showTrayAct;

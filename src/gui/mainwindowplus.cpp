@@ -69,19 +69,11 @@ TMainWindowPlus::TMainWindowPlus() :
     connect(showAllAct, SIGNAL(triggered()),
             this, SLOT(toggleShowAll()));
 
-    context_menu = new QMenu(this);
-    context_menu->addMenu(fileMenu);
-    context_menu->addMenu(playMenu);
-    context_menu->addMenu(videoMenu);
-    context_menu->addMenu(audioMenu);
-    context_menu->addMenu(subtitleMenu);
-    context_menu->addMenu(browseMenu);
-    context_menu->addMenu(windowMenu);
-    context_menu->addSeparator();
-    context_menu->addAction(showAllAct);
-    context_menu->addAction(quitAct);
-
-    tray->setContextMenu(context_menu);
+    QMenu* menu = createContextMenu();
+    menu->addSeparator();
+    menu->addAction(showAllAct);
+    menu->addAction(quitAct);
+    tray->setContextMenu(menu);
 
     connect(this, SIGNAL(openFileRequested()),
             this, SLOT(showAll()));

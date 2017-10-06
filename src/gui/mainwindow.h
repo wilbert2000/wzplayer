@@ -189,6 +189,8 @@ protected:
     virtual void aboutToExitFullscreen();
     virtual void didExitFullscreen();
 
+    QMenu* createContextMenu();
+
 protected slots:
     virtual void closeWindow();
     // Replace for setCaption (in Qt 4 it's not virtual)

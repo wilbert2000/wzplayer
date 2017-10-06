@@ -478,6 +478,19 @@ void TMainWindow::createActions() {
             this, SLOT(displayFrames(bool)));
 } // createActions
 
+QMenu* TMainWindow::createContextMenu() {
+
+    QMenu* menu = new QMenu(this);
+    menu->addMenu(fileMenu);
+    menu->addMenu(playMenu);
+    menu->addMenu(videoMenu);
+    menu->addMenu(audioMenu);
+    menu->addMenu(subtitleMenu);
+    menu->addMenu(browseMenu);
+    menu->addMenu(windowMenu);
+    return menu;
+}
+
 void TMainWindow::createMenus() {
     WZDEBUG("");
 
@@ -511,16 +524,8 @@ void TMainWindow::createMenus() {
     helpMenu = new Menu::TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
 
-    // Popup menu
-    contextMenu = new QMenu(this);
-    contextMenu->addMenu(fileMenu);
-    contextMenu->addMenu(playMenu);
-    contextMenu->addMenu(videoMenu);
-    contextMenu->addMenu(audioMenu);
-    contextMenu->addMenu(subtitleMenu);
-    contextMenu->addMenu(browseMenu);
-    contextMenu->addMenu(windowMenu);
-
+    // Context menu
+    contextMenu = createContextMenu();
     connect(showContextMenuAct, SIGNAL(triggered(bool)),
             this, SLOT(showContextMenu()));
     playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
