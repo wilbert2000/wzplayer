@@ -35,8 +35,8 @@ class TTVList : public TFavorites {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    enum Service { TV = 1, Radio = 2, Data = 4 };
-    Q_DECLARE_FLAGS(Services, Service)
+    enum TService { TV = 1, Radio = 2, Data = 4 };
+    Q_DECLARE_FLAGS(TServices, TService)
 
     TTVList(TMainWindow* mw,
             const QString& name,
@@ -44,7 +44,7 @@ public:
             const QString& icon,
             const QString& filename,
             bool check_channels_conf,
-            Services services);
+            TServices services);
     virtual ~TTVList();
 
 #ifndef Q_OS_WIN
@@ -53,7 +53,7 @@ public:
 
 #ifndef Q_OS_WIN
 protected:
-    void parseChannelsConf(Services services);
+    void parseChannelsConf(TServices services);
 #endif
 
 protected:
@@ -67,7 +67,7 @@ protected slots:
 } // namespace Action
 } // namespace Gui
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::Action::Menu::TTVList::Services)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Gui::Action::Menu::TTVList::TServices)
 
 #endif // GUI_ACTION_MENU_TVLIST_H
 

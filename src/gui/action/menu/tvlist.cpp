@@ -40,10 +40,10 @@ TTVList::TTVList(TMainWindow* mw,
                  const QString& filename,
 #ifdef Q_OS_WIN
                  bool,
-                 Services
+                 TServices
 #else
                  bool check_channels_conf,
-                 Services services
+                 TServices services
 #endif
                  )
     : TFavorites(mw, name, text, icon, filename) {
@@ -64,7 +64,7 @@ TFavorites* TTVList::createNewObject(const QString& filename) {
 }
 
 #ifndef Q_OS_WIN
-void TTVList::parseChannelsConf(Services services) {
+void TTVList::parseChannelsConf(TServices services) {
 
     QString file = QDir::homePath() + "/.mplayer/channels.conf.ter";
 
