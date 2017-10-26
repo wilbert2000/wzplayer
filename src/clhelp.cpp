@@ -85,16 +85,14 @@ QString CLHelp::help(bool html) {
     QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
 
     QString options = QString("%1 [--debug] [--trace]"
-                              " [--config-path %2]"
-                              " [--send-action %3] [--actions %4]"
+                              " [--send-action %2] [--actions %3]"
                               " [--close-at-end] [--no-close-at-end]"
                               " [--fullscreen] [--no-fullscreen]"
                               " [--ontop] [--no-ontop]"
-                              " [--sub %5] [--pos x y] [--size %6 %7]"
+                              " [--sub %4] [--pos x y] [--size %5 %6]"
                               " [--add-to-playlist] [--help]"
-                              " [%8] [%8]...")
+                              " [%7] [%7]...")
                       .arg(app_name)
-                      .arg(QObject::tr("directory"))
                       .arg(QObject::tr("action_name"))
                       .arg(QObject::tr("action_list"))
                       .arg(QObject::tr("subtitle_file"))
@@ -122,10 +120,6 @@ QString CLHelp::help(bool html) {
     s += formatHelp("--uninstall", QObject::tr(
         "Restores the old associations and cleans up the registry."), html);
 #endif
-
-    s += formatHelp("--config-path", QObject::tr(
-        "Specify the directory for the wzplayer configuration files."
-        " (wzplayer.ini, wzplayer_files.ini, etc.)"), html);
 
     s += formatHelp("--send-action", QObject::tr(
         "Send actions to an already running instance of WZPlayer."

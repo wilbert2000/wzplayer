@@ -56,29 +56,23 @@ QString TPaths::location(TLocation type) {
     return path;
 }
 
-void TPaths::setConfigPath(const QString& path) {
+void TPaths::setConfigPath() {
 
-    // Set config_path
-    if (path.isEmpty()) {
-
-#ifdef PORTABLE_APP
-        config_path = qApp->applicationDirPath();
+#if defined(PORTABLE_APP)
+    config_path = qApp->applicationDirPath();
 #else
 #if defined(Q_OS_WIN)
-        config_path = location(TLocation::DataLocation);
+    config_path = location(TLocation::DataLocation);
 #else
-        const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-        if (XDG_CONFIG_HOME != NULL) {
-            config_path = QString(XDG_CONFIG_HOME) + "/" + TConfig::PROGRAM_ID;
-        } else {
-            config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
-        }
+    const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
+    if (XDG_CONFIG_HOME == NULL) {
+        config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
+    } else {
+        config_path = QString(XDG_CONFIG_HOME) + "/" + TConfig::PROGRAM_ID;
+    }
 #endif
 #endif
 
-    } else {
-        config_path = path;
-    }
     WZINFO("config path set to '" + config_path + "'");
 
     // Create config directory

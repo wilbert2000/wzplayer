@@ -17,55 +17,35 @@
 */
 
 #include "gui/mainwindow.h"
-
-#include <QMessageBox>
-#include <QLabel>
-#include <QMenu>
-#include <QFileInfo>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QMenuBar>
-#include <QHBoxLayout>
-#include <QCursor>
-#include <QTimer>
-#include <QStyle>
-#include <QRegExp>
-#include <QStatusBar>
-#include <QActionGroup>
-#include <QUrl>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QDesktopServices>
-#include <QInputDialog>
-#include <QClipboard>
-#include <QMimeData>
-#include <QNetworkProxy>
-
-#include "player/player.h"
-#include "player/process/exitmsg.h"
-#include "version.h"
-#include "gui/desktop.h"
-#include "discname.h"
-#include "extensions.h"
-#include "colorutils.h"
-#include "images.h"
-#include "wztime.h"
-#include "mediadata.h"
 #include "gui/playerwindow.h"
-#include "clhelp.h"
 #include "gui/filedialog.h"
+#include "gui/desktop.h"
+#include "gui/logwindow.h"
+#include "gui/helpwindow.h"
+#include "gui/autohidetimer.h"
+#include "gui/filepropertiesdialog.h"
+#include "gui/inputdvddirectory.h"
+#include "gui/dockwidget.h"
+#include "gui/msg.h"
 
-#include "settings/paths.h"
-#include "settings/preferences.h"
-#include "settings/recents.h"
+#include "gui/playlist/playlist.h"
 
-#include "gui/action/action.h"
+#include "gui/about.h"
+#include "gui/timedialog.h"
+#include "gui/videoequalizer.h"
+#include "gui/audioequalizer.h"
+#include "gui/stereo3ddialog.h"
+#include "gui/updatechecker.h"
+#include "gui/eqslider.h"
+#include "gui/inputurl.h"
+
+#include "gui/pref/dialog.h"
+#include "gui/pref/interface.h"
+#include "gui/pref/input.h"
+
 #include "gui/action/actiongroup.h"
-#include "gui/action/timeslider.h"
 #include "gui/action/widgetactions.h"
-#include "gui/action/actionseditor.h"
 #include "gui/action/editabletoolbar.h"
-#include "gui/action/menu/menu.h"
 #include "gui/action/menu/menufile.h"
 #include "gui/action/menu/menuplay.h"
 #include "gui/action/menu/menuvideo.h"
@@ -75,28 +55,27 @@
 #include "gui/action/menu/menuwindow.h"
 #include "gui/action/menu/menuhelp.h"
 
-#include "gui/msg.h"
-#include "gui/logwindow.h"
-#include "gui/helpwindow.h"
-#include "gui/playlist/playlist.h"
-#include "gui/autohidetimer.h"
-#include "gui/filepropertiesdialog.h"
-#include "gui/inputdvddirectory.h"
-#include "gui/about.h"
-#include "gui/inputurl.h"
-#include "gui/timedialog.h"
-#include "gui/playlist/playlist.h"
-#include "gui/dockwidget.h"
-#include "gui/videoequalizer.h"
-#include "gui/eqslider.h"
-#include "gui/audioequalizer.h"
-#include "gui/stereo3ddialog.h"
-#include "gui/updatechecker.h"
+#include "player/player.h"
+#include "player/process/exitmsg.h"
 
-#include "gui/pref/dialog.h"
-#include "gui/pref/interface.h"
-#include "gui/pref/input.h"
+#include "settings/paths.h"
+
 #include "app.h"
+#include "images.h"
+#include "extensions.h"
+#include "colorutils.h"
+#include "wztime.h"
+#include "clhelp.h"
+#include "version.h"
+
+#include <QMessageBox>
+#include <QDesktopWidget>
+#include <QMenuBar>
+#include <QDesktopServices>
+#include <QInputDialog>
+#include <QClipboard>
+#include <QMimeData>
+#include <QNetworkProxy>
 
 #ifdef Q_OS_WIN
 #include <windows.h>

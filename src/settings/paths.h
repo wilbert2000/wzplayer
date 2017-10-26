@@ -41,7 +41,7 @@ public:
 
     static QString location(TLocation type);
 
-    static void setConfigPath(const QString& path);
+    static void setConfigPath();
     //! Return the path where wzplayer should save its config files
     static QString configPath() { return config_path; }
 

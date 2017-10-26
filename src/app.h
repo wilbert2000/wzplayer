@@ -71,7 +71,6 @@ private:
 
     Gui::TMainWindowPlus* main_window;
 
-    QString initial_config_path;
     QTranslator app_trans;
     QTranslator qt_trans;
 
@@ -99,7 +98,6 @@ private:
     void setupStyle();
     void createGUI();
     bool processArgName(const QString& arg, const QStringList& args) const;
-    int processArgPos(const QString& name, const QStringList& args) const;
     void logInfo();
 
 private slots:

@@ -3,7 +3,7 @@
 WZPlayer \- GUI for MPlayer and MPV
 .SH SYNOPSIS
 .B wzplayer
-.I [\fI-\-debug\fR] [\fI-\-config-path <directory>\fR]
+.I [\fI-\-debug\fR] [\fI-\-trace\fR]
 [\fI-\-send-action <action_name>\fR] [\fI-\-actions <action_list>\fR]
 [\fI[\-\-no]\-close\-at\-end\fR] [\fI[\-\-no]\-fullscreen\fR]
 [\fI\-\-sub <subtitle_file>\fR] [\fI-\-pos <x> <y>\fR] [\fI-\-size <width> <height>\fR]
@@ -15,10 +15,10 @@ WZPlayer is a media player based on SMPlayer, using \fBmplayer\fR(1) or \fBmpvr\
 .SH OPTIONS
 .TP
 .B \-\-debug
-Logs debug message to the console.
+Log messages to STDERR on level debug.
 .TP
-.B \-\-config\-path <directory>
-Specify the directory with configuration files (wzplayer.ini, wzplayer_files.ini...).
+.B \-\-trace
+Log messages to STDERR on level trace.
 .TP
 .B \-\-send\-action <action_name>
 Try to make a connection to another running instance and send it the specified action.

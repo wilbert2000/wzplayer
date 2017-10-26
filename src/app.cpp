@@ -193,7 +193,7 @@ void TApp::loadConfig() {
     WZDEBUG("");
 
     // Setup config directory
-    Settings::TPaths::setConfigPath(initial_config_path);
+    Settings::TPaths::setConfigPath();
     // Create settings
     Settings::pref = new Settings::TPreferences();
     // Load settings
@@ -236,23 +236,6 @@ bool TApp::processArgName(const QString& name, const QStringList& args) const {
     return false;
 }
 
-int TApp::processArgPos(const QString& name, const QStringList& args) const {
-
-    int pos = args.indexOf("--" + name);
-    if (pos < 0) {
-        pos = args.indexOf("-" + name);
-
-#ifdef Q_OS_WIN
-        if (pos < 0) {
-            pos = args.indexOf("/" + name);
-        }
-#endif
-
-    }
-
-    return pos;
-}
-
 TApp::TExitCode TApp::processArgs() {
 
     QStringList args = arguments();
@@ -271,22 +254,6 @@ TApp::TExitCode TApp::processArgs() {
         return NoError;
     }
 #endif
-
-    // Get config path from args
-    int pos = processArgPos("config-path", args);
-    if (pos >= 0) {
-        pos++;
-        if (pos < args.count()) {
-            initial_config_path = args[pos];
-            // Delete from list
-            args.removeAt(pos);
-            args.removeAt(pos - 1);
-            WZINFO("configuration path set to '" + initial_config_path + "'");
-        } else {
-            WZERROR("expected path after option --config-path");
-            return ERROR_INVALID_ARGUMENT;
-        }
-    }
 
     // Load preferences, set style and load translation
     loadConfig();
