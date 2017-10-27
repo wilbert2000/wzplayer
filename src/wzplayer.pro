@@ -100,7 +100,6 @@ HEADERS += wzdebug.h \
     gui/action/menu/menuhelp.h \
     gui/action/menu/favorite.h \
     gui/action/menu/favorites.h \
-    gui/action/menu/tvlist.h \
     gui/action/menu/favoriteeditor.h \
     gui/deviceinfo.h \
     gui/pref/languages.h \
@@ -228,7 +227,6 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menuhelp.cpp \
     gui/action/menu/favorite.cpp \
     gui/action/menu/favorites.cpp \
-    gui/action/menu/tvlist.cpp \
     gui/action/menu/favoriteeditor.cpp \
     gui/deviceinfo.cpp \
     gui/pref/languages.cpp \

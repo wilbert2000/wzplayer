@@ -110,9 +110,6 @@ public:
     bool remember_time_pos;
     QString file_settings_method; //!< Method to be used for saving file settings
 
-    // Check radio and TV channels on startup
-    bool check_channels_conf_on_startup;
-
 
     // Demuxer tab
     bool use_lavf_demuxer;

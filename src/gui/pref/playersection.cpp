@@ -93,9 +93,6 @@ void TPlayerSection::retranslateStrings() {
     filesettings_method_combo->addItem(tr("multiple ini files"), "hash");
     filesettings_method_combo->setCurrentIndex(filesettings_method_item);
 
-    // Radio and TV
-    radio_tv_icon_label->setPixmap(Images::icon("pref_radio_tv"));
-
     // Tab advanced
     advanced_icon_label->setPixmap(Images::icon("pref_advanced"));
 
@@ -109,26 +106,23 @@ void TPlayerSection::setData(TPreferences* pref) {
     setPlayerPath(pref->mplayer_bin, pref->mpv_bin);
     report_player_crashes_check->setChecked(pref->report_player_crashes);
 
-    // Media settings group
+    // Media settings
     settings_group->setChecked(pref->remember_media_settings);
     remember_time_check->setChecked(pref->remember_time_pos);
     remember_volume_check->setChecked(!pref->global_volume);
     remember_audio_eq_check->setChecked(!pref->global_audio_equalizer);
     setFileSettingsMethod(pref->file_settings_method);
 
-    // Radio and TV
-    radio_tv_rescan_check->setChecked(pref->check_channels_conf_on_startup);
+    // Log
+    setLogLevel(Log4Qt::LogManager::rootLogger()->level());
+    log_verbose_check->setChecked(pref->log_verbose);
+    log_window_max_events_spinbox->setValue(pref->log_window_max_events);
 
     // Advanced tab
     player_args_edit->setText(pref->player_additional_options);
     player_vfilters_edit->setText(pref->player_additional_video_filters);
     player_afilters_edit->setText(pref->player_additional_audio_filters);
     actions_to_run_edit->setText(pref->actions_to_run);
-
-    // Log
-    setLogLevel(Log4Qt::LogManager::rootLogger()->level());
-    log_verbose_check->setChecked(pref->log_verbose);
-    log_window_max_events_spinbox->setValue(pref->log_window_max_events);
 }
 
 void TPlayerSection::getData(TPreferences* pref) {
@@ -160,8 +154,16 @@ void TPlayerSection::getData(TPreferences* pref) {
                                    || !remember_audio_eq_check->isChecked();
     pref->file_settings_method = fileSettingsMethod();
 
-    // Radio and TV
-    pref->check_channels_conf_on_startup = radio_tv_rescan_check->isChecked();
+    // Log
+    pref->log_level = logLevel();
+    Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
+    Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
+    restartIfBoolChanged(pref->log_verbose,
+        pref->log_level <= Log4Qt::Level::DEBUG_INT
+        && log_verbose_check->isChecked(),
+        "log_verbose");
+    pref->log_window_max_events = log_window_max_events_spinbox->value();
+
 
     // Advanced tab
     restartIfStringChanged(pref->player_additional_options,
@@ -179,16 +181,6 @@ void TPlayerSection::getData(TPreferences* pref) {
                            player_afilters_edit->text(),
                            "player_additional_audio_filters");
     pref->actions_to_run = actions_to_run_edit->text();
-
-    // Log tab
-    pref->log_level = logLevel();
-    Log4Qt::LogManager::rootLogger()->setLevel(pref->log_level);
-    Log4Qt::LogManager::qtLogger()->setLevel(pref->log_level);
-    restartIfBoolChanged(pref->log_verbose,
-        pref->log_level <= Log4Qt::Level::DEBUG_INT
-        && log_verbose_check->isChecked(),
-        "log_verbose");
-    pref->log_window_max_events = log_window_max_events_spinbox->value();
 }
 
 void TPlayerSection::setPlayerID(Settings::TPreferences::TPlayerID id) {
@@ -290,7 +282,6 @@ void TPlayerSection::createHelp() {
     clearHelp();
 
     addSectionTitle(tr("Media player"));
-
     setWhatsThis(mplayer_radio, tr("MPlayer"),
         tr("Select MPlayer as the media player to use by WZPlayer."));
 
@@ -318,7 +309,6 @@ void TPlayerSection::createHelp() {
 
 
     addSectionTitle(tr("Remember player settings for every file"));
-
     setWhatsThis(settings_group, tr("Remember settings for every file"),
         tr("If checked WZPlayer will remember the settings you make for every"
            " file and reload them when you play the file again."));
@@ -355,14 +345,15 @@ void TPlayerSection::createHelp() {
                  + "</li></ul>" +
         tr("The latter will be faster when handling a lot of files."));
 
-#ifndef Q_OS_WIN
-    addSectionTitle(tr("Radio and TV"));
-    setWhatsThis(radio_tv_rescan_check,
-                 tr("Check for new radio and TV channels on startup"),
-        tr("If this option is checked, WZPlayer will look for new radio and TV"
-           " channels in ~/.mplayer/channels.conf.ter "
-           " and ~/.mplayer/channels.conf."));
-#endif
+
+    addSectionTitle(tr("Logs"));
+    setWhatsThis(log_level_combo, tr("Log level"),
+        tr("Select the level a message must have to be written to the log."
+           " You can view the log with menu <b><i>Window - View log</i></b>."));
+    setWhatsThis(log_verbose_check, tr("Verbose"),
+        tr("Request verbose messages from the player for troubleshooting."));
+    setWhatsThis(log_window_max_events_spinbox, tr("Log window events"),
+        tr("Specify the number of log events to remember for the log window."));
 
 
     addSectionTitle(tr("Extra player options"));
@@ -391,16 +382,6 @@ void TPlayerSection::createHelp() {
         + tr("Limitation: the actions are run only when a file is opened and"
              " not when the player process is restarted (e.g. you select an"
              " audio or video filter needing a  player restart)."));
-
-
-    addSectionTitle(tr("Logs"));
-    setWhatsThis(log_level_combo, tr("Log level"),
-        tr("Select the level a message must have to be written to the log."
-           " You can view the log with menu <b><i>Window - View log</i></b>."));
-    setWhatsThis(log_verbose_check, tr("Verbose"),
-        tr("Request verbose messages from the player for troubleshooting."));
-    setWhatsThis(log_window_max_events_spinbox, tr("Log window events"),
-        tr("Specify the number of log events to remember for the log window."));
 }
 
 } // namespace Pref

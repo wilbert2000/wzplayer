@@ -51,7 +51,6 @@
         <file>default-theme/playlist.png</file>
         <file>default-theme/plus.png</file>
         <file>default-theme/pref_player.png</file>
-        <file>default-theme/pref_radio_tv.png</file>
         <file>default-theme/pref_demuxer.png</file>
         <file>default-theme/pref_video.png</file>
         <file>default-theme/pref_subtitles.png</file>
@@ -137,8 +136,6 @@
         <file>default-theme/find.png</file>
         <file>default-theme/flip.png</file>
         <file>default-theme/mirror.png</file>
-        <file>default-theme/open_tv.png</file>
-        <file>default-theme/open_radio.png</file>
         <file>default-theme/favorite.png</file>
         <file>default-theme/open_favorites.png</file>
         <file>default-theme/set_in_point.png</file>

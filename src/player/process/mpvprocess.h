@@ -110,7 +110,6 @@ public:
 
     void toggleDeinterlace();
     void setOSDScale(double value);
-    void setChannelsFile(const QString &);
 
     virtual void save();
 

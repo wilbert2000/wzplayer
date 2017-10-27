@@ -21,7 +21,6 @@
 #include "player/process/exitmsg.h"
 
 #include "gui/playerwindow.h"
-#include "gui/action/menu/tvlist.h"
 #include "gui/msg.h"
 #include "gui/desktop.h"
 
@@ -1579,14 +1578,6 @@ end_video_filters:
         }
     }
 
-#ifndef Q_OS_WIN
-    if (Settings::pref->isMPV() && fileName.startsWith("dvb:")) {
-        QString channels_file = Gui::Action::Menu::TTVList::findChannelsFile();
-        WZDEBUG("channels_file '" + channels_file + "'");
-        if (!channels_file.isEmpty())
-            proc->setChannelsFile(channels_file);
-    }
-#endif
 
     // Set the capture directory
     proc->setCaptureDirectory(Settings::pref->screenshot_directory);

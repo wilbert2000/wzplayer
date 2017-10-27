@@ -1440,10 +1440,6 @@ void TMPVProcess::setSubStyles(const Settings::TAssStyles& styles,
     }
 }
 
-void TMPVProcess::setChannelsFile(const QString& filename) {
-    args << "--dvbin-file=" + filename;
-}
-
 } // namespace Process
 } // namespace Player
 

@@ -72,7 +72,7 @@ void TPreferences::reset() {
 
     config_version = CURRENT_CONFIG_VERSION;
 
-    // General section
+    // Player section
     player_id = ID_MPV;
     player_bin = default_mpv_bin;
     mpv_bin = default_mpv_bin;
@@ -84,7 +84,23 @@ void TPreferences::reset() {
     global_volume = true;
     file_settings_method = "hash"; // Possible values: normal & hash
 
-    check_channels_conf_on_startup = true;
+    // Log
+    log_verbose = false;
+    log_level = Log4Qt::Level::DEBUG_INT;
+    log_window_max_events = 1000;
+
+
+    // Advanced tab
+    actions_to_run = "";
+
+#ifdef PORTABLE_APP
+    player_additional_options = "-nofontconfig";
+#else
+    player_additional_options = "";
+#endif
+
+    player_additional_video_filters = "";
+    player_additional_audio_filters = "";
 
 
     // Demuxer section
@@ -341,22 +357,7 @@ void TPreferences::reset() {
     proxy_password = "";
 
 
-    // Advanced section
-    // Log
-    log_verbose = false;
-    log_level = Log4Qt::Level::DEBUG_INT;
-    log_window_max_events = 1000;
-
-    actions_to_run = "";
-    player_additional_options = "";
-
-#ifdef PORTABLE_APP
-    player_additional_options = "-nofontconfig";
-#endif
-
-    player_additional_video_filters = "";
-    player_additional_audio_filters = "";
-
+    // Misc
     use_edl_files = true;
 
     // If set high enough the OS will detect the "not responding state"
@@ -420,7 +421,6 @@ void TPreferences::save() {
     setValue("remember_time_pos", remember_time_pos);
     setValue("file_settings_method", file_settings_method);
 
-    setValue("check_channels_conf_on_startup", check_channels_conf_on_startup);
     endGroup();
 
 
@@ -912,10 +912,6 @@ void TPreferences::load() {
     remember_time_pos = value("remember_time_pos", remember_time_pos).toBool();
     file_settings_method = value("file_settings_method",
                                  file_settings_method).toString();
-
-    check_channels_conf_on_startup = value("check_channels_conf_on_startup",
-                                           check_channels_conf_on_startup)
-                                     .toBool();
 
     endGroup(); // players
 

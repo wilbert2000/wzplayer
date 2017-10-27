@@ -5,7 +5,6 @@
 #include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
 #include "gui/action/menu/favorites.h"
-#include "gui/action/menu/tvlist.h"
 #include "gui/action/action.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
@@ -118,48 +117,6 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     addAction(main_window->getPlaylist()->findChild<TAction*>("pl_open"));
     addAction(main_window->getPlaylist()->findChild<TAction*>("pl_save"));
     addAction(main_window->getPlaylist()->findChild<TAction*>("pl_saveas"));
-
-    addSeparator();
-
-    // TV
-    fav = new TTVList(main_window, "tv_menu", tr("&TV"), "open_tv",
-                      TPaths::configPath() + "/tv.m3u8",
-                      pref->check_channels_conf_on_startup,
-                      TTVList::TV);
-    fav->editAct()->setObjectName("edit_tv_list");
-    fav->jumpAct()->setObjectName("jump_tv_list");
-    fav->nextAct()->setObjectName("next_tv");
-    fav->previousAct()->setObjectName("previous_tv");
-    fav->addCurrentAct()->setObjectName("add_current_tv");
-    main_window->addAction(fav->editAct());
-    main_window->addAction(fav->jumpAct());
-    main_window->addAction(fav->nextAct());
-    main_window->addAction(fav->previousAct());
-    main_window->addAction(fav->addCurrentAct());
-    addMenu(fav);
-    connect(fav, SIGNAL(activated(QString)), main_window, SLOT(open(QString)));
-    connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
-            fav, SLOT(getCurrentMedia(const QString&, const QString&)));
-
-    // Radio
-    fav = new TTVList(main_window, "radio_menu", tr("Radi&o"), "open_radio",
-                      TPaths::configPath() + "/radio.m3u8",
-                      pref->check_channels_conf_on_startup,
-                      TTVList::Radio);
-    fav->editAct()->setObjectName("edit_radio_list");
-    fav->jumpAct()->setObjectName("jump_radio_list");
-    fav->nextAct()->setObjectName("next_radio");
-    fav->previousAct()->setObjectName("previous_radio");
-    fav->addCurrentAct()->setObjectName("add_current_radio");
-    main_window->addAction(fav->editAct());
-    main_window->addAction(fav->jumpAct());
-    main_window->addAction(fav->nextAct());
-    main_window->addAction(fav->previousAct());
-    main_window->addAction(fav->addCurrentAct());
-    addMenu(fav);
-    connect(fav, SIGNAL(activated(QString)), main_window, SLOT(open(QString)));
-    connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
-            fav, SLOT(getCurrentMedia(const QString&, const QString&)));
 
     addSeparator();
 

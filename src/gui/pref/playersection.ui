@@ -36,21 +36,6 @@
        <string>Player</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>16</number>
-       </property>
-       <property name="leftMargin">
-        <number>16</number>
-       </property>
-       <property name="topMargin">
-        <number>16</number>
-       </property>
-       <property name="rightMargin">
-        <number>16</number>
-       </property>
-       <property name="bottomMargin">
-        <number>16</number>
-       </property>
        <item>
         <widget class="QGroupBox" name="player_group">
          <property name="title">
@@ -184,54 +169,162 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="radio_tv_group">
+        <widget class="QGroupBox" name="log_group">
          <property name="title">
-          <string>Radio and TV</string>
+          <string>Log</string>
          </property>
          <property name="flat">
           <bool>true</bool>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="spacing">
-           <number>16</number>
-          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QLabel" name="radio_tv_icon_label">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="log_level_label">
+              <property name="text">
+               <string>&amp;Log level</string>
+              </property>
+              <property name="buddy">
+               <cstring>log_level_combo</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="log_level_combo">
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>Trace</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Debug</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Info</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Warn</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Error</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Fatal</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_verbose_check">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Icon</string>
+             <string>Request &amp;verbose messages from player</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="radio_tv_rescan_check">
-            <property name="text">
-             <string>&amp;Check for new radio and TV channels on startup</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="log_window_max_events_label">
+              <property name="text">
+               <string>Re&amp;member the last</string>
+              </property>
+              <property name="buddy">
+               <cstring>log_window_max_events_spinbox</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="log_window_max_events_spinbox">
+              <property name="minimum">
+               <number>10</number>
+              </property>
+              <property name="maximum">
+               <number>100000</number>
+              </property>
+              <property name="singleStep">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>1000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="log_window_max_events_label2">
+              <property name="text">
+               <string>messages for the log window</string>
+              </property>
+              <property name="buddy">
+               <cstring>log_window_max_events_spinbox</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
        </item>
        <item>
-        <spacer>
+        <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -435,179 +528,6 @@ Audio example: extrastereo,karaoke</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="log_tab">
-      <attribute name="title">
-       <string>Logging</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_8">
-       <item>
-        <widget class="QGroupBox" name="log_group">
-         <property name="title">
-          <string>Log</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="log_level_label">
-              <property name="text">
-               <string>&amp;Log level</string>
-              </property>
-              <property name="buddy">
-               <cstring>log_level_combo</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="log_level_combo">
-              <property name="currentIndex">
-               <number>1</number>
-              </property>
-              <item>
-               <property name="text">
-                <string>Trace</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Debug</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Info</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Warn</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Error</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Fatal</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Off</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="log_verbose_check">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Request &amp;verbose messages from player</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="log_window_max_events_label">
-              <property name="text">
-               <string>Re&amp;member the last</string>
-              </property>
-              <property name="buddy">
-               <cstring>log_window_max_events_spinbox</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="log_window_max_events_spinbox">
-              <property name="minimum">
-               <number>10</number>
-              </property>
-              <property name="maximum">
-               <number>100000</number>
-              </property>
-              <property name="singleStep">
-               <number>100</number>
-              </property>
-              <property name="value">
-               <number>1000</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="log_window_max_events_label2">
-              <property name="text">
-               <string>log events for the log window</string>
-              </property>
-              <property name="buddy">
-               <cstring>log_window_max_events_spinbox</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
     </widget>
    </item>
   </layout>
@@ -631,7 +551,13 @@ Audio example: extrastereo,karaoke</string>
   <tabstop>remember_volume_check</tabstop>
   <tabstop>remember_audio_eq_check</tabstop>
   <tabstop>filesettings_method_combo</tabstop>
-  <tabstop>radio_tv_rescan_check</tabstop>
+  <tabstop>log_level_combo</tabstop>
+  <tabstop>log_verbose_check</tabstop>
+  <tabstop>log_window_max_events_spinbox</tabstop>
+  <tabstop>player_args_edit</tabstop>
+  <tabstop>player_vfilters_edit</tabstop>
+  <tabstop>player_afilters_edit</tabstop>
+  <tabstop>actions_to_run_edit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

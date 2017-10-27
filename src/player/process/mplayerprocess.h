@@ -107,7 +107,6 @@ public:
 
     void toggleDeinterlace();
     void setOSDScale(double value);
-    void setChannelsFile(const QString&) {}
     void setCaptureDirectory(const QString & dir);
 
     virtual void save();

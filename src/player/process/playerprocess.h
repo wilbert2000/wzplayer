@@ -135,7 +135,6 @@ public:
 
     virtual void toggleDeinterlace() = 0;
     virtual void setOSDScale(double value) = 0;
-    virtual void setChannelsFile(const QString &) = 0;
 
     void setScreenshotDirectory(const QString& dir) { screenshot_dir = dir; }
     QString screenshotDirectory() const { return screenshot_dir; }
