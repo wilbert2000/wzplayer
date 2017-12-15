@@ -3,9 +3,12 @@ LANGUAGE = C++
 
 CONFIG += qt warn_on
 
-# Require Qt 5
+# Require Qt 5.4
 lessThan(QT_MAJOR_VERSION, 5) {
-    error("Qt 5 required")
+    error("Qt 5.4 required")
+}
+lessThan(QT_MINOR_VERSION, 4) {
+    error("Qt 5.4 required")
 }
 
 # Default to release build
@@ -24,6 +27,7 @@ OBJECTS_DIR = .obj
 include(log4qt/log4qt.pri)
 
 QT += network
+QT += widgets gui
 
 RESOURCES = icons.qrc
 
@@ -31,10 +35,6 @@ DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tag
 
 # Support for program switch in TS files
 #DEFINES += PROGRAM_SWITCH
-
-isEqual(QT_MAJOR_VERSION, 5) {
-    QT += widgets gui
-}
 
 
 HEADERS += wzdebug.h \
