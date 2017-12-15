@@ -30,10 +30,7 @@ public:
 
     enum TLocation {
         DataLocation = QStandardPaths::DataLocation,
-
-#if QT_VERSION >= 0x050400
         AppDataLocation = QStandardPaths::AppDataLocation,
-#endif
         PicturesLocation = QStandardPaths::PicturesLocation,
         DocumentsLocation = QStandardPaths::DocumentsLocation,
         HomeLocation = QStandardPaths::HomeLocation
@@ -45,14 +42,12 @@ public:
     //! Return the path where wzplayer should save its config files
     static QString configPath() { return config_path; }
 
-    // Ini file name
-    static QString iniPath();
-
-    static QString translationPath();
+    static QString iniFileName();
     static QString themesPath();
     static QString shortcutsPath();
+    static QString translationPath();
     static QString qtTranslationPath();
-    static QString subtitleStyleFile();
+    static QString subtitleStyleFileName();
 
 private:
     static QString config_path;

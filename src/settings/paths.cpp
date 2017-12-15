@@ -41,12 +41,10 @@ QString TPaths::location(TLocation type) {
     path = qApp->applicationDirPath();
 #else
 
-#if QT_VERSION >= 0x050400
     // Switch to roaming on Windows
     if (type == DataLocation) {
         type = AppDataLocation;
     }
-#endif
 
     path = QStandardPaths::writableLocation(
         static_cast<QStandardPaths::StandardLocation>(type));
@@ -134,12 +132,12 @@ QString TPaths::qtTranslationPath() {
     return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
 }
 
-QString TPaths::iniPath() {
+QString TPaths::iniFileName() {
     return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
 }
 
-QString TPaths::subtitleStyleFile() {
-    return config_path + "/styles.ass";
+QString TPaths::subtitleStyleFileName() {
+    return config_path + QDir::separator() + "styles.ass";
 }
 
 } // namespace Settings

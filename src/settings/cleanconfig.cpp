@@ -12,10 +12,10 @@ void TCleanConfig::clean() {
 
     QStringList files_to_delete;
 
-    QString s = TPaths::iniPath();
+    QString s = TPaths::iniFileName();
     if (QFile::exists(s)) files_to_delete << s;
 
-    s = TPaths::subtitleStyleFile();
+    s = TPaths::subtitleStyleFileName();
     if (QFile::exists(s)) files_to_delete << s;
 
     s = TPaths::configPath() + "/wzplayer_files.ini";

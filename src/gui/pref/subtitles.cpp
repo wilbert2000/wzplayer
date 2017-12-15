@@ -240,7 +240,7 @@ void TSubtitles::getData(Settings::TPreferences* pref) {
     restartIfIntChanged(pref->ass_styles.marginv, style_marginv_spin->value(),
                         "ass_styles.marginv");
 
-    pref->ass_styles.exportStyles(Settings::TPaths::subtitleStyleFile());
+    pref->ass_styles.exportStyles(Settings::TPaths::subtitleStyleFileName());
 
     restartIfBoolChanged(pref->force_ass_styles, forceAssStyles(),
                          "force_ass_styles");

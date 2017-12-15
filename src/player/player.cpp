@@ -1118,7 +1118,7 @@ void TPlayer::startPlayer(bool loopImage) {
                     proc->setOption("ass-force-style", ass_force_style);
                 } else {
                     proc->setSubStyles(Settings::pref->ass_styles,
-                                       Settings::TPaths::subtitleStyleFile());
+                                       Settings::TPaths::subtitleStyleFileName());
                 }
             }
         }
