@@ -60,7 +60,7 @@ TFavorites::TFavorites(TMainWindow* mw,
             this, SLOT(addCurrentPlaying()));
 
     connect(this, SIGNAL(triggered(QAction *)),
-            this, SLOT(triggered_slot(QAction *)));
+            this, SLOT(onTriggered(QAction *)));
 
     load();
 
@@ -75,46 +75,45 @@ TFavorites::~TFavorites() {
 void TFavorites::delete_children() {
 
     for (int n = 0; n < child.count(); n++) {
-        if (child[n])
+        if (child[n]) {
             delete child[n];
-        child[n] = 0;
+            child[n] = 0;
+        }
     }
     child.clear();
-}
-
-TFavorites* TFavorites::createNewObject(const QString& filename) {
-    return new TFavorites(main_window, "", "", "noicon", filename);
 }
 
 void TFavorites::populateMenu() {
 
     for (int n = 0; n < f_list.count(); n++) {
-        QString i = QString::number(n+1);
-        QString name = QString("%1 - " + f_list[n].name()).arg(
-                           i.insert(i.size()-1, '&'), 3, ' ');
-        if (f_list[n].isSubentry()) {
+        const TFavorite& fav = f_list.at(n);
+        QString i = QString::number(n + 1);
+        QString name = QString("%1 - " + fav.name()).arg(
+                               i.insert(i.size() - 1, '&'), 3, ' ');
+        if (fav.isSubentry()) {
 
-            if (f_list[n].file() == _filename) {
+            if (fav.file() == _filename) {
                 WZWARN("infinite recursion detected. Ignoring item.");
                 break;
             }
 
-            TFavorites* new_fav = createNewObject(f_list[n].file());
-            new_fav->getCurrentMedia(received_file_playing, received_title);
+            TFavorites* sub = new TFavorites(main_window, "", "", "noicon",
+                                             fav.file());
+            sub->getCurrentMedia(received_file_playing, received_title);
             connect(this, SIGNAL(sendCurrentMedia(const QString&,
                                                   const QString&)),
-                    new_fav, SLOT(getCurrentMedia(const QString&,
-                                                  const QString&)));
-            child.push_back(new_fav);
+                    sub, SLOT(getCurrentMedia(const QString&,
+                                              const QString&)));
+            child.push_back(sub);
 
-            QAction* a = addMenu(new_fav);
+            QAction* a = addMenu(sub);
             a->setText(name);
-            a->setIcon(QIcon(f_list[n].icon()));
+            a->setIcon(QIcon(fav.icon()));
         } else {
             QAction* a = addAction(name);
-            a->setData(f_list[n].file());
-            a->setIcon(QIcon(f_list[n].icon()));
-            a->setStatusTip(f_list[n].file());
+            a->setData(fav.file());
+            a->setIcon(QIcon(fav.icon()));
+            a->setStatusTip(fav.file());
         }
     }
 
@@ -140,13 +139,13 @@ void TFavorites::updateMenu() {
     markCurrent();
 }
 
-void TFavorites::triggered_slot(QAction* action) {
+void TFavorites::onTriggered(QAction* action) {
 
     if (action->data().isValid()) {
         QString file = action->data().toString();
-        emit activated(file);
         current_file = file;;
         markCurrent();
+        main_window->open(file);
     }
 }
 

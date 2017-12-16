@@ -22,12 +22,10 @@
 #include "gui/action/menu/menu.h"
 #include "gui/action/menu/favorite.h"
 #include "log4qt/logger.h"
-#include <QString>
 #include <QList>
 
 
 class QAction;
-class QWidget;
 
 namespace Gui {
 namespace Action {
@@ -63,7 +61,6 @@ public slots:
     void getCurrentMedia(const QString& filename, const QString& title);
 
 signals:
-    void activated(const QString& filemane);
     //! Signal to resend the data to child
     void sendCurrentMedia(const QString& filename, const QString& title);
 
@@ -72,7 +69,6 @@ protected:
     virtual void load();
     virtual void updateMenu();
     virtual void populateMenu();
-    virtual TFavorites* createNewObject(const QString& filename);
     void delete_children();
 
     int findFile(const QString& filename) const;
@@ -82,12 +78,12 @@ protected:
     bool anyItemAvailable();
 
 protected slots:
-    void triggered_slot(QAction* action);
+    void onTriggered(QAction* action);
     virtual void edit();
     virtual void jump();
     virtual void addCurrentPlaying();
 
-protected:
+private:
     TFavoriteList f_list;
     QString _filename;
     TAction* edit_act;

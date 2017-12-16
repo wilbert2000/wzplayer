@@ -224,10 +224,13 @@ TFavoriteList TFavoriteEditor::data() {
 void TFavoriteEditor::on_delete_button_clicked() {
 
     int row = table->currentRow();
-    if (row > -1) table->removeRow(row);
-
-    if (row >= table->rowCount()) row--;
-    table->setCurrentCell(row, table->currentColumn());
+    if (row >= 0) {
+        table->removeRow(row);
+        if (row >= table->rowCount()) {
+            row = table->rowCount() - 1;
+        }
+        table->setCurrentCell(row, table->currentColumn());
+    }
 }
 
 void TFavoriteEditor::on_delete_all_button_clicked() {
@@ -336,7 +339,8 @@ void TFavoriteEditor::setRow(int row, const QList<QTableWidgetItem*>& rowItems)
 
 void TFavoriteEditor::edit_icon(int row, int column) {
 
-    if (column != COL_ICON) return;
+    if (column != COL_ICON)
+        return;
 
     QTableWidgetItem* i = table->item(row, column);
     QString icon_filename = i->data(Qt::UserRole).toString();

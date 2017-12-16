@@ -82,7 +82,7 @@ class TPlaylist : public QWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlaylist(QWidget* parent, TMainWindow* mw);
+    explicit TPlaylist(QWidget* parent, TMainWindow* mw);
     virtual ~TPlaylist();
 
     void openPlaylist(const QString& filename);
