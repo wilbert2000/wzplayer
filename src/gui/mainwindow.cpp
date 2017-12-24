@@ -24,7 +24,6 @@
 #include "gui/helpwindow.h"
 #include "gui/autohidetimer.h"
 #include "gui/filepropertiesdialog.h"
-#include "gui/inputdvddirectory.h"
 #include "gui/dockwidget.h"
 #include "gui/msg.h"
 
@@ -1671,10 +1670,13 @@ void TMainWindow::openDVDFromFolder() {
     WZDEBUG("");
 
     if (playlist->maybeSave()) {
-        TInputDVDDirectory d(this);
-        d.setFolder(pref->last_dvd_directory);
-        if (d.exec() == QDialog::Accepted) {
-            pref->last_dvd_directory = d.folder();
+        QString dir = QFileDialog::getExistingDirectory(
+            this,
+            tr("Select the folder containing the DVD"),
+            pref->last_dvd_directory,
+            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        if (!dir.isEmpty()) {
+            pref->last_dvd_directory = dir;
             player->openDisc(TDiscName(pref->last_dvd_directory,
                                        pref->useDVDNAV()));
         }
@@ -1697,7 +1699,7 @@ void TMainWindow::openBluRayFromFolder() {
     if (playlist->maybeSave()) {
         QString dir = QFileDialog::getExistingDirectory(
             this,
-            tr("Select the Blu-ray folder"),
+            tr("Select the folder containing the Blu-ray"),
             pref->last_dvd_directory,
             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (!dir.isEmpty()) {

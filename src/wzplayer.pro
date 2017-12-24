@@ -125,7 +125,6 @@ HEADERS += wzdebug.h \
     gui/multilineinputdialog.h \
     gui/infofile.h \
     gui/filepropertiesdialog.h \
-    gui/inputdvddirectory.h \
     gui/stereo3ddialog.h \
     gui/verticaltext.h \
     gui/eqslider.h \
@@ -252,7 +251,6 @@ SOURCES += wzdebug.cpp \
     gui/multilineinputdialog.cpp \
     gui/infofile.cpp \
     gui/filepropertiesdialog.cpp \
-    gui/inputdvddirectory.cpp \
     gui/stereo3ddialog.cpp \
     gui/verticaltext.cpp \
     gui/eqslider.cpp \
@@ -293,8 +291,7 @@ SOURCES += wzdebug.cpp \
     app.cpp \
     main.cpp
 
-FORMS = gui/inputdvddirectory.ui \
-    gui/logwindow.ui \
+FORMS = gui/logwindow.ui \
     gui/helpwindow.ui \
     gui/filepropertiesdialog.ui \
     gui/eqslider.ui \

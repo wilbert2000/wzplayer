@@ -97,16 +97,16 @@ public:
     void runActionsLater(const QString& actions, bool postCheck);
 
 public slots:
-    virtual void open(const QString& fileName); // Generic open, autodetect type.
-    virtual void openFile();
-    virtual void openURL();
-    virtual void openVCD();
-    virtual void openAudioCD();
-    virtual void openDVD();
-    virtual void openDVDFromFolder();
+    virtual void open(const QString& fileName); // Generic open, autodetect type
+    void openURL();
+    void openFile();
+    void openDirectory();
+    void openDVD();
+    void openDVDFromFolder();
     void openBluRay();
     void openBluRayFromFolder();
-    virtual void openDirectory();
+    void openVCD();
+    void openAudioCD();
 
     virtual void showConfigFolder();
 
