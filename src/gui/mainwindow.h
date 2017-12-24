@@ -104,7 +104,6 @@ public slots:
     virtual void openAudioCD();
     virtual void openDVD();
     virtual void openDVDFromFolder();
-    virtual void openDVDFromFolder(const QString& directory);
     void openBluRay();
     void openBluRayFromFolder();
     virtual void openDirectory();

@@ -1674,15 +1674,11 @@ void TMainWindow::openDVDFromFolder() {
         TInputDVDDirectory d(this);
         d.setFolder(pref->last_dvd_directory);
         if (d.exec() == QDialog::Accepted) {
-            openDVDFromFolder(d.folder());
+            pref->last_dvd_directory = d.folder();
+            player->openDisc(TDiscName(pref->last_dvd_directory,
+                                       pref->useDVDNAV()));
         }
     }
-}
-
-void TMainWindow::openDVDFromFolder(const QString &directory) {
-
-    pref->last_dvd_directory = directory;
-    player->openDisc(TDiscName(directory, pref->useDVDNAV()));
 }
 
 void TMainWindow::openBluRay() {
@@ -1699,10 +1695,11 @@ void TMainWindow::openBluRayFromFolder() {
     WZDEBUG("");
 
     if (playlist->maybeSave()) {
-        QString dir = QFileDialog::getExistingDirectory(this,
+        QString dir = QFileDialog::getExistingDirectory(
+            this,
             tr("Select the Blu-ray folder"),
-            pref->last_dvd_directory, QFileDialog::ShowDirsOnly
-                                      | QFileDialog::DontResolveSymlinks);
+            pref->last_dvd_directory,
+            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (!dir.isEmpty()) {
             pref->last_dvd_directory = dir;
             player->openDisc(TDiscName("br", 0, dir));
