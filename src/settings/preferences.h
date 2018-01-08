@@ -271,7 +271,8 @@ public:
     TLRUList history_urls;
     bool save_dirs; // Save or not the latest dirs
 
-    QString last_dir; //!< Directory of the latest file loaded
+    QString last_dir;
+    QString last_iso;
     QString last_dvd_directory;
 
     // TV (dvb)

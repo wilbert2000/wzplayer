@@ -22,9 +22,9 @@
 
 namespace Gui {
 
-TInputURL::TInputURL(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
-{
+TInputURL::TInputURL(QWidget* parent)
+    : QDialog(parent) {
+
     setupUi(this);
 
     setMinimumSize(QSize(500,140));

@@ -1666,6 +1666,23 @@ void TMainWindow::openDVD() {
     }
 }
 
+void TMainWindow::openDVDFromISO() {
+    WZDEBUG("");
+
+    if (playlist->maybeSave()) {
+        QString iso = TFileDialog::getOpenFileName(
+            this,
+            tr("Select the ISO DVD file to open"),
+            pref->last_iso,
+            tr("ISO files") + + " (*.iso);;" + tr("All files") + " (*.*)");
+
+        if (!iso.isEmpty()) {
+            pref->last_iso = iso;
+            player->openDisc(TDiscName(iso, pref->useDVDNAV()));
+        }
+    }
+}
+
 void TMainWindow::openDVDFromFolder() {
     WZDEBUG("");
 
@@ -1693,6 +1710,23 @@ void TMainWindow::openBluRay() {
     }
 }
 
+void TMainWindow::openBluRayFromISO() {
+    WZDEBUG("");
+
+    if (playlist->maybeSave()) {
+        QString iso = TFileDialog::getOpenFileName(
+            this,
+            tr("Select the Blu-Ray ISO file to open"),
+            pref->last_iso,
+            tr("ISO files") + + " (*.iso);;" + tr("All files") + " (*.*)");
+
+        if (!iso.isEmpty()) {
+            pref->last_iso = iso;
+            player->openDisc(TDiscName("br", 0, iso));
+        }
+    }
+}
+
 void TMainWindow::openBluRayFromFolder() {
     WZDEBUG("");
 
@@ -1713,10 +1747,11 @@ void TMainWindow::loadSub() {
     WZDEBUG("");
 
     QString s = TFileDialog::getOpenFileName(
-        this, tr("Choose a file"),
+        this,
+        tr("Select a subtitle file"),
         pref->last_dir,
-        tr("Subtitles") + extensions.subtitles().forFilter()+ ";;" +
-        tr("All files") +" (*.*)");
+        tr("Subtitles") + extensions.subtitles().forFilter()
+           + ";;" + tr("All files") +" (*.*)");
 
     if (!s.isEmpty())
         player->loadSub(s);
@@ -1726,7 +1761,7 @@ void TMainWindow::loadAudioFile() {
     WZDEBUG("");
 
     QString s = TFileDialog::getOpenFileName(
-        this, tr("Choose a file"),
+        this, tr("Select an audio file"),
         pref->last_dir,
         tr("Audio") + extensions.audio().forFilter()+";;" +
         tr("All files") +" (*.*)");

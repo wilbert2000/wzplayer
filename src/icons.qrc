@@ -13,9 +13,11 @@
         <file>default-theme/delete.png</file>
         <file>default-theme/open_disc.png</file>
         <file>default-theme/dvd.png</file>
+        <file>default-theme/dvd_iso.png</file>
         <file>default-theme/dvd_drive.png</file>
         <file>default-theme/bluray_drive.png</file>
         <file>default-theme/bluray.png</file>
+        <file>default-theme/bluray_iso.png</file>
         <file>default-theme/bluray_hd.png</file>
         <file>default-theme/dvd_hd.png</file>
         <file>default-theme/exit.png</file>

@@ -102,8 +102,10 @@ public slots:
     void openFile();
     void openDirectory();
     void openDVD();
+    void openDVDFromISO();
     void openDVDFromFolder();
     void openBluRay();
+    void openBluRayFromISO();
     void openBluRayFromFolder();
     void openVCD();
     void openAudioCD();

@@ -28,20 +28,32 @@ TMenuDisc::TMenuDisc(TMainWindow* parent)
     TAction* a = new TAction(this, "open_dvd", tr("&DVD from drive"), "dvd");
     connect(a, SIGNAL(triggered()), parent, SLOT(openDVD()));
 
-    a = new TAction(this, "open_dvd_folder", tr("D&VD from folder..."),
+    a = new TAction(this, "open_dvd_iso", tr("D&VD from ISO file..."),
+                    "dvd_iso");
+    connect(a, SIGNAL(triggered()), parent, SLOT(openDVDFromISO()));
+
+    a = new TAction(this, "open_dvd_folder", tr("DVD &from folder..."),
                     "dvd_hd");
     connect(a, SIGNAL(triggered()), parent, SLOT(openDVDFromFolder()));
 
+
+    addSeparator();
     // BluRay
     a = new TAction(this, "open_bluray", tr("&Blu-ray from drive"), "bluray");
     connect(a, SIGNAL(triggered()), parent, SLOT(openBluRay()));
 
-    a = new TAction(this, "open_bluray_folder", tr("Blu-&ray from folder..."),
+    a = new TAction(this, "open_bluray_iso", tr("B&lu-&ray from ISO file..."),
+                    "bluray_iso");
+    connect(a, SIGNAL(triggered()), parent, SLOT(openBluRayFromISO()));
+
+    a = new TAction(this, "open_bluray_folder", tr("Bl&u-ray from folder..."),
                     "bluray_hd");
     connect(a, SIGNAL(triggered()), parent, SLOT(openBluRayFromFolder()));
 
+
+    addSeparator();
     // VCD
-    a = new TAction(this, "open_vcd", tr("V&CD"), "vcd");
+    a = new TAction(this, "open_vcd", tr("V&ideo CD"), "vcd");
     connect(a, SIGNAL(triggered()), parent, SLOT(openVCD()));
 
     // Audio

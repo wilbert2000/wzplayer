@@ -278,7 +278,8 @@ void TPreferences::reset() {
 
     save_dirs = true;
     last_dir = QDir::homePath();
-    last_dvd_directory = "";
+    last_dvd_directory = last_dir;
+    last_iso = "";
 
     // TV (dvb)
     last_dvb_channel = "";
@@ -575,9 +576,11 @@ void TPreferences::save() {
 
     if (save_dirs) {
         setValue("last_dir", last_dir);
+        setValue("last_iso", last_iso);
         setValue("last_dvd_directory", last_dvd_directory);
     } else {
         setValue("last_dir", "");
+        setValue("last_iso", "");
         setValue("last_dvd_directory", "");
     }
 
@@ -1109,6 +1112,7 @@ void TPreferences::load() {
     save_dirs = value("save_dirs", save_dirs).toBool();
     if (save_dirs) {
         last_dir = value("last_dir", last_dir).toString();
+        last_iso = value("last_iso", last_iso).toString();
         last_dvd_directory = value("last_dvd_directory", last_dvd_directory)
                              .toString();
     }
