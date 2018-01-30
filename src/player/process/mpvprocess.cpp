@@ -925,6 +925,7 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
             args << "--ad=spdif:ac3,spdif:dts";
     } else if (name == "verbose") {
         args << "-v";
+        args << "--ytdl-raw-options=verbose="; // pass --verbose to youtube-dl
     } else if (name == "mute") {
         args << "--mute=yes";
     } else if (name == "vf-add") {
