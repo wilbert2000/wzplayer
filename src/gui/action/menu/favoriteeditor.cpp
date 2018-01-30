@@ -17,18 +17,18 @@
 */
 
 #include "gui/action/menu/favoriteeditor.h"
+#include "gui/filechooser.h"
+#include "images.h"
+#include "wzdebug.h"
 
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QItemDelegate>
-#include "images.h"
-#include "gui/filechooser.h"
 
 #define COL_ICON 0
 #define COL_NAME 1
 #define COL_FILE 2
 
-#include <QItemDelegate>
 
 class FEDelegate : public QItemDelegate 
 {
@@ -89,16 +89,16 @@ TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
 
     add_button->setIcon(Images::icon("bookmark_add"));
     connect(add_button, SIGNAL(clicked()),
-            this, SLOT(on_add_button_clicked()));
+            this, SLOT(onAddButtonClicked()));
     add_submenu_button->setIcon(Images::icon("bookmark_folder"));
     connect(add_submenu_button, SIGNAL(clicked()),
             this, SLOT(onAddSubmenuButtonClicked()));
     delete_button->setIcon(Images::icon("delete"));
     connect(delete_button, SIGNAL(clicked()),
-            this, SLOT(on_delete_button_clicked()));
+            this, SLOT(onDeleteButtonClicked()));
     delete_all_button->setIcon(Images::icon("trash"));
     connect(delete_all_button, SIGNAL(clicked()),
-            this, SLOT(on_delete_all_button_clicked()));
+            this, SLOT(onDeleteAllButtonClicked()));
     up_button->setIcon(Images::icon("up"));
     connect(up_button, SIGNAL(clicked()),
             this, SLOT(onUpButtonClicked()));
@@ -221,7 +221,7 @@ TFavoriteList TFavoriteEditor::data() {
     return list;
 }
 
-void TFavoriteEditor::on_delete_button_clicked() {
+void TFavoriteEditor::onDeleteButtonClicked() {
 
     int row = table->currentRow();
     if (row >= 0) {
@@ -233,11 +233,11 @@ void TFavoriteEditor::on_delete_button_clicked() {
     }
 }
 
-void TFavoriteEditor::on_delete_all_button_clicked() {
+void TFavoriteEditor::onDeleteAllButtonClicked() {
     table->setRowCount(0);
 }
 
-void TFavoriteEditor::on_add_button_clicked() {
+void TFavoriteEditor::onAddButtonClicked() {
 
     int row = table->currentRow();
     row++;

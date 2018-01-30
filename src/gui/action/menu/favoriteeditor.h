@@ -58,9 +58,9 @@ public:
 protected slots:
     void onUpButtonClicked();
     void onDownButtonClicked();
-    void on_delete_button_clicked();
-    void on_delete_all_button_clicked();
-    void on_add_button_clicked();
+    void onDeleteButtonClicked();
+    void onDeleteAllButtonClicked();
+    void onAddButtonClicked();
     void onAddSubmenuButtonClicked();
 
     void edit_icon(int row, int column); 
