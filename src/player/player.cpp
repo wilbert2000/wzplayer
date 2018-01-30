@@ -449,9 +449,8 @@ void TPlayer::openTV(QString channel_id) {
     // Use last channel if the name is just "dvb://" or "tv://"
     if (channel_id == "dvb://" && !Settings::pref->last_dvb_channel.isEmpty()) {
         channel_id = Settings::pref->last_dvb_channel;
-    }
-    else
-    if (channel_id == "tv://" && !Settings::pref->last_tv_channel.isEmpty()) {
+    } else if (channel_id == "tv://"
+               && !Settings::pref->last_tv_channel.isEmpty()) {
         channel_id = Settings::pref->last_tv_channel;
     }
 
