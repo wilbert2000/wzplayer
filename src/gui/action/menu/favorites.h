@@ -48,60 +48,45 @@ public:
                const QString& filename);
     virtual ~TFavorites();
 
-    TAction* editAct() const { return edit_act; }
-    TAction* jumpAct() const { return jump_act; }
-    TAction* nextAct() const { return next_act; }
-    TAction* previousAct() const { return previous_act; }
-    TAction* addCurrentAct() const { return add_current_act; }
+    TAction* getEditAct() const { return editAct; }
+    TAction* getAddAct() const { return addAct; }
+    TAction* getJumpAct() const { return jumpAct; }
+
 
 public slots:
-    void next();
-    void previous();
-
-    void getCurrentMedia(const QString& filename, const QString& title);
-
-signals:
-    //! Signal to resend the data to child
-    void sendCurrentMedia(const QString& filename, const QString& title);
+    void edit();
+    void addCurrentPlaying();
+    void jump();
 
 protected:
+    virtual void enableActions();
+
     virtual void save();
-    virtual void load();
     virtual void updateMenu();
     virtual void populateMenu();
     void delete_children();
 
-    int findFile(const QString& filename) const;
-
     // Mark current action in the menu
     void markCurrent();
-    bool anyItemAvailable();
 
 protected slots:
     void onTriggered(QAction* action);
-    virtual void edit();
-    virtual void jump();
-    virtual void addCurrentPlaying();
 
 private:
-    TFavoriteList f_list;
     QString _filename;
-    TAction* edit_act;
-    TAction* jump_act;
-    TAction* next_act;
-    TAction* previous_act;
-    TAction* add_current_act;
-
     // Current or last file clicked
     QString current_file;
-
     // Last item selected in the jump dialog
     int last_item;
 
-    QString received_file_playing;
-    QString received_title;
+    TAction* editAct;
+    TAction* addAct;
+    TAction* jumpAct;
 
+    TFavoriteList f_list;
     QList<TFavorites*> child;
+
+    void load();
 }; // class TFavorites
 
 } // namespace Menu

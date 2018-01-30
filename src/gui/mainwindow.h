@@ -151,7 +151,6 @@ signals:
 
     void preferencesChanged();
     void mediaSettingsChanged(Settings::TMediaSettings* mset);
-    void mediaFileTitleChanged(const QString& filename, const QString& title);
 
     void fullscreenChanged();
     void aboutToEnterFullscreenSignal();

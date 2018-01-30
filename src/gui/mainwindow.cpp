@@ -1295,15 +1295,12 @@ void TMainWindow::onMediaSettingsChanged() {
 void TMainWindow::onMediaInfoChanged() {
     WZDEBUG("");
 
+    setWindowCaption(player->mdat.displayName() + " - "
+                     + TConfig::PROGRAM_NAME);
+    displayVideoInfo();
     if (file_properties_dialog && file_properties_dialog->isVisible()) {
         setDataToFileProperties();
     }
-
-    QString title = player->mdat.displayName();
-    setWindowCaption(title + " - " + TConfig::PROGRAM_NAME);
-    emit mediaFileTitleChanged(player->mdat.filename, title);
-
-    displayVideoInfo();
 }
 
 void TMainWindow::onNewMediaStartedPlaying() {

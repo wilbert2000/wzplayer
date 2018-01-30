@@ -1,6 +1,4 @@
 #include "gui/action/menu/menufile.h"
-#include <QMessageBox>
-#include <QFileInfo>
 
 #include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
@@ -8,6 +6,9 @@
 #include "gui/action/action.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
+
+#include <QMessageBox>
+#include <QFileInfo>
 
 
 using namespace Settings;
@@ -68,22 +69,19 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     TMenu(mw, mw, "file_menu", tr("&File"), "noicon") {
 
     // Favorites
-    TFavorites* fav = new TFavorites(main_window, "favorites_menu",
-                                     tr("Fa&vorites"), "open_favorites",
+    TFavorites* fav = new TFavorites(main_window,
+                                     "favorites_menu",
+                                     tr("Fa&vorites"),
+                                     "open_favorites",
                                      TPaths::configPath() + "/favorites.m3u8");
-    fav->editAct()->setObjectName("edit_fav_list");
-    fav->jumpAct()->setObjectName("jump_fav_list");
-    fav->nextAct()->setObjectName("next_fav");
-    fav->previousAct()->setObjectName("previous_fav");
-    fav->addCurrentAct()->setObjectName("add_current_fav");
-    main_window->addAction(fav->editAct());
-    main_window->addAction(fav->jumpAct());
-    main_window->addAction(fav->nextAct());
-    main_window->addAction(fav->previousAct());
-    main_window->addAction(fav->addCurrentAct());
+    fav->getEditAct()->setObjectName("favorites_edit");
+    main_window->addAction(fav->getEditAct());
+    fav->getAddAct()->setObjectName("favorites_add");
+    main_window->addAction(fav->getAddAct());
+    fav->getJumpAct()->setObjectName("favorites_jump");
+    main_window->addAction(fav->getJumpAct());
     addMenu(fav);
-    connect(main_window, SIGNAL(mediaFileTitleChanged(const QString&, const QString&)),
-            fav, SLOT(getCurrentMedia(const QString&, const QString&)));
+
 
     // Recents
     recentfiles_menu = new TMenu(main_window, main_window, "recent_menu",
