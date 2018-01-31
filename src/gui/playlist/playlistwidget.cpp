@@ -53,7 +53,7 @@ public:
                     option.fontMetrics,
                     option.decorationSize,
                     getLevel(index));
-    };
+    }
 
 private:
     QHeaderView* header;
@@ -608,6 +608,8 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
     } else {
         bool modified = item->modified();
+
+        // Collect children in QList
         QList<QTreeWidgetItem*> children;
         while (item->childCount()) {
             children << item->takeChild(0);
@@ -615,11 +617,12 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         delete item;
         item = 0;
 
+        // Insert children in parent
         clearSelection();
         parent->insertChildren(idx, children);
-
         setCurrentItem(parent->child(idx));
 
+        // Update modified
         if (modified) {
             parent->setModified();
             if (modified != mModified) {
