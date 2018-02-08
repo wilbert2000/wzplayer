@@ -68,6 +68,9 @@ public:
                      bool recurse = false,
                      bool markParents = true);
 
+    int order() const { return playlistItem.order(); }
+    void setOrder(int order);
+
     bool isRoot() const;
     bool isFolder() const { return playlistItem.folder(); }
     bool isPlaylist() const { return playlistItem.playlist(); }
@@ -114,7 +117,6 @@ private:
     bool mModified;
 
     QIcon getIcon();
-    int order() const { return playlistItem.order(); }
     void setStateIcon();
     void setNameText(bool setSizeHint);
     void setDurationText();

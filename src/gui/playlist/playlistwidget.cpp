@@ -439,6 +439,36 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
     }
 }
 
+void TPlaylistWidget::setOrder(TPlaylistWidgetItem* item, int& order) {
+    WZDEBUG(item->baseName() + " " + QString::number(order));
+
+    // Update order
+    item->setOrder(order);
+    order++;
+
+    // Update children
+    int count = item->childCount();
+    for(int i = 0; i < count; i++) {
+        setOrder(item->plChild(i), order);
+    }
+}
+
+void TPlaylistWidget::setOrder() {
+
+    bool restoreSort = sortOrder == Qt::DescendingOrder
+                       && sortSection == TPlaylistWidgetItem::COL_ORDER;
+    if (restoreSort) {
+        setSort(TPlaylistWidgetItem::COL_ORDER, Qt::AscendingOrder);
+    }
+
+    int order = 0;
+    setOrder(root(), order);
+
+    if (restoreSort) {
+        setSort(TPlaylistWidgetItem::COL_ORDER, Qt::DescendingOrder);
+    }
+}
+
 void TPlaylistWidget::setSort(int section, Qt::SortOrder order) {
 
     sortSection = section;
@@ -560,6 +590,7 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
     }
 
+    bool newModified;
     if (parent == 0 || (parent == root() && parent->childCount() == 0)) {
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
@@ -589,10 +620,12 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
             sortSection = TPlaylistWidgetItem::COL_NAME;
             sortOrder = Qt::AscendingOrder;
         } else {
-            sortSection = -1;
+            sortSection = TPlaylistWidgetItem::COL_ORDER;
             sortOrder = Qt::AscendingOrder;
         }
         setSort(sortSection, sortOrder);
+        // Renumber order column to start first item at 1
+        setOrder();
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));
@@ -601,35 +634,42 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
             onItemExpanded(item);
         }
 
-        // Update modified field
-        if (item->modified() != mModified) {
-            mModified = item->modified();
-            emit modifiedChanged();
-        }
+        newModified = item->modified();
     } else {
-        bool modified = item->modified();
+        bool itemModified = item->modified();
 
-        // Collect children in QList
+        // Collect children of item in QList
         QList<QTreeWidgetItem*> children;
         while (item->childCount()) {
             children << item->takeChild(0);
         }
+
+        // Cleanup item
         delete item;
         item = 0;
-
-        // Insert children in parent
         clearSelection();
-        parent->insertChildren(idx, children);
-        setCurrentItem(parent->child(idx));
 
-        // Update modified
-        if (modified) {
+        // Insert children at idx
+        parent->insertChildren(idx, children);
+        // Select first as current item
+        setCurrentItem(children.at(0));
+        // Renumber the order column
+        setOrder();
+
+        if (itemModified) {
+            // Update modified
+            newModified = itemModified;
             parent->setModified();
-            if (modified != mModified) {
-                mModified = modified;
-                emit modifiedChanged();
-            }
+        } else {
+            // Leave modified unchanged
+            newModified  = mModified;
         }
+    }
+
+    // Signal modified changed
+    if (newModified != mModified) {
+        mModified = newModified;
+        emit modifiedChanged();
     }
 
     return item;

@@ -31,6 +31,7 @@ public:
     static QString playlistItemState(TPlaylistItemState state);
 
     int order() const { return mOrder; }
+    void setOrder(int order) { mOrder = order; }
 
     QString filename() const { return mFilename; }
     void setFilename(const QString& fileName, const QString& baseName);

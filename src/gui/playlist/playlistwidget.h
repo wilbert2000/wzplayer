@@ -86,6 +86,8 @@ private:
     TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
                                          bool allowChild = true) const;
 
+    void setOrder(TPlaylistWidgetItem* item, int& order);
+    void setOrder();
     void resizeRows(QTreeWidgetItem* w, int level);
 
 private slots:

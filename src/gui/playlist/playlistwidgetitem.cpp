@@ -203,6 +203,12 @@ void TPlaylistWidgetItem::setOrderText() {
     setText(COL_ORDER, QString::number(order()));
 }
 
+void TPlaylistWidgetItem::setOrder(int order) {
+
+    playlistItem.setOrder(order);
+    setOrderText();
+}
+
 void TPlaylistWidgetItem::setPlayed(bool played) {
 
     playlistItem.setPlayed(played);
