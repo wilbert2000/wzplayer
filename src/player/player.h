@@ -233,12 +233,8 @@ public slots:
     void incAudioDelay();
     void decAudioDelay();
 
-    void setAudioEqualizer(const Settings::TAudioEqualizerList& values,
-                           bool restart = false);
-    void setAudioAudioEqualizerRestart(
-            const Settings::TAudioEqualizerList& values) {
-        setAudioEqualizer(values, true);
-    }
+    void setAudioEqualizer(const Settings::TAudioEqualizerList& values);
+    void setAudioAudioEqualizerRestart(const Settings::TAudioEqualizerList&);
     void setAudioEq(int eq, int value);
     void setAudioEq0(int value);
     void setAudioEq1(int value);
@@ -412,6 +408,9 @@ private:
     bool haveVideoFilters() const;
     void setVideoFilter(const QString& filter, bool enable,
                         const QVariant& option);
+
+    void setAudioEqualizerEx(const Settings::TAudioEqualizerList& values,
+                             bool restart);
 
     void setExternalSubs(const QString& filename);
     bool setPreferredAudio();

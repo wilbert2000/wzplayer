@@ -227,21 +227,21 @@ void TMainWindow::createPlayerWindow() {
     panel->setLayout(layout);
 
     // Connect player window mouse events
-    connect(playerwindow, SIGNAL(leftClicked()),
-            this, SLOT(leftClickFunction()));
-    connect(playerwindow, SIGNAL(rightClicked()),
-            this, SLOT(rightClickFunction()));
-    connect(playerwindow, SIGNAL(doubleClicked()),
-            this, SLOT(doubleClickFunction()));
-    connect(playerwindow, SIGNAL(middleClicked()),
-            this, SLOT(middleClickFunction()));
-    connect(playerwindow, SIGNAL(xbutton1Clicked()),
-            this, SLOT(xbutton1ClickFunction()));
-    connect(playerwindow, SIGNAL(xbutton2Clicked()),
-            this, SLOT(xbutton2ClickFunction()));
+    connect(playerwindow, &Gui::TPlayerWindow::leftClicked,
+            this, &TMainWindow::leftClickFunction);
+    connect(playerwindow, &Gui::TPlayerWindow::rightClicked,
+            this, &TMainWindow::rightClickFunction);
+    connect(playerwindow, &Gui::TPlayerWindow::doubleClicked,
+            this, &TMainWindow::doubleClickFunction);
+    connect(playerwindow, &Gui::TPlayerWindow::middleClicked,
+            this, &TMainWindow::middleClickFunction);
+    connect(playerwindow, &Gui::TPlayerWindow::xbutton1Clicked,
+            this, &TMainWindow::xbutton1ClickFunction);
+    connect(playerwindow, &Gui::TPlayerWindow::xbutton2Clicked,
+            this, &TMainWindow::xbutton2ClickFunction);
 
-    connect(playerwindow, SIGNAL(videoOutChanged(const QSize&)),
-            this, SLOT(displayVideoInfo()), Qt::QueuedConnection);
+    connect(playerwindow, &Gui::TPlayerWindow::videoOutChanged,
+            this, &TMainWindow::displayVideoInfo, Qt::QueuedConnection);
 }
 
 void TMainWindow::createPlayer() {
@@ -249,40 +249,40 @@ void TMainWindow::createPlayer() {
 
     new Player::TPlayer(this, playerwindow);
 
-    connect(player, SIGNAL(positionChanged(double)),
-            this, SLOT(onPositionChanged(double)));
-    connect(player, SIGNAL(durationChanged(double)),
-            this, SLOT(onDurationChanged(double)));
+    connect(player, &Player::TPlayer::positionChanged,
+            this, &TMainWindow::onPositionChanged);
+    connect(player, &Player::TPlayer::durationChanged,
+            this, &TMainWindow::onDurationChanged);
 
-    connect(player, SIGNAL(stateChanged(Player::TState)),
-            this, SLOT(onStateChanged(Player::TState)));
-    connect(player, SIGNAL(stateChanged(Player::TState)),
-            this, SLOT(checkStayOnTop(Player::TState)),
+    connect(player, &Player::TPlayer::stateChanged,
+            this, &TMainWindow::onStateChanged);
+    connect(player, &Player::TPlayer::stateChanged,
+            this, &TMainWindow::checkStayOnTop,
             Qt::QueuedConnection);
 
-    connect(player, SIGNAL(mediaSettingsChanged()),
-            this, SLOT(onMediaSettingsChanged()));
-    connect(player, SIGNAL(videoOutResolutionChanged(int, int)),
-            this, SLOT(onVideoOutResolutionChanged(int,int)));
+    connect(player, &Player::TPlayer::mediaSettingsChanged,
+            this, &TMainWindow::onMediaSettingsChanged);
+    connect(player, &Player::TPlayer::videoOutResolutionChanged,
+            this, &TMainWindow::onVideoOutResolutionChanged);
 
-    connect(player, SIGNAL(newMediaStartedPlaying()),
-            this, SLOT(onNewMediaStartedPlaying()),
+    connect(player, &Player::TPlayer::newMediaStartedPlaying,
+            this, &TMainWindow::onNewMediaStartedPlaying,
             Qt::QueuedConnection);
 
-    connect(player, SIGNAL(mediaInfoChanged()),
-            this, SLOT(onMediaInfoChanged()));
+    connect(player, &Player::TPlayer::mediaInfoChanged,
+            this, &TMainWindow::onMediaInfoChanged);
 
-    connect(player, SIGNAL(mediaStopped()),
-            this, SLOT(exitFullscreenOnStop()));
+    connect(player, &Player::TPlayer::mediaStopped,
+            this, &TMainWindow::exitFullscreenOnStop);
 
-    connect(player, SIGNAL(playerError(int)),
-            this, SLOT(onPlayerError(int)),
+    connect(player, &Player::TPlayer::playerError,
+            this, &TMainWindow::onPlayerError,
             Qt::QueuedConnection);
 
-    connect(player, SIGNAL(InOutPointsChanged()),
-            this, SLOT(displayInOutPoints()));
-    connect(player, SIGNAL(mediaSettingsChanged()),
-            this, SLOT(displayInOutPoints()));
+    connect(player, &Player::TPlayer::InOutPointsChanged,
+            this, &TMainWindow::displayInOutPoints);
+    connect(player, &Player::TPlayer::mediaSettingsChanged,
+            this, &TMainWindow::displayInOutPoints);
 }
 
 void TMainWindow::createPlaylist() {
@@ -293,10 +293,10 @@ void TMainWindow::createPlaylist() {
     playlistDock->setWidget(playlist);
     addDockWidget(Qt::LeftDockWidgetArea, playlistDock);
 
-    connect(playlist, SIGNAL(playlistFinished()),
-            this, SLOT(onPlaylistFinished()));
-    connect(playlist, SIGNAL(playlistTitleChanged(QString)),
-            this, SLOT(onPlaylistTitleChanged(QString)));
+    connect(playlist, &Playlist::TPlaylist::playlistFinished,
+            this, &TMainWindow::onPlaylistFinished);
+    connect(playlist, &Playlist::TPlaylist::playlistTitleChanged,
+            this, &TMainWindow::onPlaylistTitleChanged);
 }
 
 void TMainWindow::createVideoEqualizer() {
@@ -304,59 +304,55 @@ void TMainWindow::createVideoEqualizer() {
     video_equalizer = new TVideoEqualizer(this);
     video_equalizer->setBySoftware(pref->use_soft_video_eq);
 
-    connect(video_equalizer, SIGNAL(contrastChanged(int)),
-            player, SLOT(setContrast(int)));
-    connect(video_equalizer, SIGNAL(brightnessChanged(int)),
-            player, SLOT(setBrightness(int)));
-    connect(video_equalizer, SIGNAL(hueChanged(int)),
-            player, SLOT(setHue(int)));
-    connect(video_equalizer, SIGNAL(saturationChanged(int)),
-            player, SLOT(setSaturation(int)));
-    connect(video_equalizer, SIGNAL(gammaChanged(int)),
-            player, SLOT(setGamma(int)));
+    connect(video_equalizer, &TVideoEqualizer::contrastChanged,
+            player, &Player::TPlayer::setContrast);
+    connect(video_equalizer, &TVideoEqualizer::brightnessChanged,
+            player, &Player::TPlayer::setBrightness);
+    connect(video_equalizer, &TVideoEqualizer::hueChanged,
+            player, &Player::TPlayer::setHue);
+    connect(video_equalizer, &TVideoEqualizer::saturationChanged,
+            player, &Player::TPlayer::setSaturation);
+    connect(video_equalizer, &TVideoEqualizer::gammaChanged,
+            player, &Player::TPlayer::setGamma);
 
-    connect(video_equalizer, SIGNAL(requestToChangeDefaultValues()),
-            this, SLOT(setDefaultValuesFromVideoEqualizer()));
-    connect(video_equalizer, SIGNAL(bySoftwareChanged(bool)),
-            this, SLOT(changeVideoEqualizerBySoftware(bool)));
+    connect(video_equalizer, &TVideoEqualizer::requestToChangeDefaultValues,
+            this, &TMainWindow::setDefaultValuesFromVideoEqualizer);
+    connect(video_equalizer, &TVideoEqualizer::bySoftwareChanged,
+            this, &TMainWindow::changeVideoEqualizerBySoftware);
 
-    connect(player, SIGNAL(videoEqualizerNeedsUpdate()),
-            this, SLOT(updateVideoEqualizer()));
+    connect(player, &Player::TPlayer::videoEqualizerNeedsUpdate,
+            this, &TMainWindow::updateVideoEqualizer);
 }
 
 void TMainWindow::createAudioEqualizer() {
 
     audio_equalizer = new TAudioEqualizer(this);
 
-    connect(audio_equalizer->eq[0], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq0(int)));
-    connect(audio_equalizer->eq[1], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq1(int)));
-    connect(audio_equalizer->eq[2], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq2(int)));
-    connect(audio_equalizer->eq[3], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq3(int)));
-    connect(audio_equalizer->eq[4], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq4(int)));
-    connect(audio_equalizer->eq[5], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq5(int)));
-    connect(audio_equalizer->eq[6], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq6(int)));
-    connect(audio_equalizer->eq[7], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq7(int)));
-    connect(audio_equalizer->eq[8], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq8(int)));
-    connect(audio_equalizer->eq[9], SIGNAL(valueChanged(int)),
-            player, SLOT(setAudioEq9(int)));
+    connect(audio_equalizer->eq[0], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq0);
+    connect(audio_equalizer->eq[1], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq1);
+    connect(audio_equalizer->eq[2], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq2);
+    connect(audio_equalizer->eq[3], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq3);
+    connect(audio_equalizer->eq[4], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq4);
+    connect(audio_equalizer->eq[5], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq5);
+    connect(audio_equalizer->eq[6], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq6);
+    connect(audio_equalizer->eq[7], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq7);
+    connect(audio_equalizer->eq[8], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq8);
+    connect(audio_equalizer->eq[9], &TEqSlider::valueChanged,
+            player, &Player::TPlayer::setAudioEq9);
 
-    connect(audio_equalizer,
-            SIGNAL(applyClicked(const Settings::TAudioEqualizerList&)),
-            player, SLOT(setAudioAudioEqualizerRestart(
-                             const Settings::TAudioEqualizerList&)));
-    connect(audio_equalizer,
-            SIGNAL(valuesChanged(const Settings::TAudioEqualizerList&)),
-            player,
-            SLOT(setAudioEqualizer(const Settings::TAudioEqualizerList&)));
+    connect(audio_equalizer, &TAudioEqualizer::applyClicked,
+            player, &Player::TPlayer::setAudioAudioEqualizerRestart);
+    connect(audio_equalizer, &TAudioEqualizer::valuesChanged,
+            player, &Player::TPlayer::setAudioEqualizer);
 }
 
 void TMainWindow::createActions() {
@@ -1378,7 +1374,7 @@ void TMainWindow::onStateChanged(Player::TState state) {
     }
 }
 
-void TMainWindow::onPositionChanged(double sec, bool changed) {
+void TMainWindow::setTimeLabel(double sec, bool changed) {
 
     static int lastSec = -1111;
 
@@ -1400,7 +1396,7 @@ void TMainWindow::onPositionChanged(double sec, bool changed) {
                 sec = -sec;
             }
             sec *= fps;
-            // Fix floats. Example 0.84 * 25 = 20 if floored instead of 21
+            // TODO: fix floats. Example 0.84 * 25 = 20 if floored instead of 21
             sec += 0.0001;
             s = sec;
             if (s < 10) {
@@ -1416,6 +1412,10 @@ void TMainWindow::onPositionChanged(double sec, bool changed) {
     if (changed) {
         time_label->setText(positionText + frames + durationText);
     }
+}
+
+void TMainWindow::onPositionChanged(double sec) {
+    setTimeLabel(sec, false);
 }
 
 void TMainWindow::onDurationChanged(double duration) {
@@ -1434,7 +1434,7 @@ void TMainWindow::onDurationChanged(double duration) {
         }
     }
 
-    onPositionChanged(player->mset.current_sec, true);
+    setTimeLabel(player->mset.current_sec, true);
 }
 
 void TMainWindow::onDragPositionChanged(double t) {

@@ -2613,8 +2613,8 @@ QString TPlayer::equalizerListToString(const Settings::TAudioEqualizerList& valu
     return s;
 }
 
-void TPlayer::setAudioEqualizer(const Settings::TAudioEqualizerList& values,
-                                bool restart) {
+void TPlayer::setAudioEqualizerEx(const Settings::TAudioEqualizerList& values,
+                                  bool restart) {
 
     if (Settings::pref->global_audio_equalizer) {
         Settings::pref->audio_equalizer = values;
@@ -2627,6 +2627,15 @@ void TPlayer::setAudioEqualizer(const Settings::TAudioEqualizerList& values,
     } else {
         proc->setAudioEqualizer(equalizerListToString(values));
     }
+}
+
+void TPlayer::setAudioEqualizer(const Settings::TAudioEqualizerList& values) {
+    setAudioEqualizerEx(values, false);
+}
+
+void TPlayer::setAudioAudioEqualizerRestart(
+        const Settings::TAudioEqualizerList& values) {
+    setAudioEqualizerEx(values, true);
 }
 
 void TPlayer::setAudioEq(int eq, int value) {

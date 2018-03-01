@@ -297,6 +297,7 @@ private:
     void setDataToFileProperties();
     void configureDiscDevices();
     void setupNetworkProxy();
+    void setTimeLabel(double sec, bool changed);
 
     void processAction(QString action_name);
     void sendEnableActions();
@@ -353,7 +354,7 @@ private slots:
 
     void onStateChanged(Player::TState state);
     void onDurationChanged(double duration);
-    void onPositionChanged(double, bool changed = false);
+    void onPositionChanged(double);
     void onVideoOutResolutionChanged(int w, int h);
     void onNewMediaStartedPlaying();
     void onMediaSettingsChanged();
