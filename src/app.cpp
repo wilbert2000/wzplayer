@@ -406,10 +406,10 @@ void TApp::createGUI() {
 
     main_window->setForceCloseOnFinish(close_at_end);
 
-    connect(main_window, SIGNAL(requestRestart()),
-            this, SLOT(onRequestRestart()));
-    connect(this, SIGNAL(messageReceived(const QString&)),
-            main_window, SLOT(handleMessageFromOtherInstances(const QString&)));
+    connect(main_window, &Gui::TMainWindowPlus::requestRestart,
+            this, &TApp::onRequestRestart);
+    connect(this, &TApp::messageReceived,
+            main_window, &Gui::TMainWindowPlus::handleMessageFromOtherInstances);
 
     setActivationWindow(main_window);
 
