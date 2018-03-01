@@ -64,7 +64,7 @@ private:
     void showAll(bool b);
 
 private slots:
-    void trayIconActivated(QSystemTrayIcon::ActivationReason);
+    void onSystemTrayIconActivated(QSystemTrayIcon::ActivationReason);
     void showAll();
     void toggleShowAll();
 };

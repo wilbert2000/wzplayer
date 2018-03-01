@@ -44,30 +44,30 @@ TMainWindowTray::TMainWindowTray() :
     tray = new QSystemTrayIcon(this);
     tray->setIcon(Images::icon("logo", 22));
     tray->setToolTip(TConfig::PROGRAM_NAME);
-    connect(tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(tray, &QSystemTrayIcon::activated,
+            this, &TMainWindowTray::onSystemTrayIconActivated);
 
     quitAct = new Action::TAction(this, "quit", tr("&Quit"), "exit",
                                   QKeySequence("Ctrl+Q"));
     quitAct->setVisible(false);
-    connect(quitAct, SIGNAL(triggered()), this, SLOT(quit()));
+    connect(quitAct, &Action::TAction::triggered, this, &TMainWindowTray::quit);
     fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
                                       tr("S&how icon in system tray"),
                                       "systray");
     showTrayAct->setCheckable(true);
-    connect(showTrayAct, SIGNAL(toggled(bool)),
-            tray, SLOT(setVisible(bool)));
-    connect(showTrayAct, SIGNAL(toggled(bool)),
-            quitAct, SLOT(setVisible(bool)));
+    connect(showTrayAct, &Gui::Action::TAction::toggled,
+            tray, &QSystemTrayIcon::setVisible);
+    connect(showTrayAct, &Gui::Action::TAction::toggled,
+            quitAct, &Action::TAction::setVisible);
 
     windowMenu->addSeparator();
     windowMenu->addAction(showTrayAct);
 
     showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
-    connect(showAllAct, SIGNAL(triggered()),
-            this, SLOT(toggleShowAll()));
+    connect(showAllAct, &Action::TAction::triggered,
+            this, &TMainWindowTray::toggleShowAll);
 
     QMenu* menu = createContextMenu();
     menu->addSeparator();
@@ -75,8 +75,7 @@ TMainWindowTray::TMainWindowTray() :
     menu->addAction(quitAct);
     tray->setContextMenu(menu);
 
-    connect(this, SIGNAL(openFileRequested()),
-            this, SLOT(showAll()));
+    connect(this, SIGNAL(openFileRequested()), this, SLOT(showAll()));
 
     retranslateStrings();
 }
@@ -170,7 +169,7 @@ void TMainWindowTray::loadConfig() {
     updateShowAllAct();
 }
 
-void TMainWindowTray::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+void TMainWindowTray::onSystemTrayIconActivated(QSystemTrayIcon::ActivationReason reason) {
     WZDEBUG(QString::number(reason));
 
     updateShowAllAct();
