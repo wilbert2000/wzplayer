@@ -29,13 +29,13 @@ class QMenu;
 
 namespace Gui {
 
-class TMainWindowPlus : public TMainWindow {
+class TMainWindowTray : public TMainWindow {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-    TMainWindowPlus();
-    virtual ~TMainWindowPlus();
+    TMainWindowTray();
+    virtual ~TMainWindowTray();
 
     virtual void loadConfig();
     virtual void saveConfig();

@@ -17,7 +17,7 @@
 */
 
 #include "app.h"
-#include "gui/mainwindowplus.h"
+#include "gui/mainwindowtray.h"
 #include "gui/playlist/playlist.h"
 #include "player/player.h"
 
@@ -399,17 +399,17 @@ TApp::TExitCode TApp::processArgs() {
 void TApp::createGUI() {
     WZDEBUG("creating main window");
 
-    main_window = new Gui::TMainWindowPlus();
+    main_window = new Gui::TMainWindowTray();
 
     WZDEBUG("loading window config");
     main_window->loadConfig();
 
     main_window->setForceCloseOnFinish(close_at_end);
 
-    connect(main_window, &Gui::TMainWindowPlus::requestRestart,
+    connect(main_window, &Gui::TMainWindowTray::requestRestart,
             this, &TApp::onRequestRestart);
     connect(this, &TApp::messageReceived,
-            main_window, &Gui::TMainWindowPlus::handleMessageFromOtherInstances);
+            main_window, &Gui::TMainWindowTray::handleMessageFromOtherInstances);
 
     setActivationWindow(main_window);
 

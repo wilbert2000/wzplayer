@@ -30,7 +30,7 @@
 
 
 namespace Gui {
-class TMainWindowPlus;
+class TMainWindowTray;
 }
 
 class TApp : public QtSingleApplication {
@@ -69,7 +69,7 @@ private:
     static QString current_file;
     static QStringList files_to_play;
 
-    Gui::TMainWindowPlus* main_window;
+    Gui::TMainWindowTray* main_window;
 
     QTranslator app_trans;
     QTranslator qt_trans;

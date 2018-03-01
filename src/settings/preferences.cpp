@@ -41,7 +41,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 22;
+static const int CURRENT_CONFIG_VERSION = 23;
 
 TPreferences* pref = 0;
 

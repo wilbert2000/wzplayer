@@ -145,7 +145,7 @@ HEADERS += wzdebug.h \
     gui/autohidetimer.h \
     gui/playerwindow.h \
     gui/mainwindow.h \
-    gui/mainwindowplus.h \
+    gui/mainwindowtray.h \
     gui/dockwidget.h \
     gui/logwindowappender.h \
     gui/logwindow.h \
@@ -271,7 +271,7 @@ SOURCES += wzdebug.cpp \
     gui/autohidetimer.cpp \
     gui/playerwindow.cpp \
     gui/mainwindow.cpp \
-    gui/mainwindowplus.cpp \
+    gui/mainwindowtray.cpp \
     gui/dockwidget.cpp \
     gui/logwindowappender.cpp \
     gui/logwindow.cpp \

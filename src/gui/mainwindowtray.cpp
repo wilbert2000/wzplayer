@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/mainwindowplus.h"
+#include "gui/mainwindowtray.h"
 
 #include <QMenu>
 
@@ -36,7 +36,7 @@ using namespace Settings;
 
 namespace Gui {
 
-TMainWindowPlus::TMainWindowPlus() :
+TMainWindowTray::TMainWindowTray() :
     TMainWindow(),
     debug(logger()),
     hideMainWindowOnStartup(false) {
@@ -81,23 +81,22 @@ TMainWindowPlus::TMainWindowPlus() :
     retranslateStrings();
 }
 
-TMainWindowPlus::~TMainWindowPlus() {
+TMainWindowTray::~TMainWindowTray() {
     tray->hide();
 }
 
 
-void TMainWindowPlus::retranslateStrings() {
-
+void TMainWindowTray::retranslateStrings() {
     updateShowAllAct();
 }
 
-void TMainWindowPlus::setWindowCaption(const QString& title) {
+void TMainWindowTray::setWindowCaption(const QString& title) {
 
     TMainWindow::setWindowCaption(title);
     tray->setToolTip(title);
 }
 
-void TMainWindowPlus::updateShowAllAct() {
+void TMainWindowTray::updateShowAllAct() {
 
     if (isVisible()) {
         showAllAct->setTextAndTip(tr("&Hide"));
@@ -106,7 +105,7 @@ void TMainWindowPlus::updateShowAllAct() {
     }
 }
 
-bool TMainWindowPlus::startHidden() const {
+bool TMainWindowTray::startHidden() const {
 
 #if defined(Q_OS_WIN)
     return false;
@@ -115,7 +114,7 @@ bool TMainWindowPlus::startHidden() const {
 #endif
 }
 
-void TMainWindowPlus::switchToTray() {
+void TMainWindowTray::switchToTray() {
 
     exitFullscreen();
     showAll(false); // Hide windows
@@ -129,7 +128,7 @@ void TMainWindowPlus::switchToTray() {
     }
 }
 
-void TMainWindowPlus::closeWindow() {
+void TMainWindowTray::closeWindow() {
     WZDEBUG("");
 
     if (tray->isVisible()) {
@@ -139,39 +138,39 @@ void TMainWindowPlus::closeWindow() {
     }
 }
 
-void TMainWindowPlus::quit() {
+void TMainWindowTray::quit() {
     WZDEBUG("");
 
-    // Bypass switch to tray
+    // Bypass TMainWindowTray::switchToTray()
     TMainWindow::closeWindow();
 }
 
-void TMainWindowPlus::saveConfig() {
+void TMainWindowTray::saveConfig() {
     WZDEBUG("");
 
     TMainWindow::saveConfig();
 
-    pref->beginGroup("mainwindowplus");
+    pref->beginGroup("mainwindowtray");
     pref->setValue("show_tray_icon", showTrayAct->isChecked());
-    pref->setValue("hideMainWindowOnStartup", !isVisible());
+    pref->setValue("hide_main_window_on_startup", !isVisible());
     pref->endGroup();
 }
 
-void TMainWindowPlus::loadConfig() {
+void TMainWindowTray::loadConfig() {
     WZDEBUG("");
 
     TMainWindow::loadConfig();
 
-    pref->beginGroup("mainwindowplus");
+    pref->beginGroup("mainwindowtray");
     showTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());
-    hideMainWindowOnStartup = pref->value("hideMainWindowOnStartup",
+    hideMainWindowOnStartup = pref->value("hide_main_window_on_startup",
                                           hideMainWindowOnStartup).toBool();
     pref->endGroup();
 
     updateShowAllAct();
 }
 
-void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+void TMainWindowTray::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
     WZDEBUG(QString::number(reason));
 
     updateShowAllAct();
@@ -183,7 +182,7 @@ void TMainWindowPlus::trayIconActivated(QSystemTrayIcon::ActivationReason reason
     }
 }
 
-void TMainWindowPlus::toggleShowAll() {
+void TMainWindowTray::toggleShowAll() {
 
     // Ignore if tray is not visible
     if (tray->isVisible()) {
@@ -191,19 +190,20 @@ void TMainWindowPlus::toggleShowAll() {
     }
 }
 
-void TMainWindowPlus::showAll() {
+void TMainWindowTray::showAll() {
 
-    if (!isVisible())
+    if (!isVisible()) {
         showAll(true);
+    }
 }
 
-void TMainWindowPlus::showAll(bool b) {
+void TMainWindowTray::showAll(bool b) {
 
     setVisible(b);
     updateShowAllAct();
 }
 
-void TMainWindowPlus::onMediaInfoChanged() {
+void TMainWindowTray::onMediaInfoChanged() {
     WZDEBUG("");
 
     TMainWindow::onMediaInfoChanged();
@@ -212,4 +212,4 @@ void TMainWindowPlus::onMediaInfoChanged() {
 
 } // namespace Gui
 
-#include "moc_mainwindowplus.cpp"
+#include "moc_mainwindowtray.cpp"
