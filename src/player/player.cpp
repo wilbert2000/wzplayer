@@ -2375,7 +2375,7 @@ int TPlayer::getVolume() const {
  Since MPV version 0.18.1 softvol is deprecated,
 */
 
-void TPlayer::setVolume(int volume, bool unmute) {
+void TPlayer::setVolumeEx(int volume, bool unmute) {
 
     if (volume < 0) {
         volume = 0;
@@ -2403,6 +2403,10 @@ void TPlayer::setVolume(int volume, bool unmute) {
 
     Gui::msgOSD(tr("Volume: %1").arg(volume));
     emit volumeChanged(volume);
+}
+
+void TPlayer::setVolume(int volume) {
+    setVolumeEx(volume, true /* unmute */);
 }
 
 bool TPlayer::getMute() const {
@@ -2857,7 +2861,7 @@ void TPlayer::setAudioTrack(int id) {
         // the volume is reduced if using -softvol-max.
         if (Settings::pref->isMPlayer()
             && !Settings::pref->player_additional_options.contains("-volume")) {
-            setVolume(getVolume(), false);
+            setVolumeEx(getVolume(), false /* unmute */);
         }
     }
 }

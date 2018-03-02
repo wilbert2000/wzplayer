@@ -224,7 +224,7 @@ public slots:
 
 
     // Audio
-    void setVolume(int volume, bool unmute = true);
+    void setVolume(int volume);
     void mute(bool b);
     void incVolume();
     void decVolume();
@@ -409,6 +409,7 @@ private:
     void setVideoFilter(const QString& filter, bool enable,
                         const QVariant& option);
 
+    void setVolumeEx(int volume, bool unmute);
     void setAudioEqualizerEx(const Settings::TAudioEqualizerList& values,
                              bool restart);
 

@@ -362,94 +362,92 @@ void TMainWindow::createActions() {
                                              tr("Show context menu"));
     // see createMenu() for connect
 
-    nextWheelFunctionAct = new TAction(this, "next_wheel_function",
+    nextWheelFunctionAct = new Action::TAction(this, "next_wheel_function",
                                        tr("Next wheel function"), 0, Qt::Key_W);
-    connect(nextWheelFunctionAct, SIGNAL(triggered()),
-            player, SLOT(nextWheelFunction()));
+    connect(nextWheelFunctionAct, &Action::TAction::triggered,
+            player, &Player::TPlayer::nextWheelFunction);
 
     // Time slider
     timeslider_action = new TTimeSliderAction(this);
     timeslider_action->setObjectName("timeslider_action");
 
-    connect(player, SIGNAL(positionChanged(double)),
-            timeslider_action, SLOT(setPosition(double)));
-    connect(player, SIGNAL(durationChanged(double)),
-            timeslider_action, SLOT(setDuration(double)));
+    connect(player, &Player::TPlayer::positionChanged,
+            timeslider_action, &Action::TTimeSliderAction::setPosition);
+    connect(player, &Player::TPlayer::durationChanged,
+            timeslider_action, &Action::TTimeSliderAction::setDuration);
 
-    connect(timeslider_action, SIGNAL(positionChanged(double)),
-            player, SLOT(seekTime(double)));
-    connect(timeslider_action, SIGNAL(percentageChanged(double)),
-            player, SLOT(seekPercentage(double)));
-    connect(timeslider_action, SIGNAL(dragPositionChanged(double)),
-            this, SLOT(onDragPositionChanged(double)));
+    connect(timeslider_action, &Action::TTimeSliderAction::positionChanged,
+            player, &Player::TPlayer::seekTime);
+    connect(timeslider_action, &Action::TTimeSliderAction::percentageChanged,
+            player, &Player::TPlayer::seekPercentage);
+    connect(timeslider_action, &Action::TTimeSliderAction::dragPositionChanged,
+            this, &TMainWindow::onDragPositionChanged);
 
-    connect(timeslider_action,
-            SIGNAL(wheelUp(Settings::TPreferences::TWheelFunction)),
-            player, SLOT(wheelUp(Settings::TPreferences::TWheelFunction)));
-    connect(timeslider_action,
-            SIGNAL(wheelDown(Settings::TPreferences::TWheelFunction)),
-            player, SLOT(wheelDown(Settings::TPreferences::TWheelFunction)));
+    connect(timeslider_action, &Action::TTimeSliderAction::wheelUp,
+            player, &Player::TPlayer::wheelUp);
+    connect(timeslider_action, &Action::TTimeSliderAction::wheelDown,
+            player, &Player::TPlayer::wheelDown);
 
     // Volume slider action
     volumeslider_action = new TVolumeSliderAction(this, player->getVolume());
     volumeslider_action->setObjectName("volumeslider_action");
-    connect(volumeslider_action, SIGNAL(valueChanged(int)),
-            player, SLOT(setVolume(int)));
-    connect(player, SIGNAL(volumeChanged(int)),
-            volumeslider_action, SLOT(setValue(int)));
+    connect(volumeslider_action, &TVolumeSliderAction::valueChanged,
+            player, &Player::TPlayer::setVolume);
+    connect(player, &Player::TPlayer::volumeChanged,
+            volumeslider_action, &TVolumeSliderAction::setValue);
 
     // Menu bar
-    viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Me&nu bar"),
-                                 "", Qt::Key_F2);
+    viewMenuBarAct = new Action::TAction(this, "toggle_menubar",
+                                         tr("Me&nu bar"), "", Qt::Key_F2);
     viewMenuBarAct->setCheckable(true);
     viewMenuBarAct->setChecked(true);
-    connect(viewMenuBarAct, SIGNAL(toggled(bool)),
-            menuBar(), SLOT(setVisible(bool)));
+    connect(viewMenuBarAct, &Action::TAction::toggled,
+            menuBar(), &QMenuBar::setVisible);
 
     // Toolbars
-    editToolbarAct = new TAction(this, "edit_toolbar1",
-                                 tr("Edit main &toolbar..."));
-    editToolbar2Act = new TAction(this, "edit_toolbar2",
-                                  tr("Edit extra t&oolbar..."));
+    editToolbarAct = new Action::TAction(this, "edit_toolbar1",
+                                         tr("Edit main &toolbar..."));
+    editToolbar2Act = new Action::TAction(this, "edit_toolbar2",
+                                          tr("Edit extra t&oolbar..."));
 
     // Control bar
-    editControlBarAct = new TAction(this, "edit_controlbar",
-                                    tr("Edit control &bar.."));
+    editControlBarAct = new Action::TAction(this, "edit_controlbar",
+                                            tr("Edit control &bar.."));
 
     // Status bar
-    viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("&Status bar"),
-                                   "", Qt::Key_F7);
+    viewStatusBarAct = new Action::TAction(this, "toggle_statusbar",
+                                           tr("&Status bar"), "", Qt::Key_F7);
     viewStatusBarAct->setCheckable(true);
     viewStatusBarAct->setChecked(true);
-    connect(viewStatusBarAct, SIGNAL(toggled(bool)),
-            statusBar(), SLOT(setVisible(bool)));
+    connect(viewStatusBarAct, &Action::TAction::toggled,
+            statusBar(), &QStatusBar::setVisible);
 
     viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
                                            tr("&Video info"));
     viewVideoInfoAct->setCheckable(true);
     viewVideoInfoAct->setChecked(true);
-    connect(viewVideoInfoAct, SIGNAL(toggled(bool)),
-            video_info_label, SLOT(setVisible(bool)));
+    connect(viewVideoInfoAct, &Action::TAction::toggled,
+            video_info_label, &QLabel::setVisible);
 
     viewInOutPointsAct = new Action::TAction(this, "toggle_in_out_points",
                                              tr("&In-out points"));
     viewInOutPointsAct->setCheckable(true);
     viewInOutPointsAct->setChecked(true);
-    connect(viewInOutPointsAct, SIGNAL(toggled(bool)),
-            in_out_points_label, SLOT(setVisible(bool)));
+    connect(viewInOutPointsAct, &Action::TAction::toggled,
+            in_out_points_label, &QLabel::setVisible);
 
     viewVideoTimeAct = new Action::TAction(this, "toggle_video_time",
                                            tr("&Video time"));
     viewVideoTimeAct->setCheckable(true);
     viewVideoTimeAct->setChecked(true);
-    connect(viewVideoTimeAct, SIGNAL(toggled(bool)),
-            time_label, SLOT(setVisible(bool)));
+    connect(viewVideoTimeAct, &Action::TAction::toggled,
+            time_label, &QLabel::setVisible);
 
     viewFramesAct = new Action::TAction(this, "toggle_frames", tr("&Frames"));
     viewFramesAct->setCheckable(true);
     viewFramesAct->setChecked(false);
-    connect(viewFramesAct, SIGNAL(toggled(bool)),
-            this, SLOT(displayFrames(bool)));
+    connect(viewFramesAct, &Action::TAction::toggled,
+            this, &TMainWindow::displayFrames);
 } // createActions
 
 QMenu* TMainWindow::createContextMenu() {
@@ -500,11 +498,11 @@ void TMainWindow::createMenus() {
 
     // Context menu
     contextMenu = createContextMenu();
-    connect(showContextMenuAct, SIGNAL(triggered(bool)),
-            this, SLOT(showContextMenu()));
+    connect(showContextMenuAct, &Action::TAction::triggered,
+            this, &TMainWindow::showContextMenu);
     playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(playerwindow, SIGNAL(customContextMenuRequested(const QPoint &)),
-            this, SLOT(showCustomContextMenu(const QPoint &)));
+    connect(playerwindow, &TPlayerWindow::customContextMenuRequested,
+            this, &TMainWindow::showCustomContextMenu);
 } // createMenus()
 
 QMenu* TMainWindow::createToolbarMenu() {
@@ -529,8 +527,10 @@ QMenu* TMainWindow::createToolbarMenu() {
     menu->addSeparator();
     menu->addMenu(statusbar_menu);
 
-    connect(menu, SIGNAL(aboutToShow()), auto_hide_timer, SLOT(disable()));
-    connect(menu, SIGNAL(aboutToHide()), auto_hide_timer, SLOT(enable()));
+    connect(menu, &QMenu::aboutToShow,
+            auto_hide_timer, &TAutoHideTimer::disable);
+    connect(menu, &QMenu::aboutToHide,
+            auto_hide_timer, &TAutoHideTimer::enable);
 
     return menu;
 } // createToolbarMenu
@@ -575,8 +575,8 @@ void TMainWindow::createToolbars() {
             << "fullscreen";
     controlbar->setDefaultActions(actions);
     addToolBar(Qt::BottomToolBarArea, controlbar);
-    connect(editControlBarAct, SIGNAL(triggered()),
-            controlbar, SLOT(edit()));
+    connect(editControlBarAct, &Action::TAction::triggered,
+            controlbar, &Action::TEditableToolbar::edit);
 
     QAction* action = controlbar->toggleViewAction();
     action->setObjectName("toggle_controlbar");
@@ -589,15 +589,15 @@ void TMainWindow::createToolbars() {
     actions << "open_url" << "favorites_menu";
     toolbar->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar);
-    connect(editToolbarAct, SIGNAL(triggered()),
-            toolbar, SLOT(edit()));
+    connect(editToolbarAct, &Action::TAction::triggered,
+            toolbar, &Action::TEditableToolbar::edit);
 
     action = toolbar->toggleViewAction();
     action->setObjectName("toggle_toolbar1");
     action->setShortcut(Qt::Key_F3);
 
     // Extra toolbar
-    toolbar2 = new TEditableToolbar(this);
+    toolbar2 = new Action::TEditableToolbar(this);
     toolbar2->setObjectName("toolbar2");
     actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
@@ -605,8 +605,8 @@ void TMainWindow::createToolbars() {
             << "show_log" << "separator" << "show_preferences";
     toolbar2->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar2);
-    connect(editToolbar2Act, SIGNAL(triggered()),
-            toolbar2, SLOT(edit()));
+    connect(editToolbar2Act, &Action::TAction::triggered,
+            toolbar2, &Action::TEditableToolbar::edit);
 
     action = toolbar2->toggleViewAction();
     action->setObjectName("toggle_toolbar2");
@@ -615,8 +615,8 @@ void TMainWindow::createToolbars() {
     // Statusbar
     statusBar()->setObjectName("statusbar");
     statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(statusBar(), SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(showStatusBarPopup(const QPoint&)));
+    connect(statusBar(), &QStatusBar::customContextMenuRequested,
+            this, &TMainWindow::showStatusBarPopup);
 
     // Add toolbars to auto_hide_timer
     auto_hide_timer = new TAutoHideTimer(this, playerwindow);
@@ -626,8 +626,8 @@ void TMainWindow::createToolbars() {
     auto_hide_timer->add(viewMenuBarAct, menuBar());
     auto_hide_timer->add(viewStatusBarAct, statusBar());
     // Playlist added by createmenus
-    connect(playerwindow, SIGNAL(draggingChanged(bool)),
-            auto_hide_timer, SLOT(setDraggingPlayerWindow(bool)));
+    connect(playerwindow, &TPlayerWindow::draggingChanged,
+            auto_hide_timer, &TAutoHideTimer::setDraggingPlayerWindow);
 }
 
 void TMainWindow::setupNetworkProxy() {
@@ -661,7 +661,8 @@ void TMainWindow::createPreferencesDialog() {
 
     pref_dialog = new Pref::TDialog(this);
     pref_dialog->setModal(false);
-    connect(pref_dialog, SIGNAL(applied()), this, SLOT(applyNewPreferences()));
+    connect(pref_dialog, &Pref::TDialog::applied,
+            this, &TMainWindow::applyNewPreferences);
 
     QApplication::restoreOverrideCursor();
 }
@@ -769,16 +770,16 @@ void TMainWindow::createFilePropertiesDialog() {
 
     file_properties_dialog = new TFilePropertiesDialog(this, &player->mdat);
     file_properties_dialog->setModal(false);
-    connect(file_properties_dialog, SIGNAL(applied()),
-            this, SLOT(applyFileProperties()));
-    connect(player, SIGNAL(videoBitRateChanged(int)),
-            file_properties_dialog, SLOT(showInfo()));
-    connect(player, SIGNAL(audioBitRateChanged(int)),
-            file_properties_dialog, SLOT(showInfo()));
+    connect(file_properties_dialog, &TFilePropertiesDialog::applied,
+            this, &TMainWindow::applyFileProperties);
+    connect(player, &Player::TPlayer::videoBitRateChanged,
+            file_properties_dialog, &TFilePropertiesDialog::showInfo);
+    connect(player, &Player::TPlayer::audioBitRateChanged,
+            file_properties_dialog, &TFilePropertiesDialog::showInfo);
     TAction* action = findChild<TAction*>("view_properties");
     if (action) {
-        connect(file_properties_dialog, SIGNAL(visibilityChanged(bool)),
-                action, SLOT(setChecked(bool)));
+        connect(file_properties_dialog, &TFilePropertiesDialog::visibilityChanged,
+                action, &TAction::setChecked);
     }
 
     QApplication::restoreOverrideCursor();
