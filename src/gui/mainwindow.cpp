@@ -86,9 +86,6 @@ using namespace Settings;
 
 namespace Gui {
 
-using namespace Action;
-
-
 TMainWindow::TMainWindow() :
     QMainWindow(),
     debug(logger()),
@@ -368,7 +365,7 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::nextWheelFunction);
 
     // Time slider
-    timeslider_action = new TTimeSliderAction(this);
+    timeslider_action = new Action::TTimeSliderAction(this);
     timeslider_action->setObjectName("timeslider_action");
 
     connect(player, &Player::TPlayer::positionChanged,
@@ -389,12 +386,13 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::wheelDown);
 
     // Volume slider action
-    volumeslider_action = new TVolumeSliderAction(this, player->getVolume());
+    volumeslider_action = new Action::TVolumeSliderAction(this,
+                                                          player->getVolume());
     volumeslider_action->setObjectName("volumeslider_action");
-    connect(volumeslider_action, &TVolumeSliderAction::valueChanged,
+    connect(volumeslider_action, &Action::TVolumeSliderAction::valueChanged,
             player, &Player::TPlayer::setVolume);
     connect(player, &Player::TPlayer::volumeChanged,
-            volumeslider_action, &TVolumeSliderAction::setValue);
+            volumeslider_action, &Action::TVolumeSliderAction::setValue);
 
     // Menu bar
     viewMenuBarAct = new Action::TAction(this, "toggle_menubar",
@@ -467,17 +465,18 @@ void TMainWindow::createMenus() {
     WZDEBUG("");
 
     // MENUS
-    fileMenu = new Menu::TMenuFile(this);
+    fileMenu = new Action::Menu::TMenuFile(this);
     menuBar()->addMenu(fileMenu);
-    playMenu = new Menu::TMenuPlay(this, playlist);
+    playMenu = new Action::Menu::TMenuPlay(this, playlist);
     menuBar()->addMenu(playMenu);
-    videoMenu = new Menu::TMenuVideo(this, playerwindow, video_equalizer);
+    videoMenu = new Action::Menu::TMenuVideo(this, playerwindow,
+                                             video_equalizer);
     menuBar()->addMenu(videoMenu);
-    audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
+    audioMenu = new Action::Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
-    subtitleMenu = new Menu::TMenuSubtitle(this);
+    subtitleMenu = new Action::Menu::TMenuSubtitle(this);
     menuBar()->addMenu(subtitleMenu);
-    browseMenu = new Menu::TMenuBrowse(this);
+    browseMenu = new Action::Menu::TMenuBrowse(this);
     menuBar()->addMenu(browseMenu);
 
     // statusbar_menu added to toolbar_menu by createToolbarMenu()
@@ -489,11 +488,11 @@ void TMainWindow::createMenus() {
 
     toolbar_menu = createToolbarMenu();
 
-    windowMenu = new Menu::TMenuWindow(this, toolbar_menu, playlistDock,
-                                       logDock, auto_hide_timer);
+    windowMenu = new Action::Menu::TMenuWindow(this, toolbar_menu, playlistDock,
+                                               logDock, auto_hide_timer);
     menuBar()->addMenu(windowMenu);
 
-    helpMenu = new Menu::TMenuHelp(this);
+    helpMenu = new Action::Menu::TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
 
     // Context menu
@@ -510,8 +509,8 @@ QMenu* TMainWindow::createToolbarMenu() {
 
     // Use name "toolbar_menu" only for first
     QString name = toolbar_menu ? "" : "toolbar_menu";
-    QMenu* menu = new Menu::TMenu(this, this, name, tr("&Toolbars"),
-                                  "toolbars");
+    QMenu* menu = new Action::Menu::TMenu(this, this, name, tr("&Toolbars"),
+                                          "toolbars");
 
     menu->addAction(viewMenuBarAct);
     menu->addAction(toolbar->toggleViewAction());
@@ -542,7 +541,7 @@ QMenu* TMainWindow::createPopupMenu() {
 }
 
 void TMainWindow::showStatusBarPopup(const QPoint& pos) {
-    Menu::execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
+    Action::Menu::execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
 }
 
 void TMainWindow::createToolbars() {
@@ -551,7 +550,7 @@ void TMainWindow::createToolbars() {
     menuBar()->setObjectName("menubar");
 
     // Control bar
-    controlbar = new TEditableToolbar(this);
+    controlbar = new Action::TEditableToolbar(this);
     controlbar->setObjectName("controlbar");
     QStringList actions;
     actions << "play_or_pause"
@@ -583,7 +582,7 @@ void TMainWindow::createToolbars() {
     action->setShortcut(Qt::Key_F6);
 
     // Main toolbar
-    toolbar = new TEditableToolbar(this);
+    toolbar = new Action::TEditableToolbar(this);
     toolbar->setObjectName("toolbar1");
     actions.clear();
     actions << "open_url" << "favorites_menu";
@@ -776,10 +775,10 @@ void TMainWindow::createFilePropertiesDialog() {
             file_properties_dialog, &TFilePropertiesDialog::showInfo);
     connect(player, &Player::TPlayer::audioBitRateChanged,
             file_properties_dialog, &TFilePropertiesDialog::showInfo);
-    TAction* action = findChild<TAction*>("view_properties");
+    Action::TAction* action = findChild<Action::TAction*>("view_properties");
     if (action) {
         connect(file_properties_dialog, &TFilePropertiesDialog::visibilityChanged,
-                action, &TAction::setChecked);
+                action, &Action::TAction::setChecked);
     }
 
     QApplication::restoreOverrideCursor();
@@ -968,10 +967,10 @@ void TMainWindow::retranslateStrings() {
     }
 } // retranslateStrings()
 
-TActionList TMainWindow::getAllNamedActions() const {
+Action::TActionList TMainWindow::getAllNamedActions() const {
 
     // Get all actions with a name
-    TActionList all_actions = findChildren<QAction*>();
+    Action::TActionList all_actions = findChildren<QAction*>();
     for (int i = all_actions.count() - 1; i >= 0; i--) {
         QAction* a = all_actions[i];
         if (a->objectName().isEmpty() || a->isSeparator()) {
@@ -992,7 +991,7 @@ void TMainWindow::loadConfig() {
     // Disable actions
     sendEnableActions();
     // Get all actions with a name
-    TActionList all_actions = getAllNamedActions();
+    Action::TActionList all_actions = getAllNamedActions();
     // Load actions
     Action::TActionsEditor::loadFromConfig(pref, all_actions);
 
@@ -1223,7 +1222,7 @@ void TMainWindow::showContextMenu() {
 
     // Handle show_context_menu action not triggered by right click
     if (!contextMenu->isVisible()) {
-        Menu::execPopup(this, contextMenu, QCursor::pos());
+        Action::Menu::execPopup(this, contextMenu, QCursor::pos());
     }
 }
 
@@ -1235,7 +1234,8 @@ void TMainWindow::showCustomContextMenu(const QPoint& pos) {
     // which, if still assigned, would trigger the show_context_menu action.
     if (!contextMenu->isVisible()
         && pref->mouse_right_click_function == "show_context_menu") {
-        Menu::execPopup(this, contextMenu, playerwindow->mapToGlobal(pos));
+        Action::Menu::execPopup(this, contextMenu,
+                                playerwindow->mapToGlobal(pos));
     }
 }
 
