@@ -55,26 +55,26 @@ TToolbarEditor::TToolbarEditor(QWidget* parent, Qt::WindowFlags f) :
 
     right_button->setIcon(Images::icon("up").transformed(matrix));
     left_button->setIcon(Images::icon("down").transformed(matrix));
-    connect(up_button, SIGNAL(clicked()),
-            this, SLOT(onUpButtonClicked()));
-    connect(down_button, SIGNAL(clicked()),
-            this, SLOT(onDownButtonClicked()));
-    connect(left_button, SIGNAL(clicked()),
-            this, SLOT(onLeftButtonClicked()));
-    connect(right_button, SIGNAL(clicked()),
-            this, SLOT(onRightButtonClicked()));
+    connect(up_button, &QToolButton::clicked,
+            this, &TToolbarEditor::onUpButtonClicked);
+    connect(down_button, &QToolButton::clicked,
+            this, &TToolbarEditor::onDownButtonClicked);
+    connect(left_button, &QToolButton::clicked,
+            this, &TToolbarEditor::onLeftButtonClicked);
+    connect(right_button, &QToolButton::clicked,
+            this, &TToolbarEditor::onRightButtonClicked);
 
-    connect(separator_button, SIGNAL(clicked()),
-            this, SLOT(onSeperatorButtonClicked()));
+    connect(separator_button, &QToolButton::clicked,
+            this, &TToolbarEditor::onSeperatorButtonClicked);
 
     QPushButton* restore = buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    connect(restore, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
+    connect(restore, &QPushButton::clicked,
+            this, &TToolbarEditor::restoreDefaults);
 
-    connect(all_actions_list, SIGNAL(currentRowChanged(int)),
-            this, SLOT(checkRowsAllList(int)));
-    connect(active_actions_table,
-            SIGNAL(currentCellChanged(int, int, int, int)),
-            this, SLOT(onCurrentCellChanged(int, int, int, int)));
+    connect(all_actions_list, &QListWidget::currentRowChanged,
+            this, &TToolbarEditor::checkRowsAllList);
+    connect(active_actions_table, &QTableWidget::currentCellChanged,
+            this, &TToolbarEditor::onCurrentCellChanged);
 
     all_actions_list->setSelectionMode(QAbstractItemView::SingleSelection);
     all_actions_list->setDragEnabled(true);

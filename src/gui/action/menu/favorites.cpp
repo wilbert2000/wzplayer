@@ -45,16 +45,15 @@ TFavorites::TFavorites(TMainWindow* mw,
     , last_item(1) {
 
     editAct = new TAction(this, "", tr("&Edit..."), "noicon");
-    connect(editAct, SIGNAL(triggered()), this, SLOT(edit()));
+    connect(editAct, &TAction::triggered, this, &TFavorites::edit);
 
     addAct = new TAction(this, "", tr("&Add current media"), "noicon");
-    connect(addAct, SIGNAL(triggered()), this, SLOT(addCurrentPlaying()));
+    connect(addAct, &TAction::triggered, this, &TFavorites::addCurrentPlaying);
 
     jumpAct = new TAction(this, "", tr("&Jump..."), "noicon", 0, false);
-    connect(jumpAct, SIGNAL(triggered()), this, SLOT(jump()));
+    connect(jumpAct, &TAction::triggered, this, &TFavorites::jump);
 
-    connect(this, SIGNAL(triggered(QAction *)),
-            this, SLOT(onTriggered(QAction *)));
+    connect(this, &TFavorites::triggered, this, &TFavorites::onTriggered);
 
     load();
     addSeparator();

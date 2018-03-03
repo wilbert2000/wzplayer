@@ -47,8 +47,7 @@ TActionGroup::TActionGroup(QObject* parent, const QString& name)
 
     setObjectName(name);
     setExclusive(true);
-    connect(this, SIGNAL(triggered(QAction*)),
-            this, SLOT(itemTriggered(QAction*)));
+    connect(this, &TActionGroup::triggered, this, &TActionGroup::itemTriggered);
 }
 
 QAction* TActionGroup::setChecked(int ID) {

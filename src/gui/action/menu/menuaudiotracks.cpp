@@ -13,15 +13,21 @@ TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
     : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track") {
 
     // Next audio track
-    nextAudioTrackAct = new TAction(this, "next_audio_track", tr("Next audio track"), "", QKeySequence("*"));
+    nextAudioTrackAct = new TAction(this, "next_audio_track",
+                                    tr("Next audio track"), "",
+                                    QKeySequence("*"));
     main_window->addAction(nextAudioTrackAct);
-    connect(nextAudioTrackAct, SIGNAL(triggered()), player, SLOT(nextAudioTrack()));
+    connect(nextAudioTrackAct, &TAction::triggered,
+            player, &Player::TPlayer::nextAudioTrack);
 
     addSeparator();
     audioTrackGroup = new TActionGroup(this, "audiotrack");
-    connect(audioTrackGroup, SIGNAL(activated(int)), player, SLOT(setAudioTrack(int)));
-    connect(player, SIGNAL(audioTracksChanged()), this, SLOT(updateAudioTracks()));
-    connect(player, SIGNAL(audioTrackChanged(int)), audioTrackGroup, SLOT(setChecked(int)));
+    connect(audioTrackGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setAudioTrack);
+    connect(player, &Player::TPlayer::audioTracksChanged,
+            this, &TMenuAudioTracks::updateAudioTracks);
+    connect(player, &Player::TPlayer::audioTrackChanged,
+            audioTrackGroup, &TActionGroup::setChecked);
 }
 
 void TMenuAudioTracks::enableActions() {

@@ -42,8 +42,10 @@ public:
 
     bool startHidden() const;
 
-protected slots:
+public slots:
     virtual void closeWindow();
+
+protected slots:
     virtual void quit();
     virtual void setWindowCaption(const QString& title);
     virtual void onMediaInfoChanged();

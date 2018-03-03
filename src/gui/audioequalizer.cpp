@@ -47,25 +47,29 @@ TAudioEqualizer::TAudioEqualizer(QWidget* parent, Qt::WindowFlags f)
         slider->sliderWidget()->setTracking(false);
         eq[n] = slider;
 
-        connect(slider, SIGNAL(valueChanged(int)),
-                this, SLOT(updatePresetCombo()));
+        connect(slider, &TEqSlider::valueChanged,
+                this, &TAudioEqualizer::updatePresetCombo);
         bl->addWidget(slider);
     }
 
     presets_combo = new QComboBox(this);
-    connect(presets_combo, SIGNAL(activated(int)), this, SLOT(presetChanged(int)));
+    connect(presets_combo, SIGNAL(activated(int)),
+            this, SLOT(presetChanged(int)));
 
     presets_label = new QLabel("&Preset", this);
     presets_label->setBuddy(presets_combo);
 
     reset_button = new QPushButton("&Reset", this);
-    connect(reset_button, SIGNAL(clicked()), this, SLOT(reset()));
+    connect(reset_button, &QPushButton::clicked,
+            this, &TAudioEqualizer::reset);
 
     set_default_button = new QPushButton("&Set as default values", this);
-    connect(set_default_button, SIGNAL(clicked()), this, SLOT(setDefaults()));
+    connect(set_default_button, &QPushButton::clicked,
+            this, &TAudioEqualizer::setDefaults);
 
     apply_button = new QPushButton("&Apply", this);
-    connect(apply_button, SIGNAL(clicked()), this, SLOT(applyButtonClicked()));
+    connect(apply_button, &QPushButton::clicked,
+            this, &TAudioEqualizer::applyButtonClicked);
 
     QBoxLayout *button_layout = new QHBoxLayout; //(0, 4, 2);
     button_layout->addWidget(presets_label);

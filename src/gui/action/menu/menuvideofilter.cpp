@@ -24,50 +24,52 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
                                     tr("&Postprocessing"));
     postProcessingAct->setCheckable(true);
     group->addAction(postProcessingAct);
-    connect(postProcessingAct, SIGNAL(triggered(bool)),
-            player, SLOT(setPostprocessing(bool)));
+    connect(postProcessingAct, &TAction::triggered,
+            player, &Player::TPlayer::setPostprocessing);
 
     deblockAct = new TAction(this, "deblock", tr("&Deblock"));
     deblockAct->setCheckable(true);
     group->addAction(deblockAct);
-    connect(deblockAct, SIGNAL(triggered(bool)),
-            player, SLOT(setDeblock(bool)));
+    connect(deblockAct, &TAction::triggered,
+            player, &Player::TPlayer::setDeblock);
 
     deringAct = new TAction(this, "dering", tr("De&ring"));
     deringAct->setCheckable(true);
     group->addAction(deringAct);
-    connect(deringAct, SIGNAL(triggered(bool)), player, SLOT(setDering(bool)));
+    connect(deringAct, &TAction::triggered,
+            player, &Player::TPlayer::setDering);
 
     gradfunAct = new TAction(this, "gradfun", tr("Debanding (&gradfun)"));
     gradfunAct->setCheckable(true);
     group->addAction(gradfunAct);
-    connect(gradfunAct, SIGNAL(triggered(bool)),
-            player, SLOT(setGradfun(bool)));
+    connect(gradfunAct, &TAction::triggered,
+            player, &Player::TPlayer::setGradfun);
 
     addNoiseAct = new TAction(this, "add_noise", tr("Add n&oise"));
     addNoiseAct->setCheckable(true);
     group->addAction(addNoiseAct);
-    connect(addNoiseAct, SIGNAL(triggered(bool)), player, SLOT(setNoise(bool)));
+    connect(addNoiseAct, &TAction::triggered,
+            player, &Player::TPlayer::setNoise);
 
     addLetterboxAct = new TAction(this, "add_letterbox",
                                   tr("Add &black borders"), "letterbox");
     addLetterboxAct->setCheckable(true);
     group->addAction(addLetterboxAct);
-    connect(addLetterboxAct, SIGNAL(triggered(bool)),
-            player, SLOT(setetterbox(bool)));
+    connect(addLetterboxAct, &TAction::triggered,
+            player, &Player::TPlayer::setetterbox);
 
     softwareScalingAct = new TAction(this, "software_scaling",
                                      tr("Soft&ware scaling"));
     softwareScalingAct->setCheckable(true);
     group->addAction(softwareScalingAct);
-    connect(softwareScalingAct, SIGNAL(triggered(bool)),
-            player, SLOT(setSoftwareScaling(bool)));
+    connect(softwareScalingAct, &TAction::triggered,
+            player, &Player::TPlayer::setSoftwareScaling);
 
     phaseAct = new TAction(this, "autodetect_phase", tr("&Autodetect phase"));
     phaseAct->setCheckable(true);
     group->addAction(phaseAct);
-    connect(phaseAct, SIGNAL(triggered(bool)),
-            player, SLOT(setAutophase(bool)));
+    connect(phaseAct, &TAction::triggered,
+            player, &Player::TPlayer::setAutophase);
 
     // Denoise
     TMenu* menu = new TMenu(this, main_window, "denoise_menu", tr("De&noise"),
@@ -87,10 +89,10 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
     menu->addActions(denoiseGroup->actions());
     menu->addActionsTo(main_window);
     addMenu(menu);
-    connect(denoiseGroup, SIGNAL(activated(int)),
-            player, SLOT(setDenoiser(int)));
-    connect(menu, SIGNAL(aboutToShow()),
-            this, SLOT(onAboutToShowDenoise()));
+    connect(denoiseGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setDenoiser);
+    connect(menu, &TMenu::aboutToShow,
+            this, &TMenuVideoFilter::onAboutToShowDenoise);
 
     // Unsharp group
     menu = new TMenu(this, main_window, "sharpen_menu", tr("S&harpen"),
@@ -106,9 +108,10 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
     menu->addActions(sharpenGroup->actions());
     menu->addActionsTo(main_window);
     addMenu(menu);
-    connect(sharpenGroup, SIGNAL(activated(int)),
-            player, SLOT(setSharpen(int)));
-    connect(menu, SIGNAL(aboutToShow()), this, SLOT(onAboutToShowUnSharp()));
+    connect(sharpenGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setSharpen);
+    connect(menu, &TMenu::aboutToShow,
+            this, &TMenuVideoFilter::onAboutToShowUnSharp);
 
     updateFilters();
 }

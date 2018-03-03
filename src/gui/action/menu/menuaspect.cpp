@@ -48,15 +48,17 @@ TMenuAspect::TMenuAspect(TMainWindow* mw) :
     aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none",
         tr("&Disabled"), TAspectRatio::AspectNone);
 
-    connect(group, SIGNAL(activated(int)), player, SLOT(setAspectRatio(int)));
-    connect(player, SIGNAL(aspectRatioChanged(int)),
-            this, SLOT(onAspectRatioChanged(int)),
+    connect(group, &TActionGroup::activated,
+            player, &Player::TPlayer::setAspectRatio);
+    connect(player, &Player::TPlayer::aspectRatioChanged,
+            this, &TMenuAspect::onAspectRatioChanged,
             Qt::QueuedConnection);
 
     addSeparator();
     nextAspectAct = new TAction(this, "next_aspect", tr("&Next aspect ratio"),
                                 "", Qt::Key_A);
-    connect(nextAspectAct, SIGNAL(triggered()), player, SLOT(nextAspectRatio()));
+    connect(nextAspectAct, &TAction::triggered,
+            player, &Player::TPlayer::nextAspectRatio);
 
     addActionsTo(main_window);
     upd();

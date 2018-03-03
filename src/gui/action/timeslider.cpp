@@ -47,15 +47,20 @@ TTimeSlider::TTimeSlider(QWidget* parent,
     setValue(position);
     setFocusPolicy(Qt::NoFocus);
 
-    connect(this, SIGNAL(sliderPressed()), this, SLOT(stopUpdate()));
-    connect(this, SIGNAL(sliderReleased()), this, SLOT(resumeUpdate()));
-    connect(this, SIGNAL(sliderReleased()), this, SLOT(mouseReleased()));
-    connect(this, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));
-    connect(this, SIGNAL(draggingPosChanged(int)), this, SLOT(checkDragging(int)));
+    connect(this, &TTimeSlider::sliderPressed,
+            this, &TTimeSlider::stopUpdate);
+    connect(this, &TTimeSlider::sliderReleased,
+            this, &TTimeSlider::resumeUpdate);
+    connect(this, &TTimeSlider::sliderReleased,
+            this, &TTimeSlider::mouseReleased);
+    connect(this, &TTimeSlider::valueChanged,
+            this, &TTimeSlider::onValueChanged);
+    connect(this, &TTimeSlider::draggingPosChanged,
+            this, &TTimeSlider::checkDragging);
 
     timer = new QTimer(this);
     timer->setInterval(drag_delay);
-    connect(timer, SIGNAL(timeout()), this, SLOT(sendDelayedPos()));
+    connect(timer, &QTimer::timeout, this, &TTimeSlider::sendDelayedPos);
 }
 
 TTimeSlider::~TTimeSlider() {

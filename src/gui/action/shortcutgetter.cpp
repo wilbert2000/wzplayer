@@ -75,17 +75,20 @@ TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
     vbox->setSpacing(10);
 
     list = new QListWidget(this);
-    connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(rowChanged(int)));
+    connect(list, &QListWidget::currentRowChanged,
+            this, &TShortcutGetter::rowChanged);
     vbox->addWidget(list);
 
     QHBoxLayout *hbox = new QHBoxLayout;
     addItem = new QPushButton(Images::icon("plus"), "", this);
     addItem->setToolTip(tr("Add shortcut to list"));
-    connect(addItem, SIGNAL(clicked()), this, SLOT(addItemClicked()));
+    connect(addItem, &QPushButton::clicked,
+            this, &TShortcutGetter::addItemClicked);
 
     removeItem = new QPushButton(Images::icon("minus"), "", this);
     removeItem->setToolTip(tr("Remove shortcut from list"));
-    connect(removeItem, SIGNAL(clicked()), this, SLOT(removeItemClicked()));
+    connect(removeItem, &QPushButton::clicked,
+            this, &TShortcutGetter::removeItemClicked);
 
     hbox->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
     hbox->addWidget(addItem);
@@ -105,8 +108,8 @@ TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
     vbox->addWidget(assignedToLabel);
 
     leKey->installEventFilter(this);
-    connect(leKey, SIGNAL(textChanged(const QString &)),
-            this, SLOT(textChanged(const QString &)));
+    connect(leKey, &QLineEdit::textChanged,
+            this, &TShortcutGetter::textChanged);
 
     setCaptureKeyboard(true);
 
@@ -119,14 +122,16 @@ TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
     captureButton->setToolTip(tr("Capture keystrokes"));
     captureButton->setCheckable(captureKeyboard());
     captureButton->setChecked(captureKeyboard());
-    connect(captureButton, SIGNAL(toggled(bool)),
-            this, SLOT(setCaptureKeyboard(bool)));
+    connect(captureButton, &QPushButton::toggled,
+            this, &TShortcutGetter::setCaptureKeyboard);
 
     buttonbox->addButton(captureButton, QDialogButtonBox::ActionRole);
 
-    connect(buttonbox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonbox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(clearbutton, SIGNAL(clicked()), leKey, SLOT(clear()));
+    connect(buttonbox, &QDialogButtonBox::accepted,
+            this, &TShortcutGetter::accept);
+    connect(buttonbox, &QDialogButtonBox::rejected,
+            this, &TShortcutGetter::reject);
+    connect(clearbutton, &QPushButton::clicked, leKey, &QLineEdit::clear);
     vbox->addWidget(buttonbox);
 }
 

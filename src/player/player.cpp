@@ -1706,36 +1706,36 @@ void TPlayer::seekTime(double sec) {
     seekCmd(sec, 2);
 }
 
-void TPlayer::sforward() {
+void TPlayer::forward1() {
     WZDEBUG("");
     seekRelative(Settings::pref->seeking1); // +10s
 }
 
-void TPlayer::srewind() {
+void TPlayer::rewind1() {
     WZDEBUG("");
     seekRelative(-Settings::pref->seeking1); // -10s
 }
 
 
-void TPlayer::forward() {
+void TPlayer::forward2() {
     WZDEBUG("");
     seekRelative(Settings::pref->seeking2); // +1m
 }
 
 
-void TPlayer::rewind() {
+void TPlayer::rewind2() {
     WZDEBUG("");
     seekRelative(-Settings::pref->seeking2); // -1m
 }
 
 
-void TPlayer::fastforward() {
+void TPlayer::forward3() {
     WZDEBUG("");
     seekRelative(Settings::pref->seeking3); // +10m
 }
 
 
-void TPlayer::fastrewind() {
+void TPlayer::rewind3() {
     WZDEBUG("");
     seekRelative(-Settings::pref->seeking3); // -10m
 }
@@ -1760,7 +1760,7 @@ void TPlayer::seekToPrevSub() {
     proc->seekSub(-1);
 }
 
-void TPlayer::wheelUp(Settings::TPreferences::TWheelFunction function) {
+void TPlayer::wheelUpFunc(Settings::TPreferences::TWheelFunction function) {
     WZDEBUG("");
 
     if (function == Settings::TPreferences::DoNothing) {
@@ -1780,7 +1780,15 @@ void TPlayer::wheelUp(Settings::TPreferences::TWheelFunction function) {
     }
 }
 
-void TPlayer::wheelDown(Settings::TPreferences::TWheelFunction function) {
+void TPlayer::wheelUpSeeking() {
+    wheelUpFunc(Settings::TPreferences::Seeking);
+}
+
+void TPlayer::wheelUp() {
+    wheelUpFunc(Settings::TPreferences::DoNothing);
+}
+
+void TPlayer::wheelDownFunc(Settings::TPreferences::TWheelFunction function) {
     WZDEBUG("");
 
     if (function == Settings::TPreferences::DoNothing) {
@@ -1795,16 +1803,20 @@ void TPlayer::wheelDown(Settings::TPreferences::TWheelFunction function) {
                     ? forward(Settings::pref->seeking4)
                     : rewind(Settings::pref->seeking4);
             break;
-        case Settings::TPreferences::ChangeSpeed : decSpeed10(); break;
+        case Settings::TPreferences::ChangeSpeed: decSpeed10(); break;
         default : {} // do nothing
     }
 }
 
-void TPlayer::setInPoint() {
-    setInPoint(mset.current_sec);
+void TPlayer::wheelDownSeeking() {
+    wheelDownFunc(Settings::TPreferences::Seeking);
 }
 
-void TPlayer::setInPoint(double sec) {
+void TPlayer::wheelDown() {
+    wheelDownFunc(Settings::TPreferences::DoNothing);
+}
+
+void TPlayer::setInPointSec(double sec) {
     WZDEBUG(QString::number(sec));
 
     mset.in_point = sec;
@@ -1825,6 +1837,10 @@ void TPlayer::setInPoint(double sec) {
     Gui::msgOSD(msg);
 }
 
+void TPlayer::setInPoint() {
+    setInPointSec(mset.current_sec);
+}
+
 void TPlayer::seekInPoint() {
 
     seekTime(mset.in_point);
@@ -1840,11 +1856,7 @@ void TPlayer::clearInPoint() {
     Gui::msgOSD(tr("Cleared in point"));
 }
 
-void TPlayer::setOutPoint() {
-    setOutPoint(mset.current_sec);
-}
-
-void TPlayer::setOutPoint(double sec) {
+void TPlayer::setOutPointSec(double sec) {
     WZDEBUG(QString::number(sec));
 
     if (sec <= 0) {
@@ -1867,6 +1879,10 @@ void TPlayer::setOutPoint(double sec) {
 
     emit InOutPointsChanged();
     Gui::msgOSD(msg);
+}
+
+void TPlayer::setOutPoint() {
+    setOutPointSec(mset.current_sec);
 }
 
 void TPlayer::seekOutPoint() {
@@ -2873,12 +2889,10 @@ void TPlayer::nextAudioTrack() {
 }
 
 // Note: setSubtitle is by index, not ID
-void TPlayer::setSubtitle(int idx, bool selected_by_user) {
+void TPlayer::setSubtitle(int idx) {
     WZDEBUG("idx " + QString::number(idx));
 
-    if (selected_by_user)
-        mset.current_sub_set_by_user = true;
-
+    mset.current_sub_set_by_user = true;
     if (idx >= 0 && idx < mdat.subs.count()) {
         mset.current_sub_idx = idx;
         SubData sub = mdat.subs.itemAt(idx);
@@ -3424,7 +3438,8 @@ void TPlayer::selectPreferredSubtitles() {
         WZDEBUG("keeping selected subtitles");
     } else {
         WZDEBUG("selecting preferred subtitles");
-        setSubtitle(wanted_idx, false);
+        setSubtitle(wanted_idx);
+        mset.current_sub_set_by_user = false;
     }
 }
 

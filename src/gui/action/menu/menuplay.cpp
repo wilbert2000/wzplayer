@@ -27,12 +27,12 @@ TMenuSeek::TMenuSeek(QWidget* parent,
     seek_sign(sign) {
 
     setDefaultAction(menuAction());
-    connect(this, SIGNAL(triggered(QAction*)),
-            this, SLOT(onTriggered(QAction*)));
-    connect(main_window, SIGNAL(preferencesChanged()),
-            this, SLOT(setJumpTexts()));
-    connect(main_window->getPlaylist(), SIGNAL(enablePrevNextChanged()),
-            this, SLOT(updateDefaultAction()));
+    connect(this, &TMenuSeek::triggered, this, &TMenuSeek::onTriggered);
+    connect(main_window, &TMainWindow::preferencesChanged,
+            this, &TMenuSeek::setJumpTexts);
+    connect(main_window->getPlaylist(),
+            &Playlist::TPlaylist::enablePrevNextChanged,
+            this, &TMenuSeek::updateDefaultAction);
 }
 
 // Map in to action
@@ -148,19 +148,20 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
     TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"),
               tr("+", "sign to use in menu for forward seeking")) {
 
-    frameAct = new TAction(this, "frame_step", tr("Fra&me step"), "", Qt::ALT | Qt::Key_Right);
-    connect(frameAct, SIGNAL(triggered()), player, SLOT(frameStep()));
+    frameAct = new TAction(this, "frame_step", tr("Fra&me step"), "",
+                           Qt::ALT | Qt::Key_Right);
+    connect(frameAct, &TAction::triggered, player, &Player::TPlayer::frameStep);
 
     addSeparator();
     seek1Act = new TAction(this, "forward1", "", "", Qt::Key_Right);
     seek1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
-    connect(seek1Act, SIGNAL(triggered()), player, SLOT(sforward()));
+    connect(seek1Act, &TAction::triggered, player, &Player::TPlayer::forward1);
 
     seek2Act = new TAction(this, "forward2", "", "", Qt::SHIFT | Qt::Key_Right);
-    connect(seek2Act, SIGNAL(triggered()), player, SLOT(forward()));
+    connect(seek2Act, &TAction::triggered, player, &Player::TPlayer::forward2);
 
     seek3Act = new TAction(this, "forward3", "", "", Qt::CTRL | Qt::Key_Right);
-    connect(seek3Act, SIGNAL(triggered()), player, SLOT(fastforward()));
+    connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::forward3);
 
     addSeparator();
     plAct = playlist->findChild<TAction*>("pl_next");
@@ -184,19 +185,21 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
     TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"),
               tr("-", "sign to use in menu for rewind seeking")) {
 
-    frameAct = new TAction(this, "frame_back_step", tr("Fra&me back step"), "", Qt::ALT | Qt::Key_Left);
-    connect(frameAct, SIGNAL(triggered()), player, SLOT(frameBackStep()));
+    frameAct = new TAction(this, "frame_back_step", tr("Fra&me back step"), "",
+                           Qt::ALT | Qt::Key_Left);
+    connect(frameAct, &TAction::triggered, player,
+            &Player::TPlayer::frameBackStep);
 
     addSeparator();
     seek1Act = new TAction(this, "rewind1", "", "", Qt::Key_Left);
     seek1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
-    connect(seek1Act, SIGNAL(triggered()), player, SLOT(srewind()));
+    connect(seek1Act, &TAction::triggered, player, &Player::TPlayer::rewind1);
 
     seek2Act = new TAction(this, "rewind2", "", "", Qt::SHIFT | Qt::Key_Left);
-    connect(seek2Act, SIGNAL(triggered()), player, SLOT(rewind()));
+    connect(seek2Act, &TAction::triggered, player, &Player::TPlayer::rewind2);
 
     seek3Act = new TAction(this, "rewind3", "", "", Qt::CTRL | Qt::Key_Left);
-    connect(seek3Act, SIGNAL(triggered()), player, SLOT(fastrewind()));
+    connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::rewind3);
 
     addSeparator();
     plAct = playlist->findChild<TAction*>("pl_prev");
@@ -227,47 +230,47 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     TAction* a = new TAction(this, "normal_speed", tr("&Normal speed"), "",
                              Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(normalSpeed()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::normalSpeed);
 
     addSeparator();
     a = new TAction(this, "halve_speed", tr("&Half speed"), "",
                     Qt::META | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(halveSpeed()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::halveSpeed);
     a = new TAction(this, "double_speed", tr("&Double speed"), "",
                     Qt::ALT | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(doubleSpeed()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::doubleSpeed);
 
     addSeparator();
     a = new TAction(this, "dec_speed", tr("Speed &-10%"), "",
                     Qt::SHIFT | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(decSpeed10()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed10);
     a = new TAction(this, "inc_speed", tr("Speed &+10%"), "",
                     Qt::CTRL | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(incSpeed10()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed10);
 
     addSeparator();
     a = new TAction(this, "dec_speed_4", tr("Speed -&4%"), "",
                     Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(decSpeed4()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed4);
     a = new TAction(this, "inc_speed_4", tr("&Speed +4%"), "",
                     Qt::ALT | Qt::CTRL | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(incSpeed4()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed4);
 
     addSeparator();
     a = new TAction(this, "dec_speed_1", tr("Speed -&1%"), "",
                     Qt::SHIFT | Qt::META | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(decSpeed1()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed1);
     a = new TAction(this, "inc_speed_1", tr("S&peed +1%"), "",
                     Qt::CTRL | Qt::META | Qt::Key_Z);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(incSpeed1()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed1);
 
     addActionsTo(main_window);
 }
@@ -288,20 +291,22 @@ TMenuPlay::TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist)
     addSeparator();
 
     // Forward menu
-    QMenu* forward_menu = new TMenuSeekForward(this, main_window, playlist);
+    TMenuSeek* forward_menu = new TMenuSeekForward(this, main_window, playlist);
     addMenu(forward_menu);
     // Rewind menu
-    QMenu* rewind_menu = new TMenuSeekRewind(this, main_window, playlist);
+    TMenuSeek* rewind_menu = new TMenuSeekRewind(this, main_window, playlist);
     addMenu(rewind_menu);
     // Let forward and rewind work in tandem
-    connect(forward_menu, SIGNAL(triggered(QAction*)),
-            rewind_menu, SLOT(updateDefaultAction()));
-    connect(rewind_menu, SIGNAL(triggered(QAction*)),
-            forward_menu, SLOT(updateDefaultAction()));
+    connect(forward_menu, &TMenuSeek::triggered,
+            rewind_menu, &TMenuSeek::updateDefaultAction);
+    connect(rewind_menu, &TMenuSeek::triggered,
+            forward_menu, &TMenuSeek::updateDefaultAction);
 
     // Seek to...
-    seekToAct = new TAction(this, "seek_to", tr("S&eek to..."), "", QKeySequence("Ctrl+G"));
-    connect(seekToAct, SIGNAL(triggered()), main_window, SLOT(showSeekToDialog()));
+    seekToAct = new TAction(this, "seek_to", tr("S&eek to..."), "",
+                            QKeySequence("Ctrl+G"));
+    connect(seekToAct, &TAction::triggered,
+            main_window, &TMainWindow::showSeekToDialog);
 
     // Speed submenu
     addSeparator();

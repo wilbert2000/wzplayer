@@ -70,8 +70,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
     license->setText(license_text);
     license->setOpenLinks(false);
     license->setOpenExternalLinks(false);
-    connect(license, SIGNAL(anchorClicked(const QUrl &)),
-            this, SLOT(openLink(const QUrl&)));
+    connect(license, &QTextBrowser::anchorClicked, this, &TAbout::openLink);
 
     translators->setHtml(getTranslators());
 

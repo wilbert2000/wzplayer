@@ -138,17 +138,17 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
     if (!custom_stylesheet.isEmpty())
         slider->setStyleSheet(custom_stylesheet);
 
-    connect(slider, SIGNAL(posChanged(int)),
-            this, SLOT(onPosChanged(int)));
-    connect(slider, SIGNAL(draggingPosChanged(int)),
-            this, SLOT(onDraggingPosChanged(int)));
-    connect(slider, SIGNAL(delayedDraggingPos(int)),
-            this, SLOT(onDelayedDraggingPos(int)));
+    connect(slider, &TTimeSlider::posChanged,
+            this, &TTimeSliderAction::onPosChanged);
+    connect(slider, &TTimeSlider::draggingPosChanged,
+            this, &TTimeSliderAction::onDraggingPosChanged);
+    connect(slider, &TTimeSlider::delayedDraggingPos,
+            this, &TTimeSliderAction::onDelayedDraggingPos);
 
-    connect(slider, SIGNAL(wheelUp()),
-            this, SIGNAL(wheelUp()));
-    connect(slider, SIGNAL(wheelDown()),
-            this, SIGNAL(wheelDown()));
+    connect(slider, &TTimeSlider::wheelUp,
+            this, &TTimeSliderAction::wheelUp);
+    connect(slider, &TTimeSlider::wheelDown,
+            this, &TTimeSliderAction::wheelDown);
 
     return slider;
 }
@@ -219,7 +219,8 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
     slider->setEnabled(isEnabled());
     slider->setAttribute(Qt::WA_NoMousePropagation);
 
-    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(valueSliderChanged(int)));
+    connect(slider, &TSlider::valueChanged,
+            this, &TVolumeSliderAction::valueSliderChanged);
 
     return slider;
 }

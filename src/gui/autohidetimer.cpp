@@ -29,7 +29,7 @@ TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
 
     setSingleShot(true);
     setInterval(pref->floating_hide_delay);
-    connect(this, SIGNAL(timeout()), this, SLOT(onTimeOut()));
+    connect(this, &TAutoHideTimer::timeout, this, &TAutoHideTimer::onTimeOut);
 
     playerWindow->installEventFilter(this);
 }
@@ -87,7 +87,7 @@ void TAutoHideTimer::add(QAction* action, QWidget* w) {
         actions.append(action);
         widgets.append(w);
     }
-    connect(action, SIGNAL(toggled(bool)), this, SLOT(onActionToggled(bool)));
+    connect(action, &QAction::toggled, this, &TAutoHideTimer::onActionToggled);
 }
 
 void TAutoHideTimer::setVisible(bool visible) {

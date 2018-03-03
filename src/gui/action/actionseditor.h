@@ -57,11 +57,6 @@ public:
 
 public slots:
     void applyChanges();
-    void saveActionsTable();
-    bool saveActionsTable(const QString& filename);
-    void loadActionsTable();
-    bool loadActionsTable(const QString& filename);
-
     void updateView();
 
 protected:
@@ -74,11 +69,7 @@ protected:
     bool hasConflicts();
     static bool containsShortcut(const QString& accel, const QString& shortcut);
 
-protected slots:
-    void editShortcut();
-
 private:
-
     enum TActionCols {
         COL_CONFLICTS = 0,
         COL_ACTION = 1,
@@ -105,7 +96,14 @@ private:
 
     static QAction* findAction(const TActionList& actions, const QString& name);
 
+    bool loadActionsTableFromFile(const QString& filename);
+    bool saveActionsTableAsFile(const QString& filename);
     void resizeColumns();
+
+private slots:
+    void editShortcut();
+    void loadActionsTable();
+    void saveActionsTable();
 };
 
 } // namespace Action

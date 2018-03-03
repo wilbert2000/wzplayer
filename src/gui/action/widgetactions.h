@@ -73,10 +73,8 @@ signals:
     void percentageChanged(double percentage);
     void dragPositionChanged(double sec);
 
-    void wheelUp(Settings::TPreferences::TWheelFunction function =
-                 Settings::TPreferences::Seeking);
-    void wheelDown(Settings::TPreferences::TWheelFunction function =
-                   Settings::TPreferences::Seeking);
+    void wheelUp();
+    void wheelDown();
 
 protected:
     virtual QWidget* createWidget(QWidget* parent);

@@ -118,17 +118,20 @@ TActionsEditor::TActionsEditor(QWidget* parent, Qt::WindowFlags f) :
     actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     actionsTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    connect(actionsTable, SIGNAL(itemActivated(QTableWidgetItem*)),
-            this, SLOT(editShortcut()));
+    connect(actionsTable, &QTableWidget::itemActivated,
+            this, &TActionsEditor::editShortcut);
 
     saveButton = new QPushButton(this);
     loadButton = new QPushButton(this);
 
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveActionsTable()));
-    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadActionsTable()));
+    connect(saveButton, &QPushButton::clicked,
+            this, &TActionsEditor::saveActionsTable);
+    connect(loadButton, &QPushButton::clicked,
+            this, &TActionsEditor::loadActionsTable);
 
     editButton = new QPushButton(this);
-    connect(editButton, SIGNAL(clicked()), this, SLOT(editShortcut()));
+    connect(editButton, &QPushButton::clicked,
+            this, &TActionsEditor::editShortcut);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->setContentsMargins(16, 8, 16, 0);
@@ -353,6 +356,24 @@ bool TActionsEditor::hasConflicts() {
     return conflict;
 }
 
+bool TActionsEditor::saveActionsTableAsFile(const QString& filename) {
+    WZDEBUG("'" + filename + "'");
+
+    QFile f(filename);
+    if (f.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&f);
+        stream.setCodec("UTF-8");
+
+        for (int row = 0; row < actionsTable->rowCount(); row++) {
+            stream << actionsTable->item(row, COL_ACTION)->text() << "\t"
+                   << actionsTable->item(row, COL_SHORTCUT)->text() << "\n";
+        }
+        f.close();
+        return true;
+    }
+    return false;
+}
+
 void TActionsEditor::saveActionsTable() {
 
     QString s = TFileDialog::getSaveFileName(
@@ -379,7 +400,7 @@ void TActionsEditor::saveActionsTable() {
         }
 
         last_dir = QFileInfo(s).absolutePath();
-        bool r = saveActionsTable(s);
+        bool r = saveActionsTableAsFile(s);
         if (!r) {
             QMessageBox::warning(this, tr("Error"),
                 tr("The file couldn't be saved"),
@@ -388,41 +409,7 @@ void TActionsEditor::saveActionsTable() {
     }
 }
 
-bool TActionsEditor::saveActionsTable(const QString & filename) {
-    WZDEBUG("'" + filename + "'");
-
-    QFile f(filename);
-    if (f.open(QIODevice::WriteOnly)) {
-        QTextStream stream(&f);
-        stream.setCodec("UTF-8");
-
-        for (int row = 0; row < actionsTable->rowCount(); row++) {
-            stream << actionsTable->item(row, COL_ACTION)->text() << "\t"
-                   << actionsTable->item(row, COL_SHORTCUT)->text() << "\n";
-        }
-        f.close();
-        return true;
-    }
-    return false;
-}
-
-void TActionsEditor::loadActionsTable() {
-    QString s = TFileDialog::getOpenFileName(
-                    this, tr("Choose a file"),
-                    last_dir, tr("Key files") +" (*.keys)");
-
-    if (!s.isEmpty()) {
-        last_dir = QFileInfo(s).absolutePath();
-        bool r = loadActionsTable(s);
-        if (!r) {
-            QMessageBox::warning(this, tr("Error"),
-                tr("The file couldn't be loaded"),
-                QMessageBox::Ok, Qt::NoButton);
-        }
-    }
-}
-
-bool TActionsEditor::loadActionsTable(const QString& filename) {
+bool TActionsEditor::loadActionsTableFromFile(const QString& filename) {
 
     QRegExp rx("^([^\\t]*)\\t(.*)");
 
@@ -450,6 +437,22 @@ bool TActionsEditor::loadActionsTable(const QString& filename) {
         return true;
     } else {
         return false;
+    }
+}
+
+void TActionsEditor::loadActionsTable() {
+
+    QString s = TFileDialog::getOpenFileName(
+                    this, tr("Choose a file"),
+                    last_dir, tr("Key files") +" (*.keys)");
+
+    if (!s.isEmpty()) {
+        last_dir = QFileInfo(s).absolutePath();
+        if (!loadActionsTableFromFile(s)) {
+            QMessageBox::warning(this, tr("Error"),
+                tr("The file couldn't be loaded"),
+                QMessageBox::Ok, Qt::NoButton);
+        }
     }
 }
 

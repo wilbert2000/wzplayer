@@ -14,15 +14,20 @@ TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
     : TMenu(mw, mw, "videotrack_menu", tr("&Video track"), "video_track") {
 
     // Next video track
-    nextVideoTrackAct = new TAction(this, "next_video_track", tr("Next video track"));
+    nextVideoTrackAct = new TAction(this, "next_video_track",
+                                    tr("Next video track"));
     main_window->addAction(nextVideoTrackAct);
-    connect(nextVideoTrackAct, SIGNAL(triggered()), player, SLOT(nextVideoTrack()));
+    connect(nextVideoTrackAct, &TAction::triggered,
+            player, &Player::TPlayer::nextVideoTrack);
 
     addSeparator();
     videoTrackGroup = new TActionGroup(this, "videotrack");
-    connect(videoTrackGroup, SIGNAL(activated(int)), player, SLOT(setVideoTrack(int)));
-    connect(player, SIGNAL(videoTracksChanged()), this, SLOT(updateVideoTracks()));
-    connect(player, SIGNAL(videoTrackChanged(int)), videoTrackGroup, SLOT(setChecked(int)));
+    connect(videoTrackGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setVideoTrack);
+    connect(player, &Player::TPlayer::videoTracksChanged,
+            this, &TMenuVideoTracks::updateVideoTracks);
+    connect(player, &Player::TPlayer::videoTrackChanged,
+            videoTrackGroup, &TActionGroup::setChecked);
 }
 
 void TMenuVideoTracks::enableActions() {

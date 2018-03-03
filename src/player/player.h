@@ -124,12 +124,13 @@ public slots:
 
     void frameStep();
     void frameBackStep();
-    void sforward();    // + 10 seconds
-    void srewind();     // - 10 seconds
-    void forward();     // + 1 minute
-    void rewind();      // -1 minute
-    void fastforward(); // + 10 minutes
-    void fastrewind();  // - 10 minutes
+    void forward1();    // + 10 seconds
+    void rewind1();     // - 10 seconds
+    void forward2();     // + 1 minute
+    void rewind2();      // -1 minute
+    void forward3(); // + 10 minutes
+    void rewind3();  // - 10 minutes
+
     void forward(int secs);
     void rewind(int secs);
 
@@ -149,11 +150,9 @@ public slots:
     void normalSpeed();
 
     void setInPoint(); //!< Set in point to current sec
-    void setInPoint(double sec);
     void seekInPoint();
     void clearInPoint();
     void setOutPoint(); //!< Set out point to current sec
-    void setOutPoint(double sec);
     void seekOutPoint();
     void clearOutPoint();
     void setRepeat(bool b);
@@ -277,7 +276,7 @@ public slots:
     void seekToNextSub();
     void seekToPrevSub();
 
-    void setSubtitle(int idx, bool selected_by_user = true);
+    void setSubtitle(int idx);
     void nextSubtitle();
     void setSecondarySubtitle(int idx);
     void setClosedCaptionChannel(int);
@@ -326,10 +325,12 @@ public slots:
                           int duration = TConfig::MESSAGE_DURATION,
                           int level = 1);
 
-    void wheelUp(Settings::TPreferences::TWheelFunction function =
-        Settings::TPreferences::DoNothing);
-    void wheelDown(Settings::TPreferences::TWheelFunction function =
-        Settings::TPreferences::DoNothing);
+    void wheelUpFunc(Settings::TPreferences::TWheelFunction function);
+    void wheelUpSeeking();
+    void wheelUp();
+    void wheelDownFunc(Settings::TPreferences::TWheelFunction function);
+    void wheelDownSeeking();
+    void wheelDown();
     void nextWheelFunction();
 
     void clearKeepSize();
@@ -399,6 +400,8 @@ private:
     void startPlayer(bool loopImage = false);
     void stopPlayer();
     void restartPlay();
+    void setInPointSec(double sec);
+    void setOutPointSec(double sec);
 
     void saveMediaSettings();
     void initVolume();

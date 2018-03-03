@@ -21,7 +21,6 @@
 
 #include <QAction>
 #include <QString>
-#include <QIcon>
 #include <QKeySequence>
 
 namespace Gui {
@@ -37,7 +36,6 @@ public:
             const QString& icon = 0,
             const QKeySequence& shortCut = 0,
             bool autoAdd = true);
-
     virtual ~TAction();
 
     void addShortcut(QKeySequence key);

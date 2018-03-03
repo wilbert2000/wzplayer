@@ -49,16 +49,18 @@ TEditableToolbar::TEditableToolbar(TMainWindow* mainwindow) :
 
     // Context menu
     setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(showContextMenu(const QPoint&)));
+    connect(this, &TEditableToolbar::customContextMenuRequested,
+            this, &TEditableToolbar::showContextMenu);
 
     // Update size grip when top level changes
-    connect(this, SIGNAL(topLevelChanged(bool)),
-            this, SLOT(onTopLevelChanged(bool)));
+    connect(this, &TEditableToolbar::topLevelChanged,
+            this, &TEditableToolbar::onTopLevelChanged);
 
     // Reload toolbars when entering and exiting fullscreen
-    connect(main_window, SIGNAL(didEnterFullscreenSignal()), this, SLOT(reload()));
-    connect(main_window, SIGNAL(didExitFullscreenSignal()), this, SLOT(reload()));
+    connect(main_window, &TMainWindow::didEnterFullscreenSignal,
+            this, &TEditableToolbar::reload);
+    connect(main_window, &TMainWindow::didExitFullscreenSignal,
+            this, &TEditableToolbar::reload);
 }
 
 TEditableToolbar::~TEditableToolbar() {
@@ -81,11 +83,11 @@ void TEditableToolbar::addMenu(QAction* action) {
         button->setPopupMode(QToolButton::MenuButtonPopup);
         button->setDefaultAction(menu->defaultAction());
         // Set triggered action as default action
-        connect(menu, SIGNAL(triggered(QAction*)),
-                button, SLOT(setDefaultAction(QAction*)));
+        connect(menu, &QMenu::triggered,
+                button, &QToolButton::setDefaultAction);
         // Show menu when action disabled
-        connect(action, SIGNAL(triggered()),
-                button, SLOT(showMenu()),
+        connect(action, &QAction::triggered,
+                button, &QToolButton::showMenu,
                 Qt::QueuedConnection);
     } else {
         // Default, use instant popup
@@ -269,8 +271,8 @@ void TEditableToolbar::addSizeGrip() {
         setMaximumSize(0.9 * TDesktop::availableSize(this));
         if (!size_grip) {
             size_grip = new TSizeGrip(main_window, this);
-            connect(size_grip, SIGNAL(saveSizeHint()),
-                    space_eater, SLOT(saveSizeHint()));
+            connect(size_grip, &TSizeGrip::saveSizeHint,
+                    space_eater, &TTimeSlider::saveSizeHint);
         }
     } else {
         setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);

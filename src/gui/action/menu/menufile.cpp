@@ -27,39 +27,39 @@ TMenuDisc::TMenuDisc(TMainWindow* parent)
 
     // DVD
     TAction* a = new TAction(this, "open_dvd", tr("&DVD from drive"), "dvd");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openDVD()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openDVD);
 
     a = new TAction(this, "open_dvd_iso", tr("D&VD from ISO file..."),
                     "dvd_iso");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openDVDFromISO()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openDVDFromISO);
 
     a = new TAction(this, "open_dvd_folder", tr("DVD &from folder..."),
                     "dvd_hd");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openDVDFromFolder()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openDVDFromFolder);
 
 
     addSeparator();
     // BluRay
     a = new TAction(this, "open_bluray", tr("&Blu-ray from drive"), "bluray");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openBluRay()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openBluRay);
 
     a = new TAction(this, "open_bluray_iso", tr("B&lu-&ray from ISO file..."),
                     "bluray_iso");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openBluRayFromISO()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openBluRayFromISO);
 
     a = new TAction(this, "open_bluray_folder", tr("Bl&u-ray from folder..."),
                     "bluray_hd");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openBluRayFromFolder()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openBluRayFromFolder);
 
 
     addSeparator();
     // VCD
     a = new TAction(this, "open_vcd", tr("V&ideo CD"), "vcd");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openVCD()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openVCD);
 
     // Audio
     a = new TAction(this, "open_audio_cd", tr("&Audio CD"), "cdda");
-    connect(a, SIGNAL(triggered()), parent, SLOT(openAudioCD()));
+    connect(a, &TAction::triggered, parent, &TMainWindow::openAudioCD);
 
     addActionsTo(parent);
 }
@@ -89,11 +89,12 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"),
                                   "delete", 0, false);
     main_window->addAction(clearRecentsAct);
-    connect(clearRecentsAct, SIGNAL(triggered()), this, SLOT(clearRecentsList()));
+    connect(clearRecentsAct, &TAction::triggered,
+            this, &TMenuFile::clearRecentsList);
     addMenu(recentfiles_menu);
     updateRecents();
-    connect(main_window, SIGNAL(preferencesChanged()),
-            this, SLOT(onPreferencesChanged()));
+    connect(main_window, &TMainWindow::preferencesChanged,
+            this, &TMenuFile::onPreferencesChanged);
 
     addSeparator();
 
@@ -101,19 +102,19 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     // Open URL
     TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "",
                              QKeySequence("Ctrl+U"));
-    connect(a, SIGNAL(triggered()), main_window, SLOT(openURL()));
+    connect(a, &TAction::triggered, main_window, &TMainWindow::openURL);
     main_window->addAction(a);
 
     // Open file
     a  = new TAction(this, "open_file", tr("&Open file..."), "open",
                               Qt::CTRL | Qt::Key_F);
-    connect(a, SIGNAL(triggered()), main_window, SLOT(openFile()));
+    connect(a, &TAction::triggered, main_window, &TMainWindow::openFile);
     main_window->addAction(a);
 
     // Open dir
     a = new TAction(this, "open_directory", tr("Open &directory..."),
                              "", QKeySequence("Ctrl+D"));
-    connect(a, SIGNAL(triggered()), main_window, SLOT(openDirectory()));
+    connect(a, &TAction::triggered, main_window, &TMainWindow::openDirectory);
     main_window->addAction(a);
 
     // Disc submenu
@@ -131,7 +132,7 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     // Close
     a = new TAction(this, "close", tr("&Close"));
     main_window->addAction(a);
-    connect(a, SIGNAL(triggered()), main_window, SLOT(closeWindow()));
+    connect(a, &TAction::triggered, main_window, &TMainWindow::closeWindow);
 }
 
 TMenuFile::~TMenuFile() {
@@ -166,7 +167,8 @@ void TMenuFile::updateRecents() {
                 .arg(i.insert(i.size()-1, '&'), 3, ' '));
             a->setStatusTip(fullname);
             a->setData(n);
-            connect(a, SIGNAL(triggered()), main_window, SLOT(openRecent()));
+            connect(a, &QAction::triggered,
+                    main_window, &TMainWindow::openRecent);
             current_items++;
         }
     } else {

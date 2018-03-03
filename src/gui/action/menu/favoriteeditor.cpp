@@ -88,23 +88,23 @@ TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
     setupUi(this);
 
     add_button->setIcon(Images::icon("bookmark_add"));
-    connect(add_button, SIGNAL(clicked()),
-            this, SLOT(onAddButtonClicked()));
+    connect(add_button, &QPushButton::clicked,
+            this, &TFavoriteEditor::onAddButtonClicked);
     add_submenu_button->setIcon(Images::icon("bookmark_folder"));
-    connect(add_submenu_button, SIGNAL(clicked()),
-            this, SLOT(onAddSubmenuButtonClicked()));
+    connect(add_submenu_button, &QPushButton::clicked,
+            this, &TFavoriteEditor::onAddSubmenuButtonClicked);
     delete_button->setIcon(Images::icon("delete"));
-    connect(delete_button, SIGNAL(clicked()),
-            this, SLOT(onDeleteButtonClicked()));
+    connect(delete_button, &QPushButton::clicked,
+            this, &TFavoriteEditor::onDeleteButtonClicked);
     delete_all_button->setIcon(Images::icon("trash"));
-    connect(delete_all_button, SIGNAL(clicked()),
-            this, SLOT(onDeleteAllButtonClicked()));
+    connect(delete_all_button, &QPushButton::clicked,
+            this, &TFavoriteEditor::onDeleteAllButtonClicked);
     up_button->setIcon(Images::icon("up"));
-    connect(up_button, SIGNAL(clicked()),
-            this, SLOT(onUpButtonClicked()));
+    connect(up_button, &QPushButton::clicked,
+            this, &TFavoriteEditor::onUpButtonClicked);
     down_button->setIcon(Images::icon("down"));
-    connect(down_button, SIGNAL(clicked()),
-            this, SLOT(onDownButtonClicked()));
+    connect(down_button, &QPushButton::clicked,
+            this, &TFavoriteEditor::onDownButtonClicked);
 
     table->setColumnCount(3);
     table->setHorizontalHeaderLabels(QStringList() << tr("Icon") << tr("Name")
@@ -120,8 +120,8 @@ TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
     table->setItemDelegateForColumn(COL_NAME, new FEDelegate(table));
     table->setItemDelegateForColumn(COL_FILE, new FEDelegate(table));
 
-    connect(table, SIGNAL(cellActivated(int,int)),
-            this, SLOT(edit_icon(int,int)));
+    connect(table, &QTableWidget::cellActivated,
+            this, &TFavoriteEditor::edit_icon);
 
     setWindowTitle(tr("Favorite editor"));
 

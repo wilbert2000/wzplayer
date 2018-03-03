@@ -19,8 +19,8 @@ TSizeGrip::TSizeGrip(QWidget* parent, QToolBar* tb)
     // Copy stay on top and floating
     setWindowFlags(toolbar->windowFlags());
     onOrientationChanged(toolbar->orientation());
-    connect(toolbar, SIGNAL(orientationChanged(Qt::Orientation)),
-            this, SLOT(onOrientationChanged(Qt::Orientation)));
+    connect(toolbar, &QToolBar::orientationChanged,
+            this, &TSizeGrip::onOrientationChanged);
 }
 
 void TSizeGrip::onOrientationChanged(Qt::Orientation orientation) {

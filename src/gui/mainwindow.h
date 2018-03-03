@@ -98,6 +98,7 @@ public:
 
 public slots:
     virtual void open(const QString& fileName); // Generic open, autodetect type
+    void openRecent();
     void openURL();
     void openFile();
     void openDirectory();
@@ -110,6 +111,7 @@ public slots:
     void openVCD();
     void openAudioCD();
 
+    virtual void closeWindow();
     virtual void showConfigFolder();
 
     virtual void helpCLOptions();
@@ -128,16 +130,17 @@ public slots:
     virtual void showStereo3dDialog();
 
     virtual void exitFullscreen();
+    virtual void setFullscreen(bool);
     virtual void toggleFullscreen();
-    virtual void toggleFullscreen(bool);
 
     void setStayOnTop(bool b);
     virtual void changeStayOnTop(int);
     virtual void checkStayOnTop(Player::TState);
     void toggleStayOnTop();
 
-    void setSize(double factor);
-    void setSize(int percentage);
+    void setSizeFactor(double factor);
+    void setSizePercentage(int percentage);
+    void toggleDoubleSize();
     void optimizeSizeFactor();
 
     void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
@@ -192,13 +195,9 @@ protected:
     QMenu* createContextMenu();
 
 protected slots:
-    virtual void closeWindow();
-    // Replace for setCaption (in Qt 4 it's not virtual)
+    // Replacement for setCaption (in Qt 4 it's not virtual)
     virtual void setWindowCaption(const QString& title);
     virtual void onMediaInfoChanged();
-
-    void openRecent();
-    void toggleDoubleSize();
 
 private:
     QWidget* panel;

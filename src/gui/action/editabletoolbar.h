@@ -21,8 +21,8 @@
 
 #include <QToolBar>
 #include <QStringList>
+#include "gui/action/actionlist.h"
 #include "wzdebug.h"
-#include <gui/action/actionlist.h>
 
 
 namespace Gui {

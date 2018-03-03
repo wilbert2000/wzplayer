@@ -381,9 +381,9 @@ void TMainWindow::createActions() {
             this, &TMainWindow::onDragPositionChanged);
 
     connect(timeslider_action, &Action::TTimeSliderAction::wheelUp,
-            player, &Player::TPlayer::wheelUp);
+            player, &Player::TPlayer::wheelUpSeeking);
     connect(timeslider_action, &Action::TTimeSliderAction::wheelDown,
-            player, &Player::TPlayer::wheelDown);
+            player, &Player::TPlayer::wheelDownSeeking);
 
     // Volume slider action
     volumeslider_action = new Action::TVolumeSliderAction(this,
@@ -1843,17 +1843,10 @@ void TMainWindow::showStereo3dDialog() {
 }
 
 void TMainWindow::exitFullscreen() {
-
-    if (pref->fullscreen) {
-        toggleFullscreen(false);
-    }
+    setFullscreen(false);
 }
 
-void TMainWindow::toggleFullscreen() {
-    toggleFullscreen(!pref->fullscreen);
-}
-
-void TMainWindow::toggleFullscreen(bool b) {
+void TMainWindow::setFullscreen(bool b) {
     WZDEBUG(QString::number(b));
 
     if (b == pref->fullscreen) {
@@ -1875,6 +1868,10 @@ void TMainWindow::toggleFullscreen(bool b) {
     }
 
     setFocus(); // Fixes bug #2493415
+}
+
+void TMainWindow::toggleFullscreen() {
+    setFullscreen(!pref->fullscreen);
 }
 
 void TMainWindow::aboutToEnterFullscreen() {
@@ -1940,7 +1937,7 @@ void TMainWindow::didExitFullscreen() {
     // Update size when current video changed in fullscreen
     if (pref->resize_on_load
         && player->mdat.filename != first_fullscreen_filename) {
-        setSize(getDefaultSize());;
+        setSizeFactor(getDefaultSize());;
     }
 
     emit didExitFullscreenSignal();
@@ -1951,10 +1948,7 @@ void TMainWindow::enterFullscreenOnPlay() {
 
     if (TApp::start_in_fullscreen != TApp::FS_FALSE) {
         if (pref->start_in_fullscreen || TApp::start_in_fullscreen > 0) {
-            if (!pref->fullscreen) {
-                toggleFullscreen(true);
-            }
-
+            setFullscreen(true);
             // Clear TApp::start_in_fullscreen
             if (TApp::start_in_fullscreen == TApp::FS_RESTART) {
                 TApp::start_in_fullscreen = TApp::FS_NOT_SET;
@@ -1965,10 +1959,7 @@ void TMainWindow::enterFullscreenOnPlay() {
 
 // Called when the playlist has stopped
 void TMainWindow::exitFullscreenOnStop() {
-
-    if (pref->fullscreen) {
-        toggleFullscreen(false);
-    }
+    setFullscreen(false);
 }
 
 void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {
@@ -2003,7 +1994,7 @@ void TMainWindow::dropEvent(QDropEvent *e) {
     QMainWindow::dropEvent(e);
 }
 
-void TMainWindow::setSize(double factor) {
+void TMainWindow::setSizeFactor(double factor) {
     WZDEBUG(QString::number(factor));
 
     if (player->mdat.noVideo()) {
@@ -2040,22 +2031,22 @@ void TMainWindow::setSize(double factor) {
     msgOSD(tr("Size %1%").arg(QString::number(qRound(factor * 100))));
 }
 
-void TMainWindow::setSize(int percentage) {
+void TMainWindow::setSizePercentage(int percentage) {
     WZDEBUG(QString::number(percentage) + "%");
 
     if (percentage == 33) {
-        setSize((double) 1 / 3);
+        setSizeFactor((double) 1 / 3);
     } else {
-        setSize((double) percentage / 100);
+        setSizeFactor((double) percentage / 100);
     }
 }
 
 void TMainWindow::toggleDoubleSize() {
 
     if (pref->size_factor != 1.0) {
-        setSize(1.0);
+        setSizeFactor(1.0);
     } else {
-        setSize(2.0);
+        setSizeFactor(2.0);
     }
 }
 
@@ -2065,7 +2056,7 @@ void TMainWindow::hidePanel() {
     if (panel->isVisible()) {
         // Exit from fullscreen
         if (pref->fullscreen) {
-            toggleFullscreen(false);
+            setFullscreen(false);
             update();
         }
 
@@ -2181,7 +2172,7 @@ void TMainWindow::optimizeSizeFactor() {
     if (pref->fullscreen) {
         player->setZoom(1.0);
     } else {
-        setSize(optimizeSize(pref->size_factor));
+        setSizeFactor(optimizeSize(pref->size_factor));
     }
 }
 

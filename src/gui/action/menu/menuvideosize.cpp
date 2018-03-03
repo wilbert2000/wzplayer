@@ -97,28 +97,30 @@ TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
 
     group = new TVideoSizeGroup(this, pw);
     addActions(group->actions());
-    connect(group, SIGNAL(activated(int)), main_window, SLOT(setSize(int)));
+    connect(group, &TVideoSizeGroup::activated,
+            main_window, &TMainWindow::setSizePercentage);
 
     addSeparator();
     doubleSizeAct = new TAction(this, "toggle_double_size",
                                 tr("&Toggle double size"), "", Qt::Key_D);
-    connect(doubleSizeAct, SIGNAL(triggered()),
-            main_window, SLOT(toggleDoubleSize()));
+    connect(doubleSizeAct, &TAction::triggered,
+            main_window, &TMainWindow::toggleDoubleSize);
 
     currentSizeAct = new TAction(this, "video_size", "", "", QKeySequence("`"));
-    connect(currentSizeAct, SIGNAL(triggered()),
-            main_window, SLOT(optimizeSizeFactor()));
+    connect(currentSizeAct, &TAction::triggered,
+            main_window, &TMainWindow::optimizeSizeFactor);
     //setDefaultAction(currentSizeAct);
-    connect(playerWindow, SIGNAL(videoSizeFactorChanged(double, double)),
-            this, SLOT(onVideoSizeFactorChanged()), Qt::QueuedConnection);
+    connect(playerWindow, &TPlayerWindow::videoSizeFactorChanged,
+            this, &TMenuVideoSize::onVideoSizeFactorChanged,
+            Qt::QueuedConnection);
 
 
     resizeOnLoadAct = new TAction(this, "resize_on_load",
                                   tr("&Resize on load"), "",
                                   Qt::ALT | Qt::Key_R);
     resizeOnLoadAct->setCheckable(true);
-    connect(resizeOnLoadAct, SIGNAL(triggered(bool)),
-            this, SLOT(onResizeOnLoadTriggered(bool)));
+    connect(resizeOnLoadAct, &TAction::triggered,
+            this, &TMenuVideoSize::onResizeOnLoadTriggered);
 
     addActionsTo(main_window);
     upd();

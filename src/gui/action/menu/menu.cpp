@@ -68,10 +68,10 @@ TMenu::TMenu(QWidget* parent,
         menuAction()->setIcon(Images::icon(iconName));
     }
 
-    connect(main_window, SIGNAL(enableActions()),
-            this, SLOT(enableActions()));
-    connect(main_window, SIGNAL(mediaSettingsChanged(Settings::TMediaSettings*)),
-            this, SLOT(onMediaSettingsChanged(Settings::TMediaSettings*)));
+    connect(main_window, &TMainWindow::enableActions,
+            this, &TMenu::enableActions);
+    connect(main_window, &TMainWindow::mediaSettingsChanged,
+            this, &TMenu::onMediaSettingsChanged);
 }
 
 TMenu::~TMenu() {

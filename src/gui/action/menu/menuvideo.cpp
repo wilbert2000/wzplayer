@@ -53,7 +53,8 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
     new TActionGroupItem(this, group, "deinterlace_kern", tr("&Kerndeint"),
                          TMediaSettings::Kerndeint);
     group->setChecked(player->mset.current_deinterlacer);
-    connect(group, SIGNAL(activated(int)), player, SLOT(setDeinterlace(int)));
+    connect(group, &TActionGroup::activated,
+            player, &Player::TPlayer::setDeinterlace);
     // No one else sets it
 
     addSeparator();
@@ -61,8 +62,8 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
                                        tr("Toggle deinterlacing"),
                                        "deinterlace", Qt::Key_I);
     toggleDeinterlaceAct->setCheckable(true);
-    connect(toggleDeinterlaceAct, SIGNAL(triggered()),
-            player, SLOT(toggleDeinterlace()));
+    connect(toggleDeinterlaceAct, &TAction::triggered,
+            player, &Player::TPlayer::toggleDeinterlace);
 
     addActionsTo(main_window);
 }
@@ -104,20 +105,26 @@ TMenuTransform::TMenuTransform(TMainWindow* mw)
 
     flipAct = new TAction(this, "flip", tr("Fli&p image"));
     flipAct->setCheckable(true);
-    connect(flipAct, SIGNAL(triggered(bool)), player, SLOT(setFlip(bool)));
+    connect(flipAct, &TAction::triggered,
+            player, &Player::TPlayer::setFlip);
 
     mirrorAct = new TAction(this, "mirror", tr("&Mirror image"));
     mirrorAct->setCheckable(true);
-    connect(mirrorAct, SIGNAL(triggered(bool)), player, SLOT(setMirror(bool)));
+    connect(mirrorAct, &TAction::triggered,
+            player, &Player::TPlayer::setMirror);
 
     addSeparator();
     group = new TActionGroup(this, "rotate");
     group->setEnabled(false);
     new TActionGroupItem(this, group, "rotate_none", tr("&No rotation"), 0);
-    new TActionGroupItem(this, group, "rotate_90", trUtf8("&Rotate 90° clockwise"), 90, true, true);
-    new TActionGroupItem(this, group, "rotate_270", trUtf8("Rotate 90° &counter-clockwise"), 270, true, true);
+    new TActionGroupItem(this, group, "rotate_90",
+                         trUtf8("&Rotate 90° clockwise"), 90, true, true);
+    new TActionGroupItem(this, group, "rotate_270",
+                         trUtf8("Rotate 90° &counter-clockwise"), 270, true,
+                         true);
     group->setChecked(player->mset.rotate);
-    connect(group, SIGNAL(activated(int)), player, SLOT(setRotate(int)));
+    connect(group, &TActionGroup::activated,
+            player, &Player::TPlayer::setRotate);
     // No one changes it
 
     addActionsTo(main_window);
@@ -170,31 +177,31 @@ TMenuZoomAndPan::TMenuZoomAndPan(TMainWindow* mw)
     TAction* a = new TAction(this, "reset_zoom_and_pan",
                              tr("&Reset zoom and pan"), "", Qt::Key_5);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(resetZoomAndPan()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::resetZoomAndPan);
 
     // Zoom
     addSeparator();
     a = new TAction(this, "dec_zoom", tr("Zoom &-"), "", Qt::Key_1);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(decZoom()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decZoom);
     a = new TAction(this, "inc_zoom", tr("Zoom &+"), "", Qt::Key_9);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(incZoom()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incZoom);
 
     // Pan
     addSeparator();
     a = new TAction(this, "move_left", tr("Move &left"), "", Qt::Key_4);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(panRight()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::panRight);
     a = new TAction(this, "move_right", tr("Move &right"), "", Qt::Key_6);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(panLeft()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::panLeft);
     a = new TAction(this, "move_up", tr("Move &up"), "", Qt::Key_8);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(panDown()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::panDown);
     a = new TAction(this, "move_down", tr("Move &down"), "", Qt::Key_2);
     group->addAction(a);
-    connect(a, SIGNAL(triggered()), player, SLOT(panUp()));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::panUp);
 
     addActionsTo(main_window);
 }
@@ -213,20 +220,19 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
                                 Qt::Key_F);
     //fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
     fullscreenAct->setCheckable(true);
-    connect(fullscreenAct, SIGNAL(triggered(bool)),
-            main_window, SLOT(toggleFullscreen(bool)));
+    connect(fullscreenAct, &TAction::triggered,
+            main_window, &TMainWindow::toggleFullscreen);
 
     exitFullscreenAct = new TAction(this, "exit_fullscreen",
                                     tr("Exit fullscreen"), "", Qt::Key_Escape,
                                     false);
     exitFullscreenAct->setEnabled(false);
     main_window->addAction(exitFullscreenAct);
-    connect(exitFullscreenAct, SIGNAL(triggered()),
-            main_window, SLOT(exitFullscreen()));
+    connect(exitFullscreenAct, &TAction::triggered,
+            main_window, &TMainWindow::exitFullscreen);
 
-    connect(main_window, SIGNAL(fullscreenChanged()),
-            this, SLOT(onFullscreenChanged()),
-            Qt::QueuedConnection);
+    connect(main_window, &TMainWindow::fullscreenChanged,
+            this, &TMenuVideo::onFullscreenChanged, Qt::QueuedConnection);
 
     // Aspect submenu
     addSeparator();
@@ -238,55 +244,79 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
 
     // Equalizer
     addSeparator();
-    equalizerAct = new TAction(this, "video_equalizer", tr("&Equalizer"), "", QKeySequence("E"));
+    equalizerAct = new TAction(this, "video_equalizer", tr("&Equalizer"), "",
+                               QKeySequence("E"));
     equalizerAct->setCheckable(true);
     equalizerAct->setChecked(videoEqualizer->isVisible());
-    connect(equalizerAct, SIGNAL(triggered(bool)), videoEqualizer, SLOT(setVisible(bool)));
-    connect(videoEqualizer, SIGNAL(visibilityChanged(bool)), equalizerAct, SLOT(setChecked(bool)));
+    connect(equalizerAct, &TAction::triggered,
+            videoEqualizer, &TVideoEqualizer::setVisible);
+    connect(videoEqualizer, &TVideoEqualizer::visibilityChanged,
+            equalizerAct, &TAction::setChecked);
 
-    resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer", tr("Reset video equalizer"), "", QKeySequence("Shift+E"));
-    connect(resetVideoEqualizerAct, SIGNAL(triggered()), videoEqualizer, SLOT(reset()));
+    resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer",
+                                         tr("Reset video equalizer"), "",
+                                         QKeySequence("Shift+E"));
+    connect(resetVideoEqualizerAct, &TAction::triggered,
+            videoEqualizer, &TVideoEqualizer::reset);
 
     // Short cuts equalizer (not in menu)
-    decContrastAct = new TAction(this, "dec_contrast", tr("Dec contrast"), "", Qt::ALT | Qt::Key_1, false);
+    decContrastAct = new TAction(this, "dec_contrast", tr("Dec contrast"), "",
+                                 Qt::ALT | Qt::Key_1, false);
     main_window->addAction(decContrastAct);
-    connect(decContrastAct, SIGNAL(triggered()), player, SLOT(decContrast()));
+    connect(decContrastAct, &TAction::triggered,
+            player, &Player::TPlayer::decContrast);
 
-    incContrastAct = new TAction(this, "inc_contrast", tr("Inc contrast"), "", Qt::ALT | Qt::Key_2, false);
+    incContrastAct = new TAction(this, "inc_contrast", tr("Inc contrast"), "",
+                                 Qt::ALT | Qt::Key_2, false);
     main_window->addAction(incContrastAct);
-    connect(incContrastAct, SIGNAL(triggered()), player, SLOT(incContrast()));
+    connect(incContrastAct, &TAction::triggered,
+            player, &Player::TPlayer::incContrast);
 
-    decBrightnessAct = new TAction(this, "dec_brightness", tr("Dec brightness"), "", Qt::ALT | Qt::Key_3, false);
+    decBrightnessAct = new TAction(this, "dec_brightness", tr("Dec brightness"),
+                                   "", Qt::ALT | Qt::Key_3, false);
     main_window->addAction(decBrightnessAct);
-    connect(decBrightnessAct, SIGNAL(triggered()), player, SLOT(decBrightness()));
+    connect(decBrightnessAct, &TAction::triggered,
+            player, &Player::TPlayer::decBrightness);
 
-    incBrightnessAct = new TAction(this, "inc_brightness", tr("Inc brightness"), "", Qt::ALT | Qt::Key_4, false);
+    incBrightnessAct = new TAction(this, "inc_brightness", tr("Inc brightness"),
+                                   "", Qt::ALT | Qt::Key_4, false);
     main_window->addAction(incBrightnessAct);
-    connect(incBrightnessAct, SIGNAL(triggered()), player, SLOT(incBrightness()));
+    connect(incBrightnessAct, &TAction::triggered,
+            player, &Player::TPlayer::incBrightness);
 
-    decHueAct = new TAction(this, "dec_hue", tr("Dec hue"), "", Qt::ALT | Qt::Key_5, false);
+    decHueAct = new TAction(this, "dec_hue", tr("Dec hue"), "",
+                            Qt::ALT | Qt::Key_5, false);
     main_window->addAction(decHueAct);
-    connect(decHueAct, SIGNAL(triggered()), player, SLOT(decHue()));
+    connect(decHueAct, &TAction::triggered, player, &Player::TPlayer::decHue);
 
-    incHueAct = new TAction(this, "inc_hue", tr("Inc hue"), "", Qt::ALT | Qt::Key_6, false);
+    incHueAct = new TAction(this, "inc_hue", tr("Inc hue"), "",
+                            Qt::ALT | Qt::Key_6, false);
     main_window->addAction(incHueAct);
-    connect(incHueAct, SIGNAL(triggered()), player, SLOT(incHue()));
+    connect(incHueAct, &TAction::triggered, player, &Player::TPlayer::incHue);
 
-    decSaturationAct = new TAction(this, "dec_saturation", tr("Dec saturation"), "", Qt::ALT | Qt::Key_7, false);
+    decSaturationAct = new TAction(this, "dec_saturation", tr("Dec saturation"),
+                                   "", Qt::ALT | Qt::Key_7, false);
     main_window->addAction(decSaturationAct);
-    connect(decSaturationAct, SIGNAL(triggered()), player, SLOT(decSaturation()));
+    connect(decSaturationAct, &TAction::triggered,
+            player, &Player::TPlayer::decSaturation);
 
-    incSaturationAct = new TAction(this, "inc_saturation", tr("Inc saturation"), "", Qt::ALT | Qt::Key_8, false);
+    incSaturationAct = new TAction(this, "inc_saturation", tr("Inc saturation"),
+                                   "", Qt::ALT | Qt::Key_8, false);
     main_window->addAction(incSaturationAct);
-    connect(incSaturationAct, SIGNAL(triggered()), player, SLOT(incSaturation()));
+    connect(incSaturationAct, &TAction::triggered,
+            player, &Player::TPlayer::incSaturation);
 
-    decGammaAct = new TAction(this, "dec_gamma", tr("Dec gamma"), "", Qt::ALT | Qt::Key_9, false);
+    decGammaAct = new TAction(this, "dec_gamma", tr("Dec gamma"), "",
+                              Qt::ALT | Qt::Key_9, false);
     main_window->addAction(decGammaAct);
-    connect(decGammaAct, SIGNAL(triggered()), player, SLOT(decGamma()));
+    connect(decGammaAct, &TAction::triggered,
+            player, &Player::TPlayer::decGamma);
 
-    incGammaAct = new TAction(this, "inc_gamma", tr("Inc gamma"), "", Qt::ALT | Qt::Key_0, false);
+    incGammaAct = new TAction(this, "inc_gamma", tr("Inc gamma"), "",
+                              Qt::ALT | Qt::Key_0, false);
     main_window->addAction(incGammaAct);
-    connect(incGammaAct, SIGNAL(triggered()), player, SLOT(incGamma()));
+    connect(incGammaAct, &TAction::triggered,
+            player, &Player::TPlayer::incGamma);
 
     // Color space
     addMenu(new TMenuVideoColorSpace(main_window));
@@ -300,8 +330,10 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     addMenu(new TMenuVideoFilter(main_window));
 
     // Stereo 3D
-    stereo3DAct = new TAction(this, "stereo_3d_filter", tr("Stereo &3D filter..."), "stereo3d");
-    connect(stereo3DAct, SIGNAL(triggered()), main_window, SLOT(showStereo3dDialog()));
+    stereo3DAct = new TAction(this, "stereo_3d_filter",
+                              tr("Stereo &3D filter..."), "stereo3d");
+    connect(stereo3DAct, &TAction::triggered,
+            main_window, &TMainWindow::showStereo3dDialog);
 
     // Video tracks
     addSeparator();
@@ -310,18 +342,24 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     // Screenshots
     addSeparator();
     // Single
-    screenshotAct = new TAction(this, "screenshot", tr("S&creenshot"), "", Qt::Key_R);
-    connect(screenshotAct, SIGNAL(triggered()), player, SLOT(screenshot()));
+    screenshotAct = new TAction(this, "screenshot", tr("S&creenshot"), "",
+                                Qt::Key_R);
+    connect(screenshotAct, &TAction::triggered,
+            player, &Player::TPlayer::screenshot);
 
     // Multiple
     screenshotsAct = new TAction(this, "multiple_screenshots",
-        tr("Start/stop takin&g screenshots"), "screenshots", Qt::SHIFT | Qt::Key_R);
-    connect(screenshotsAct, SIGNAL(triggered()), player, SLOT(screenshots()));
+        tr("Start/stop takin&g screenshots"), "screenshots",
+        Qt::SHIFT | Qt::Key_R);
+    connect(screenshotsAct, &TAction::triggered,
+            player, &Player::TPlayer::screenshots);
 
     // Capture
-    capturingAct = new TAction(this, "capture_stream", tr("Start/stop capturing stream"),
-        "record", Qt::CTRL | Qt::Key_R);
-    connect(capturingAct, SIGNAL(triggered()), player, SLOT(switchCapturing()) );
+    capturingAct = new TAction(this, "capture_stream",
+                               tr("Start/stop capturing stream"),
+                               "record", Qt::CTRL | Qt::Key_R);
+    connect(capturingAct, &TAction::triggered,
+            player, &Player::TPlayer::switchCapturing);
 
     addActionsTo(main_window);
 }
