@@ -73,8 +73,8 @@ TAddRemovedMenu::TAddRemovedMenu(QWidget* parent,
     TMenu(parent, w, "pl_add_removed_menu", tr("Add &removed item")),
     playlistWidget(plWidget) {
 
-    connect(this, SIGNAL(triggered(QAction*)),
-            this, SLOT(onTriggered(QAction*)));
+    connect(this, &TAddRemovedMenu::triggered,
+            this, &TAddRemovedMenu::onTriggered);
 }
 
 TAddRemovedMenu::~TAddRemovedMenu() {
@@ -144,19 +144,19 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
     createToolbar();
     createPopupMenu();
 
-    connect(player, SIGNAL(newMediaStartedPlaying()),
-            this, SLOT(onNewMediaStartedPlaying()));
-    connect(player, SIGNAL(playerError(int)),
-            this, SLOT(onPlayerError()));
-    connect(player, SIGNAL(titleTrackChanged(int)),
-            this, SLOT(onTitleTrackChanged(int)));
-    connect(player, SIGNAL(mediaEOF()),
-            this, SLOT(onMediaEOF()), Qt::QueuedConnection);
-    connect(player, SIGNAL(noFileToPlay()),
-            this, SLOT(resumePlay()), Qt::QueuedConnection);
+    connect(player, &Player::TPlayer::newMediaStartedPlaying,
+            this, &TPlaylist::onNewMediaStartedPlaying);
+    connect(player, &Player::TPlayer::playerError,
+            this, &TPlaylist::onPlayerError);
+    connect(player, &Player::TPlayer::titleTrackChanged,
+            this, &TPlaylist::onTitleTrackChanged);
+    connect(player, &Player::TPlayer::mediaEOF,
+            this, &TPlaylist::onMediaEOF, Qt::QueuedConnection);
+    connect(player, &Player::TPlayer::noFileToPlay,
+            this, &TPlaylist::resumePlay, Qt::QueuedConnection);
 
-    connect(main_window, SIGNAL(enableActions()),
-            this, SLOT(enableActions()));
+    connect(main_window, &TMainWindow::enableActions,
+            this, &TPlaylist::enableActions);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(playlistWidget);
@@ -180,13 +180,12 @@ void TPlaylist::createTree() {
     playlistWidget = new TPlaylistWidget(this);
     playlistWidget->setObjectName("playlist_tree");
 
-    connect(playlistWidget, SIGNAL(modifiedChanged()),
-            this, SLOT(onModifiedChanged()));
-    connect(playlistWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
-             this, SLOT(onItemActivated(QTreeWidgetItem*, int)));
-    connect(playlistWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,
-                                                      QTreeWidgetItem*)),
-            this, SLOT(enableActions()));
+    connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
+            this, &TPlaylist::onModifiedChanged);
+    connect(playlistWidget, &TPlaylistWidget::itemActivated,
+             this, &TPlaylist::onItemActivated);
+    connect(playlistWidget, &TPlaylistWidget::currentItemChanged,
+            this, &TPlaylist::enableActions);
 }
 
 void TPlaylist::createActions() {
@@ -194,76 +193,80 @@ void TPlaylist::createActions() {
     // Open
     openAct = new TAction(this, "pl_open", tr("Open &playlist..."), "",
                           QKeySequence("Ctrl+P"));
-    connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+    connect(openAct, &TAction::triggered, this, &TPlaylist::open);
 
     // Save
     saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save",
                           QKeySequence("Ctrl+S"));
-    connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+    connect(saveAct, &TAction::triggered, this, &TPlaylist::save);
 
     // SaveAs
     saveAsAct = new TAction(this, "pl_saveas", tr("S&ave playlist as..."),
                             "saveas");
-    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+    connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
     // Properties
     propertiesAct = new TAction(this, "view_properties",
         tr("&View properties..."), "info", Qt::SHIFT | Qt::Key_P);
     propertiesAct->setCheckable(true);
-    connect(propertiesAct, SIGNAL(triggered(bool)),
-            main_window, SLOT(showFilePropertiesDialog(bool)));
+    connect(propertiesAct, &TAction::triggered,
+            main_window, &TMainWindow::showFilePropertiesDialog);
 
     // Open directory
     openDirectoryAct = new TAction(this, "pl_open_directory",
                                    tr("&Open directory"));
     openDirectoryAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
-    connect(openDirectoryAct, SIGNAL(triggered()), this, SLOT(openFolder()));
+    connect(openDirectoryAct, &TAction::triggered,
+            this, &TPlaylist::openFolder);
 
     // Refresh
     refreshAct = new TAction(this, "pl_refresh", tr("R&efresh playlist"), "",
                              Qt::Key_F5);
-    connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
+    connect(refreshAct, &TAction::triggered,
+            this, &TPlaylist::refresh);
 
     // Stop
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
-    connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
+    connect(stopAct, &TAction::triggered, this, &TPlaylist::stop);
 
     // Play
     playAct = new TAction(this, "play", tr("P&lay selected"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
-    connect(playAct, SIGNAL(triggered()), this, SLOT(play()));
+    connect(playAct, &TAction::triggered, this, &TPlaylist::play);
 
     // Play in new window
     playNewAct = new TAction(this, "play_new", tr("Pl&ay in new window"),
                              "play", Qt::CTRL | Qt::Key_Space);
-    connect(playNewAct, SIGNAL(triggered()), this, SLOT(openInNewWindow()));
+    connect(playNewAct, &TAction::triggered,
+            this, &TPlaylist::openInNewWindow);
 
     // Pause
     pauseAct = new TAction(this, "pause", tr("Pause"), "",
                            QKeySequence("Media Pause")); // MCE remote key
-    connect(pauseAct, SIGNAL(triggered()), player, SLOT(pause()));
+    connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
 
     // Play/pause
     playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play",
                                  Qt::Key_Space);
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
-    connect(playOrPauseAct, SIGNAL(triggered()), this, SLOT(playOrPause()));
+    connect(playOrPauseAct, &TAction::triggered,
+            this, &TPlaylist::playOrPause);
 
     // Next
     nextAct = new TAction(this, "pl_next", tr("Play &next"), "next",
                           QKeySequence(">"));
     nextAct->addShortcut(QKeySequence("."));
     nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
-    connect(nextAct, SIGNAL(triggered()), this, SLOT(playNext()));
+    connect(nextAct, &TAction::triggered, this, &TPlaylist::playNext);
 
     // Prev
     prevAct = new TAction(this, "pl_prev", tr("Play pre&vious"), "previous",
                           QKeySequence("<"));
     prevAct->addShortcut(QKeySequence(","));
     prevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
-    connect(prevAct, SIGNAL(triggered()), this, SLOT(playPrev()));
+    connect(prevAct, &TAction::triggered, this, &TPlaylist::playPrev);
 
     // In-out menu
     inOutMenu = new Menu::TMenuInOut(main_window);
@@ -271,13 +274,13 @@ void TPlaylist::createActions() {
 
     // Repeat
     repeatAct = inOutMenu->findChild<TAction*>("pl_repeat");
-    connect(repeatAct, SIGNAL(triggered(bool)),
-            this, SLOT(onRepeatToggled(bool)));
+    connect(repeatAct, &TAction::triggered,
+            this, &TPlaylist::onRepeatToggled);
 
     // Shuffle
     shuffleAct = inOutMenu->findChild<TAction*>("pl_shuffle");
-    connect(shuffleAct, SIGNAL(triggered(bool)),
-            this, SLOT(onShuffleToggled(bool)));
+    connect(shuffleAct, &TAction::triggered,
+            this, &TPlaylist::onShuffleToggled);
 
     // Add menu
     add_menu = new Menu::TMenu(this, main_window, "pl_add_menu",
@@ -285,24 +288,28 @@ void TPlaylist::createActions() {
 
     addCurrentAct = new TAction(add_menu, "pl_add_current",
                                 tr("Add &current file"));
-    connect(addCurrentAct, SIGNAL(triggered()), this, SLOT(addCurrentFile()));
+    connect(addCurrentAct, &TAction::triggered,
+            this, &TPlaylist::addCurrentFile);
 
     addFilesAct = new TAction(add_menu, "pl_add_files", tr("Add &file(s)..."));
-    connect(addFilesAct, SIGNAL(triggered()), this, SLOT(addFiles()));
+    connect(addFilesAct, &TAction::triggered,
+            this, &TPlaylist::addFilesDialog);
 
     addDirectoryAct = new TAction(add_menu, "pl_add_directory",
                                   tr("Add &directory..."));
-    connect(addDirectoryAct, SIGNAL(triggered()), this, SLOT(addDirectory()));
+    connect(addDirectoryAct, &TAction::triggered,
+            this, &TPlaylist::addDirectory);
 
     addUrlsAct = new TAction(add_menu, "pl_add_urls", tr("Add &URL(s)..."));
-    connect(addUrlsAct, SIGNAL(triggered()), this, SLOT(addUrls()));
+    connect(addUrlsAct, &TAction::triggered,
+            this, &TPlaylist::addUrls);
 
     // Add removed sub menu
     add_removed_menu = new TAddRemovedMenu(add_menu, main_window,
                                                playlistWidget);
     add_menu->addMenu(add_removed_menu);
-    connect(add_removed_menu, SIGNAL(addRemovedItem(QString)),
-            this, SLOT(addRemovedItem(QString)));
+    connect(add_removed_menu, &TAddRemovedMenu::addRemovedItem,
+            this, &TPlaylist::addRemovedItem);
 
     addActions(add_menu->actions());
 
@@ -313,47 +320,50 @@ void TPlaylist::createActions() {
     removeSelectedAct = new TAction(remove_menu, "pl_remove_selected",
                                     tr("&Remove from list"), "",
                                     Qt::Key_Delete);
-    connect(removeSelectedAct, SIGNAL(triggered()),
-            this, SLOT(removeSelected()));
+    connect(removeSelectedAct, &TAction::triggered,
+            this, &TPlaylist::removeSelected);
 
     removeSelectedFromDiskAct = new TAction(remove_menu, "pl_delete_from_disk",
                                             tr("&Delete from disk..."));
-    connect(removeSelectedFromDiskAct, SIGNAL(triggered()),
-            this, SLOT(removeSelectedFromDisk()));
+    connect(removeSelectedFromDiskAct, &TAction::triggered,
+            this, &TPlaylist::removeSelectedFromDisk);
 
     removeAllAct = new TAction(remove_menu, "pl_remove_all",
                                tr("&Clear playlist"), "",
                                Qt::CTRL | Qt::Key_Delete);
-    connect(removeAllAct, SIGNAL(triggered()), this, SLOT(removeAll()));
+    connect(removeAllAct, &TAction::triggered,
+            this, &TPlaylist::removeAll);
 
     addActions(remove_menu->actions());
 
     // Edit
     editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "",
                           Qt::Key_Return);
-    connect(editAct, SIGNAL(triggered()), this, SLOT(editCurrentItem()));
+    connect(editAct, &TAction::triggered,
+            this, &TPlaylist::editCurrentItem);
 
     // Find playing
     findPlayingAct = new TAction(this, "pl_find_playing",
                                  tr("&Find playing item"));
-    connect(findPlayingAct, SIGNAL(triggered()), this, SLOT(findPlayingItem()));
+    connect(findPlayingAct, &TAction::triggered,
+            this, &TPlaylist::findPlayingItem);
 
     // Cut
     cutAct = new TAction(this, "pl_cut", tr("&Cut file name(s)"), "",
                           QKeySequence("Ctrl+X"));
-    connect(cutAct, SIGNAL(triggered()), this, SLOT(cut()));
+    connect(cutAct, &TAction::triggered, this, &TPlaylist::cut);
 
     // Copy
     copyAct = new TAction(this, "pl_copy", tr("&Copy file name(s)"), "",
                           QKeySequence("Ctrl+C"));
-    connect(copyAct, SIGNAL(triggered()), this, SLOT(copySelected()));
+    connect(copyAct, &TAction::triggered, this, &TPlaylist::copySelected);
 
     // Paste
     pasteAct = new TAction(this, "pl_paste", tr("&Paste file name(s)"), "",
                           QKeySequence("Ctrl+V"));
-    connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
-    connect(QApplication::clipboard(), SIGNAL(dataChanged()),
-            this, SLOT(enablePaste()));
+    connect(pasteAct, &TAction::triggered, this, &TPlaylist::paste);
+    connect(QApplication::clipboard(), &QClipboard::dataChanged,
+            this, &TPlaylist::enablePaste);
 
 
     // Add actions to main window
@@ -419,8 +429,8 @@ void TPlaylist::createPopupMenu() {
     popup->addAction(openDirectoryAct);
     popup->addAction(refreshAct);
 
-    connect(playlistWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
-            this, SLOT(showContextMenu(const QPoint &)));
+    connect(playlistWidget, &TPlaylistWidget::customContextMenuRequested,
+            this, &TPlaylist::showContextMenu);
 }
 
 void TPlaylist::retranslateStrings() {
@@ -574,9 +584,10 @@ void TPlaylist::addFilesStartThread() {
                                      pref->addPlaylists,
                                      addImages);
 
-        connect(thread, SIGNAL(finished()), this, SLOT(onThreadFinished()));
-        connect(thread, SIGNAL(displayMessage(QString, int)),
-                msgSlot, SLOT(msg(QString, int)));
+        connect(thread, &TAddFilesThread::finished,
+                this, &TPlaylist::onThreadFinished);
+        connect(thread, &TAddFilesThread::displayMessage,
+                msgSlot, &TMsgSlot::msg);
 
         thread->start();
         enableActions();
@@ -599,7 +610,7 @@ void TPlaylist::addFiles(const QStringList& files,
     addFilesStartThread();
 }
 
-void TPlaylist::addFiles() {
+void TPlaylist::addFilesDialog() {
 
     QStringList files = TFileDialog::getOpenFileNames(this,
         tr("Select one or more files to add"), pref->last_dir,

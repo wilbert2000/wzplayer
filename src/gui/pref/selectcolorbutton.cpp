@@ -25,10 +25,10 @@
 namespace Gui { namespace Pref {
 
 TSelectColorButton::TSelectColorButton(QWidget* parent) 
-    : QPushButton(parent)
-{
-    connect(this, SIGNAL(clicked()), this, SLOT(selectColor()));
+    : QPushButton(parent) {
 
+    connect(this, &TSelectColorButton::clicked,
+            this, &TSelectColorButton::selectColor);
     ignore_change_event = false;
 }
 

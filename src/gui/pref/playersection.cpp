@@ -40,14 +40,14 @@ TPlayerSection::TPlayerSection(QWidget* parent)
     mplayer_edit->setDialogType(TFileChooser::GetFileName);
     mpv_edit->setDialogType(TFileChooser::GetFileName);
 
-    connect(mplayer_edit, SIGNAL(fileChanged(QString)),
-            this, SLOT(onMPlayerFileChanged(QString)));
-    connect(mpv_edit, SIGNAL(fileChanged(QString)),
-            this, SLOT(onMPVFileChanged(QString)));
-    connect(mplayer_radio, SIGNAL(clicked(bool)),
-            this, SLOT(onPlayerRadioClicked(bool)));
-    connect(mpv_radio, SIGNAL(clicked(bool)),
-            this, SLOT(onPlayerRadioClicked(bool)));
+    connect(mplayer_edit, &TFileChooser::fileChanged,
+            this, &TPlayerSection::onMPlayerFileChanged);
+    connect(mpv_edit, &TFileChooser::fileChanged,
+            this, &TPlayerSection::onMPVFileChanged);
+    connect(mplayer_radio, &QRadioButton::clicked,
+            this, &TPlayerSection::onPlayerRadioClicked);
+    connect(mpv_radio, &QRadioButton::clicked,
+            this, &TPlayerSection::onPlayerRadioClicked);
 
 #ifdef Q_OS_WIN
     radio_tv_group->hide();

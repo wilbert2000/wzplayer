@@ -233,7 +233,7 @@ private slots:
     void stop();
 
     void addCurrentFile();
-    void addFiles();
+    void addFilesDialog();
     void addDirectory();
     void addUrls();
     void addRemovedItem(QString s);

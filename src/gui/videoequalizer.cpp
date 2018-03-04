@@ -49,19 +49,19 @@ TVideoEqualizer::TVideoEqualizer(QWidget* parent, Qt::WindowFlags f)
              gamma_indicator, SLOT(setNum(int)));
 
     // Reemit signals
-    connect(contrast_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(contrastChanged(int)));
-    connect(brightness_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(brightnessChanged(int)));
-    connect(hue_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(hueChanged(int)));
-    connect(saturation_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(saturationChanged(int)));
-    connect(gamma_slider, SIGNAL(valueChanged(int)),
-             this, SIGNAL(gammaChanged(int)));
+    connect(contrast_slider, &QSlider::valueChanged,
+             this, &TVideoEqualizer::contrastChanged);
+    connect(brightness_slider, &QSlider::valueChanged,
+             this, &TVideoEqualizer::brightnessChanged);
+    connect(hue_slider, &QSlider::valueChanged,
+             this, &TVideoEqualizer::hueChanged);
+    connect(saturation_slider, &QSlider::valueChanged,
+             this, &TVideoEqualizer::saturationChanged);
+    connect(gamma_slider, &QSlider::valueChanged,
+             this, &TVideoEqualizer::gammaChanged);
 
-    connect(makedefault_button, SIGNAL(clicked()), 
-             this, SIGNAL(requestToChangeDefaultValues()));
+    connect(makedefault_button, &QPushButton::clicked,
+             this, &TVideoEqualizer::requestToChangeDefaultValues);
 
     adjustSize();
 }

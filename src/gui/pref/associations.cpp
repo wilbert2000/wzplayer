@@ -40,10 +40,14 @@ TAssociations::TAssociations(QWidget* parent, Qt::WindowFlags f)
 {
     setupUi(this);
 
-    connect(selectAll, SIGNAL(clicked(bool)), this, SLOT(selectAllClicked(bool)));
-    connect(selectNone, SIGNAL(clicked(bool)), this, SLOT(selectNoneClicked(bool)));
-    connect(listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listItemClicked(QListWidgetItem*)));
-    connect(listWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(listItemPressed(QListWidgetItem*)));
+    connect(selectAll, &QPushButton::clicked,
+            this, &TAssociations::selectAllClicked);
+    connect(selectNone, &QPushButton::clicked,
+            this, &TAssociations::selectNoneClicked);
+    connect(listWidget, &QListWidget::itemClicked,
+            this, &TAssociations::listItemClicked);
+    connect(listWidget, &QListWidget::itemPressed,
+            this, &TAssociations::listItemPressed);
 
     if (QSysInfo::WindowsVersion >= QSysInfo::WV_VISTA)
     {

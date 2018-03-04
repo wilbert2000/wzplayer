@@ -121,7 +121,8 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     left_click_timer = new QTimer(this);
     left_click_timer->setSingleShot(true);
     left_click_timer->setInterval(qApp->doubleClickInterval() + 10);
-    connect(left_click_timer, SIGNAL(timeout()), this, SLOT(onLeftClicked()));
+    connect(left_click_timer, &QTimer::timeout,
+            this, &TPlayerWindow::onLeftClicked);
     setDelayLeftClick(pref->delay_left_click);
 }
 

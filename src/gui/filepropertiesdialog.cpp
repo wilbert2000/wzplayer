@@ -40,7 +40,8 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, TMediaData* md)
     okButton = buttonBox->button(QDialogButtonBox::Ok);
     cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
     applyButton = buttonBox->button(QDialogButtonBox::Apply);
-    connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+    connect(applyButton, &QPushButton::clicked,
+            this, &TFilePropertiesDialog::apply);
 
     codecs_set = false;
 

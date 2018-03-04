@@ -48,14 +48,14 @@ TUpdateChecker::TUpdateChecker(QWidget* parent,
     check_url = TConfig::URL_VERSION_INFO;
     user_agent = TConfig::PROGRAM_NAME.toLatin1();
 
-    connect(this, SIGNAL(newVersionFound(const QString&)),
-            this, SLOT(reportNewVersionAvailable(const QString&)));
+    connect(this, &TUpdateChecker::newVersionFound,
+            this, &TUpdateChecker::reportNewVersionAvailable);
 
-    connect(this, SIGNAL(noNewVersionFound(const QString&)),
-            this, SLOT(reportNoNewVersionFound(const QString&)));
+    connect(this, &TUpdateChecker::noNewVersionFound,
+            this, &TUpdateChecker::reportNoNewVersionFound);
 
-    connect(this, SIGNAL(errorOcurred(int, QString)),
-            this, SLOT(reportError(int, QString)));
+    connect(this, &TUpdateChecker::errorOcurred,
+            this, &TUpdateChecker::reportError);
 
     net_manager = new QNetworkAccessManager(this);
 
@@ -70,8 +70,9 @@ TUpdateChecker::TUpdateChecker(QWidget* parent,
     QNetworkRequest req(check_url);
     req.setRawHeader("User-Agent", user_agent);
     QNetworkReply *reply = net_manager->get(req);
-    connect(reply, SIGNAL(finished()),
-            this, SLOT(gotReply()), Qt::QueuedConnection);
+    connect(reply, &QNetworkReply::finished,
+            this, &TUpdateChecker::gotReply,
+            Qt::QueuedConnection);
 }
 
 TUpdateChecker::~TUpdateChecker() {
@@ -84,7 +85,8 @@ void TUpdateChecker::check() {
     QNetworkRequest req(check_url);
     req.setRawHeader("User-Agent", user_agent);
     QNetworkReply *reply = net_manager->get(req);
-    connect(reply, SIGNAL(finished()), this, SLOT(gotReplyFromUserRequest()));
+    connect(reply, &QNetworkReply::finished,
+            this, &TUpdateChecker::gotReplyFromUserRequest);
 }
 
 QString TUpdateChecker::parseVersion(const QByteArray& data, const QString& name) {

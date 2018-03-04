@@ -94,7 +94,7 @@ private slots:
     void onSectionClicked(int section);
     void onItemExpanded(QTreeWidgetItem*w);
     void onSectionResized(int, int, int);
-    void resizeRows();
+    void resizeRowsEx();
 };
 
 } // namespace Playlist

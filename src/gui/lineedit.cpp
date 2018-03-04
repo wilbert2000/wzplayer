@@ -28,9 +28,9 @@ TLineEdit::TLineEdit(QWidget *parent)
 {
     setupButton();
     button->hide();
-    connect(button, SIGNAL(clicked()), this, SLOT(clear()));
-    connect(this, SIGNAL(textChanged(const QString&)),
-            this, SLOT(updateCloseButton(const QString&)));
+    connect(button, &QToolButton::clicked, this, &TLineEdit::clear);
+    connect(this, &TLineEdit::textChanged,
+            this, &TLineEdit::updateCloseButton);
 }
 
 void TLineEdit::setupButton() {

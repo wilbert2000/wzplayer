@@ -59,8 +59,8 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
         }
     }
 
-    connect(single_instance_check, SIGNAL(toggled(bool)),
-            this, SLOT(changeInstanceImages()));
+    connect(single_instance_check, &QCheckBox::toggled,
+            this, &TInterface::changeInstanceImages);
 
     retranslateStrings();
 }

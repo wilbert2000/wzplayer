@@ -36,8 +36,8 @@ TEqSlider::TEqSlider(QWidget* parent, Qt::WindowFlags f)
     _slider->setSingleStep(1);
     _slider->setPageStep(10);
 
-    connect(_slider, SIGNAL(valueChanged(int)),
-            this, SIGNAL(valueChanged(int)));
+    connect(_slider, &QSlider::valueChanged,
+            this, &TEqSlider::valueChanged);
 }
 
 TEqSlider::~TEqSlider() {

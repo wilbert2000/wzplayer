@@ -51,7 +51,7 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
     setupUi(this);
 
     helpButton = buttonBox->button(QDialogButtonBox::Help);
-    connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
+    connect(helpButton, &QPushButton::clicked, this, &TDialog::showHelp);
 
     setWindowIcon(Images::icon("logo"));
 
@@ -68,10 +68,8 @@ TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
 
     page_player = new TPlayerSection(this);
     addSection(page_player);
-    connect(page_player, SIGNAL(binChanged(Settings::TPreferences::TPlayerID,
-                                           bool, const QString&)),
-            this, SLOT(onBinChanged(Settings::TPreferences::TPlayerID,
-                                    bool, const QString&)));
+    connect(page_player, &TPlayerSection::binChanged,
+            this, &TDialog::onBinChanged);
 
     page_demuxer = new TDemuxer(this);
     addSection(page_demuxer);

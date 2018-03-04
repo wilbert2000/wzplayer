@@ -36,9 +36,9 @@ TFileChooser::TFileChooser(QWidget* parent) : Gui::TLineEditWithIcon(parent) {
     setupButton();
     button->setCursor(Qt::PointingHandCursor);
 
-    connect(button, SIGNAL(clicked()), this, SLOT(openFileDialog()));
-    connect(this, SIGNAL(editingFinished()),
-            this, SLOT(onEditingFinished()));
+    connect(button, &QToolButton::clicked, this, &TFileChooser::openFileDialog);
+    connect(this, &TFileChooser::editingFinished,
+            this, &TFileChooser::onEditingFinished);
 }
 
 TFileChooser::~TFileChooser() {

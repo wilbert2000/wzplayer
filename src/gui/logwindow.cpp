@@ -45,17 +45,19 @@ TLogWindow::TLogWindow(QWidget* parent)
     setupUi(this);
     setObjectName("logwindow");
 
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(onSaveButtonClicked()));
-    connect(copyButton, SIGNAL(clicked()), this, SLOT(onCopyButtonClicked()));
-    connect(findEdit, SIGNAL(returnPressed()),
-            this, SLOT(onFindNextButtonClicked()));
-    connect(findEdit, SIGNAL(textChanged(QString)),
-            this, SLOT(onFindTextChanged()));
+    connect(saveButton, &QPushButton::clicked,
+            this, &TLogWindow::onSaveButtonClicked);
+    connect(copyButton, &QPushButton::clicked,
+            this, &TLogWindow::onCopyButtonClicked);
+    connect(findEdit, &QLineEdit::returnPressed,
+            this, &TLogWindow::onFindNextButtonClicked);
+    connect(findEdit, &QLineEdit::textChanged,
+            this, &TLogWindow::onFindTextChanged);
 
-    connect(findPreviousButton, SIGNAL(clicked()),
-            this, SLOT(onFindPreviousButtonClicked()));
-    connect(findNextButton, SIGNAL(clicked()),
-            this, SLOT(onFindNextButtonClicked()));
+    connect(findPreviousButton, &QPushButton::clicked,
+            this, &TLogWindow::onFindPreviousButtonClicked);
+    connect(findNextButton, &QPushButton::clicked,
+            this, &TLogWindow::onFindNextButtonClicked);
 
     edit->setMaximumBlockCount(pref->log_window_max_events);
     edit->setFont(QFont("Monospace"));

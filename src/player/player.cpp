@@ -71,85 +71,80 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     keepSizeTimer = new QTimer(this);
     keepSizeTimer->setInterval(1000);
     keepSizeTimer->setSingleShot(true);
-    connect(keepSizeTimer, SIGNAL(timeout()), this, SLOT(clearKeepSize()));
+    connect(keepSizeTimer, &QTimer::timeout, this, &TPlayer::clearKeepSize);
 
     proc = Player::Process::TPlayerProcess::createPlayerProcess(this, &mdat);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)),
-            this, SLOT(onProcessError(QProcess::ProcessError)));
-#else
-    connect(proc, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(onProcessError(QProcess::ProcessError)));
-#endif
+    connect(proc, &Process::TPlayerProcess::errorOccurred,
+            this, &TPlayer::onProcessError);
 
-    connect(proc, SIGNAL(processFinished(bool, int, bool)),
-            this, SLOT(onProcessFinished(bool, int, bool)));
+    connect(proc, &Process::TPlayerProcess::processFinished,
+            this, &TPlayer::onProcessFinished);
 
-    connect(proc, SIGNAL(playerFullyLoaded()),
-            this, SLOT(onPlayingStarted()));
+    connect(proc, &Process::TPlayerProcess::playerFullyLoaded,
+            this, &TPlayer::onPlayingStarted);
 
-    connect(proc, SIGNAL(receivedPosition(double)),
-            this, SLOT(onReceivedPosition(double)));
+    connect(proc, &Process::TPlayerProcess::receivedPosition,
+            this, &TPlayer::onReceivedPosition);
 
-    connect(proc, SIGNAL(receivedPause()),
-            this, SLOT(onReceivedPause()));
+    connect(proc, &Process::TPlayerProcess::receivedPause,
+            this, &TPlayer::onReceivedPause);
 
-    connect(proc, SIGNAL(receivedBuffering()),
-            this, SLOT(displayBuffering()));
+    connect(proc, &Process::TPlayerProcess::receivedBuffering,
+            this, &TPlayer::displayBuffering);
 
-    connect(proc, SIGNAL(receivedBufferingEnded()),
-            this, SLOT(displayBufferingEnded()));
+    connect(proc, &Process::TPlayerProcess::receivedBufferingEnded,
+            this, &TPlayer::displayBufferingEnded);
 
-    connect(proc, SIGNAL(receivedMessage(const QString&)),
-            this, SLOT(onReceivedMessage(const QString&)));
+    connect(proc, &Process::TPlayerProcess::receivedMessage,
+            this, &TPlayer::onReceivedMessage);
 
-    connect(proc, SIGNAL(receivedScreenshot(const QString&)),
-            this, SLOT(displayScreenshotName(const QString&)));
+    connect(proc, &Process::TPlayerProcess::receivedScreenshot,
+            this, &TPlayer::displayScreenshotName);
 
-    connect(proc, SIGNAL(receivedUpdatingFontCache()),
-            this, SLOT(displayUpdatingFontCache()));
+    connect(proc, &Process::TPlayerProcess::receivedUpdatingFontCache,
+            this, &TPlayer::displayUpdatingFontCache);
 
-    connect(proc, SIGNAL(receivedVideoOut()),
-            this, SLOT(onReceivedVideoOut()));
+    connect(proc, &Process::TPlayerProcess::receivedVideoOut,
+            this, &TPlayer::onReceivedVideoOut);
 
-    connect(proc, SIGNAL(receivedStreamTitle()),
-            this, SIGNAL(mediaInfoChanged()));
+    connect(proc, &Process::TPlayerProcess::receivedStreamTitle,
+            this, &TPlayer::mediaInfoChanged);
 
-    connect(proc, SIGNAL(receivedVideoTracks()),
-            this, SIGNAL(videoTracksChanged()));
-    connect(proc, SIGNAL(receivedVideoTrackChanged(int)),
-            this, SIGNAL(videoTrackChanged(int)));
+    connect(proc, &Process::TPlayerProcess::receivedVideoTracks,
+            this, &TPlayer::videoTracksChanged);
+    connect(proc, &Process::TPlayerProcess::receivedVideoTrackChanged,
+            this, &TPlayer::videoTrackChanged);
 
-    connect(proc, SIGNAL(receivedAudioTracks()),
-            this, SLOT(onAudioTracksChanged()));
-    connect(proc, SIGNAL(receivedAudioTrackChanged(int)),
-            this, SIGNAL(audioTrackChanged(int)));
+    connect(proc, &Process::TPlayerProcess::receivedAudioTracks,
+            this, &TPlayer::onAudioTracksChanged);
+    connect(proc, &Process::TPlayerProcess::receivedAudioTrackChanged,
+            this, &TPlayer::audioTrackChanged);
 
-    connect(proc, SIGNAL(receivedSubtitleTracks()),
-            this, SLOT(onSubtitlesChanged()));
-    connect(proc, SIGNAL(receivedSubtitleTrackChanged()),
-            this, SLOT(onSubtitleChanged()));
+    connect(proc, &Process::TPlayerProcess::receivedSubtitleTracks,
+            this, &TPlayer::onSubtitlesChanged);
+    connect(proc, &Process::TPlayerProcess::receivedSubtitleTrackChanged,
+            this, &TPlayer::onSubtitleChanged);
 
-    connect(proc, SIGNAL(receivedTitleTracks()),
-            this, SIGNAL(titleTracksChanged()));
-    connect(proc, SIGNAL(receivedTitleTrackChanged(int)),
-            this, SIGNAL(titleTrackChanged(int)));
+    connect(proc, &Process::TPlayerProcess::receivedTitleTracks,
+            this, &TPlayer::titleTracksChanged);
+    connect(proc, &Process::TPlayerProcess::receivedTitleTrackChanged,
+            this, &TPlayer::titleTrackChanged);
 
-    connect(proc, SIGNAL(receivedChapters()),
-            this, SIGNAL(chaptersChanged()));
+    connect(proc, &Process::TPlayerProcess::receivedChapters,
+            this, &TPlayer::chaptersChanged);
 
-    connect(proc, SIGNAL(receivedAngles()),
-            this, SIGNAL(anglesChanged()));
+    connect(proc, &Process::TPlayerProcess::receivedAngles,
+            this, &TPlayer::anglesChanged);
 
-    connect(proc, SIGNAL(durationChanged(double)),
-            this, SIGNAL(durationChanged(double)));
+    connect(proc, &Process::TPlayerProcess::durationChanged,
+            this, &TPlayer::durationChanged);
 
-    connect(proc, SIGNAL(videoBitRateChanged(int)),
-            this, SIGNAL(videoBitRateChanged(int)));
+    connect(proc, &Process::TPlayerProcess::videoBitRateChanged,
+            this, &TPlayer::videoBitRateChanged);
 
-    connect(proc, SIGNAL(audioBitRateChanged(int)),
-            this, SIGNAL(audioBitRateChanged(int)));
+    connect(proc, &Process::TPlayerProcess::audioBitRateChanged,
+            this, &TPlayer::audioBitRateChanged);
 }
 
 TPlayer::~TPlayer() {

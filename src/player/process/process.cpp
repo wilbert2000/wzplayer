@@ -30,8 +30,8 @@ TProcess::TProcess(QObject* parent) :
 
     setProcessChannelMode(QProcess::MergedChannels);
 
-    connect(this, SIGNAL(readyReadStandardOutput()),
-            this, SLOT(readStdOut()));
+    connect(this, &TProcess::readyReadStandardOutput,
+            this, &TProcess::readStdOut);
     connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
             this, SLOT(procFinished()));
 

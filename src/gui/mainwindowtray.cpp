@@ -75,7 +75,8 @@ TMainWindowTray::TMainWindowTray() :
     menu->addAction(quitAct);
     tray->setContextMenu(menu);
 
-    connect(this, SIGNAL(openFileRequested()), this, SLOT(showAll()));
+    connect(this, &TMainWindowTray::openFileRequested,
+            this, &TMainWindowTray::showMainWindow);
 
     retranslateStrings();
 }
@@ -189,7 +190,7 @@ void TMainWindowTray::toggleShowAll() {
     }
 }
 
-void TMainWindowTray::showAll() {
+void TMainWindowTray::showMainWindow() {
 
     if (!isVisible()) {
         showAll(true);

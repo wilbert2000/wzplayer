@@ -3,12 +3,9 @@ LANGUAGE = C++
 
 CONFIG += qt warn_on
 
-# Require Qt 5.4
-lessThan(QT_MAJOR_VERSION, 5) {
-    error("Qt 5.4 required")
-}
-lessThan(QT_MINOR_VERSION, 4) {
-    error("Qt 5.4 required")
+# Require Qt 5.6
+lessThan(QT_VERSION, 0x050600) {
+    error("Qt 5.6 required")
 }
 
 # Default to release build

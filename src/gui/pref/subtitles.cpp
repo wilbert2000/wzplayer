@@ -39,8 +39,8 @@ TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f) :
 
     setupUi(this);
 
-    connect(custom_style_group, SIGNAL(toggled(bool)),
-            this, SLOT(onUseCustomStyleToggled(bool)));
+    connect(custom_style_group, &QGroupBox::toggled,
+            this, &TSubtitles::onUseCustomStyleToggled);
     connect(style_border_style_combo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(onBorderStyleCurrentIndexChanged(int)));
 

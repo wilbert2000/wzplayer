@@ -94,8 +94,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setRootIndex(model()->index(0, 0));
 
     // Sort
-    connect(header(), SIGNAL(sectionClicked(int)),
-            this, SLOT(onSectionClicked(int)));
+    connect(header(), &QHeaderView::sectionClicked,
+            this, &TPlaylistWidget::onSectionClicked);
     header()->setSectionsClickable(true);
 
     // Drag and drop
@@ -117,13 +117,13 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     wordWrapTimer = new QTimer(this);
     wordWrapTimer->setInterval(500);
     wordWrapTimer->setSingleShot(true);
-    connect(wordWrapTimer, SIGNAL(timeout()),
-            this, SLOT(resizeRows()));
+    connect(wordWrapTimer, &QTimer::timeout,
+            this, &TPlaylistWidget::resizeRowsEx);
 
-    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)),
-            this, SLOT(onItemExpanded(QTreeWidgetItem*)));
-    connect(header(), SIGNAL(sectionResized(int,int,int)),
-            this, SLOT(onSectionResized(int,int,int)));
+    connect(this, &TPlaylistWidget::itemExpanded,
+            this, &TPlaylistWidget::onItemExpanded);
+    connect(header(), &QHeaderView::sectionResized,
+            this, &TPlaylistWidget::onSectionResized);
 
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
@@ -515,7 +515,7 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
     }
 }
 
-void TPlaylistWidget::resizeRows() {
+void TPlaylistWidget::resizeRowsEx() {
 
     gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
     resizeRows(root(), gRootNodeLevel);
