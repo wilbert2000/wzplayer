@@ -110,6 +110,7 @@ public slots:
     void openBluRayFromFolder();
     void openVCD();
     void openAudioCD();
+    void saveThumbnail();
 
     virtual void closeWindow();
     virtual void showConfigFolder();
@@ -317,10 +318,14 @@ private:
     void resizeMainWindow(int w, int h, double size_factor,
                           bool try_twice = true);
 
+    void removeThumbnail(QString fn);
+    void saveThumbnailToIni(const QString& fn, const QString& time);
+
     void retranslateStrings();
 
     void save();
     void restartApplication();
+    QString getSectionName();
 
 private slots:
     void onPlayerError(int exit_code);

@@ -83,6 +83,18 @@ void TPaths::setConfigPath() {
 
 } // void TPaths::setConfigPath()
 
+QString TPaths::genericCachePath() {
+
+    QString cache;
+    const char* XDG_CACHE_HOME = getenv("XDG_CACHE_HOME");
+    if (XDG_CACHE_HOME == NULL) {
+        cache = QDir::homePath() + "/.cache";
+    } else {
+        cache = QString(XDG_CACHE_HOME);
+    }
+    return cache;
+}
+
 static QString getDataSubDir(const QString& subdir) {
 
 #if defined(Q_OS_WIN) || defined(PORTABLE_APP)

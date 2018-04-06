@@ -129,6 +129,13 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
 
     addSeparator();
 
+    a  = new TAction(this, "save_thumbnail", tr("&Save thumbnail"), "",
+                              Qt::CTRL | Qt::Key_I);
+    connect(a, &TAction::triggered, main_window, &TMainWindow::saveThumbnail);
+    main_window->addAction(a);
+
+    addSeparator();
+
     // Close
     a = new TAction(this, "close", tr("&Close"));
     main_window->addAction(a);

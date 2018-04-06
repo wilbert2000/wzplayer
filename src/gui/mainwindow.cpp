@@ -75,6 +75,7 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QNetworkProxy>
+#include <QCryptographicHash>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -1737,6 +1738,78 @@ void TMainWindow::openBluRayFromFolder() {
         if (!dir.isEmpty()) {
             pref->last_dvd_directory = dir;
             player->openDisc(TDiscName("br", 0, dir));
+        }
+    }
+}
+
+QString TMainWindow::getSectionName() {
+
+    QString section;
+    QString fn = player->mdat.filename;
+    if (!fn.isEmpty()) {
+        QFileInfo fi(fn);
+        QString section(fi.canonicalFilePath());
+        if (section.isEmpty()) {
+            WZWARN("Canonical path for '" + fn + "' not found");
+        } if (section.startsWith('/')) {
+            section = "files" + section;
+        } else {
+            section = "files/" + section;
+        }
+    }
+
+    return section;
+}
+
+void TMainWindow::removeThumbnail(QString fn) {
+
+    fn = "file://" + fn;
+    QString thumb = QCryptographicHash::hash(fn.toUtf8(),
+                        QCryptographicHash::Md5).toHex() + ".png";
+
+    QString cacheDir = TPaths::genericCachePath() + "/thumbnails";
+    QDir dir(cacheDir + "/large");
+    dir.remove(thumb);
+    dir.setPath(cacheDir + "/normal");
+    dir.remove(thumb);
+}
+
+void TMainWindow::saveThumbnailToIni(const QString& fn, const QString& time) {
+
+    QString section;
+    if (fn.startsWith('/')) {
+        section = "files" + fn;
+    } else {
+        section = "files/" + fn;
+    }
+
+    QSettings settings("WH", "ffmpegthumbs");
+    settings.beginGroup(section);
+    settings.setValue("time", time);
+    settings.endGroup();
+    settings.sync();
+
+    QString m = "Saved thumbnail time " + time;
+    msg2(m);
+    WZINFO(m + " to " + section);
+}
+
+void TMainWindow::saveThumbnail() {
+
+    QString fn = player->mdat.filename;
+    if (!fn.isEmpty()) {
+        QFileInfo fi(fn);
+        QString canonical = fi.canonicalFilePath();
+        if (canonical.isEmpty()) {
+            WZWARN("Canonical path for '" + fn + "' not found");
+        } else {
+            QString time =TWZTime::formatTimeMS(
+                qRound(player->mset.current_sec * 1000));
+            saveThumbnailToIni(canonical, time);
+
+            // Remove cached thumbnails
+            removeThumbnail(fn);
+            removeThumbnail(canonical);
         }
     }
 }

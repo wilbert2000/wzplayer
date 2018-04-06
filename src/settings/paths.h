@@ -31,6 +31,7 @@ public:
     enum TLocation {
         DataLocation = QStandardPaths::DataLocation,
         AppDataLocation = QStandardPaths::AppDataLocation,
+        // GenericCacheLocation = QStandardPaths::GenericCacheLocation,
         PicturesLocation = QStandardPaths::PicturesLocation,
         DocumentsLocation = QStandardPaths::DocumentsLocation,
         HomeLocation = QStandardPaths::HomeLocation
@@ -48,6 +49,7 @@ public:
     static QString translationPath();
     static QString qtTranslationPath();
     static QString subtitleStyleFileName();
+    static QString genericCachePath();
 
 private:
     static QString config_path;
