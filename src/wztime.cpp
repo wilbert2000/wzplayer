@@ -1,6 +1,7 @@
 #include "wztime.h"
 
-// Format time as hh:mm:ss
+
+// Format time as [hh:]mm:ss
 QString TWZTime::formatTime(int secs) {
 
     QString negative;
@@ -11,10 +12,10 @@ QString TWZTime::formatTime(int secs) {
 
     int hours = 0;
     if (secs >= 3600) {
-        hours = (int) secs / 3600;
+        hours = secs / 3600;
         secs -= hours * 3600;
     }
-    int minutes = (int) secs / 60;
+    int minutes = secs / 60;
     secs -= minutes * 60;
 
     if (hours == 0) {
