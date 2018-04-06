@@ -12,10 +12,11 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, TWZFiles)
 bool TWZFiles::directoryContainsDVD(const QString& directory) {
 
     QDir dir(directory);
-    QStringList l = dir.entryList();
-    for (int n = 0; n < l.count(); n++) {
-        if (l[n].toLower() == "video_ts")
+    QStringList entries = dir.entryList();
+    for (int i = 0; i < entries.count(); i++) {
+        if (entries[i].toLower() == "video_ts") {
             return true;
+        }
     }
 
     return false;
