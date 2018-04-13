@@ -1769,9 +1769,13 @@ void TMainWindow::removeThumbnail(QString fn) {
 
     QString cacheDir = TPaths::genericCachePath() + "/thumbnails";
     QDir dir(cacheDir + "/large");
-    dir.remove(thumb);
+    if (dir.remove(thumb)) {
+        WZINFO("Removed large thumb '" + thumb + "'");
+    }
     dir.setPath(cacheDir + "/normal");
-    dir.remove(thumb);
+    if (dir.remove(thumb)) {
+        WZINFO("Removed normal thumb '" + thumb + "'");
+    }
 }
 
 void TMainWindow::saveThumbnailToIni(const QString& fn, const QString& time) {
