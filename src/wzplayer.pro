@@ -1,12 +1,12 @@
 TEMPLATE = app
 LANGUAGE = C++
 
-CONFIG += qt warn_on
-
 # Require Qt 5.6
 lessThan(QT_VERSION, 0x050600) {
-    error("Qt 5.6 required")
+    error("Qt 5.6 or later required")
 }
+
+CONFIG += qt warn_on c++11
 
 # Default to release build
 !CONFIG(debug, debug|release) {
