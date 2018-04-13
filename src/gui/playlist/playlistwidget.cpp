@@ -440,7 +440,7 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
 }
 
 void TPlaylistWidget::setOrder(TPlaylistWidgetItem* item, int& order) {
-    WZDEBUG(item->baseName() + " " + QString::number(order));
+    //WZDEBUG(item->baseName() + " " + QString::number(order));
 
     // Update order
     item->setOrder(order);

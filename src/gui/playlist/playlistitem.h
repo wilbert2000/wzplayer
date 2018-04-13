@@ -35,9 +35,12 @@ public:
 
     QString filename() const { return mFilename; }
     void setFilename(const QString& fileName, const QString& baseName);
+    void setFName(const QString& fileName);
 
     QString baseName() const { return mBaseName; }
     void setBaseName(const QString &baseName, bool protectName = false);
+
+    QString editName() const;
 
     QString extension() const { return mExt; }
     void setExtension(const QString& ext) { mExt = ext; }

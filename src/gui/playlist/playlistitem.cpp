@@ -174,12 +174,25 @@ void TPlaylistItem::setFileInfo() {
     }
 }
 
+void TPlaylistItem::setFName(const QString &fileName) {
+    mFilename = fileName;
+}
+
 void TPlaylistItem::setFilename(const QString &fileName,
                                 const QString& baseName) {
 
     mFilename = fileName;
     mBaseName = baseName;
     setFileInfo();
+}
+
+QString TPlaylistItem::editName() const {
+
+    QString name = mBaseName;
+    if (!mWZPlaylist && !mExt.isEmpty()) {
+        name += "." + mExt;
+    }
+    return name;
 }
 
 bool TPlaylistItem::blacklisted(const QString& filename) const {

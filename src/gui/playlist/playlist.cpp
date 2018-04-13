@@ -337,10 +337,16 @@ void TPlaylist::createActions() {
     addActions(remove_menu->actions());
 
     // Edit
-    editAct = new TAction(this, "pl_edit", tr("&Edit name..."), "",
-                          Qt::Key_Return);
-    connect(editAct, &TAction::triggered,
-            this, &TPlaylist::editCurrentItem);
+    editNameAct = new TAction(this, "pl_edit_name", tr("&Edit name..."));
+    // TODO:              "", Qt::Key_F2);
+    connect(editNameAct, &TAction::triggered,
+            this, &TPlaylist::editName);
+
+    // New folder
+    newFolderAct = new TAction(this, "pl_new_folder", tr("&New folder..."));
+    // TODO:              "", Qt::Key_F10);
+    connect(newFolderAct, &TAction::triggered,
+            this, &TPlaylist::newFolder);
 
     // Find playing
     findPlayingAct = new TAction(this, "pl_find_playing",
@@ -408,7 +414,8 @@ void TPlaylist::createToolbar() {
 void TPlaylist::createPopupMenu() {
 
     popup = new QMenu(this);
-    popup->addAction(editAct);
+    popup->addAction(editNameAct);
+    popup->addAction(newFolderAct);
     popup->addAction(findPlayingAct);
     popup->addSeparator();
     popup->addAction(cutAct);
@@ -1150,7 +1157,7 @@ void TPlaylist::enableActions() {
                                           && !current_item->isFolder());
     removeAllAct->setEnabled(e);
 
-    editAct->setEnabled(e && current_item);
+    editNameAct->setEnabled(e && current_item);
     findPlayingAct->setEnabled(playing_item);
     cutAct->setEnabled(e);
     copyAct->setEnabled(haveItems || playerHasFilename);
@@ -1202,7 +1209,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
             if (name != item->baseName()) {
                 WZDEBUG("updating name from '" + item->baseName() + "' to '"
                         + name + "'");
-                item->setName(name, item->extension());
+                item->setName(name, item->extension(), false);
                 modified = true;
             }
         }
@@ -1393,75 +1400,57 @@ void TPlaylist::onModifiedChanged() {
     setPlaylistTitle();
 }
 
-bool TPlaylist::rename(TPlaylistWidgetItem* item, const QString& newName) {
-
-    // Stop player if item is playing
-    if (item == playlistWidget->playing_item
-        && player->state() != Player::STATE_STOPPED) {
-        WZDEBUG("stopping currently playing item");
-        player->stop();
-        // TODO: restart at current time
-    }
-
-    QString nn = QDir::toNativeSeparators(
-                     QFileInfo(item->filename()).absolutePath());
-    if (!nn.endsWith(QDir::separator())) {
-        nn += QDir::separator();
-    }
-    nn += QDir::toNativeSeparators(newName);
-
-    if (QFile::rename(item->filename(), nn)) {
-        WZINFO("renamed file '" + item->filename() + "' to '" + nn + "'");
-        item->setFilename(nn, QFileInfo(newName).completeBaseName());
-        // item->setNameText(true) will be done by setModified
-        item->setExtensionText();
-    } else {
-        WZERROR("failed to rename '" + item->filename() + "' to '" + nn + "'");
-        QMessageBox::warning(this, tr("Error"),
-                             tr("Failed to rename '%1' to '%2'")
-                             .arg(item->filename()).arg(nn));
-        return false;
-    }
-
-    return true;
-}
-
-void TPlaylist::editItem(TPlaylistWidgetItem* item) {
-
-    bool renameFile = (item->plParent()->isWZPlaylist()
-                       || !item->plParent()->isPlaylist())
-                      && QFileInfo(item->filename()).exists();
-
-    QString name = item->baseName();
-    QString ext = item->extension();
-    if (renameFile && !ext.isEmpty()) {
-        name += "." + ext;
-    }
-
-    bool ok;
-    QString newName = QInputDialog::getText(this, tr("Edit name"), tr("Name:"),
-                                            QLineEdit::Normal, name, &ok);
-    if (!ok || newName == name) {
-        return;
-    }
-
-    if (renameFile && !newName.isEmpty()) {
-        if (!rename(item, newName)) {
-            return;
-        }
-    } else {
-        WZINFO("renaming '" + name + "' to '" + newName + "'");
-        item->setName(newName, ext, true);
-    }
-
-    playlistWidget->setModified(item);
-}
-
-void TPlaylist::editCurrentItem() {
+void TPlaylist::editName() {
+    WZDEBUG("");
 
     TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
     if (current) {
-        editItem(current);
+        current->setFlags(current->flags() | Qt::ItemIsEditable);
+        playlistWidget->editItem(current, TPlaylistWidgetItem::COL_NAME);
+        current->setFlags(current->flags() & ~Qt::ItemIsEditable);
+    }
+}
+
+void TPlaylist::newFolder() {
+    WZDEBUG("");
+
+    TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
+    if (current) {
+        if (!current->isFolder()) {
+            current = current->plParent();
+        }
+        QString base = tr("New folder");
+        QString path = current->pathPlusSep();
+        QDir dir(path);
+
+        int i = 2;
+        QString name = base;
+        while (dir.exists(name)) {
+            name = base + " " + QString::number(i++);
+        }
+
+        QString fn = path + name;
+
+        if (dir.mkdir(name)) {
+            TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
+                current,
+                fn,
+                name,
+                0,
+                false);
+            i->setModified();
+            playlistWidget->setCurrentItem(i);
+            editName();
+        } else {
+            WZERROR("Failed to create directory '" + fn + "'");
+            QMessageBox::warning (this,
+                tr("Error"),
+                tr("Failed to create folder '%1'").arg(fn),
+                QMessageBox::Ok,
+                QMessageBox::NoButton,
+                QMessageBox::NoButton);
+
+        }
     }
 }
 

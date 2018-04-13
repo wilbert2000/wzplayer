@@ -38,6 +38,10 @@ public:
                         bool protectName = false);
     virtual ~TPlaylistWidgetItem();
 
+    virtual QVariant data(int column, int role) const override;
+    virtual void setData(int column, int role, const QVariant &value) override;
+
+
     QString filename() const { return playlistItem.filename(); }
     void setFilename(const QString& fileName, const QString& baseName);
 
@@ -46,10 +50,7 @@ public:
     QString fname() const;
 
     QString baseName() const { return playlistItem.baseName(); }
-    void setName(const QString& baseName,
-                 const QString& ext,
-                 bool protectName = false,
-                 bool setSizeHint = true);
+    void setName(const QString& baseName, const QString& ext, bool protectName);
 
     double duration() const { return playlistItem.duration(); }
     void setDuration(double d);
@@ -106,7 +107,6 @@ public:
     }
 
     void loadIcon();
-    void setExtensionText();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
     // TODO: override clone?
@@ -118,9 +118,9 @@ private:
 
     QIcon getIcon();
     void setStateIcon();
-    void setNameText(bool setSizeHint);
-    void setDurationText();
-    void setOrderText();
+    void refresh(const QString& dir, const QString& newDir);
+    bool renameFile(const QString& newName);
+    bool rename(const QString& newName);
 };
 
 } // namespace Playlist

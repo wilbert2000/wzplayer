@@ -163,7 +163,8 @@ private:
     Action::TAction* addDirectoryAct;
     Action::TAction* addUrlsAct;
 
-    Action::TAction* editAct;
+    Action::TAction* editNameAct;
+    Action::TAction* newFolderAct;
     Action::TAction* findPlayingAct;
     Action::TAction* cutAct;
     Action::TAction* copyAct;
@@ -207,8 +208,6 @@ private:
     void copySelection(const QString& actionName);
     bool deleteFileFromDisk(const QString& filename,
                             const QString& playingFile);
-    bool rename(TPlaylistWidgetItem* item, const QString& newName);
-    void editItem(TPlaylistWidgetItem* item);
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
                        const QString& path,
@@ -242,7 +241,8 @@ private slots:
     void removeSelectedFromDisk();
     void removeAll();
 
-    void editCurrentItem();
+    void editName();
+    void newFolder();
     void onModifiedChanged();
 
     void findPlayingItem();
