@@ -130,8 +130,12 @@ void TFavorites::onTriggered(QAction* action) {
 
     if (action->data().isValid()) {
         QString file = action->data().toString();
+        QString descr = action->text();
+        int i = descr.indexOf(" - ");
+        descr = descr.mid(i + 3);
         current_file = file;;
         markCurrent();
+        player->addForcedTitle(file, descr);
         main_window->open(file);
     }
 }
