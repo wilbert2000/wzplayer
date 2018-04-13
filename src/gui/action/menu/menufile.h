@@ -21,9 +21,13 @@ public:
     virtual ~TMenuFile();
     void updateRecents();
 
+protected slots:
+    virtual void enableActions();
+
 private:
     TMenu* recentfiles_menu;
     TAction* clearRecentsAct;
+    TAction* saveThumbnailAct;
 
 private slots:
     void clearRecentsList();

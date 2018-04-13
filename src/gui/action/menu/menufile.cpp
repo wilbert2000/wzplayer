@@ -4,6 +4,7 @@
 #include "gui/playlist/playlist.h"
 #include "gui/action/menu/favorites.h"
 #include "gui/action/action.h"
+#include "player/player.h"
 #include "settings/paths.h"
 #include "settings/preferences.h"
 
@@ -129,10 +130,13 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
 
     addSeparator();
 
-    a  = new TAction(this, "save_thumbnail", tr("&Save thumbnail"), "",
-                              Qt::CTRL | Qt::Key_I);
-    connect(a, &TAction::triggered, main_window, &TMainWindow::saveThumbnail);
-    main_window->addAction(a);
+    // Save thumbnail
+    saveThumbnailAct  = new TAction(this, "save_thumbnail",
+                                    tr("&Save thumbnail"), "",
+                                    Qt::CTRL | Qt::Key_I);
+    connect(saveThumbnailAct, &TAction::triggered,
+            main_window, &TMainWindow::saveThumbnail);
+    main_window->addAction(saveThumbnailAct);
 
     addSeparator();
 
@@ -143,6 +147,12 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
 }
 
 TMenuFile::~TMenuFile() {
+}
+
+void TMenuFile::enableActions() {
+    saveThumbnailAct->setEnabled(player
+        && player->mdat.selected_type == TMediaData::TYPE_FILE
+        && !player->mdat.filename.isEmpty());
 }
 
 void TMenuFile::updateRecents() {
