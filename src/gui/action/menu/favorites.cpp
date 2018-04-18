@@ -61,7 +61,6 @@ TFavorites::TFavorites(TMainWindow* mw,
 }
 
 TFavorites::~TFavorites() {
-    save();
 }
 
 void TFavorites::enableActions() {
