@@ -1,9 +1,10 @@
 #ifndef GUI_PLAYLIST_PLAYLISTWIDGET_H
 #define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
-#include <QTreeWidget>
-#include <gui/playlist/playlistwidgetitem.h>
+#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/playlistitem.h"
 #include "wzdebug.h"
+#include <QTreeWidget>
 
 class QTimer;
 
