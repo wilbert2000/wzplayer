@@ -113,23 +113,21 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     }
     QString nn = dir + newName;
 
-
     if (QFile::rename(name, nn)) {
         setFilename(nn, QFileInfo(newName).completeBaseName());
-        WZINFO("renamed '" + name + "' to '" + nn + "'");
         if (isFolder()) {
             refresh(name + QDir::separator(), nn + QDir::separator());
         }
+        plTreeWidget()->setModified(this);
+        WZINFO("Renamed '" + name + "' to '" + nn + "'");
         return true;
     }
 
-    WZERROR("failed to rename '" + name + "' to '" + nn + "'");
+    WZERROR("Failed to rename '" + name + "' to '" + nn + "'");
     QMessageBox::warning(treeWidget(),
-                         qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
-                                         "Error"),
-                         qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
-                                         "Failed to rename '%1' to '%2'")
-                         .arg(name).arg(nn));
+        qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
+        qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
+                        "Failed to rename '%1' to '%2'").arg(name).arg(nn));
     return false;
 }
 
@@ -145,24 +143,36 @@ bool TPlaylistWidgetItem::rename(const QString &newName) {
         return true;
     }
 
-    if (plParent()->isWZPlaylist()) {
-        if (!renameFile(newName)) {
-            return false;
-        }
-    } else if (plParent()->isPlaylist()) {
-        QFileInfo fi(newName);
-        setName(fi.completeBaseName(), fi.suffix(), true);
-    } else if (QFileInfo(filename()).exists()) {
-        if (!renameFile(newName)) {
-            return false;
-        }
-    } else {
-        setName(newName, "", true);
+    if (QFileInfo(filename()).exists()) {
+        return renameFile(newName);
     }
 
-    static_cast<TPlaylistWidget*>(treeWidget())->setModified(this);
+    if (isFolder()) {
+        // A folder needs to exist
+        WZERROR("Folder '" + filename() + "' not found");
+        QMessageBox::warning(treeWidget(),
+            qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
+            qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
+                            "Folder '%1' not found").arg(filename()));
 
-    return true;
+        return false;
+    }
+
+    if (plParent()->isPlaylist()) {
+        // Set name and extension of this playlist item and protect name
+        QFileInfo fi(newName);
+        setName(fi.completeBaseName(), fi.suffix(), true);
+        plTreeWidget()->setModified(this);
+        return true;
+    }
+
+    // Cannot change name of non-existing item when parent not a playlist
+    WZERROR("Parent '" + filename() + "' is not a playlist");
+    QMessageBox::warning(treeWidget(),
+        qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
+        qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
+                        "Parent '%1' is not a playlist").arg(filename()));
+    return false;
 }
 
 void TPlaylistWidgetItem::setData(int column, int role, const QVariant& value) {
@@ -376,6 +386,10 @@ QString TPlaylistWidgetItem::fname() const {
         }
     }
     return fn;
+}
+
+TPlaylistWidget* TPlaylistWidgetItem::plTreeWidget() const {
+    return static_cast<TPlaylistWidget*>(treeWidget());
 }
 
 bool TPlaylistWidgetItem::whitelist(const QString& filename) {

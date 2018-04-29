@@ -1,14 +1,16 @@
 #ifndef GUI_PLAYLIST_PLAYLISTWIDGETITEM_H
 #define GUI_PLAYLIST_PLAYLISTWIDGETITEM_H
 
+#include "gui/playlist/playlistitem.h"
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QIcon>
-#include "gui/playlist/playlistitem.h"
 
 
 namespace Gui {
 namespace Playlist {
+
+class TPlaylistWidget;
 
 extern int gRootNodeLevel;
 extern int gNameColumnWidth;
@@ -99,6 +101,7 @@ public:
     void setSzHint(int level);
     int getLevel() const;
 
+    TPlaylistWidget* plTreeWidget() const;
     TPlaylistWidgetItem* plParent() const {
         return static_cast<TPlaylistWidgetItem*>(parent());
     }
