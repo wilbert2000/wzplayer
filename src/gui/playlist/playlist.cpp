@@ -1158,6 +1158,7 @@ void TPlaylist::enableActions() {
     removeAllAct->setEnabled(e);
 
     editNameAct->setEnabled(e && current_item);
+    newFolderAct->setEnabled(thread == 0);
     findPlayingAct->setEnabled(playing_item);
     cutAct->setEnabled(e);
     copyAct->setEnabled(haveItems || playerHasFilename);
