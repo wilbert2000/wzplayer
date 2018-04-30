@@ -1416,42 +1416,47 @@ void TPlaylist::newFolder() {
     WZDEBUG("");
 
     TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
-    if (current) {
-        if (!current->isFolder()) {
-            current = current->plParent();
+    if (current == 0) {
+        current = playlistWidget->root();
+        if (current == 0) {
+            return;
         }
-        QString base = tr("New folder");
-        QString path = current->pathPlusSep();
-        QDir dir(path);
+    }
+    if (!current->isPlaylist() && !current->isFolder()) {
+        current = current->plParent();
+    }
 
-        int i = 2;
-        QString name = base;
-        while (dir.exists(name)) {
-            name = base + " " + QString::number(i++);
-        }
+    QString base = tr("New folder");
+    QString path = current->pathPlusSep();
+    QDir dir(path);
 
-        QString fn = path + name;
+    int i = 2;
+    QString name = base;
+    while (dir.exists(name)) {
+        name = base + " " + QString::number(i++);
+    }
 
-        if (dir.mkdir(name)) {
-            TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-                current,
-                fn,
-                name,
-                0,
-                false);
-            i->setModified();
-            playlistWidget->setCurrentItem(i);
-            editName();
-        } else {
-            WZERROR("Failed to create directory '" + fn + "'");
-            QMessageBox::warning (this,
-                tr("Error"),
-                tr("Failed to create folder '%1'").arg(fn),
-                QMessageBox::Ok,
-                QMessageBox::NoButton,
-                QMessageBox::NoButton);
+    QString fn = path + name;
 
-        }
+    if (dir.mkdir(name)) {
+        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
+            current,
+            fn,
+            name,
+            0,
+            false);
+        i->setModified();
+        playlistWidget->setCurrentItem(i);
+        editName();
+    } else {
+        WZERROR("Failed to create directory '" + fn + "'");
+        QMessageBox::warning (this,
+            tr("Error"),
+            tr("Failed to create folder '%1'").arg(fn),
+            QMessageBox::Ok,
+            QMessageBox::NoButton,
+            QMessageBox::NoButton);
+
     }
 }
 
