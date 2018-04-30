@@ -1061,7 +1061,7 @@ void TMPVProcess::setVolume(int v) {
 }
 
 void TMPVProcess::setOSDLevel(int level) {
-    writeToPlayer("osd " + QString::number(level));
+    writeToPlayer("no-osd set osd-level " + QString::number(level));
 }
 
 void TMPVProcess::setAudio(int ID) {
