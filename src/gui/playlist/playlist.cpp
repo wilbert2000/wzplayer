@@ -859,40 +859,54 @@ void TPlaylist::resumePlay() {
     }
 }
 
-bool TPlaylist::deleteFileFromDisk(const QString& filename,
-                                   const QString& playingFile) {
+bool TPlaylist::removeFromDisk(const QString& filename,
+                               const QString& playingFile) {
 
     QFileInfo fi(filename);
     if (!fi.exists()) {
         return true;
     }
 
-    if (!fi.isFile()) {
-        QMessageBox::warning(this, tr("Error"),
-            tr("Cannot delete '%1', it does not seem to be a file.")
-            .arg(filename));
-        return false;
+    if (!fi.isSymLink() && fi.isDir()) {
+        if (TWZFiles::directoryIsEmpty(filename)) {
+            QMessageBox::warning(this, tr("Error"),
+                tr("Cannot delete folder '%1', it must be empty.")
+                .arg(filename));
+            return false;
+        }
     }
 
     // Ask the user for confirmation
-    int res = QMessageBox::question(this, tr("Confirm file deletion"),
+    int res = QMessageBox::question(this, tr("Confirm delete from disk"),
         tr("You're about to delete '%1' from your drive.").arg(filename)
         + "<br>"+
         tr("This action cannot be undone. Are you sure you want to proceed?"),
         QMessageBox::Yes, QMessageBox::No);
 
-    if (res == QMessageBox::Yes) {
-        // Cannot delete file on Windows when in use...
-        if (filename == playingFile && player->state() != Player::STATE_STOPPED) {
-            player->stop();
-        }
-        if (QFile::remove(filename)) {
-            return true;
-        }
-        QMessageBox::warning(this, tr("Deletion failed"),
-                             tr("Failed to delete '%1'").arg(filename));
+    if (res != QMessageBox::Yes) {
+        WZINFO("User canceled delete of '" + filename + "'");
+        return false;
     }
 
+    if (fi.isSymLink() || fi.isFile()) {
+        // Cannot delete file on Windows when in use...
+        if (filename == playingFile
+            && player->state() != Player::STATE_STOPPED) {
+            player->stop();
+        }
+
+        if (QFile::remove(filename)) {
+            WZINFO("Removed file '" + filename + "' from disk");
+            return true;
+        }
+    } else if (fi.dir().rmdir(fi.fileName())) {
+        WZINFO("Removed directory '" + filename + "' from disk");
+        return true;
+    }
+
+    WZERROR("Failed to remove '" + filename + "' from disk");
+    QMessageBox::warning(this, tr("Delete failed"),
+                         tr("Failed to delete '%1' from disk").arg(filename));
     return false;
 }
 
@@ -921,13 +935,14 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         newCurrent = playlistWidget->getNextItem(newCurrent, false);
     } while (newCurrent && newCurrent->isSelected());
 
+    // Delete selection
     QTreeWidgetItemIterator it(playlistWidget,
                                QTreeWidgetItemIterator::Selected);
     while (*it) {
         TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
         if (i != root
             && (!deleteFromDisk
-                || deleteFileFromDisk(i->filename(), playing))) {
+                || removeFromDisk(i->filename(), playing))) {
             WZDEBUG("removing '" + i->filename() + "'");
 
             TPlaylistWidgetItem* parent = i->plParent();
@@ -1151,20 +1166,28 @@ void TPlaylist::enableActions() {
 
     addCurrentAct->setEnabled(playerHasFilename && thread == 0);
 
-    e = haveItems && thread == 0;
+    // Remove menu
+    bool winEnabled = isActiveWindow() && isVisible() && thread == 0;
+    e = winEnabled && haveItems;
     removeSelectedAct->setEnabled(e);
-    removeSelectedFromDiskAct->setEnabled(e && current_item
-                                          && !current_item->isFolder());
+    removeSelectedFromDiskAct->setEnabled(e
+        && current_item
+        && (current_item->isSymLink()
+            || !current_item->isFolder()
+            || current_item->childCount() == 0));
+            // Leaving test for non media files in dir to deleteFileFromDisk()
     removeAllAct->setEnabled(e);
 
+    // Context menu
     editNameAct->setEnabled(e && current_item);
-    newFolderAct->setEnabled(thread == 0);
+    newFolderAct->setEnabled(winEnabled);
     findPlayingAct->setEnabled(playing_item);
+
     cutAct->setEnabled(e);
     copyAct->setEnabled(haveItems || playerHasFilename);
 
     openDirectoryAct->setEnabled(current_item);
-    refreshAct->setEnabled(enable && !filename.isEmpty());
+    refreshAct->setEnabled(thread == 0 && !filename.isEmpty());
 }
 
 void TPlaylist::onPlayerError() {

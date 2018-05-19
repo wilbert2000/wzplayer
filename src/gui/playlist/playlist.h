@@ -206,7 +206,7 @@ private:
 
     void swapItems(int item1, int item2);
     void copySelection(const QString& actionName);
-    bool deleteFileFromDisk(const QString& filename,
+    bool removeFromDisk(const QString& filename,
                             const QString& playingFile);
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,

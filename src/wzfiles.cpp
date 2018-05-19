@@ -22,6 +22,16 @@ bool TWZFiles::directoryContainsDVD(const QString& directory) {
     return false;
 }
 
+bool TWZFiles::directoryIsEmpty(const QString& directory) {
+
+    return QDir(directory).entryList(QDir::AllDirs
+                                     | QDir::Files
+                                     | QDir::Drives
+                                     | QDir::NoDotAndDotDot
+                                     | QDir::Hidden
+                                     | QDir::System).count() == 0;
+}
+
 QString TWZFiles::findExecutable(const QString& name) {
 
     QFileInfo fi(name);
