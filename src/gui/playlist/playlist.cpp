@@ -337,14 +337,14 @@ void TPlaylist::createActions() {
     addActions(remove_menu->actions());
 
     // Edit
-    editNameAct = new TAction(this, "pl_edit_name", tr("&Edit name..."));
-    // TODO:              "", Qt::Key_F2);
+    editNameAct = new TAction(this, "pl_edit_name", tr("&Edit name..."),
+                              "", Qt::Key_F2);
     connect(editNameAct, &TAction::triggered,
             this, &TPlaylist::editName);
 
     // New folder
-    newFolderAct = new TAction(this, "pl_new_folder", tr("&New folder..."));
-    // TODO:              "", Qt::Key_F10);
+    newFolderAct = new TAction(this, "pl_new_folder", tr("&New folder"),
+                               "", Qt::Key_F10);
     connect(newFolderAct, &TAction::triggered,
             this, &TPlaylist::newFolder);
 

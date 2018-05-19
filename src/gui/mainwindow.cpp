@@ -397,7 +397,8 @@ void TMainWindow::createActions() {
 
     // Menu bar
     viewMenuBarAct = new Action::TAction(this, "toggle_menubar",
-                                         tr("Me&nu bar"), "", Qt::Key_F2);
+                                         tr("Me&nu bar"), "",
+                                         Qt::SHIFT | Qt::Key_F2);
     viewMenuBarAct->setCheckable(true);
     viewMenuBarAct->setChecked(true);
     connect(viewMenuBarAct, &Action::TAction::toggled,
@@ -415,7 +416,8 @@ void TMainWindow::createActions() {
 
     // Status bar
     viewStatusBarAct = new Action::TAction(this, "toggle_statusbar",
-                                           tr("&Status bar"), "", Qt::Key_F7);
+                                           tr("&Status bar"), "",
+                                           Qt::SHIFT | Qt::Key_F7);
     viewStatusBarAct->setCheckable(true);
     viewStatusBarAct->setChecked(true);
     connect(viewStatusBarAct, &Action::TAction::toggled,
@@ -580,7 +582,7 @@ void TMainWindow::createToolbars() {
 
     QAction* action = controlbar->toggleViewAction();
     action->setObjectName("toggle_controlbar");
-    action->setShortcut(Qt::Key_F6);
+    action->setShortcut(Qt::SHIFT | Qt::Key_F6);
 
     // Main toolbar
     toolbar = new Action::TEditableToolbar(this);
@@ -594,7 +596,7 @@ void TMainWindow::createToolbars() {
 
     action = toolbar->toggleViewAction();
     action->setObjectName("toggle_toolbar1");
-    action->setShortcut(Qt::Key_F3);
+    action->setShortcut(Qt::SHIFT | Qt::Key_F3);
 
     // Extra toolbar
     toolbar2 = new Action::TEditableToolbar(this);
@@ -610,7 +612,7 @@ void TMainWindow::createToolbars() {
 
     action = toolbar2->toggleViewAction();
     action->setObjectName("toggle_toolbar2");
-    action->setShortcut(Qt::Key_F4);
+    action->setShortcut(Qt::SHIFT | Qt::Key_F4);
 
     // Statusbar
     statusBar()->setObjectName("statusbar");
