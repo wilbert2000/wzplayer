@@ -1453,9 +1453,7 @@ void TPlaylist::newFolder() {
         QMessageBox::warning (this,
             tr("Error"),
             tr("Failed to create folder '%1'").arg(fn),
-            QMessageBox::Ok,
-            QMessageBox::NoButton,
-            QMessageBox::NoButton);
+            QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
 
     }
 }
