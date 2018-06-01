@@ -98,7 +98,6 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     if (state() == PSTATE_LOADING || state() == PSTATE_PLAYING) {
         WZDEBUG("Stopping playing item");
         player->stop();
-        // TODO: restart at current time
     }
 
     QString dir = QDir::toNativeSeparators(QFileInfo(filename()).absolutePath());
