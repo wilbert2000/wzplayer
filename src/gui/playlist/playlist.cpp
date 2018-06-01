@@ -1428,11 +1428,14 @@ void TPlaylist::editName() {
     WZDEBUG("");
 
     TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
-    if (current) {
-        current->setFlags(current->flags() | Qt::ItemIsEditable);
-        playlistWidget->editItem(current, TPlaylistWidgetItem::COL_NAME);
-        current->setFlags(current->flags() & ~Qt::ItemIsEditable);
+    if (current == 0) {
+        return;
     }
+
+    current->setFlags(current->flags() | Qt::ItemIsEditable);
+    playlistWidget->editItem(current, TPlaylistWidgetItem::COL_NAME);
+    current->setFlags(current->flags() & ~Qt::ItemIsEditable);
+    WZDEBUG("Done");
 }
 
 void TPlaylist::newFolder() {
@@ -1447,16 +1450,19 @@ void TPlaylist::newFolder() {
     }
     if (!current->isPlaylist() && !current->isFolder()) {
         current = current->plParent();
+        if (current == 0) {
+            return;
+        }
     }
 
-    QString base = tr("New folder");
+    QString baseName = tr("New folder");
     QString path = current->pathPlusSep();
     QDir dir(path);
 
     int i = 2;
-    QString name = base;
+    QString name = baseName;
     while (dir.exists(name)) {
-        name = base + " " + QString::number(i++);
+        name = baseName + " " + QString::number(i++);
     }
 
     QString fn = path + name;
