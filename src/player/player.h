@@ -399,7 +399,7 @@ private:
 
     void startPlayer(bool loopImage = false);
     void stopPlayer();
-    void restartPlay();
+    void restartPlayer();
     void setInPointSec(double sec);
     void setOutPointSec(double sec);
 

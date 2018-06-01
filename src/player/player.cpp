@@ -512,7 +512,7 @@ void TPlayer::loadSub(const QString & sub) {
         setExternalSubs(sub);
         if (mset.external_subtitles_fps
             != Settings::TMediaSettings::SFPS_None) {
-            restartPlay();
+            restartPlayer();
         } else {
             proc->setExternalSubtitleFile(sub);
         }
@@ -527,14 +527,14 @@ void TPlayer::unloadSub() {
     mset.current_sub_idx = Settings::TMediaSettings::NoneSelected;
     mset.sub = SubData();
 
-    restartPlay();
+    restartPlayer();
 }
 
 void TPlayer::loadAudioFile(const QString& audiofile) {
 
     if (!audiofile.isEmpty()) {
         mset.external_audio = audiofile;
-        restartPlay();
+        restartPlayer();
     }
 }
 
@@ -542,7 +542,7 @@ void TPlayer::unloadAudioFile() {
 
     if (!mset.external_audio.isEmpty()) {
         mset.external_audio = "";
-        restartPlay();
+        restartPlayer();
     }
 }
 
@@ -594,7 +594,7 @@ void TPlayer::play() {
             if (mdat.filename.isEmpty()) {
                 emit noFileToPlay();
             } else {
-                restartPlay();
+                restartPlayer();
             }
             break;
         case QProcess::Starting:
@@ -624,7 +624,7 @@ void TPlayer::playOrPause() {
 }
 
 // Save current state and restart player
-void TPlayer::restartPlay() {
+void TPlayer::restartPlayer() {
     WZDEBUG("");
 
     // Save state proc, currently only used by TMPlayerProcess for DVDNAV
@@ -641,7 +641,7 @@ void TPlayer::restart() {
     WZDEBUG("");
 
     if (proc->isReady()) {
-        restartPlay();
+        restartPlayer();
     } else {
         WZWARN("player not ready");
     }
@@ -1976,7 +1976,7 @@ void TPlayer::setAudioChannels(int channels) {
     if (channels != mset.audio_use_channels) {
         mset.audio_use_channels = channels;
         if (proc->isRunning())
-            restartPlay();
+            restartPlayer();
     }
 }
 
@@ -1986,7 +1986,7 @@ void TPlayer::setStereoMode(int mode) {
     if (mode != mset.stereo_mode) {
         mset.stereo_mode = mode;
         if (proc->isRunning())
-            restartPlay();
+            restartPlayer();
     }
 }
 
@@ -1999,7 +1999,7 @@ void TPlayer::setVideoFilter(const QString& filter, bool enable,
     if (Settings::pref->isMPV() && !mdat.video_hwdec) {
         proc->setVideoFilter(filter, enable, option);
     } else {
-        restartPlay();
+        restartPlayer();
     }
 }
 
@@ -2083,7 +2083,7 @@ void TPlayer::setDenoiser(int id) {
     if (id != mset.current_denoiser) {
         if (Settings::pref->isMPlayer() || mdat.video_hwdec) {
             mset.current_denoiser = id;
-            restartPlay();
+            restartPlayer();
         } else {
             // MPV
             QString dsoft = Settings::pref->filters.item("denoise_soft")
@@ -2119,7 +2119,7 @@ void TPlayer::setSharpen(int id) {
     if (id != mset.current_unsharp) {
         if (Settings::pref->isMPlayer() || mdat.video_hwdec) {
             mset.current_unsharp = id;
-            restartPlay();
+            restartPlayer();
         } else {
             // MPV
             // Remove previous filter
@@ -2154,7 +2154,7 @@ void TPlayer::setStereo3D(const QString& in, const QString& out) {
         if (Settings::pref->isMPlayer() || mdat.video_hwdec) {
             mset.stereo3d_in = in;
             mset.stereo3d_out = out;
-            restartPlay();
+            restartPlayer();
         } else {
             // Remove previous filter
             if (mset.stereo3d_in != "none" && !mset.stereo3d_out.isEmpty()) {
@@ -2560,7 +2560,7 @@ void TPlayer::setOSDScale(double value) {
         if (value != Settings::pref->subfont_osd_scale) {
             Settings::pref->subfont_osd_scale = value;
             if (proc->isRunning())
-                restartPlay();
+                restartPlayer();
         }
     } else {
         if (value != Settings::pref->osd_scale) {
@@ -2602,7 +2602,7 @@ void TPlayer::changeExternalSubFPS(int fps_id) {
 
     mset.external_subtitles_fps = fps_id;
     if (hasExternalSubs()) {
-        restartPlay();
+        restartPlayer();
     }
 }
 
@@ -2638,7 +2638,7 @@ void TPlayer::setAudioEqualizerEx(const Settings::TAudioEqualizerList& values,
     }
 
     if (restart) {
-        restartPlay();
+        restartPlayer();
     } else {
         proc->setAudioEqualizer(equalizerListToString(values));
     }
@@ -2796,7 +2796,7 @@ void TPlayer::setDeinterlace(int ID) {
     if (ID != mset.current_deinterlacer) {
         if (Settings::pref->isMPlayer()) {
             mset.current_deinterlacer = ID;
-            restartPlay();
+            restartPlayer();
         } else {
             // MPV: remove previous filter
             switch (mset.current_deinterlacer) {
@@ -2847,7 +2847,7 @@ void TPlayer::setVideoTrack(int id) {
     // When fixed use proc->setVideo() instead of restartPlay().
     if (id != mdat.videos.getSelectedID()) {
         mset.current_video_id = id;
-        restartPlay();
+        restartPlayer();
     }
 }
 
@@ -3122,7 +3122,7 @@ void TPlayer::setRotate(int r) {
     if (mset.rotate != r) {
         if (Settings::pref->isMPlayer()) {
             mset.rotate = r;
-            restartPlay();
+            restartPlayer();
         } else {
             // MPV
             // Remove previous filter
@@ -3224,7 +3224,7 @@ void TPlayer::setUseCustomSubStyle(bool b) {
     if (Settings::pref->use_custom_ass_style != b) {
         Settings::pref->use_custom_ass_style = b;
         if (proc->isRunning())
-            restartPlay();
+            restartPlayer();
     }
 }
 
@@ -3242,7 +3242,7 @@ void TPlayer::setClosedCaptionChannel(int c) {
     if (c != mset.closed_caption_channel) {
         mset.closed_caption_channel = c;
         if (proc->isRunning())
-            restartPlay();
+            restartPlayer();
     }
 }
 
