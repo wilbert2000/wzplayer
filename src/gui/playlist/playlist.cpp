@@ -1530,8 +1530,10 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 
         if (files.count()) {
             // TODO: see dropIndicator for above/below
-            QTreeWidgetItem* target = playlistWidget->itemAt(e->pos()
-                - playlistWidget->pos() - playlistWidget->viewport()->pos());
+            QTreeWidgetItem* target = playlistWidget->itemAt(
+                        e->pos()
+                        - playlistWidget->pos()
+                        - playlistWidget->viewport()->pos());
 
             if (target) {
                 QTreeWidgetItem* parent;
