@@ -68,7 +68,6 @@ TLogWindow::TLogWindow(QWidget* parent)
 }
 
 TLogWindow::~TLogWindow() {
-    WZDEBUG("");
     appender->setEdit(0);
 }
 
