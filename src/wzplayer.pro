@@ -138,6 +138,8 @@ HEADERS += wzdebug.h \
     gui/playlist/playlistitem.h \
     gui/playlist/playlistwidgetitem.h \
     gui/playlist/playlistwidget.h \
+    gui/playlist/menuremove.h \
+    gui/playlist/menucontext.h \
     gui/playlist/playlist.h \
     gui/autohidetimer.h \
     gui/playerwindow.h \
@@ -264,6 +266,8 @@ SOURCES += wzdebug.cpp \
     gui/playlist/playlistitem.cpp \
     gui/playlist/playlistwidgetitem.cpp \
     gui/playlist/playlistwidget.cpp \
+    gui/playlist/menuremove.cpp \
+    gui/playlist/menucontext.cpp \
     gui/playlist/playlist.cpp \
     gui/autohidetimer.cpp \
     gui/playerwindow.cpp \

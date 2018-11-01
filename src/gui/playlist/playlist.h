@@ -98,6 +98,13 @@ public:
         return playlistWidget->findFilename(filename);
     }
 
+    bool isPlaylistEnabled() const;
+    TPlaylistWidgetItem* currentPlaylistWidgetItem() const {
+        return playlistWidget->currentPlaylistWidgetItem();
+    }
+    bool hasItems() const { return playlistWidget->hasItems(); }
+    bool hasPlayingItem() const { return playlistWidget->playing_item; }
+
     void clear();
     void addFiles(const QStringList& files,
                   bool startPlay = false,
@@ -122,6 +129,18 @@ public slots:
     bool save();
     bool saveAs();
 
+    void editName();
+    void newFolder();
+    void findPlayingItem();
+
+    void cut();
+    void copySelected();
+    void paste();
+
+    void removeSelected(bool deleteFromDisk = false);
+    void removeSelectedFromDisk();
+    void removeAll();
+
 signals:
     void playlistFinished();
     void enablePrevNextChanged();
@@ -135,7 +154,7 @@ private:
     Action::Menu::TMenu* add_menu;
     TAddRemovedMenu* add_removed_menu;
     Action::Menu::TMenu* remove_menu;
-    QMenu* popup;
+    QMenu* contextMenu;
 
     QToolBar* toolbar;
     QToolButton* add_button;
@@ -163,17 +182,6 @@ private:
     Action::TAction* addDirectoryAct;
     Action::TAction* addUrlsAct;
 
-    Action::TAction* editNameAct;
-    Action::TAction* newFolderAct;
-    Action::TAction* findPlayingAct;
-    Action::TAction* cutAct;
-    Action::TAction* copyAct;
-    Action::TAction* pasteAct;
-
-    Action::TAction* removeSelectedAct;
-    Action::TAction* removeSelectedFromDiskAct;
-    Action::TAction* removeAllAct;
-
     Action::Menu::TMenuInOut* inOutMenu;
 
     TMainWindow* main_window;
@@ -195,7 +203,6 @@ private:
     void createTree();
     void createActions();
     void createToolbar();
-    void createPopupMenu();
 
     void addFilesStartThread();
 
@@ -237,20 +244,8 @@ private slots:
     void addUrls();
     void addRemovedItem(QString s);
 
-    void removeSelected(bool deleteFromDisk = false);
-    void removeSelectedFromDisk();
-    void removeAll();
-
-    void editName();
-    void newFolder();
     void onModifiedChanged();
 
-    void findPlayingItem();
-
-    void copySelected();
-    void paste();
-    void enablePaste();
-    void cut();
     void openInNewWindow();
 
     void enableActions();
