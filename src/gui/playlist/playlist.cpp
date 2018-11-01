@@ -1429,6 +1429,7 @@ void TPlaylist::editName() {
 
     TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
     if (current == 0) {
+        WZDEBUG("Skipping edit. No current playlist item.");
         return;
     }
 
