@@ -215,9 +215,6 @@ bool TPlaylistItem::whitelist(const QString& filename) {
 
 bool TPlaylistItem::operator == (const TPlaylistItem& item) {
 
-    if (&item == 0) {
-        return false;
-    }
     return item.filename().compare(mFilename, caseSensitiveFileNames) == 0;
 }
 
