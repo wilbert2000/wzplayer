@@ -417,24 +417,28 @@ void TPlaylistWidget::dropEvent(QDropEvent *e) {
     WZDEBUG("");
 
     QTreeWidgetItem* current = currentItem();
-    QList<QTreeWidgetItem*>    selection = selectedItems();
+    QList<QTreeWidgetItem*> sel = selectedItems();
 
-    for(int i = 0; i < selection.count(); i++) {
-        setModified(static_cast<TPlaylistWidgetItem*>(
-                        selection.at(i)->parent()));
+    // Mark parents of the selection as modified
+    // TODO: set modified only if the drop is accepted
+    for(int i = 0; i < sel.count(); i++) {
+        setModified(static_cast<TPlaylistWidgetItem*>(sel.at(i)->parent()));
     }
 
+    // Handle the drop
     QTreeWidget::dropEvent(e);
 
     if (e->isAccepted()) {
+        // Restore current item and selection
         clearSelection();
         setCurrentItem(current);
-        for(int i = 0; i < selection.count(); i++) {
-            selection[i]->setSelected(true);
+        for(int i = 0; i < sel.count(); i++) {
+            sel[i]->setSelected(true);
         }
-        if (!selection.isEmpty()) {
-            setModified(static_cast<TPlaylistWidgetItem*>(
-                            selection.at(0)->parent()));
+
+        // Mark the drop target as modified
+        if (!sel.isEmpty()) {
+            setModified(static_cast<TPlaylistWidgetItem*>(sel.at(0)->parent()));
         }
     }
 }
