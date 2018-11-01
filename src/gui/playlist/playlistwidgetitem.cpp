@@ -110,7 +110,12 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     } else {
         name = filename();
     }
-    QString nn = dir + newName;
+    QString nn;
+    if (newName.startsWith('/')) {
+        nn = newName;
+    } else {
+        nn = dir + newName;
+    }
 
     if (QFile::rename(name, nn)) {
         setFilename(nn, QFileInfo(newName).completeBaseName());
