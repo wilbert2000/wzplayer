@@ -44,7 +44,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
 
     info->setText(
         "<b>" + TConfig::PROGRAM_NAME
-        +"</b> &copy; 2015-2016 Wilbert Hengst.<br><br>"
+        +"</b> &copy; 2015-2018 Wilbert Hengst.<br><br>"
         + tr("WZPlayer is a graphical user interface for %1 and %2"
              " based on %3 by Ricardo Villalba.")
             .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">"
@@ -58,8 +58,7 @@ TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
         + "<br>" + tr("Using Qt %1 (compiled with Qt %2)")
                    .arg(qVersion()).arg(QT_VERSION_STR)
         + "<br><br><b>"+ tr("Links:") +"</b><br>"
-        + tr("Website:") + " " + link(TConfig::URL_HOMEPAGE) + "<br>"
-        + tr("Issues:") +" "+  link(TConfig::URL_ISSUES));
+        + tr("Website:") + " " + link(TConfig::URL_HOMEPAGE));
 
     QString license_text =
         "<i>This program is free software; you can redistribute it and/or"

@@ -22,7 +22,6 @@ public:
     static const QString WZPLAYLIST;
 
     static const QString URL_HOMEPAGE;
-    static const QString URL_ISSUES;
     static const QString URL_TRANSLATORS;
     static const QString URL_CHANGES;
     static const QString URL_OPENSSL;
