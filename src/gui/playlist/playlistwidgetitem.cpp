@@ -409,7 +409,7 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 
     // TODO: get from where?
     const int hm = 4;
-    const int vm = 1;
+    const int vm = 2;
 
     int w = width - level * (iconSize.width() + hm) - 2 * hm;
     if (w <= 32) {
