@@ -1499,7 +1499,8 @@ void TPlaylist::open() {
 bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                               const QString& path,
                               QTextStream& stream,
-                              bool linkFolders) {
+                              bool linkFolders,
+                              bool& savedMetaData) {
     WZDEBUG("saving '" + folder->filename() + "'");
 
     bool result = true;
@@ -1539,7 +1540,9 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                     WZINFO("folder not modified '" + i->filename() + "'");
                 }
             } else {
-                if (saveM3uFolder(i, path, stream, linkFolders)) {
+                // Note: savedMetaData destroyed as dummy here.
+                // It is only used for WZPlaylists.
+                if (saveM3uFolder(i, path, stream, linkFolders, savedMetaData)) {
                     WZINFO("succesfully saved '" + i->filename() + "'");
                 } else {
                     result = false;
@@ -1547,8 +1550,13 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
                 continue;
             }
         } else {
-            stream << "#EXTINF:" << (int) i->duration()
-                   << "," << i->baseName() << "\n";
+            int d = (int) i->duration();
+            stream << "#EXTINF:" << d << "," << i->baseName() << "\n";
+            if (!savedMetaData) {
+                if (d || i->edited()) {
+                    savedMetaData = true;
+                }
+            }
         }
 
         if (filename.startsWith(path)) {
@@ -1574,7 +1582,7 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     if (!f.open(QIODevice::WriteOnly)) {
         // Ok to fail on wzplaylist
         if (wzplaylist) {
-            WZINFO("ignoring failed save '" + filename + "'");
+            WZINFO("ignoring failed save of '" + filename + "'");
             return true;
         }
 
@@ -1589,28 +1597,42 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     }
 
     QTextStream stream(&f);
-    if (QFileInfo(filename).suffix().toLower() != "m3u") {
-        stream.setCodec("UTF-8");
-    } else {
+    if (QFileInfo(filename).suffix().toLower() == "m3u") {
         stream.setCodec(QTextCodec::codecForLocale());
+    } else {
+        stream.setCodec("UTF-8");
     }
 
     stream << "#EXTM3U" << "\n"
            << "# Playlist created by WZPlayer " << TVersion::version << "\n";
 
-    if (wzplaylist) {
+    // Keep track of whether we saved anything usefull
+    bool savedMetaData = false;
+
+    if (wzplaylist && folder->getBlacklist().count() > 0) {
+        savedMetaData = true;
         foreach(const QString& fn, folder->getBlacklist()) {
             WZDEBUG("blacklisting '" + fn + "'");
             stream << "#WZP-blacklist:" << fn << "\n";
         }
     }
 
-    bool result = saveM3uFolder(folder, path, stream, wzplaylist);
+    bool result = saveM3uFolder(folder, path, stream, wzplaylist, savedMetaData);
 
     stream.flush();
     f.close();
 
-    WZDEBUG("saved '" + filename + "'");
+    // Remove wzplaylist if nothing interesting to remember
+    if (wzplaylist && !savedMetaData) {
+        if (f.remove()) {
+            WZDEBUG("removed '" + filename + "'");
+        } else {
+            WZWARN("failed to remove '" + filename + "'");
+        }
+    } else {
+        WZDEBUG("saved '" + filename + "'");
+    }
+
     return result;
 }
 

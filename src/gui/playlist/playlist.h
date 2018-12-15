@@ -219,7 +219,8 @@ private:
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
                        const QString& path,
                        QTextStream& stream,
-                       bool linkFolders);
+                       bool linkFolders,
+                       bool& savedMetaData);
     bool saveM3u(TPlaylistWidgetItem* folder,
                  const QString& filename,
                  bool wzplaylist);
