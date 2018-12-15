@@ -6,7 +6,7 @@ lessThan(QT_VERSION, 0x050600) {
     error("Qt 5.6 or later required")
 }
 
-CONFIG += qt warn_on c++11
+CONFIG += qt warn_on
 
 # Default to release build
 !CONFIG(debug, debug|release) {
