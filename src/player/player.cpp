@@ -914,6 +914,8 @@ void TPlayer::startPlayer(bool loopImage) {
         if (mdat.selected_type == TMediaData::TYPE_FILE) {
             if (mdat.image) {
                 proc->setImageDuration(Settings::pref->imageDuration);
+                // loopImage is set by TPlaylist::playItem() when playlist
+                // has only a single item
                 if (loopImage) {
                     proc->setOption("loop", 0 /* loop forever */);
                 }
