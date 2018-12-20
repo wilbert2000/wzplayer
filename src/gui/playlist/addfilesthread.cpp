@@ -363,7 +363,7 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
             duration = rx.cap(1).toDouble();
             name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            addItem(playlistItem, line, name, duration);
+            addItem(playlistItem, line, name, duration, true);
             name = "";
             duration = 0;
         } else if (line.startsWith("#WZP-blacklist:")) {
@@ -577,7 +577,8 @@ TPlaylistWidgetItem* TAddFilesThread::addItemNotFound(
 TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
                                               QString filename,
                                               QString name,
-                                              double duration) {
+                                              double duration,
+                                              bool useBlackList) {
 
     bool protectName = !name.isEmpty();
 
@@ -613,6 +614,14 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
         }
     } else {
         return addItemNotFound(parent, filename, name, protectName);
+    }
+
+    // Check against blacklist
+    if (useBlackList && nameBlackListed(fi.absoluteFilePath())) {
+        if (parent->isWZPlaylist()) {
+            parent->setModified();
+        }
+        return 0;
     }
 
     QString savedPlaylistPath = playlistPath;
@@ -654,7 +663,10 @@ void TAddFilesThread::addFiles() {
         if (filename.isEmpty()) {
             continue;
         }
-        TPlaylistWidgetItem* result = addItem(root, filename, "", 0);
+        TPlaylistWidgetItem* result = addItem(root, filename,
+                                              "" /* name */,
+                                              0 /* duartion */,
+                                              false /* use black list */);
         if (result) {
             result->setSelected(true);
         }

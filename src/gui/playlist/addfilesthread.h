@@ -93,7 +93,8 @@ private:
     TPlaylistWidgetItem* addItem(TPlaylistWidgetItem* parent,
                                  QString filename,
                                  QString name,
-                                 double duration);
+                                 double duration,
+                                 bool useBlackList);
 
     void addFiles();
 };
