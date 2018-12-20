@@ -225,7 +225,6 @@ private:
                  const QString& filename,
                  bool wzplaylist);
     bool saveM3u(const QString& filename, bool linkFolders);
-    bool savePls(const QString& filename);
 
 private slots:
     void showContextMenu(const QPoint& pos);

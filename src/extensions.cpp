@@ -95,7 +95,7 @@ TExtensions::TExtensions() {
     _images << "bmp" << "gif" << "jpg" << "jpeg" << "mj2c" << "mjp2" << "pcx"
             << "png" << "tga" << "sgi" << "tiff";
 
-    _playlists << "m3u8" << "m3u" << "pls";
+    _playlists << "m3u8" << "m3u";
 
     _videoAndAudio = _video;
     _videoAndAudio.addList(_audio);

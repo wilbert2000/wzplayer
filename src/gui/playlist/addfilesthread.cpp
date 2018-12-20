@@ -1,6 +1,5 @@
 #include "gui/playlist/addfilesthread.h"
 
-#include <QSettings>
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
@@ -381,35 +380,6 @@ bool TAddFilesThread::openM3u(TPlaylistWidgetItem* playlistItem,
     if (!stopRequested && playlistItem->isWZPlaylist()) {
         addNewItems(playlistItem);
     }
-    return true;
-}
-
-bool TAddFilesThread::openPls(TPlaylistWidgetItem* playlistItem,
-                              const QString& playlistFileName) {
-
-    QSettings set(playlistFileName, QSettings::IniFormat);
-    set.beginGroup("playlist");
-    if (set.status() != QSettings::NoError) {
-        return false;
-    }
-
-    QString filename;
-    QString name;
-    double duration;
-
-    int num_items = set.value("NumberOfEntries", 0).toInt();
-    for (int n = 1; n <= num_items; n++) {
-        if (stopRequested) {
-            break;
-        }
-        QString ns = QString::number(n);
-        filename = set.value("File" + ns, "").toString();
-        name = set.value("Title" + ns, "").toString().simplified();
-        duration = (double) set.value("Length" + ns, 0).toInt();
-        addItem(playlistItem, filename, name, duration);
-    }
-
-    set.endGroup();
 
     return true;
 }
@@ -450,14 +420,7 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
         0, // duration
         protectName);
 
-    bool result;
-    if (playlistItem->extension() == "pls") {
-        result = openPls(playlistItem, sourceFileName);
-    } else {
-        result = openM3u(playlistItem, sourceFileName);
-    }
-
-    if (result) {
+    if (openM3u(playlistItem, sourceFileName)) {
         if (playlistItem->childCount()) {
             latestDir = playlistPath;
         } else {
@@ -691,7 +654,7 @@ void TAddFilesThread::addFiles() {
         if (filename.isEmpty()) {
             continue;
         }
-        TPlaylistWidgetItem* result = addItem(root, filename);
+        TPlaylistWidgetItem* result = addItem(root, filename, "", 0);
         if (result) {
             result->setSelected(true);
         }

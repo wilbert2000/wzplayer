@@ -28,7 +28,6 @@
 #include <QPushButton>
 #include <QRegExp>
 #include <QMenu>
-#include <QSettings>
 #include <QInputDialog>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -1509,41 +1508,29 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
         QString filename = i->filename();
 
         if (i->isPlaylist()) {
-            bool modified = i->modified();
-
-            // Switch pls to m3u8
-            QFileInfo fi(i->filename());
-            if (fi.suffix().toLower() == "pls") {
-                // Replace extension pls with m3u8
-                WZWARN("saving '" + i->filename() + "' as m3u8");
-                filename = filename.left(filename.length() - 4) + ".m3u8";
-                i->setFilename(filename, i->baseName());
-                modified = true;
-            }
-
-            if (modified) {
-                if (!saveM3u(i, filename, fi.fileName() == TConfig::WZPLAYLIST)) {
+            if (i->modified()) {
+                if (!saveM3u(i, filename, i->isWZPlaylist())) {
                     result = false;
                 }
             } else {
-                WZINFO("playlist '" + i->filename() + "' not modified");
+                WZINFO("playlist '" + filename + "' not modified");
             }
         } else if (i->isFolder()) {
             if (linkFolders) {
                 if (i->modified()) {
-                    QFileInfo fi(i->filename(), TConfig::WZPLAYLIST);
+                    QFileInfo fi(filename, TConfig::WZPLAYLIST);
                     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
                     if (!saveM3u(i, filename, linkFolders)) {
                         result = false;
                     }
                 } else {
-                    WZINFO("folder not modified '" + i->filename() + "'");
+                    WZINFO("folder not modified '" + filename + "'");
                 }
             } else {
                 // Note: savedMetaData destroyed as dummy here.
                 // It is only used for WZPlaylists.
                 if (saveM3uFolder(i, path, stream, linkFolders, savedMetaData)) {
-                    WZINFO("succesfully saved '" + i->filename() + "'");
+                    WZINFO("succesfully saved '" + filename + "'");
                 } else {
                     result = false;
                 }
@@ -1643,52 +1630,6 @@ bool TPlaylist::saveM3u(const QString& filename, bool linkFolders) {
     return saveM3u(root, filename, linkFolders);
 }
 
-bool TPlaylist::savePls(const QString& filename) {
-    WZDEBUG("'" + filename + "'");
-
-    QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
-    if (!path.endsWith(QDir::separator())) {
-        path += QDir::separator();
-    }
-
-    QSettings set(filename, QSettings::IniFormat);
-    set.beginGroup("playlist");
-
-    int n = 0;
-    QTreeWidgetItemIterator it(playlistWidget);
-    while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        if (!i->isFolder()) {
-            QString filename = i->filename();
-            if (filename.startsWith(path)) {
-                filename = filename.mid(path.length());
-            }
-            QString ns = QString::number(n + 1);
-            set.setValue("File" + ns, filename);
-            set.setValue("Title" + ns, i->baseName());
-            set.setValue("Length" + ns, (int) i->duration());
-            n++;
-        }
-        ++it;
-    }
-
-    set.setValue("NumberOfEntries", n);
-    set.setValue("Version", 2);
-
-    set.endGroup();
-    set.sync();
-
-    if (set.status() == QSettings::NoError) {
-        return true;
-    }
-
-    WZERROR("failed to save '" + filename + "'");
-    QMessageBox::warning(this, tr("Save failed"),
-                         tr("Failed to save '%1'").arg(filename),
-                         QMessageBox::Ok);
-    return false;
-}
-
 bool TPlaylist::save() {
     WZINFO("'" + filename + "'");
 
@@ -1712,13 +1653,7 @@ bool TPlaylist::save() {
     setPlaylistTitle();
     pref->last_dir = fi.absolutePath();
 
-    bool result;
-    if (fi.suffix().toLower() == "pls") {
-        result = savePls(filename);
-    } else {
-        result = saveM3u(filename, wzplaylist);
-    }
-
+    bool result = saveM3u(filename, wzplaylist);
     if (result) {
         playlistWidget->clearModified();
         WZINFO("succesfully saved '" + fi.absoluteFilePath() + "'");

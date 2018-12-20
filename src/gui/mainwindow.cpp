@@ -1544,8 +1544,7 @@ void TMainWindow::open(const QString &fileName) {
             playlist->playDirectory(fileName);
             return;
         }
-        QString ext = fi.suffix().toLower();
-        if (ext == "m3u8" || ext == "m3u" || ext == "pls") {
+        if (extensions.isPlaylist(fi)) {
             playlist->openPlaylist(fi.absoluteFilePath());
             return;
         }
@@ -1929,7 +1928,6 @@ void TMainWindow::setFullscreen(bool b) {
     WZDEBUG(QString::number(b));
 
     if (b == pref->fullscreen) {
-        WZDEBUG("nothing to do");
         return;
     }
 

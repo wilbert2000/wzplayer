@@ -80,8 +80,6 @@ private:
 
     bool openM3u(TPlaylistWidgetItem* playlistItem,
                  const QString& fileName);
-    bool openPls(TPlaylistWidgetItem* playlistItem,
-                 const QString& playlistFileName);
     TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
                                       const QFileInfo& fi,
                                       const QString& name,
@@ -94,8 +92,8 @@ private:
 
     TPlaylistWidgetItem* addItem(TPlaylistWidgetItem* parent,
                                  QString filename,
-                                 QString name = "",
-                                 double duration = 0);
+                                 QString name,
+                                 double duration);
 
     void addFiles();
 };

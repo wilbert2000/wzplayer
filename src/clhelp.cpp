@@ -171,7 +171,7 @@ QString CLHelp::help(bool html) {
     s += formatHelp(QObject::tr("media"), QObject::tr(
         "'Media' is any kind of file that WZPlayer can open. It can "
         "be a local file, a DVD (e.g. dvd:// or dvdnav://), an Internet stream "
-        "(e.g. mms://....) or a local playlist in format m3u or pls."), html);
+        "(e.g. mms://....) or a local playlist in format m3u or m3u8."), html);
 
     if (html)
         s += "</table>";
