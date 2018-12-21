@@ -12,12 +12,11 @@ namespace Playlist {
 
 class TPlaylistWidget;
 
-extern int gRootNodeLevel;
+extern const int ROOT_NODE_LEVEL;
 extern int gNameColumnWidth;
 extern QFontMetrics gNameFontMetrics;
 
 
-// TODO: root selectable or not...
 const Qt::ItemFlags ROOT_FLAGS = Qt::ItemIsSelectable
                                  | Qt::ItemIsEnabled
                                  | Qt::ItemIsDropEnabled;
@@ -32,7 +31,9 @@ public:
         COL_COUNT = 4
     };
 
+    // Create a root node
     TPlaylistWidgetItem();
+    // Create a normal node
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
                         const QString& filename,
                         const QString& name,

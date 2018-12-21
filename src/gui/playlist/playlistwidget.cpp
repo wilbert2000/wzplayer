@@ -31,7 +31,7 @@ public:
     static int getLevel(const QModelIndex& index) {
 
         if (index.parent() == QModelIndex()) {
-            return gRootNodeLevel;
+            return ROOT_NODE_LEVEL;
         }
         return getLevel(index.parent()) + 1;
     }
@@ -522,7 +522,7 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
 void TPlaylistWidget::resizeRowsEx() {
 
     gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
-    resizeRows(root(), gRootNodeLevel);
+    resizeRows(root(), ROOT_NODE_LEVEL);
 }
 
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {

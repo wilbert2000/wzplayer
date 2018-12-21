@@ -18,7 +18,7 @@ namespace Playlist {
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
 
-// Alignment text fields
+// Text alignment for columns
 const int TEXT_ALIGN_NAME = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 const int TEXT_ALIGN_TYPE = Qt::AlignLeft | Qt::AlignVCenter;
 const int TEXT_ALIGN_TIME = Qt::AlignRight | Qt::AlignVCenter;
@@ -26,15 +26,20 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 
 // Level of the root node in the tree view, where level means the number of
 // icons indenting the item. With root decoration on, toplevel items appear on
-// level 2, being gRootNodeLevel + 1.
-int gRootNodeLevel = 1;
-// Set by TPlaylistWidget event handlers
-int gNameColumnWidth = 0;
+// level 2, being ROOT_NODE_LEVEL + 1.
+const int ROOT_NODE_LEVEL = 1;
+
+// Minimum name column width
+const int MIN_NAME_COL_WIDTH = 32;
+
+// Updated by TPlaylistWidget event handlers
+int gNameColumnWidth = MIN_NAME_COL_WIDTH;
+
 // Set by TPlaylistWidget constructor
 QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
 
 
-// Used as root
+// Constructor used for root item
 TPlaylistWidgetItem::TPlaylistWidgetItem() :
     QTreeWidgetItem(),
     mModified(false) {
@@ -47,6 +52,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
 }
 
+// Used for every item except the root
 TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& filename,
                                          const QString& name,
@@ -252,7 +258,7 @@ bool TPlaylistWidgetItem::isRoot() const {
 int TPlaylistWidgetItem::getLevel() const {
 
     if (plParent() == 0) {
-        return gRootNodeLevel;
+        return ROOT_NODE_LEVEL;
     }
     return plParent()->getLevel() + 1;
 }
