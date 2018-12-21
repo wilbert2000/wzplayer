@@ -552,7 +552,8 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
         i->plChild(c)->loadIcon();
     }
 
-    if (i && !wordWrapTimer->isActive()) {
+    // Resize rows of expanded item
+    if (!wordWrapTimer->isActive()) {
         gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
         resizeRows(i, i->getLevel());
     }
