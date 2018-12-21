@@ -94,7 +94,7 @@ public:
     QStringList getBlacklist() const { return playlistItem.getBlacklist(); }
     bool whitelist(const QString& filename);
 
-    static QSize itemSize(const QString& text,
+    static QSize sizeColumnName(const QString& text,
                           int width,
                           const QFontMetrics& fm,
                           const QSize& iconSize,

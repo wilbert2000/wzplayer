@@ -39,15 +39,21 @@ public:
     virtual QSize sizeHint(const QStyleOptionViewItem& option,
                            const QModelIndex& index) const {
 
+        // Return default size hint for all but column name
         if (index.column() != TPlaylistWidgetItem::COL_NAME) {
             return QStyledItemDelegate::sizeHint(option, index);
         }
+
+        // Column name
         QString text = index.model()->data(index).toString();
+
+        // Return default for no name
         if (text.isEmpty()) {
             return QStyledItemDelegate::sizeHint(option, index);
         }
 
-        return TPlaylistWidgetItem::itemSize(
+        // Return the size of column name as hint
+        return TPlaylistWidgetItem::sizeColumnName(
                     text,
                     header->sectionSize(TPlaylistWidgetItem::COL_NAME),
                     option.fontMetrics,
@@ -57,7 +63,7 @@ public:
 
 private:
     QHeaderView* header;
-};
+}; // class TWordWrapItemDelegate
 
 
 TPlaylistWidget::TPlaylistWidget(QWidget* parent) :

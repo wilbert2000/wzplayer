@@ -406,29 +406,35 @@ bool TPlaylistWidgetItem::whitelist(const QString& filename) {
     return playlistItem.whitelist(filename);
 }
 
-// static
-QSize TPlaylistWidgetItem::itemSize(const QString& text,
-                                    int width,
-                                    const QFontMetrics& fm,
-                                    const QSize& iconSize,
-                                    int level) {
+// static, return size of the name column
+QSize TPlaylistWidgetItem::sizeColumnName(const QString& text,
+                                          int width,
+                                          const QFontMetrics& fm,
+                                          const QSize& iconSize,
+                                          int level) {
 
     // TODO: get from where?
-    const int hm = 4;
-    const int vm = 2;
+    const int hMargin = 4; // horizontal margin
+    const int vMargin = 2; // vertical margin
+    const int minHeight = iconSize.height(); // Minimal height
 
-    int w = width - level * (iconSize.width() + hm) - 2 * hm;
-    if (w <= 32) {
-        return QSize(width, iconSize.height());
+    // Get availlable width for text
+    int w = width - level * (iconSize.width() + hMargin) - 2 * hMargin;
+
+    // Return minimal size if no space available
+    if (w <= MIN_NAME_COL_WIDTH) {
+        return QSize(MIN_NAME_COL_WIDTH, minHeight);
     }
 
-    int maxh = 4 * fm.lineSpacing();
-    QRect r = QRect(QPoint(), QSize(w, maxh));
+    // Get bounding rect of text
+    int maxHeight = 4 * fm.lineSpacing();
+    QRect r = QRect(QPoint(), QSize(w, maxHeight));
     QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text);
 
-    int h = br.height() + 2 * vm;
-    if (h < iconSize.height()) {
-        h = iconSize.height();
+    // Pick up height from bounding rect
+    int h = br.height() + 2 * vMargin;
+    if (h < minHeight) {
+        h = minHeight;
     }
 
     return QSize(width, h);
@@ -437,12 +443,12 @@ QSize TPlaylistWidgetItem::itemSize(const QString& text,
 void TPlaylistWidgetItem::setSzHint(int level) {
 
     if (parent()) {
-        //QSize iconSize = icon(COL_NAME).actualSize(QSize(22, 22));
-        setSizeHint(COL_NAME, itemSize(text(COL_NAME),
-                                       gNameColumnWidth,
-                                       gNameFontMetrics,
-                                       iconProvider.iconSize,
-                                       level));
+        setSizeHint(COL_NAME,
+                    sizeColumnName(text(COL_NAME),
+                                   gNameColumnWidth,
+                                   gNameFontMetrics,
+                                   iconProvider.iconSize,
+                                   level));
     }
 }
 
