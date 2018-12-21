@@ -534,8 +534,8 @@ void TPlaylistWidget::resizeRowsEx() {
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 
     if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
-        wordWrapTimer->start();
         gNameColumnWidth = newSize;
+        wordWrapTimer->start();
     }
 }
 
