@@ -1,8 +1,6 @@
 #ifndef GUI_PLAYLIST_PLAYLISTWIDGETITEM_H
 #define GUI_PLAYLIST_PLAYLISTWIDGETITEM_H
 
-#include "gui/playlist/playlistitem.h"
-#include <QString>
 #include <QTreeWidgetItem>
 #include <QIcon>
 
@@ -10,16 +8,27 @@
 namespace Gui {
 namespace Playlist {
 
+enum TPlaylistWidgetItemState {
+    PSTATE_STOPPED,
+    PSTATE_LOADING,
+    PSTATE_PLAYING,
+    PSTATE_FAILED
+};
+
 class TPlaylistWidget;
 
+extern Qt::CaseSensitivity caseSensitiveFileNames;
+
+// Globals for resizing the name column
 extern const int ROOT_NODE_LEVEL;
 extern int gNameColumnWidth;
 extern QFontMetrics gNameFontMetrics;
 
-
+// Item flags to use for the root node
 const Qt::ItemFlags ROOT_FLAGS = Qt::ItemIsSelectable
                                  | Qt::ItemIsEnabled
                                  | Qt::ItemIsDropEnabled;
+
 
 class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
@@ -31,9 +40,13 @@ public:
         COL_COUNT = 4
     };
 
+    static int gItemOrder;
+
     // Create a root node
     TPlaylistWidgetItem();
-    // Create a normal node
+    // Copy constructor
+    TPlaylistWidgetItem(const TPlaylistWidgetItem& item);
+    // Create an item from arguments
     TPlaylistWidgetItem(QTreeWidgetItem* parent,
                         const QString& filename,
                         const QString& name,
@@ -44,53 +57,51 @@ public:
     virtual QVariant data(int column, int role) const override;
     virtual void setData(int column, int role, const QVariant &value) override;
 
-    QString filename() const { return playlistItem.filename(); }
+    QString filename() const { return mFilename; }
     void setFilename(const QString& fileName, const QString& baseName);
 
     QString path() const;
     QString pathPlusSep() const;
     QString fname() const;
 
-    QString baseName() const { return playlistItem.baseName(); }
+    QString baseName() const { return mBaseName; }
     void setName(const QString& baseName, const QString& ext, bool protectName);
 
-    double duration() const { return playlistItem.duration(); }
-    void setDuration(double d);
+    QString extension() const { return mExt; }
 
-    TPlaylistItemState state() const { return playlistItem.state(); }
-    void setState(TPlaylistItemState state);
+    double duration() const { return mDuration; }
+    void setDuration(double d) { mDuration = d; }
 
-    bool played() const { return playlistItem.played(); }
+    TPlaylistWidgetItemState state() const { return mState; }
+    void setState(TPlaylistWidgetItemState state);
+
+    bool played() const { return mPlayed; }
     void setPlayed(bool played);
 
-    bool edited() const { return playlistItem.edited(); }
-    void setEdited(bool edited) { playlistItem.setEdited(edited); }
+    bool edited() const { return mEdited; }
+    void setEdited(bool edited) { mEdited = edited; }
 
     bool modified() const { return mModified; }
     void setModified(bool modified = true,
                      bool recurse = false,
                      bool markParents = true);
 
-    int order() const { return playlistItem.order(); }
-    void setOrder(int order);
+    int order() const { return mOrder; }
+    void setOrder(int order) { mOrder = order; }
 
-    bool isRoot() const;
-    bool isFolder() const { return playlistItem.folder(); }
-    bool isPlaylist() const { return playlistItem.playlist(); }
-    bool isWZPlaylist() const { return playlistItem.wzPlaylist(); }
-    bool isSymLink() const { return playlistItem.symLink(); }
-    QString target() const { return playlistItem.target(); }
-    QString extension() const { return playlistItem.extension(); }
+    bool isFolder() const { return mFolder; }
+    bool isPlaylist() const { return mPlaylist; }
+    bool isWZPlaylist() const { return mWZPlaylist; }
+    bool isSymLink() const { return mSymLink; }
+    QString target() const { return mTarget; }
 
-    int playedTime() const { return playlistItem.playedTime(); }
+    int playedTime() const { return mPlayedTime; }
 
     void blacklist(const QString& filename) {
-        playlistItem.blacklist(filename);
+        mBlacklist.append(filename);
     }
-    bool blacklisted(const QString& filename) const {
-        return playlistItem.blacklisted(filename);
-    }
-    QStringList getBlacklist() const { return playlistItem.getBlacklist(); }
+    bool blacklisted(const QString& filename) const;
+    QStringList getBlacklist() const { return mBlacklist; }
     bool whitelist(const QString& filename);
 
     static QSize sizeColumnName(int width,
@@ -112,19 +123,41 @@ public:
     void loadIcon();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
+    bool operator == (const TPlaylistWidgetItem& item);
 
 private:
-    TPlaylistItem playlistItem;
+    int mOrder;
+    QString mFilename;
+    QString mBaseName;
+    QString mExt;
+    double mDuration;
 
+    bool mFolder;
+    bool mPlaylist;
+    bool mWZPlaylist;
+    bool mSymLink;
+    QString mTarget;
+
+    TPlaylistWidgetItemState mState;
+    bool mPlayed;
+    bool mEdited;
     bool mModified;
+    int mPlayedTime;
+    QStringList mBlacklist;
 
     QIcon itemIcon;
     QIcon getIcon();
     void setStateIcon();
 
+    QString editName() const;
+
+    static QString playlistItemState(TPlaylistWidgetItemState state);
+
     void refresh(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);
     bool rename(const QString& newName);
+
+    void setFileInfo();
 };
 
 } // namespace Playlist

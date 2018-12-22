@@ -1,17 +1,17 @@
 #include "gui/playlist/playlistwidget.h"
 
+#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/msg.h"
+#include "images.h"
+#include "iconprovider.h"
+#include "wzdebug.h"
+
 #include <QHeaderView>
 #include <QTreeWidgetItemIterator>
 #include <QStyledItemDelegate>
 #include <QDropEvent>
 #include <QFontMetrics>
 #include <QTimer>
-
-#include "gui/playlist/playlistwidgetitem.h"
-#include "images.h"
-#include "iconprovider.h"
-#include "gui/msg.h"
-#include "wzdebug.h"
 
 
 namespace Gui {
@@ -273,7 +273,7 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
 }
 
 void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item,
-                                     TPlaylistItemState state) {
+                                     TPlaylistWidgetItemState state) {
     WZDEBUG("");
 
     bool setCurrent = true;

@@ -2,7 +2,6 @@
 #define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
 #include "gui/playlist/playlistwidgetitem.h"
-#include "gui/playlist/playlistitem.h"
 #include "wzdebug.h"
 #include <QTreeWidget>
 
@@ -22,7 +21,7 @@ public:
     TPlaylistWidgetItem* playing_item;
 
     void setPlayingItem(TPlaylistWidgetItem* item,
-                        TPlaylistItemState state = PSTATE_STOPPED);
+                        TPlaylistWidgetItemState state = PSTATE_STOPPED);
 
     TPlaylistWidgetItem* root() const {
         return static_cast<TPlaylistWidgetItem*>(topLevelItem(0));
