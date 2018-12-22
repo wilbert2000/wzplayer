@@ -44,7 +44,6 @@ public:
     virtual QVariant data(int column, int role) const override;
     virtual void setData(int column, int role, const QVariant &value) override;
 
-
     QString filename() const { return playlistItem.filename(); }
     void setFilename(const QString& fileName, const QString& baseName);
 
@@ -94,11 +93,11 @@ public:
     QStringList getBlacklist() const { return playlistItem.getBlacklist(); }
     bool whitelist(const QString& filename);
 
-    static QSize sizeColumnName(const QString& text,
-                          int width,
-                          const QFontMetrics& fm,
-                          const QSize& iconSize,
-                          int level);
+    static QSize sizeColumnName(int width,
+                                const QString& text,
+                                const QFontMetrics& fm,
+                                const QSize& iconSize,
+                                int level);
     void setSzHint(int level);
     int getLevel() const;
 
@@ -113,15 +112,16 @@ public:
     void loadIcon();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
-    // TODO: override clone?
 
 private:
     TPlaylistItem playlistItem;
-    QIcon itemIcon;
+
     bool mModified;
 
+    QIcon itemIcon;
     QIcon getIcon();
     void setStateIcon();
+
     void refresh(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);
     bool rename(const QString& newName);

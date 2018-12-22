@@ -52,10 +52,10 @@ public:
             return QStyledItemDelegate::sizeHint(option, index);
         }
 
-        // Return the size of column name as hint
+        // Return the size of column name
         return TPlaylistWidgetItem::sizeColumnName(
-                    text,
                     header->sectionSize(TPlaylistWidgetItem::COL_NAME),
+                    text,
                     option.fontMetrics,
                     option.decorationSize,
                     getLevel(index));

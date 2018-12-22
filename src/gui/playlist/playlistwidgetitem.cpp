@@ -15,7 +15,6 @@
 namespace Gui {
 namespace Playlist {
 
-
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
 
 // Text alignment for columns
@@ -29,11 +28,8 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 // level 2, being ROOT_NODE_LEVEL + 1.
 const int ROOT_NODE_LEVEL = 1;
 
-// Minimum name column width
-const int MIN_NAME_COL_WIDTH = 32;
-
 // Updated by TPlaylistWidget event handlers
-int gNameColumnWidth = MIN_NAME_COL_WIDTH;
+int gNameColumnWidth = 0;
 
 // Set by TPlaylistWidget constructor
 QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
@@ -406,24 +402,24 @@ bool TPlaylistWidgetItem::whitelist(const QString& filename) {
     return playlistItem.whitelist(filename);
 }
 
-// static, return size of the name column
-QSize TPlaylistWidgetItem::sizeColumnName(const QString& text,
-                                          int width,
+// static, return the size of the name column
+QSize TPlaylistWidgetItem::sizeColumnName(int width,
+                                          const QString& text,
                                           const QFontMetrics& fm,
                                           const QSize& iconSize,
                                           int level) {
 
-    // TODO: get from where?
+    // TODO: get from style
     const int hMargin = 4; // horizontal margin
     const int vMargin = 2; // vertical margin
-    const int minHeight = iconSize.height(); // Minimal height
+    const QSize minSize = iconSize;
 
     // Get availlable width for text
     int w = width - level * (iconSize.width() + hMargin) - 2 * hMargin;
 
     // Return minimal size if no space available
-    if (w <= MIN_NAME_COL_WIDTH) {
-        return QSize(MIN_NAME_COL_WIDTH, minHeight);
+    if (w <= minSize.width()) {
+        return minSize;
     }
 
     // Get bounding rect of text
@@ -431,12 +427,13 @@ QSize TPlaylistWidgetItem::sizeColumnName(const QString& text,
     QRect r = QRect(QPoint(), QSize(w, maxHeight));
     QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text);
 
-    // Pick up height from bounding rect
+    // Pick up the height from the bounding rect
     int h = br.height() + 2 * vMargin;
-    if (h < minHeight) {
-        h = minHeight;
+    if (h < minSize.height()) {
+        h = minSize.height();
     }
 
+    // Return original width and height needed by text
     return QSize(width, h);
 };
 
@@ -444,8 +441,8 @@ void TPlaylistWidgetItem::setSzHint(int level) {
 
     if (parent()) {
         setSizeHint(COL_NAME,
-                    sizeColumnName(text(COL_NAME),
-                                   gNameColumnWidth,
+                    sizeColumnName(gNameColumnWidth,
+                                   text(COL_NAME),
                                    gNameFontMetrics,
                                    iconProvider.iconSize,
                                    level));
