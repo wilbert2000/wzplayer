@@ -36,16 +36,13 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 // Level of the root node in the tree view, where level means the number of
 // icons indenting the item. With root decoration on, toplevel items appear on
 // level 2, being ROOT_NODE_LEVEL + 1.
-const int ROOT_NODE_LEVEL = 1;
-
-// Updated by TPlaylistWidget event handlers
-int gNameColumnWidth = 0;
-
-// Set by TPlaylistWidget constructor
-QFontMetrics gNameFontMetrics = QFontMetrics(QFont());
-
-// Global counter to generate order field for items
+const int TPlaylistWidgetItem::ROOT_NODE_LEVEL = 1;
+// Counter to generate order field for items
 int TPlaylistWidgetItem::gItemOrder = 0;
+// Width of name column. Updated by TPlaylistWidget event handlers.
+int TPlaylistWidgetItem::gNameColumnWidth = 0;
+// Set by TPlaylistWidget constructor
+QFontMetrics TPlaylistWidgetItem::gNameFontMetrics = QFontMetrics(QFont());
 
 
 // Generate a timestamp for played items
@@ -576,7 +573,7 @@ QSize TPlaylistWidgetItem::sizeColumnName(int width,
         h = minSize.height();
     }
 
-    // Return original width and height needed by text
+    // Return original width and new height needed by text
     return QSize(width, h);
 };
 
@@ -644,7 +641,7 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
 }
 
 // TODO: check usage...
-bool TPlaylistWidgetItem::operator == (const TPlaylistWidgetItem& item) {
+bool TPlaylistWidgetItem::operator == (const TPlaylistWidgetItem& item) const {
 
     return item.filename().compare(mFilename, caseSensitiveFileNames) == 0;
 }

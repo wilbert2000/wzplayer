@@ -19,11 +19,6 @@ class TPlaylistWidget;
 
 extern Qt::CaseSensitivity caseSensitiveFileNames;
 
-// Globals for resizing the name column
-extern const int ROOT_NODE_LEVEL;
-extern int gNameColumnWidth;
-extern QFontMetrics gNameFontMetrics;
-
 // Item flags to use for the root node
 const Qt::ItemFlags ROOT_FLAGS = Qt::ItemIsSelectable
                                  | Qt::ItemIsEnabled
@@ -40,7 +35,24 @@ public:
         COL_COUNT = 4
     };
 
+    // Level of the root node in the tree view, where level means the number of
+    // icons indenting the item. With root decoration on, toplevel items appear
+    // on level 2, being ROOT_NODE_LEVEL + 1.
+    static const int ROOT_NODE_LEVEL;
+    // Counter to generate order field for items
     static int gItemOrder;
+
+    // Handle resizing name column
+    // Updated by TPlaylistWidget event handlers.
+    static int gNameColumnWidth;
+    // Set by TPlaylistWidget constructor.
+    static QFontMetrics gNameFontMetrics;
+    // Get size for name column
+    static QSize sizeColumnName(int width,
+                                const QString& text,
+                                const QFontMetrics& fm,
+                                const QSize& iconSize,
+                                int level);
 
     // Create a root node
     TPlaylistWidgetItem();
@@ -104,11 +116,6 @@ public:
     QStringList getBlacklist() const { return mBlacklist; }
     bool whitelist(const QString& filename);
 
-    static QSize sizeColumnName(int width,
-                                const QString& text,
-                                const QFontMetrics& fm,
-                                const QSize& iconSize,
-                                int level);
     void setSzHint(int level);
     int getLevel() const;
 
@@ -123,7 +130,7 @@ public:
     void loadIcon();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
-    bool operator == (const TPlaylistWidgetItem& item);
+    bool operator == (const TPlaylistWidgetItem& item) const;
 
 private:
     int mOrder;

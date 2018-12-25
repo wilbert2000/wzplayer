@@ -31,7 +31,7 @@ public:
     static int getLevel(const QModelIndex& index) {
 
         if (index.parent() == QModelIndex()) {
-            return ROOT_NODE_LEVEL;
+            return TPlaylistWidgetItem::ROOT_NODE_LEVEL;
         }
         return getLevel(index.parent()) + 1;
     }
@@ -115,7 +115,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setDefaultDropAction(Qt::MoveAction);
 
     // Wordwrap
-    gNameFontMetrics = fontMetrics();
+    TPlaylistWidgetItem::gNameFontMetrics = fontMetrics();
 
     setWordWrap(true);
     setUniformRowHeights(false);
@@ -527,14 +527,15 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
 
 void TPlaylistWidget::resizeRowsEx() {
 
-    gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
-    resizeRows(root(), ROOT_NODE_LEVEL);
+    TPlaylistWidgetItem::gNameColumnWidth =
+            header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
+    resizeRows(root(), TPlaylistWidgetItem::ROOT_NODE_LEVEL);
 }
 
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 
     if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
-        gNameColumnWidth = newSize;
+        TPlaylistWidgetItem::gNameColumnWidth = newSize;
         wordWrapTimer->start();
     }
 }
@@ -554,7 +555,8 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
 
     // Resize rows of expanded item
     if (!wordWrapTimer->isActive()) {
-        gNameColumnWidth = header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
+        TPlaylistWidgetItem::gNameColumnWidth =
+                header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
         resizeRows(i, i->getLevel());
     }
 }
