@@ -160,7 +160,7 @@ private:
 
     static QString playlistItemState(TPlaylistWidgetItemState state);
 
-    void refresh(const QString& dir, const QString& newDir);
+    void renameDir(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);
     bool rename(const QString& newName);
 

@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QTimer>
 
 
 namespace Gui {
@@ -204,25 +205,29 @@ void TPlaylistWidgetItem::setFileInfo() {
     }
 }
 
-void TPlaylistWidgetItem::refresh(const QString& dir, const QString& newDir) {
+void TPlaylistWidgetItem::renameDir(const QString& dir, const QString& newDir) {
 
     if (mFilename.startsWith(dir)) {
         mFilename = newDir + mFilename.mid(dir.length());
     }
 
     for(int i = 0; i < childCount(); i++) {
-        plChild(i)->refresh(dir, newDir);
+        plChild(i)->renameDir(dir, newDir);
     }
 }
 
 bool TPlaylistWidgetItem::renameFile(const QString& newName) {
 
     // Stop player if item is playing
+    bool restartPlayer = false;
     if (mState == PSTATE_LOADING || mState == PSTATE_PLAYING) {
-        WZDEBUG("Stopping playing item");
+        restartPlayer = true;
+        player->saveRestartTime();
+        WZDEBUG("Stopping player");
         player->stop();
     }
 
+    // Fully qualify name and newName
     QString dir = QDir::toNativeSeparators(QFileInfo(mFilename).absolutePath());
     if (!dir.endsWith(QDir::separator())) {
         dir += QDir::separator();
@@ -233,29 +238,38 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     } else {
         name = mFilename;
     }
-    QString nn;
+    QString newFullName;
     if (newName.startsWith('/')) {
-        nn = newName;
+        newFullName = newName;
     } else {
-        nn = dir + newName;
+        newFullName = dir + newName;
     }
 
-    if (QFile::rename(name, nn)) {
-        setFilename(nn, QFileInfo(newName).completeBaseName());
-        if (mFolder) {
-            refresh(name + QDir::separator(), nn + QDir::separator());
-        }
-        plTreeWidget()->setModified(this);
-        WZINFO("Renamed '" + name + "' to '" + nn + "'");
-        return true;
+    // Rename file
+    if (!QFile::rename(name, newFullName)) {
+        WZERROR("Failed to rename '" + name + "' to '" + newFullName + "'");
+        QMessageBox::warning(treeWidget(),
+            qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
+            qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
+                            "Failed to rename '%1' to '%2'"
+                            ).arg(name).arg(newFullName));
+        return false;
     }
 
-    WZERROR("Failed to rename '" + name + "' to '" + nn + "'");
-    QMessageBox::warning(treeWidget(),
-        qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
-        qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
-                        "Failed to rename '%1' to '%2'").arg(name).arg(nn));
-    return false;
+    // Update tree view
+    setFilename(newFullName, QFileInfo(newName).completeBaseName());
+    if (mFolder) {
+        renameDir(name + QDir::separator(), newFullName + QDir::separator());
+    }
+    plTreeWidget()->setModified(this);
+
+    // Restart player
+    if (restartPlayer) {
+        QTimer::singleShot(0, plTreeWidget()->parent(), SLOT(play()));
+    }
+
+    WZINFO("Renamed '" + name + "' to '" + newFullName + "'");
+    return true;
 }
 
 QString TPlaylistWidgetItem::editName() const {
