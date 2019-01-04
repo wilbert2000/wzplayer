@@ -2324,7 +2324,7 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
     if (stickx) {
         int x = available.x() + available.width()
                 - frameGeometry().size().width();
-        if (x < 0) {
+        if (x < available.x() || x == p.x()) {
             stickx = false;
         } else {
             p.rx() = x;
@@ -2333,7 +2333,7 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
     if (sticky) {
         int y = available.y() + available.height()
                 - frameGeometry().size().height();
-        if (y < 0) {
+        if (y < available.y() || y == p.y()) {
             sticky = false;
         } else {
             p.ry() = y;
