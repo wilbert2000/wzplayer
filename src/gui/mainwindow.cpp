@@ -2498,20 +2498,21 @@ void TMainWindow::processAction(QString action_name) {
 }
 
 void TMainWindow::runActions(QString actions) {
-    WZDEBUG("");
+    WZDEBUG("actions '" + actions + "'");
 
     actions = actions.simplified(); // Remove white space
 
     QAction* action;
     QStringList actionsList = actions.split(" ");
+    int delay = 500; // in ms
 
     for (int n = 0; n < actionsList.count(); n++) {
-        QString actionStr = actionsList[n];
-        QString par = ""; //the parameter which the action takes
+        const QString& actionStr = actionsList.at(n);
+        QString par = ""; // Parameter for action
 
-        //set par if the next word is a boolean value
+        // Set par if the next word is a boolean value
         if (n + 1 < actionsList.count()) {
-            par = actionsList[n + 1].toLower();
+            par = actionsList.at(n + 1).toLower();
             if (par == "true" || par == "false") {
                 n++;
             } else {
@@ -2521,24 +2522,26 @@ void TMainWindow::runActions(QString actions) {
 
         action = findChild<QAction*>(actionStr);
         if (action) {
-            WZDEBUG("running action '" + actionStr + "' " + par);
-
-            if (action->isCheckable()) {
-                if (par.isEmpty()) {
-                    action->trigger();
-                } else {
-                    action->setChecked(par == "true");
-                }
+            if (action->isCheckable() && !par.isEmpty()) {
+                // Set the checked state of action
+                WZDEBUG("set checked action '" + actionStr + "' to " + par);
+                action->setChecked(par == "true");
             } else {
-                action->trigger();
+                // Post to action slot trigger() with a delay of delay ms
+                WZDEBUG(QString("posting action '%1' with %2ms delay")
+                        .arg(actionStr).arg(delay));
+                QTimer::singleShot(delay, action, SLOT(trigger()));
+
+                // Add half a second to the delay for the next action
+                delay += 500;
             }
         } else {
             WZWARN("action '" + actionStr + "' not found");
         }
     } //end for
-}
+} // void TMainWindow::runActions(QString actions)
 
-// Called by timer and onNewMediaStartedPlaying
+// Slot called by onNewMediaStartedPlaying and the runActionsLater() timer
 void TMainWindow::checkPendingActionsToRun() {
 
     QString actions;
@@ -2553,16 +2556,22 @@ void TMainWindow::checkPendingActionsToRun() {
     }
 
     if (!actions.isEmpty()) {
-        WZDEBUG("running actions '" + actions + "'");
+        WZDEBUG("running pending actions '" + actions + "'");
         runActions(actions);
     }
 }
 
 void TMainWindow::runActionsLater(const QString& actions, bool postCheck) {
 
-    pending_actions_to_run = actions;
+    if (pending_actions_to_run.isEmpty()) {
+        pending_actions_to_run = actions;
+    } else {
+        pending_actions_to_run += " " + actions;
+    }
     if (!pending_actions_to_run.isEmpty() && postCheck) {
-        QTimer::singleShot(100, this, SLOT(checkPendingActionsToRun()));
+        WZDEBUG(QString("posting '%1' with 500ms delay")
+                .arg(pending_actions_to_run));
+        QTimer::singleShot(500, this, SLOT(checkPendingActionsToRun()));
     }
 }
 

@@ -17,6 +17,22 @@
 */
 
 #include "gui/playlist/playlist.h"
+#include "gui/playlist/playlistwidget.h"
+#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/addfilesthread.h"
+#include "gui/playlist/menuremove.h"
+#include "gui/playlist/menucontext.h"
+#include "gui/mainwindow.h"
+#include "gui/multilineinputdialog.h"
+#include "gui/action/menu/menuinoutpoints.h"
+#include "gui/action/action.h"
+#include "gui/msg.h"
+#include "gui/filedialog.h"
+#include "player/player.h"
+#include "images.h"
+#include "wzfiles.h"
+#include "extensions.h"
+#include "version.h"
 
 #include <QDesktopServices>
 #include <QToolBar>
@@ -40,23 +56,6 @@
 #include <QtAlgorithms>
 #include <QProcess>
 #include <QApplication>
-
-#include "gui/mainwindow.h"
-#include "gui/playlist/playlistwidget.h"
-#include "gui/playlist/playlistwidgetitem.h"
-#include "gui/playlist/addfilesthread.h"
-#include "gui/playlist/menuremove.h"
-#include "gui/playlist/menucontext.h"
-#include "player/player.h"
-#include "gui/multilineinputdialog.h"
-#include "gui/action/menu/menuinoutpoints.h"
-#include "gui/action/action.h"
-#include "gui/msg.h"
-#include "images.h"
-#include "wzfiles.h"
-#include "gui/filedialog.h"
-#include "extensions.h"
-#include "version.h"
 
 
 using namespace Settings;
@@ -748,16 +747,23 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
 void TPlaylist::playNext(bool loop_playlist) {
     WZDEBUG("");
 
+    // Keep paused images paused
+    if (player->mdat.image && player->state() == Player::TState::STATE_PAUSED) {
+        main_window->runActionsLater("pause", false);
+    }
+
     TPlaylistWidgetItem* item = 0;
     if (shuffleAct->isChecked()) {
         item = getRandomItem();
         if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
+            // Restart the playlist
             playlistWidget->clearPlayed();
             item = getRandomItem();
         }
     } else {
         item = playlistWidget->getNextPlaylistWidgetItem();
         if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
+            // Select first item in playlist
             item = playlistWidget->firstPlaylistWidgetItem();
         }
     }
@@ -766,6 +772,11 @@ void TPlaylist::playNext(bool loop_playlist) {
 
 void TPlaylist::playPrev() {
     WZDEBUG("");
+
+    // Keep paused images paused
+    if (player->mdat.image && player->state() == Player::TState::STATE_PAUSED) {
+        main_window->runActionsLater("pause", false);
+    }
 
     TPlaylistWidgetItem* i = playlistWidget->playing_item;
     if (i && shuffleAct->isChecked()) {
@@ -1135,6 +1146,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
     QString current_filename = playlistWidget->playingFile();
 
     if (md->disc.valid) {
+        // Handle disk
         if (md->titles.count() == playlistWidget->countItems()) {
             TDiscName cur_disc(current_filename);
             if (cur_disc.valid
@@ -1145,6 +1157,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
     } else if (filename == current_filename) {
+        // HHandle current item started playing
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item == 0) {
             return;
@@ -1179,6 +1192,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
         } else {
             WZDEBUG("item considered uptodate");
         }
+
+        // Pause a single image
+        if (player->mdat.image && playlistWidget->hasSingleItem()) {
+            main_window->runActionsLater("pause", true);
+        }
+
         return;
     }
 
