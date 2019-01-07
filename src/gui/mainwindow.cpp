@@ -2013,7 +2013,8 @@ void TMainWindow::didExitFullscreen() {
 
     // Update size when current video changed in fullscreen
     if (pref->resize_on_load
-        && player->mdat.filename != first_fullscreen_filename) {
+        && player->mdat.filename != first_fullscreen_filename
+        && player->statePOP()) {
         // Set default zoom
         pref->size_factor = pref->initial_zoom_factor;
         // Needs delay for framesize to settle down...
