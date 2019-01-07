@@ -627,7 +627,7 @@ void TMainWindow::createToolbars() {
     auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
     auto_hide_timer->add(viewMenuBarAct, menuBar());
     auto_hide_timer->add(viewStatusBarAct, statusBar());
-    // Playlist added by createmenus
+    // Docks added by TMenuWindow constructor called by createMenus()
     connect(playerwindow, &TPlayerWindow::draggingChanged,
             auto_hide_timer, &TAutoHideTimer::setDraggingPlayerWindow);
 }

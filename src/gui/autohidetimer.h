@@ -64,7 +64,7 @@ private:
     TItemMap items;
 
     bool hiddenWidget() const;
-    bool visibleWidget() const;
+    bool haveWidgetToHide() const;
 
     bool mouseInsideShowArea() const;
     void setVisible(bool visible);

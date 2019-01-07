@@ -94,29 +94,26 @@ void TAutoHideTimer::setVisible(bool visible) {
 
     settingVisible = true;
 
+    int screen = QApplication::desktop()->screenNumber(playerWindow);
     for(int i = 0; i < actions.size(); i++) {
-        QAction* action = actions[i];
+        QAction* action = actions.at(i);
         if (action->isChecked() != visible) {
-            action->trigger();
+            if (visible) {
+                action->trigger();
+            } else if (QApplication::desktop()->screenNumber(widgets.at(i))
+                       == screen) {
+                action->trigger();
+            }
         }
     }
 
     settingVisible = false;
 }
 
-bool TAutoHideTimer::visibleWidget() const {
-
-    for(int i = 0; i < widgets.size(); i++) {
-        if (widgets[i]->isVisible())
-            return true;
-    }
-    return false;
-}
-
 bool TAutoHideTimer::hiddenWidget() const {
 
     for(int i = 0; i < widgets.size(); i++) {
-        if (widgets[i]->isHidden())
+        if (widgets.at(i)->isHidden())
             return true;
     }
     return false;
@@ -141,7 +138,7 @@ bool TAutoHideTimer::mouseInsideShowArea() const {
     QPoint o(-margin, -margin);
     QSize s(2 * margin, 2 * margin);
     for (int i = 0; i < widgets.size(); i++) {
-        QWidget* w = widgets[i];
+        QWidget* w = widgets.at(i);
         QRect showArea(w->mapToGlobal(o), w->size() + s);
         if (showArea.contains(QCursor::pos())) {
             return true;
@@ -195,9 +192,20 @@ void TAutoHideTimer::hideMouse() {
 void TAutoHideTimer::setDraggingPlayerWindow(bool dragging) {
 
     draggingPlayerWindow = dragging;
-    if (autoHide && enabled && draggingPlayerWindow && visibleWidget()) {
+    if (autoHide && enabled && draggingPlayerWindow) {
         setVisible(false);
     }
+}
+
+bool TAutoHideTimer::haveWidgetToHide() const {
+
+    int scrn = QApplication::desktop()->screenNumber(playerWindow);
+    for(int i = 0; i < widgets.size(); i++) {
+        QWidget* w = widgets.at(i);
+        if (w->isVisible() && QApplication::desktop()->screenNumber(w) == scrn)
+            return true;
+    }
+    return false;
 }
 
 void TAutoHideTimer::onTimeOut() {
@@ -217,7 +225,7 @@ void TAutoHideTimer::onTimeOut() {
     autoHideMouseLastPosition = QCursor::pos();
 
     // Hide widgets when no mouse buttons down and mouse outside show area
-    if (autoHide && enabled && visibleWidget()) {
+    if (autoHide && enabled && haveWidgetToHide()) {
         if (QApplication::mouseButtons() || mouseInsideShowArea()) {
             QTimer::start();
         } else {
