@@ -2205,6 +2205,15 @@ double TMainWindow::optimizeSize(double size) const {
     if (i < 13) {
         return size;
     }
+    if (i < 25) {
+        // Can we scale up to 25%?
+        video_size = res * (double) 0.25;
+        if (video_size.width() > available_size.width()
+                || video_size.height() > available_size.height()) {
+            return size;
+        }
+        return 0.25;
+    }
     if (i < 29) {
         return 0.25;
     }
