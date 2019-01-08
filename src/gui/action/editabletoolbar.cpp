@@ -18,20 +18,18 @@
 
 #include "gui/action/editabletoolbar.h"
 
-#include <QMenu>
-#include <QResizeEvent>
-#include <QTimer>
-
-#include "gui/desktop.h"
-#include "settings/preferences.h"
-#include "gui/mainwindow.h"
 #include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
 #include "gui/action/menu/menu.h"
-#include "gui/action/sizegrip.h"
-#include "gui/action/timeslider.h"
 
+#include "gui/mainwindow.h"
+#include "gui/desktop.h"
+#include "settings/preferences.h"
+
+#include <QMenu>
+#include <QResizeEvent>
+#include <QTimer>
 
 namespace Gui {
 namespace Action {
@@ -40,21 +38,12 @@ namespace Action {
 TEditableToolbar::TEditableToolbar(TMainWindow* mainwindow) :
     QToolBar(mainwindow),
     debug(logger()),
-    main_window(mainwindow),
-    size_grip(0),
-    space_eater(0),
-    fixing_size(false) {
-
-    fix_size = height() - iconSize().height();
+    main_window(mainwindow) {
 
     // Context menu
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, &TEditableToolbar::customContextMenuRequested,
             this, &TEditableToolbar::showContextMenu);
-
-    // Update size grip when top level changes
-    connect(this, &TEditableToolbar::topLevelChanged,
-            this, &TEditableToolbar::onTopLevelChanged);
 
     // Reload toolbars when entering and exiting fullscreen
     connect(main_window, &TMainWindow::didEnterFullscreenSignal,
@@ -100,11 +89,8 @@ void TEditableToolbar::addMenu(QAction* action) {
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
                                                 const TActionList& all_actions) {
-    // W ZTRACE("updating '" + objectName() + "'");
 
     clear();
-    space_eater = 0;
-    removeSizeGrip();
     // Copy actions
     actions = acts;
 
@@ -129,10 +115,6 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
                             addMenu(action);
                         } else {
                             addAction(action);
-                            if (action_name == "timeslider_action") {
-                                space_eater = qobject_cast<TTimeSlider*>(
-                                                  widgetForAction(action));
-                            }
                         }
                     } else {
                         WZWARN("action '" + action_name + " not found");
@@ -146,13 +128,9 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
         }
     } // while
 
-    addSizeGrip();
 } // TEditableToolbar::setActionsFromStringList()
 
-QStringList TEditableToolbar::actionsToStringList(bool remove_size_grip) {
-
-    if (remove_size_grip)
-        removeSizeGrip();
+QStringList TEditableToolbar::actionsToStringList() const {
     return actions;
 }
 
@@ -195,112 +173,7 @@ void TEditableToolbar::showContextMenu(const QPoint& pos) {
     }
 }
 
-void TEditableToolbar::mouseReleaseEvent(QMouseEvent* event) {
-
-    QToolBar::mouseReleaseEvent(event);
-    if (size_grip) {
-        QTimer::singleShot(1000, size_grip, SLOT(delayedShow()));
-    }
-}
-
-void TEditableToolbar::moveEvent(QMoveEvent* event) {
-
-    QToolBar::moveEvent(event);
-    if (size_grip) {
-        if (QApplication::mouseButtons()) {
-            size_grip->hide();
-        }
-        size_grip->follow();
-    }
-}
-
-void TEditableToolbar::resizeEvent(QResizeEvent* event) {
-    //qDebug() << "resizeEvent:" << objectName()
-    //         << "from" << event->oldSize() << "to" << size()
-    //         << "min" << minimumSizeHint();
-
-    QToolBar::resizeEvent(event);
-
-    // Fix the dark and uncontrollable ways of Qt's layout engine.
-    // It looks like that with an orientation change the resize is done first,
-    // than the orientation changed signal is sent and received by TTImeslider
-    // changing TTImesliders minimum size and then another resize arrives,
-    // based on the old minimum size hint from before the orientation change.
-    // sizeHint() is never called, so can't fix it that way.
-    if (isFloating() && space_eater && !fixing_size) {
-        if (orientation() == Qt::Horizontal) {
-            if (height() > iconSize().height() + fix_size) {
-                WZDEBUG("fixing height");
-                fixing_size = true;
-                resize(width(), iconSize().height() + fix_size);
-                fixing_size = false;
-            }
-        } else if (width() > iconSize().width() + fix_size) {
-            WZDEBUG("fixing width");
-            fixing_size = true;
-            resize(iconSize().width() + fix_size, height());
-            fixing_size = false;
-        }
-    }
-
-    if (size_grip) {
-        size_grip->follow();
-    }
-}
-
-void TEditableToolbar::setVisible(bool visible) {
-
-    QToolBar::setVisible(visible);
-    if (size_grip && (!visible || underMouse())) {
-        size_grip->setVisible(visible);
-    }
-}
-
-void TEditableToolbar::removeSizeGrip() {
-
-    if (size_grip) {
-        size_grip->close();
-        delete size_grip;
-        size_grip = 0;
-    }
-}
-
-void TEditableToolbar::addSizeGrip() {
-
-    if (space_eater && isFloating()) {
-        setMaximumSize(0.9 * TDesktop::availableSize(this));
-        if (!size_grip) {
-            size_grip = new TSizeGrip(main_window, this);
-            connect(size_grip, &TSizeGrip::saveSizeHint,
-                    space_eater, &TTimeSlider::saveSizeHint);
-        }
-    } else {
-        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-        removeSizeGrip();
-    }
-}
-
-void TEditableToolbar::onTopLevelChanged(bool) {
-
-    addSizeGrip();
-}
-
-void TEditableToolbar::enterEvent(QEvent* event) {
-
-    QToolBar::enterEvent(event);
-    if (size_grip)
-        size_grip->show();
-}
-
-void TEditableToolbar::leaveEvent(QEvent* event) {
-
-    QToolBar::leaveEvent(event);
-    if (size_grip)
-        QTimer::singleShot(0, size_grip, SLOT(delayedHide()));
-}
-
 } // namespace Action
 } // namespace Gui
 
 #include "moc_editabletoolbar.cpp"
-

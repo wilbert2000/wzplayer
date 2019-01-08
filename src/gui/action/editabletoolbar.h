@@ -31,10 +31,6 @@ class TMainWindow;
 
 namespace Action {
 
-class TSizeGrip;
-class TTimeSlider;
-
-
 class TEditableToolbar : public QToolBar {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
@@ -43,7 +39,7 @@ public:
     TEditableToolbar(TMainWindow* mainwindow);
     virtual ~TEditableToolbar();
 
-    QStringList actionsToStringList(bool remove_size_grip = true);
+    QStringList actionsToStringList() const;
     void setActionsFromStringList(const QStringList& acts,
                                   const TActionList& all_actions);
 
@@ -52,37 +48,18 @@ public:
         default_actions = action_names;
     }
 
-    virtual void setVisible(bool visible);
-
 public slots:
     void edit();
 
-protected:
-    TMainWindow* main_window;
-
-    virtual void resizeEvent(QResizeEvent* event);
-
-    virtual void moveEvent(QMoveEvent* event);
-    virtual void enterEvent(QEvent* event);
-    virtual void leaveEvent(QEvent* event);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-
 private:
+    TMainWindow* main_window;
     QStringList actions;
     QStringList default_actions;
 
-    TSizeGrip* size_grip;
-    TTimeSlider* space_eater;
-    bool fixing_size;
-    int fix_size;
-
     void addMenu(QAction* action);
-    void addSizeGrip();
-    void removeSizeGrip();
 
 private slots:
     void showContextMenu(const QPoint& pos);
-    void onTopLevelChanged(bool);
     void reload();
 }; // class TEditableToolbar
 

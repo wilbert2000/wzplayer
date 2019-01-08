@@ -48,7 +48,6 @@ public:
 public slots:
     virtual void setPos(int); // Don't use setValue!
     virtual void setDuration(double t);
-    void saveSizeHint();
 
 signals:
     void posChanged(int);
@@ -70,22 +69,14 @@ protected slots:
 protected:
     virtual void wheelEvent(QWheelEvent* e);
     virtual bool event(QEvent* event);
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
-    virtual void resizeEvent(QResizeEvent* e);
 
 private:
-    static const int SLIDER_MIN_SIZE = 84;
-
     bool dont_update;
     int position;
     double _duration;
 
     int last_pos_to_send;
     QTimer* timer;
-
-    int savedSize;
-    bool getInitialSize;
 }; // class TTimeSlider
 
 } // namespace Action

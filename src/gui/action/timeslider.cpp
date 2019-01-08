@@ -38,9 +38,7 @@ TTimeSlider::TTimeSlider(QWidget* parent,
     , dont_update(false)
     , position(pos)
     , _duration(duration)
-    , last_pos_to_send(-1)
-    , savedSize(256)
-    , getInitialSize(true) {
+    , last_pos_to_send(-1) {
 
     setMinimum(0);
     setMaximum(max_pos);
@@ -64,44 +62,6 @@ TTimeSlider::TTimeSlider(QWidget* parent,
 }
 
 TTimeSlider::~TTimeSlider() {
-}
-
-QSize TTimeSlider::sizeHint() const {
-
-    QSize s = TSlider::sizeHint();
-    if (orientation() == Qt::Horizontal)
-        s.rwidth() = savedSize;
-    else
-        s.rheight() = savedSize;
-    return s;
-}
-
-QSize TTimeSlider::minimumSizeHint() const {
-
-    QSize s = TSlider::sizeHint();
-    if (orientation() == Qt::Horizontal)
-        s.rwidth() = SLIDER_MIN_SIZE;
-    else
-        s.rheight() = SLIDER_MIN_SIZE;
-    return s;
-}
-
-// Called by TSizeGrip signal saveSizeHint when user resized toolbar
-void TTimeSlider::saveSizeHint() {
-
-    savedSize = orientation() == Qt::Horizontal ? width() : height();
-    if (savedSize < SLIDER_MIN_SIZE)
-        savedSize = SLIDER_MIN_SIZE;
-}
-
-void TTimeSlider::resizeEvent(QResizeEvent* event) {
-
-    TSlider::resizeEvent(event);
-    // Save initial size as size hint
-    if (getInitialSize) {
-        getInitialSize = false;
-        saveSizeHint();
-    }
 }
 
 void TTimeSlider::setPos(int v) {
