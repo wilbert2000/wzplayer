@@ -752,7 +752,7 @@ void TPlaylist::playNext(bool loop_playlist) {
         main_window->runActionsLater("pause", false);
     }
 
-    TPlaylistWidgetItem* item = 0;
+    TPlaylistWidgetItem* item;
     if (shuffleAct->isChecked()) {
         item = getRandomItem();
         if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
@@ -814,6 +814,26 @@ void TPlaylist::resumePlay() {
 
 bool TPlaylist::isPlaylistEnabled() const {
     return isActiveWindow() && isVisible() && thread == 0;
+}
+
+QString TPlaylist::playingFile() const {
+    return playlistWidget->playingFile();
+}
+
+TPlaylistWidgetItem* TPlaylist::findFilename(const QString& filename) const {
+    return playlistWidget->findFilename(filename);
+}
+
+TPlaylistWidgetItem* TPlaylist::currentPlaylistWidgetItem() const {
+    return playlistWidget->currentPlaylistWidgetItem();
+}
+
+bool TPlaylist::hasItems() const {
+    return playlistWidget->hasItems();
+}
+
+bool TPlaylist::hasPlayingItem() const {
+    return playlistWidget->playing_item;
 }
 
 bool TPlaylist::removeFromDisk(const QString& filename,

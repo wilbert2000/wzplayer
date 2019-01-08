@@ -24,17 +24,12 @@
 #include <QStringList>
 
 #include "wzdebug.h"
-#include "gui/playlist/playlistwidget.h"
 #include "gui/action/menu/menu.h"
-#include "config.h"
 
 
 class QToolBar;
 class QMenu;
-class QSettings;
 class QToolButton;
-class QTimer;
-class QItemSelection;
 
 
 namespace Gui {
@@ -50,6 +45,8 @@ class TMenuInOut;
 
 namespace Playlist {
 
+class TPlaylistWidget;
+class TPlaylistWidgetItem;
 class TAddFilesThread;
 
 class TAddRemovedMenu : public Action::Menu::TMenu {
@@ -86,24 +83,14 @@ public:
     virtual ~TPlaylist();
 
     void openPlaylist(const QString& filename);
-
-    // Start playing, from item 0 if shuffle is off,
-    // or from a random item otherwise
-    void startPlay();
-    void playItem(TPlaylistWidgetItem* item);
     void playDirectory(const QString& dir);
 
-    QString playingFile() const { return playlistWidget->playingFile(); }
-    TPlaylistWidgetItem* findFilename(const QString& filename) {
-        return playlistWidget->findFilename(filename);
-    }
-
     bool isPlaylistEnabled() const;
-    TPlaylistWidgetItem* currentPlaylistWidgetItem() const {
-        return playlistWidget->currentPlaylistWidgetItem();
-    }
-    bool hasItems() const { return playlistWidget->hasItems(); }
-    bool hasPlayingItem() const { return playlistWidget->playing_item; }
+    QString playingFile() const;
+    TPlaylistWidgetItem* findFilename(const QString& filename) const;
+    TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
+    bool hasItems() const;
+    bool hasPlayingItem() const;
 
     void clear();
     void addFiles(const QStringList& files,
@@ -122,13 +109,6 @@ public:
     Action::Menu::TMenuInOut* getInOutMenu() const { return inOutMenu; }
 
 public slots:
-    void playNext(bool loop_playlist = true);
-    void playPrev();
-
-    void open();
-    bool save();
-    bool saveAs();
-
     void editName();
     void newFolder();
     void findPlayingItem();
@@ -205,13 +185,14 @@ private:
     void createToolbar();
 
     void addFilesStartThread();
+    void startPlay();
+    void playItem(TPlaylistWidgetItem* item);
 
     void setPlaylistTitle();
 
     TPlaylistWidgetItem* getRandomItem() const;
     bool haveUnplayedItems() const;
 
-    void swapItems(int item1, int item2);
     void copySelection(const QString& actionName);
     bool removeFromDisk(const QString& filename,
                             const QString& playingFile);
@@ -227,16 +208,10 @@ private:
     bool saveM3u(const QString& filename, bool linkFolders);
 
 private slots:
-    void showContextMenu(const QPoint& pos);
-
-    void onPlayerError();
-
+    void open();
+    bool save();
+    bool saveAs();
     void openFolder();
-    void refresh();
-
-    void play();
-    void playOrPause();
-    void stop();
 
     void addCurrentFile();
     void addFilesDialog();
@@ -244,19 +219,28 @@ private slots:
     void addUrls();
     void addRemovedItem(QString s);
 
-    void onModifiedChanged();
+    void refresh();
 
+    void play();
+    void playOrPause();
+    void playNext(bool loop_playlist = true);
+    void playPrev();
+    void stop();
     void openInNewWindow();
+    void resumePlay();
 
-    void enableActions();
-
-    void onItemActivated(QTreeWidgetItem* item, int);
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
+
+    void enableActions();
+    void showContextMenu(const QPoint& pos);
+
+    void onItemActivated(QTreeWidgetItem* item, int);
+    void onPlayerError();
+    void onModifiedChanged();
     void onNewMediaStartedPlaying();
     void onTitleTrackChanged(int id);
     void onMediaEOF();
-    void resumePlay();
     void onThreadFinished();
 };
 

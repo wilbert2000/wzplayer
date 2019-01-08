@@ -1,5 +1,6 @@
 #include "gui/playlist/menuremove.h"
 #include "gui/playlist/playlist.h"
+#include "gui/playlist/playlistwidgetitem.h"
 #include "gui/action/action.h"
 
 
