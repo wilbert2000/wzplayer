@@ -135,7 +135,8 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
     main_window(mw),
     thread(0),
     restartThread(false),
-    disable_enableActions(false) {
+    disable_enableActions(false),
+    reachedEndOfPlaylist(false) {
 
     setAcceptDrops(true);
 
@@ -647,12 +648,12 @@ void TPlaylist::playOrPause() {
         player->pause();
     } else if (player->state() == Player::STATE_PAUSED) {
         player->play();
+    } else if (reachedEndOfPlaylist) {
+        playNext(true);
     } else if (playlistWidget->playing_item) {
         playItem(playlistWidget->playing_item);
-    } else if (playlistWidget->currentItem()) {
-        playItem(playlistWidget->currentPlaylistWidgetItem());
     } else {
-        player->play();
+        play();
     }
 }
 
@@ -737,6 +738,7 @@ void TPlaylist::startPlay() {
 
 void TPlaylist::playItem(TPlaylistWidgetItem* item) {
 
+    reachedEndOfPlaylist = false;
     while (item && item->isFolder()) {
         item = playlistWidget->getNextPlaylistWidgetItem(item);
     }
@@ -747,6 +749,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
     } else {
         WZDEBUG("end of playlist");
         stop();
+        reachedEndOfPlaylist = true;
         msg(tr("End of playlist"), 0);
         emit playlistFinished();
     }

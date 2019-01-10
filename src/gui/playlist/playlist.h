@@ -180,6 +180,7 @@ private:
     bool restartThread;
 
     bool disable_enableActions;
+    bool reachedEndOfPlaylist;
 
 
     void createTree();
