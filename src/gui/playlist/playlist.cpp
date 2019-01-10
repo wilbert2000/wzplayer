@@ -1164,9 +1164,9 @@ void TPlaylist::onPlayerError() {
         if (item) {
             if (item->filename() == player->mdat.filename) {
                 item->setState(PSTATE_FAILED);
+                playlistWidget->setCurrentItem(item);
                 playlistWidget->scrollToItem(item);
             }
-            playlistWidget->setPlayingItem(0);
         }
     }
 }
