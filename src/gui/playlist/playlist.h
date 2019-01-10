@@ -109,6 +109,8 @@ public:
     Action::Menu::TMenuInOut* getInOutMenu() const { return inOutMenu; }
 
 public slots:
+    void stop();
+
     void editName();
     void newFolder();
     void findPlayingItem();
@@ -225,7 +227,6 @@ private slots:
     void playOrPause();
     void playNext(bool loop_playlist = true);
     void playPrev();
-    void stop();
     void openInNewWindow();
     void resumePlay();
 

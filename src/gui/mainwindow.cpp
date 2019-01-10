@@ -1319,8 +1319,6 @@ void TMainWindow::onNewMediaStartedPlaying() {
 void TMainWindow::onPlaylistFinished() {
     WZDEBUG("");
 
-    player->stop();
-
     // Handle "Close on end of playlist" option
     if (arg_close_on_finish != 0) {
         if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {

@@ -661,6 +661,13 @@ void TPlaylist::stop() {
 
     abortThread();
     player->stop();
+    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    if (i) {
+        if (i->state() != PSTATE_STOPPED && i->state() != PSTATE_FAILED) {
+            i->setState(PSTATE_STOPPED);
+        }
+        playlistWidget->setCurrentItem(i);
+    }
 }
 
 TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
@@ -739,6 +746,7 @@ void TPlaylist::playItem(TPlaylistWidgetItem* item) {
         player->open(item->filename(), playlistWidget->hasSingleItem());
     } else {
         WZDEBUG("end of playlist");
+        stop();
         msg(tr("End of playlist"), 0);
         emit playlistFinished();
     }

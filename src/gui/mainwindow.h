@@ -168,6 +168,7 @@ signals:
     void requestRestart();
 
 protected:
+    Playlist::TPlaylist* playlist;
     Action::Menu::TMenuFile* fileMenu;
     Action::Menu::TMenuPlay* playMenu;
     Action::Menu::TMenuVideo* videoMenu;
@@ -204,7 +205,6 @@ private:
     QWidget* panel;
     TPlayerWindow* playerwindow;
     TDockWidget* playlistDock;
-    Playlist::TPlaylist* playlist;
     TDockWidget* logDock;
     TLogWindow* log_window;
 

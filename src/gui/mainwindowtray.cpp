@@ -30,6 +30,7 @@
 #include "gui/action/menu/menusubtitle.h"
 #include "gui/action/menu/menubrowse.h"
 #include "gui/action/menu/menuwindow.h"
+#include "gui/playlist/playlist.h"
 
 
 using namespace Settings;
@@ -118,7 +119,7 @@ void TMainWindowTray::switchToTray() {
 
     exitFullscreen();
     showAll(false); // Hide windows
-    player->stop();
+    playlist->stop();
 
     if (pref->balloon_count > 0) {
         tray->showMessage(TConfig::PROGRAM_NAME,
