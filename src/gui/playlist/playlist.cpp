@@ -866,7 +866,8 @@ bool TPlaylist::removeFromDisk(const QString& filename,
     }
 
     if (fi.isSymLink() || fi.isFile()) {
-        // Cannot delete file on Windows when in use...
+        // Cannot delete file on Windows when in use.
+        // Also mpv will go to 100% cpu when deleting a used image file.
         if (filename == playingFile
             && player->state() != Player::STATE_STOPPED) {
             player->stop();
