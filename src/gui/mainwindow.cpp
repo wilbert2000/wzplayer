@@ -2580,9 +2580,8 @@ void TMainWindow::runActionsLater(const QString& actions, bool postCheck) {
         pending_actions_to_run += " " + actions;
     }
     if (!pending_actions_to_run.isEmpty() && postCheck) {
-        WZDEBUG(QString("posting '%1' with 500ms delay")
-                .arg(pending_actions_to_run));
-        QTimer::singleShot(500, this, SLOT(checkPendingActionsToRun()));
+        WZDEBUG(QString("posting '%1'").arg(pending_actions_to_run));
+        QTimer::singleShot(0, this, SLOT(checkPendingActionsToRun()));
     }
 }
 
