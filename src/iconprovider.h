@@ -1,14 +1,15 @@
 #ifndef ICONPROVIDER
 #define ICONPROVIDER
 
-#include <QFileIconProvider>
+#include <QIcon>
 #include <QFileInfo>
 #include <QSize>
 
 
 class QStyle;
 
-class TIconProvider: public QFileIconProvider {
+// No longer use QFileIconProvider. It fails in mysterious ways...
+class TIconProvider {
 public:
     TIconProvider();
 
@@ -26,8 +27,7 @@ public:
 
     QSize iconSize;
 
-    virtual QIcon icon(const QFileInfo& info) const;
-
+    QIcon icon(const QFileInfo& info) const;
     QIcon iconForFile(const QString& filename) const;
 
     void setStyle(QStyle* aStyle);

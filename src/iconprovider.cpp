@@ -6,8 +6,7 @@
 
 TIconProvider iconProvider;
 
-TIconProvider::TIconProvider() :
-    QFileIconProvider() {
+TIconProvider::TIconProvider() {
 }
 
 void TIconProvider::setStyle(QStyle* aStyle) {
@@ -58,23 +57,14 @@ QIcon TIconProvider::icon(const QFileInfo& fi) const {
         return driveCDIcon;
     }
 
-    /*
-     * TODO: QFileIconProvider::icon(fi) fails in mysterious ways...
-     * Fix or no longer extend QFileIconProvider to save code size.
-     * For now, always return fileIcon.
-     *
-    QIcon i = QFileIconProvider::icon(fi);
-    if (i.isNull()) {
-        return fileIcon;
-    }
-
-    return i;
-    */
-
     return fileIcon;
 }
 
 QIcon TIconProvider::iconForFile(const QString& filename) const {
+
+    if (filename.isEmpty()) {
+        return fileIcon;
+    }
     return icon(QFileInfo(filename));
 }
 
