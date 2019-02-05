@@ -39,8 +39,6 @@ public:
     // icons indenting the item. With root decoration on, toplevel items appear
     // on level 2, being ROOT_NODE_LEVEL + 1.
     static const int ROOT_NODE_LEVEL;
-    // Counter to generate order field for items
-    static int gItemOrder;
 
     // Handle resizing name column
     // Updated by TPlaylistWidget event handlers.
@@ -75,6 +73,7 @@ public:
     QString path() const;
     QString pathPlusSep() const;
     QString fname() const;
+    int compareFilename(const TPlaylistWidgetItem& item) const;
 
     QString baseName() const { return mBaseName; }
     void setName(const QString& baseName, const QString& ext, bool protectName);
@@ -130,14 +129,13 @@ public:
     void loadIcon();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
-    bool operator == (const TPlaylistWidgetItem& item) const;
 
 private:
-    int mOrder;
     QString mFilename;
     QString mBaseName;
     QString mExt;
     double mDuration;
+    int mOrder;
 
     bool mFolder;
     bool mPlaylist;

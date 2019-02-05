@@ -228,11 +228,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
 
     WZDEBUG("creating folder '" + path + "'");
     emit displayMessage(path, 0);
-    TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent,
-                                                          path,
-                                                          dir,
-                                                          0);
-
+    TPlaylistWidgetItem* folder = new TPlaylistWidgetItem(parent, path, dir, 0);
     createPath(folder, fi, name, duration, protectName);
     return folder;
 }
@@ -425,7 +421,6 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
             latestDir = playlistPath;
         } else {
             WZINFO("found no playable items in '" + sourceFileName + "'");
-            TPlaylistWidgetItem::gItemOrder--;
             delete playlistItem;
             playlistItem = 0;
         }
@@ -433,7 +428,6 @@ TPlaylistWidgetItem* TAddFilesThread::openPlaylist(TPlaylistWidgetItem *parent,
         WZERROR("failed to open '" + sourceFileName + "'");
         emit displayMessage(tr("Failed to open '%1'").arg(sourceFileName),
                             TConfig::ERROR_MESSAGE_DURATION);
-        TPlaylistWidgetItem::gItemOrder--;
         delete playlistItem;
         playlistItem = 0;
     }
@@ -536,7 +530,6 @@ TPlaylistWidgetItem* TAddFilesThread::addDirectory(TPlaylistWidgetItem* parent,
         latestDir = directory.path();
     } else {
         WZDEBUG("found no playable items in '" + dirItem->filename() + "'");
-        TPlaylistWidgetItem::gItemOrder--;
         delete dirItem;
         dirItem = 0;
     }

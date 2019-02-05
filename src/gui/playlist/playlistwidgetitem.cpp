@@ -38,8 +38,6 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 // icons indenting the item. With root decoration on, toplevel items appear on
 // level 2, being ROOT_NODE_LEVEL + 1.
 const int TPlaylistWidgetItem::ROOT_NODE_LEVEL = 1;
-// Counter to generate order field for items
-int TPlaylistWidgetItem::gItemOrder = 0;
 // Width of name column. Updated by TPlaylistWidget event handlers.
 int TPlaylistWidgetItem::gNameColumnWidth = 0;
 // Set by TPlaylistWidget constructor
@@ -88,8 +86,8 @@ QString TPlaylistWidgetItem::playlistItemState(TPlaylistWidgetItemState state) {
 // Constructor used for root item
 TPlaylistWidgetItem::TPlaylistWidgetItem() :
     QTreeWidgetItem(),
-    mOrder(++gItemOrder),
     mDuration(0),
+    mOrder(0),
     mFolder(true),
     mPlaylist(false),
     mWZPlaylist(false),
@@ -110,11 +108,11 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
 // Copy constructor
 TPlaylistWidgetItem::TPlaylistWidgetItem(const TPlaylistWidgetItem& item) :
     QTreeWidgetItem(item),
-    mOrder(item.order()),
     mFilename(item.filename()),
     mBaseName(item.baseName()),
     mExt(item.extension()),
     mDuration(item.duration()),
+    mOrder(item.order()),
 
     mFolder(item.isFolder()),
     mPlaylist(item.isPlaylist()),
@@ -129,7 +127,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(const TPlaylistWidgetItem& item) :
     mPlayedTime(item.playedTime()),
     mBlacklist(item.getBlacklist()),
 
-    itemIcon(item.itemIcon){
+    itemIcon(item.itemIcon) {
 }
 
 // Used for every item except the root
@@ -138,8 +136,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& name,
                                          double duration,
                                          bool protectName) :
-    QTreeWidgetItem(parent),
-    mOrder(++gItemOrder),
+    QTreeWidgetItem(parent, QTreeWidgetItem::UserType),
     mFilename(QDir::toNativeSeparators(filename)),
     mBaseName(name),
     mDuration(duration),
@@ -149,6 +146,11 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     mModified(false),
     mPlayedTime(0) {
 
+    if (parent) {
+        mOrder = parent->childCount();
+    } else {
+        mOrder = 0;
+    }
     if (mBaseName.isEmpty()) {
         // setFileInfo removes the extension
         mBaseName = TName::nameForURL(mFilename);
@@ -623,41 +625,37 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
         return true;
     }
 
-    // Sort on path
-    int i = QString::localeAwareCompare(QFileInfo(mFilename).absolutePath(),
-                                        QFileInfo(o->filename()).absolutePath());
-    if (i < 0) {
-        return true;
-    }
-    if (i > 0) {
-        return false;
+    if (parent() != o->parent()) {
+        // Sort on path
+        int i = QString::localeAwareCompare(
+                    QFileInfo(mFilename).absolutePath(),
+                    QFileInfo(o->filename()).absolutePath());
+        if (i < 0) {
+            return true;
+        }
+        if (i > 0) {
+            return false;
+        }
     }
 
+    // Sort on section
     int section;
-    QTreeWidget* tree = treeWidget();
-    if (tree) {
-        section = tree->header()->sortIndicatorSection();
+    if (treeWidget()) {
+        section = treeWidget()->header()->sortIndicatorSection();
     } else {
         section = COL_ORDER;
     }
-
-    if (section == COL_NAME) {
+    switch (section) {
+    case COL_NAME:
         return QString::localeAwareCompare(mBaseName, o->baseName()) < 0;
+    case COL_TYPE: return QString::localeAwareCompare(mExt, o->extension()) < 0;
+    case COL_TIME: return mDuration < o->duration();
+    default: return mOrder < o->order();
     }
-    if (section == COL_TYPE) {
-        return QString::localeAwareCompare(mExt, o->extension()) < 0;
-    }
-    if (section == COL_TIME) {
-        return mDuration < o->duration();
-    }
-
-    return mOrder < o->order();
 }
 
-// TODO: check usage...
-bool TPlaylistWidgetItem::operator == (const TPlaylistWidgetItem& item) const {
-
-    return item.filename().compare(mFilename, caseSensitiveFileNames) == 0;
+int TPlaylistWidgetItem::compareFilename(const TPlaylistWidgetItem& item) const {
+    return mFilename.compare(item.mFilename, caseSensitiveFileNames);
 }
 
 } // namespace Playlist

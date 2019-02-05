@@ -419,64 +419,90 @@ TPlaylistWidgetItem* TPlaylistWidget::findPreviousPlayedTime(
     return result;
 }
 
-void TPlaylistWidget::dropEvent(QDropEvent *e) {
+void TPlaylistWidget::dropEvent(QDropEvent* e) {
     WZDEBUG("");
 
     QTreeWidgetItem* current = currentItem();
     QList<QTreeWidgetItem*> sel = selectedItems();
+    QList<QTreeWidgetItem*> modified;
 
-    // Mark parents of the selection as modified
-    // TODO: set modified only if the drop is accepted
+    // Collect parents of the selection to mark as modified
     for(int i = 0; i < sel.count(); i++) {
-        setModified(static_cast<TPlaylistWidgetItem*>(sel.at(i)->parent()));
+        QTreeWidgetItem* p = sel.at(i)->parent();
+        if (!modified.contains(p)) {
+            modified.append(p);
+        }
     }
 
     // Handle the drop
     QTreeWidget::dropEvent(e);
 
     if (e->isAccepted()) {
+        WZDEBUG("Drop accepted");
+
         // Restore current item and selection
         clearSelection();
         setCurrentItem(current);
         for(int i = 0; i < sel.count(); i++) {
-            sel[i]->setSelected(true);
+            sel.at(i)->setSelected(true);
         }
 
-        // Mark the drop target as modified
         if (!sel.isEmpty()) {
-            setModified(static_cast<TPlaylistWidgetItem*>(sel.at(0)->parent()));
+            TPlaylistWidgetItem* parent = static_cast<TPlaylistWidgetItem*>(
+                        sel.at(0)->parent());
+            if (parent == 0) {
+                parent = root();
+            }
+            if (!modified.contains(parent)) {
+                modified.append(parent);
+            }
+
+            // Update order
+            int order = parent->childCount() + 1;
+            TPlaylistWidgetItem* target = static_cast<TPlaylistWidgetItem*>(
+                        itemAt(e->pos() - pos() - viewport()->pos()));
+            if (target) {
+                int o = target->order();
+                if (o > 0) {
+                    switch (dropIndicatorPosition()) {
+                    case QAbstractItemView::AboveItem: order = o; break;
+                    case QAbstractItemView::OnItem:
+                    case QAbstractItemView::BelowItem: order = o + 1; break;
+                    case QAbstractItemView::OnViewport: ; // Keep order
+                    }
+                }
+                WZDEBUG(QString("Target '%1' o %2 order %3")
+                        .arg(target->baseName()).arg(o).arg(order));
+            }
+            int selOrder = order + sel.count();
+
+            // Set new order
+            for (int i = parent->childCount() - 1; i >= 0; i--) {
+                TPlaylistWidgetItem* item = parent->plChild(i);
+                if (sel.contains(item)) {
+                    item->setOrder(--selOrder);
+                } else if (item->order() >= order) {
+                    item->setOrder(item->order() + sel.count());
+                }
+                WZDEBUG(QString("'%1' %2")
+                        .arg(item->baseName()).arg(item->order()));
+            }
         }
+
+        // Set modified
+        for(int i = 0; i < modified.count(); i++) {
+            setModified(static_cast<TPlaylistWidgetItem*>(modified.at(i)));
+        }
+    } else {
+        WZDEBUG("Drop not accepted");
     }
 }
 
-void TPlaylistWidget::setOrder(TPlaylistWidgetItem* item, int& order) {
-    //WZDEBUG(item->baseName() + " " + QString::number(order));
 
-    // Update order
-    item->setOrder(order);
-    order++;
 
-    // Update children
-    int count = item->childCount();
-    for(int i = 0; i < count; i++) {
-        setOrder(item->plChild(i), order);
     }
-}
-
-void TPlaylistWidget::setOrder() {
-
-    bool restoreSort = sortOrder == Qt::DescendingOrder
-                       && sortSection == TPlaylistWidgetItem::COL_ORDER;
-    if (restoreSort) {
-        setSort(TPlaylistWidgetItem::COL_ORDER, Qt::AscendingOrder);
     }
 
-    int order = 0;
-    setOrder(root(), order);
-
-    if (restoreSort) {
-        setSort(TPlaylistWidgetItem::COL_ORDER, Qt::DescendingOrder);
-    }
 }
 
 void TPlaylistWidget::setSort(int section, Qt::SortOrder order) {
@@ -576,6 +602,56 @@ TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
     return 0;
 }
 
+void TPlaylistWidget::updateOrder2(TPlaylistWidgetItem* parent, int order) {
+
+    // Called after item with order is removed from parent
+    if (sortSection == TPlaylistWidgetItem::COL_ORDER) {
+        if (sortOrder == Qt::AscendingOrder) {
+            for (int i = order - 1; i < parent->childCount(); i++) {
+                parent->plChild(i)->setOrder(i + 1);
+            }
+        } else {
+            for (int i = order - 2; i >= 0; i--) {
+                parent->plChild(i)->setOrder(order++);
+            }
+        }
+    } else {
+        for (int i = parent->childCount() - 1; i >= 0; i--) {
+            TPlaylistWidgetItem* item = parent->plChild(i);
+            int o = item->order();
+            if (o > order) {
+                item->setOrder(o - 1);
+            }
+        }
+    }
+}
+
+void TPlaylistWidget::updateOrder1(TPlaylistWidgetItem* parent, int idx, int d) {
+
+    if (sortSection == TPlaylistWidgetItem::COL_ORDER) {
+        if (sortOrder == Qt::AscendingOrder) {
+            d++;
+            for (int i = parent->childCount() - 1; i >= idx; i--) {
+                parent->plChild(i)->setOrder(i + d);
+            }
+        } else {
+            // New children not yet inserted, hence childCount + d
+            d += parent->childCount();
+            for (int i = 0; i < idx; i++) {
+                parent->plChild(i)->setOrder(d--);
+            }
+        }
+    } else {
+        for (int i = parent->childCount() - 1; i >= 0; i--) {
+            TPlaylistWidgetItem* item = parent->plChild(i);
+            int o = item->order();
+            if (o > idx) {
+                item->setOrder(o + d);
+            }
+        }
+    }
+}
+
 TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
                                           TPlaylistWidgetItem* target) {
     WZDEBUG("");
@@ -637,8 +713,6 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
             sortOrder = Qt::AscendingOrder;
         }
         setSort(sortSection, sortOrder);
-        // Renumber order column to start first item at 1
-        setOrder();
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));
@@ -658,16 +732,27 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         }
 
         // Cleanup item
+        clearSelection();
         delete item;
         item = 0;
-        clearSelection();
 
-        // Insert children at idx
+        // Update order siblings
+        updateOrder1(parent, idx, children.count());
+
+        // Update order and load icon of items being added
+        int d = idx + 1;
+        for (int i = children.count() - 1; i >= 0; i--) {
+            TPlaylistWidgetItem* c = static_cast<TPlaylistWidgetItem*>(
+                        children.at(i));
+            c->setOrder(i + d);
+            c->loadIcon();
+        }
+
+        // Insert children
         parent->insertChildren(idx, children);
+
         // Select first as current item
         setCurrentItem(children.at(0));
-        // Renumber the order column
-        setOrder();
 
         if (itemModified) {
             // Update modified

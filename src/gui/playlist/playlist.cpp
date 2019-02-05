@@ -903,16 +903,15 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     WZDEBUG("");
 
     if (!isActiveWindow()) {
-        WZINFO("ignoring remove actiom while not active window");
+        WZWARN("ignoring remove actiom while playlist not active window");
         return;
     }
     if (!isVisible()) {
-        WZINFO("ignoring remove action while not visible");
+        WZWARN("ignoring remove action while playlist not visible");
         return;
     }
 
     disable_enableActions = true;
-    TPlaylistWidgetItem* root = playlistWidget->root();
 
     // Save currently playing item, which might be deleted
     QString playing = playingFile();
@@ -925,6 +924,7 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     } while (newCurrent && newCurrent->isSelected());
 
     // Delete selection
+    TPlaylistWidgetItem* root = playlistWidget->root();
     QTreeWidgetItemIterator it(playlistWidget,
                                QTreeWidgetItemIterator::Selected);
     while (*it) {
@@ -932,11 +932,26 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         if (i != root
             && (!deleteFromDisk
                 || removeFromDisk(i->filename(), playing))) {
-            WZDEBUG("removing '" + i->filename() + "'");
+            WZINFO("removing '" + i->filename() + "' from playlist");
 
+            int orderDeleted = i->order();
             TPlaylistWidgetItem* parent = i->plParent();
-            if (parent) {
-                parent->blacklist(i->fname());
+
+            // Blacklist item if WZPlaylist
+            if (parent && parent->isWZPlaylist()) {
+                // A playlist may contain multiple identical items
+                bool multipleItems = false;
+                for(int c = 0; c < parent->childCount(); c++) {
+                    TPlaylistWidgetItem* s = parent->plChild(c);
+                    if (s != i && s->compareFilename(*i) == 0) {
+                        multipleItems = true;
+                        break;
+                    }
+                }
+
+                if (!multipleItems) {
+                    parent->blacklist(i->fname());
+                }
             }
             delete i;
 
@@ -959,15 +974,22 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
                     }
                 }
 
+                orderDeleted = parent->order();
                 delete parent;
                 parent = gp;
             }
+
             if (parent) {
+                // Update order siblings
+                playlistWidget->updateOrder2(parent, orderDeleted);
+
+                // Set parent modified
                 playlistWidget->setModified(parent);
             }
         }
         it++;
     }
+
 
     playlistWidget->playing_item = findFilename(playing);
     if (newCurrent && newCurrent != root) {
