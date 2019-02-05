@@ -2319,29 +2319,44 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
         return;
     }
 
-    QRect available = QApplication::desktop()->availableGeometry(this);
-    bool stickx = pos().x() - available.x() + frameGeometry().size().width()
-                  >= available.width();
-    bool sticky = pos().y() - available.y() + frameGeometry().size().height()
-                  >= available.height();
+    QRect avail = QApplication::desktop()->availableGeometry(this);
+
+    // Prevent resize of window snapped by KDE, the resize will fail...
+    int fh = frameGeometry().size().height();
+    if (fh == avail.height() || fh == (avail.height() / 2)) {
+        if (pos().y() == avail.y()
+                || pos().y() + fh == avail.y() + avail.height()) {
+            if (pos().x() == avail.x()
+                    || pos().x() + frameGeometry().size().width()
+                    == avail.x() + avail.width()) {
+                WZDEBUG("Skipping resize of snapped window");
+                return;
+            }
+        }
+    }
+
+    bool stickx = pos().x() - avail.x() + frameGeometry().size().width()
+                  >= avail.width();
+    bool sticky = pos().y() - avail.y() + frameGeometry().size().height()
+                  >= avail.height();
 
     resizeMainWindow(w, h, pref->size_factor);
     TDesktop::keepInsideDesktop(this);
 
     QPoint p = pos();
     if (stickx) {
-        int x = available.x() + available.width()
+        int x = avail.x() + avail.width()
                 - frameGeometry().size().width();
-        if (x < available.x() || x == p.x()) {
+        if (x < avail.x() || x == p.x()) {
             stickx = false;
         } else {
             p.rx() = x;
         }
     }
     if (sticky) {
-        int y = available.y() + available.height()
+        int y = avail.y() + avail.height()
                 - frameGeometry().size().height();
-        if (y < available.y() || y == p.y()) {
+        if (y < avail.y() || y == p.y()) {
             sticky = false;
         } else {
             p.ry() = y;
