@@ -19,6 +19,7 @@ public:
     QIcon folderLinkIcon;
     QIcon driveCDIcon;
     QIcon driveDVDIcon;
+    QIcon urlIcon;
 
     QIcon okIcon;
     QIcon loadingIcon;
