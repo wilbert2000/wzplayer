@@ -87,7 +87,7 @@ QString TPlaylistWidgetItem::playlistItemState(TPlaylistWidgetItemState state) {
 TPlaylistWidgetItem::TPlaylistWidgetItem() :
     QTreeWidgetItem(),
     mDuration(0),
-    mOrder(0),
+    mOrder(1),
     mFolder(true),
     mPlaylist(false),
     mWZPlaylist(false),
@@ -149,7 +149,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     if (parent) {
         mOrder = parent->childCount();
     } else {
-        mOrder = 0;
+        mOrder = 1;
     }
     if (mBaseName.isEmpty()) {
         // setFileInfo removes the extension
