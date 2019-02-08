@@ -938,7 +938,12 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
             TPlaylistWidgetItem* parent = i->plParent();
 
             // Blacklist item if WZPlaylist
-            if (parent && parent->isWZPlaylist()) {
+            if (parent
+                    && parent->isWZPlaylist()
+                    && QFileInfo(parent->filename()).absolutePath().compare(
+                        QFileInfo(i->filename()).absolutePath(),
+                        caseSensitiveFileNames) == 0) {
+
                 // A playlist may contain multiple identical items
                 bool multipleItems = false;
                 for(int c = 0; c < parent->childCount(); c++) {
