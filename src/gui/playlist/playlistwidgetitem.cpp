@@ -241,6 +241,7 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
         name = mFilename;
     }
     QString newFullName;
+    // TODO: check next for windows
     if (newName.startsWith('/')) {
         newFullName = newName;
     } else {
@@ -325,6 +326,25 @@ bool TPlaylistWidgetItem::rename(const QString &newName) {
         qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
                         "Parent '%1' is not a playlist").arg(mFilename));
     return false;
+}
+
+bool TPlaylistWidgetItem::renameDroppedFile() {
+
+    // TODO: copy if not on same device...
+    QString name;
+    if (isWZPlaylist()) {
+        name = QFileInfo(mFilename).absolutePath();
+    } else {
+        name = mFilename;
+    }
+
+    if (QFileInfo(name).exists()) {
+        QString newName = plParent()->pathPlusSep() + editName();
+        return renameFile(newName);
+    }
+
+    // URLs etc.
+    return true;
 }
 
 void TPlaylistWidgetItem::setData(int column, int role, const QVariant& value) {

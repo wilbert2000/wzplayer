@@ -63,8 +63,6 @@ public:
 
     TPlaylistWidgetItem* validateItem(TPlaylistWidgetItem* item);
 
-    void updateOrder2(TPlaylistWidgetItem* parent, int order);
-
     TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
                              TPlaylistWidgetItem* target);
 
@@ -72,9 +70,15 @@ public:
 
 signals:
     void modifiedChanged();
+    void refresh();
 
 protected:
     virtual void dropEvent(QDropEvent*) override;
+protected slots:
+    virtual void rowsAboutToBeRemoved(const QModelIndex& parent,
+                                      int start, int end) override;
+    virtual void rowsInserted(const QModelIndex& parent,
+                              int start, int end) override;
 
 private:
     int sortSection;
@@ -89,7 +93,6 @@ private:
                                          bool allowChild = true) const;
 
     void resizeRows(QTreeWidgetItem* w, int level);
-    void updateOrder1(TPlaylistWidgetItem* parent, int idx, int d);
 
 private slots:
     void onSectionClicked(int section);

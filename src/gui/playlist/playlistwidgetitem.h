@@ -127,6 +127,7 @@ public:
     }
 
     void loadIcon();
+    bool renameDroppedFile();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
 

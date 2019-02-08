@@ -227,6 +227,8 @@ void TPlaylist::createActions() {
                              Qt::Key_F5);
     connect(refreshAct, &TAction::triggered,
             this, &TPlaylist::refresh);
+    connect(playlistWidget, &TPlaylistWidget::refresh,
+            this, &TPlaylist::refresh, Qt::QueuedConnection);
 
     // Stop
     stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
@@ -934,7 +936,6 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
                 || removeFromDisk(i->filename(), playing))) {
             WZINFO("removing '" + i->filename() + "' from playlist");
 
-            int orderDeleted = i->order();
             TPlaylistWidgetItem* parent = i->plParent();
 
             // Blacklist item if WZPlaylist
@@ -966,35 +967,28 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
                 if (parent == newCurrent) {
                     newCurrent = gp;
                 }
-                if (gp) {
+                if (gp && gp->isWZPlaylist()) {
                     gp->blacklist(parent->fname());
                 }
 
-                if (parent->isWZPlaylist()) {
-                    if (QFile::remove(parent->filename())) {
-                        WZINFO("removed '" + parent->filename() + "' from disk");
-                    } else {
-                        WZERROR("failed to remove '" + parent->filename()
-                                + "' from disk");
-                    }
+                // TODO: are you sure you want to remove empty dirs from disk?
+                if (parent->isWZPlaylist()
+                        && QFile::remove(parent->filename())) {
+                    WZINFO("removed empty dir '" + parent->filename()
+                           + "' from disk");
                 }
 
-                orderDeleted = parent->order();
                 delete parent;
                 parent = gp;
             }
 
             if (parent) {
-                // Update order siblings
-                playlistWidget->updateOrder2(parent, orderDeleted);
-
                 // Set parent modified
                 playlistWidget->setModified(parent);
             }
         }
         it++;
     }
-
 
     playlistWidget->playing_item = findFilename(playing);
     if (newCurrent && newCurrent != root) {
