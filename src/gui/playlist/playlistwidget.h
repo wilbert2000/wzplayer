@@ -74,6 +74,7 @@ signals:
 
 protected:
     virtual void dropEvent(QDropEvent*) override;
+
 protected slots:
     virtual void rowsAboutToBeRemoved(const QModelIndex& parent,
                                       int start, int end) override;
