@@ -29,7 +29,7 @@ class TPlaylistWidgetItem : public QTreeWidgetItem {
 public:
     enum TColID {
         COL_NAME = 0,
-        COL_TYPE = 1,
+        COL_EXT = 1,
         COL_TIME = 2,
         COL_ORDER = 3,
         COL_COUNT = 4

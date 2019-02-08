@@ -100,7 +100,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
 
     setFlags(ROOT_FLAGS);
     setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
-    setTextAlignment(COL_TYPE, TEXT_ALIGN_TYPE);
+    setTextAlignment(COL_EXT, TEXT_ALIGN_TYPE);
     setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
 }
@@ -168,7 +168,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     }
 
     setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
-    setTextAlignment(COL_TYPE, TEXT_ALIGN_TYPE);
+    setTextAlignment(COL_EXT, TEXT_ALIGN_TYPE);
     setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
 }
@@ -349,7 +349,7 @@ QVariant TPlaylistWidgetItem::data(int column, int role) const {
             }
             return QVariant(mBaseName);
         }
-        if (column == COL_TYPE) {
+        if (column == COL_EXT) {
             QString ext = mExt;
             if (ext.length() > 8) {
                 ext = ext.left(5) + "...";
@@ -370,7 +370,7 @@ QVariant TPlaylistWidgetItem::data(int column, int role) const {
         if (column == COL_NAME) {
             return QVariant(editName());
         }
-        if (column == COL_TYPE) {
+        if (column == COL_EXT) {
             return QVariant(mExt);
         }
     } else if (role == Qt::ToolTipRole) {
@@ -382,7 +382,7 @@ QVariant TPlaylistWidgetItem::data(int column, int role) const {
             }
             return QVariant(mFilename);
         }
-        if (column == COL_TYPE) {
+        if (column == COL_EXT) {
             if (mExt.length() > 8) {
                 return QVariant(mExt);
             }
@@ -648,7 +648,7 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
     switch (section) {
     case COL_NAME:
         return QString::localeAwareCompare(mBaseName, o->baseName()) < 0;
-    case COL_TYPE: return QString::localeAwareCompare(mExt, o->extension()) < 0;
+    case COL_EXT: return QString::localeAwareCompare(mExt, o->extension()) < 0;
     case COL_TIME: return mDuration < o->duration();
     default: return mOrder < o->order();
     }
