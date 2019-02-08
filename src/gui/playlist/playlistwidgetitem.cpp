@@ -364,7 +364,7 @@ QVariant TPlaylistWidgetItem::data(int column, int role) const {
             return QVariant(s);
         }
         if (column == COL_ORDER) {
-             return QVariant(QString::number(mOrder));
+            return QVariant(mOrder);
         }
     } else if (role == Qt::EditRole) {
         if (column == COL_NAME) {
