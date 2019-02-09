@@ -15,9 +15,6 @@ class TMainWindow;
 namespace Action {
 namespace Menu {
 
-// Evade mouse before popping up
-void execPopup(QWidget* w, QMenu* popup, QPoint p);
-
 
 class TMenu : public QMenu {
     Q_OBJECT

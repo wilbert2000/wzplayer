@@ -489,7 +489,7 @@ void TMainWindow::createMenus() {
     statusbar_menu->addAction(viewVideoTimeAct);
     statusbar_menu->addAction(viewFramesAct);
 
-    toolbar_menu = createToolbarMenu();
+    toolbar_menu = createToolbarMenu("toolbar_menu");
 
     windowMenu = new Action::Menu::TMenuWindow(this, toolbar_menu, playlistDock,
                                                logDock, auto_hide_timer);
@@ -507,11 +507,9 @@ void TMainWindow::createMenus() {
             this, &TMainWindow::showCustomContextMenu);
 } // createMenus()
 
-QMenu* TMainWindow::createToolbarMenu() {
+QMenu* TMainWindow::createToolbarMenu(const QString& name) {
     WZDEBUG("");
 
-    // Use name "toolbar_menu" only for first
-    QString name = toolbar_menu ? "" : "toolbar_menu";
     QMenu* menu = new Action::Menu::TMenu(this, this, name, tr("&Toolbars"),
                                           "toolbars");
 
@@ -537,14 +535,18 @@ QMenu* TMainWindow::createToolbarMenu() {
     return menu;
 } // createToolbarMenu
 
-// Called by main window to show context popup.
-// The main window takes ownership of the returned menu.
+// Called by main window to show context popup on toolbars and dock widgets.
+// The main window takes ownership of the returned menu and will delete it
+// after use, hence the need to create a new one every time.
 QMenu* TMainWindow::createPopupMenu() {
-    return createToolbarMenu();
+    return createToolbarMenu("");
 }
 
-void TMainWindow::showStatusBarPopup(const QPoint& pos) {
-    Action::Menu::execPopup(this, toolbar_menu, statusBar()->mapToGlobal(pos));
+void TMainWindow::showStatusBarPopup() {
+
+    if (!toolbar_menu->isVisible()) {
+        toolbar_menu->exec(QCursor::pos());
+    }
 }
 
 void TMainWindow::createToolbars() {
@@ -1224,20 +1226,18 @@ void TMainWindow::showContextMenu() {
 
     // Handle show_context_menu action not triggered by right click
     if (!contextMenu->isVisible()) {
-        Action::Menu::execPopup(this, contextMenu, QCursor::pos());
+        contextMenu->exec(QCursor::pos());
     }
 }
 
-void TMainWindow::showCustomContextMenu(const QPoint& pos) {
+void TMainWindow::showCustomContextMenu() {
     WZDEBUG("");
 
     // Using this event to make the context menu popup on right mouse button
     // down event, instead of waiting for the mouse button release event,
-    // which, if still assigned, would trigger the show_context_menu action.
-    if (!contextMenu->isVisible()
-        && pref->mouse_right_click_function == "show_context_menu") {
-        Action::Menu::execPopup(this, contextMenu,
-                                playerwindow->mapToGlobal(pos));
+    // which, if assigned to mouse_right_click_function, would trigger it.
+    if (pref->mouse_right_click_function == "show_context_menu") {
+        contextMenu->exec(QCursor::pos());
     }
 }
 

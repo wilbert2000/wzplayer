@@ -131,7 +131,6 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     connect(header(), &QHeaderView::sectionResized,
             this, &TPlaylistWidget::onSectionResized);
 
-    setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 TPlaylistWidget::~TPlaylistWidget() {

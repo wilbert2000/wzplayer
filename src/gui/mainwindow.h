@@ -91,7 +91,6 @@ public:
 
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
     Action::TActionList getAllNamedActions() const;
-    QMenu* getToolbarMenu() const { return toolbar_menu; }
 
     //! Execute all the actions after the video has started to play
     void runActionsLater(const QString& actions, bool postCheck);
@@ -287,7 +286,7 @@ private:
     void createPlaylist();
     void createStatusBar();
     void createToolbars();
-    QMenu* createToolbarMenu();
+    QMenu* createToolbarMenu(const QString& name);
     void createActions();
     void createMenus();
     void createVideoEqualizer();
@@ -339,8 +338,8 @@ private slots:
     void xbutton2ClickFunction();
 
     void showContextMenu();
-    void showCustomContextMenu(const QPoint& pos);
-    void showStatusBarPopup(const QPoint& pos);
+    void showCustomContextMenu();
+    void showStatusBarPopup();
 
     void displayVideoInfo();
     void displayInOutPoints();

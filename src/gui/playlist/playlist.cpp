@@ -334,6 +334,7 @@ void TPlaylist::createActions() {
     contextMenu->addAction(openDirectoryAct);
     contextMenu->addAction(refreshAct);
 
+    playlistWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playlistWidget, &TPlaylistWidget::customContextMenuRequested,
             this, &TPlaylist::showContextMenu);
 
@@ -1077,11 +1078,10 @@ void TPlaylist::openInNewWindow() {
     }
 }
 
-void TPlaylist::showContextMenu(const QPoint & pos) {
+void TPlaylist::showContextMenu() {
 
     if (!contextMenu->isVisible()) {
-        Menu::execPopup(this, contextMenu,
-                        playlistWidget->viewport()->mapToGlobal(pos));
+        contextMenu->exec(QCursor::pos());
     }
 }
 

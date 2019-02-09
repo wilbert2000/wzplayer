@@ -234,7 +234,7 @@ private slots:
     void onShuffleToggled(bool toggled);
 
     void enableActions();
-    void showContextMenu(const QPoint& pos);
+    void showContextMenu();
 
     void onItemActivated(QTreeWidgetItem* item, int);
     void onPlayerError();
