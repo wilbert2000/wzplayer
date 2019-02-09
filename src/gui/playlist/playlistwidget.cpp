@@ -1,6 +1,7 @@
 #include "gui/playlist/playlistwidget.h"
 
 #include "gui/playlist/playlistwidgetitem.h"
+#include "gui/action/menu/menuexec.h"
 #include "gui/msg.h"
 #include "settings/preferences.h"
 #include "images.h"
@@ -13,9 +14,6 @@
 #include <QDropEvent>
 #include <QFontMetrics>
 #include <QTimer>
-#include <QMenu>
-#include <QAction>
-#include <QCursor>
 
 
 namespace Gui {
@@ -132,11 +130,10 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
             this, &TPlaylistWidget::onSectionClicked);
 
     // Columns menu
-    columnsMenu = new QMenu(this);
+    columnsMenu = new Gui::Action::Menu::TMenuExec(this);
     for(int i = 0; i < columnCount(); i++) {
         QAction* a = new QAction(headerItem()->text(i), columnsMenu);
         a->setCheckable(true);
-        a->setChecked(true);
         a->setData(i);
         columnsMenu->addAction(a);
     }
@@ -144,7 +141,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
             this, &TPlaylistWidget::onColumnMenuTriggered);
     header()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(header(), &QHeaderView::customContextMenuRequested,
-            this, &TPlaylistWidget::showColumnsMenu);
+            columnsMenu, &Gui::Action::Menu::TMenuExec::execSlot);
 }
 
 TPlaylistWidget::~TPlaylistWidget() {
@@ -623,13 +620,6 @@ void TPlaylistWidget::onColumnMenuTriggered(QAction* action) {
     }
     showColumn(col);
     action->setChecked(true);
-}
-
-void TPlaylistWidget::showColumnsMenu() {
-
-    if (!columnsMenu->isVisible()) {
-        columnsMenu->exec(QCursor::pos());
-    }
 }
 
 void TPlaylistWidget::onSectionClicked(int section) {

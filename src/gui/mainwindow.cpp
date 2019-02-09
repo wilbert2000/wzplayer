@@ -94,7 +94,6 @@ TMainWindow::TMainWindow() :
     statusbar_visible(true),
     fullscreen_menubar_visible(false),
     fullscreen_statusbar_visible(true),
-    toolbar_menu(0),
     file_properties_dialog(0),
     pref_dialog(0),
     help_window(0),
@@ -451,9 +450,9 @@ void TMainWindow::createActions() {
             this, &TMainWindow::displayFrames);
 } // createActions
 
-QMenu* TMainWindow::createContextMenu() {
+Action::Menu::TMenuExec* TMainWindow::createContextMenu() {
 
-    QMenu* menu = new QMenu(this);
+    Action::Menu::TMenuExec* menu = new Action::Menu::TMenuExec(this);
     menu->addMenu(fileMenu);
     menu->addMenu(playMenu);
     menu->addMenu(videoMenu);
@@ -467,7 +466,6 @@ QMenu* TMainWindow::createContextMenu() {
 void TMainWindow::createMenus() {
     WZDEBUG("");
 
-    // MENUS
     fileMenu = new Action::Menu::TMenuFile(this);
     menuBar()->addMenu(fileMenu);
     playMenu = new Action::Menu::TMenuPlay(this, playlist);
@@ -489,9 +487,12 @@ void TMainWindow::createMenus() {
     statusbar_menu->addAction(viewVideoTimeAct);
     statusbar_menu->addAction(viewFramesAct);
 
-    toolbar_menu = createToolbarMenu("toolbar_menu");
+    Action::Menu::TMenu* toolbarMenu = createToolbarMenu("toolbar_menu");
+    statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(statusBar(), &QStatusBar::customContextMenuRequested,
+            toolbarMenu, &Action::Menu::TMenu::execSlot);
 
-    windowMenu = new Action::Menu::TMenuWindow(this, toolbar_menu, playlistDock,
+    windowMenu = new Action::Menu::TMenuWindow(this, toolbarMenu, playlistDock,
                                                logDock, auto_hide_timer);
     menuBar()->addMenu(windowMenu);
 
@@ -501,17 +502,17 @@ void TMainWindow::createMenus() {
     // Context menu
     contextMenu = createContextMenu();
     connect(showContextMenuAct, &Action::TAction::triggered,
-            this, &TMainWindow::showContextMenu);
+            contextMenu, &Action::Menu::TMenuExec::execSlot);
     playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playerwindow, &TPlayerWindow::customContextMenuRequested,
-            this, &TMainWindow::showCustomContextMenu);
+            this, &TMainWindow::showContextMenu);
 } // createMenus()
 
-QMenu* TMainWindow::createToolbarMenu(const QString& name) {
+Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
     WZDEBUG("");
 
-    QMenu* menu = new Action::Menu::TMenu(this, this, name, tr("&Toolbars"),
-                                          "toolbars");
+    Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, this, name,
+        tr("&Toolbars"), "toolbars");
 
     menu->addAction(viewMenuBarAct);
     menu->addAction(toolbar->toggleViewAction());
@@ -540,13 +541,6 @@ QMenu* TMainWindow::createToolbarMenu(const QString& name) {
 // after use, hence the need to create a new one every time.
 QMenu* TMainWindow::createPopupMenu() {
     return createToolbarMenu("");
-}
-
-void TMainWindow::showStatusBarPopup() {
-
-    if (!toolbar_menu->isVisible()) {
-        toolbar_menu->exec(QCursor::pos());
-    }
 }
 
 void TMainWindow::createToolbars() {
@@ -618,9 +612,6 @@ void TMainWindow::createToolbars() {
 
     // Statusbar
     statusBar()->setObjectName("statusbar");
-    statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(statusBar(), &QStatusBar::customContextMenuRequested,
-            this, &TMainWindow::showStatusBarPopup);
 
     // Add toolbars to auto_hide_timer
     auto_hide_timer = new TAutoHideTimer(this, playerwindow);
@@ -928,10 +919,6 @@ void TMainWindow::retranslateStrings() {
 
     setWindowIcon(Images::icon("logo", 64));
 
-    // Toolbars
-    toolbar_menu->menuAction()->setText(tr("&Toolbars"));
-    toolbar_menu->menuAction()->setIcon(Images::icon("toolbars"));
-
     // Main toolbar
     toolbar->setWindowTitle(tr("&Main toolbar"));
     toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
@@ -1222,22 +1209,13 @@ void TMainWindow::hideEvent(QHideEvent* event) {
 }
 
 void TMainWindow::showContextMenu() {
-    WZDEBUG("");
-
-    // Handle show_context_menu action not triggered by right click
-    if (!contextMenu->isVisible()) {
-        contextMenu->exec(QCursor::pos());
-    }
-}
-
-void TMainWindow::showCustomContextMenu() {
-    WZDEBUG("");
 
     // Using this event to make the context menu popup on right mouse button
     // down event, instead of waiting for the mouse button release event,
-    // which, if assigned to mouse_right_click_function, would trigger it.
+    // which would trigger the show_context_menu action if it is assigned to the
+    // mouse_right_click_function.
     if (pref->mouse_right_click_function == "show_context_menu") {
-        contextMenu->exec(QCursor::pos());
+        contextMenu->execSlot();
     }
 }
 

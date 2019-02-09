@@ -47,6 +47,8 @@ class TTimeLabelAction;
 
 namespace Menu {
 
+class TMenuExec;
+class TMenu;
 class TMenuFile;
 class TMenuPlay;
 class TMenuVideo;
@@ -193,7 +195,7 @@ protected:
     virtual void aboutToExitFullscreen();
     virtual void didExitFullscreen();
 
-    QMenu* createContextMenu();
+    Action::Menu::TMenuExec* createContextMenu();
 
 protected slots:
     // Replacement for setCaption (in Qt 4 it's not virtual)
@@ -211,7 +213,7 @@ private:
     Action::TAction* nextWheelFunctionAct;
 
     QMenu* helpMenu;
-    QMenu* contextMenu;
+    Action::Menu::TMenuExec* contextMenu;
 
     // Statusbar labels
     QLabel* video_info_label;
@@ -246,7 +248,6 @@ private:
     Action::TAction* editToolbar2Act;
     Action::TAction* editControlBarAct;
     Action::TAction* viewStatusBarAct;
-    QMenu* toolbar_menu;
 
     // Slider actions for toolbars
     Action::TTimeSliderAction* timeslider_action;
@@ -286,7 +287,7 @@ private:
     void createPlaylist();
     void createStatusBar();
     void createToolbars();
-    QMenu* createToolbarMenu(const QString& name);
+    Gui::Action::Menu::TMenu* createToolbarMenu(const QString& name);
     void createActions();
     void createMenus();
     void createVideoEqualizer();
@@ -338,8 +339,6 @@ private slots:
     void xbutton2ClickFunction();
 
     void showContextMenu();
-    void showCustomContextMenu();
-    void showStatusBarPopup();
 
     void displayVideoInfo();
     void displayInOutPoints();

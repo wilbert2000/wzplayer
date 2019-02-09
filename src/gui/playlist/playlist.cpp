@@ -315,7 +315,7 @@ void TPlaylist::createActions() {
     remove_menu = new TMenuRemove(this, main_window);
 
     // Context menu
-    contextMenu = new TMenuContext(this, main_window);
+    TMenuContext* contextMenu = new TMenuContext(this, main_window);
 
     contextMenu->addSeparator();
     contextMenu->addAction(playOrPauseAct);
@@ -336,7 +336,7 @@ void TPlaylist::createActions() {
 
     playlistWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playlistWidget, &TPlaylistWidget::customContextMenuRequested,
-            this, &TPlaylist::showContextMenu);
+            contextMenu, &TMenuContext::execSlot);
 
     // Add actions to main window
     main_window->addActions(actions());
@@ -1075,13 +1075,6 @@ void TPlaylist::openInNewWindow() {
                              tr("Failed to start '%1'")
                              .arg(qApp->applicationFilePath()),
                              QMessageBox::Ok);
-    }
-}
-
-void TPlaylist::showContextMenu() {
-
-    if (!contextMenu->isVisible()) {
-        contextMenu->exec(QCursor::pos());
     }
 }
 

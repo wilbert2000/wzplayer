@@ -28,7 +28,6 @@
 
 
 class QToolBar;
-class QMenu;
 class QToolButton;
 
 
@@ -136,7 +135,6 @@ private:
     Action::Menu::TMenu* add_menu;
     TAddRemovedMenu* add_removed_menu;
     Action::Menu::TMenu* remove_menu;
-    QMenu* contextMenu;
 
     QToolBar* toolbar;
     QToolButton* add_button;
@@ -234,7 +232,6 @@ private slots:
     void onShuffleToggled(bool toggled);
 
     void enableActions();
-    void showContextMenu();
 
     void onItemActivated(QTreeWidgetItem* item, int);
     void onPlayerError();

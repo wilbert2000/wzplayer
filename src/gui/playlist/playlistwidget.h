@@ -8,6 +8,11 @@
 class QTimer;
 
 namespace Gui {
+
+namespace Action { namespace Menu {
+    class TMenuExec;
+}}
+
 namespace Playlist {
 
 class TPlaylistWidget : public QTreeWidget {
@@ -89,7 +94,7 @@ private:
     Qt::SortOrder sortOrder;
     bool mModified;
     QTimer* wordWrapTimer;
-    QMenu* columnsMenu;
+    Gui::Action::Menu::TMenuExec* columnsMenu;
 
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
@@ -104,7 +109,6 @@ private slots:
     void onSectionClicked(int section);
     void onSectionResized(int, int, int);
     void onColumnMenuTriggered(QAction* action);
-    void showColumnsMenu();
     void resizeRowsEx();
 };
 

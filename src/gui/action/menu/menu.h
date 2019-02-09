@@ -1,7 +1,7 @@
 #ifndef GUI_ACTION_MENU_MENU_H
 #define GUI_ACTION_MENU_MENU_H
 
-#include <QMenu>
+#include "gui/action/menu/menuexec.h"
 
 
 namespace Settings {
@@ -16,7 +16,7 @@ namespace Action {
 namespace Menu {
 
 
-class TMenu : public QMenu {
+class TMenu : public TMenuExec {
     Q_OBJECT
 public:
     explicit TMenu(QWidget* parent,

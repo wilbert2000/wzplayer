@@ -1,7 +1,4 @@
 #include "gui/action/menu/menu.h"
-#include <QEvent>
-#include <QApplication>
-#include <QDesktopWidget>
 #include "gui/mainwindow.h"
 #include "settings/mediasettings.h"
 #include "images.h"
@@ -16,7 +13,7 @@ TMenu::TMenu(QWidget* parent,
              const QString& name,
              const QString& text,
              const QString& icon) :
-    QMenu(parent),
+    TMenuExec(parent),
     main_window(w) {
 
     menuAction()->setObjectName(name);
@@ -49,7 +46,7 @@ void TMenu::setVisible(bool visible) {
 
     if (visible)
         onAboutToShow();
-    QMenu::setVisible(visible);
+    TMenuExec::setVisible(visible);
 }
 
 void TMenu::addActionsTo(QWidget* w) {
