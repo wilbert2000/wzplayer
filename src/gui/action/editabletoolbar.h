@@ -59,7 +59,6 @@ private:
     void addMenu(QAction* action);
 
 private slots:
-    void showContextMenu(const QPoint& pos);
     void reload();
 }; // class TEditableToolbar
 

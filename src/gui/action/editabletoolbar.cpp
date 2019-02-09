@@ -40,11 +40,6 @@ TEditableToolbar::TEditableToolbar(TMainWindow* mainwindow) :
     debug(logger()),
     main_window(mainwindow) {
 
-    // Context menu
-    setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, &TEditableToolbar::customContextMenuRequested,
-            this, &TEditableToolbar::showContextMenu);
-
     // Reload toolbars when entering and exiting fullscreen
     connect(main_window, &TMainWindow::didEnterFullscreenSignal,
             this, &TEditableToolbar::reload);
@@ -163,14 +158,6 @@ void TEditableToolbar::reload() {
 
     TActionList all_actions = main_window->getAllNamedActions();
     setActionsFromStringList(actions, all_actions);
-}
-
-void TEditableToolbar::showContextMenu(const QPoint& pos) {
-
-    QMenu* popup = main_window->getToolbarMenu();
-    if (popup) {
-        Menu::execPopup(this, popup, mapToGlobal(pos));
-    }
 }
 
 } // namespace Action
