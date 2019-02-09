@@ -62,8 +62,8 @@ TMenuContext::TMenuContext(TPlaylist* pl, TMainWindow* mw) :
 }
 
 void TMenuContext::enablePaste() {
-    // TODO: thread = 0????
-    pasteAct->setEnabled(QApplication::clipboard()->mimeData()->hasText());
+    pasteAct->setEnabled(playlist->isPlaylistEnabled()
+                         && QApplication::clipboard()->mimeData()->hasText());
 }
 
 void TMenuContext::enableActions() {
