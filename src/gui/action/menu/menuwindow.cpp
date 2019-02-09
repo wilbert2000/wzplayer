@@ -166,7 +166,14 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
 
     addSeparator();
     // Show properties
-    addAction(main_window->findChild<TAction*>("view_properties"));
+    propertiesAct = new TAction(this, "view_properties",
+                                tr("&View properties..."), "info",
+                                Qt::SHIFT | Qt::Key_P);
+    propertiesAct->setCheckable(true);
+    propertiesAct->setEnabled(false);
+    main_window->addAction(propertiesAct);
+    connect(propertiesAct, &TAction::triggered,
+            main_window, &TMainWindow::showFilePropertiesDialog);
 
     // Show playlist
     QAction* q = playlistDock->toggleViewAction();
@@ -201,6 +208,10 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     main_window->addAction(a);
     connect(a, &TAction::triggered,
             main_window, &TMainWindow::showPreferencesDialog);
+}
+
+void TMenuWindow::onMediaSettingsChanged(Settings::TMediaSettings*) {
+    propertiesAct->setEnabled(true);
 }
 
 } // namespace Menu

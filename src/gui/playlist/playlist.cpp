@@ -208,13 +208,6 @@ void TPlaylist::createActions() {
                             "saveas");
     connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
-    // Properties
-    propertiesAct = new TAction(this, "view_properties",
-        tr("&View properties..."), "info", Qt::SHIFT | Qt::Key_P);
-    propertiesAct->setCheckable(true);
-    connect(propertiesAct, &TAction::triggered,
-            main_window, &TMainWindow::showFilePropertiesDialog);
-
     // Open directory
     openDirectoryAct = new TAction(this, "pl_open_directory",
                                    tr("&Open directory"));
@@ -340,7 +333,6 @@ void TPlaylist::createActions() {
     contextMenu->addSeparator();
     contextMenu->addAction(openDirectoryAct);
     contextMenu->addAction(refreshAct);
-    contextMenu->addAction(propertiesAct);
 
     connect(playlistWidget, &TPlaylistWidget::customContextMenuRequested,
             this, &TPlaylist::showContextMenu);

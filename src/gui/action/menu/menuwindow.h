@@ -35,12 +35,19 @@ private slots:
 };
 
 class TMenuWindow : public TMenu {
+    Q_OBJECT
 public:
-    TMenuWindow(TMainWindow* mw,
-                QMenu* toolBarMenu,
-                TDockWidget* playlistDock,
-                TDockWidget* logDock,
-                TAutoHideTimer* autoHideTimer);
+    explicit TMenuWindow(TMainWindow* mw,
+                         QMenu* toolBarMenu,
+                         TDockWidget* playlistDock,
+                         TDockWidget* logDock,
+                         TAutoHideTimer* autoHideTimer);
+
+protected slots:
+    virtual void onMediaSettingsChanged(Settings::TMediaSettings*) override;
+
+private:
+    TAction* propertiesAct;
 };
 
 } // namespace Menu

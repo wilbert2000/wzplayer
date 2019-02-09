@@ -145,7 +145,6 @@ private:
     Action::TAction* openAct;
     Action::TAction* saveAct;
     Action::TAction* saveAsAct;
-    Action::TAction* propertiesAct;
     Action::TAction* openDirectoryAct;
     Action::TAction* refreshAct;
 
