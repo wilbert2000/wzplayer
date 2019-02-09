@@ -1058,6 +1058,12 @@ void TPlaylist::openFolder() {
 void TPlaylist::openInNewWindow() {
     WZDEBUG("'" + qApp->applicationFilePath() + "'");
 
+    // Save modified WZPlaylist
+    if (playlistWidget->modified()
+            && QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
+        save();
+    }
+
     QStringList files;
     QTreeWidgetItemIterator it(playlistWidget,
                                QTreeWidgetItemIterator::Selected);
