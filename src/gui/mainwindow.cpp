@@ -689,7 +689,6 @@ void TMainWindow::restartApplication() {
 
     emit requestRestart();
 
-    // TODO:
     // When fullscreen the window size will not yet be updated by the time it is
     // saved by saveConfig. Block saving...
     save_size = !pref->fullscreen;
