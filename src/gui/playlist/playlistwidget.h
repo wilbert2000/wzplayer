@@ -68,6 +68,9 @@ public:
 
     void setSort(int section, Qt::SortOrder order);
 
+    void saveSettings();
+    void loadSettings();
+
 signals:
     void modifiedChanged();
     void refresh();
@@ -86,6 +89,7 @@ private:
     Qt::SortOrder sortOrder;
     bool mModified;
     QTimer* wordWrapTimer;
+    QMenu* columnsMenu;
 
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
@@ -96,9 +100,11 @@ private:
     void resizeRows(QTreeWidgetItem* w, int level);
 
 private slots:
-    void onSectionClicked(int section);
     void onItemExpanded(QTreeWidgetItem*w);
+    void onSectionClicked(int section);
     void onSectionResized(int, int, int);
+    void onColumnMenuTriggered(QAction* action);
+    void showColumnsMenu();
     void resizeRowsEx();
 };
 

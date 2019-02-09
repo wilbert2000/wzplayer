@@ -2,6 +2,7 @@
 
 #include "gui/playlist/playlistwidgetitem.h"
 #include "gui/msg.h"
+#include "settings/preferences.h"
 #include "images.h"
 #include "iconprovider.h"
 #include "wzdebug.h"
@@ -12,6 +13,9 @@
 #include <QDropEvent>
 #include <QFontMetrics>
 #include <QTimer>
+#include <QMenu>
+#include <QAction>
+#include <QCursor>
 
 
 namespace Gui {
@@ -75,10 +79,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     mModified(false) {
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setSelectionMode(QAbstractItemView::ExtendedSelection);
-    setAutoExpandDelay(750);
 
-    //setRootIsDecorated(false);
     setColumnCount(TPlaylistWidgetItem::COL_COUNT);
     setHeaderLabels(QStringList() << tr("Name") << tr("Ext") << tr("Length")
                     << tr("#"));
@@ -92,17 +93,11 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     header()->setSectionResizeMode(TPlaylistWidgetItem::COL_ORDER,
                                    QHeaderView::ResizeToContents);
 
-    // Icons
-    setIconSize(iconProvider.iconSize);
-
     // Create a TPlaylistWidgetItem root
     addTopLevelItem(new TPlaylistWidgetItem());
     setRootIndex(model()->index(0, 0));
 
-    // Sort
-    connect(header(), &QHeaderView::sectionClicked,
-            this, &TPlaylistWidget::onSectionClicked);
-    header()->setSectionsClickable(true);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     // Drag and drop
     setDragEnabled(true);
@@ -115,8 +110,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setDefaultDropAction(Qt::MoveAction);
 
     // Wordwrap
+    setIconSize(iconProvider.iconSize);
     TPlaylistWidgetItem::gNameFontMetrics = fontMetrics();
-
     setWordWrap(true);
     setUniformRowHeights(false);
     setItemDelegate(new TWordWrapItemDelegate(this));
@@ -126,11 +121,30 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     connect(wordWrapTimer, &QTimer::timeout,
             this, &TPlaylistWidget::resizeRowsEx);
 
+    setAutoExpandDelay(750);
     connect(this, &TPlaylistWidget::itemExpanded,
             this, &TPlaylistWidget::onItemExpanded);
     connect(header(), &QHeaderView::sectionResized,
             this, &TPlaylistWidget::onSectionResized);
 
+    header()->setSectionsClickable(true);
+    connect(header(), &QHeaderView::sectionClicked,
+            this, &TPlaylistWidget::onSectionClicked);
+
+    // Columns menu
+    columnsMenu = new QMenu(this);
+    for(int i = 0; i < columnCount(); i++) {
+        QAction* a = new QAction(headerItem()->text(i), columnsMenu);
+        a->setCheckable(true);
+        a->setChecked(true);
+        a->setData(i);
+        columnsMenu->addAction(a);
+    }
+    connect(columnsMenu, &QMenu::triggered,
+            this, &TPlaylistWidget::onColumnMenuTriggered);
+    header()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(header(), &QHeaderView::customContextMenuRequested,
+            this, &TPlaylistWidget::showColumnsMenu);
 }
 
 TPlaylistWidget::~TPlaylistWidget() {
@@ -596,6 +610,28 @@ void TPlaylistWidget::setSort(int section, Qt::SortOrder order) {
     }
 }
 
+void TPlaylistWidget::onColumnMenuTriggered(QAction* action) {
+
+    int col = action->data().toInt();
+    setColumnHidden(col, !action->isChecked());
+
+    // Prevent all columns hidden
+    for (int i = 0; i < columnCount(); i++) {
+        if (!isColumnHidden(i)) {
+            return;
+        }
+    }
+    showColumn(col);
+    action->setChecked(true);
+}
+
+void TPlaylistWidget::showColumnsMenu() {
+
+    if (!columnsMenu->isVisible()) {
+        columnsMenu->exec(QCursor::pos());
+    }
+}
+
 void TPlaylistWidget::onSectionClicked(int section) {
 
     if (section == sortSection) {
@@ -799,6 +835,25 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     }
 
     return item;
+}
+
+void TPlaylistWidget::saveSettings() {
+
+    for(int c = 0; c < columnCount(); c++) {
+        Settings::pref->setValue("COL_" + QString::number(c),
+                                 !isColumnHidden(c));
+    }
+}
+
+void TPlaylistWidget::loadSettings() {
+
+    QList<QAction*> actions = columnsMenu->actions();
+    for(int c = 0; c < columnCount(); c++) {
+        bool show = Settings::pref->value("COL_" + QString::number(c), true)
+                .toBool();
+        setColumnHidden(c, !show);
+        actions.at(c)->setChecked(show);
+    }
 }
 
 } // namespace Playlist

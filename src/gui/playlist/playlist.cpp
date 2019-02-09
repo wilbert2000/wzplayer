@@ -1814,22 +1814,22 @@ bool TPlaylist::maybeSave() {
 }
 
 void TPlaylist::saveSettings() {
-    WZDEBUG("");
 
     pref->beginGroup("playlist");
     pref->setValue("repeat", repeatAct->isChecked());
     pref->setValue("shuffle", shuffleAct->isChecked());
+    playlistWidget->saveSettings();
     pref->endGroup();
 }
 
 void TPlaylist::loadSettings() {
-    WZDEBUG("");
 
     pref->beginGroup("playlist");
     repeatAct->setChecked(pref->value("repeat",
                                       repeatAct->isChecked()).toBool());
     shuffleAct->setChecked(pref->value("shuffle",
                                        shuffleAct->isChecked()).toBool());
+    playlistWidget->loadSettings();
     pref->endGroup();
 }
 
