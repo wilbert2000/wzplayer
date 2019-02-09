@@ -136,7 +136,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
                                          const QString& name,
                                          double duration,
                                          bool protectName) :
-    QTreeWidgetItem(parent, QTreeWidgetItem::UserType),
+    QTreeWidgetItem(parent),
     mFilename(QDir::toNativeSeparators(filename)),
     mBaseName(name),
     mDuration(duration),
