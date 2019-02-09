@@ -330,7 +330,6 @@ bool TPlaylistWidgetItem::rename(const QString &newName) {
 
 bool TPlaylistWidgetItem::renameDroppedFile() {
 
-    // TODO: copy if not on same device...
     QString name;
     if (isWZPlaylist()) {
         name = QFileInfo(mFilename).absolutePath();
