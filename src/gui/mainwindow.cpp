@@ -554,10 +554,10 @@ void TMainWindow::createToolbars() {
     QStringList actions;
     actions << "play_or_pause"
             << "stop"
-            << "timeslider_action"
             << "rewind_menu"
             << "forward_menu"
             << "in_out_points_menu|0|1"
+            << "timeslider_action"
             << "separator|0|1"
             << "deinterlace_menu|0|1"
             << "aspect_menu|1|1"
