@@ -53,11 +53,9 @@ void TMenu::addActionsTo(QWidget* w) {
 
     w->addAction(menuAction());
 
-    QList<QAction*> acts = actions();
-    for(int i = 0; i < acts.count(); i++) {
-        QAction* a = acts[i];
-        if (!a->isSeparator()) {
-            w->addAction(a);
+    foreach(QAction* action, actions()) {
+        if (!action->isSeparator()) {
+            w->addAction(action);
         }
     }
 }
