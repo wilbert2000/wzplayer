@@ -4,12 +4,11 @@
 
 #include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
-#include "gui/action/widgetactions.h"
 #include "gui/action/menu/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "settings/preferences.h"
 #include "player/player.h"
-#include "images.h"
+
 
 using namespace Settings;
 
@@ -136,16 +135,11 @@ void TMenuSeek::setJumpTexts() {
 
 class TMenuSeekForward: public TMenuSeek {
 public:
-    explicit TMenuSeekForward(QWidget* parent,
-                              TMainWindow* mainwindow,
-                              Gui::Playlist::TPlaylist* playlist);
+    explicit TMenuSeekForward(QWidget* parent, TMainWindow* mnw);
 };
 
-// Create forward menu as descendant from TMenuSeek
-TMenuSeekForward::TMenuSeekForward(QWidget* parent,
-                                   TMainWindow* mainwindow,
-                                   Gui::Playlist::TPlaylist* playlist) :
-    TMenuSeek(parent, mainwindow, "forward_menu", tr("&Forward"),
+TMenuSeekForward::TMenuSeekForward(QWidget* parent, TMainWindow* mw) :
+    TMenuSeek(parent, mw, "forward_menu", tr("&Forward"),
               tr("+", "sign to use in menu for forward seeking")) {
 
     frameAct = new TAction(this, "frame_step", tr("Fra&me step"), "",
@@ -164,7 +158,7 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
     connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::forward3);
 
     addSeparator();
-    plAct = playlist->findChild<TAction*>("pl_next");
+    plAct = main_window->findChild<TAction*>("play_next");
     addAction(plAct);
 
     setJumpTexts();
@@ -173,16 +167,12 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent,
 
 class TMenuSeekRewind: public TMenuSeek {
 public:
-    explicit TMenuSeekRewind(QWidget* parent,
-                             TMainWindow* mainwindow,
-                             Gui::Playlist::TPlaylist* playlist);
+    explicit TMenuSeekRewind(QWidget* parent, TMainWindow* mw);
 };
 
 // Create rewind menu as descendant from TMenuSeek
-TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
-                                 TMainWindow* mainwindow,
-                                 Gui::Playlist::TPlaylist* playlist) :
-    TMenuSeek(parent, mainwindow, "rewind_menu", tr("&Rewind"),
+TMenuSeekRewind::TMenuSeekRewind(QWidget* parent, TMainWindow* mw) :
+    TMenuSeek(parent, mw, "rewind_menu", tr("&Rewind"),
               tr("-", "sign to use in menu for rewind seeking")) {
 
     frameAct = new TAction(this, "frame_back_step", tr("Fra&me back step"), "",
@@ -202,7 +192,7 @@ TMenuSeekRewind::TMenuSeekRewind(QWidget* parent,
     connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::rewind3);
 
     addSeparator();
-    plAct = playlist->findChild<TAction*>("pl_prev");
+    plAct = main_window->findChild<TAction*>("play_prev");
     addAction(plAct);
 
     setJumpTexts();
@@ -271,8 +261,6 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
                     Qt::CTRL | Qt::META | Qt::Key_Z);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed1);
-
-    addActionsTo(main_window);
 }
 
 void TMenuPlaySpeed::enableActions() {
@@ -282,19 +270,20 @@ void TMenuPlaySpeed::enableActions() {
 
 
 // Create main play menu
-TMenuPlay::TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist)
+TMenuPlay::TMenuPlay(TMainWindow* mw)
     : TMenu(mw, mw, "play_menu", tr("&Play"), "noicon") {
 
-    addAction(playlist->findChild<TAction*>("play_or_pause"));
-    addAction(playlist->findChild<TAction*>("stop"));
+    addAction(main_window->findChild<TAction*>("play_or_pause"));
+    addAction(main_window->findChild<TAction*>("stop"));
+    addAction(main_window->findChild<TAction*>("play_new_window"));
 
     addSeparator();
 
     // Forward menu
-    TMenuSeek* forward_menu = new TMenuSeekForward(this, main_window, playlist);
+    TMenuSeek* forward_menu = new TMenuSeekForward(this, main_window);
     addMenu(forward_menu);
     // Rewind menu
-    TMenuSeek* rewind_menu = new TMenuSeekRewind(this, main_window, playlist);
+    TMenuSeek* rewind_menu = new TMenuSeekRewind(this, main_window);
     addMenu(rewind_menu);
     // Let forward and rewind work in tandem
     connect(forward_menu, &TMenuSeek::triggered,
@@ -313,7 +302,7 @@ TMenuPlay::TMenuPlay(TMainWindow* mw, Gui::Playlist::TPlaylist* playlist)
     addMenu(new TMenuPlaySpeed(main_window));
 
     // In-out point submenu
-    addMenu(playlist->getInOutMenu());
+    addMenu(new TMenuInOut(main_window));
 
     addActionsTo(main_window);
 }

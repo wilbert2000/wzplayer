@@ -20,11 +20,9 @@
 #include "gui/playlist/playlistwidget.h"
 #include "gui/playlist/playlistwidgetitem.h"
 #include "gui/playlist/addfilesthread.h"
-#include "gui/playlist/menuremove.h"
 #include "gui/playlist/menucontext.h"
 #include "gui/mainwindow.h"
 #include "gui/multilineinputdialog.h"
-#include "gui/action/menu/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "gui/msg.h"
 #include "gui/filedialog.h"
@@ -38,13 +36,9 @@
 #include <QToolBar>
 #include <QFile>
 #include <QTextStream>
-#include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QRegExp>
-#include <QMenu>
-#include <QInputDialog>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QUrl>
@@ -53,9 +47,6 @@
 #include <QTextCodec>
 #include <QMimeData>
 #include <QClipboard>
-#include <QtAlgorithms>
-#include <QProcess>
-#include <QApplication>
 
 
 using namespace Settings;
@@ -65,68 +56,6 @@ namespace Gui {
 using namespace Action;
 
 namespace Playlist {
-
-
-TAddRemovedMenu::TAddRemovedMenu(QWidget* parent,
-                                 TMainWindow* w,
-                                 TPlaylistWidget* plWidget) :
-    TMenu(parent, w, "pl_add_removed_menu", tr("Add &removed item")),
-    playlistWidget(plWidget) {
-
-    connect(this, &TAddRemovedMenu::triggered,
-            this, &TAddRemovedMenu::onTriggered);
-}
-
-TAddRemovedMenu::~TAddRemovedMenu() {
-}
-
-void TAddRemovedMenu::onAboutToShow() {
-
-    clear();
-    int c = 0;
-    item = playlistWidget->currentPlaylistWidgetItem();
-    if (item) {
-        if (!item->isFolder()) {
-            item = item->plParent();
-        }
-        if (item) {
-            WZDEBUG("'" + item->filename() + "'");
-
-            foreach(const QString& s, item->getBlacklist()) {
-                QAction* action = new QAction(s, this);
-                action->setData(s);
-                addAction(action);
-                c++;
-            }
-        }
-    }
-
-    if (c == 0) {
-        QAction* action = new QAction(tr("No removed items"), this);
-        action->setEnabled(false);
-        addAction(action);
-    }
-}
-
-void TAddRemovedMenu::onTriggered(QAction* action) {
-
-    QString s = action->data().toString();
-    if (!s.isEmpty()) {
-        // Check item still valid
-        item = playlistWidget->validateItem(item);
-        if (item) {
-            if (item->whitelist(s)) {
-                WZDEBUG("whitelisted '" + s + "'");
-                playlistWidget->setModified(item);
-                emit addRemovedItem(s);
-            } else {
-                WZWARN("'" + s + "' not blacklisted");
-            }
-        } else {
-            WZWARN("item no longer existing");
-        }
-    }
-}
 
 
 TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
@@ -142,7 +71,6 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
 
     createTree();
     createActions();
-    createToolbar();
 
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TPlaylist::onNewMediaStartedPlaying);
@@ -156,8 +84,8 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
             this, &TPlaylist::resumePlay, Qt::QueuedConnection);
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(playlistWidget);
     layout->addWidget(toolbar);
+    layout->addWidget(playlistWidget);
     setLayout(layout);
 
     // Random seed
@@ -188,193 +116,140 @@ void TPlaylist::createTree() {
 void TPlaylist::createActions() {
 
     // Connect of enableActions() needs to be done before creation of menus
-    // because it can set the currently playing item, which can be used in
-    // TMenu::enableActions()
+    // because enableActions() can set the currently playing item, which can be
+    // used in TMenu::enableActions()
     connect(main_window, &TMainWindow::enableActions,
             this, &TPlaylist::enableActions);
 
     // Open
-    openAct = new TAction(this, "pl_open", tr("Open &playlist..."), "",
+    openAct = new TAction(main_window, "pl_open", tr("Open &playlist..."), "",
                           QKeySequence("Ctrl+P"));
     connect(openAct, &TAction::triggered, this, &TPlaylist::open);
 
     // Save
-    saveAct = new TAction(this, "pl_save", tr("&Save playlist"), "save",
+    saveAct = new TAction(main_window, "pl_save", tr("&Save playlist"), "save",
                           QKeySequence("Ctrl+S"));
     connect(saveAct, &TAction::triggered, this, &TPlaylist::save);
 
     // SaveAs
-    saveAsAct = new TAction(this, "pl_saveas", tr("S&ave playlist as..."),
-                            "saveas");
+    saveAsAct = new TAction(main_window, "pl_saveas",
+                            tr("S&ave playlist as..."), "saveas");
     connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
-    // Open directory
-    openDirectoryAct = new TAction(this, "pl_open_directory",
-                                   tr("&Open directory"));
-    openDirectoryAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
-    connect(openDirectoryAct, &TAction::triggered,
-            this, &TPlaylist::openFolder);
-
     // Refresh
-    refreshAct = new TAction(this, "pl_refresh", tr("R&efresh playlist"), "",
+    refreshAct = new TAction(main_window, "pl_refresh", tr("R&efresh playlist"), "",
                              Qt::Key_F5);
-    connect(refreshAct, &TAction::triggered,
-            this, &TPlaylist::refresh);
+    connect(refreshAct, &TAction::triggered, this, &TPlaylist::refresh);
     connect(playlistWidget, &TPlaylistWidget::refresh,
             this, &TPlaylist::refresh, Qt::QueuedConnection);
 
+    // Browse directory
+    browseDirAct = new TAction(main_window, "pl_browse_dir",
+                               tr("&Browse directory"));
+    browseDirAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
+    connect(browseDirAct, &TAction::triggered, this, &TPlaylist::browseDir);
+
     // Stop
-    stopAct = new TAction(this, "stop", tr("&Stop"), "", Qt::Key_MediaStop);
+    stopAct = new TAction(main_window, "stop", tr("&Stop"), "",
+                          Qt::Key_MediaStop);
     connect(stopAct, &TAction::triggered, this, &TPlaylist::stop);
 
     // Play
-    playAct = new TAction(this, "play", tr("P&lay selected"), "play",
+    playAct = new TAction(main_window, "play", tr("P&lay"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
-    connect(playAct, &TAction::triggered, this, &TPlaylist::play);
+    connect(playAct, &TAction::triggered, this, &Playlist::TPlaylist::play);
+
+    // Play/pause
+    playOrPauseAct = new TAction(main_window, "play_or_pause", tr("&Play"),
+                                 "play", Qt::Key_Space);
+    // Add MCE remote key
+    playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
+    connect(playOrPauseAct, &TAction::triggered, this, &TPlaylist::playOrPause);
 
     // Play in new window
-    playNewAct = new TAction(this, "play_new", tr("Pl&ay in new window"),
-                             "play", Qt::CTRL | Qt::Key_Space);
+    playNewAct = new TAction(main_window, "play_new_window",
+                             tr("Pl&ay in new window"), "play",
+                             Qt::CTRL | Qt::Key_Space);
     connect(playNewAct, &TAction::triggered,
             this, &TPlaylist::openInNewWindow);
 
     // Pause
-    pauseAct = new TAction(this, "pause", tr("Pause"), "",
+    pauseAct = new TAction(main_window, "pause", tr("Pause"), "",
                            QKeySequence("Media Pause")); // MCE remote key
     connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
 
-    // Play/pause
-    playOrPauseAct = new TAction(this, "play_or_pause", tr("&Play"), "play",
-                                 Qt::Key_Space);
-    // Add MCE remote key
-    playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
-    connect(playOrPauseAct, &TAction::triggered,
-            this, &TPlaylist::playOrPause);
+    // Play next
+    playNextAct = new TAction(main_window, "play_next", tr("Play &next"), "next",
+                              QKeySequence(">"));
+    playNextAct->addShortcut(QKeySequence("."));
+    playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
+    connect(playNextAct, &TAction::triggered, this, &TPlaylist::playNext);
 
-    // Next
-    nextAct = new TAction(this, "pl_next", tr("Play &next"), "next",
-                          QKeySequence(">"));
-    nextAct->addShortcut(QKeySequence("."));
-    nextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
-    connect(nextAct, &TAction::triggered, this, &TPlaylist::playNext);
-
-    // Prev
-    prevAct = new TAction(this, "pl_prev", tr("Play pre&vious"), "previous",
-                          QKeySequence("<"));
-    prevAct->addShortcut(QKeySequence(","));
-    prevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
-    connect(prevAct, &TAction::triggered, this, &TPlaylist::playPrev);
-
-    // In-out menu
-    inOutMenu = new Menu::TMenuInOut(main_window);
-    addActions(inOutMenu->actions());
+    // Play prev
+    playPrevAct = new TAction(main_window, "play_prev", tr("Play pre&vious"),
+                              "previous", QKeySequence("<"));
+    playPrevAct->addShortcut(QKeySequence(","));
+    playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
+    connect(playPrevAct, &TAction::triggered, this, &TPlaylist::playPrev);
 
     // Repeat
-    repeatAct = inOutMenu->findChild<TAction*>("pl_repeat");
+    repeatAct = new TAction(main_window, "pl_repeat", tr("&Repeat playlist"),
+                            "", Qt::CTRL | Qt::Key_Backslash);
+    repeatAct->setCheckable(true);
     connect(repeatAct, &TAction::triggered,
             this, &TPlaylist::onRepeatToggled);
 
     // Shuffle
-    shuffleAct = inOutMenu->findChild<TAction*>("pl_shuffle");
+    shuffleAct = new TAction(main_window, "pl_shuffle", tr("S&huffle playlist"),
+                             "shuffle", Qt::ALT | Qt::Key_Backslash);
+    shuffleAct->setCheckable(true);
     connect(shuffleAct, &TAction::triggered,
             this, &TPlaylist::onShuffleToggled);
-
-    // Add menu
-    add_menu = new Menu::TMenu(this, main_window, "pl_add_menu",
-                               tr("&Add to playlist"), "plus");
-
-    addCurrentAct = new TAction(add_menu, "pl_add_current",
-                                tr("Add &current file"));
-    connect(addCurrentAct, &TAction::triggered,
-            this, &TPlaylist::addCurrentFile);
-
-    addFilesAct = new TAction(add_menu, "pl_add_files", tr("Add &file(s)..."));
-    connect(addFilesAct, &TAction::triggered,
-            this, &TPlaylist::addFilesDialog);
-
-    addDirectoryAct = new TAction(add_menu, "pl_add_directory",
-                                  tr("Add &directory..."));
-    connect(addDirectoryAct, &TAction::triggered,
-            this, &TPlaylist::addDirectory);
-
-    addUrlsAct = new TAction(add_menu, "pl_add_urls", tr("Add &URL(s)..."));
-    connect(addUrlsAct, &TAction::triggered,
-            this, &TPlaylist::addUrls);
-
-    // Add removed sub menu
-    add_removed_menu = new TAddRemovedMenu(add_menu, main_window,
-                                           playlistWidget);
-    add_menu->addMenu(add_removed_menu);
-    connect(add_removed_menu, &TAddRemovedMenu::addRemovedItem,
-            this, &TPlaylist::addRemovedItem);
-
-    addActions(add_menu->actions());
-
-    // Remove menu
-    remove_menu = new TMenuRemove(this, main_window);
 
     // Context menu
     TMenuContext* contextMenu = new TMenuContext(this, main_window);
 
+    contextMenu->addAction(refreshAct);
+
     contextMenu->addSeparator();
-    contextMenu->addAction(playOrPauseAct);
-    contextMenu->addAction(stopAct);
     contextMenu->addAction(playAct);
     contextMenu->addAction(playNewAct);
 
     contextMenu->addSeparator();
-    contextMenu->addMenu(inOutMenu);
-
-    contextMenu->addSeparator();
-    contextMenu->addMenu(add_menu);
-    contextMenu->addMenu(remove_menu);
-
-    contextMenu->addSeparator();
-    contextMenu->addAction(openDirectoryAct);
-    contextMenu->addAction(refreshAct);
+    contextMenu->addAction(browseDirAct);
 
     playlistWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playlistWidget, &TPlaylistWidget::customContextMenuRequested,
             contextMenu, &TMenuContext::execSlot);
 
-    // Add actions to main window
-    main_window->addActions(actions());
-}
-
-void TPlaylist::createToolbar() {
-
+    // Toolbar
     toolbar = new QToolBar(this);
     toolbar->setObjectName("playlisttoolbar");
 
     toolbar->addAction(openAct);
     toolbar->addAction(saveAct);;
     toolbar->addAction(saveAsAct);
-    toolbar->addAction(openDirectoryAct);
+    toolbar->addAction(browseDirAct);
 
     toolbar->addSeparator();
 
     add_button = new QToolButton(this);
-    add_button->setMenu(add_menu);
+    add_button->setMenu(contextMenu->addToPlaylistMenu);
     add_button->setPopupMode(QToolButton::InstantPopup);
-    add_button->setDefaultAction(add_menu->menuAction());
+    add_button->setDefaultAction(contextMenu->addToPlaylistMenu->menuAction());
     toolbar->addWidget(add_button);
 
     remove_button = new QToolButton(this);
-    remove_button->setMenu(remove_menu);
+    remove_button->setMenu(contextMenu->removeFromPlaylistMenu);
     remove_button->setPopupMode(QToolButton::InstantPopup);
-    remove_button->setDefaultAction(remove_menu->menuAction());
+    remove_button->setDefaultAction(
+                contextMenu->removeFromPlaylistMenu->menuAction());
     toolbar->addWidget(remove_button);
 
     toolbar->addSeparator();
     toolbar->addAction(shuffleAct);
     toolbar->addAction(repeatAct);
-    toolbar->addAction(inOutMenu->findChild<TAction*>("repeat_in_out"));
-
-    toolbar->addSeparator();
-    toolbar->addAction(playOrPauseAct);
-    toolbar->addAction(prevAct);
-    toolbar->addAction(nextAct);
 }
 
 void TPlaylist::retranslateStrings() {
@@ -601,12 +476,11 @@ void TPlaylist::addUrls() {
     }
 }
 
-void TPlaylist::addRemovedItem(QString item) {
+void TPlaylist::addRemovedItem(const QString& item) {
     WZDEBUG("'" + item + "'");
 
-    if (!filename.isEmpty() || saveAs()) {
-        refresh();
-    }
+    // TODO: just add the item instead of refresh
+    refresh();
 }
 
 void TPlaylist::onRepeatToggled(bool toggled) {
@@ -818,10 +692,6 @@ void TPlaylist::resumePlay() {
     }
 }
 
-bool TPlaylist::isPlaylistEnabled() const {
-    return isActiveWindow() && isVisible() && thread == 0;
-}
-
 QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
@@ -851,10 +721,10 @@ bool TPlaylist::removeFromDisk(const QString& filename,
     }
 
     if (!fi.isSymLink() && fi.isDir()) {
-        if (TWZFiles::directoryIsEmpty(filename)) {
-            QMessageBox::warning(this, tr("Error"),
-                tr("Cannot delete folder '%1', it must be empty.")
-                .arg(filename));
+        if (!TWZFiles::directoryIsEmpty(filename)) {
+            QMessageBox::warning(this, tr("Warning"),
+                tr("Skipping delete of directory '%1',"
+                   " it does not seem to be empty.").arg(filename));
             return false;
         }
     }
@@ -1024,27 +894,35 @@ void TPlaylist::refresh() {
     }
 }
 
-void TPlaylist::openFolder() {
+void TPlaylist::browseDir() {
 
+    QString fn;
     TPlaylistWidgetItem* i = playlistWidget->currentPlaylistWidgetItem();
     if (i) {
-        QUrl url;
-        QFileInfo fi(i->filename());
-        if (fi.exists()) {
-            if (i->isPlaylist()
-                || !i->isFolder()
-                || fi.fileName() == TConfig::WZPLAYLIST) {
-                url = QUrl::fromLocalFile(fi.absolutePath());
-            } else {
-                url = QUrl::fromLocalFile(i->filename());
-            }
-        } else {
-            url.setUrl(i->filename());
-        }
+        fn = i->filename();
+    } else {
+        fn = player->mdat.filename;
+    }
+    if (fn.isEmpty()) {
+        return;
+    }
 
-        debug << "openFolder: opening" << url;
-        debug << debug;
-        QDesktopServices::openUrl(url);
+    QUrl url;
+    QFileInfo fi(fn);
+    if (fi.exists()) {
+        if (fi.isDir()) {
+            url = QUrl::fromLocalFile(fi.absoluteFilePath());
+        } else {
+            url = QUrl::fromLocalFile(fi.absolutePath());
+        }
+    } else {
+        url.setUrl(fn);
+    }
+
+    if (!QDesktopServices::openUrl(url)) {
+        QMessageBox::warning(this, tr("Open URL failed"),
+            tr("Failed to open URL '%1'").arg(url.toString(QUrl::None)),
+            QMessageBox::Ok);
     }
 }
 
@@ -1090,31 +968,15 @@ void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
 void TPlaylist::enableActions() {
 
     if (disable_enableActions) {
-        WZDEBUG("disabled");
         return;
     }
     WZDEBUG("state " + player->stateToString());
 
-    // Note: there is always something selected if there are items
-    bool haveItems = playlistWidget->hasItems();
-
-    TPlaylistWidgetItem* playing_item = playlistWidget->playing_item;
-
     Player::TState s = player->state();
-    bool enable = (s == Player::STATE_STOPPED || s == Player::STATE_PLAYING
+    bool enable = (s == Player::STATE_STOPPED
+                   || s == Player::STATE_PLAYING
                    || s == Player::STATE_PAUSED)
                   && thread == 0;
-    bool e = enable && haveItems;
-    bool playerHasFilename = player->mdat.filename.count();
-
-    openAct->setEnabled(thread == 0);
-    saveAct->setEnabled(e);
-    saveAsAct->setEnabled(e);
-
-    playAct->setEnabled(enable && (playerHasFilename || haveItems));
-    pauseAct->setEnabled(s == Player::STATE_PLAYING);
-
-    playOrPauseAct->setEnabled(enable && (playerHasFilename || haveItems));
 
     if (!enable) {
         QString text;
@@ -1126,12 +988,13 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setTextAndTip(text + "...");
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == Player::STATE_PLAYING) {
+        TPlaylistWidgetItem* playingItem = playlistWidget->playing_item;
         disable_enableActions = true;
-        if (playing_item == 0) {
-            playing_item = findFilename(player->mdat.filename);
+        if (playingItem == 0) {
+            playingItem = findFilename(player->mdat.filename);
         }
-        if (playing_item && playing_item->state() != PSTATE_PLAYING) {
-            playlistWidget->setPlayingItem(playing_item, PSTATE_PLAYING);
+        if (playingItem && playingItem->state() != PSTATE_PLAYING) {
+            playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
         }
         playOrPauseAct->setTextAndTip(tr("&Pause"));
         playOrPauseAct->setIcon(Images::icon("pause"));
@@ -1141,21 +1004,33 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setIcon(Images::icon("play"));
     }
 
-    // Stop action
+    bool haveItems = playlistWidget->hasItems();
+    bool e = enable && haveItems;
+
+    openAct->setEnabled(thread == 0);
+    saveAct->setEnabled(e);
+    saveAsAct->setEnabled(e);
+    refreshAct->setEnabled(thread == 0 && !filename.isEmpty());
+    browseDirAct->setEnabled(playlistWidget->currentPlaylistWidgetItem());
+
     stopAct->setEnabled(thread
                         || s == Player::STATE_PLAYING
                         || s == Player::STATE_PAUSED
                         || s == Player::STATE_RESTARTING
                         || s == Player::STATE_LOADING);
+    bool pe = enable && (haveItems || player->mdat.filename.count());
+    playOrPauseAct->setEnabled(pe || s == Player::STATE_PLAYING);
+    playNewAct->setEnabled(e);
+    pauseAct->setEnabled(s == Player::STATE_PLAYING);
 
     // Prev/Next
     bool changed = false;
-    if (e != nextAct->isEnabled()) {
-        nextAct->setEnabled(e);
+    if (e != playNextAct->isEnabled()) {
+        playNextAct->setEnabled(e);
         changed = true;
     }
-    if (e != prevAct->isEnabled()) {
-        prevAct->setEnabled(e);
+    if (e != playPrevAct->isEnabled()) {
+        playPrevAct->setEnabled(e);
         changed = true;
     }
     if (changed) {
@@ -1163,10 +1038,7 @@ void TPlaylist::enableActions() {
         emit enablePrevNextChanged();
     }
 
-    addCurrentAct->setEnabled(playerHasFilename && thread == 0);
-
-    openDirectoryAct->setEnabled(playlistWidget->currentPlaylistWidgetItem());
-    refreshAct->setEnabled(thread == 0 && !filename.isEmpty());
+    // Repeat and shuffle are always enabled
 }
 
 void TPlaylist::onPlayerError() {
@@ -1416,6 +1288,7 @@ void TPlaylist::editName() {
         return;
     }
 
+    playlistWidget->scrollToItem(current);
     current->setFlags(current->flags() | Qt::ItemIsEditable);
     playlistWidget->editItem(current, TPlaylistWidgetItem::COL_NAME);
     current->setFlags(current->flags() & ~Qt::ItemIsEditable);
@@ -1458,6 +1331,7 @@ void TPlaylist::newFolder() {
             name,
             0,
             false);
+        i->loadIcon();
         i->setModified();
         playlistWidget->setCurrentItem(i);
         editName();
@@ -1475,6 +1349,11 @@ void TPlaylist::findPlayingItem() {
 
     TPlaylistWidgetItem* i = playlistWidget->playing_item;
     if (i) {
+        if (!isVisible()) {
+            // parent is playlistdock
+            QWidget* p = qobject_cast<QWidget*>(parent());
+            p->setVisible(true);
+        }
         if (i == playlistWidget->currentItem()) {
             playlistWidget->scrollToItem(i);
         } else {
@@ -1659,7 +1538,7 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     // Keep track of whether we saved anything usefull
     bool savedMetaData = false;
 
-    if (wzplaylist && folder->getBlacklist().count() > 0) {
+    if (wzplaylist && folder->getBlacklistCount() > 0) {
         savedMetaData = true;
         foreach(const QString& fn, folder->getBlacklist()) {
             WZDEBUG("blacklisting '" + fn + "'");

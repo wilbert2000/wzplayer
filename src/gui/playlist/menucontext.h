@@ -21,12 +21,16 @@ class TMenuContext : public Gui::Action::Menu::TMenu {
 public:
     explicit TMenuContext(TPlaylist* pl, TMainWindow* mw);
 
+    Gui::Action::Menu::TMenu* addToPlaylistMenu;
+    Gui::Action::Menu::TMenu* removeFromPlaylistMenu;
+
 protected:
     virtual void enableActions();
     virtual void onAboutToShow();
 
 private:
     TPlaylist* playlist;
+
     Gui::Action::TAction* editNameAct;
     Gui::Action::TAction* newFolderAct;
     Gui::Action::TAction* findPlayingAct;

@@ -355,15 +355,6 @@ void TMainWindow::createAudioEqualizer() {
 void TMainWindow::createActions() {
     WZDEBUG("createActions");
 
-    showContextMenuAct = new Action::TAction(this, "show_context_menu",
-                                             tr("Show context menu"));
-    // see createMenu() for connect
-
-    nextWheelFunctionAct = new Action::TAction(this, "next_wheel_function",
-                                       tr("Next wheel function"), 0, Qt::Key_W);
-    connect(nextWheelFunctionAct, &Action::TAction::triggered,
-            player, &Player::TPlayer::nextWheelFunction);
-
     // Time slider
     timeslider_action = new Action::TTimeSliderAction(this);
     timeslider_action->setObjectName("timeslider_action");
@@ -448,6 +439,11 @@ void TMainWindow::createActions() {
     viewFramesAct->setChecked(false);
     connect(viewFramesAct, &Action::TAction::toggled,
             this, &TMainWindow::displayFrames);
+
+    Action::TAction* a = new Action::TAction(this, "next_wheel_function",
+                                       tr("Next wheel function"), 0, Qt::Key_W);
+    connect(a, &Action::TAction::triggered,
+            player, &Player::TPlayer::nextWheelFunction);
 } // createActions
 
 Action::Menu::TMenuExec* TMainWindow::createContextMenu() {
@@ -468,7 +464,7 @@ void TMainWindow::createMenus() {
 
     fileMenu = new Action::Menu::TMenuFile(this);
     menuBar()->addMenu(fileMenu);
-    playMenu = new Action::Menu::TMenuPlay(this, playlist);
+    playMenu = new Action::Menu::TMenuPlay(this);
     menuBar()->addMenu(playMenu);
     videoMenu = new Action::Menu::TMenuVideo(this, playerwindow,
                                              video_equalizer);
@@ -501,7 +497,9 @@ void TMainWindow::createMenus() {
 
     // Context menu
     contextMenu = createContextMenu();
-    connect(showContextMenuAct, &Action::TAction::triggered,
+    Action::TAction* a = new Action::TAction(this, "show_context_menu",
+                                             tr("Show context menu"));
+    connect(a, &Action::TAction::triggered,
             contextMenu, &Action::Menu::TMenuExec::execSlot);
     playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playerwindow, &TPlayerWindow::customContextMenuRequested,

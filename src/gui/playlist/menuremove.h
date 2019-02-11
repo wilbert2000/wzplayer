@@ -30,6 +30,9 @@ private:
     Gui::Action::TAction* removeSelectedAct;
     Gui::Action::TAction* removeSelectedFromDiskAct;
     Gui::Action::TAction* removeAllAct;
+
+private slots:
+    void enableRemoveFromDiskAction();
 };
 
 } // namespace Playlist

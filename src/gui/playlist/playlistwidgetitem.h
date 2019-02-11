@@ -113,6 +113,7 @@ public:
     }
     bool blacklisted(const QString& filename) const;
     QStringList getBlacklist() const { return mBlacklist; }
+    int getBlacklistCount() const { return mBlacklist.count(); }
     bool whitelist(const QString& filename);
 
     void setSzHint(int level);

@@ -1,15 +1,12 @@
 #include "gui/action/menu/menufile.h"
 
 #include "gui/mainwindow.h"
-#include "gui/playlist/playlist.h"
 #include "gui/action/menu/favorites.h"
 #include "gui/action/action.h"
 #include "player/player.h"
 #include "settings/paths.h"
-#include "settings/preferences.h"
 
 #include <QMessageBox>
-#include <QFileInfo>
 
 
 using namespace Settings;
@@ -124,11 +121,15 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     addSeparator();
 
     // Playlist
-    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_open"));
-    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_save"));
-    addAction(main_window->getPlaylist()->findChild<TAction*>("pl_saveas"));
+    addAction(main_window->findChild<TAction*>("pl_open"));
+    addAction(main_window->findChild<TAction*>("pl_save"));
+    addAction(main_window->findChild<TAction*>("pl_saveas"));
+    addAction(main_window->findChild<TAction*>("pl_refresh"));
 
     addSeparator();
+
+    // Browse dir
+    addAction(main_window->findChild<TAction*>("pl_browse_dir"));
 
     // Save thumbnail
     saveThumbnailAct  = new TAction(this, "save_thumbnail",

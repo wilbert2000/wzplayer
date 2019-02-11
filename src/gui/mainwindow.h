@@ -209,9 +209,6 @@ private:
     TDockWidget* logDock;
     TLogWindow* log_window;
 
-    Action::TAction* showContextMenuAct;
-    Action::TAction* nextWheelFunctionAct;
-
     QMenu* helpMenu;
     Action::Menu::TMenuExec* contextMenu;
 

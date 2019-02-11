@@ -19,16 +19,12 @@
 #define GUI_PLAYLIST_PLAYLIST_H
 
 #include <QWidget>
-#include <QTreeWidgetItem>
-#include <QList>
-#include <QStringList>
-
 #include "wzdebug.h"
-#include "gui/action/menu/menu.h"
 
 
 class QToolBar;
 class QToolButton;
+class QTreeWidgetItem;
 
 
 namespace Gui {
@@ -37,9 +33,6 @@ class TMainWindow;
 
 namespace Action {
 class TAction;
-namespace Menu {
-class TMenuInOut;
-}
 }
 
 namespace Playlist {
@@ -47,30 +40,6 @@ namespace Playlist {
 class TPlaylistWidget;
 class TPlaylistWidgetItem;
 class TAddFilesThread;
-
-class TAddRemovedMenu : public Action::Menu::TMenu {
-    Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
-public:
-    explicit TAddRemovedMenu(QWidget* parent,
-                             TMainWindow* w,
-                             TPlaylistWidget* plWidget);
-    virtual ~TAddRemovedMenu();
-
-signals:
-    void addRemovedItem(QString s);
-
-protected:
-    virtual void onAboutToShow();
-
-private:
-    TPlaylistWidget* playlistWidget;
-    TPlaylistWidgetItem* item;
-
-private slots:
-    void onTriggered(QAction* action);
-};
 
 
 class TPlaylist : public QWidget {
@@ -84,12 +53,14 @@ public:
     void openPlaylist(const QString& filename);
     void playDirectory(const QString& dir);
 
-    bool isPlaylistEnabled() const;
     QString playingFile() const;
     TPlaylistWidgetItem* findFilename(const QString& filename) const;
+
+    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
     TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
     bool hasItems() const;
     bool hasPlayingItem() const;
+    bool isLoading() const { return thread; }
 
     void clear();
     void addFiles(const QStringList& files,
@@ -105,14 +76,18 @@ public:
     void saveSettings();
     void retranslateStrings();
 
-    Action::Menu::TMenuInOut* getInOutMenu() const { return inOutMenu; }
-
 public slots:
     void stop();
 
     void editName();
     void newFolder();
     void findPlayingItem();
+
+    void addCurrentFile();
+    void addFilesDialog();
+    void addDirectory();
+    void addUrls();
+    void addRemovedItem(const QString& s);
 
     void cut();
     void copySelected();
@@ -132,10 +107,8 @@ protected:
     virtual void dropEvent(QDropEvent*);
 
 private:
-    Action::Menu::TMenu* add_menu;
-    TAddRemovedMenu* add_removed_menu;
-    Action::Menu::TMenu* remove_menu;
-
+    TMainWindow* main_window;
+    TPlaylistWidget* playlistWidget;
     QToolBar* toolbar;
     QToolButton* add_button;
     QToolButton* remove_button;
@@ -143,28 +116,19 @@ private:
     Action::TAction* openAct;
     Action::TAction* saveAct;
     Action::TAction* saveAsAct;
-    Action::TAction* openDirectoryAct;
     Action::TAction* refreshAct;
+    Action::TAction* browseDirAct;
 
+    Action::TAction* stopAct;
     Action::TAction* playAct;
+    Action::TAction* playOrPauseAct;
     Action::TAction* playNewAct;
     Action::TAction* pauseAct;
-    Action::TAction* playOrPauseAct;
-    Action::TAction* stopAct;
-    Action::TAction* prevAct;
-    Action::TAction* nextAct;
+    Action::TAction* playNextAct;
+    Action::TAction* playPrevAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
 
-    Action::TAction* addCurrentAct;
-    Action::TAction* addFilesAct;
-    Action::TAction* addDirectoryAct;
-    Action::TAction* addUrlsAct;
-
-    Action::Menu::TMenuInOut* inOutMenu;
-
-    TMainWindow* main_window;
-    TPlaylistWidget* playlistWidget;
 
     QString filename;
 
@@ -182,7 +146,6 @@ private:
 
     void createTree();
     void createActions();
-    void createToolbar();
 
     void addFilesStartThread();
     void startPlay();
@@ -211,13 +174,7 @@ private slots:
     void open();
     bool save();
     bool saveAs();
-    void openFolder();
-
-    void addCurrentFile();
-    void addFilesDialog();
-    void addDirectory();
-    void addUrls();
-    void addRemovedItem(QString s);
+    void browseDir();
 
     void refresh();
 

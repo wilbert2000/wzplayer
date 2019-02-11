@@ -137,6 +137,7 @@ HEADERS += wzdebug.h \
     gui/playlist/addfilesthread.h \
     gui/playlist/playlistwidgetitem.h \
     gui/playlist/playlistwidget.h \
+    gui/playlist/menuadd.h \
     gui/playlist/menuremove.h \
     gui/playlist/menucontext.h \
     gui/playlist/playlist.h \
@@ -264,6 +265,7 @@ SOURCES += wzdebug.cpp \
     gui/playlist/addfilesthread.cpp \
     gui/playlist/playlistwidgetitem.cpp \
     gui/playlist/playlistwidget.cpp \
+    gui/playlist/menuadd.cpp \
     gui/playlist/menuremove.cpp \
     gui/playlist/menucontext.cpp \
     gui/playlist/playlist.cpp \

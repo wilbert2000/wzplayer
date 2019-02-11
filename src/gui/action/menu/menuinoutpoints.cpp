@@ -20,13 +20,7 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
     group->setExclusive(false);
     group->setEnabled(false);
 
-    TAction* a = new TAction(this, "clear_in_out_points",
-                    tr("Cle&ar in-out points and repeat"), "", Qt::Key_Backspace);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::clearInOutPoints);
-
-    addSeparator();
-    a  = new TAction(this, "set_in_point", tr("Set &in point"), "",
+    TAction* a  = new TAction(this, "set_in_point", tr("Set &in point"), "",
                               QKeySequence("["));
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::setInPoint);
@@ -46,6 +40,12 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
                     "", QKeySequence("Shift+]"));
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::clearOutPoint);
+
+    a = new TAction(this, "clear_in_out_points",
+                             tr("Cle&ar in-out points and repeat"), "",
+                             Qt::Key_Backspace);
+    group->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::clearInOutPoints);
 
     addSeparator();
     a  = new TAction(this, "seek_in_point", tr("&Seek to in point"), "",
@@ -69,22 +69,14 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
             this, &TMenuInOut::upd);
 
     // Repeat playlist
-    a = new TAction(this, "pl_repeat", tr("&Repeat playlist"), "",
-                    Qt::CTRL | Qt::Key_Backslash);
-    a->setCheckable(true);
+    addAction(main_window->findChild<TAction*>("pl_repeat"));
 
     // Shuffle
-    a = new TAction(this, "pl_shuffle", tr("S&huffle playlist"), "shuffle",
-                    Qt::ALT | Qt::Key_Backslash);
-    a->setCheckable(true);
-
-    // Don't add actions to main window, playlist will add them
+    addAction(main_window->findChild<TAction*>("pl_shuffle"));
 }
 
 void TMenuInOut::enableActions() {
     group->setEnabled(player->statePOP());
-    // repeat playlist always enabled
-    // shuffle playlist always enabled
 }
 
 void TMenuInOut::upd() {
