@@ -70,7 +70,6 @@ TMenuVideoColorSpace::TMenuVideoColorSpace(TMainWindow* mw) :
     connect(group, &TColorSpaceGroup::activated,
             player, &Player::TPlayer::setColorSpace);
     addActions(group->actions());
-    addActionsTo(mw);
 }
 
 void TMenuVideoColorSpace::enableActions() {

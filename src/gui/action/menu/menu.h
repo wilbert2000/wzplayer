@@ -26,8 +26,6 @@ public:
                    const QString& icon = QString());
     virtual ~TMenu();
 
-    void addActionsTo(QWidget* w);
-
 protected:
     TMainWindow* main_window;
     virtual void onAboutToShow();

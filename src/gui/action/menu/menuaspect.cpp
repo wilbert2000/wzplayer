@@ -60,7 +60,6 @@ TMenuAspect::TMenuAspect(TMainWindow* mw) :
     connect(nextAspectAct, &TAction::triggered,
             player, &Player::TPlayer::nextAspectRatio);
 
-    addActionsTo(main_window);
     upd();
 }
 

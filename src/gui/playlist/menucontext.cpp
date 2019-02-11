@@ -63,7 +63,7 @@ TMenuContext::TMenuContext(TPlaylist* pl, TMainWindow* mw) :
 
     addSeparator();
     // Add menu
-    addToPlaylistMenu = new TMenuAdd(this, main_window, playlist);
+    addToPlaylistMenu = new TMenuAdd(playlist, main_window);
     addMenu(addToPlaylistMenu);
 
     // Remove menu

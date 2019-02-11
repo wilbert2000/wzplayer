@@ -48,7 +48,6 @@ TMenuAudioChannel::TMenuAudioChannel(TMainWindow* mw)
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::setAudioChannels);
     // No one else sets it
-    addActionsTo(main_window);
 }
 
 void TMenuAudioChannel::enableActions() {
@@ -95,7 +94,6 @@ TMenuStereo::TMenuStereo(TMainWindow* mw)
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::setStereoMode);
     // No one else changes it
-    addActionsTo(main_window);
 }
 
 void TMenuStereo::enableActions() {
@@ -181,24 +179,20 @@ TMenuAudio::TMenuAudio(TMainWindow* mw, TAudioEqualizer* audioEqualizer)
     // Filter sub
     audioFilterMenu = new TMenu(main_window, main_window, "audiofilter_menu",
                                 tr("&Filters"), "audio_filters");
-    volnormAct = new TAction(this, "volnorm_filter",
-                             tr("Volume &normalization"), "", 0, false);
+    volnormAct = new TAction(audioFilterMenu, "volnorm_filter",
+                             tr("Volume &normalization"));
     volnormAct->setCheckable(true);
-    audioFilterMenu->addAction(volnormAct);
     connect(volnormAct, &TAction::triggered,
             player, &Player::TPlayer::setVolnorm);
 
-    extrastereoAct = new TAction(this, "extrastereo_filter", tr("&Extrastereo"),
-                                 "", 0, false);
+    extrastereoAct = new TAction(audioFilterMenu, "extrastereo_filter",
+                                 tr("&Extrastereo"));
     extrastereoAct->setCheckable(true);
-    audioFilterMenu->addAction(extrastereoAct);
     connect(extrastereoAct, &TAction::triggered,
             player, &Player::TPlayer::setExtrastereo);
 
-    karaokeAct = new TAction(this, "karaoke_filter", tr("&Karaoke"), "", 0,
-                             false);
+    karaokeAct = new TAction(audioFilterMenu, "karaoke_filter", tr("&Karaoke"));
     karaokeAct->setCheckable(true);
-    audioFilterMenu->addAction(karaokeAct);
     connect(karaokeAct, &TAction::triggered,
             player, &Player::TPlayer::toggleKaraoke);
 
@@ -218,8 +212,6 @@ TMenuAudio::TMenuAudio(TMainWindow* mw, TAudioEqualizer* audioEqualizer)
                                  "unload");
     connect(unloadAudioAct, &TAction::triggered,
             player, &Player::TPlayer::unloadAudioFile);
-
-    addActionsTo(main_window);
 }
 
 void TMenuAudio::enableActions() {

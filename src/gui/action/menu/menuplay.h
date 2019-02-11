@@ -21,8 +21,7 @@ namespace Menu {
 class TMenuSeek: public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuSeek(QWidget* parent,
-                       TMainWindow* mainwindow,
+    explicit TMenuSeek(TMainWindow* mnw,
                        const QString& name,
                        const QString& text,
                        const QString& sign);

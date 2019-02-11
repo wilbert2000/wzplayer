@@ -58,8 +58,6 @@ TMenuDisc::TMenuDisc(TMainWindow* parent)
     // Audio
     a = new TAction(this, "open_audio_cd", tr("&Audio CD"), "cdda");
     connect(a, &TAction::triggered, parent, &TMainWindow::openAudioCD);
-
-    addActionsTo(parent);
 }
 
 

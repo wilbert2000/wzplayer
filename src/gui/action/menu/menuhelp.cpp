@@ -22,8 +22,6 @@ TMenuHelp::TMenuHelp(TMainWindow* mw) :
     a = new TAction(this, "about", tr("About &WZPlayer"), "logo");
     connect(a, &TAction::triggered,
             main_window, &TMainWindow::helpAbout);
-
-    addActionsTo(main_window);
 }
 
 } // namespace Menu

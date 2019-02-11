@@ -28,14 +28,13 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
             this, &TMenuBrowse::updateTitles);
 
     // Chapters
-    nextChapterAct = new TAction(this, "next_chapter", tr("Next chapter"), "",
-                                 Qt::Key_C, false);
-    main_window->addAction(nextChapterAct);
+    nextChapterAct = new TAction(main_window, "next_chapter",
+                                 tr("Next chapter"), "", Qt::Key_C);
     connect(nextChapterAct, &TAction::triggered,
             player, &Player::TPlayer::nextChapter);
-    prevChapterAct = new TAction(this, "prev_chapter", tr("Previous chapter"),
-                                 "", Qt::SHIFT | Qt::Key_C, false);
-    main_window->addAction(prevChapterAct);
+    prevChapterAct = new TAction(main_window, "prev_chapter",
+                                 tr("Previous chapter"), "",
+                                 Qt::SHIFT | Qt::Key_C);
     connect(prevChapterAct, &TAction::triggered,
             player, &Player::TPlayer::prevChapter);
 
@@ -56,8 +55,8 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
             this, &TMenuBrowse::updateChapters);
 
     // Angles submenu
-    nextAngleAct = new TAction(this, "next_angle", tr("Next angle"), "",
-                               Qt::SHIFT | Qt::Key_A, false);
+    nextAngleAct = new TAction(main_window, "next_angle", tr("Next angle"), "",
+                               Qt::SHIFT | Qt::Key_A);
     connect(nextAngleAct, &TAction::triggered,
             player, &Player::TPlayer::nextAngle);
     anglesMenu = new TMenu(main_window, main_window, "angles_menu",
@@ -114,8 +113,6 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
                                 "", Qt::META | Qt::Key_Escape);
     connect(dvdnavPrevAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavPrev);
-
-    addActionsTo(main_window);
 }
 
 void TMenuBrowse::enableActions() {

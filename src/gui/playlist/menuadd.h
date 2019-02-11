@@ -48,7 +48,7 @@ private slots:
 
 class TMenuAdd : public Gui::Action::Menu::TMenu {
 public:
-    explicit TMenuAdd(QWidget* parent, TMainWindow* w, TPlaylist* playlist);
+    explicit TMenuAdd(TPlaylist* playlist, TMainWindow* w);
     virtual ~TMenuAdd();
 };
 

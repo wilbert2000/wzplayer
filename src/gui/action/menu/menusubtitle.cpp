@@ -38,7 +38,6 @@ TMenuCC::TMenuCC(TMainWindow* mw)
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::setClosedCaptionChannel);
     // Currently no one else sets it
-    addActionsTo(main_window);
 }
 
 void TMenuCC::enableActions() {
@@ -77,7 +76,6 @@ TMenuSubFPS::TMenuSubFPS(TMainWindow* mw)
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::changeExternalSubFPS);
     // No one else sets it
-    addActionsTo(main_window);
 }
 
 void TMenuSubFPS::enableActions() {
@@ -152,14 +150,12 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     addSeparator();
     subtitleTrackMenu = new TMenu(main_window, main_window,
         "subtitlestrack_menu", tr("Subtitle &track"), "sub");
-    nextSubtitleAct = new TAction(this, "next_subtitle",
-        tr("Next subtitle track"), "", Qt::CTRL | Qt::Key_N, false);
-    subtitleTrackMenu->addAction(nextSubtitleAct);
-    main_window->addAction(nextSubtitleAct);
-    subtitleTrackMenu->addSeparator();
-    addMenu(subtitleTrackMenu);
+    nextSubtitleAct = new TAction(subtitleTrackMenu, "next_subtitle",
+        tr("Next subtitle track"), "", Qt::CTRL | Qt::Key_N);
     connect(nextSubtitleAct, &TAction::triggered,
             player, &Player::TPlayer::nextSubtitle);
+    subtitleTrackMenu->addSeparator();
+    addMenu(subtitleTrackMenu);
 
     subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
     connect(subtitleTrackGroup, &TActionGroup::activated,
@@ -213,8 +209,6 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
             player, &Player::TPlayer::setUseCustomSubStyle);
     connect(main_window, &TMainWindow::preferencesChanged,
             this, &TMenuSubtitle::onPreferencesChanged);
-
-    addActionsTo(main_window);
 }
 
 void TMenuSubtitle::enableActions() {

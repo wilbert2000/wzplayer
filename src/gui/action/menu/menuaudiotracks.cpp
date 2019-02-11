@@ -16,7 +16,6 @@ TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
     nextAudioTrackAct = new TAction(this, "next_audio_track",
                                     tr("Next audio track"), "",
                                     QKeySequence("*"));
-    main_window->addAction(nextAudioTrackAct);
     connect(nextAudioTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextAudioTrack);
 

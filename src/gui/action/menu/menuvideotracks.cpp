@@ -16,7 +16,6 @@ TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
     // Next video track
     nextVideoTrackAct = new TAction(this, "next_video_track",
                                     tr("Next video track"));
-    main_window->addAction(nextVideoTrackAct);
     connect(nextVideoTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextVideoTrack);
 

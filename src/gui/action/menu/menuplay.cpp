@@ -17,12 +17,11 @@ namespace Action {
 namespace Menu {
 
 // Base class for seeking forward/rewinding
-TMenuSeek::TMenuSeek(QWidget* parent,
-                     TMainWindow* mainwindow,
+TMenuSeek::TMenuSeek(TMainWindow* mw,
                      const QString& name,
                      const QString& text,
                      const QString& sign) :
-    TMenu(parent, mainwindow, name, text),
+    TMenu(mw, mw, name, text),
     seek_sign(sign) {
 
     setDefaultAction(menuAction());
@@ -135,11 +134,11 @@ void TMenuSeek::setJumpTexts() {
 
 class TMenuSeekForward: public TMenuSeek {
 public:
-    explicit TMenuSeekForward(QWidget* parent, TMainWindow* mnw);
+    explicit TMenuSeekForward(TMainWindow* mnw);
 };
 
-TMenuSeekForward::TMenuSeekForward(QWidget* parent, TMainWindow* mw) :
-    TMenuSeek(parent, mw, "forward_menu", tr("&Forward"),
+TMenuSeekForward::TMenuSeekForward(TMainWindow* mw) :
+    TMenuSeek(mw, "forward_menu", tr("&Forward"),
               tr("+", "sign to use in menu for forward seeking")) {
 
     frameAct = new TAction(this, "frame_step", tr("Fra&me step"), "",
@@ -167,12 +166,12 @@ TMenuSeekForward::TMenuSeekForward(QWidget* parent, TMainWindow* mw) :
 
 class TMenuSeekRewind: public TMenuSeek {
 public:
-    explicit TMenuSeekRewind(QWidget* parent, TMainWindow* mw);
+    explicit TMenuSeekRewind(TMainWindow* mw);
 };
 
 // Create rewind menu as descendant from TMenuSeek
-TMenuSeekRewind::TMenuSeekRewind(QWidget* parent, TMainWindow* mw) :
-    TMenuSeek(parent, mw, "rewind_menu", tr("&Rewind"),
+TMenuSeekRewind::TMenuSeekRewind(TMainWindow* mw) :
+    TMenuSeek(mw, "rewind_menu", tr("&Rewind"),
               tr("-", "sign to use in menu for rewind seeking")) {
 
     frameAct = new TAction(this, "frame_back_step", tr("Fra&me back step"), "",
@@ -280,10 +279,10 @@ TMenuPlay::TMenuPlay(TMainWindow* mw)
     addSeparator();
 
     // Forward menu
-    TMenuSeek* forward_menu = new TMenuSeekForward(this, main_window);
+    TMenuSeek* forward_menu = new TMenuSeekForward(main_window);
     addMenu(forward_menu);
     // Rewind menu
-    TMenuSeek* rewind_menu = new TMenuSeekRewind(this, main_window);
+    TMenuSeek* rewind_menu = new TMenuSeekRewind(main_window);
     addMenu(rewind_menu);
     // Let forward and rewind work in tandem
     connect(forward_menu, &TMenuSeek::triggered,
@@ -303,8 +302,6 @@ TMenuPlay::TMenuPlay(TMainWindow* mw)
 
     // In-out point submenu
     addMenu(new TMenuInOut(main_window));
-
-    addActionsTo(main_window);
 }
 
 void TMenuPlay::enableActions() {

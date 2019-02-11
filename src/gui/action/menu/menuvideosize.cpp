@@ -122,7 +122,6 @@ TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
     connect(resizeOnLoadAct, &TAction::triggered,
             this, &TMenuVideoSize::onResizeOnLoadTriggered);
 
-    addActionsTo(main_window);
     upd();
 }
 

@@ -64,8 +64,6 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
     toggleDeinterlaceAct->setCheckable(true);
     connect(toggleDeinterlaceAct, &TAction::triggered,
             player, &Player::TPlayer::toggleDeinterlace);
-
-    addActionsTo(main_window);
 }
 
 void TMenuDeinterlace::enableActions() {
@@ -126,8 +124,6 @@ TMenuTransform::TMenuTransform(TMainWindow* mw)
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::setRotate);
     // No one changes it
-
-    addActionsTo(main_window);
 }
 
 void TMenuTransform::enableActions() {
@@ -202,8 +198,6 @@ TMenuZoomAndPan::TMenuZoomAndPan(TMainWindow* mw)
     a = new TAction(this, "move_down", tr("Move &down"), "", Qt::Key_2);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::panUp);
-
-    addActionsTo(main_window);
 }
 
 void TMenuZoomAndPan::enableActions() {
@@ -222,15 +216,12 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     fullscreenAct->setCheckable(true);
     connect(fullscreenAct, &TAction::triggered,
             main_window, &TMainWindow::toggleFullscreen);
-
-    exitFullscreenAct = new TAction(this, "exit_fullscreen",
-                                    tr("Exit fullscreen"), "", Qt::Key_Escape,
-                                    false);
+    // Exit fullscreen (not in menu)
+    exitFullscreenAct = new TAction(main_window, "exit_fullscreen",
+                                    tr("Exit fullscreen"), "", Qt::Key_Escape);
     exitFullscreenAct->setEnabled(false);
-    main_window->addAction(exitFullscreenAct);
     connect(exitFullscreenAct, &TAction::triggered,
             main_window, &TMainWindow::exitFullscreen);
-
     connect(main_window, &TMainWindow::fullscreenChanged,
             this, &TMenuVideo::onFullscreenChanged, Qt::QueuedConnection);
 
@@ -260,61 +251,55 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
             videoEqualizer, &TVideoEqualizer::reset);
 
     // Short cuts equalizer (not in menu)
-    decContrastAct = new TAction(this, "dec_contrast", tr("Dec contrast"), "",
-                                 Qt::ALT | Qt::Key_1, false);
-    main_window->addAction(decContrastAct);
+    decContrastAct = new TAction(main_window, "dec_contrast",
+                                 tr("Dec contrast"), "", Qt::ALT | Qt::Key_1);
     connect(decContrastAct, &TAction::triggered,
             player, &Player::TPlayer::decContrast);
 
-    incContrastAct = new TAction(this, "inc_contrast", tr("Inc contrast"), "",
-                                 Qt::ALT | Qt::Key_2, false);
-    main_window->addAction(incContrastAct);
+    incContrastAct = new TAction(main_window, "inc_contrast",
+                                 tr("Inc contrast"), "", Qt::ALT | Qt::Key_2);
     connect(incContrastAct, &TAction::triggered,
             player, &Player::TPlayer::incContrast);
 
-    decBrightnessAct = new TAction(this, "dec_brightness", tr("Dec brightness"),
-                                   "", Qt::ALT | Qt::Key_3, false);
-    main_window->addAction(decBrightnessAct);
+    decBrightnessAct = new TAction(main_window, "dec_brightness",
+                                   tr("Dec brightness"), "",
+                                   Qt::ALT | Qt::Key_3);
     connect(decBrightnessAct, &TAction::triggered,
             player, &Player::TPlayer::decBrightness);
 
-    incBrightnessAct = new TAction(this, "inc_brightness", tr("Inc brightness"),
-                                   "", Qt::ALT | Qt::Key_4, false);
-    main_window->addAction(incBrightnessAct);
+    incBrightnessAct = new TAction(main_window, "inc_brightness",
+                                   tr("Inc brightness"), "",
+                                   Qt::ALT | Qt::Key_4);
     connect(incBrightnessAct, &TAction::triggered,
             player, &Player::TPlayer::incBrightness);
 
-    decHueAct = new TAction(this, "dec_hue", tr("Dec hue"), "",
-                            Qt::ALT | Qt::Key_5, false);
-    main_window->addAction(decHueAct);
+    decHueAct = new TAction(main_window, "dec_hue", tr("Dec hue"), "",
+                            Qt::ALT | Qt::Key_5);
     connect(decHueAct, &TAction::triggered, player, &Player::TPlayer::decHue);
 
-    incHueAct = new TAction(this, "inc_hue", tr("Inc hue"), "",
-                            Qt::ALT | Qt::Key_6, false);
-    main_window->addAction(incHueAct);
+    incHueAct = new TAction(main_window, "inc_hue", tr("Inc hue"), "",
+                            Qt::ALT | Qt::Key_6);
     connect(incHueAct, &TAction::triggered, player, &Player::TPlayer::incHue);
 
-    decSaturationAct = new TAction(this, "dec_saturation", tr("Dec saturation"),
-                                   "", Qt::ALT | Qt::Key_7, false);
-    main_window->addAction(decSaturationAct);
+    decSaturationAct = new TAction(main_window, "dec_saturation",
+                                   tr("Dec saturation"), "",
+                                   Qt::ALT | Qt::Key_7);
     connect(decSaturationAct, &TAction::triggered,
             player, &Player::TPlayer::decSaturation);
 
-    incSaturationAct = new TAction(this, "inc_saturation", tr("Inc saturation"),
-                                   "", Qt::ALT | Qt::Key_8, false);
-    main_window->addAction(incSaturationAct);
+    incSaturationAct = new TAction(main_window, "inc_saturation",
+                                   tr("Inc saturation"), "",
+                                   Qt::ALT | Qt::Key_8);
     connect(incSaturationAct, &TAction::triggered,
             player, &Player::TPlayer::incSaturation);
 
-    decGammaAct = new TAction(this, "dec_gamma", tr("Dec gamma"), "",
-                              Qt::ALT | Qt::Key_9, false);
-    main_window->addAction(decGammaAct);
+    decGammaAct = new TAction(main_window, "dec_gamma", tr("Dec gamma"), "",
+                              Qt::ALT | Qt::Key_9);
     connect(decGammaAct, &TAction::triggered,
             player, &Player::TPlayer::decGamma);
 
-    incGammaAct = new TAction(this, "inc_gamma", tr("Inc gamma"), "",
-                              Qt::ALT | Qt::Key_0, false);
-    main_window->addAction(incGammaAct);
+    incGammaAct = new TAction(main_window, "inc_gamma", tr("Inc gamma"), "",
+                              Qt::ALT | Qt::Key_0);
     connect(incGammaAct, &TAction::triggered,
             player, &Player::TPlayer::incGamma);
 
@@ -360,8 +345,6 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
                                "record", Qt::CTRL | Qt::Key_R);
     connect(capturingAct, &TAction::triggered,
             player, &Player::TPlayer::switchCapturing);
-
-    addActionsTo(main_window);
 }
 
 void TMenuVideo::enableActions() {

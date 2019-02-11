@@ -30,8 +30,6 @@ TMenuRemove::TMenuRemove(TPlaylist* pl, TMainWindow* mw) :
     removeAllAct = new TAction(this, "pl_remove_all", tr("&Clear playlist"),
                                "", Qt::CTRL | Qt::Key_Delete);
     connect(removeAllAct, &TAction::triggered, playlist, &TPlaylist::removeAll);
-
-    addActionsTo(playlist);
 }
 
 void TMenuRemove::enableRemoveFromDiskAction() {

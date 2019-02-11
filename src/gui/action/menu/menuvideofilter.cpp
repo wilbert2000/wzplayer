@@ -87,7 +87,6 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
                                           tr("&Soft"),
                                           TMediaSettings::DenoiseSoft, false);
     menu->addActions(denoiseGroup->actions());
-    menu->addActionsTo(main_window);
     addMenu(menu);
     connect(denoiseGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setDenoiser);
@@ -106,7 +105,6 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
     sharpenAct = new TActionGroupItem(this, sharpenGroup, "sharpen",
                                       tr("&Sharpen"), 2, false);
     menu->addActions(sharpenGroup->actions());
-    menu->addActionsTo(main_window);
     addMenu(menu);
     connect(sharpenGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSharpen);

@@ -49,17 +49,6 @@ void TMenu::setVisible(bool visible) {
     TMenuExec::setVisible(visible);
 }
 
-void TMenu::addActionsTo(QWidget* w) {
-
-    w->addAction(menuAction());
-
-    foreach(QAction* action, actions()) {
-        if (!action->isSeparator()) {
-            w->addAction(action);
-        }
-    }
-}
-
 } // namespace Menu
 } // namespace Action
 } // namespace Gui

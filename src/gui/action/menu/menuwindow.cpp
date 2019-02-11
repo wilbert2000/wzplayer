@@ -45,7 +45,7 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
         Settings::TPreferences::SeekTimer, true, false, Qt::ALT | Qt::Key_O);
     new TActionGroupItem(this, group, "osd_total",
                          tr("Volume + Seek + Timer + T&otal time"),
-        Settings::TPreferences::SeekTimerTotal, true, false,
+                         Settings::TPreferences::SeekTimerTotal, true, false,
                          Qt::META | Qt::Key_O);
     group->setChecked(pref->osd_level);
     connect(group, &TActionGroup::activated,
@@ -71,8 +71,6 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
                               tr("Show playback time on OSD"));
     connect(showTimeAct, &TAction::triggered,
             player, &Player::TPlayer::showTimeOnOSD);
-
-    addActionsTo(main_window);
 }
 
 void TMenuOSD::enableActions() {
@@ -118,15 +116,13 @@ TMenuStayOnTop::TMenuStayOnTop(TMainWindow* mw) :
         Settings::TPreferences::AlwaysOnTop, true, true, Qt::CTRL | Qt::Key_T);
     new TActionGroupItem(this, group, "stay_on_top_playing",
                          tr("While &playing"),
-        Settings::TPreferences::WhilePlayingOnTop, true, true,
+                         Settings::TPreferences::WhilePlayingOnTop, true, true,
                          Qt::ALT | Qt::Key_T);
     group->setChecked((int) pref->stay_on_top);
     connect(group , &TActionGroup::activated,
             main_window, &TMainWindow::changeStayOnTop);
     connect(main_window , &TMainWindow::stayOnTopChanged,
             group, &TActionGroup::setChecked);
-
-    addActionsTo(main_window);
 }
 
 void TMenuStayOnTop::onTriggered(QAction* action) {

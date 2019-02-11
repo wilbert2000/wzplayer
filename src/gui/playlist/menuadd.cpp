@@ -91,9 +91,9 @@ void TAddRemovedMenu::onCurrentItemChanged(QTreeWidgetItem* current,
 }
 
 
-TMenuAdd::TMenuAdd(QWidget* parent, TMainWindow* w, TPlaylist* playlist) :
-    Gui::Action::Menu::TMenu(parent, w, "pl_add_menu", tr("&Add to playlist"),
-                             "plus") {
+TMenuAdd::TMenuAdd(TPlaylist* playlist, TMainWindow* mw) :
+    Gui::Action::Menu::TMenu(playlist, mw, "pl_add_menu",
+                             tr("&Add to playlist"), "plus") {
 
     using namespace Gui::Action;
 
@@ -111,8 +111,6 @@ TMenuAdd::TMenuAdd(QWidget* parent, TMainWindow* w, TPlaylist* playlist) :
 
     // Add removed sub menu
     addMenu(new TAddRemovedMenu(this, main_window, playlist));
-
-    addActionsTo(main_window);
 }
 
 TMenuAdd::~TMenuAdd() {
