@@ -599,7 +599,7 @@ void TMainWindow::createToolbars() {
     actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
             << "separator" << "view_properties" << "view_playlist"
-            << "view_log" << "separator" << "show_preferences";
+            << "view_log" << "separator" << "view_settings";
     toolbar2->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar2);
     connect(editToolbar2Act, &Action::TAction::triggered,
@@ -649,23 +649,23 @@ void TMainWindow::setupNetworkProxy() {
     QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void TMainWindow::createPreferencesDialog() {
+void TMainWindow::createSettingsDialog() {
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     pref_dialog = new Pref::TDialog(this);
     pref_dialog->setModal(false);
     connect(pref_dialog, &Pref::TDialog::applied,
-            this, &TMainWindow::applyNewPreferences);
+            this, &TMainWindow::applyNewSettings);
 
     QApplication::restoreOverrideCursor();
 }
 
-void TMainWindow::showPreferencesDialog() {
+void TMainWindow::showSettingsDialog() {
     WZDEBUG("");
 
     if (!pref_dialog) {
-        createPreferencesDialog();
+        createSettingsDialog();
     }
 
     pref_dialog->setData(pref);
@@ -695,21 +695,22 @@ void TMainWindow::restartApplication() {
     return;
 }
 
-// The user has pressed OK in preferences dialog
-void TMainWindow::applyNewPreferences() {
+// The user has pressed OK in settings dialog
+void TMainWindow::applyNewSettings() {
     WZDEBUG("");
 
     // Get pref from dialog
     pref_dialog->getData(pref);
 
-    // Save playlist preferences repeat and shuffle
+    // Save playlist settings
     playlist->saveSettings();
 
-    // Get and save actions
+    // Save new action shortcuts to currently active actions
     pref_dialog->mod_input()->actions_editor->applyChanges();
+    // Save actions to pref
     Action::TActionsEditor::saveToConfig(pref, this);
 
-    // Commit changes
+    // Commit changes to disk
     pref->save();
 
     // Restart TApp
@@ -745,7 +746,7 @@ void TMainWindow::applyNewPreferences() {
     // Update log window edit control
     log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
 
-    emit preferencesChanged();
+    emit settingsChanged();
 
     // Enable actions to reflect changes
     sendEnableActions();
@@ -754,7 +755,7 @@ void TMainWindow::applyNewPreferences() {
     if (pref_dialog->requiresRestartPlayer()) {
         player->restart();
     }
-} // TMainWindow::applyNewPreferences()
+} // TMainWindow::applyNewSettings()
 
 void TMainWindow::createFilePropertiesDialog() {
     WZDEBUG("");
@@ -949,9 +950,9 @@ void TMainWindow::retranslateStrings() {
         help_window->retranslateStrings();
     }
 
-    // Update actions view in preferences
+    // Update actions view in settings dialog
     // It has to be done, here. The actions are translated after the
-    // preferences dialog.
+    // settings dialog.
     if (pref_dialog) {
         pref_dialog->mod_input()->actions_editor->updateView();
     }
@@ -1598,10 +1599,10 @@ void TMainWindow::openURL() {
 void TMainWindow::configureDiscDevices() {
     QMessageBox::information(this, TConfig::PROGRAM_NAME + tr(" - Information"),
             tr("The CDROM / DVD drives are not configured yet.\n"
-               "The configuration dialog will be shown now, "
-               "so you can do it."), QMessageBox::Ok);
+               "The settings dialog will be shown now, so you can do it."),
+            QMessageBox::Ok);
 
-    showPreferencesDialog();
+    showSettingsDialog();
     pref_dialog->showSection(Pref::TDialog::SECTION_DRIVES);
 }
 

@@ -79,7 +79,7 @@ void TInput::createMouseCombos() {
     left_click_combo->addItem(tr("Exit fullscreen"), "exit_fullscreen");
     left_click_combo->addItem(tr("Normal speed"), "normal_speed");
     left_click_combo->addItem(tr("Frame counter"), "frame_counter");
-    left_click_combo->addItem(tr("Preferences"), "show_preferences");
+    left_click_combo->addItem(tr("Settings"), "view_settings");
     left_click_combo->addItem(tr("Double size"), "toggle_double_size");
     left_click_combo->addItem(tr("Next chapter"), "next_chapter");
     left_click_combo->addItem(tr("Previous chapter"), "prev_chapter");

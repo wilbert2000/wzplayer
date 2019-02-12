@@ -64,7 +64,7 @@
         <file>default-theme/pref_network.png</file>
         <file>default-theme/pref_updates.png</file>
         <file>default-theme/pref_advanced.png</file>
-        <file>default-theme/prefs.png</file>
+        <file>default-theme/view_settings.png</file>
         <file>default-theme/previous.png</file>
         <file>default-theme/saturation.png</file>
         <file>default-theme/save.png</file>
@@ -152,7 +152,7 @@
         <file>default-theme/trash.png</file>
         <file>default-theme/clear_left.png</file>
         <file>default-theme/folder_open.png</file>
-        <file>default-theme/show_config.png</file>
+        <file>default-theme/open_config_dir.png</file>
         <file>default-theme/guide.png</file>
         <file>default-theme/crash.png</file>
         <file>default-theme/shutdown.png</file>

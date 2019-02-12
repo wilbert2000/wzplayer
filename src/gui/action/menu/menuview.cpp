@@ -167,43 +167,38 @@ TMenuView::TMenuView(TMainWindow* mw,
                                 Qt::SHIFT | Qt::Key_P);
     propertiesAct->setCheckable(true);
     propertiesAct->setEnabled(false);
-    main_window->addAction(propertiesAct);
     connect(propertiesAct, &TAction::triggered,
             main_window, &TMainWindow::showFilePropertiesDialog);
 
     // Show playlist
-    QAction* q = playlistDock->toggleViewAction();
-    q->setObjectName("view_playlist");
-    q->setIcon(Images::icon("playlist"));
-    q->setShortcut(Qt::Key_P);
-    updateToolTip(q);
-    addAction(q);
-    main_window->addAction(q);
-    autoHideTimer->add(q, playlistDock);
+    QAction* a = playlistDock->toggleViewAction();
+    a->setObjectName("view_playlist");
+    a->setIcon(Images::icon("playlist"));
+    a->setShortcut(Qt::Key_P);
+    updateToolTip(a);
+    addAction(a);
+    autoHideTimer->add(a, playlistDock);
 
     // Show log
-    q = logDock->toggleViewAction();
-    q->setObjectName("view_log");
-    q->setIcon(Images::icon("log"));
-    q->setShortcut(QKeySequence("Ctrl+L"));
-    updateToolTip(q);
-    addAction(q);
-    main_window->addAction(q);
-    autoHideTimer->add(q, logDock);
+    a = logDock->toggleViewAction();
+    a->setObjectName("view_log");
+    a->setIcon(Images::icon("log"));
+    a->setShortcut(QKeySequence("Ctrl+L"));
+    updateToolTip(a);
+    addAction(a);
+    autoHideTimer->add(a, logDock);
 
-    // Preferences
+    // Settings
     addSeparator();
-    TAction* a = new TAction(this, "show_config",
-                             tr("Open &configuration folder..."));
-    main_window->addAction(a);
-    connect(a, &TAction::triggered,
+    a = new TAction(this, "open_config_dir",
+                    tr("Open &configuration folder..."));
+    connect(a, &QAction::triggered,
             main_window, &TMainWindow::showConfigFolder);
 
-    a = new TAction(this, "show_preferences", tr("P&references..."), "prefs",
-                    Qt::ALT | Qt::Key_P);
-    main_window->addAction(a);
-    connect(a, &TAction::triggered,
-            main_window, &TMainWindow::showPreferencesDialog);
+    a = new TAction(this, "view_settings", tr("Settings..."), "",
+                    Qt::ALT | Qt::CTRL | Qt::Key_S);
+    connect(a, &QAction::triggered,
+            main_window, &TMainWindow::showSettingsDialog);
 }
 
 void TMenuView::onMediaSettingsChanged(Settings::TMediaSettings*) {

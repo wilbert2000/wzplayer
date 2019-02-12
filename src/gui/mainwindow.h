@@ -123,7 +123,7 @@ public slots:
     virtual void loadSub();
     virtual void loadAudioFile(); // Load external audio file
 
-    virtual void showPreferencesDialog();
+    virtual void showSettingsDialog();
     virtual void showFilePropertiesDialog(bool checked);
 
     virtual void showSeekToDialog();
@@ -154,7 +154,7 @@ public slots:
 signals:
     void enableActions();
 
-    void preferencesChanged();
+    void settingsChanged();
     void mediaSettingsChanged(Settings::TMediaSettings* mset);
 
     void fullscreenChanged();
@@ -289,7 +289,7 @@ private:
     void createMenus();
     void createVideoEqualizer();
     void createAudioEqualizer();
-    void createPreferencesDialog();
+    void createSettingsDialog();
     void createFilePropertiesDialog();
     void setDataToFileProperties();
     void configureDiscDevices();
@@ -342,7 +342,7 @@ private slots:
     void displayFrames(bool);
 
     void applyFileProperties();
-    void applyNewPreferences();
+    void applyNewSettings();
 
     void setDefaultValuesFromVideoEqualizer();
     void changeVideoEqualizerBySoftware(bool b);

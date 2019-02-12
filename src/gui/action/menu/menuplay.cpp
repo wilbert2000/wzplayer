@@ -26,7 +26,7 @@ TMenuSeek::TMenuSeek(TMainWindow* mw,
 
     setDefaultAction(menuAction());
     connect(this, &TMenuSeek::triggered, this, &TMenuSeek::onTriggered);
-    connect(main_window, &TMainWindow::preferencesChanged,
+    connect(main_window, &TMainWindow::settingsChanged,
             this, &TMenuSeek::setJumpTexts);
     connect(main_window->getPlaylist(),
             &Playlist::TPlaylist::enablePrevNextChanged,

@@ -70,7 +70,7 @@ private:
 
 private slots:
     void updateSubtitles();
-    void onPreferencesChanged();
+    void onSettingsChanged();
 };
 
 } // namespace Menu
