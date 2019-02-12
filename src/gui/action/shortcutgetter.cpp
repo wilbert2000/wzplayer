@@ -278,6 +278,7 @@ bool TShortcutGetter::event(QEvent* e) {
             captureEvent(e);
             return true;
         }
+        Q_FALLTHROUGH();
     default:
         return QDialog::event(e);
     }
