@@ -162,9 +162,8 @@ TMenuView::TMenuView(TMainWindow* mw,
 
     addSeparator();
     // Show properties
-    propertiesAct = new TAction(this, "view_properties",
-                                tr("&Properties..."), "info",
-                                Qt::SHIFT | Qt::Key_P);
+    propertiesAct = new TAction(this, "view_properties", tr("&Properties..."),
+                                "", Qt::SHIFT | Qt::Key_P);
     propertiesAct->setCheckable(true);
     propertiesAct->setEnabled(false);
     connect(propertiesAct, &TAction::triggered,
