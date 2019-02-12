@@ -1013,8 +1013,7 @@ void TMainWindow::loadSettings() {
         toolbar->defaultActions()).toStringList(), all_actions);
     toolbar2->setActionsFromStringList(pref->value("toolbar2",
         toolbar2->defaultActions()).toStringList(), all_actions);
-    // Using old name "controlwidget" to pick up old toolbars
-    controlbar->setActionsFromStringList(pref->value("controlwidget",
+    controlbar->setActionsFromStringList(pref->value("controlbar",
         controlbar->defaultActions()).toStringList(), all_actions);
     pref->endGroup();
 
@@ -1023,8 +1022,7 @@ void TMainWindow::loadSettings() {
         toolbar->iconSize()).toSize());
     toolbar2->setIconSize(pref->value("toolbar2",
         toolbar2->iconSize()).toSize());
-    // Using old name "controlwidget" to pick up old toolbars
-    controlbar->setIconSize(pref->value("controlwidget",
+    controlbar->setIconSize(pref->value("controlbar",
         controlbar->iconSize()).toSize());
     pref->endGroup();
 
@@ -1073,15 +1071,13 @@ void TMainWindow::saveSettings() {
     pref->beginGroup("actions");
     pref->setValue("toolbar1", toolbar->actionsToStringList());
     pref->setValue("toolbar2", toolbar2->actionsToStringList());
-    // Using old name "controlwidget" for backward compat
-    pref->setValue("controlwidget", controlbar->actionsToStringList());
+    pref->setValue("controlbar", controlbar->actionsToStringList());
     pref->endGroup();
 
     pref->beginGroup("toolbars_icon_size");
     pref->setValue("toolbar1", toolbar->iconSize());
     pref->setValue("toolbar2", toolbar2->iconSize());
-    // Using old name "controlwidget" for backward compat
-    pref->setValue("controlwidget", controlbar->iconSize());
+    pref->setValue("controlbar", controlbar->iconSize());
     pref->endGroup();
 
     pref->setValue("menubar_visible", !menuBar()->isHidden());
