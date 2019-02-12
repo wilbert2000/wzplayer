@@ -436,7 +436,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* e) {
     QList<QTreeWidgetItem*> sel = selectedItems();
     QList<QTreeWidgetItem*> modified;
 
-    // Collect parents of the selection to mark as modified
+    // Collect parents of the selection to mark as modified if drop succeeds
     for(int i = 0; i < sel.count(); i++) {
         QTreeWidgetItem* p = sel.at(i)->parent();
         if (!modified.contains(p)) {
@@ -471,7 +471,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* e) {
                     modified.append(parent);
                 }
 
-                // Rename files if WZPlaylist
+                // Rename dropped files if WZPlaylist
                 if (parent->isWZPlaylist()) {
                     bool failed = false;
                     for(int i = 0; i < sel.count(); i++) {
@@ -492,7 +492,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* e) {
                 }
             }
         } else {
-            // TODO: add target to modified
+            // TODO: currently copy is blocked by drag drop settings
         }
 
         // Set modified

@@ -129,7 +129,7 @@ public:
 
     bool renameDroppedFile();
 
-    virtual bool operator<(const QTreeWidgetItem& other) const;
+    virtual bool operator<(const QTreeWidgetItem& other) const override;
 
 private:
     QString mFilename;

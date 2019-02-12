@@ -235,15 +235,6 @@ void TPlaylistWidgetItem::renameDir(const QString& dir, const QString& newDir) {
 
 bool TPlaylistWidgetItem::renameFile(const QString& newName) {
 
-    // Stop player if item is playing
-    bool restartPlayer = false;
-    if (mState == PSTATE_LOADING || mState == PSTATE_PLAYING) {
-        restartPlayer = true;
-        player->saveRestartTime();
-        WZDEBUG("Stopping player");
-        player->stop();
-    }
-
     // Fully qualify name and newName
     QString dir = QDir::toNativeSeparators(QFileInfo(mFilename).absolutePath());
     if (!dir.endsWith(QDir::separator())) {
@@ -255,12 +246,27 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     } else {
         name = mFilename;
     }
+
     QString newFullName;
-    // TODO: check next for windows
-    if (newName.startsWith('/')) {
+    if (QFileInfo(newName).isAbsolute()) {
         newFullName = newName;
     } else {
         newFullName = dir + newName;
+    }
+
+    // Use compare instead of localized compare and case sensitive, to allow
+    // changing case or encoding
+    if (newFullName.compare(name, Qt::CaseSensitive) == 0) {
+        return true;
+    }
+
+    // Stop player if item is playing
+    bool restartPlayer = false;
+    if (mState == PSTATE_LOADING || mState == PSTATE_PLAYING) {
+        restartPlayer = true;
+        player->saveRestartTime();
+        WZDEBUG("Stopping player");
+        player->stop();
     }
 
     // Rename file
@@ -271,6 +277,7 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
             qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
                             "Failed to rename '%1' to '%2'"
                             ).arg(name).arg(newFullName));
+        // Don't restart a stopped player
         return false;
     }
 
