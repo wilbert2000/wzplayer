@@ -94,9 +94,9 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
 
         QString action_name;
         bool ns, fs;
-        TToolbarEditor::stringToAction(actions[i], action_name, ns, fs);
+        TToolbarEditor::stringToAction(actions.at(i), action_name, ns, fs);
         if (action_name.isEmpty()) {
-            WZWARN("malformed action '" + actions[i] + "'");
+            WZWARN("malformed action '" + actions.at(i) + "'");
             actions.removeAt(i);
         } else {
             if (Settings::pref->fullscreen ? fs : ns) {
