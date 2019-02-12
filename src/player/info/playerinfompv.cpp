@@ -82,23 +82,24 @@ QList<QByteArray> TPlayerInfoMPV::run(QString options) {
     return r;
 }
 
-InfoList TPlayerInfoMPV::getList(const QList<QByteArray> & lines) {
+InfoList TPlayerInfoMPV::getList(const QList<QByteArray>& lines) {
     InfoList l;
 
     foreach(QByteArray line, lines) {
         line.replace("\n", "");
         line = line.simplified();
-        if (line.startsWith("Available") || line.startsWith("demuxer:") ||
-            line.startsWith("Video decoders:")
-            || line.startsWith("Audio decoders:")) {
+        if (line.startsWith("Available")
+                || line.startsWith("demuxer:")
+                || line.startsWith("Video decoders:")
+                || line.startsWith("Audio decoders:")) {
             line = QByteArray();
         }
         if (!line.isEmpty()) {
             int pos = line.indexOf(' ');
             if (pos > -1) {
                 QString name = line.left(pos);
-                if (name.endsWith(':')) name = name.left(name.count()-1);
-                QString desc = line.mid(pos+1);
+                if (name.endsWith(':')) name = name.left(name.count() - 1);
+                QString desc = line.mid(pos + 1);
                 desc = desc.replace(": ", "").replace("- ", "");
                 l.append(InfoData(name, desc));
             }
