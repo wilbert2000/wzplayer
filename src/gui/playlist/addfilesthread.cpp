@@ -91,14 +91,17 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     recurse(recurseSubDirs),
     addImages(images) {
 
-    foreach(const QString& name, nameBlacklist) {
+    rxNameBlacklist.reserve(nameBlacklist.count());
+    QRegExp rx("", Qt::CaseInsensitive);
+
+    for(int i = nameBlacklist.count() - 1; i >=0; i--) {
+        const QString& name = nameBlacklist.at(i);
         if (!name.isEmpty()) {
-            QRegExp* rx = new QRegExp(name, Qt::CaseInsensitive);
-            if (rx->isValid()) {
-                WZINFO("precompiled '" + rx->pattern() + "' for blacklist");
-                rxNameBlacklist << *rx;
+            rx.setPattern(name);
+            if (rx.isValid()) {
+                WZINFO("compiled '" + rx.pattern() + "' for blacklist");
+                rxNameBlacklist.append(rx);
             } else {
-                delete rx;
                 WZERROR("failed to parse regular expression '" + name + "'");
             }
         }
@@ -157,7 +160,8 @@ void TAddFilesThread::run() {
 
 bool TAddFilesThread::nameBlackListed(const QString& name) {
 
-    foreach(const QRegExp& rx, rxNameBlacklist) {
+    for(int i = rxNameBlacklist.size() - 1; i >= 0; i--) {
+        const QRegExp& rx = rxNameBlacklist.at(i);
         if (rx.indexIn(name) >= 0) {
             WZINFO("skipping '" + name + "' on '" + rx.pattern() + "'");
             return true;

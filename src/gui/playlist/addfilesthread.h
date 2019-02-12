@@ -56,7 +56,7 @@ private:
 
     QStringList lockedFiles;
     QStringList nameFilterList;
-    QList<QRegExp> rxNameBlacklist;
+    QVector<QRegExp> rxNameBlacklist;
 
     bool nameBlackListed(const QString& name);
 
