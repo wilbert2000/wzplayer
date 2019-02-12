@@ -59,13 +59,11 @@ void THelpWindow::loadSettings(QSettings* pref) {
     pref->beginGroup(objectName());
     QPoint p = pref->value("pos", QPoint()).toPoint();
     QSize s = pref->value("size", QPoint()).toSize();
-    int state = pref->value("state", 0).toInt();
     pref->endGroup();
 
     if (s.width() > 200 && s.height() > 200) {
         move(p);
         resize(s);
-        setWindowState((Qt::WindowStates) state);
         TDesktop::keepInsideDesktop(this);
     }
 }
@@ -75,7 +73,6 @@ void THelpWindow::saveSettings(QSettings* pref) {
     pref->beginGroup(objectName());
     pref->setValue("pos", pos());
     pref->setValue("size", size());
-    pref->setValue("state", (int) windowState());
     pref->endGroup();
 }
 
