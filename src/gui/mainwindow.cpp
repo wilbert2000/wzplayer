@@ -2032,7 +2032,7 @@ void TMainWindow::dropEvent(QDropEvent *e) {
 
     if (e->mimeData()->hasUrls()) {
         QStringList files;
-        foreach(const QUrl url, e->mimeData()->urls()) {
+        foreach(const QUrl& url, e->mimeData()->urls()) {
             files.append(url.toString());
         }
         openFiles(files);
