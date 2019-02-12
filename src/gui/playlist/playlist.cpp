@@ -1125,7 +1125,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         // Add disc titles without sorting
         playlistWidget->setSort(-1, Qt::AscendingOrder);
         TDiscName disc = md->disc;
-        foreach(const Maps::TTitleData title, md->titles) {
+        foreach(const Maps::TTitleData& title, md->titles) {
             disc.title = title.getID();
             TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
                 playlistWidget->root(),
@@ -1387,7 +1387,7 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 
     if (e->mimeData()->hasUrls()) {
         QStringList files;
-        foreach(const QUrl url, e->mimeData()->urls()) {
+        foreach(const QUrl& url, e->mimeData()->urls()) {
             files.append(url.toString());
         }
 

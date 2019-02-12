@@ -311,7 +311,7 @@ void TSubTracks::list() const {
     WZDEBUG("selected subtitle track ID: " + QString::number(_selected_ID));
 
     int n = 0;
-    foreach(const SubData sub, subs) {
+    foreach(const SubData& sub, subs) {
         n++;
         WZDEBUG("item " + QString::number(n)
                 + " type: " + QString::number(sub.type())

@@ -174,7 +174,7 @@ void TShortcutGetter::removeItemClicked() {
 QString TShortcutGetter::exec(const QString& s) {
 
     QStringList shortcuts = s.split(", ");
-    foreach(const QString shortcut, shortcuts) {
+    foreach(const QString& shortcut, shortcuts) {
         list->addItem(shortcut.trimmed());
     }
     list->setCurrentRow(0);

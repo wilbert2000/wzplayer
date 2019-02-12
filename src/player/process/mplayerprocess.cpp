@@ -683,7 +683,7 @@ void TMPlayerProcess::convertTitlesToChapters() {
 
     Maps::TTitleTracks::TTitleTrackIterator i = md->titles.getIterator();
     double start = 0;
-    foreach(const Maps::TTitleData title, md->titles) {
+    foreach(const Maps::TTitleData& title, md->titles) {
         md->chapters.addChapter(title.getID() - first_title_id, title.getName(),
                                 start);
         start += title.getDuration();
