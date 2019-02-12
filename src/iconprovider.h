@@ -13,23 +13,23 @@ class TIconProvider {
 public:
     TIconProvider();
 
+    QSize iconSize;
+
     QIcon fileIcon;
     QIcon fileLinkIcon;
     QIcon folderIcon;
     QIcon folderLinkIcon;
-    QIcon driveCDIcon;
-    QIcon driveDVDIcon;
-    QIcon urlIcon;
+    //QIcon driveCDIcon;
+    //QIcon driveDVDIcon;
+    //QIcon urlIcon;
 
     QIcon okIcon;
     QIcon loadingIcon;
     QIcon playIcon;
     QIcon failedIcon;
 
-    QSize iconSize;
-
-    QIcon icon(const QFileInfo& info) const;
-    QIcon iconForFile(const QString& filename) const;
+    //QIcon icon(const QFileInfo& info) const;
+    //QIcon iconForFile(const QString& filename) const;
 
     void setStyle(QStyle* aStyle);
 

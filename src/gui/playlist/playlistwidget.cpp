@@ -677,11 +677,6 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
         return;
     }
 
-    // Load icons
-    for(int c = 0; c < i->childCount(); c++) {
-        i->plChild(c)->loadIcon();
-    }
-
     // Resize rows of expanded item
     if (!wordWrapTimer->isActive()) {
         TPlaylistWidgetItem::gNameColumnWidth =
@@ -787,13 +782,6 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         clearSelection();
         delete item;
         item = 0;
-
-        // Load icon of items being added
-        for (int i = children.count() - 1; i >= 0; i--) {
-            TPlaylistWidgetItem* c = static_cast<TPlaylistWidgetItem*>(
-                        children.at(i));
-            c->loadIcon();
-        }
 
         // Disable sort
         int savedSortSection = sortSection;

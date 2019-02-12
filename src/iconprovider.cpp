@@ -23,9 +23,9 @@ void TIconProvider::setStyle(QStyle* aStyle) {
                          QIcon::Normal, QIcon::On);
 
     folderLinkIcon = QIcon(style->standardPixmap(QStyle::SP_DirLinkIcon));
-    driveCDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveCDIcon));
-    driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
-    urlIcon = Images::icon("type_url", iconSize.width());
+    //driveCDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveCDIcon));
+    //driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
+    //urlIcon = Images::icon("type_url", iconSize.width());
 
     iconSize = folderIcon.actualSize(QSize(22, 22));
     okIcon = Images::icon("ok", iconSize.width());
@@ -34,6 +34,7 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     failedIcon = Images::icon("failed", iconSize.width());
 }
 
+/* No longer used
 QIcon TIconProvider::icon(const QFileInfo& fi) const {
 
     if (fi.isSymLink()) {
@@ -72,3 +73,4 @@ QIcon TIconProvider::iconForFile(const QString& filename) const {
     }
     return icon(QFileInfo(filename));
 }
+*/

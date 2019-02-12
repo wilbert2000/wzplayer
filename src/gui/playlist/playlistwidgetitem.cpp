@@ -171,6 +171,8 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     setTextAlignment(COL_EXT, TEXT_ALIGN_TYPE);
     setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
+
+    setIcon(COL_NAME, itemIcon);
 }
 
 TPlaylistWidgetItem::~TPlaylistWidgetItem() {
@@ -204,6 +206,19 @@ void TPlaylistWidgetItem::setFileInfo() {
         if (mWZPlaylist) {
             mBaseName = fi.dir().dirName();
         }
+    }
+
+    // Icon
+    if (mFolder) {
+        if (mSymLink) {
+            itemIcon = iconProvider.folderLinkIcon;
+        } else {
+            itemIcon = iconProvider.folderIcon;
+        }
+    } else if (mSymLink) {
+        itemIcon = iconProvider.fileLinkIcon;
+    } else {
+        itemIcon = iconProvider.fileIcon;
     }
 }
 
@@ -436,21 +451,6 @@ void TPlaylistWidgetItem::setName(const QString& baseName,
     setSzHint(getLevel());
 }
 
-QIcon TPlaylistWidgetItem::getIcon() {
-
-    if (itemIcon.isNull()) {
-        itemIcon = iconProvider.icon(mFilename);
-    }
-    return itemIcon;
-}
-
-void TPlaylistWidgetItem::loadIcon() {
-
-    if (icon(COL_NAME).isNull()) {
-        setStateIcon();
-    }
-}
-
 void TPlaylistWidgetItem::setStateIcon() {
 
     switch (mState) {
@@ -458,7 +458,7 @@ void TPlaylistWidgetItem::setStateIcon() {
             if (mPlayed) {
                 setIcon(COL_NAME, iconProvider.okIcon);
             } else {
-                setIcon(COL_NAME, getIcon());
+                setIcon(COL_NAME, itemIcon);
             }
             break;
         case PSTATE_LOADING:
@@ -493,7 +493,7 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
         if (mPlayed) {
             setIcon(COL_NAME, iconProvider.okIcon);
         } else {
-            setIcon(COL_NAME, getIcon());
+            setIcon(COL_NAME, itemIcon);
         }
     }
 }

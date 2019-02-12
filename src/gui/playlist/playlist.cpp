@@ -1331,7 +1331,6 @@ void TPlaylist::newFolder() {
             name,
             0,
             false);
-        i->loadIcon();
         i->setModified();
         playlistWidget->setCurrentItem(i);
         editName();

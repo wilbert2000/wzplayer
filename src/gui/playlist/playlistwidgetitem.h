@@ -127,7 +127,6 @@ public:
         return static_cast<TPlaylistWidgetItem*>(child(idx));
     }
 
-    void loadIcon();
     bool renameDroppedFile();
 
     virtual bool operator<(const QTreeWidgetItem& other) const;
@@ -153,7 +152,6 @@ private:
     QStringList mBlacklist;
 
     QIcon itemIcon;
-    QIcon getIcon();
     void setStateIcon();
 
     QString editName() const;
