@@ -54,10 +54,10 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
             group, &TActionGroup::setChecked);
 
     addSeparator();
-    a = new TAction(this, "inc_osd_scale", tr("Size &+"), "",
+    a = new TAction(this, "inc_osd_scale", tr("OSD size &+"), "",
                     QKeySequence(")"));
     connect(a, &TAction::triggered, player, &Player::TPlayer::incOSDScale);
-    a = new TAction(this, "dec_osd_scale", tr("Size &-"), "",
+    a = new TAction(this, "dec_osd_scale", tr("OSD size &-"), "",
                     QKeySequence("("));
     connect(a, &TAction::triggered, player, &Player::TPlayer::decOSDScale);
 
