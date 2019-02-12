@@ -37,8 +37,8 @@ public:
     TMainWindowTray();
     virtual ~TMainWindowTray();
 
-    virtual void loadConfig();
-    virtual void saveConfig();
+    virtual void loadSettings() override;
+    virtual void saveSettings() override;
 
     bool startHidden() const;
 

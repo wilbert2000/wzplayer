@@ -49,7 +49,7 @@
 #include <QClipboard>
 
 
-using namespace Settings;
+//using namespace Settings;
 
 namespace Gui {
 
@@ -302,7 +302,7 @@ void TPlaylist::onThreadFinished() {
     TPlaylistWidgetItem* root = thread->root;
     thread->root = 0;
     if (!thread->latestDir.isEmpty()) {
-        pref->last_dir = thread->latestDir;
+        Settings::pref->last_dir = thread->latestDir;
     }
 
     // Clean up
@@ -390,17 +390,17 @@ void TPlaylist::addFilesStartThread() {
         restartThread = false;
 
         // Allow single image
-        bool addImages = pref->addImages
+        bool addImages = Settings::pref->addImages
                          || ((addFilesFiles.count() == 1)
                              && extensions.isImage(addFilesFiles.at(0)));
 
         thread = new TAddFilesThread(this,
                                      addFilesFiles,
-                                     pref->nameBlacklist,
-                                     pref->addDirectories,
-                                     pref->addVideo,
-                                     pref->addAudio,
-                                     pref->addPlaylists,
+                                     Settings::pref->nameBlacklist,
+                                     Settings::pref->addDirectories,
+                                     Settings::pref->addVideo,
+                                     Settings::pref->addAudio,
+                                     Settings::pref->addPlaylists,
                                      addImages);
 
         connect(thread, &TAddFilesThread::finished,
@@ -432,7 +432,7 @@ void TPlaylist::addFiles(const QStringList& files,
 void TPlaylist::addFilesDialog() {
 
     QStringList files = TFileDialog::getOpenFileNames(this,
-        tr("Select one or more files to add"), pref->last_dir,
+        tr("Select one or more files to add"), Settings::pref->last_dir,
         tr("Multimedia") + extensions.allPlayable().forFilter() + ";;" +
         tr("All files") +" (*.*)");
 
@@ -460,7 +460,7 @@ void TPlaylist::addCurrentFile() {
 void TPlaylist::addDirectory() {
 
     QString s = TFileDialog::getExistingDirectory(this,
-                    tr("Choose a directory"), pref->last_dir);
+                    tr("Choose a directory"), Settings::pref->last_dir);
 
     if (!s.isEmpty()) {
         addFiles(QStringList() << s, false, playlistWidget->currentItem());
@@ -1152,11 +1152,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
         // Add associated files to playlist
         // TODO: remove from main thread
         if (md->selected_type == TMediaData::TYPE_FILE
-            && pref->mediaToAddToPlaylist != TPreferences::NoFiles) {
+            && Settings::pref->mediaToAddToPlaylist
+                != Settings::TPreferences::NoFiles) {
             WZDEBUG("searching for files to add to playlist for '" + filename
                     + "'");
             QStringList files_to_add = TWZFiles::filesForPlaylist(filename,
-                pref->mediaToAddToPlaylist);
+                Settings::pref->mediaToAddToPlaylist);
             if (files_to_add.isEmpty()) {
                 WZDEBUG("none found");
             } else {
@@ -1418,7 +1419,7 @@ void TPlaylist::dropEvent(QDropEvent *e) {
 
 void TPlaylist::openPlaylist(const QString& filename) {
 
-    pref->last_dir = QFileInfo(filename).absolutePath();
+    Settings::pref->last_dir = QFileInfo(filename).absolutePath();
     addFiles(QStringList() << filename, true);
 }
 
@@ -1426,7 +1427,7 @@ void TPlaylist::open() {
 
     if (maybeSave()) {
         QString s = TFileDialog::getOpenFileName(this, tr("Choose a file"),
-            pref->last_dir,
+            Settings::pref->last_dir,
             tr("Playlists") + extensions.playlists().forFilter() + ";;"
             + tr("All files") +" (*.*)");
 
@@ -1592,7 +1593,7 @@ bool TPlaylist::save() {
     TPlaylistWidgetItem* root = playlistWidget->root();
     root->setFilename(filename, fi.completeBaseName());
     setPlaylistTitle();
-    pref->last_dir = fi.absolutePath();
+    Settings::pref->last_dir = fi.absolutePath();
 
     bool result = saveM3u(filename, wzplaylist);
     if (result) {
@@ -1610,7 +1611,8 @@ bool TPlaylist::save() {
 bool TPlaylist::saveAs() {
 
     QString s = TFileDialog::getSaveFileName(this, tr("Choose a filename"),
-        pref->last_dir, tr("Playlists") + extensions.playlists().forFilter());
+        Settings::pref->last_dir,
+        tr("Playlists") + extensions.playlists().forFilter());
 
     if (s.isEmpty()) {
         return false;
@@ -1657,7 +1659,7 @@ bool TPlaylist::maybeSave() {
 
     if (!playlistWidget->root()->isPlaylist()) {
         // Directorie
-        if (pref->useDirectoriePlaylists) {
+        if (Settings::pref->useDirectoriePlaylists) {
             WZDEBUG("auto saving directorie");
             return save();
         }
@@ -1686,21 +1688,23 @@ bool TPlaylist::maybeSave() {
 
 void TPlaylist::saveSettings() {
 
-    pref->beginGroup("playlist");
-    pref->setValue("repeat", repeatAct->isChecked());
-    pref->setValue("shuffle", shuffleAct->isChecked());
-    playlistWidget->saveSettings();
-    pref->endGroup();
+    Settings::pref->beginGroup("playlist");
+    Settings::pref->setValue("repeat", repeatAct->isChecked());
+    Settings::pref->setValue("shuffle", shuffleAct->isChecked());
+    playlistWidget->saveSettings(Settings::pref);
+    Settings::pref->endGroup();
 }
 
 void TPlaylist::loadSettings() {
 
+    using namespace Settings;
+
     pref->beginGroup("playlist");
-    repeatAct->setChecked(pref->value("repeat",
-                                      repeatAct->isChecked()).toBool());
-    shuffleAct->setChecked(pref->value("shuffle",
-                                       shuffleAct->isChecked()).toBool());
-    playlistWidget->loadSettings();
+    repeatAct->setChecked(pref->value("repeat", repeatAct->isChecked())
+                          .toBool());
+    shuffleAct->setChecked(pref->value("shuffle", shuffleAct->isChecked())
+                           .toBool());
+    playlistWidget->loadSettings(pref);
     pref->endGroup();
 }
 

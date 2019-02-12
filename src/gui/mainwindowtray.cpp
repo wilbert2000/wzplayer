@@ -146,10 +146,10 @@ void TMainWindowTray::quit() {
     TMainWindow::closeWindow();
 }
 
-void TMainWindowTray::saveConfig() {
+void TMainWindowTray::saveSettings() {
     WZDEBUG("");
 
-    TMainWindow::saveConfig();
+    TMainWindow::saveSettings();
 
     pref->beginGroup("mainwindowtray");
     pref->setValue("show_tray_icon", showTrayAct->isChecked());
@@ -157,10 +157,10 @@ void TMainWindowTray::saveConfig() {
     pref->endGroup();
 }
 
-void TMainWindowTray::loadConfig() {
+void TMainWindowTray::loadSettings() {
     WZDEBUG("");
 
-    TMainWindow::loadConfig();
+    TMainWindow::loadSettings();
 
     pref->beginGroup("mainwindowtray");
     showTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());

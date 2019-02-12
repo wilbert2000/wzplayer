@@ -402,7 +402,7 @@ void TApp::createGUI() {
     main_window = new Gui::TMainWindowTray();
 
     WZDEBUG("loading window config");
-    main_window->loadConfig();
+    main_window->loadSettings();
 
     main_window->setForceCloseOnFinish(close_at_end);
 

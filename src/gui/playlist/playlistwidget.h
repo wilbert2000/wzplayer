@@ -5,7 +5,9 @@
 #include "wzdebug.h"
 #include <QTreeWidget>
 
+
 class QTimer;
+class QSettings;
 
 namespace Gui {
 
@@ -73,8 +75,8 @@ public:
 
     void setSort(int section, Qt::SortOrder order);
 
-    void saveSettings();
-    void loadSettings();
+    void saveSettings(QSettings* pref);
+    void loadSettings(QSettings* pref);
 
 signals:
     void modifiedChanged();

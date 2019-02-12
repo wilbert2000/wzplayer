@@ -17,17 +17,14 @@
 */
 
 #include "gui/helpwindow.h"
-#include <QCloseEvent>
-#include <QTextEdit>
-
 #include "config.h"
 #include "gui/desktop.h"
 #include "images.h"
-#include "settings/preferences.h"
-#include "wzdebug.h"
 
+#include <QCloseEvent>
+#include <QTextEdit>
+#include <QSettings>
 
-using namespace Settings;
 
 namespace Gui {
 
@@ -57,8 +54,7 @@ void THelpWindow::retranslateStrings() {
     setWindowIcon(Images::icon("logo"));
 }
 
-void THelpWindow::loadConfig() {
-    WZDEBUG("");
+void THelpWindow::loadSettings(QSettings* pref) {
 
     pref->beginGroup(objectName());
     QPoint p = pref->value("pos", QPoint()).toPoint();
@@ -74,8 +70,7 @@ void THelpWindow::loadConfig() {
     }
 }
 
-void THelpWindow::saveConfig() {
-    WZDEBUG("");
+void THelpWindow::saveSettings(QSettings* pref) {
 
     pref->beginGroup(objectName());
     pref->setValue("pos", pos());
@@ -85,12 +80,10 @@ void THelpWindow::saveConfig() {
 }
 
 void THelpWindow::showEvent(QShowEvent*) {
-    WZDEBUG("");
     emit visibilityChanged(true);
 }
 
 void THelpWindow::hideEvent(QShowEvent*) {
-    WZDEBUG("");
 
     clear();
     emit visibilityChanged(false);
@@ -98,7 +91,6 @@ void THelpWindow::hideEvent(QShowEvent*) {
 
 // Fix hideEvent() not called on close
 void THelpWindow::closeEvent(QCloseEvent* event) {
-    WZDEBUG("");
 
     hideEvent(0);
     event->accept();

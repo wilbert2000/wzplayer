@@ -86,8 +86,8 @@ public:
     TMainWindow();
     virtual ~TMainWindow();
 
-    virtual void loadConfig();
-    virtual void saveConfig();
+    virtual void loadSettings();
+    virtual void saveSettings();
 
     void openFiles(const QStringList& files, const QString& current = "");
 
@@ -275,7 +275,7 @@ private:
     TAutoHideTimer* auto_hide_timer;
     TUpdateChecker* update_checker;
 
-    static QString settingsGroupName();
+    static QString settingsGroupName() { return "mainwindow"; }
 
     void createLogDock();
     void createPanel();

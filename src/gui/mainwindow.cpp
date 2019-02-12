@@ -681,7 +681,7 @@ void TMainWindow::restartApplication() {
     emit requestRestart();
 
     // When fullscreen the window size will not yet be updated by the time it is
-    // saved by saveConfig. Block saving...
+    // saved by saveSettings, so block saving it.
     save_size = !pref->fullscreen;
 
     // Close and restart with the new settings
@@ -970,11 +970,7 @@ Action::TActionList TMainWindow::getAllNamedActions() const {
     return all_actions;
 }
 
-QString TMainWindow::settingsGroupName() {
-    return "mainwindow";
-}
-
-void TMainWindow::loadConfig() {
+void TMainWindow::loadSettings() {
     WZDEBUG("");
 
     // Disable actions
@@ -1060,8 +1056,8 @@ void TMainWindow::loadConfig() {
     playlist->loadSettings();
 }
 
-void TMainWindow::saveConfig() {
-    logger()->debug("saveConfig");
+void TMainWindow::saveSettings() {
+    WZDEBUG("");
 
     pref->beginGroup(settingsGroupName());
 
@@ -1104,7 +1100,7 @@ void TMainWindow::saveConfig() {
 
     playlist->saveSettings();
     if (help_window) {
-        help_window->saveConfig();
+        help_window->saveSettings(pref);
     }
 }
 
@@ -1116,7 +1112,7 @@ void TMainWindow::save() {
         pref->remove("");
         Action::TActionsEditor::saveToConfig(pref, this);
     }
-    saveConfig();
+    saveSettings();
     pref->save();
 }
 
@@ -1825,7 +1821,7 @@ void TMainWindow::helpCLOptions() {
         help_window = new THelpWindow(this, "helpwindow");
         help_window->setWindowTitle(tr("%1 command line options")
                                     .arg(TConfig::PROGRAM_NAME));
-        help_window->loadConfig();
+        help_window->loadSettings(pref);
     }
 
     // Hide event clears the help window content, so recreate it

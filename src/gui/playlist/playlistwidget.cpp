@@ -3,7 +3,6 @@
 #include "gui/playlist/playlistwidgetitem.h"
 #include "gui/action/menu/menuexec.h"
 #include "gui/msg.h"
-#include "settings/preferences.h"
 #include "images.h"
 #include "iconprovider.h"
 #include "wzdebug.h"
@@ -14,6 +13,7 @@
 #include <QDropEvent>
 #include <QFontMetrics>
 #include <QTimer>
+#include <QSettings>
 
 
 namespace Gui {
@@ -815,22 +815,20 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
     return item;
 }
 
-void TPlaylistWidget::saveSettings() {
+void TPlaylistWidget::saveSettings(QSettings* pref) {
 
     for(int c = 0; c < columnCount(); c++) {
-        Settings::pref->setValue("COL_" + QString::number(c),
-                                 !isColumnHidden(c));
+        pref->setValue("COL_" + QString::number(c), !isColumnHidden(c));
     }
 }
 
-void TPlaylistWidget::loadSettings() {
+void TPlaylistWidget::loadSettings(QSettings* pref) {
 
     QList<QAction*> actions = columnsMenu->actions();
     for(int c = 0; c < columnCount(); c++) {
-        bool show = Settings::pref->value("COL_" + QString::number(c), true)
-                .toBool();
-        setColumnHidden(c, !show);
+        bool show = pref->value("COL_" + QString::number(c), true).toBool();
         actions.at(c)->setChecked(show);
+        setColumnHidden(c, !show);
     }
 }
 
