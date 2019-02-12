@@ -247,7 +247,7 @@ void TActionsEditor::updateView() {
 void TActionsEditor::applyChanges() {
     WZDEBUG("");
 
-    for (int row = 0; row < (int)actionsList.size(); ++row) {
+    for (int row = 0; row < actionsList.size(); ++row) {
         QAction* action = actionsList[row];
         QTableWidgetItem* i = actionsTable->item(row, COL_SHORTCUT);
         if (i) {
