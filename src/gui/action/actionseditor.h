@@ -39,8 +39,14 @@ typedef QList<QKeySequence> TShortCutList;
 class TActionsEditor : public QWidget {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
-
 public:
+    // Static functions
+    static QString actionTextToDescription(const QString& text,
+                                           const QString& action_name);
+
+    static void saveToConfig(QSettings* set, QObject* o);
+    static void loadFromConfig(QSettings* set, const TActionList& all_actions);
+
     TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
     virtual ~TActionsEditor();
 
@@ -48,12 +54,6 @@ public:
     void clear();
     void addActions(QWidget* widget);
     QString findShortcutsAction(const QString& shortcuts);
-
-    // Static functions
-    static QString actionTextToDescription(const QString& text, const QString& action_name);
-
-    static void saveToConfig(QSettings* set, QObject* o);
-    static void loadFromConfig(QSettings* set, const TActionList& all_actions);
 
 public slots:
     void applyChanges();
