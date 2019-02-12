@@ -568,8 +568,8 @@ bool TPlaylistWidgetItem::whitelist(const QString& filename) {
                                        caseSensitiveFileNames,
                                        QRegExp::FixedString));
     if (i >= 0) {
-        WZDEBUG("removing '" + filename + "' from blacklist");
         mBlacklist.removeAt(i);
+        WZINFO("removed '" + filename + "' from blacklist");
         return true;
     }
 
@@ -610,7 +610,7 @@ QSize TPlaylistWidgetItem::sizeColumnName(int width,
 
     // Return original width and new height needed by text
     return QSize(width, h);
-};
+}
 
 void TPlaylistWidgetItem::setSzHint(int level) {
 

@@ -61,16 +61,11 @@ void TAddRemovedMenu::onTriggered(QAction* action) {
     if (!s.isEmpty()) {
         // Check item still valid
         item = playlistWidget->validateItem(item);
-        if (item) {
-            if (item->whitelist(s)) {
-                WZINFO("Removed '" + s + "' from blacklist");
-                playlistWidget->setModified(item);
-                emit addRemovedItem(s);
-            } else {
-                WZWARN("'" + s + "' not found in blacklist");
-            }
-        } else {
+        if (!item) {
             WZWARN("Owner of blacklist no longer existing");
+        } else if (item->whitelist(s)) {
+            playlistWidget->setModified(item);
+            emit addRemovedItem(s);
         }
     }
 }

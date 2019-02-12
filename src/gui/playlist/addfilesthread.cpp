@@ -315,7 +315,6 @@ void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem) {
     // Remove no longer existing items from blacklist
     if (!stopRequested) {
         foreach(const QString& filename, blacklist) {
-            WZINFO("'" + filename + "' not matched, removing it from blacklist");
             playlistItem->whitelist(filename);
             playlistItem->setModified();
         }
