@@ -29,7 +29,7 @@
 #include "gui/action/menu/menuaudio.h"
 #include "gui/action/menu/menusubtitle.h"
 #include "gui/action/menu/menubrowse.h"
-#include "gui/action/menu/menuwindow.h"
+#include "gui/action/menu/menuview.h"
 #include "gui/playlist/playlist.h"
 
 
@@ -63,8 +63,8 @@ TMainWindowTray::TMainWindowTray() :
     connect(showTrayAct, &Gui::Action::TAction::toggled,
             quitAct, &Action::TAction::setVisible);
 
-    windowMenu->addSeparator();
-    windowMenu->addAction(showTrayAct);
+    viewMenu->addSeparator();
+    viewMenu->addAction(showTrayAct);
 
     showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
     connect(showAllAct, &Action::TAction::triggered,

@@ -93,7 +93,7 @@ HEADERS += wzdebug.h \
     gui/action/menu/menuaudio.h \
     gui/action/menu/menusubtitle.h \
     gui/action/menu/menubrowse.h \
-    gui/action/menu/menuwindow.h \
+    gui/action/menu/menuview.h \
     gui/action/menu/menuhelp.h \
     gui/action/menu/favorite.h \
     gui/action/menu/favorites.h \
@@ -221,7 +221,7 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menuaudio.cpp \
     gui/action/menu/menusubtitle.cpp \
     gui/action/menu/menubrowse.cpp \
-    gui/action/menu/menuwindow.cpp \
+    gui/action/menu/menuview.cpp \
     gui/action/menu/menuhelp.cpp \
     gui/action/menu/favorite.cpp \
     gui/action/menu/favorites.cpp \

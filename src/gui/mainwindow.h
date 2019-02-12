@@ -176,7 +176,7 @@ protected:
     Action::Menu::TMenuAudio* audioMenu;
     Action::Menu::TMenuSubtitle* subtitleMenu;
     Action::Menu::TMenuBrowse* browseMenu;
-    QMenu* windowMenu;
+    QMenu* viewMenu;
 
     virtual void closeEvent(QCloseEvent* e);
     virtual void hideEvent(QHideEvent* event);

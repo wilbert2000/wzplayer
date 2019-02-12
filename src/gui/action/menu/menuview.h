@@ -1,5 +1,5 @@
-#ifndef GUI_ACTION_MENU_MENUWINDOW_H
-#define GUI_ACTION_MENU_MENUWINDOW_H
+#ifndef GUI_ACTION_MENU_MENUVIEW_H
+#define GUI_ACTION_MENU_MENUVIEW_H
 
 #include "gui/action/menu/menu.h"
 
@@ -34,14 +34,14 @@ private slots:
     void onTriggered(QAction* action);
 };
 
-class TMenuWindow : public TMenu {
+class TMenuView : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuWindow(TMainWindow* mw,
-                         QMenu* toolBarMenu,
-                         TDockWidget* playlistDock,
-                         TDockWidget* logDock,
-                         TAutoHideTimer* autoHideTimer);
+    explicit TMenuView(TMainWindow* mw,
+                       QMenu* toolBarMenu,
+                       TDockWidget* playlistDock,
+                       TDockWidget* logDock,
+                       TAutoHideTimer* autoHideTimer);
 
 protected slots:
     virtual void onMediaSettingsChanged(Settings::TMediaSettings*) override;
@@ -54,4 +54,4 @@ private:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_MENUWINDOW_H
+#endif // GUI_ACTION_MENU_MENUVIEW_H

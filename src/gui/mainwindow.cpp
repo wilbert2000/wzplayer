@@ -51,7 +51,7 @@
 #include "gui/action/menu/menuaudio.h"
 #include "gui/action/menu/menusubtitle.h"
 #include "gui/action/menu/menubrowse.h"
-#include "gui/action/menu/menuwindow.h"
+#include "gui/action/menu/menuview.h"
 #include "gui/action/menu/menuhelp.h"
 
 #include "player/player.h"
@@ -455,7 +455,7 @@ Action::Menu::TMenuExec* TMainWindow::createContextMenu() {
     menu->addMenu(audioMenu);
     menu->addMenu(subtitleMenu);
     menu->addMenu(browseMenu);
-    menu->addMenu(windowMenu);
+    menu->addMenu(viewMenu);
     return menu;
 }
 
@@ -488,9 +488,10 @@ void TMainWindow::createMenus() {
     connect(statusBar(), &QStatusBar::customContextMenuRequested,
             toolbarMenu, &Action::Menu::TMenu::execSlot);
 
-    windowMenu = new Action::Menu::TMenuWindow(this, toolbarMenu, playlistDock,
-                                               logDock, auto_hide_timer);
-    menuBar()->addMenu(windowMenu);
+    viewMenu = new Action::Menu::TMenuView(this, toolbarMenu,
+                                           playlistDock, logDock,
+                                           auto_hide_timer);
+    menuBar()->addMenu(viewMenu);
 
     helpMenu = new Action::Menu::TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
@@ -566,7 +567,7 @@ void TMainWindow::createToolbars() {
             << "separator|0|1"
             << "osd_menu|0|1"
             << "view_properties|0|1"
-            << "show_playlist|0|1"
+            << "view_playlist|0|1"
             << "separator|0|1"
             << "fullscreen";
     controlbar->setDefaultActions(actions);
@@ -597,8 +598,8 @@ void TMainWindow::createToolbars() {
     toolbar2->setObjectName("toolbar2");
     actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
-            << "separator" << "view_properties" << "show_playlist"
-            << "show_log" << "separator" << "show_preferences";
+            << "separator" << "view_properties" << "view_playlist"
+            << "view_log" << "separator" << "show_preferences";
     toolbar2->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar2);
     connect(editToolbar2Act, &Action::TAction::triggered,
@@ -618,7 +619,7 @@ void TMainWindow::createToolbars() {
     auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
     auto_hide_timer->add(viewMenuBarAct, menuBar());
     auto_hide_timer->add(viewStatusBarAct, statusBar());
-    // Docks added by TMenuWindow constructor called by createMenus()
+    // Docks added by TMenuView constructor called by createMenus()
     connect(playerwindow, &TPlayerWindow::draggingChanged,
             auto_hide_timer, &TAutoHideTimer::setDraggingPlayerWindow);
 }

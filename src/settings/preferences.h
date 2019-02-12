@@ -294,6 +294,7 @@ public:
 
     int imageDuration;
 
+    // TODO: check usage
     bool useDirectoriePlaylists;
 
     QStringList nameBlacklist;

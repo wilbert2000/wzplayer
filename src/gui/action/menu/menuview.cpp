@@ -1,4 +1,4 @@
-#include "gui/action/menu/menuwindow.h"
+#include "gui/action/menu/menuview.h"
 #include "gui/mainwindow.h"
 #include "gui/dockwidget.h"
 #include "gui/autohidetimer.h"
@@ -146,12 +146,12 @@ void TMenuStayOnTop::onAboutToShow() {
     group->setChecked((int) pref->stay_on_top);
 }
 
-TMenuWindow::TMenuWindow(TMainWindow* mw,
-                         QMenu* toolBarMenu,
-                         TDockWidget* playlistDock,
-                         TDockWidget* logDock,
-                         TAutoHideTimer* autoHideTimer)
-    : TMenu(mw, mw, "window_menu", tr("&Window"), "noicon") {
+TMenuView::TMenuView(TMainWindow* mw,
+                     QMenu* toolBarMenu,
+                     TDockWidget* playlistDock,
+                     TDockWidget* logDock,
+                     TAutoHideTimer* autoHideTimer)
+    : TMenu(mw, mw, "view_menu", tr("Vie&w"), "noicon") {
 
     // OSD
     addMenu(new TMenuOSD(main_window));
@@ -163,7 +163,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
     addSeparator();
     // Show properties
     propertiesAct = new TAction(this, "view_properties",
-                                tr("&View properties..."), "info",
+                                tr("&Properties..."), "info",
                                 Qt::SHIFT | Qt::Key_P);
     propertiesAct->setCheckable(true);
     propertiesAct->setEnabled(false);
@@ -173,7 +173,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
 
     // Show playlist
     QAction* q = playlistDock->toggleViewAction();
-    q->setObjectName("show_playlist");
+    q->setObjectName("view_playlist");
     q->setIcon(Images::icon("playlist"));
     q->setShortcut(Qt::Key_P);
     updateToolTip(q);
@@ -183,7 +183,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
 
     // Show log
     q = logDock->toggleViewAction();
-    q->setObjectName("show_log");
+    q->setObjectName("view_log");
     q->setIcon(Images::icon("log"));
     q->setShortcut(QKeySequence("Ctrl+L"));
     updateToolTip(q);
@@ -206,7 +206,7 @@ TMenuWindow::TMenuWindow(TMainWindow* mw,
             main_window, &TMainWindow::showPreferencesDialog);
 }
 
-void TMenuWindow::onMediaSettingsChanged(Settings::TMediaSettings*) {
+void TMenuView::onMediaSettingsChanged(Settings::TMediaSettings*) {
     propertiesAct->setEnabled(true);
 }
 
