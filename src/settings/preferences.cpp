@@ -270,7 +270,7 @@ void TPreferences::reset() {
 
     nameBlacklist.clear();
     titleBlacklist = QStringList() << "RARBG" << "\\.com";
-    setTitleBlackList();
+    rxTitleBlacklist.clear();
 
     // History
     history_recents.clear();
@@ -1142,7 +1142,7 @@ void TPreferences::load() {
     nameBlacklist = value("name_blacklist", nameBlacklist).toStringList();
     titleBlacklist = value("title_blacklist", titleBlacklist).toStringList();
     endGroup();
-    setTitleBlackList();
+    compileTitleBlackList();
 
 
     beginGroup("mouse");
@@ -1362,18 +1362,19 @@ void TPreferences::setupScreenshotFolder() {
     }
 }
 
-void TPreferences::setTitleBlackList() {
+void TPreferences::compileTitleBlackList() {
 
     rxTitleBlacklist.clear();
-    foreach(const QString& s, titleBlacklist) {
+    QRegExp rx("", Qt::CaseInsensitive);
+    for(int i = titleBlacklist.count() - 1; i >= 0; i--) {
+        const QString& s = titleBlacklist.at(i);
         if (!s.isEmpty()) {
-            QRegExp* rx = new QRegExp(s, Qt::CaseInsensitive);
-            if (rx->isValid()) {
-                WZDEBUG("adding '" + rx->pattern() + "'");
-                rxTitleBlacklist << *rx;
+            rx.setPattern(s);
+            if (rx.isValid()) {
+                WZDEBUG("adding '" + rx.pattern() + "'");
+                rxTitleBlacklist.append(rx);
             } else {
                 WZERROR("failed to parse regular expression '" + s + "'");
-                delete rx;
             }
         }
     }

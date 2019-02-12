@@ -165,7 +165,8 @@ QString TName::clean(const QString& name) {
 
 QString TName::cleanTitle(const QString& title) {
 
-    foreach(const QRegExp& rx, pref->rxTitleBlacklist) {
+    for(int i = pref->rxTitleBlacklist.count() - 1; i >= 0; i--) {
+        const QRegExp& rx = pref->rxTitleBlacklist.at(i);
         if (rx.indexIn(title) >= 0) {
             WZINFO("'" + title + "' blacklisted on '" + rx.pattern() + "'");
             return "";

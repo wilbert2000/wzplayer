@@ -99,7 +99,7 @@ void TPlaylistSection::getData(Settings::TPreferences* pref) {
         QString::SkipEmptyParts);
     pref->titleBlacklist = title_blacklist_edit->toPlainText().split("\n",
         QString::SkipEmptyParts);
-    pref->setTitleBlackList();
+    pref->compileTitleBlackList();
 }
 
 void TPlaylistSection::setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type) {

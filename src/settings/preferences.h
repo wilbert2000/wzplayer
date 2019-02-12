@@ -70,8 +70,6 @@ public:
     TPreferences();
     virtual ~TPreferences();
 
-    void reset();
-
     void load();
     void save();
 
@@ -300,7 +298,7 @@ public:
     QStringList nameBlacklist;
     QStringList titleBlacklist;
     QList<QRegExp> rxTitleBlacklist;
-    void setTitleBlackList();
+    void compileTitleBlackList();
 
 
     // Actions section
@@ -409,7 +407,7 @@ public:
     bool clean_config;
 
 private:
-
+    void reset();
     void setPlayerBin0(QString bin);
     void setPlayerID();
 };
