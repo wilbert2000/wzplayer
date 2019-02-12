@@ -544,13 +544,12 @@ void TActionsEditor::saveToConfig(QSettings* set, QObject* o) {
     Log4Qt::Logger::logger("Gui::Action::TActionsEditor")->debug("saveToConfig");
 
     set->beginGroup("actions");
-
     // Clear group to remove actions no longer modified
     set->remove("");
 
     TActionList actions = o->findChildren<QAction*>();
-    for (int n = 0; n < actions.count(); n++) {
-        QAction* action = actions[n];
+    for (int i = 0; i < actions.count(); i++) {
+        QAction* action = actions.at(i);
         if (action->property("modified").toBool()) {
             set->setValue(action->objectName(), actionToString(action));
         }
