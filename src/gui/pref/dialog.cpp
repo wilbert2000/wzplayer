@@ -23,6 +23,7 @@
 #include "config.h"
 #include "images.h"
 #include "settings/preferences.h"
+#include "gui/desktop.h"
 #include "gui/pref/section.h"
 #include "gui/pref/playersection.h"
 #include "gui/pref/demuxer.h"
@@ -139,21 +140,28 @@ void TDialog::retranslateStrings() {
     help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
 }
 
+void TDialog::done() {
+
+    help_window->hide();
+    hide();
+
+    pref->beginGroup("settingsdialog");
+    pref->setValue("pos", pos());
+    pref->setValue("size", size());
+    pref->endGroup();
+}
+
 void TDialog::accept() {
 
-    hide();
-    help_window->hide();
+    done();
     setResult(QDialog::Accepted);
     emit applied();
 }
 
 void TDialog::reject() {
 
-    hide();
-    help_window->hide();
+    done();
     setResult(QDialog::Rejected);
-
-    setResult(QDialog::Accepted);
 }
 
 void TDialog::onBinChanged(Settings::TPreferences::TPlayerID player_id,
@@ -176,6 +184,20 @@ void TDialog::addSection(TSection* s) {
 }
 
 void TDialog::setData(Settings::TPreferences* pref) {
+
+    // Restore pos and size
+    // Save pref for done()
+    this->pref = pref;
+    pref->beginGroup("settingsdialog");
+    QPoint p = pref->value("pos", QPoint()).toPoint();
+    QSize s = pref->value("size", QPoint()).toSize();
+    pref->endGroup();
+
+    if (s.width() > 400 && s.height() > 400) {
+        move(p);
+        resize(s);
+        TDesktop::keepInsideDesktop(this);
+    }
 
     page_player->setData(pref);
     page_demuxer->setData(pref);

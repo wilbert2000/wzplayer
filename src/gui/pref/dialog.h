@@ -123,8 +123,10 @@ private:
 
     QTextBrowser* help_window;
     QPushButton* helpButton;
+    QSettings* pref;
 
     void addSection(TSection* s);
+    void done();
 
 private slots:
     void showHelp();
