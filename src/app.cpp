@@ -139,7 +139,7 @@ void TApp::setupStyle() {
     WZDEBUG("");
 
     // Set application style
-    // TODO: from help: Warning: To ensure that the application's style is set
+    // From help: Warning: To ensure that the application's style is set
     // correctly, it is best to call this function before the QApplication
     // constructor, if possible.
     if (!Settings::pref->style.isEmpty()) {
