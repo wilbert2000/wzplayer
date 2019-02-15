@@ -43,7 +43,13 @@ TLogWindow::TLogWindow(QWidget* parent)
     : QWidget(parent) {
 
     setupUi(this);
+    retranslateUi(this);
     setObjectName("logwindow");
+
+    saveButton->setText("");
+    saveButton->setIcon(Images::icon("save"));
+    copyButton->setText("");
+    copyButton->setIcon(Images::icon("copy"));
 
     connect(saveButton, &QPushButton::clicked,
             this, &TLogWindow::onSaveButtonClicked);
@@ -63,22 +69,10 @@ TLogWindow::TLogWindow(QWidget* parent)
     edit->setFont(QFont("Monospace"));
 
     findEdit->setClearButtonEnabled(true);
-
-    retranslateStrings();
 }
 
 TLogWindow::~TLogWindow() {
     appender->setEdit(0);
-}
-
-void TLogWindow::retranslateStrings() {
-
-    retranslateUi(this);
-
-    saveButton->setText("");
-    saveButton->setIcon(Images::icon("save"));
-    copyButton->setText("");
-    copyButton->setIcon(Images::icon("copy"));
 }
 
 void TLogWindow::showEvent(QShowEvent*) {

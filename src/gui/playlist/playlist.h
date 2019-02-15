@@ -74,7 +74,6 @@ public:
     bool maybeSave();
     void loadSettings();
     void saveSettings();
-    void retranslateStrings();
 
 public slots:
     void stop();

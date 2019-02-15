@@ -32,26 +32,21 @@ THelpWindow::THelpWindow(QWidget* parent, const QString& name)
     : QWidget(parent, Qt::Window) {
 
     setupUi(this);
-    setObjectName(name);
-    retranslateStrings();
-}
-
-THelpWindow::~THelpWindow() {
-}
-
-void THelpWindow::retranslateStrings() {
-
     retranslateUi(this);
+    setObjectName(name);
 
     saveButton->setText("");
-    copyButton->setText("");
-
     saveButton->setIcon(Images::icon("save"));
+
+    copyButton->setText("");
     copyButton->setIcon(Images::icon("copy"));
 
     // Title changed by TMainWindow::helpCLOptions()
     setWindowTitle(tr("%1 help").arg(TConfig::PROGRAM_NAME));
     setWindowIcon(Images::icon("logo"));
+}
+
+THelpWindow::~THelpWindow() {
 }
 
 void THelpWindow::loadSettings(QSettings* pref) {

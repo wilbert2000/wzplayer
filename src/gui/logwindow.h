@@ -30,15 +30,11 @@ class TLogWindowAppender;
 class TLogWindow : public QWidget, public Ui::TLogWindow {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
-    TLogWindow(QWidget* parent);
-    virtual ~TLogWindow();
-
-    void retranslateStrings();
-
     static TLogWindowAppender* appender;
 
+    TLogWindow(QWidget* parent);
+    virtual ~TLogWindow();
 
 signals:
     void visibilityChanged(bool visible);

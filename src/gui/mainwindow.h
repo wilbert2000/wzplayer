@@ -318,8 +318,6 @@ private:
     void removeThumbnail(QString fn);
     void saveThumbnailToIni(const QString& fn, const QString& time);
 
-    void retranslateStrings();
-
     void save();
     void restartApplication();
     QString getSectionName();

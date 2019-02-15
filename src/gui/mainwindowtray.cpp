@@ -67,6 +67,7 @@ TMainWindowTray::TMainWindowTray() :
     viewMenu->addAction(showTrayAct);
 
     showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
+    updateShowAllAct();
     connect(showAllAct, &Action::TAction::triggered,
             this, &TMainWindowTray::toggleShowAll);
 
@@ -78,17 +79,10 @@ TMainWindowTray::TMainWindowTray() :
 
     connect(this, &TMainWindowTray::openFileRequested,
             this, &TMainWindowTray::showMainWindow);
-
-    retranslateStrings();
 }
 
 TMainWindowTray::~TMainWindowTray() {
     tray->hide();
-}
-
-
-void TMainWindowTray::retranslateStrings() {
-    updateShowAllAct();
 }
 
 void TMainWindowTray::setWindowCaption(const QString& title) {

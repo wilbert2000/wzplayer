@@ -252,11 +252,6 @@ void TPlaylist::createActions() {
     toolbar->addAction(repeatAct);
 }
 
-void TPlaylist::retranslateStrings() {
-
-    setPlaylistTitle();
-}
-
 void TPlaylist::getFilesToPlay(QStringList& files) const {
 
     TPlaylistWidgetItem* root = playlistWidget->root();

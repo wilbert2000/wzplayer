@@ -61,7 +61,6 @@ private:
     bool hideMainWindowOnStartup;
 
     void switchToTray();
-    void retranslateStrings();
     void updateShowAllAct();
     void showAll(bool b);
 

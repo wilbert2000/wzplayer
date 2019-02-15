@@ -48,8 +48,6 @@ public:
     void appendText(const QString& text);
     void appendHtml(const QString& text);
 
-    void retranslateStrings();
-
 signals:
     void visibilityChanged(bool visible);
 

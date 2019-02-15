@@ -105,6 +105,7 @@ TMainWindow::TMainWindow() :
 
     setObjectName("mainwindow");
     setWindowTitle(TConfig::PROGRAM_NAME);
+    setWindowIcon(Images::icon("logo", 64));
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
     setAnimated(false); // Disable animation of docks
@@ -139,8 +140,6 @@ TMainWindow::TMainWindow() :
     changeStayOnTop(pref->stay_on_top);
 
     update_checker = new TUpdateChecker(this, &pref->update_checker_data);
-
-    retranslateStrings();
 }
 
 TMainWindow::~TMainWindow() {
@@ -358,6 +357,7 @@ void TMainWindow::createActions() {
     // Time slider
     timeslider_action = new Action::TTimeSliderAction(this);
     timeslider_action->setObjectName("timeslider_action");
+    timeslider_action->setText(tr("Time slider"));
 
     connect(player, &Player::TPlayer::positionChanged,
             timeslider_action, &Action::TTimeSliderAction::setPosition);
@@ -380,6 +380,8 @@ void TMainWindow::createActions() {
     volumeslider_action = new Action::TVolumeSliderAction(this,
                                                           player->getVolume());
     volumeslider_action->setObjectName("volumeslider_action");
+    volumeslider_action->setText(tr("Volume slider"));
+
     connect(volumeslider_action, &Action::TVolumeSliderAction::valueChanged,
             player, &Player::TPlayer::setVolume);
     connect(player, &Player::TPlayer::volumeChanged,
@@ -396,17 +398,15 @@ void TMainWindow::createActions() {
 
     // Toolbars
     editToolbarAct = new Action::TAction(this, "edit_toolbar1",
-                                         tr("Edit main &toolbar..."));
+                                         tr("Edit main toolbar..."));
     editToolbar2Act = new Action::TAction(this, "edit_toolbar2",
-                                          tr("Edit extra t&oolbar..."));
-
+                                          tr("Edit extra toolbar..."));
     // Control bar
     editControlBarAct = new Action::TAction(this, "edit_controlbar",
-                                            tr("Edit control &bar.."));
-
+                                            tr("Edit control bar.."));
     // Status bar
     viewStatusBarAct = new Action::TAction(this, "toggle_statusbar",
-                                           tr("&Status bar"), "",
+                                           tr("Status bar"), "",
                                            Qt::SHIFT | Qt::Key_F7);
     viewStatusBarAct->setCheckable(true);
     viewStatusBarAct->setChecked(true);
@@ -478,6 +478,8 @@ void TMainWindow::createMenus() {
 
     // statusbar_menu added to toolbar_menu by createToolbarMenu()
     statusbar_menu = new QMenu(this);
+    statusbar_menu->menuAction()->setText(tr("Statusbar"));
+    statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
     statusbar_menu->addAction(viewVideoInfoAct);
     statusbar_menu->addAction(viewInOutPointsAct);
     statusbar_menu->addAction(viewVideoTimeAct);
@@ -550,6 +552,8 @@ void TMainWindow::createToolbars() {
     // Control bar
     controlbar = new Action::TEditableToolbar(this);
     controlbar->setObjectName("controlbar");
+    controlbar->setWindowTitle("Control bar");
+    controlbar->toggleViewAction()->setIcon(Images::icon("controlbar"));
     QStringList actions;
     actions << "play_or_pause"
             << "stop"
@@ -561,7 +565,7 @@ void TMainWindow::createToolbars() {
             << "deinterlace_menu|0|1"
             << "aspect_menu|1|1"
             << "videosize_menu|1|0"
-            << "reset_zoom_and_pan|0|1"
+            << "reset_zoom_pan|0|1"
             << "separator|0|1"
             << "volumeslider_action"
             << "separator|0|1"
@@ -582,6 +586,9 @@ void TMainWindow::createToolbars() {
     // Main toolbar
     toolbar = new Action::TEditableToolbar(this);
     toolbar->setObjectName("toolbar1");
+    toolbar->setWindowTitle(tr("Main toolbar"));
+    toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
+
     actions.clear();
     actions << "open_url" << "favorites_menu";
     toolbar->setDefaultActions(actions);
@@ -596,6 +603,9 @@ void TMainWindow::createToolbars() {
     // Extra toolbar
     toolbar2 = new Action::TEditableToolbar(this);
     toolbar2->setObjectName("toolbar2");
+    toolbar2->setWindowTitle(tr("Extra toolbar"));
+    toolbar2->toggleViewAction()->setIcon(Images::icon("extra_toolbar"));
+
     actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
             << "separator" << "view_properties" << "view_playlist"
@@ -2370,13 +2380,13 @@ void TMainWindow::resizeMainWindow(int w,
 }
 
 void TMainWindow::setStayOnTop(bool b) {
-    WZDEBUG(QString::number(b));
 
     bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
     if (b == stay_on_top) {
-        WZDEBUG("already set");
+        WZDEBUG(QString("already set to %1").arg(b));
         return;
     }
+    WZDEBUG(QString::number(b));
 
     ignore_show_hide_events = true;
     bool visible = isVisible();

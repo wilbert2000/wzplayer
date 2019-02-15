@@ -75,7 +75,7 @@ void TInput::createMouseCombos() {
     left_click_combo->addItem(tr("Mute"), "mute");
     left_click_combo->addItem(tr("OSD - Next level"), "next_osd");
     left_click_combo->addItem(tr("Playlist"), "view_playlist");
-    left_click_combo->addItem(tr("Reset zoom"), "reset_zoom_and_pan");
+    left_click_combo->addItem(tr("Reset zoom"), "reset_zoom_pan");
     left_click_combo->addItem(tr("Exit fullscreen"), "exit_fullscreen");
     left_click_combo->addItem(tr("Normal speed"), "normal_speed");
     left_click_combo->addItem(tr("Frame counter"), "frame_counter");
