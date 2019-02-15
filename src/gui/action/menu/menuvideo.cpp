@@ -170,7 +170,7 @@ TMenuZoomAndPan::TMenuZoomAndPan(TMainWindow* mw)
     group->setEnabled(false);
 
     // Zoom
-    TAction* a = new TAction(this, "reset_zoom_and_pan",
+    TAction* a = new TAction(this, "reset_zoom_pan",
                              tr("&Reset zoom and pan"), "", Qt::Key_5);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::resetZoomAndPan);

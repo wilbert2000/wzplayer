@@ -13,47 +13,47 @@ TColorSpaceGroup::TColorSpaceGroup(QWidget* parent) :
 
     setEnabled(false);
 
-    new TActionGroupItem(this, this, "video_colorspace_auto",
+    new TActionGroupItem(this, this, "colorspace_auto",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_bt_601",
+    new TActionGroupItem(this, this, "colorspace_bt_601",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_601),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_601,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_bt_709",
+    new TActionGroupItem(this, this, "colorspace_bt_709",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_709),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_709,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_smpte_240m",
+    new TActionGroupItem(this, this, "colorspace_smpte_240m",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_SMPTE_240M),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_SMPTE_240M,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_bt_2020_ncl",
+    new TActionGroupItem(this, this, "colorspace_bt_2020_ncl",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_2020_NCL),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_2020_NCL,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_bt_2020_cl",
+    new TActionGroupItem(this, this, "colorspace_bt_2020_cl",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_2020_CL),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_BT_2020_CL,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_rgb",
+    new TActionGroupItem(this, this, "colorspace_rgb",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_RGB),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_RGB,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_xyz",
+    new TActionGroupItem(this, this, "colorspace_xyz",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_XYZ),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_XYZ,
             false);
-    new TActionGroupItem(this, this, "video_colorspace_ycgco",
+    new TActionGroupItem(this, this, "colorspace_ycgco",
         Settings::TMediaSettings::getColorSpaceDescriptionString(
             Settings::TMediaSettings::TColorSpace::COLORSPACE_YCGCO),
             Settings::TMediaSettings::TColorSpace::COLORSPACE_YCGCO,
@@ -63,8 +63,7 @@ TColorSpaceGroup::TColorSpaceGroup(QWidget* parent) :
 }
 
 TMenuVideoColorSpace::TMenuVideoColorSpace(TMainWindow* mw) :
-    TMenu(mw, mw, "video_colorspace_menu", tr("&Color space"),
-          "video_colorspace") {
+    TMenu(mw, mw, "colorspace_menu", tr("&Color space")) {
 
     group = new TColorSpaceGroup(this);
     connect(group, &TColorSpaceGroup::activated,

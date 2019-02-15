@@ -12,7 +12,7 @@ namespace Menu {
 
 // Create in-out points menu
 TMenuInOut::TMenuInOut(TMainWindow* mw)
-    : TMenu(mw, mw, "in_out_points_menu", tr("&In-out points")) {
+    : TMenu(mw, mw, "in_out_menu", tr("&In-out points")) {
 
     // Put in group to enable/disable together, if we disable the menu users
     // cannot discover the menu because it won't open.
@@ -20,40 +20,39 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
     group->setExclusive(false);
     group->setEnabled(false);
 
-    TAction* a  = new TAction(this, "set_in_point", tr("Set &in point"), "",
+    TAction* a  = new TAction(this, "set_in", tr("Set &in"), "",
                               QKeySequence("["));
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::setInPoint);
 
-    a = new TAction(this, "set_out_point", tr("Set &out point and repeat"), "",
+    a = new TAction(this, "set_out", tr("Set &out and repeat"), "",
                     QKeySequence("]"));
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::setOutPoint);
 
     addSeparator();
-    a  = new TAction(this, "clear_in_point", tr("&Clear in point"), "",
+    a  = new TAction(this, "clear_in", tr("&Clear in"), "",
                      QKeySequence("Shift+["));
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::clearInPoint);
 
-    a = new TAction(this, "clear_out_point", tr("C&lear out point and repeat"),
+    a = new TAction(this, "clear_out", tr("C&lear out and repeat"),
                     "", QKeySequence("Shift+]"));
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::clearOutPoint);
 
-    a = new TAction(this, "clear_in_out_points",
-                             tr("Cle&ar in-out points and repeat"), "",
+    a = new TAction(this, "clear_in_out", tr("Cle&ar in-out and repeat"), "",
                              Qt::Key_Backspace);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::clearInOutPoints);
 
     addSeparator();
-    a  = new TAction(this, "seek_in_point", tr("&Seek to in point"), "",
+    a  = new TAction(this, "seek_in", tr("&Seek to in"), "",
                      Qt::Key_Home);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::seekInPoint);
 
-    a = new TAction(this, "seek_out_point", tr("S&eek to &out point"), "",
+    a = new TAction(this, "seek_out", tr("S&eek to &out"), "",
                     Qt::Key_End);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::seekOutPoint);

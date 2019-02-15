@@ -55,7 +55,7 @@ void TMenuCC::onAboutToShow() {
 
 
 TMenuSubFPS::TMenuSubFPS(TMainWindow* mw)
-    : TMenu(mw, mw, "subfps_menu", tr("F&rames per second external subtitles"),
+    : TMenu(mw, mw, "subfps_menu", tr("F&rames per second ext. subs"),
             "subfps") {
 
     group = new TActionGroup(this, "subfps");
@@ -149,7 +149,7 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     // Subtitle tracks
     addSeparator();
     subtitleTrackMenu = new TMenu(main_window, main_window,
-        "subtitlestrack_menu", tr("Subtitle &track"), "sub");
+        "subtitle_track_menu", tr("Subtitle &track"), "sub");
     nextSubtitleAct = new TAction(subtitleTrackMenu, "next_subtitle",
         tr("Next subtitle track"), "", Qt::CTRL | Qt::Key_N);
     connect(nextSubtitleAct, &TAction::triggered,
@@ -157,7 +157,7 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     subtitleTrackMenu->addSeparator();
     addMenu(subtitleTrackMenu);
 
-    subtitleTrackGroup = new TActionGroup(this, "subtitletrack");
+    subtitleTrackGroup = new TActionGroup(this, "subtitletrackgroup");
     connect(subtitleTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSubtitle);
     connect(player, &Player::TPlayer::subtitlesChanged,
@@ -167,13 +167,12 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
 
     // Secondary subtitle track
     secondarySubtitleTrackMenu = new TMenu(main_window, main_window,
-        "secondary_subtitles_track_menu", tr("Secondary trac&k"),
+        "subtitle_track2_menu", tr("Secondary trac&k"),
         "secondary_sub");
     if (pref->isMPV()) {
         addMenu(secondarySubtitleTrackMenu);
     }
-    secondarySubtitleTrackGroup = new TActionGroup(this,
-                                                   "secondarysubtitletrack");
+    secondarySubtitleTrackGroup = new TActionGroup(this, "subtitletrack2group");
     connect(secondarySubtitleTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSecondarySubtitle);
     connect(player, &Player::TPlayer::secondarySubtitleTrackChanged,

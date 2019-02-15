@@ -37,14 +37,14 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
     addSeparator();
     group = new TActionGroup(this, "osd");
     // Always enabled
-    new TActionGroupItem(this, group, "osd_none", tr("Subtitles onl&y"),
+    new TActionGroupItem(this, group, "osd_none", tr("Subtitles only"),
         Settings::TPreferences::None, true, false, Qt::SHIFT | Qt::Key_O);
-    new TActionGroupItem(this, group, "osd_seek", tr("Volume + &Seek"),
+    new TActionGroupItem(this, group, "osd_seek", tr("Volume + seek"),
         Settings::TPreferences::Seek, true, false, Qt::CTRL | Qt::Key_O);
-    new TActionGroupItem(this, group, "osd_timer", tr("Volume + Seek + &Timer"),
+    new TActionGroupItem(this, group, "osd_time", tr("Volume + seek + time"),
         Settings::TPreferences::SeekTimer, true, false, Qt::ALT | Qt::Key_O);
     new TActionGroupItem(this, group, "osd_total",
-                         tr("Volume + Seek + Timer + T&otal time"),
+                         tr("Volume + seek + time + length"),
                          Settings::TPreferences::SeekTimerTotal, true, false,
                          Qt::META | Qt::Key_O);
     group->setChecked(pref->osd_level);
