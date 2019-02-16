@@ -19,10 +19,9 @@
 #ifndef GUI_ACTION_TOOLBAR_EDITOR_H
 #define GUI_ACTION_TOOLBAR_EDITOR_H
 
-#include <QStringList>
 #include "ui_toolbareditor.h"
 #include "wzdebug.h"
-#include "gui/action/actionlist.h"
+#include <QStringList>
 
 
 class QWidget;
@@ -31,53 +30,54 @@ class QListWidget;
 namespace Gui {
 namespace Action {
 
+class TActionItem;
 
 class TToolbarEditor : public QDialog, public Ui::TToolbarEditor {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
-
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-    TToolbarEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    static QAction* findAction(const QString& actionName,
+                               const QList<QAction*>& actionList);
+    static void stringToAction(const QString& s, QString& actionName,
+                               bool& ns, bool&fs);
+
+    TToolbarEditor(QWidget* parent, const QString& tbarName);
     virtual ~TToolbarEditor();
 
-    void setAllActions(const TActionList& actions_list);
+    void setAllActions(const QList<QAction*>& actions);
     void setActiveActions(const QStringList& actions);
-    void setDefaultActions(const QStringList& action_names) { default_actions = action_names; }
+    void setDefaultActions(const QStringList& actionNames) {
+        defaultActions = actionNames;
+    }
     void setIconSize(int size);
     int iconSize() const;
 
     QStringList saveActions();
-    static QAction* findAction(const QString& action_name, const TActionList& actions_list);
-    static QAction* newSeparator(QWidget* parent);
-    static void stringToAction(const QString& s, QString& action_name, bool& ns, bool&fs);
 
-protected:
-    static void populateList(QListWidget* w, const TActionList& actions_list);
-    virtual void resizeEvent(QResizeEvent* event);
-    virtual void changeEvent(QEvent* event);
+private:
+    QList<QAction*> allActions;
+    QString toolbarName;
+    QStringList defaultActions;
+    QAction* separatorAction;
+    int savedFirst, savedLast;
 
-protected slots:
+    QString getToolTipForItem(QListWidgetItem* item);
+    Qt::CheckState getCheckStateItem(bool ns, bool fs);
+    TActionItem* createActiveActionItem(QAction* action, bool ns, bool fs);
+    bool isActionEditable(QAction* action);
+
+private slots:
+    void onItemClicked(QListWidgetItem* item);
+    void onItemDoubleClicked(QListWidgetItem* item);
+    void onCurrentRowChanged(int currentRow);
+    void onRowsInsertedActiveList();
+    void onRowsInserted(const QModelIndex&, int first, int last);
     void onUpButtonClicked();
     void onDownButtonClicked();
     void onRightButtonClicked();
     void onLeftButtonClicked();
     void onSeperatorButtonClicked();
     void restoreDefaults();
-    void checkRowsAllList(int currentRow);
-    void onCurrentCellChanged(int currentRow, int currentColumn,
-                              int previousRow, int previousColumn);
-
-private:
-    const TActionList* all_actions;
-    QStringList default_actions;
-
-    bool getVis(int row, int col);
-    void insertRowFromAction(int row, QAction* action, bool ns, bool fs);
-    void insertSeparator(int row, bool ns, bool fs);
-    void swapRows(int row1, int row2);
-    void setCurrentRow(int row);
-    void resizeColumns();
-    void retranslateStrings();
 }; // class TToolbarEditor
 
 } // namespace Action

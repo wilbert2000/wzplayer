@@ -27,7 +27,6 @@
 namespace Gui {
 namespace Pref {
 
-
 class TInput : public TSection, public Ui::TInput {
     Q_OBJECT
 
@@ -39,10 +38,12 @@ public:
     virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref,
+                 const QList<QAction*>& allActions);
 
     // Apply changes
-    virtual void getData(Settings::TPreferences* pref);
+    virtual void getData(Settings::TPreferences* pref,
+                         const QList<QAction*>& allActions);
 
 protected:
     void createMouseCombos();

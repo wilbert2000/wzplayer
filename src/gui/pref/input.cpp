@@ -166,7 +166,10 @@ void TInput::retranslateStrings() {
     createHelp();
 }
 
-void TInput::setData(Settings::TPreferences* pref) {
+void TInput::setData(Settings::TPreferences* pref,
+                     const QList<QAction*>& allActions) {
+
+    actions_editor->setActionsTable(allActions);
 
     setLeftClickFunction(pref->mouse_left_click_function);
     setRightClickFunction(pref->mouse_right_click_function);
@@ -189,9 +192,16 @@ void TInput::setData(Settings::TPreferences* pref) {
     setPreciseSeeking(pref->precise_seeking);
 }
 
-void TInput::getData(Settings::TPreferences* pref) {
+void TInput::getData(Settings::TPreferences* pref,
+                     const QList<QAction*>& allActions) {
 
     TSection::getData(pref);
+
+    // Save new action shortcuts to the currently active actions
+    actions_editor->applyChanges(allActions);
+    // Save actions to pref
+    Action::TActionsEditor::saveSettings(pref, allActions);
+
     pref->mouse_left_click_function = leftClickFunction();
     pref->mouse_right_click_function = rightClickFunction();
     pref->mouse_double_click_function = doubleClickFunction();

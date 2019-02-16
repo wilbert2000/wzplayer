@@ -83,7 +83,7 @@ void TEditableToolbar::addMenu(QAction* action) {
 }
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
-                                                const TActionList& all_actions) {
+                                                const TActionList& allActions) {
 
     clear();
     // Copy actions
@@ -91,20 +91,20 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
 
     int i = 0;
     while (i < actions.count()) {
-
         QString action_name;
         bool ns, fs;
         TToolbarEditor::stringToAction(actions.at(i), action_name, ns, fs);
         if (action_name.isEmpty()) {
-            WZWARN("malformed action '" + actions.at(i) + "'");
+            WZERROR(QString("Failed to parse action '%1' for toolbar '%2'")
+                   .arg(actions.at(i)).arg(windowTitle()));
             actions.removeAt(i);
         } else {
             if (Settings::pref->fullscreen ? fs : ns) {
                 if (action_name == "separator") {
-                    addAction(TToolbarEditor::newSeparator(this));
+                    addSeparator();
                 } else {
                     QAction* action = TToolbarEditor::findAction(action_name,
-                                                                 all_actions);
+                                                                 allActions);
                     if (action) {
                         if (action_name.endsWith("_menu")) {
                             addMenu(action);
@@ -112,7 +112,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
                             addAction(action);
                         }
                     } else {
-                        WZWARN("action '" + action_name + " not found");
+                        WZERROR("action '" + action_name + " not found");
                         actions.removeAt(i);
                         i--;
                     }
@@ -130,34 +130,33 @@ QStringList TEditableToolbar::actionsToStringList() const {
 }
 
 void TEditableToolbar::edit() {
-    WZDEBUG("");
+    WZDEBUG(objectName());
 
     // Create toolbar editor dialog
-    TActionList all_actions = main_window->getAllNamedActions();
-    TToolbarEditor editor(main_window);
-    editor.setAllActions(all_actions);
+    QList<QAction*> allActions = main_window->getNamedActions();
+    TToolbarEditor editor(main_window, windowTitle());
+    editor.setAllActions(allActions);
     editor.setActiveActions(actions);
-    editor.setDefaultActions(default_actions);
+    editor.setDefaultActions(defaultActions);
     editor.setIconSize(iconSize().width());
 
     // Execute
     if (editor.exec() == QDialog::Accepted) {
-        // Get action names and update actions in all_actions
+        // Get action names and update active actions
         QStringList new_actions = editor.saveActions();
-        // Load new actions
-        setActionsFromStringList(new_actions, all_actions);
+        // Load new actions into this toolbar
+        setActionsFromStringList(new_actions, allActions);
         // Update icon size
         setIconSize(QSize(editor.iconSize(), editor.iconSize()));
         // Save modified icon texts to pref
-        TActionsEditor::saveToConfig(Settings::pref, main_window);
+        TActionsEditor::saveSettings(Settings::pref, allActions);
         Settings::pref->sync();
     }
 }
 
 void TEditableToolbar::reload() {
 
-    TActionList all_actions = main_window->getAllNamedActions();
-    setActionsFromStringList(actions, all_actions);
+    setActionsFromStringList(actions, main_window->getNamedActions());
 }
 
 } // namespace Action

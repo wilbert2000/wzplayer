@@ -74,15 +74,17 @@ public:
 #endif
     };
 
-    TDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    TDialog(QWidget* parent);
     virtual ~TDialog();
 
     TInput* mod_input() const { return page_input; }
 
     // Pass data to the standard dialogs
-    void setData(Settings::TPreferences* pref);
+    void setData(Settings::TPreferences* pref,
+                 const QList<QAction*>& allActions);
     // Apply changes
-    virtual void getData(Settings::TPreferences* pref);
+    void getData(Settings::TPreferences* pref,
+                 const QList<QAction*>& allActions);
 
     // Return true if the application should be restarted.
     bool requiresRestartApp();
@@ -90,6 +92,8 @@ public:
     bool requiresRestartPlayer();
 
     void showSection(TSectionNumber section);
+
+    void saveSettings();
 
 public slots:
     virtual void accept(); // Reimplemented to send a signal
@@ -123,10 +127,8 @@ private:
 
     QTextBrowser* help_window;
     QPushButton* helpButton;
-    QSettings* pref;
 
     void addSection(TSection* s);
-    void done();
 
 private slots:
     void showHelp();

@@ -32,6 +32,7 @@ class QSettings;
 class QPushButton;
 
 namespace Gui {
+
 namespace Action {
 
 typedef QList<QKeySequence> TShortCutList;
@@ -41,32 +42,25 @@ class TActionsEditor : public QWidget {
     DECLARE_QCLASS_LOGGER
 public:
     // Static functions
-    static QString actionTextToDescription(const QString& text,
+    static QString cleanActionText(const QString& text,
                                            const QString& action_name);
 
-    static void saveToConfig(QSettings* set, QObject* o);
-    static void loadFromConfig(QSettings* set, const TActionList& all_actions);
+    static void saveSettings(QSettings* set,
+                             const QList<QAction*>& allActions);
+    static void loadSettings(QSettings* set,
+                               const QList<QAction*>& allActions);
+    void applyChanges(const QList<QAction*>& allActions);
 
-    TActionsEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    TActionsEditor(QWidget* parent);
     virtual ~TActionsEditor();
 
-    // Clear the actionlist
-    void clear();
-    void addActions(QWidget* widget);
+    void setActionsTable(const QList<QAction*>& allActions);
     QString findShortcutsAction(const QString& shortcuts);
 
-public slots:
-    void applyChanges();
-    void updateView();
-
 protected:
-    virtual void retranslateStrings();
-    virtual void resizeEvent(QResizeEvent* event);
-
     // Find in table, not in actionslist
     int findActionName(const QString& name);
     int findShortcuts(const QString& accel, int ignoreRow = -1);
-    bool hasConflicts();
     static bool containsShortcut(const QString& accel, const QString& shortcut);
 
 private:
@@ -79,7 +73,6 @@ private:
     };
 
     QTableWidget* actionsTable;
-    TActionList actionsList;
     QPushButton* saveButton;
     QPushButton* loadButton;
     QPushButton* editButton;
@@ -98,7 +91,8 @@ private:
 
     bool loadActionsTableFromFile(const QString& filename);
     bool saveActionsTableAsFile(const QString& filename);
-    void resizeColumns();
+    bool updateConflict(QTableWidgetItem* item, int ignoreRow);
+    bool updateConflicts();
 
 private slots:
     void editShortcut();

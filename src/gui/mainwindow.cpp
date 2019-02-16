@@ -678,11 +678,7 @@ void TMainWindow::showSettingsDialog() {
         createSettingsDialog();
     }
 
-    pref_dialog->setData(pref);
-
-    pref_dialog->mod_input()->actions_editor->clear();
-    pref_dialog->mod_input()->actions_editor->addActions(this);
-
+    pref_dialog->setData(pref, allActions);
     pref_dialog->show();
 }
 
@@ -710,15 +706,10 @@ void TMainWindow::applyNewSettings() {
     WZDEBUG("");
 
     // Get pref from dialog
-    pref_dialog->getData(pref);
+    pref_dialog->getData(pref, allActions);
 
     // Save playlist settings
     playlist->saveSettings();
-
-    // Save new action shortcuts to currently active actions
-    pref_dialog->mod_input()->actions_editor->applyChanges();
-    // Save actions to pref
-    Action::TActionsEditor::saveToConfig(pref, this);
 
     // Commit changes to disk
     pref->save();
@@ -924,62 +915,30 @@ void TMainWindow::setWindowCaption(const QString& title) {
     setWindowTitle(title);
 }
 
-void TMainWindow::retranslateStrings() {
-    WZDEBUG("");
+QList<QAction*> TMainWindow::findNamedActions() const {
 
-    setWindowIcon(Images::icon("logo", 64));
+    QList<QAction*> allActions = findChildren<QAction*>();
+    QList<QAction*> selectedActions;
 
-    // Main toolbar
-    toolbar->setWindowTitle(tr("&Main toolbar"));
-    toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
-
-    // Extra toolbar
-    toolbar2->setWindowTitle(tr("&Extra toolbar"));
-    toolbar2->toggleViewAction()->setIcon(Images::icon("extra_toolbar"));
-
-    // Control bar
-    controlbar->setWindowTitle(tr("&Control bar"));
-    controlbar->toggleViewAction()->setIcon(Images::icon("controlbar"));
-
-    // Status bar
-    statusbar_menu->menuAction()->setText(tr("St&atusbar"));
-    statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
-
-    // Sliders
-    timeslider_action->setText(tr("Time slider"));
-    volumeslider_action->setText(tr("Volume slider"));
-
-    // Playlist
-    playlist->retranslateStrings();
-
-    // Log
-    log_window->retranslateStrings();
-
-    // Help window
-    if (help_window) {
-        help_window->retranslateStrings();
-    }
-
-    // Update actions view in settings dialog
-    // It has to be done, here. The actions are translated after the
-    // settings dialog.
-    if (pref_dialog) {
-        pref_dialog->mod_input()->actions_editor->updateView();
-    }
-} // retranslateStrings()
-
-Action::TActionList TMainWindow::getAllNamedActions() const {
-
-    // Get all actions with a name
-    Action::TActionList all_actions = findChildren<QAction*>();
-    for (int i = all_actions.count() - 1; i >= 0; i--) {
-        QAction* a = all_actions[i];
-        if (a->objectName().isEmpty() || a->isSeparator()) {
-            all_actions.removeAt(i);
+    for (int i = 0; i < allActions.count(); i++) {
+        QAction* action = allActions.at(i);
+        if (action->isSeparator()) {
+            WZTRACE(QString("Skipping separator"));
+        } else if (action->objectName().isEmpty()) {
+            WZTRACE(QString("Skipping action without name with text '%1'")
+                    .arg(action->text()));
+        } else if (action->objectName() == "_q_qlineeditclearaction") {
+            WZTRACE("Skipping action '_q_qlineeditclearaction'");
+        } else {
+            WZTRACE(QString("Selecting action '%1' '%2'")
+                    .arg(action->objectName()).arg(action->text()));
+            selectedActions.append(action);
         }
     }
+    WZDEBUG(QString("Selected %1 actions out of %2 found actions")
+            .arg(selectedActions.count()).arg(allActions.count()));
 
-    return all_actions;
+    return selectedActions;
 }
 
 void TMainWindow::loadSettings() {
@@ -987,13 +946,15 @@ void TMainWindow::loadSettings() {
 
     // Disable actions
     sendEnableActions();
+
     // Get all actions with a name
-    Action::TActionList all_actions = getAllNamedActions();
-    // Load actions
-    Action::TActionsEditor::loadFromConfig(pref, all_actions);
+    allActions = findNamedActions();
+    // Load modified actions from settings
+    Action::TActionsEditor::loadSettings(pref, allActions);
 
     pref->beginGroup(settingsGroupName());
 
+    // Position, size and windowstate
     if (pref->save_window_size_on_exit) {
         QPoint p = pref->value("pos", pos()).toPoint();
         QSize s = pref->value("size", size()).toSize();
@@ -1004,7 +965,9 @@ void TMainWindow::loadSettings() {
 
         move(p);
         resize(s);
-        setWindowState((Qt::WindowStates) state);
+        if (state != Qt::WindowMinimized) {
+            setWindowState((Qt::WindowStates) state);
+        }
 
         if (p.isNull()) {
             TDesktop::centerWindow(this);
@@ -1020,11 +983,11 @@ void TMainWindow::loadSettings() {
 
     pref->beginGroup("actions");
     toolbar->setActionsFromStringList(pref->value("toolbar1",
-        toolbar->defaultActions()).toStringList(), all_actions);
+        toolbar->getDefaultActions()).toStringList(), allActions);
     toolbar2->setActionsFromStringList(pref->value("toolbar2",
-        toolbar2->defaultActions()).toStringList(), all_actions);
+        toolbar2->getDefaultActions()).toStringList(), allActions);
     controlbar->setActionsFromStringList(pref->value("controlbar",
-        controlbar->defaultActions()).toStringList(), all_actions);
+        controlbar->getDefaultActions()).toStringList(), allActions);
     pref->endGroup();
 
     pref->beginGroup("toolbars_icon_size");
@@ -1113,6 +1076,9 @@ void TMainWindow::saveSettings() {
     if (file_properties_dialog) {
         file_properties_dialog->saveSettings();
     }
+    if (pref_dialog) {
+        pref_dialog->saveSettings();
+    }
 }
 
 void TMainWindow::save() {
@@ -1121,7 +1087,7 @@ void TMainWindow::save() {
     if (pref->clean_config) {
         pref->clean_config = false;
         pref->remove("");
-        Action::TActionsEditor::saveToConfig(pref, this);
+        Action::TActionsEditor::saveSettings(pref, allActions);
     }
     saveSettings();
     pref->save();

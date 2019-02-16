@@ -41,11 +41,11 @@ public:
 
     QStringList actionsToStringList() const;
     void setActionsFromStringList(const QStringList& acts,
-                                  const TActionList& all_actions);
+                                  const TActionList& allActions);
 
-    QStringList defaultActions() const { return default_actions; }
-    void setDefaultActions(const QStringList& action_names) {
-        default_actions = action_names;
+    QStringList getDefaultActions() const { return defaultActions; }
+    void setDefaultActions(const QStringList& actions) {
+        defaultActions = actions;
     }
 
 public slots:
@@ -54,7 +54,7 @@ public slots:
 private:
     TMainWindow* main_window;
     QStringList actions;
-    QStringList default_actions;
+    QStringList defaultActions;
 
     void addMenu(QAction* action);
 

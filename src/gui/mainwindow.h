@@ -92,7 +92,7 @@ public:
     void openFiles(const QStringList& files, const QString& current = "");
 
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
-    Action::TActionList getAllNamedActions() const;
+    QList<QAction*> getNamedActions() const { return allActions; }
 
     //! Execute all the actions after the video has started to play
     void runActionsLater(const QString& actions, bool postCheck);
@@ -151,6 +151,8 @@ public slots:
     // Handle message from new intance send by TApp
     void handleMessageFromOtherInstances(const QString& message);
 
+    void save();
+
 signals:
     void enableActions();
 
@@ -208,6 +210,8 @@ private:
     TDockWidget* playlistDock;
     TDockWidget* logDock;
     TLogWindow* log_window;
+
+    QList<QAction*> allActions;
 
     QMenu* helpMenu;
     Action::Menu::TMenuExec* contextMenu;
@@ -296,6 +300,7 @@ private:
     void setupNetworkProxy();
     void setTimeLabel(double sec, bool changed);
 
+    QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
     void sendEnableActions();
     //! Execute all actions in \a actions. The actions should be
@@ -318,7 +323,6 @@ private:
     void removeThumbnail(QString fn);
     void saveThumbnailToIni(const QString& fn, const QString& time);
 
-    void save();
     void restartApplication();
     QString getSectionName();
 

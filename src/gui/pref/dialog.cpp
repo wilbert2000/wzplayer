@@ -46,10 +46,22 @@
 namespace Gui {
 namespace Pref {
 
-TDialog::TDialog(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f) {
+TDialog::TDialog(QWidget* parent)
+    : QDialog(parent) {
 
     setupUi(this);
+
+    // Restore pos and size
+    Settings::pref->beginGroup("settingsdialog");
+    QPoint p = Settings::pref->value("pos", QPoint()).toPoint();
+    QSize s = Settings::pref->value("size", QPoint()).toSize();
+    Settings::pref->endGroup();
+
+    if (s.width() > 400 && s.height() > 400) {
+        move(p);
+        resize(s);
+        TDesktop::keepInsideDesktop(this);
+    }
 
     helpButton = buttonBox->button(QDialogButtonBox::Help);
     connect(helpButton, &QPushButton::clicked, this, &TDialog::showHelp);
@@ -140,27 +152,27 @@ void TDialog::retranslateStrings() {
     help_window->setWindowTitle(tr("%1 - Help").arg(TConfig::PROGRAM_NAME));
 }
 
-void TDialog::done() {
+void TDialog::saveSettings() {
 
-    help_window->hide();
-    hide();
+    Settings::pref->beginGroup("settingsdialog");
+    Settings::pref->setValue("pos", pos());
+    Settings::pref->setValue("size", size());
+    Settings::pref->endGroup();
 
-    pref->beginGroup("settingsdialog");
-    pref->setValue("pos", pos());
-    pref->setValue("size", size());
-    pref->endGroup();
 }
 
 void TDialog::accept() {
 
-    done();
+    help_window->hide();
+    hide();
     setResult(QDialog::Accepted);
     emit applied();
 }
 
 void TDialog::reject() {
 
-    done();
+    help_window->hide();
+    hide();
     setResult(QDialog::Rejected);
 }
 
@@ -183,21 +195,8 @@ void TDialog::addSection(TSection* s) {
     pages->addWidget(s);
 }
 
-void TDialog::setData(Settings::TPreferences* pref) {
-
-    // Restore pos and size
-    // Save pref for done()
-    this->pref = pref;
-    pref->beginGroup("settingsdialog");
-    QPoint p = pref->value("pos", QPoint()).toPoint();
-    QSize s = pref->value("size", QPoint()).toSize();
-    pref->endGroup();
-
-    if (s.width() > 400 && s.height() > 400) {
-        move(p);
-        resize(s);
-        TDesktop::keepInsideDesktop(this);
-    }
+void TDialog::setData(Settings::TPreferences* pref,
+                      const QList<QAction*>& allActions) {
 
     page_player->setData(pref);
     page_demuxer->setData(pref);
@@ -206,7 +205,7 @@ void TDialog::setData(Settings::TPreferences* pref) {
     page_subtitles->setData(pref);
     page_interface->setData(pref);
     page_playlist->setData(pref);
-    page_input->setData(pref);
+    page_input->setData(pref, allActions);
     page_drives->setData(pref);
     page_capture->setData(pref);
     page_performance->setData(pref);
@@ -218,7 +217,8 @@ void TDialog::setData(Settings::TPreferences* pref) {
 
 }
 
-void TDialog::getData(Settings::TPreferences* pref) {
+void TDialog::getData(Settings::TPreferences* pref,
+                      const QList<QAction*>& allActions) {
 
     page_player->getData(pref);
     page_demuxer->getData(pref);
@@ -227,7 +227,7 @@ void TDialog::getData(Settings::TPreferences* pref) {
     page_subtitles->getData(pref);
     page_interface->getData(pref);
     page_playlist->getData(pref);
-    page_input->getData(pref);
+    page_input->getData(pref, allActions);
     page_drives->getData(pref);
     page_capture->getData(pref);
     page_performance->getData(pref);

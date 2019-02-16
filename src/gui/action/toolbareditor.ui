@@ -113,25 +113,12 @@
         <string>&amp;Current actions:</string>
        </property>
        <property name="buddy">
-        <cstring>active_actions_table</cstring>
+        <cstring>active_actions_list</cstring>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QTableWidget" name="active_actions_table">
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="columnCount">
-        <number>0</number>
-       </property>
-       <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>80</number>
-       </attribute>
-       <attribute name="verticalHeaderVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
+      <widget class="QListWidget" name="active_actions_list"/>
      </item>
     </layout>
    </item>
@@ -204,6 +191,7 @@
   <tabstop>up_button</tabstop>
   <tabstop>right_button</tabstop>
   <tabstop>down_button</tabstop>
+  <tabstop>active_actions_list</tabstop>
   <tabstop>iconsize_spin</tabstop>
   <tabstop>separator_button</tabstop>
   <tabstop>buttonBox</tabstop>
