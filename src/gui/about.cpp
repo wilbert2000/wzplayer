@@ -30,8 +30,8 @@ using namespace Settings;
 
 namespace Gui {
 
-TAbout::TAbout(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f) {
+TAbout::TAbout(QWidget* parent)
+    : QDialog(parent, TConfig::DIALOG_FLAGS) {
 
     setupUi(this);
     setWindowIcon(Images::icon("logo", 64));

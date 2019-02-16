@@ -2,10 +2,12 @@
 #define CONFIG_H
 
 #include <QString>
-
+#include <Qt>
 
 class TConfig {
 public:
+    static const Qt::WindowFlags DIALOG_FLAGS;
+
     static const int MESSAGE_DURATION;
     static const int ERROR_MESSAGE_DURATION;
 

@@ -17,11 +17,13 @@
 */
 
 #include "gui/stereo3ddialog.h"
+#include "config.h"
+
 
 namespace Gui {
 
-TStereo3dDialog::TStereo3dDialog(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
+TStereo3dDialog::TStereo3dDialog(QWidget* parent)
+    : QDialog(parent, TConfig::DIALOG_FLAGS)
 {
     setupUi(this);
 

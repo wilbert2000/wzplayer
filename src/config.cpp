@@ -1,6 +1,8 @@
 #include "config.h"
-#include <QString>
 
+
+const Qt::WindowFlags TConfig::DIALOG_FLAGS =
+        Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint;
 
 const int TConfig::MESSAGE_DURATION = 3500;
 const int TConfig::ERROR_MESSAGE_DURATION = 6000;

@@ -20,6 +20,7 @@
 #include "gui/filechooser.h"
 #include "images.h"
 #include "wzdebug.h"
+#include "config.h"
 
 #include <QHeaderView>
 #include <QFileDialog>
@@ -82,9 +83,9 @@ namespace Menu {
 QString TFavoriteEditor::last_dir;
 
 
-TFavoriteEditor::TFavoriteEditor(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
-{
+TFavoriteEditor::TFavoriteEditor(QWidget* parent)
+    : QDialog(parent, TConfig::DIALOG_FLAGS) {
+
     setupUi(this);
 
     add_button->setIcon(Images::icon("bookmark_add"));

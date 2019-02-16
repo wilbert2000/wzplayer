@@ -46,7 +46,9 @@
 
 
 #include "gui/action/shortcutgetter.h"
+#include "gui/action/actionseditor.h"
 #include "images.h"
+#include "config.h"
 
 #include <QLayout>
 #include <QHash>
@@ -58,15 +60,13 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 
-#include "gui/action/actionseditor.h"
-
 
 namespace Gui {
 namespace Action {
 
 
 TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
-    QDialog(parent),
+    QDialog(parent, TConfig::DIALOG_FLAGS),
     editor(parent) {
 
     setWindowTitle(tr("Modify shortcuts"));

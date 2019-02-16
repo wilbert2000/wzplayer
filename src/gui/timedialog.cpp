@@ -17,14 +17,15 @@
 */
 
 #include "gui/timedialog.h"
+#include "config.h"
+
 
 namespace Gui {
 
-TTimeDialog::TTimeDialog(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
-{
-    setupUi(this);
+TTimeDialog::TTimeDialog(QWidget* parent)
+    : QDialog(parent, TConfig::DIALOG_FLAGS) {
 
+    setupUi(this);
     time_edit->setDisplayFormat("H:mm:ss");
 }
 

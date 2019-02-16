@@ -29,7 +29,7 @@ class TMultilineInputDialog : public QDialog, public Ui::TMultilineInputDialog
     Q_OBJECT
 
 public:
-    TMultilineInputDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    TMultilineInputDialog(QWidget* parent);
     virtual ~TMultilineInputDialog();
 
     void setLines(const QStringList&);

@@ -36,7 +36,7 @@ class TFavoriteEditor : public QDialog, public Ui::TFavoriteEditor {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TFavoriteEditor(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    TFavoriteEditor(QWidget* parent);
     virtual ~TFavoriteEditor();
 
     void setCaption(const QString & caption);

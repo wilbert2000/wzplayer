@@ -17,11 +17,13 @@
 */
 
 #include "gui/multilineinputdialog.h"
+#include "config.h"
+
 
 namespace Gui {
 
-TMultilineInputDialog::TMultilineInputDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent,f)
-{
+TMultilineInputDialog::TMultilineInputDialog(QWidget* parent) :
+    QDialog(parent,TConfig::DIALOG_FLAGS) {
     setupUi(this);
 }
 

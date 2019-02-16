@@ -18,21 +18,17 @@
 
 #include "gui/filepropertiesdialog.h"
 
-#include <QListWidget>
-#include <QLineEdit>
-#include <QTextEdit>
-#include <QPushButton>
-#include <QCloseEvent>
-
 #include "images.h"
 #include "gui/infofile.h"
+#include "config.h"
 
 
 namespace Gui {
 
-TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent, TMediaData* md)
-    : QDialog(parent),
-      media_data(md) {
+TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent,
+                                             TMediaData* md)
+    : QDialog(parent, TConfig::DIALOG_FLAGS),
+    media_data(md) {
 
     setupUi(this);
 
@@ -52,7 +48,6 @@ TFilePropertiesDialog::~TFilePropertiesDialog() {
 }
 
 void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {
-    WZDEBUG("");
 
     emit visibilityChanged(false);
     event->accept();
@@ -71,7 +66,6 @@ void TFilePropertiesDialog::retranslateStrings() {
 }
 
 void TFilePropertiesDialog::accept() {
-    WZDEBUG("");
 
     setResult(QDialog::Accepted);
     hide();
@@ -80,7 +74,6 @@ void TFilePropertiesDialog::accept() {
 }
 
 void TFilePropertiesDialog::reject() {
-    WZDEBUG("");
 
     setResult(QDialog::Rejected);
     hide();
@@ -88,7 +81,6 @@ void TFilePropertiesDialog::reject() {
 }
 
 void TFilePropertiesDialog::apply() {
-    WZDEBUG("");
 
     setResult(QDialog::Accepted);
     emit applied();

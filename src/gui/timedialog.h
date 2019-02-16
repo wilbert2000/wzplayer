@@ -28,7 +28,7 @@ class TTimeDialog : public QDialog, public Ui::TTimeDialog
     Q_OBJECT
 
 public:
-    TTimeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    TTimeDialog(QWidget* parent);
     virtual ~TTimeDialog();
 
     int time();

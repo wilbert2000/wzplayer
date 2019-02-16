@@ -19,11 +19,13 @@
 #include "gui/inputurl.h"
 #include "gui/lineedit.h"
 #include "images.h"
+#include "config.h"
+
 
 namespace Gui {
 
 TInputURL::TInputURL(QWidget* parent)
-    : QDialog(parent) {
+    : QDialog(parent, TConfig::DIALOG_FLAGS) {
 
     setupUi(this);
 

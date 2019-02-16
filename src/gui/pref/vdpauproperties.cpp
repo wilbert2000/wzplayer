@@ -17,11 +17,13 @@
 */
 
 #include "gui/pref/vdpauproperties.h"
+#include "config.h"
+
 
 namespace Gui { namespace Pref {
 
-TVDPAUProperties::TVDPAUProperties(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
+TVDPAUProperties::TVDPAUProperties(QWidget* parent)
+    : QDialog(parent, TConfig::DIALOG_FLAGS)
 {
     setupUi(this);
 
