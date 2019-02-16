@@ -924,11 +924,8 @@ void TPlaylist::browseDir() {
 void TPlaylist::openInNewWindow() {
     WZDEBUG("'" + qApp->applicationFilePath() + "'");
 
-    // Save modified WZPlaylist
-    if (playlistWidget->modified()
-            && QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
-        save();
-    }
+    // Save settings and modified playlist
+    main_window->save();
 
     QStringList files;
     QTreeWidgetItemIterator it(playlistWidget,
