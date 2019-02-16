@@ -61,6 +61,8 @@ public:
     void setPlayerAdditionalAudioFilters(const QString& s);
     QString playerAdditionalAudioFilters();
 
+    void saveSettings();
+
 public slots:
     void accept(); // Reimplemented to send a signal
     void reject();
@@ -77,7 +79,7 @@ protected slots:
     virtual void on_resetVCButton_clicked();
 
 protected:
-    virtual void closeEvent(QCloseEvent* event);
+    virtual void closeEvent(QCloseEvent* event) override;
 
     bool hasCodecsList() { return codecs_set; }
     int find(const QString& s, const Player::Info::InfoList& list) const;

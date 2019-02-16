@@ -17,9 +17,10 @@
 */
 
 #include "gui/filepropertiesdialog.h"
-
-#include "images.h"
 #include "gui/infofile.h"
+#include "settings/preferences.h"
+#include "images.h"
+#include "desktop.h"
 #include "config.h"
 
 
@@ -31,6 +32,18 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent,
     media_data(md) {
 
     setupUi(this);
+
+    // Restore pos and size
+    Settings::pref->beginGroup("propertiesdialog");
+    QPoint p = Settings::pref->value("pos", QPoint()).toPoint();
+    QSize s = Settings::pref->value("size", QPoint()).toSize();
+    Settings::pref->endGroup();
+
+    if (s.width() > 400 && s.height() > 400) {
+        move(p);
+        resize(s);
+        TDesktop::keepInsideDesktop(this);
+    }
 
     // Setup buttons
     okButton = buttonBox->button(QDialogButtonBox::Ok);
@@ -45,6 +58,14 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent,
 }
 
 TFilePropertiesDialog::~TFilePropertiesDialog() {
+}
+
+void TFilePropertiesDialog::saveSettings() {
+
+    Settings::pref->beginGroup("propertiesdialog");
+    Settings::pref->setValue("pos", pos());
+    Settings::pref->setValue("size", size());
+    Settings::pref->endGroup();
 }
 
 void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {

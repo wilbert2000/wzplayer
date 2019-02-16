@@ -1110,6 +1110,9 @@ void TMainWindow::saveSettings() {
     if (help_window) {
         help_window->saveSettings(pref);
     }
+    if (file_properties_dialog) {
+        file_properties_dialog->saveSettings();
+    }
 }
 
 void TMainWindow::save() {
