@@ -21,70 +21,67 @@ public:
 };
 
 TMenuDisc::TMenuDisc(TMainWindow* parent)
-    : TMenu(parent, parent, "disc_menu", tr("Open d&isc"), "open_disc") {
+    : TMenu(parent, parent, "disc_menu", tr("Open disc"), "open_disc") {
 
     // DVD
-    TAction* a = new TAction(this, "open_dvd", tr("&DVD from drive"), "dvd");
+    TAction* a = new TAction(this, "open_dvd", tr("DVD from drive"), "dvd");
     connect(a, &TAction::triggered, parent, &TMainWindow::openDVD);
 
-    a = new TAction(this, "open_dvd_iso", tr("D&VD from ISO file..."),
+    a = new TAction(this, "open_dvd_iso", tr("DVD from ISO file..."),
                     "dvd_iso");
     connect(a, &TAction::triggered, parent, &TMainWindow::openDVDFromISO);
 
-    a = new TAction(this, "open_dvd_folder", tr("DVD &from folder..."),
+    a = new TAction(this, "open_dvd_folder", tr("DVD from folder..."),
                     "dvd_hd");
     connect(a, &TAction::triggered, parent, &TMainWindow::openDVDFromFolder);
 
 
     addSeparator();
     // BluRay
-    a = new TAction(this, "open_bluray", tr("&Blu-ray from drive"), "bluray");
+    a = new TAction(this, "open_bluray", tr("Blu-ray from drive"), "bluray");
     connect(a, &TAction::triggered, parent, &TMainWindow::openBluRay);
 
-    a = new TAction(this, "open_bluray_iso", tr("B&lu-&ray from ISO file..."),
+    a = new TAction(this, "open_bluray_iso", tr("Blu-ray from ISO file..."),
                     "bluray_iso");
     connect(a, &TAction::triggered, parent, &TMainWindow::openBluRayFromISO);
 
-    a = new TAction(this, "open_bluray_folder", tr("Bl&u-ray from folder..."),
+    a = new TAction(this, "open_bluray_folder", tr("Blu-ray from folder..."),
                     "bluray_hd");
     connect(a, &TAction::triggered, parent, &TMainWindow::openBluRayFromFolder);
 
 
     addSeparator();
     // VCD
-    a = new TAction(this, "open_vcd", tr("V&ideo CD"), "vcd");
+    a = new TAction(this, "open_vcd", tr("Video CD"), "vcd");
     connect(a, &TAction::triggered, parent, &TMainWindow::openVCD);
 
     // Audio
-    a = new TAction(this, "open_audio_cd", tr("&Audio CD"), "cdda");
+    a = new TAction(this, "open_audio_cd", tr("Audio CD"), "cdda");
     connect(a, &TAction::triggered, parent, &TMainWindow::openAudioCD);
 }
 
 
 TMenuFile::TMenuFile(TMainWindow* mw) :
-    TMenu(mw, mw, "file_menu", tr("&File"), "noicon") {
+    TMenu(mw, mw, "file_menu", tr("File"), "noicon") {
 
     // Favorites
     TFavorites* fav = new TFavorites(main_window,
                                      "favorites_menu",
                                      tr("Fa&vorites"),
-                                     "open_favorites",
+                                     "",
                                      TPaths::configPath() + "/favorites.m3u8");
-    fav->getEditAct()->setObjectName("favorites_edit");
-    main_window->addAction(fav->getEditAct());
     fav->getAddAct()->setObjectName("favorites_add");
     main_window->addAction(fav->getAddAct());
-    fav->getJumpAct()->setObjectName("favorites_jump");
-    main_window->addAction(fav->getJumpAct());
+    fav->getEditAct()->setObjectName("favorites_edit");
+    main_window->addAction(fav->getEditAct());
     addMenu(fav);
 
 
     // Recents
     recentfiles_menu = new TMenu(main_window, main_window, "recent_menu",
-                                 tr("&Recent files"), "recents");
-    clearRecentsAct = new TAction(this, "clear_recents", tr("&Clear"),
-                                  "delete", 0, false);
-    main_window->addAction(clearRecentsAct);
+                                 tr("&Recent files"));
+    clearRecentsAct = new TAction(main_window, "recents_clear",
+                                  tr("Clear recents"), "delete");
     connect(clearRecentsAct, &TAction::triggered,
             this, &TMenuFile::clearRecentsList);
     addMenu(recentfiles_menu);
@@ -96,22 +93,22 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
 
 
     // Open URL
-    TAction* a = new TAction(this, "open_url", tr("Open &URL..."), "",
+    TAction* a = new TAction(main_window, "open_url", tr("Open &URL..."), "",
                              QKeySequence("Ctrl+U"));
+    addAction(a);
     connect(a, &TAction::triggered, main_window, &TMainWindow::openURL);
-    main_window->addAction(a);
 
     // Open file
-    a  = new TAction(this, "open_file", tr("&Open file..."), "open",
-                              Qt::CTRL | Qt::Key_F);
+    a  = new TAction(main_window, "open_file", tr("&Open file..."), "open",
+                     Qt::CTRL | Qt::Key_F);
+    addAction(a);
     connect(a, &TAction::triggered, main_window, &TMainWindow::openFile);
-    main_window->addAction(a);
 
     // Open dir
-    a = new TAction(this, "open_directory", tr("Open &directory..."),
-                             "", QKeySequence("Ctrl+D"));
+    a = new TAction(main_window, "open_directory", tr("Open &directory..."),
+                    "", QKeySequence("Ctrl+D"));
+    addAction(a);
     connect(a, &TAction::triggered, main_window, &TMainWindow::openDirectory);
-    main_window->addAction(a);
 
     // Disc submenu
     addMenu(new TMenuDisc(main_window));

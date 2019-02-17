@@ -50,13 +50,11 @@ public:
 
     TAction* getEditAct() const { return editAct; }
     TAction* getAddAct() const { return addAct; }
-    TAction* getJumpAct() const { return jumpAct; }
 
 
 public slots:
     void edit();
     void addCurrentPlaying();
-    void jump();
 
 protected:
     virtual void enableActions();
@@ -81,7 +79,6 @@ private:
 
     TAction* editAct;
     TAction* addAct;
-    TAction* jumpAct;
 
     TFavoriteList f_list;
     QList<TFavorites*> child;

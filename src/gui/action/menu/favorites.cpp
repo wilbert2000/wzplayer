@@ -44,14 +44,12 @@ TFavorites::TFavorites(TMainWindow* mw,
     , _filename(filename)
     , last_item(1) {
 
-    editAct = new TAction(this, "", tr("&Edit..."), "noicon");
-    connect(editAct, &TAction::triggered, this, &TFavorites::edit);
-
-    addAct = new TAction(this, "", tr("&Add current media"), "noicon");
+    // Warning: also used for submenus. See TMenuFile for bindings
+    addAct = new TAction(this, "", tr("Add current media"));
     connect(addAct, &TAction::triggered, this, &TFavorites::addCurrentPlaying);
 
-    jumpAct = new TAction(this, "", tr("&Jump..."), "noicon", 0, false);
-    connect(jumpAct, &TAction::triggered, this, &TFavorites::jump);
+    editAct = new TAction(this, "", tr("Edit..."));
+    connect(editAct, &TAction::triggered, this, &TFavorites::edit);
 
     connect(this, &TFavorites::triggered, this, &TFavorites::onTriggered);
 
@@ -65,8 +63,7 @@ TFavorites::~TFavorites() {
 
 void TFavorites::enableActions() {
 
-    addAct->setEnabled(player && !player->mdat.filename.isEmpty());
-    jumpAct->setEnabled(f_list.count() > 0);
+    addAct->setEnabled(!player->mdat.filename.isEmpty());
 }
 
 void TFavorites::delete_children() {
@@ -84,25 +81,18 @@ void TFavorites::populateMenu() {
 
     for (int n = 0; n < f_list.count(); n++) {
         const TFavorite& fav = f_list.at(n);
-        QString i = QString::number(n + 1);
-        QString name = QString("%1 - " + fav.name()).arg(
-                               i.insert(i.size() - 1, '&'), 3, ' ');
         if (fav.isSubentry()) {
-
             if (fav.file() == _filename) {
                 WZWARN("infinite recursion detected. Ignoring item.");
                 break;
             }
 
-            TFavorites* sub = new TFavorites(main_window, "", "", "noicon",
-                                             fav.file());
-            child.push_back(sub);
-
-            QAction* a = addMenu(sub);
-            a->setText(name);
-            a->setIcon(QIcon(fav.icon()));
+            TFavorites* sub = new TFavorites(main_window, "", fav.name(),
+                                             fav.icon(), fav.file());
+            child.append(sub);
+            addMenu(sub);
         } else {
-            QAction* a = addAction(name);
+            QAction* a = addAction(fav.name());
             a->setData(fav.file());
             a->setIcon(QIcon(fav.icon()));
             a->setStatusTip(fav.file());
@@ -129,20 +119,18 @@ void TFavorites::onTriggered(QAction* action) {
 
     if (action->data().isValid()) {
         QString file = action->data().toString();
-        QString descr = action->text();
-        int i = descr.indexOf(" - ");
-        descr = descr.mid(i + 3);
         current_file = file;;
         markCurrent();
-        player->addForcedTitle(file, descr);
+        player->addForcedTitle(file, action->text());
         main_window->open(file);
     }
 }
 
 void TFavorites::markCurrent() {
 
-    for (int n = FIRST_MENU_ENTRY; n < actions().count(); n++) {
-        QAction* a = actions()[n];
+    QList<QAction*> acts = actions();
+    for (int n = FIRST_MENU_ENTRY; n < acts.count(); n++) {
+        QAction* a = acts.at(n);
         QString file = a->data().toString();
         QFont f = a->font();
 
@@ -259,19 +247,6 @@ void TFavorites::edit() {
         f_list = e.data();
         save();
         updateMenu();
-    }
-}
-
-void TFavorites::jump() {
-
-    bool ok;
-    int item = QInputDialog::getInt(main_window, tr("Jump to item"),
-        tr("Enter the number of the item in the list to jump to:"),
-        last_item, 1, f_list.count(), 1, &ok);
-    if (ok) {
-        last_item = item;
-        item--;
-        actions()[item + FIRST_MENU_ENTRY]->trigger();
     }
 }
 
