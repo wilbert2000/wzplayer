@@ -506,7 +506,7 @@ QString TActionsEditor::cleanActionText(const QString& text,
     if (action_name == "aspect_none") {
         return tr("Disabled");
     }
-    if (action_name == "video_size") {
+    if (action_name == "size_optimize") {
         return tr("Optimize size");
     }
     if (action_name == "view_playlist") {

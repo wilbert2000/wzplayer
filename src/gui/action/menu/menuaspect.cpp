@@ -57,7 +57,7 @@ TMenuAspect::TMenuAspect(TMainWindow* mw) :
             Qt::QueuedConnection);
 
     addSeparator();
-    nextAspectAct = new TAction(mw, "next_aspect", tr("Next aspect ratio"), "",
+    nextAspectAct = new TAction(mw, "aspect_next", tr("Next aspect ratio"), "",
                                 Qt::Key_A);
     addAction(nextAspectAct);
     connect(nextAspectAct, &TAction::triggered,

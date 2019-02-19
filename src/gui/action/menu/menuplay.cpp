@@ -230,59 +230,59 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     group->setEnabled(false);
 
 
-    TAction* a = new TAction(mw, "normal_speed", tr("Normal speed"), "",
+    TAction* a = new TAction(mw, "speed_normal", tr("Normal speed"), "",
                              Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::normalSpeed);
 
     addSeparator();
-    a = new TAction(mw, "halve_speed", tr("Half speed"), "",
+    a = new TAction(mw, "spedd_half", tr("Half speed"), "",
                     Qt::META | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::halveSpeed);
 
-    a = new TAction(mw, "double_speed", tr("Double speed"), "",
+    a = new TAction(mw, "speed_double", tr("Double speed"), "",
                     Qt::ALT | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::doubleSpeed);
 
     addSeparator();
-    a = new TAction(mw, "dec_speed", tr("Speed -10%"), "",
+    a = new TAction(mw, "speed_dec_10", tr("Speed -10%"), "",
                     Qt::SHIFT | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed10);
 
-    a = new TAction(mw, "inc_speed", tr("Speed +10%"), "",
+    a = new TAction(mw, "speed_inc_10", tr("Speed +10%"), "",
                     Qt::CTRL | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed10);
 
     addSeparator();
-    a = new TAction(mw, "dec_speed_4", tr("Speed -4%"), "",
+    a = new TAction(mw, "speed_dec_4", tr("Speed -4%"), "",
                     Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed4);
 
-    a = new TAction(mw, "inc_speed_4", tr("Speed +4%"), "",
+    a = new TAction(mw, "speed_inc_4", tr("Speed +4%"), "",
                     Qt::ALT | Qt::CTRL | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed4);
 
     addSeparator();
-    a = new TAction(mw, "dec_speed_1", tr("Speed -1%"), "",
+    a = new TAction(mw, "speed_dec_1", tr("Speed -1%"), "",
                     Qt::SHIFT | Qt::META | Qt::Key_Z);
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed1);
 
-    a = new TAction(main_window, "inc_speed_1", tr("Speed +1%"), "",
+    a = new TAction(main_window, "speed_inc_1", tr("Speed +1%"), "",
                     Qt::CTRL | Qt::META | Qt::Key_Z);
     addAction(a);
     group->addAction(a);

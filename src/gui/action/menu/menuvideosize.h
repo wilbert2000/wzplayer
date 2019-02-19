@@ -47,7 +47,7 @@ private:
     TVideoSizeGroup* group;
     TAction* doubleSizeAct;
     TAction* resizeOnLoadAct;
-    TAction* currentSizeAct;
+    TAction* optimizeSizeAct;
 
     void upd();
 

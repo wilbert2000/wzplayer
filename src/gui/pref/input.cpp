@@ -73,14 +73,14 @@ void TInput::createMouseCombos() {
     left_click_combo->addItem(tr("Never on top"), "on_top_never");
     left_click_combo->addItem(tr("On top while playing"), "on_top_while_playing");
     left_click_combo->addItem(tr("Mute"), "mute");
-    left_click_combo->addItem(tr("OSD - Next level"), "next_osd");
+    left_click_combo->addItem(tr("Next OSD level"), "osd_next");
     left_click_combo->addItem(tr("Playlist"), "view_playlist");
     left_click_combo->addItem(tr("Reset zoom"), "reset_zoom_pan");
     left_click_combo->addItem(tr("Exit fullscreen"), "exit_fullscreen");
     left_click_combo->addItem(tr("Normal speed"), "normal_speed");
     left_click_combo->addItem(tr("Frame counter"), "frame_counter");
     left_click_combo->addItem(tr("Settings"), "view_settings");
-    left_click_combo->addItem(tr("Double size"), "toggle_double_size");
+    left_click_combo->addItem(tr("Double size"), "size_toggle_double");
     left_click_combo->addItem(tr("Next chapter"), "next_chapter");
     left_click_combo->addItem(tr("Previous chapter"), "prev_chapter");
     left_click_combo->addItem(tr("Show video equalizer"), "video_equalizer");

@@ -30,7 +30,7 @@ private:
 TMenuOSD::TMenuOSD(TMainWindow* mw)
     : TMenu(mw, mw, "osd_menu", tr("OSD"), "osd") {
 
-    TAction* a = new TAction(mw, "next_osd", tr("OSD - Next level"), "",
+    TAction* a = new TAction(mw, "osd_next", tr("Next OSD level"), "",
                              Qt::Key_O);
     connect(a, &TAction::triggered, player, &Player::TPlayer::nextOSDLevel);
     addAction(a);
@@ -56,23 +56,24 @@ TMenuOSD::TMenuOSD(TMainWindow* mw)
     addActions(group->actions());
 
     addSeparator();
-    a = new TAction(mw, "inc_osd_scale", tr("OSD size +"), "",
+    a = new TAction(mw, "osd_inc_scale", tr("OSD size +"), "",
                     QKeySequence(")"));
     connect(a, &TAction::triggered, player, &Player::TPlayer::incOSDScale);
     addAction(a);
-    a = new TAction(mw, "dec_osd_scale", tr("OSD size -"), "",
+    a = new TAction(mw, "osd_dec_scale", tr("OSD size -"), "",
                     QKeySequence("("));
     connect(a, &TAction::triggered, player, &Player::TPlayer::decOSDScale);
     addAction(a);
 
     addSeparator();
-    showFilenameAct = new TAction(mw, "show_filename",
+    showFilenameAct = new TAction(mw, "osd_show_filename",
                                   tr("Show filename on OSD"));
     connect(showFilenameAct, &TAction::triggered,
             player, &Player::TPlayer::showFilenameOnOSD);
     addAction(showFilenameAct);
 
-    showTimeAct = new TAction(mw, "show_time", tr("Show playback time on OSD"));
+    showTimeAct = new TAction(mw, "osd_show_time",
+                              tr("Show playback time on OSD"));
     connect(showTimeAct, &TAction::triggered,
             player, &Player::TPlayer::showTimeOnOSD);
     addAction(showTimeAct);

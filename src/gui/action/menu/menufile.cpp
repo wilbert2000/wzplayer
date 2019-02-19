@@ -21,7 +21,7 @@ public:
 };
 
 TMenuDisc::TMenuDisc(TMainWindow* mw)
-    : TMenu(mw, mw, "disc_menu", tr("Open disc"), "open_disc") {
+    : TMenu(mw, mw, "opem_disc_menu", tr("Open disc"), "open_disc") {
 
     // DVD
     TAction* a = new TAction(mw, "open_dvd", tr("DVD from drive"), "dvd");

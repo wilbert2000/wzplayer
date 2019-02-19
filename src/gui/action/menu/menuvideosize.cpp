@@ -92,7 +92,7 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 
 
 TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
-    TMenu(mw, mw, "videosize_menu", tr("Window size"), "video_size"),
+    TMenu(mw, mw, "video_size_menu", tr("Window size")),
     playerWindow(pw) {
 
     group = new TVideoSizeGroup(mw, pw);
@@ -101,20 +101,21 @@ TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
             main_window, &TMainWindow::setSizePercentage);
 
     addSeparator();
-    doubleSizeAct = new TAction(mw, "toggle_double_size",
+    doubleSizeAct = new TAction(mw, "size_toggle_double",
                                 tr("Toggle double size"), "", Qt::Key_D);
     connect(doubleSizeAct, &TAction::triggered,
             main_window, &TMainWindow::toggleDoubleSize);
     addAction(doubleSizeAct);
 
-    currentSizeAct = new TAction(mw, "video_size", "", "", QKeySequence("`"));
-    connect(currentSizeAct, &TAction::triggered,
+    optimizeSizeAct = new TAction(mw, "size_optimize", "", "",
+                                 QKeySequence("`"));
+    connect(optimizeSizeAct, &TAction::triggered,
             main_window, &TMainWindow::optimizeSizeFactor);
     //setDefaultAction(currentSizeAct);
     connect(playerWindow, &TPlayerWindow::videoSizeFactorChanged,
             this, &TMenuVideoSize::onVideoSizeFactorChanged,
             Qt::QueuedConnection);
-    addAction(currentSizeAct);
+    addAction(optimizeSizeAct);
 
     resizeOnLoadAct = new TAction(mw, "resize_on_load", tr("Resize on load"),
                                   "", Qt::ALT | Qt::Key_R);
@@ -131,7 +132,7 @@ void TMenuVideoSize::enableActions() {
     bool enable = player->statePOP() && player->hasVideo();
     group->setEnabled(enable);
     doubleSizeAct->setEnabled(enable);
-    currentSizeAct->setEnabled(enable);
+    optimizeSizeAct->setEnabled(enable);
     // Resize on load always enabled
 }
 
@@ -140,11 +141,11 @@ void TMenuVideoSize::upd() {
     group->updateVideoSizeGroup();
     doubleSizeAct->setEnabled(group->isEnabled());
     resizeOnLoadAct->setChecked(pref->resize_on_load);
-    currentSizeAct->setEnabled(group->isEnabled());
+    optimizeSizeAct->setEnabled(group->isEnabled());
 
     // Update text and tips
     QString txt = tr("Optimize (current size %1%)").arg(group->size_percentage);
-    currentSizeAct->setTextAndTip(txt);
+    optimizeSizeAct->setTextAndTip(txt);
 
     txt = tr("Size %1%").arg(group->size_percentage);
     QString scut = menuAction()->shortcut().toString();
