@@ -189,7 +189,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     // File residing inside parent directory
     if (path == parentPath) {
         QString filename = parentPathPlusSep + fi.fileName();
-        WZTRACE("creating file '" + filename + "'");
+        //WZTRACE("creating file '" + filename + "'");
         return new TPlaylistWidgetItem(parent,
                                        filename,
                                        name,
@@ -238,7 +238,6 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
 }
 
 void TAddFilesThread::addNewItems(TPlaylistWidgetItem* playlistItem) {
-    WZDEBUG("'" + playlistPath + "'");
 
     emit displayMessage(playlistPath, 0);
 
@@ -584,7 +583,7 @@ TPlaylistWidgetItem* TAddFilesThread::addItem(TPlaylistWidgetItem* parent,
 
     QFileInfo fi(playlistPath, filename);
     if (fi.exists()) {
-        WZTRACE("found '" + fi.absoluteFilePath() + "'");
+        //WZTRACE("found '" + fi.absoluteFilePath() + "'");
     } else if (fi.fileName().compare(TConfig::WZPLAYLIST,
                                      caseSensitiveFileNames) == 0) {
         // Non-existing wzplaylist
