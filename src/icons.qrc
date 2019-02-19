@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/" >
-        <file>default-theme/aspect.png</file>
-        <file>default-theme/next_aspect.png</file>
+        <file>default-theme/aspect_menu.png</file>
         <file>default-theme/brightness.png</file>
         <file>default-theme/cdda.png</file>
         <file>default-theme/cdrom_drive.png</file>

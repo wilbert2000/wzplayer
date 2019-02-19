@@ -15,7 +15,7 @@ namespace Menu {
 
 
 TMenuAspect::TMenuAspect(TMainWindow* mw) :
-    TMenu(mw, mw, "aspect_menu", tr("Aspect ratio"), "aspect") {
+    TMenu(mw, mw, "aspect_menu", tr("Aspect ratio")) {
 
     group = new TActionGroup(mw, "aspectgroup");
     group->setEnabled(false);
