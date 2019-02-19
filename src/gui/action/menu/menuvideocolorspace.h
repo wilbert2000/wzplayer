@@ -16,7 +16,7 @@ class TColorSpaceGroup : public TActionGroup {
     Q_OBJECT
 
 public:
-    explicit TColorSpaceGroup(QWidget* parent);
+    explicit TColorSpaceGroup(TMainWindow* mw);
 };
 
 class TMenuVideoColorSpace : public TMenu {

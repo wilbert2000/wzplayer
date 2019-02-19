@@ -117,51 +117,51 @@ void TPlaylist::createActions() {
 
     // Connect of enableActions() needs to be done before creation of menus
     // because enableActions() can set the currently playing item, which can be
-    // used in TMenu::enableActions()
+    // used by TMenu::enableActions()
     connect(main_window, &TMainWindow::enableActions,
             this, &TPlaylist::enableActions);
 
     // Open
-    openAct = new TAction(main_window, "pl_open", tr("Open &playlist..."), "",
+    openAct = new TAction(main_window, "pl_open", tr("Open playlist..."), "",
                           QKeySequence("Ctrl+P"));
     connect(openAct, &TAction::triggered, this, &TPlaylist::open);
 
     // Save
-    saveAct = new TAction(main_window, "pl_save", tr("&Save playlist"), "save",
+    saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "save",
                           QKeySequence("Ctrl+S"));
     connect(saveAct, &TAction::triggered, this, &TPlaylist::save);
 
     // SaveAs
     saveAsAct = new TAction(main_window, "pl_saveas",
-                            tr("S&ave playlist as..."), "saveas");
+                            tr("Save playlist as..."), "saveas");
     connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
     // Refresh
-    refreshAct = new TAction(main_window, "pl_refresh", tr("R&efresh playlist"), "",
-                             Qt::Key_F5);
+    refreshAct = new TAction(main_window, "pl_refresh", tr("Refresh playlist"),
+                             "", Qt::Key_F5);
     connect(refreshAct, &TAction::triggered, this, &TPlaylist::refresh);
     connect(playlistWidget, &TPlaylistWidget::refresh,
             this, &TPlaylist::refresh, Qt::QueuedConnection);
 
     // Browse directory
     browseDirAct = new TAction(main_window, "pl_browse_dir",
-                               tr("&Browse directory"));
+                               tr("Browse directory"));
     browseDirAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
     connect(browseDirAct, &TAction::triggered, this, &TPlaylist::browseDir);
 
     // Stop
-    stopAct = new TAction(main_window, "stop", tr("&Stop"), "",
+    stopAct = new TAction(main_window, "stop", tr("Stop"), "",
                           Qt::Key_MediaStop);
     connect(stopAct, &TAction::triggered, this, &TPlaylist::stop);
 
     // Play
-    playAct = new TAction(main_window, "play", tr("P&lay"), "play",
+    playAct = new TAction(main_window, "play", tr("Play"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
     connect(playAct, &TAction::triggered, this, &Playlist::TPlaylist::play);
 
     // Play/pause
-    playOrPauseAct = new TAction(main_window, "play_or_pause", tr("&Play"),
+    playOrPauseAct = new TAction(main_window, "play_or_pause", tr("Play"),
                                  "play", Qt::Key_Space);
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
@@ -169,7 +169,7 @@ void TPlaylist::createActions() {
 
     // Play in new window
     playNewAct = new TAction(main_window, "play_new_window",
-                             tr("Pl&ay in new window"), "play",
+                             tr("Play in new window"), "play",
                              Qt::CTRL | Qt::Key_Space);
     connect(playNewAct, &TAction::triggered,
             this, &TPlaylist::openInNewWindow);
@@ -180,28 +180,28 @@ void TPlaylist::createActions() {
     connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
 
     // Play next
-    playNextAct = new TAction(main_window, "play_next", tr("Play &next"), "next",
+    playNextAct = new TAction(main_window, "play_next", tr("Play next"), "next",
                               QKeySequence(">"));
     playNextAct->addShortcut(QKeySequence("."));
     playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
     connect(playNextAct, &TAction::triggered, this, &TPlaylist::playNext);
 
     // Play prev
-    playPrevAct = new TAction(main_window, "play_prev", tr("Play pre&vious"),
+    playPrevAct = new TAction(main_window, "play_prev", tr("Play previous"),
                               "previous", QKeySequence("<"));
     playPrevAct->addShortcut(QKeySequence(","));
     playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
     connect(playPrevAct, &TAction::triggered, this, &TPlaylist::playPrev);
 
     // Repeat
-    repeatAct = new TAction(main_window, "pl_repeat", tr("&Repeat playlist"),
+    repeatAct = new TAction(main_window, "pl_repeat", tr("Repeat playlist"),
                             "", Qt::CTRL | Qt::Key_Backslash);
     repeatAct->setCheckable(true);
     connect(repeatAct, &TAction::triggered,
             this, &TPlaylist::onRepeatToggled);
 
     // Shuffle
-    shuffleAct = new TAction(main_window, "pl_shuffle", tr("S&huffle playlist"),
+    shuffleAct = new TAction(main_window, "pl_shuffle", tr("Shuffle playlist"),
                              "shuffle", Qt::ALT | Qt::Key_Backslash);
     shuffleAct->setCheckable(true);
     connect(shuffleAct, &TAction::triggered,

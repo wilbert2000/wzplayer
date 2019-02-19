@@ -21,16 +21,16 @@ const double TAspectRatio::RATIOS[] = {
 
 // List of aspect ratio names used in menus and pretty strings
 const char* TAspectRatio::RATIO_NAMES[] = {
-    QT_TR_NOOP("1&:1"),
-    QT_TR_NOOP("&5:4"),
-    QT_TR_NOOP("&4:3"),
-    QT_TR_NOOP("11:&8"),
-    QT_TR_NOOP("1&4:10"),
-    QT_TR_NOOP("&3:2"),
-    QT_TR_NOOP("&14:9"),
-    QT_TR_NOOP("1&6:10"),
-    QT_TR_NOOP("16:&9"),
-    QT_TR_NOOP("&2:1"),
+    QT_TR_NOOP("1:1"),
+    QT_TR_NOOP("5:4"),
+    QT_TR_NOOP("4:3"),
+    QT_TR_NOOP("11:8"),
+    QT_TR_NOOP("14:10"),
+    QT_TR_NOOP("3:2"),
+    QT_TR_NOOP("14:9"),
+    QT_TR_NOOP("16:10"),
+    QT_TR_NOOP("16:9"),
+    QT_TR_NOOP("2:1"),
     QT_TR_NOOP("2.35:1")
 };
 
@@ -53,13 +53,16 @@ QString TAspectRatio::doubleToString(double aspect) {
 
     for(unsigned int i = 0; i < RATIOS_COUNT; i++) {
         if (qAbs(aspect - RATIOS[i]) < 0.0001) {
-            QString s = RATIO_NAMES[i];
-            s.replace("&", "");
-            return tr("%1 (%2)").arg(s, QString::number(aspect));
+            return QString("%1 (%2)").arg(RATIO_NAMES[i],
+                                          QString::number(aspect));
         }
     }
 
-    return QString::number(aspect);
+    QString s = QString::number(aspect);
+    if (s == "nan") {
+        return tr("Unknown");
+    }
+    return s;
 }
 
 // Get string to use in menu. Note: id is not a TMenuID!
@@ -124,17 +127,17 @@ QString TAspectRatio::toString() const {
 
     switch (id) {
         case AspectNone: name = tr("disabled"); break;
+        case AspectAuto: name = tr("auto"); break;
         case Aspect43: name = "4:3"; break;
-        case Aspect169: name = "16:9"; break;
-        case Aspect149: name = "14:9"; break;
-        case Aspect1610: name = "16:10"; break;
         case Aspect54: name = "5:4"; break;
-        case Aspect235: name = QString(RATIO_NAMES[9]).replace("&", ""); break;
+        case Aspect149: name = "14:9"; break;
+        case Aspect169: name = "16:9"; break;
+        case Aspect1610: name = "16:10"; break;
+        case Aspect235: name = RATIO_NAMES[10]; break; // Translate . in 2.35:1
         case Aspect11: name = "1:1"; break;
         case Aspect32: name = "3:2"; break;
         case Aspect1410: name = "14:10"; break;
         case Aspect118: name = "11:8"; break;
-        case AspectAuto: name = tr("auto"); break;
         default: name = tr("unknown");
     }
 

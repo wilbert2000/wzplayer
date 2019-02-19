@@ -10,17 +10,18 @@ namespace Action {
 namespace Menu {
 
 TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
-    : TMenu(mw, mw, "audiotrack_menu", tr("Audio &track"), "audio_track") {
+    : TMenu(mw, mw, "audiotrack_menu", tr("Audio track"), "audio_track") {
 
     // Next audio track
-    nextAudioTrackAct = new TAction(this, "next_audio_track",
+    nextAudioTrackAct = new TAction(mw, "next_audio_track",
                                     tr("Next audio track"), "",
                                     QKeySequence("*"));
     connect(nextAudioTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextAudioTrack);
+    addAction(nextAudioTrackAct);
 
     addSeparator();
-    audioTrackGroup = new TActionGroup(this, "audiotrack");
+    audioTrackGroup = new TActionGroup(mw, "audiotrackgroup");
     connect(audioTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setAudioTrack);
     connect(player, &Player::TPlayer::audioTracksChanged,
@@ -31,7 +32,8 @@ TMenuAudioTracks::TMenuAudioTracks(TMainWindow* mw)
 
 void TMenuAudioTracks::enableActions() {
 
-    nextAudioTrackAct->setEnabled(player->statePOP() && player->mdat.audios.count() > 1);
+    nextAudioTrackAct->setEnabled(player->statePOP()
+                                  && player->mdat.audios.count() > 1);
 }
 
 void TMenuAudioTracks::updateAudioTracks() {
@@ -47,7 +49,7 @@ void TMenuAudioTracks::updateAudioTracks() {
         Maps::TTracks::TTrackIterator i = audios->getIterator();
         while (i.hasNext()) {
             i.next();
-            Maps::TTrackData track = i.value();
+            const Maps::TTrackData& track = i.value();
             QAction* action = new QAction(audioTrackGroup);
             action->setCheckable(true);
             action->setText(track.getDisplayName());

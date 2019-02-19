@@ -48,14 +48,14 @@ TMainWindowTray::TMainWindowTray() :
     connect(tray, &QSystemTrayIcon::activated,
             this, &TMainWindowTray::onSystemTrayIconActivated);
 
-    quitAct = new Action::TAction(this, "quit", tr("&Quit"), "exit",
+    quitAct = new Action::TAction(this, "quit", tr("Quit"), "exit",
                                   QKeySequence("Ctrl+Q"));
     quitAct->setVisible(false);
     connect(quitAct, &Action::TAction::triggered, this, &TMainWindowTray::quit);
     fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
-                                      tr("S&how icon in system tray"),
+                                      tr("Show icon in system tray"),
                                       "systray");
     showTrayAct->setCheckable(true);
     connect(showTrayAct, &Gui::Action::TAction::toggled,
@@ -66,7 +66,7 @@ TMainWindowTray::TMainWindowTray() :
     viewMenu->addSeparator();
     viewMenu->addAction(showTrayAct);
 
-    showAllAct = new Action::TAction(this, "restore_hide", tr("&Hide"));
+    showAllAct = new Action::TAction(this, "tray_restore_hide", tr("Hide"));
     updateShowAllAct();
     connect(showAllAct, &Action::TAction::triggered,
             this, &TMainWindowTray::toggleShowAll);
@@ -94,9 +94,9 @@ void TMainWindowTray::setWindowCaption(const QString& title) {
 void TMainWindowTray::updateShowAllAct() {
 
     if (isVisible()) {
-        showAllAct->setTextAndTip(tr("&Hide"));
+        showAllAct->setTextAndTip(tr("Hide"));
     } else {
-        showAllAct->setTextAndTip(tr("&Restore"));
+        showAllAct->setTextAndTip(tr("Restore"));
     }
 }
 
@@ -136,7 +136,7 @@ void TMainWindowTray::closeWindow() {
 void TMainWindowTray::quit() {
     WZDEBUG("");
 
-    // Bypass TMainWindowTray::switchToTray()
+    // Bypass switchToTray() in TMainWindowTray::closeWindow
     TMainWindow::closeWindow();
 }
 

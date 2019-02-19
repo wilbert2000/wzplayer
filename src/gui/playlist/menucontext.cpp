@@ -16,45 +16,46 @@ namespace Playlist {
 
 
 TMenuContext::TMenuContext(TPlaylist* pl, TMainWindow* mw) :
-    Gui::Action::Menu::TMenu(pl, mw, "", ""),
+    Gui::Action::Menu::TMenu(pl, mw, "pl_context_menu",
+                             tr("Playlist context menu")),
     playlist(pl) {
 
     using namespace Gui::Action;
 
     // Edit name
-    editNameAct = new TAction(this, "pl_edit_name", tr("&Edit name..."), "",
+    editNameAct = new TAction(this, "pl_edit_name", tr("Edit name..."), "",
                               Qt::Key_F2);
     connect(editNameAct, &TAction::triggered, playlist, &TPlaylist::editName);
     playlist->addAction(editNameAct);
 
     // New folder
-    newFolderAct = new TAction(this, "pl_new_folder", tr("&New folder"), "",
+    newFolderAct = new TAction(this, "pl_new_folder", tr("New folder"), "",
                                Qt::Key_F10);
     connect(newFolderAct, &TAction::triggered, playlist, &TPlaylist::newFolder);
     playlist->addAction(newFolderAct);
 
     // Find playing
     findPlayingAct = new TAction(this, "pl_find_playing",
-                                 tr("&Find playing item"), "", Qt::Key_F3);
+                                 tr("Find playing item"), "", Qt::Key_F3);
     connect(findPlayingAct, &TAction::triggered,
             playlist, &TPlaylist::findPlayingItem);
     main_window->addAction(findPlayingAct);
 
     addSeparator();
     // Cut
-    cutAct = new TAction(this, "pl_cut", tr("&Cut file name(s)"), "",
+    cutAct = new TAction(this, "pl_cut", tr("Cut file name(s)"), "",
                          QKeySequence("Ctrl+X"));
     connect(cutAct, &TAction::triggered, playlist, &TPlaylist::cut);
     playlist->addAction(cutAct);
 
     // Copy
-    copyAct = new TAction(this, "pl_copy", tr("&Copy file name(s)"), "",
+    copyAct = new TAction(this, "pl_copy", tr("Copy file name(s)"), "",
                           QKeySequence("Ctrl+C"));
     connect(copyAct, &TAction::triggered, playlist, &TPlaylist::copySelected);
     main_window->addAction(copyAct);
 
     // Paste
-    pasteAct = new TAction(this, "pl_paste", tr("&Paste file name(s)"), "",
+    pasteAct = new TAction(this, "pl_paste", tr("Paste file name(s)"), "",
                            QKeySequence("Ctrl+V"));
     connect(pasteAct, &TAction::triggered, playlist, &TPlaylist::paste);
     connect(QApplication::clipboard(), &QClipboard::dataChanged,
@@ -69,8 +70,6 @@ TMenuContext::TMenuContext(TPlaylist* pl, TMainWindow* mw) :
     // Remove menu
     removeFromPlaylistMenu = new TMenuRemove(playlist, main_window);
     addMenu(removeFromPlaylistMenu);
-
-    //connect(pw, &TPlaylistWidget::currentItemChanged)
 }
 
 void TMenuContext::enablePaste() {

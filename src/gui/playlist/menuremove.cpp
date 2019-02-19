@@ -9,25 +9,25 @@ namespace Playlist {
 
 TMenuRemove::TMenuRemove(TPlaylist* pl, TMainWindow* mw) :
     Gui::Action::Menu::TMenu(pl, mw, "pl_remove_menu",
-                             tr("&Remove from playlist"), "minus"),
+                             tr("Remove from playlist"), "minus"),
     playlist(pl) {
 
     using namespace Gui::Action;
 
     removeSelectedAct = new TAction(this, "pl_remove_selected",
-        tr("&Remove from playlist"), "", Qt::Key_Delete);
+        tr("Remove from playlist"), "", Qt::Key_Delete);
     connect(removeSelectedAct, &TAction::triggered,
             playlist, &TPlaylist::removeSelected);
 
     removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk",
-        tr("&Delete from disk..."), "", Qt::SHIFT | Qt::Key_Delete);
+        tr("Delete from disk..."), "", Qt::SHIFT | Qt::Key_Delete);
     connect(removeSelectedFromDiskAct, &TAction::triggered,
             playlist, &TPlaylist::removeSelectedFromDisk);
     connect(playlist->getPlaylistWidget(), &TPlaylistWidget::currentItemChanged,
             this, &TMenuRemove::enableRemoveFromDiskAction);
 
 
-    removeAllAct = new TAction(this, "pl_remove_all", tr("&Clear playlist"),
+    removeAllAct = new TAction(this, "pl_remove_all", tr("Clear playlist"),
                                "", Qt::CTRL | Qt::Key_Delete);
     connect(removeAllAct, &TAction::triggered, playlist, &TPlaylist::removeAll);
 }

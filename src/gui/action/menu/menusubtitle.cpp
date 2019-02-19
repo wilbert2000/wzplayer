@@ -24,17 +24,18 @@ private:
 };
 
 TMenuCC::TMenuCC(TMainWindow* mw)
-    : TMenu(mw, mw, "closed_captions_menu", tr("&Closed captions"),
+    : TMenu(mw, mw, "closed_captions_menu", tr("Closed captions"),
             "closed_caption") {
 
-    group = new TActionGroup(this, "cc");
+    group = new TActionGroup(mw, "cc");
     group->setEnabled(false);
-    new TActionGroupItem(this, group, "cc_none", tr("&Off"), 0);
-    new TActionGroupItem(this, group, "cc_ch_1", tr("&1"), 1);
-    new TActionGroupItem(this, group, "cc_ch_2", tr("&2"), 2);
-    new TActionGroupItem(this, group, "cc_ch_3", tr("&3"), 3);
-    new TActionGroupItem(this, group, "cc_ch_4", tr("&4"), 4);
+    new TActionGroupItem(mw, group, "cc_none", tr("Off"), 0);
+    new TActionGroupItem(mw, group, "cc_ch_1", tr("1"), 1);
+    new TActionGroupItem(mw, group, "cc_ch_2", tr("2"), 2);
+    new TActionGroupItem(mw, group, "cc_ch_3", tr("3"), 3);
+    new TActionGroupItem(mw, group, "cc_ch_4", tr("4"), 4);
     group->setChecked(player->mset.closed_caption_channel);
+    addActions(group->actions());
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::setClosedCaptionChannel);
     // Currently no one else sets it
@@ -55,24 +56,25 @@ void TMenuCC::onAboutToShow() {
 
 
 TMenuSubFPS::TMenuSubFPS(TMainWindow* mw)
-    : TMenu(mw, mw, "subfps_menu", tr("F&rames per second ext. subs"),
+    : TMenu(mw, mw, "subfps_menu", tr("FPS external subs"),
             "subfps") {
 
-    group = new TActionGroup(this, "subfps");
+    group = new TActionGroup(mw, "subfps");
     group->setEnabled(false);
-    new TActionGroupItem(this, group, "sub_fps_none", tr("&Default"),
+    new TActionGroupItem(mw, group, "sub_fps_none", tr("Default"),
                          TMediaSettings::SFPS_None);
-    new TActionGroupItem(this, group, "sub_fps_23976", tr("23.9&76"),
+    new TActionGroupItem(mw, group, "sub_fps_23976", tr("23.976"),
                          TMediaSettings::SFPS_23976);
-    new TActionGroupItem(this, group, "sub_fps_24", tr("2&4"),
+    new TActionGroupItem(mw, group, "sub_fps_24", tr("24"),
                          TMediaSettings::SFPS_24);
-    new TActionGroupItem(this, group, "sub_fps_25", tr("2&5"),
+    new TActionGroupItem(mw, group, "sub_fps_25", tr("25"),
                          TMediaSettings::SFPS_25);
-    new TActionGroupItem(this, group, "sub_fps_29970", tr("29.&970"),
+    new TActionGroupItem(mw, group, "sub_fps_29970", tr("29.970"),
                          TMediaSettings::SFPS_29970);
-    new TActionGroupItem(this, group, "sub_fps_30", tr("3&0"),
+    new TActionGroupItem(mw, group, "sub_fps_30", tr("30"),
                          TMediaSettings::SFPS_30);
     group->setChecked(player->mset.external_subtitles_fps);
+    addActions(group->actions());
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::changeExternalSubFPS);
     // No one else sets it
@@ -92,72 +94,83 @@ void TMenuSubFPS::onAboutToShow() {
 
 
 TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
-    : TMenu(mw, mw, "subtitle_menu", tr("&Subtitles"), "noicon") {
+    : TMenu(mw, mw, "subtitle_menu", tr("Subtitles"), "noicon") {
 
-    decSubPosAct = new TAction(this, "dec_sub_pos", tr("&Up"), "", Qt::Key_Up);
+    decSubPosAct = new TAction(mw, "dec_sub_pos", tr("Up"), "", Qt::Key_Up);
     connect(decSubPosAct, &TAction::triggered,
             player, &Player::TPlayer::decSubPos);
-    incSubPosAct = new TAction(this, "inc_sub_pos", tr("&Down"), "",
-                               Qt::Key_Down);
+    addAction(decSubPosAct);
+    incSubPosAct = new TAction(mw, "inc_sub_pos", tr("Down"), "",Qt::Key_Down);
     connect(incSubPosAct, &TAction::triggered,
             player, &Player::TPlayer::incSubPos);
+    addAction(incSubPosAct);
 
     addSeparator();
-    incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Si&ze +"), "",
+    incSubScaleAct = new TAction(mw, "inc_sub_scale", tr("Size +"), "",
                                  Qt::Key_K);
     connect(incSubScaleAct, &TAction::triggered,
             player, &Player::TPlayer::incSubScale);
-    decSubScaleAct = new TAction(this, "dec_sub_scale", tr("S&ize -"), "",
+    addAction(incSubScaleAct);
+    decSubScaleAct = new TAction(mw, "dec_sub_scale", tr("Size -"), "",
                                  Qt::SHIFT | Qt::Key_K);
     connect(decSubScaleAct, &TAction::triggered,
             player, &Player::TPlayer::decSubScale);
+    addAction(decSubScaleAct);
 
     addSeparator();
-    incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay &+"), "",
+    incSubDelayAct = new TAction(mw, "inc_sub_delay", tr("Delay +"), "",
                                  Qt::ALT | Qt::Key_D);
     connect(incSubDelayAct, &TAction::triggered,
             player, &Player::TPlayer::incSubDelay);
-    decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay &-"), "",
+    addAction(incSubDelayAct);
+    decSubDelayAct = new TAction(mw, "dec_sub_delay", tr("Delay -"), "",
                                  Qt::SHIFT | Qt::Key_D);
     connect(decSubDelayAct, &TAction::triggered,
             player, &Player::TPlayer::decSubDelay);
-    subDelayAct = new TAction(this, "sub_delay", tr("Se&t delay..."), "",
+    addAction(decSubDelayAct);
+    subDelayAct = new TAction(mw, "sub_delay", tr("Set delay..."), "",
                               Qt::META | Qt::Key_D);
     connect(subDelayAct, &TAction::triggered,
-            main_window, &TMainWindow::showSubDelayDialog);
+            mw, &TMainWindow::showSubDelayDialog);
+    addAction(subDelayAct);
 
     addSeparator();
-    incSubStepAct = new TAction(this, "inc_sub_step",
-        tr("N&ext line in subtitles"), "", Qt::Key_L);
+    incSubStepAct = new TAction(mw, "inc_sub_step",
+                                tr("Next line in subtitles"), "", Qt::Key_L);
     connect(incSubStepAct, &TAction::triggered,
             player, &Player::TPlayer::incSubStep);
-    decSubStepAct = new TAction(this, "dec_sub_step",
-        tr("&Previous line in subtitles"), "", Qt::SHIFT | Qt::Key_L);
+    addAction(incSubStepAct);
+    decSubStepAct = new TAction(mw, "dec_sub_step",
+        tr("Previous line in subtitles"), "", Qt::SHIFT | Qt::Key_L);
     connect(decSubStepAct, &TAction::triggered,
             player, &Player::TPlayer::decSubStep);
+    addAction(decSubStepAct);
 
-    seekNextSubAct = new TAction(this, "seek_next_sub",
+    seekNextSubAct = new TAction(mw, "seek_next_sub",
         tr("Seek to next subtitle"), "", Qt::Key_N, pref->isMPV());
     connect(seekNextSubAct, &TAction::triggered,
             player, &Player::TPlayer::seekToNextSub);
-    seekPrevSubAct = new TAction(this, "seek_prev_sub",
+    addAction(seekNextSubAct);
+    seekPrevSubAct = new TAction(mw, "seek_prev_sub",
                                  tr("Seek to previous subtitle"), "",
                                  Qt::SHIFT | Qt::Key_N, pref->isMPV());
     connect(seekPrevSubAct, &TAction::triggered,
             player, &Player::TPlayer::seekToPrevSub);
+    addAction(seekPrevSubAct);
 
     // Subtitle tracks
     addSeparator();
-    subtitleTrackMenu = new TMenu(main_window, main_window,
-        "subtitle_track_menu", tr("Subtitle &track"), "sub");
-    nextSubtitleAct = new TAction(subtitleTrackMenu, "next_subtitle",
+    subtitleTrackMenu = new TMenu(mw, mw, "subtitle_track_menu",
+                                  tr("Subtitle track"), "sub");
+    nextSubtitleAct = new TAction(mw, "next_subtitle",
         tr("Next subtitle track"), "", Qt::CTRL | Qt::Key_N);
     connect(nextSubtitleAct, &TAction::triggered,
             player, &Player::TPlayer::nextSubtitle);
+    subtitleTrackMenu->addAction(nextSubtitleAct);
     subtitleTrackMenu->addSeparator();
     addMenu(subtitleTrackMenu);
 
-    subtitleTrackGroup = new TActionGroup(this, "subtitletrackgroup");
+    subtitleTrackGroup = new TActionGroup(mw, "subtitletrackgroup");
     connect(subtitleTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSubtitle);
     connect(player, &Player::TPlayer::subtitlesChanged,
@@ -166,48 +179,49 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
             this, &TMenuSubtitle::updateSubtitles);
 
     // Secondary subtitle track
-    secondarySubtitleTrackMenu = new TMenu(main_window, main_window,
-        "subtitle_track2_menu", tr("Secondary trac&k"),
-        "secondary_sub");
+    secondarySubtitleTrackMenu = new TMenu(mw, mw, "subtitle_track2_menu",
+        tr("Secondary track"), "secondary_sub");
     if (pref->isMPV()) {
         addMenu(secondarySubtitleTrackMenu);
     }
-    secondarySubtitleTrackGroup = new TActionGroup(this, "subtitletrack2group");
+    secondarySubtitleTrackGroup = new TActionGroup(mw, "subtitletrack2group");
     connect(secondarySubtitleTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSecondarySubtitle);
     connect(player, &Player::TPlayer::secondarySubtitleTrackChanged,
             this, &TMenuSubtitle::updateSubtitles);
 
-    addMenu(new TMenuCC(main_window));
+    addMenu(new TMenuCC(mw));
 
-    useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only",
-        tr("&Forced subtitles only"), "forced_subs");
+    useForcedSubsOnlyAct = new TAction(mw, "use_forced_subs_only",
+        tr("Forced subtitles only"), "forced_subs");
     useForcedSubsOnlyAct->setCheckable(true);
     useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
     connect(useForcedSubsOnlyAct, &TAction::triggered,
             player, &Player::TPlayer::toggleForcedSubsOnly);
+    addAction(useForcedSubsOnlyAct);
 
     addSeparator();
-    loadSubsAct = new TAction(this, "load_subs", tr("&Load subtitles..."),
-                              "open");
-    connect(loadSubsAct, &TAction::triggered,
-            main_window, &TMainWindow::loadSub);
-    unloadSubsAct = new TAction(this, "unload_subs", tr("U&nload subtitles"),
+    loadSubsAct = new TAction(mw, "load_subs", tr("Load subtitles..."),"open");
+    connect(loadSubsAct, &TAction::triggered, mw, &TMainWindow::loadSub);
+    unloadSubsAct = new TAction(mw, "unload_subs", tr("Unload subtitles"),
                                 "unload");
     connect(unloadSubsAct, &TAction::triggered,
             player, &Player::TPlayer::unloadSub);
-    subFPSMenu = new TMenuSubFPS(main_window);
+    addAction(unloadSubsAct);
+
+    subFPSMenu = new TMenuSubFPS(mw);
     addMenu(subFPSMenu);
 
     addSeparator();
-    useCustomSubStyleAct = new TAction(this, "use_custom_sub_style",
-                                       tr("Use custo&m style"));
+    useCustomSubStyleAct = new TAction(mw, "use_custom_sub_style",
+                                       tr("Use custom style"));
     useCustomSubStyleAct->setCheckable(true);
     useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
     connect(useCustomSubStyleAct, &TAction::triggered,
             player, &Player::TPlayer::setUseCustomSubStyle);
-    connect(main_window, &TMainWindow::settingsChanged,
+    connect(mw, &TMainWindow::settingsChanged,
             this, &TMenuSubtitle::onSettingsChanged);
+    addAction(useCustomSubStyleAct);
 }
 
 void TMenuSubtitle::enableActions() {
@@ -256,13 +270,13 @@ void TMenuSubtitle::updateSubtitles() {
     subtitleTrackGroup->clear();
     secondarySubtitleTrackGroup->clear();
 
-    QAction* subNoneAct = subtitleTrackGroup->addAction(tr("&None"));
+    QAction* subNoneAct = subtitleTrackGroup->addAction(tr("None"));
     subNoneAct->setData(SubData::None);
     subNoneAct->setCheckable(true);
     if (player->mset.current_sub_idx < 0) {
         subNoneAct->setChecked(true);
     }
-    subNoneAct = secondarySubtitleTrackGroup->addAction(tr("&None"));
+    subNoneAct = secondarySubtitleTrackGroup->addAction(tr("None"));
     subNoneAct->setData(SubData::None);
     subNoneAct->setCheckable(true);
     if (player->mset.current_secondary_sub_idx < 0) {

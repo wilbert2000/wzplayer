@@ -44,7 +44,7 @@ TFavorites::TFavorites(TMainWindow* mw,
     , _filename(filename)
     , last_item(1) {
 
-    // Warning: also used for submenus. See TMenuFile for bindings
+    // Warning: also used for submenus. See TMenuFile for more.
     addAct = new TAction(this, "", tr("Add current media"));
     connect(addAct, &TAction::triggered, this, &TFavorites::addCurrentPlaying);
 

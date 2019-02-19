@@ -49,7 +49,7 @@ private:
 
     TAction* screenshotAct;
     TAction* screenshotsAct;
-    TAction * capturingAct;
+    TAction* capturingAct;
 
 private slots:
     void onFullscreenChanged();

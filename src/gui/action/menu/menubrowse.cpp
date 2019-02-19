@@ -13,13 +13,12 @@ namespace Action {
 namespace Menu {
 
 TMenuBrowse::TMenuBrowse(TMainWindow* mw)
-    : TMenu(mw, mw, "browse_menu", tr("&Browse"), "noicon") {
+    : TMenu(mw, mw, "browse_menu", tr("Browse"), "noicon") {
 
     // Titles
-    titlesMenu = new TMenu(main_window, main_window, "titles_menu",
-                           tr("&Title"), "title");
+    titlesMenu = new TMenu(mw, mw, "titles_menu", tr("Title"), "title");
     addMenu(titlesMenu);
-    titleGroup = new TActionGroup(this, "title");
+    titleGroup = new TActionGroup(mw, "titlegroup");
     connect(titleGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setTitle);
     connect(player, &Player::TPlayer::titleTrackChanged,
@@ -28,24 +27,22 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
             this, &TMenuBrowse::updateTitles);
 
     // Chapters
-    nextChapterAct = new TAction(main_window, "next_chapter",
-                                 tr("Next chapter"), "", Qt::Key_C);
+    nextChapterAct = new TAction(mw, "next_chapter", tr("Next chapter"), "",
+                                 Qt::Key_C);
     connect(nextChapterAct, &TAction::triggered,
             player, &Player::TPlayer::nextChapter);
-    prevChapterAct = new TAction(main_window, "prev_chapter",
-                                 tr("Previous chapter"), "",
+    prevChapterAct = new TAction(mw, "prev_chapter", tr("Previous chapter"), "",
                                  Qt::SHIFT | Qt::Key_C);
     connect(prevChapterAct, &TAction::triggered,
             player, &Player::TPlayer::prevChapter);
 
-    chaptersMenu = new TMenu(main_window, main_window, "chapters_menu",
-                             tr("&Chapter"), "chapter");
+    chaptersMenu = new TMenu(mw, mw, "chapters_menu", tr("Chapter"), "chapter");
     chaptersMenu->addAction(nextChapterAct);
     chaptersMenu->addAction(prevChapterAct);
     chaptersMenu->addSeparator();
     addMenu(chaptersMenu);
 
-    chapterGroup = new TActionGroup(this, "chapter");
+    chapterGroup = new TActionGroup(mw, "chaptergroup");
     connect(chapterGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setChapter);
     connect(player, &Player::TPlayer::chapterChanged,
@@ -55,16 +52,15 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
             this, &TMenuBrowse::updateChapters);
 
     // Angles submenu
-    nextAngleAct = new TAction(main_window, "next_angle", tr("Next angle"), "",
+    nextAngleAct = new TAction(mw, "next_angle", tr("Next angle"), "",
                                Qt::SHIFT | Qt::Key_A);
     connect(nextAngleAct, &TAction::triggered,
             player, &Player::TPlayer::nextAngle);
-    anglesMenu = new TMenu(main_window, main_window, "angles_menu",
-                           tr("&Angle"), "angle");
+    anglesMenu = new TMenu(mw, mw, "angles_menu", tr("Angle"), "angle");
     anglesMenu->addAction(nextAngleAct);
     anglesMenu->addSeparator();
     addMenu(anglesMenu);
-    angleGroup = new TActionGroup(this, "angle");
+    angleGroup = new TActionGroup(mw, "anglegroup");
     connect(angleGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setAngle);
     // Update normally done by updateTitles. For DVDNAV only:
@@ -74,45 +70,51 @@ TMenuBrowse::TMenuBrowse(TMainWindow* mw)
     addSeparator();
 
     // DVDNAV
-    dvdnavUpAct = new TAction(this, "dvdnav_up", tr("DVD, move up"),
-                              "", Qt::META | Qt::Key_Up);
+    dvdnavUpAct = new TAction(mw, "dvdnav_up", tr("DVD, move up"), "",
+                              Qt::META | Qt::Key_Up);
     connect(dvdnavUpAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavUp);
-    dvdnavDownAct = new TAction(this, "dvdnav_down", tr("DVD, move down"),
-                                "", Qt::META | Qt::Key_Down);
+    addAction(dvdnavUpAct);
+    dvdnavDownAct = new TAction(mw, "dvdnav_down", tr("DVD, move down"), "",
+                                Qt::META | Qt::Key_Down);
     connect(dvdnavDownAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavDown);
-    dvdnavLeftAct = new TAction(this, "dvdnav_left", tr("DVD, move left"),
-                                "", Qt::META | Qt::Key_Left);
+    addAction(dvdnavDownAct);
+    dvdnavLeftAct = new TAction(mw, "dvdnav_left", tr("DVD, move left"), "",
+                                Qt::META | Qt::Key_Left);
     connect(dvdnavLeftAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavLeft);
-    dvdnavRightAct = new TAction(this, "dvdnav_right", tr("DVD, move right"),
-                                 "", Qt::META | Qt::Key_Right);
+    addAction(dvdnavLeftAct);
+    dvdnavRightAct = new TAction(mw, "dvdnav_right", tr("DVD, move right"), "",
+                                 Qt::META | Qt::Key_Right);
     connect(dvdnavRightAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavRight);
+    addAction(dvdnavRightAct);
 
     addSeparator();
 
-    dvdnavSelectAct = new TAction(this, "dvdnav_select", tr("DVD, select"),
-                                  "", Qt::META | Qt::Key_Return);
+    dvdnavSelectAct = new TAction(mw, "dvdnav_select", tr("DVD, select"), "",
+                                  Qt::META | Qt::Key_Return);
     connect(dvdnavSelectAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavSelect);
+    addAction(dvdnavSelectAct);
 
-    // Not in menu, so add to parent only
-    dvdnavMouseAct = new TAction(main_window, "dvdnav_mouse",
-                                 tr("DVD, mouse click"));
+    // Not in menu
+    dvdnavMouseAct = new TAction(mw, "dvdnav_mouse", tr("DVD, mouse click"));
     connect(dvdnavMouseAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavMouse);
 
-    dvdnavMenuAct = new TAction(this, "dvdnav_menu", tr("DVD &menu"),
-                                "", Qt::CTRL | Qt::Key_Return);
+    dvdnavMenuAct = new TAction(mw, "dvdnav_menu", tr("DVD menu"), "",
+                                Qt::CTRL | Qt::Key_Return);
     connect(dvdnavMenuAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavMenu);
+    addAction(dvdnavMenuAct);
 
-    dvdnavPrevAct = new TAction(this, "dvdnav_prev", tr("DVD &previous menu"),
-                                "", Qt::META | Qt::Key_Escape);
+    dvdnavPrevAct = new TAction(mw, "dvdnav_prev", tr("DVD previous menu"), "",
+                                Qt::META | Qt::Key_Escape);
     connect(dvdnavPrevAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavPrev);
+    addAction(dvdnavPrevAct);
 }
 
 void TMenuBrowse::enableActions() {
@@ -124,7 +126,8 @@ void TMenuBrowse::enableActions() {
 
     nextAngleAct->setEnabled(pop && player->mdat.angles > 1);
 
-    bool enableDVDNav = pop && player->mdat.detected_type == TMediaData::TYPE_DVDNAV;
+    bool enableDVDNav = pop
+            && player->mdat.detected_type == TMediaData::TYPE_DVDNAV;
     dvdnavUpAct->setEnabled(enableDVDNav);
     dvdnavDownAct->setEnabled(enableDVDNav);
     dvdnavLeftAct->setEnabled(enableDVDNav);
@@ -145,7 +148,7 @@ void TMenuBrowse::updateTitles() {
         a->setEnabled(false);
     } else {
         int selected_ID = player->mdat.titles.getSelectedID();
-        foreach(const Maps::TTitleData title, player->mdat.titles) {
+        foreach(const Maps::TTitleData& title, player->mdat.titles) {
             QAction* action = new QAction(titleGroup);
             action->setCheckable(true);
             action->setText(title.getDisplayName());
@@ -168,7 +171,7 @@ void TMenuBrowse::updateChapters() {
     chapterGroup->clear();
     if (player->mdat.chapters.count() > 0) {
         int selected_id = player->mdat.chapters.getSelectedID();
-        foreach(const Maps::TChapterData chapter, player->mdat.chapters) {
+        foreach(const Maps::TChapterData& chapter, player->mdat.chapters) {
             QAction *a = new QAction(chapterGroup);
             a->setCheckable(true);
             a->setText(chapter.getDisplayName());

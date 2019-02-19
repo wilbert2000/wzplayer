@@ -11,7 +11,7 @@ namespace Playlist {
 
 TAddRemovedMenu::TAddRemovedMenu(QWidget* parent, TMainWindow* w,
                                  TPlaylist* playlist) :
-    TMenu(parent, w, "pl_add_removed_menu", tr("Add &removed item")),
+    TMenu(parent, w, "pl_add_removed_menu", tr("Add removed item")),
     playlistWidget(playlist->getPlaylistWidget()) {
 
     connect(this, &TAddRemovedMenu::triggered,
@@ -88,20 +88,20 @@ void TAddRemovedMenu::onCurrentItemChanged(QTreeWidgetItem* current,
 
 TMenuAdd::TMenuAdd(TPlaylist* playlist, TMainWindow* mw) :
     Gui::Action::Menu::TMenu(playlist, mw, "pl_add_menu",
-                             tr("&Add to playlist"), "plus") {
+                             tr("Add to playlist"), "plus") {
 
     using namespace Gui::Action;
 
-    TAction* a = new TAction(this, "pl_add_current", tr("Add &playing file"));
+    TAction* a = new TAction(this, "pl_add_current", tr("Add playing file"));
     connect(a, &TAction::triggered, playlist, &TPlaylist::addCurrentFile);
 
-    a = new TAction(this, "pl_add_files", tr("Add &file(s)..."));
+    a = new TAction(this, "pl_add_files", tr("Add file(s)..."));
     connect(a, &TAction::triggered, playlist, &TPlaylist::addFilesDialog);
 
-    a = new TAction(this, "pl_add_directory", tr("Add &directory..."));
+    a = new TAction(this, "pl_add_directory", tr("Add directory..."));
     connect(a, &TAction::triggered, playlist, &TPlaylist::addDirectory);
 
-    a = new TAction(this, "pl_add_urls", tr("Add &URL(s)..."));
+    a = new TAction(this, "pl_add_urls", tr("Add URL(s)..."));
     connect(a, &TAction::triggered, playlist, &TPlaylist::addUrls);
 
     // Add removed sub menu

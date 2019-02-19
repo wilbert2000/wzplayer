@@ -389,7 +389,7 @@ void TMainWindow::createActions() {
 
     // Menu bar
     viewMenuBarAct = new Action::TAction(this, "toggle_menubar",
-                                         tr("Me&nu bar"), "",
+                                         tr("Menu bar"), "",
                                          Qt::SHIFT | Qt::Key_F2);
     viewMenuBarAct->setCheckable(true);
     viewMenuBarAct->setChecked(true);
@@ -414,27 +414,27 @@ void TMainWindow::createActions() {
             statusBar(), &QStatusBar::setVisible);
 
     viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
-                                           tr("&Video info"));
+                                           tr("Video info"));
     viewVideoInfoAct->setCheckable(true);
     viewVideoInfoAct->setChecked(true);
     connect(viewVideoInfoAct, &Action::TAction::toggled,
             video_info_label, &QLabel::setVisible);
 
     viewInOutPointsAct = new Action::TAction(this, "toggle_in_out_points",
-                                             tr("&In-out points"));
+                                             tr("In-out points"));
     viewInOutPointsAct->setCheckable(true);
     viewInOutPointsAct->setChecked(true);
     connect(viewInOutPointsAct, &Action::TAction::toggled,
             in_out_points_label, &QLabel::setVisible);
 
     viewVideoTimeAct = new Action::TAction(this, "toggle_video_time",
-                                           tr("&Video time"));
+                                           tr("Video time"));
     viewVideoTimeAct->setCheckable(true);
     viewVideoTimeAct->setChecked(true);
     connect(viewVideoTimeAct, &Action::TAction::toggled,
             time_label, &QLabel::setVisible);
 
-    viewFramesAct = new Action::TAction(this, "toggle_frames", tr("&Frames"));
+    viewFramesAct = new Action::TAction(this, "toggle_frames", tr("Frames"));
     viewFramesAct->setCheckable(true);
     viewFramesAct->setChecked(false);
     connect(viewFramesAct, &Action::TAction::toggled,
@@ -478,6 +478,7 @@ void TMainWindow::createMenus() {
 
     // statusbar_menu added to toolbar_menu by createToolbarMenu()
     statusbar_menu = new QMenu(this);
+    statusbar_menu->menuAction()->setObjectName("statusbar_menu");
     statusbar_menu->menuAction()->setText(tr("Statusbar"));
     statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
     statusbar_menu->addAction(viewVideoInfoAct);
@@ -513,7 +514,7 @@ Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
     WZDEBUG("");
 
     Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, this, name,
-        tr("&Toolbars"), "toolbars");
+        tr("Toolbars"), "toolbars");
 
     menu->addAction(viewMenuBarAct);
     menu->addAction(toolbar->toggleViewAction());
@@ -582,12 +583,17 @@ void TMainWindow::createToolbars() {
     QAction* action = controlbar->toggleViewAction();
     action->setObjectName("toggle_controlbar");
     action->setShortcut(Qt::SHIFT | Qt::Key_F6);
+    addAction(action);
 
     // Main toolbar
     toolbar = new Action::TEditableToolbar(this);
     toolbar->setObjectName("toolbar1");
     toolbar->setWindowTitle(tr("Main toolbar"));
-    toolbar->toggleViewAction()->setIcon(Images::icon("main_toolbar"));
+    action = toolbar->toggleViewAction();
+    action->setObjectName("toggle_toolbar1");
+    action->setIcon(Images::icon("main_toolbar"));
+    action->setShortcut(Qt::SHIFT | Qt::Key_F3);
+    addAction(action);
 
     actions.clear();
     actions << "open_url" << "favorites_menu";
@@ -596,15 +602,15 @@ void TMainWindow::createToolbars() {
     connect(editToolbarAct, &Action::TAction::triggered,
             toolbar, &Action::TEditableToolbar::edit);
 
-    action = toolbar->toggleViewAction();
-    action->setObjectName("toggle_toolbar1");
-    action->setShortcut(Qt::SHIFT | Qt::Key_F3);
-
     // Extra toolbar
     toolbar2 = new Action::TEditableToolbar(this);
     toolbar2->setObjectName("toolbar2");
     toolbar2->setWindowTitle(tr("Extra toolbar"));
-    toolbar2->toggleViewAction()->setIcon(Images::icon("extra_toolbar"));
+    action = toolbar2->toggleViewAction();
+    action->setObjectName("toggle_toolbar2");
+    action->setIcon(Images::icon("extra_toolbar"));
+    action->setShortcut(Qt::SHIFT | Qt::Key_F4);
+    addAction(action);
 
     actions.clear();
     actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
@@ -614,10 +620,6 @@ void TMainWindow::createToolbars() {
     addToolBar(Qt::TopToolBarArea, toolbar2);
     connect(editToolbar2Act, &Action::TAction::triggered,
             toolbar2, &Action::TEditableToolbar::edit);
-
-    action = toolbar2->toggleViewAction();
-    action->setObjectName("toggle_toolbar2");
-    action->setShortcut(Qt::SHIFT | Qt::Key_F4);
 
     // Statusbar
     statusBar()->setObjectName("statusbar");
@@ -629,7 +631,7 @@ void TMainWindow::createToolbars() {
     auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
     auto_hide_timer->add(viewMenuBarAct, menuBar());
     auto_hide_timer->add(viewStatusBarAct, statusBar());
-    // Docks added by TMenuView constructor called by createMenus()
+    // Docks added to auto hide timer by TMenuView constructor
     connect(playerwindow, &TPlayerWindow::draggingChanged,
             auto_hide_timer, &TAutoHideTimer::setDraggingPlayerWindow);
 }
@@ -915,6 +917,18 @@ void TMainWindow::setWindowCaption(const QString& title) {
     setWindowTitle(title);
 }
 
+QString parentOrMenuName(QAction* action) {
+
+    QString name = action->parent()->objectName();
+    if (name.isEmpty()) {
+        QMenu* menu = qobject_cast<QMenu*>(action->parent());
+        if (menu) {
+            return "from menu '" + menu->menuAction()->objectName() + "'";
+        }
+    }
+    return "with parent '" + name + "'";
+}
+
 QList<QAction*> TMainWindow::findNamedActions() const {
 
     QList<QAction*> allActions = findChildren<QAction*>();
@@ -923,16 +937,20 @@ QList<QAction*> TMainWindow::findNamedActions() const {
     for (int i = 0; i < allActions.count(); i++) {
         QAction* action = allActions.at(i);
         if (action->isSeparator()) {
-            WZTRACE(QString("Skipping separator"));
+            WZTRACE(QString("Skipping separator %1")
+                    .arg(parentOrMenuName(action)));
         } else if (action->objectName().isEmpty()) {
-            WZTRACE(QString("Skipping action without name with text '%1'")
-                    .arg(action->text()));
+            WZTRACE(QString("Skipping action '' '%1' %2")
+                    .arg(action->text()).arg(parentOrMenuName(action)));
         } else if (action->objectName() == "_q_qlineeditclearaction") {
             WZTRACE("Skipping action '_q_qlineeditclearaction'");
         } else {
-            WZTRACE(QString("Selecting action '%1' '%2'")
-                    .arg(action->objectName()).arg(action->text()));
             selectedActions.append(action);
+            WZTRACE(QString("Selected action '%1' '%2' %3")
+                        .arg(action->objectName())
+                        .arg(action->text())
+                        .arg(parentOrMenuName(action)));
+
         }
     }
     WZDEBUG(QString("Selected %1 actions out of %2 found actions")

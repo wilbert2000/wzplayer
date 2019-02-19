@@ -76,6 +76,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     sortOrder(Qt::AscendingOrder),
     mModified(false) {
 
+    setObjectName("playlistwidget");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setColumnCount(TPlaylistWidgetItem::COL_COUNT);
@@ -131,8 +132,13 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     // Columns menu
     columnsMenu = new Gui::Action::Menu::TMenuExec(this);
+    columnsMenu->menuAction()->setObjectName("pl_columns_menu");
+    columnsMenu->menuAction()->setText(tr("View columns"));
+    QStringList colnames = QStringList() << "name" << "ext" << "length"
+                        << "order";
     for(int i = 0; i < columnCount(); i++) {
         QAction* a = new QAction(headerItem()->text(i), columnsMenu);
+        a->setObjectName("pl_toggle_col_" + colnames.at(i));
         a->setCheckable(true);
         a->setData(i);
         columnsMenu->addAction(a);

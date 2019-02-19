@@ -11,16 +11,17 @@ namespace Menu {
 
 
 TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
-    : TMenu(mw, mw, "videotrack_menu", tr("&Video track"), "video_track") {
+    : TMenu(mw, mw, "videotrack_menu", tr("Video track"), "video_track") {
 
     // Next video track
-    nextVideoTrackAct = new TAction(this, "next_video_track",
+    nextVideoTrackAct = new TAction(mw, "next_video_track",
                                     tr("Next video track"));
     connect(nextVideoTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextVideoTrack);
+    addAction(nextVideoTrackAct);
 
     addSeparator();
-    videoTrackGroup = new TActionGroup(this, "videotrack");
+    videoTrackGroup = new TActionGroup(mw, "videotrackgroup");
     connect(videoTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setVideoTrack);
     connect(player, &Player::TPlayer::videoTracksChanged,
@@ -31,7 +32,8 @@ TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
 
 void TMenuVideoTracks::enableActions() {
 
-    nextVideoTrackAct->setEnabled(player->statePOP() && player->mdat.videos.count() > 1);
+    nextVideoTrackAct->setEnabled(player->statePOP()
+                                  && player->mdat.videos.count() > 1);
 }
 
 void TMenuVideoTracks::updateVideoTracks() {
@@ -47,7 +49,7 @@ void TMenuVideoTracks::updateVideoTracks() {
         Maps::TTracks::TTrackIterator i = videos->getIterator();
         while (i.hasNext()) {
             i.next();
-            Maps::TTrackData track = i.value();
+            const Maps::TTrackData& track = i.value();
             QAction* action = new QAction(videoTrackGroup);
             action->setCheckable(true);
             action->setText(track.getDisplayName());

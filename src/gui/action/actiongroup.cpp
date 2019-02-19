@@ -54,7 +54,7 @@ QAction* TActionGroup::setChecked(int ID) {
 
     QList <QAction *> l = actions();
     for (int n = 0; n < l.count(); n++) {
-        QAction* action = l[n];
+        QAction* action = l.at(n);
         if (!action->isSeparator() && action->data().toInt() == ID) {
             action->setChecked(true);
             return action;
@@ -66,9 +66,9 @@ QAction* TActionGroup::setChecked(int ID) {
 
 void TActionGroup::clear() {
 
-    QList <QAction*> acts = actions();
+    QList<QAction*> acts = actions();
     for (int i = acts.count() - 1; i >= 0; i--) {
-        QAction* action = acts[i];
+        QAction* action = acts.at(i);
         removeAction(action);
         action->deleteLater();
     }

@@ -18,7 +18,7 @@ class TVideoSizeGroup : public TActionGroup {
     Q_OBJECT
 
 public:
-    explicit TVideoSizeGroup(QWidget* parent, TPlayerWindow* pw);
+    explicit TVideoSizeGroup(TMainWindow* mw, TPlayerWindow* pw);
     int size_percentage;
 
 public slots:

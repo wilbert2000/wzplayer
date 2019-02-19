@@ -15,38 +15,40 @@ namespace Menu {
 
 
 TMenuAspect::TMenuAspect(TMainWindow* mw) :
-    TMenu(mw, mw, "aspect_menu", tr("&Aspect ratio"), "aspect") {
+    TMenu(mw, mw, "aspect_menu", tr("Aspect ratio"), "aspect") {
 
-    group = new TActionGroup(this, "aspect");
+    group = new TActionGroup(mw, "aspectgroup");
     group->setEnabled(false);
-    aspectAutoAct = new TActionGroupItem(this, group, "aspect_detect",
-                                         tr("&Auto"), TAspectRatio::AspectAuto);
+    aspectAutoAct = new TActionGroupItem(mw, group, "aspect_detect",
+                                         tr("Auto"), TAspectRatio::AspectAuto);
+    addAction(aspectAutoAct);
     addSeparator();
-    new TActionGroupItem(this, group, "aspect_1_1",
-        TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
-    new TActionGroupItem(this, group, "aspect_5_4",
-        TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54);
-    new TActionGroupItem(this, group, "aspect_4_3",
-        TAspectRatio::aspectIDToString(2), TAspectRatio::Aspect43);
-    new TActionGroupItem(this, group, "aspect_11_8",
-        TAspectRatio::aspectIDToString(3), TAspectRatio::Aspect118);
-    new TActionGroupItem(this, group, "aspect_14_10",
-        TAspectRatio::aspectIDToString(4), TAspectRatio::Aspect1410);
-    new TActionGroupItem(this, group, "aspect_3_2",
-        TAspectRatio::aspectIDToString(5), TAspectRatio::Aspect32);
-    new TActionGroupItem(this, group, "aspect_14_9",
-        TAspectRatio::aspectIDToString(6), TAspectRatio::Aspect149);
-    new TActionGroupItem(this, group, "aspect_16_10",
-        TAspectRatio::aspectIDToString(7), TAspectRatio::Aspect1610);
-    new TActionGroupItem(this, group, "aspect_16_9",
-        TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
-    new TActionGroupItem(this, group, "aspect_2_1",
-        TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect2);
-    new TActionGroupItem(this, group, "aspect_2.35_1",
-        TAspectRatio::aspectIDToString(10), TAspectRatio::Aspect235);
+    addAction(new TActionGroupItem(mw, group, "aspect_1_1",
+        TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11));
+    addAction(new TActionGroupItem(mw, group, "aspect_5_4",
+        TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54));
+    addAction(new TActionGroupItem(mw, group, "aspect_4_3",
+        TAspectRatio::aspectIDToString(2), TAspectRatio::Aspect43));
+    addAction(new TActionGroupItem(mw, group, "aspect_11_8",
+        TAspectRatio::aspectIDToString(3), TAspectRatio::Aspect118));
+    addAction(new TActionGroupItem(mw, group, "aspect_14_10",
+        TAspectRatio::aspectIDToString(4), TAspectRatio::Aspect1410));
+    addAction(new TActionGroupItem(mw, group, "aspect_3_2",
+        TAspectRatio::aspectIDToString(5), TAspectRatio::Aspect32));
+    addAction(new TActionGroupItem(mw, group, "aspect_14_9",
+        TAspectRatio::aspectIDToString(6), TAspectRatio::Aspect149));
+    addAction(new TActionGroupItem(mw, group, "aspect_16_10",
+        TAspectRatio::aspectIDToString(7), TAspectRatio::Aspect1610));
+    addAction(new TActionGroupItem(mw, group, "aspect_16_9",
+        TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169));
+    addAction(new TActionGroupItem(mw, group, "aspect_2_1",
+        TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect2));
+    addAction(new TActionGroupItem(mw, group, "aspect_2.35_1",
+        TAspectRatio::aspectIDToString(10), TAspectRatio::Aspect235));
     addSeparator();
-    aspectDisabledAct = new TActionGroupItem(this, group, "aspect_none",
-        tr("&Disabled"), TAspectRatio::AspectNone);
+    aspectDisabledAct = new TActionGroupItem(mw, group, "aspect_none",
+        tr("Disabled"), TAspectRatio::AspectNone);
+    addAction(aspectDisabledAct);
 
     connect(group, &TActionGroup::activated,
             player, &Player::TPlayer::setAspectRatio);
@@ -55,8 +57,9 @@ TMenuAspect::TMenuAspect(TMainWindow* mw) :
             Qt::QueuedConnection);
 
     addSeparator();
-    nextAspectAct = new TAction(this, "next_aspect", tr("&Next aspect ratio"),
-                                "", Qt::Key_A);
+    nextAspectAct = new TAction(mw, "next_aspect", tr("Next aspect ratio"), "",
+                                Qt::Key_A);
+    addAction(nextAspectAct);
     connect(nextAspectAct, &TAction::triggered,
             player, &Player::TPlayer::nextAspectRatio);
 
@@ -71,11 +74,11 @@ void TMenuAspect::upd() {
     QString s = TAspectRatio::doubleToString(aspect);
     menuAction()->setToolTip(tr("Aspect ratio %1").arg(s));
 
-    s = tr("&Auto") + "\t"
+    s = tr("Auto") + "\t"
         + TAspectRatio::doubleToString(player->mdat.video_aspect_original);
     aspectAutoAct->setTextAndTip(s);
 
-    s = tr("&Disabled") + "\t" + TAspectRatio::doubleToString(
+    s = tr("Disabled") + "\t" + TAspectRatio::doubleToString(
             (double) player->mdat.video_width / player->mdat.video_height);
     aspectDisabledAct->setTextAndTip(s);
 }

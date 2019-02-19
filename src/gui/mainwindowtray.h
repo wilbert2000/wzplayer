@@ -43,7 +43,7 @@ public:
     bool startHidden() const;
 
 public slots:
-    virtual void closeWindow();
+    virtual void closeWindow() override;
 
 protected slots:
     virtual void quit();

@@ -14,78 +14,69 @@ namespace Menu {
 
 
 TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
-    : TMenu(mw, mw, "videofilter_menu", tr("F&ilters"), "video_filters") {
+    : TMenu(mw, mw, "videofilter_menu", tr("Filters"), "video_filters") {
 
-    group = new QActionGroup(this);
+    group = new QActionGroup(mw);
     group->setExclusive(false);
     group->setEnabled(false);
 
-    postProcessingAct = new TAction(this, "postprocessing",
-                                    tr("&Postprocessing"));
+    postProcessingAct = new TAction(group, "postprocessing",
+                                    tr("Postprocessing"));
     postProcessingAct->setCheckable(true);
-    group->addAction(postProcessingAct);
     connect(postProcessingAct, &TAction::triggered,
             player, &Player::TPlayer::setPostprocessing);
 
-    deblockAct = new TAction(this, "deblock", tr("&Deblock"));
+    deblockAct = new TAction(group, "deblock", tr("Deblock"));
     deblockAct->setCheckable(true);
-    group->addAction(deblockAct);
     connect(deblockAct, &TAction::triggered,
             player, &Player::TPlayer::setDeblock);
 
-    deringAct = new TAction(this, "dering", tr("De&ring"));
+    deringAct = new TAction(group, "dering", tr("Dering"));
     deringAct->setCheckable(true);
-    group->addAction(deringAct);
     connect(deringAct, &TAction::triggered,
             player, &Player::TPlayer::setDering);
 
-    gradfunAct = new TAction(this, "gradfun", tr("Debanding (&gradfun)"));
+    gradfunAct = new TAction(group, "gradfun", tr("Debanding (gradfun)"));
     gradfunAct->setCheckable(true);
-    group->addAction(gradfunAct);
     connect(gradfunAct, &TAction::triggered,
             player, &Player::TPlayer::setGradfun);
 
-    addNoiseAct = new TAction(this, "add_noise", tr("Add n&oise"));
+    addNoiseAct = new TAction(group, "add_noise", tr("Add noise"));
     addNoiseAct->setCheckable(true);
-    group->addAction(addNoiseAct);
     connect(addNoiseAct, &TAction::triggered,
             player, &Player::TPlayer::setNoise);
 
-    addLetterboxAct = new TAction(this, "add_letterbox",
-                                  tr("Add &black borders"), "letterbox");
+    addLetterboxAct = new TAction(group, "add_letterbox",
+                                  tr("Add black borders"), "letterbox");
     addLetterboxAct->setCheckable(true);
-    group->addAction(addLetterboxAct);
     connect(addLetterboxAct, &TAction::triggered,
             player, &Player::TPlayer::setetterbox);
 
-    softwareScalingAct = new TAction(this, "software_scaling",
-                                     tr("Soft&ware scaling"));
+    softwareScalingAct = new TAction(group, "software_scaling",
+                                     tr("Software scaling"));
     softwareScalingAct->setCheckable(true);
-    group->addAction(softwareScalingAct);
     connect(softwareScalingAct, &TAction::triggered,
             player, &Player::TPlayer::setSoftwareScaling);
 
-    phaseAct = new TAction(this, "autodetect_phase", tr("&Autodetect phase"));
+    phaseAct = new TAction(group, "autodetect_phase", tr("Autodetect phase"));
     phaseAct->setCheckable(true);
-    group->addAction(phaseAct);
     connect(phaseAct, &TAction::triggered,
             player, &Player::TPlayer::setAutophase);
 
+    addActions(group->actions());
+
     // Denoise
-    TMenu* menu = new TMenu(this, main_window, "denoise_menu", tr("De&noise"),
-                            "denoise");
-    denoiseGroup = new TActionGroup(this, "denoise");
+    TMenu* menu = new TMenu(mw, mw, "denoise_menu", tr("Denoise"), "denoise");
+    denoiseGroup = new TActionGroup(mw, "denoisegroup");
     denoiseGroup->setEnabled(false);
-    denoiseNoneAct = new TActionGroupItem(this, denoiseGroup, "denoise_none",
-                                          tr("&Off"), TMediaSettings::NoDenoise,
-                                          false);
-    denoiseNormalAct = new TActionGroupItem(this, denoiseGroup,
-                                            "denoise_normal", tr("&Normal"),
-                                            TMediaSettings::DenoiseNormal,
-                                            false);
-    denoiseSoftAct = new TActionGroupItem(this, denoiseGroup, "denoise_soft",
-                                          tr("&Soft"),
-                                          TMediaSettings::DenoiseSoft, false);
+    denoiseNoneAct = new TActionGroupItem(mw, denoiseGroup, "denoise_none",
+                                         tr("Off"), TMediaSettings::NoDenoise);
+    denoiseNormalAct = new TActionGroupItem(mw, denoiseGroup,
+                                            "denoise_normal", tr("Normal"),
+                                            TMediaSettings::DenoiseNormal);
+    denoiseSoftAct = new TActionGroupItem(mw, denoiseGroup, "denoise_soft",
+                                          tr("Soft"),
+                                          TMediaSettings::DenoiseSoft);
     menu->addActions(denoiseGroup->actions());
     addMenu(menu);
     connect(denoiseGroup, &TActionGroup::activated,
@@ -94,16 +85,14 @@ TMenuVideoFilter::TMenuVideoFilter(TMainWindow* mw)
             this, &TMenuVideoFilter::onAboutToShowDenoise);
 
     // Unsharp group
-    menu = new TMenu(this, main_window, "sharpen_menu", tr("S&harpen"),
-                     "sharpen");
-    sharpenGroup = new TActionGroup(this, "sharpen");
+    menu = new TMenu(mw, mw, "sharpen_menu", tr("Sharpen"), "sharpen");
+    sharpenGroup = new TActionGroup(mw, "sharpen");
     sharpenGroup->setEnabled(false);
-    sharpenNoneAct = new TActionGroupItem(this, sharpenGroup, "sharpen_off",
-                                          tr("&None"), 0, false);
-    blurAct = new TActionGroupItem(this, sharpenGroup, "blur", tr("&Blur"), 1,
-                                   false);
-    sharpenAct = new TActionGroupItem(this, sharpenGroup, "sharpen",
-                                      tr("&Sharpen"), 2, false);
+    sharpenNoneAct = new TActionGroupItem(mw, sharpenGroup, "sharpen_off",
+                                          tr("None"), 0);
+    blurAct = new TActionGroupItem(mw, sharpenGroup, "blur", tr("Blur"), 1);
+    sharpenAct = new TActionGroupItem(mw, sharpenGroup, "sharpen",
+                                      tr("Sharpen"), 2);
     menu->addActions(sharpenGroup->actions());
     addMenu(menu);
     connect(sharpenGroup, &TActionGroup::activated,
