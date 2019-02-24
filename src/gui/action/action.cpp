@@ -25,6 +25,17 @@
 namespace Gui {
 namespace Action {
 
+QAction* findAction(const QString& name, const QList<QAction*>& actions) {
+
+    for (int i = 0; i < actions.count(); i++) {
+        QAction* action = actions.at(i);
+        if (action->objectName() == name)
+            return action;
+    }
+
+    return 0;
+}
+
 void updateToolTip(QAction* action) {
 
     QString shortcut = action->shortcut().toString();

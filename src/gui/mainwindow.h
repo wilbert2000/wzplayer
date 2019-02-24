@@ -260,7 +260,7 @@ private:
 
     // Windows
     TFilePropertiesDialog* file_properties_dialog;
-    Pref::TDialog* pref_dialog;
+    Pref::TDialog* prefDialog;
     THelpWindow* help_window;
 
     QString first_fullscreen_filename;

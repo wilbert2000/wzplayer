@@ -26,6 +26,7 @@
 namespace Gui {
 namespace Action {
 
+extern QAction* findAction(const QString& name, const QList<QAction*>& actions);
 extern void updateToolTip(QAction* action);
 
 class TAction : public QAction {

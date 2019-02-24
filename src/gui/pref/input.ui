@@ -6,12 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
+    <width>519</width>
     <height>576</height>
    </rect>
   </property>
   <layout class="QVBoxLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -75,7 +84,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Here you can change the keyboard shortcuts for actions. Double click an action to change its shortcut. You can save the list for later use, sharing or transport to another computer.</string>
+            <string>Here you can assign keyboard shortcuts to actions. Double click an action to change its shortcuts.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignVCenter</set>
@@ -117,7 +126,16 @@
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
         <number>16</number>
        </property>
        <item>
@@ -431,10 +449,19 @@
        <string>&amp;Seeking</string>
       </attribute>
       <layout class="QGridLayout">
-       <property name="verticalSpacing">
+       <property name="leftMargin">
         <number>16</number>
        </property>
-       <property name="margin">
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <property name="verticalSpacing">
         <number>16</number>
        </property>
        <item row="0" column="0">
@@ -544,7 +571,7 @@
           <item row="1" column="1">
            <widget class="QLabel" name="seek1_label">
             <property name="text">
-             <string>&amp;Short jump</string>
+             <string>Short &amp;jump</string>
             </property>
             <property name="buddy">
              <cstring>seek1_minutes_spin</cstring>
@@ -669,7 +696,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>&amp;Behaviour of time slider:</string>
+            <string>Beha&amp;viour of time slider:</string>
            </property>
            <property name="buddy">
             <cstring>timeslider_behaviour_combo</cstring>

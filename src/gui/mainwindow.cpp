@@ -95,7 +95,7 @@ TMainWindow::TMainWindow() :
     fullscreen_menubar_visible(false),
     fullscreen_statusbar_visible(true),
     file_properties_dialog(0),
-    pref_dialog(0),
+    prefDialog(0),
     help_window(0),
     arg_close_on_finish(-1),
     ignore_show_hide_events(false),
@@ -149,7 +149,6 @@ TMainWindow::~TMainWindow() {
 }
 
 void TMainWindow::createPanel() {
-    WZDEBUG("");
 
     panel = new QWidget(this);
     panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -159,7 +158,6 @@ void TMainWindow::createPanel() {
 }
 
 void TMainWindow::createLogDock() {
-    WZDEBUG("");
 
     logDock = new TDockWidget(tr("Log"), this, "logdock");
     log_window = new TLogWindow(logDock);
@@ -168,7 +166,6 @@ void TMainWindow::createLogDock() {
 }
 
 void TMainWindow::createStatusBar() {
-    WZDEBUG("");
 
     setMessageHandler(statusBar());
     msgSlot = new TMsgSlot(this);
@@ -211,7 +208,6 @@ void TMainWindow::createStatusBar() {
 }
 
 void TMainWindow::createPlayerWindow() {
-    WZDEBUG("");
 
     playerwindow = new TPlayerWindow(panel);
     playerwindow->setObjectName("playerwindow");
@@ -241,7 +237,6 @@ void TMainWindow::createPlayerWindow() {
 }
 
 void TMainWindow::createPlayer() {
-    logger()->debug("createPlayer");
 
     new Player::TPlayer(this, playerwindow);
 
@@ -282,7 +277,6 @@ void TMainWindow::createPlayer() {
 }
 
 void TMainWindow::createPlaylist() {
-    WZDEBUG("");
 
     playlistDock = new TDockWidget(tr("Playlist"), this, "playlistdock");
     playlist = new Playlist::TPlaylist(playlistDock, this);
@@ -665,9 +659,9 @@ void TMainWindow::createSettingsDialog() {
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    pref_dialog = new Pref::TDialog(this);
-    pref_dialog->setModal(false);
-    connect(pref_dialog, &Pref::TDialog::applied,
+    prefDialog = new Pref::TDialog(this);
+    prefDialog->setModal(false);
+    connect(prefDialog, &Pref::TDialog::applied,
             this, &TMainWindow::applyNewSettings);
 
     QApplication::restoreOverrideCursor();
@@ -676,12 +670,12 @@ void TMainWindow::createSettingsDialog() {
 void TMainWindow::showSettingsDialog() {
     WZDEBUG("");
 
-    if (!pref_dialog) {
+    if (!prefDialog) {
         createSettingsDialog();
     }
 
-    pref_dialog->setData(pref, allActions);
-    pref_dialog->show();
+    prefDialog->setData(pref, allActions);
+    prefDialog->show();
 }
 
 void TMainWindow::restartApplication() {
@@ -708,7 +702,7 @@ void TMainWindow::applyNewSettings() {
     WZDEBUG("");
 
     // Get pref from dialog
-    pref_dialog->getData(pref, allActions);
+    prefDialog->getData(pref, allActions);
 
     // Save playlist settings
     playlist->saveSettings();
@@ -717,7 +711,7 @@ void TMainWindow::applyNewSettings() {
     pref->save();
 
     // Restart TApp
-    if (pref_dialog->requiresRestartApp()) {
+    if (prefDialog->requiresRestartApp()) {
         restartApplication();
         return;
     }
@@ -755,7 +749,7 @@ void TMainWindow::applyNewSettings() {
     sendEnableActions();
 
     // Restart video if needed
-    if (pref_dialog->requiresRestartPlayer()) {
+    if (prefDialog->requiresRestartPlayer()) {
         player->restart();
     }
 } // TMainWindow::applyNewSettings()
@@ -1094,8 +1088,8 @@ void TMainWindow::saveSettings() {
     if (file_properties_dialog) {
         file_properties_dialog->saveSettings();
     }
-    if (pref_dialog) {
-        pref_dialog->saveSettings();
+    if (prefDialog) {
+        prefDialog->saveSettings();
     }
 }
 
@@ -1596,7 +1590,7 @@ void TMainWindow::configureDiscDevices() {
             QMessageBox::Ok);
 
     showSettingsDialog();
-    pref_dialog->showSection(Pref::TDialog::SECTION_DRIVES);
+    prefDialog->showSection(Pref::TDialog::SECTION_DRIVES);
 }
 
 void TMainWindow::openVCD() {

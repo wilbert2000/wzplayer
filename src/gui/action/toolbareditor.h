@@ -36,8 +36,6 @@ class TToolbarEditor : public QDialog, public Ui::TToolbarEditor {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-    static QAction* findAction(const QString& actionName,
-                               const QList<QAction*>& actionList);
     static void stringToAction(const QString& s, QString& actionName,
                                bool& ns, bool&fs);
 
@@ -55,11 +53,11 @@ public:
     QStringList saveActions();
 
 private:
-    QList<QAction*> allActions;
     QString toolbarName;
     QStringList defaultActions;
     QAction* separatorAction;
     int savedFirst, savedLast;
+    int checkBoxWidth;
 
     QString getToolTipForItem(QListWidgetItem* item);
     Qt::CheckState getCheckStateItem(bool ns, bool fs);
@@ -69,7 +67,7 @@ private:
 private slots:
     void onItemClicked(QListWidgetItem* item);
     void onItemDoubleClicked(QListWidgetItem* item);
-    void onCurrentRowChanged(int currentRow);
+    void onActiveActionsItemSelectionChanged();
     void onRowsInsertedActiveList();
     void onRowsInserted(const QModelIndex&, int first, int last);
     void onUpButtonClicked();

@@ -65,66 +65,76 @@ namespace Gui {
 namespace Action {
 
 
-TShortcutGetter::TShortcutGetter(TActionsEditor* parent) :
+TShortcutGetter::TShortcutGetter(TActionsEditor* parent,
+                                 const QString& actName) :
     QDialog(parent, TConfig::DIALOG_FLAGS),
+    actionName(actName),
     editor(parent) {
 
-    setWindowTitle(tr("Modify shortcuts"));
+    setWindowTitle(tr("Modify shortcut for action %1").arg(actionName));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setSpacing(10);
+    vbox->setSpacing(11);
 
     list = new QListWidget(this);
     connect(list, &QListWidget::currentRowChanged,
             this, &TShortcutGetter::rowChanged);
     vbox->addWidget(list);
 
-    QHBoxLayout *hbox = new QHBoxLayout;
     addItem = new QPushButton(Images::icon("plus"), "", this);
-    addItem->setToolTip(tr("Add shortcut to list"));
+    addItem->setText("Add new shortcut");
     connect(addItem, &QPushButton::clicked,
             this, &TShortcutGetter::addItemClicked);
 
     removeItem = new QPushButton(Images::icon("minus"), "", this);
-    removeItem->setToolTip(tr("Remove shortcut from list"));
+    removeItem->setText("Remove shortcut");
     connect(removeItem, &QPushButton::clicked,
             this, &TShortcutGetter::removeItemClicked);
 
+    QHBoxLayout *hbox = new QHBoxLayout();
     hbox->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
     hbox->addWidget(addItem);
     hbox->addWidget(removeItem);
-
     vbox->addLayout(hbox);
 
     QLabel *l = new QLabel(this);
-    l->setText(tr("Press the key combination you want to assign"));
+    l->setText(tr("Press the key combination to assign to action %1:")
+               .arg(actionName));
     vbox->addWidget(l);
 
     leKey = new QLineEdit(this);
     vbox->addWidget(leKey);
 
     assignedToLabel = new QLabel(this);
-    assignedToLabel->setText(parent->findShortcutsAction(""));
+    assignedToLabel->setText("\n");
     vbox->addWidget(assignedToLabel);
 
     leKey->installEventFilter(this);
+    // Needs QueuedConnection otherwise during the call to onTextChanged()
+    // list.count() will not yet be updated
     connect(leKey, &QLineEdit::textChanged,
-            this, &TShortcutGetter::textChanged);
-
+            this, &TShortcutGetter::onKeyTextChanged,
+            Qt::QueuedConnection);
     setCaptureKeyboard(true);
 
-    QDialogButtonBox* buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok
-        | QDialogButtonBox::Cancel | QDialogButtonBox::Reset);
+    QDialogButtonBox* buttonbox = new QDialogButtonBox(
+                QDialogButtonBox::Ok
+                | QDialogButtonBox::Cancel
+                | QDialogButtonBox::Reset,
+                this);
+
+    okButton = buttonbox->button(QDialogButtonBox::Ok);
+    okButtonText = okButton->text();
+
     QPushButton* clearbutton = buttonbox->button(QDialogButtonBox::Reset);
     clearbutton->setText(tr("Clear"));
 
     QPushButton* captureButton = new QPushButton(tr("Capture"), this);
     captureButton->setToolTip(tr("Capture keystrokes"));
-    captureButton->setCheckable(captureKeyboard());
-    captureButton->setChecked(captureKeyboard());
+    captureButton->setCheckable(capture);
+    captureButton->setChecked(capture);
     connect(captureButton, &QPushButton::toggled,
             this, &TShortcutGetter::setCaptureKeyboard);
-
     buttonbox->addButton(captureButton, QDialogButtonBox::ActionRole);
 
     connect(buttonbox, &QDialogButtonBox::accepted,
@@ -149,10 +159,23 @@ void TShortcutGetter::rowChanged(int row) {
     leKey->setFocus();
 }
 
-void TShortcutGetter::textChanged(const QString& text) {
+void TShortcutGetter::onKeyTextChanged(const QString& text) {
+    WZDEBUG(QString("'%1' %2").arg(text).arg(list->count()));
 
     list->item(list->currentRow())->setText(text);
-    assignedToLabel->setText(editor->findShortcutsAction(text));
+    QString label, action;
+    editor->findShortcutLabelAndAction(text, label, action);
+    assignedToLabel->setText(label);
+
+    QString buttonText;
+    if (list->count() > 1) {
+        buttonText = tr("Take shortcuts");
+    } else if (action.isEmpty() || action == actionName) {
+        buttonText = okButtonText;
+    } else {
+        buttonText = tr("Take shortcut from %1").arg(action);
+    }
+    okButton->setText(buttonText);
 }
 
 void TShortcutGetter::addItemClicked() {
@@ -173,9 +196,13 @@ void TShortcutGetter::removeItemClicked() {
 
 QString TShortcutGetter::exec(const QString& s) {
 
-    QStringList shortcuts = s.split(", ");
-    foreach(const QString& shortcut, shortcuts) {
-        list->addItem(shortcut.trimmed());
+    QStringList shortcuts = TActionsEditor::shortcutsToStringList(s);
+    if (shortcuts.count() == 0) {
+        list->addItem("");
+    } else {
+        for(int i = 0; i < shortcuts.count(); i++) {
+            list->addItem(shortcuts.at(i));
+        }
     }
     list->setCurrentRow(0);
 
@@ -183,8 +210,8 @@ QString TShortcutGetter::exec(const QString& s) {
 
     if (QDialog::exec() == QDialog::Accepted) {
         QStringList l;
-        for (int n = 0; n < list->count(); n++) {
-            QString shortcut = list->item(n)->text();
+        for (int i = 0; i < list->count(); i++) {
+            QString shortcut = list->item(i)->text();
             if (!shortcut.isEmpty()) {
                 l << shortcut;
             }
@@ -271,17 +298,13 @@ void TShortcutGetter::captureEvent(QEvent* e) {
 
 bool TShortcutGetter::event(QEvent* e) {
 
-    switch (e->type()) {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-        if (capture) {
-            captureEvent(e);
-            return true;
-        }
-        Q_FALLTHROUGH();
-    default:
-        return QDialog::event(e);
+    if (capture && (e->type() == QEvent::KeyPress
+                    || e->type() == QEvent::KeyRelease)) {
+        captureEvent(e);
+        return true;
     }
+
+    return QDialog::event(e);
 }
 
 bool TShortcutGetter::eventFilter(QObject* o, QEvent* e) {

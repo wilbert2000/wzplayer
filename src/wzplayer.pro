@@ -76,6 +76,7 @@ HEADERS += wzdebug.h \
     gui/action/widgetactions.h \
     gui/action/shortcutgetter.h \
     gui/action/actionseditor.h \
+    gui/action/actionitem.h \
     gui/action/toolbareditor.h \
     gui/action/editabletoolbar.h \
     gui/action/menu/menuexec.h \
@@ -204,6 +205,7 @@ SOURCES += wzdebug.cpp \
     gui/action/widgetactions.cpp \
     gui/action/shortcutgetter.cpp \
     gui/action/actionseditor.cpp \
+    gui/action/actionitem.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/editabletoolbar.cpp \
     gui/action/menu/menuexec.cpp \

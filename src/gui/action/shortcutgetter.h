@@ -30,7 +30,7 @@
 
 #include <QDialog>
 #include <QListWidget>
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 
 class QLineEdit;
 class QLabel;
@@ -45,27 +45,17 @@ class TShortcutGetter : public QDialog {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TShortcutGetter(TActionsEditor* parent);
+    TShortcutGetter(TActionsEditor* parent, const QString& actName);
     virtual ~TShortcutGetter() {}
 
     QString exec(const QString& s);
 
-protected slots:
-    void setCaptureKeyboard(bool b);
-    void rowChanged(int row);
-    void textChanged(const QString& text);
-
-    void addItemClicked();
-    void removeItemClicked();
-
 protected:
-    bool captureKeyboard() { return capture; }
-
     bool event(QEvent* e);
     bool eventFilter(QObject* o, QEvent* e);
-    void setText();
 
 private:
+    QString actionName;
     bool bStop;
     bool capture;
     Qt::KeyboardModifiers modifiers;
@@ -76,10 +66,21 @@ private:
     QLabel* assignedToLabel;
     QPushButton* addItem;
     QPushButton* removeItem;
+    QPushButton* okButton;
+    QString okButtonText;
 
     TActionsEditor* editor;
 
     void captureEvent(QEvent* e);
+    void setText();
+
+private slots:
+    void setCaptureKeyboard(bool b);
+    void rowChanged(int row);
+    void onKeyTextChanged(const QString& text);
+
+    void addItemClicked();
+    void removeItemClicked();
 }; // class TShortcutGetter
 
 } // namespace Action

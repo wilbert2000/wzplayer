@@ -18,6 +18,7 @@
 
 #include "gui/action/editabletoolbar.h"
 
+#include "gui/action/action.h"
 #include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
@@ -103,8 +104,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts,
                 if (action_name == "separator") {
                     addSeparator();
                 } else {
-                    QAction* action = TToolbarEditor::findAction(action_name,
-                                                                 allActions);
+                    QAction* action = findAction(action_name, allActions);
                     if (action) {
                         if (action_name.endsWith("_menu")) {
                             addMenu(action);
