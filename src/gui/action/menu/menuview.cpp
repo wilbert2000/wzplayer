@@ -191,7 +191,7 @@ TMenuView::TMenuView(TMainWindow* mw,
     a = logDock->toggleViewAction();
     a->setObjectName("view_log");
     a->setIcon(Images::icon("log"));
-    a->setShortcut(QKeySequence("Ctrl+L"));
+    a->setShortcut(QKeySequence("L"));
     updateToolTip(a);
     addAction(a);
     mw->addAction(a);

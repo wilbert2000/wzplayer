@@ -136,12 +136,13 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
 
     addSeparator();
     incSubStepAct = new TAction(mw, "inc_sub_step",
-                                tr("Next line in subtitles"), "", Qt::Key_L);
+                                tr("Next line in subtitles"), "",
+                                Qt::SHIFT | Qt::Key_L);
     connect(incSubStepAct, &TAction::triggered,
             player, &Player::TPlayer::incSubStep);
     addAction(incSubStepAct);
     decSubStepAct = new TAction(mw, "dec_sub_step",
-        tr("Previous line in subtitles"), "", Qt::SHIFT | Qt::Key_L);
+        tr("Previous line in subtitles"), "", Qt::CTRL | Qt::Key_L);
     connect(decSubStepAct, &TAction::triggered,
             player, &Player::TPlayer::decSubStep);
     addAction(decSubStepAct);
