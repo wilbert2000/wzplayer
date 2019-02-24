@@ -539,12 +539,12 @@ void TApp::logInfo() {
     WZINFO(s);
     WZINFO(QString("Compiled with Qt version " QT_VERSION_STR
            ", running on Qt version ") + qVersion());
-    WZINFO("application '" + applicationDirPath() + "'");
-    WZINFO("translation '" + Settings::TPaths::translationPath() + "'");
-    WZINFO("themes '" + Settings::TPaths::themesPath() + "'");
-    WZINFO("shortcuts '" + Settings::TPaths::shortcutsPath() + "'");
-    WZINFO("config '" + Settings::TPaths::configPath() + "'");
-    WZINFO("current '" + QDir::currentPath() + "'");
+    WZINFO("application dir '" + applicationDirPath() + "'");
+    WZINFO("translation dir '" + Settings::TPaths::translationPath() + "'");
+    WZINFO("themes dir '" + Settings::TPaths::themesPath() + "'");
+    WZINFO("shortcuts dir '" + Settings::TPaths::shortcutsPath() + "'");
+    WZINFO("config dir '" + Settings::TPaths::configPath() + "'");
+    WZINFO("current dir '" + QDir::currentPath() + "'");
 }
 
 #include "moc_app.cpp"
