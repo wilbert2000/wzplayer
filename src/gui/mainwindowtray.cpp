@@ -55,8 +55,7 @@ TMainWindowTray::TMainWindowTray() :
     fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
-                                      tr("Show icon in system tray"),
-                                      "systray");
+                                      tr("Show icon in system tray"));
     showTrayAct->setCheckable(true);
     connect(showTrayAct, &Gui::Action::TAction::toggled,
             tray, &QSystemTrayIcon::setVisible);
