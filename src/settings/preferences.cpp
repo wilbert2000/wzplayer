@@ -41,7 +41,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 23;
+static const int CURRENT_CONFIG_VERSION = 24;
 
 TPreferences* pref = 0;
 
@@ -256,8 +256,6 @@ void TPreferences::reset() {
 
 
     // Playlist
-    mediaToAddToPlaylist = NoFiles;
-
     addDirectories = true;
     addVideo = true;
     addAudio = true;
@@ -592,7 +590,6 @@ void TPreferences::save() {
 
 
     beginGroup("playlist");
-    setValue("media_to_add_to_playlist", mediaToAddToPlaylist);
     setValue("add_directories", addDirectories);
     setValue("add_video", addVideo);
     setValue("add_audio", addAudio);
@@ -1125,9 +1122,6 @@ void TPreferences::load() {
 
 
     beginGroup("playlist");
-    mediaToAddToPlaylist = (TAddToPlaylist) value("media_to_add_to_playlist",
-                                                  mediaToAddToPlaylist).toInt();
-
     addDirectories = value("add_directories", addDirectories).toBool();
     addVideo = value("add_video", addVideo).toBool();
     addAudio = value("add_audio", addAudio).toBool();

@@ -52,13 +52,6 @@ public:
     Q_DECLARE_FLAGS(TWheelFunctions, TWheelFunction)
 
     enum TOptionState { Detect = -1, Disabled = 0, Enabled = 1 };
-    enum TAddToPlaylist {
-        NoFiles = 0,
-        VideoFiles = 1,
-        AudioFiles = 2,
-        MultimediaFiles = 3,
-        ConsecutiveFiles = 4
-    };
 
     enum TIPPrefer {
         IP_PREFER_AUTO,
@@ -282,8 +275,6 @@ public:
 
 
     // Playlist section
-    TAddToPlaylist mediaToAddToPlaylist;
-
     bool addDirectories;
     bool addVideo;
     bool addAudio;

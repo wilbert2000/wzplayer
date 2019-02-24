@@ -1065,7 +1065,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
             }
         }
     } else if (filename == current_filename) {
-        // HHandle current item started playing
+        // Handle current item started playing
         TPlaylistWidgetItem* item = playlistWidget->playing_item;
         if (item == 0) {
             return;
@@ -1140,22 +1140,6 @@ void TPlaylist::onNewMediaStartedPlaying() {
             md->duration,
             false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
-
-        // Add associated files to playlist
-        // TODO: remove from main thread
-        if (md->selected_type == TMediaData::TYPE_FILE
-            && Settings::pref->mediaToAddToPlaylist
-                != Settings::TPreferences::NoFiles) {
-            WZDEBUG("searching for files to add to playlist for '" + filename
-                    + "'");
-            QStringList files_to_add = TWZFiles::filesForPlaylist(filename,
-                Settings::pref->mediaToAddToPlaylist);
-            if (files_to_add.isEmpty()) {
-                WZDEBUG("none found");
-            } else {
-                addFiles(files_to_add);
-            }
-        }
     }
 
     setPlaylistTitle();

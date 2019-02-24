@@ -21,7 +21,6 @@
 
 #include "ui_playlistsection.h"
 #include "gui/pref/section.h"
-#include "settings/preferences.h"
 #include "wzdebug.h"
 
 
@@ -53,10 +52,6 @@ protected:
 
 private:
     void createHelp();
-
-    void setMediaToAddToPlaylist(Settings::TPreferences::TAddToPlaylist type);
-    Settings::TPreferences::TAddToPlaylist mediaToAddToPlaylist();
-
     void setDirectoryRecursion(bool b);
     bool directoryRecursion();
 };
