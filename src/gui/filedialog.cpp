@@ -47,7 +47,7 @@ QString TFileDialog::getSaveFileName (QWidget* parent,
             QFileDialog::Options options)
 {
     return QFileDialog::getSaveFileName(parent, caption, dir, filter,
-                                         selectedFilter, options);
+                                        selectedFilter, options);
 }
 
 QStringList TFileDialog::getOpenFileNames (QWidget* parent,
@@ -58,7 +58,7 @@ QStringList TFileDialog::getOpenFileNames (QWidget* parent,
             QFileDialog::Options options)
 {
     return QFileDialog::getOpenFileNames(parent, caption, dir, filter,
-                                          selectedFilter, options);
+                                         selectedFilter, options);
 }
 
 } // namespace Gui
