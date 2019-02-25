@@ -511,7 +511,8 @@ bool TMPVProcess::parseLine(QString& line) {
     static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 
     // Messages to show in statusline
-    static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\]|\\[ffmpeg\\])");
+    static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\])");
+    static QRegExp rx_message_ffmpeg("^\\[ffmpeg\\]");
 
     // Errors
     static QRegExp rx_file_open("^\\[file\\] Cannot open file '.*': (.*)");
@@ -549,7 +550,6 @@ bool TMPVProcess::parseLine(QString& line) {
         return true;
 
     if (rx_message.indexIn(line) >= 0) {
-        WZINFO("emit receivedMessage(" + line + ")");
         emit receivedMessage(line);
         return true;
     }
@@ -679,6 +679,11 @@ bool TMPVProcess::parseLine(QString& line) {
     if (rx_error_http_404.indexIn(line) >= 0) {
         WZDEBUG("stored HTTP 404");
         exit_code_override = TExitMsg::ERR_HTTP_404;
+        return true;
+    }
+
+    if (rx_message_ffmpeg.indexIn(line) >= 0) {
+        emit receivedMessage(line);
         return true;
     }
 
