@@ -82,25 +82,3 @@ QString TWZFiles::findExecutable(const QString& name) {
     WZINFO("name '" + name + "' not found");
     return QString();
 }
-
-QStringList TWZFiles::filesInDirectory(const QString& initial_file,
-                                     const QStringList& filter) {
-    WZDEBUG("initial_file: '" + initial_file + "'");
-
-    QFileInfo fi(initial_file);
-    QString current_file = fi.fileName();
-    QString path = fi.absolutePath();
-
-    QDir d(path);
-    QStringList all_files = d.entryList(filter, QDir::Files);
-
-    QStringList r;
-    for (int n = 0; n < all_files.count(); n++) {
-        if (all_files[n] != current_file) {
-            QString s = path +"/" + all_files[n];
-            r << s;
-        }
-    }
-
-    return r;
-}

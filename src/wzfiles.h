@@ -11,10 +11,6 @@ public:
     // Tries to find the executable in the path.
     // Returns the path if found or empty string if not.
     static QString findExecutable(const QString& name);
-
-private:
-    static QStringList filesInDirectory(const QString& initial_file,
-                                        const QStringList& filter);
 };
 
 #endif // WZFILES_H
