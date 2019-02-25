@@ -567,7 +567,7 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
         }
     } while (foundFreeItem);
 
-    WZDEBUG("end of playlist");
+    WZDEBUG("End of playlist");
     return 0;
 }
 
@@ -1110,27 +1110,30 @@ void TPlaylist::onNewMediaStartedPlaying() {
     }
 
     // Create new playlist
-    WZDEBUG("creating new playlist for '" + filename + "'");
+    WZDEBUG("Creating new playlist for '" + filename + "'");
     clear();
 
     if (md->disc.valid) {
         // Add disc titles without sorting
         playlistWidget->setSort(-1, Qt::AscendingOrder);
+        TPlaylistWidgetItem* root = playlistWidget->root();
+        root->setFilename(filename, md->name());
+        // setFilename() won't recognize iso's as folder. No need to set icon.
+        root->setFolder(true);
+
         TDiscName disc = md->disc;
         foreach(const Maps::TTitleData& title, md->titles) {
             disc.title = title.getID();
             TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-                playlistWidget->root(),
+                root,
                 disc.toString(),
                 title.getDisplayName(false),
                 title.getDuration(),
-                false);
+                false /* protext name */);
             if (title.getID() == md->titles.getSelectedID()) {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
             }
         }
-        TPlaylistWidgetItem* root = playlistWidget->root();
-        root->setFilename(filename, md->name());
     } else {
         // Add current file
         TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
@@ -1562,6 +1565,11 @@ bool TPlaylist::save() {
         wzplaylist = true;
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
         wzplaylist = true;
+    } else if (player->mdat.disc.valid) {
+        // Save as adds playlist extension
+        if (!extensions.isPlaylist(fi)) {
+            return saveAs();
+        }
     }
     msgOSD(tr("Saving %1").arg(fi.fileName()), 0);
 
@@ -1596,7 +1604,7 @@ bool TPlaylist::saveAs() {
 
     // If filename has no extension, add it
     QFileInfo fi(s);
-    if (fi.suffix().isEmpty()) {
+    if (fi.suffix().isEmpty() || !extensions.isPlaylist(fi)) {
         fi.setFile(s + ".m3u8");
     }
 

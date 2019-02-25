@@ -37,8 +37,6 @@ void TAddRemovedMenu::onAboutToShow() {
             item = item->plParent();
         }
         if (item) {
-            WZDEBUG("'" + item->filename() + "'");
-
             foreach(const QString& s, item->getBlacklist()) {
                 QAction* action = new QAction(s, this);
                 action->setData(s);
@@ -79,7 +77,10 @@ void TAddRemovedMenu::onCurrentItemChanged(QTreeWidgetItem* current,
         if (c->isFolder()) {
             e = c->getBlacklistCount();
         } else {
-            e = c->plParent()->getBlacklistCount();
+            c = c->plParent();
+            if (c) {
+                e = c->getBlacklistCount();
+            }
         }
     }
     setEnabled(e);

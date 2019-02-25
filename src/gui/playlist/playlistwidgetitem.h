@@ -101,6 +101,7 @@ public:
     void setOrder(int order) { mOrder = order; }
 
     bool isFolder() const { return mFolder; }
+    void setFolder(bool folder) { mFolder = folder; }
     bool isPlaylist() const { return mPlaylist; }
     bool isWZPlaylist() const { return mWZPlaylist; }
     bool isSymLink() const { return mSymLink; }

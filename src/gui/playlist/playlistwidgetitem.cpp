@@ -188,6 +188,7 @@ void TPlaylistWidgetItem::setFileInfo() {
     if (mSymLink) {
         fi.setFile(fi.symLinkTarget());
     }
+    // Root item uses empty filename
     if (mFilename.isEmpty() || fi.isDir()) {
         mExt = "";
         mFolder = true;
@@ -200,6 +201,7 @@ void TPlaylistWidgetItem::setFileInfo() {
             mBaseName = mBaseName.left(mBaseName.length() - mExt.length() - 1);
         }
 
+        // TPlaylist::onNewMediaStartedPlaying set mFolder for disc
         mFolder = mPlaylist;
         mWZPlaylist = fi.fileName().compare(TConfig::WZPLAYLIST,
                                             caseSensitiveFileNames) == 0;
