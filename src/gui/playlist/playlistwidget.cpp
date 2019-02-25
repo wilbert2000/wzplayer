@@ -708,7 +708,7 @@ TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
 
 TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
                                           TPlaylistWidgetItem* target) {
-    WZDEBUG("");
+    WZDEBUG(QString("Child count %1").arg(item->childCount()));
 
     // Get parent and child index into parent
     TPlaylistWidgetItem* parent;
