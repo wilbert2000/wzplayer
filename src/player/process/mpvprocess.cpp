@@ -511,7 +511,7 @@ bool TMPVProcess::parseLine(QString& line) {
     static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 
     // Messages to show in statusline
-    static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\])");
+    static QRegExp rx_message("^(Playing:|\\[ytdl_hook\\]|\\[ffmpeg\\])");
 
     // Errors
     static QRegExp rx_file_open("^\\[file\\] Cannot open file '.*': (.*)");
