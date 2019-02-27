@@ -1278,22 +1278,15 @@ void TPlaylist::editName() {
 void TPlaylist::newFolder() {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
-    if (current == 0) {
-        current = playlistWidget->root();
-        if (current == 0) {
-            return;
-        }
-    }
-    if (!current->isPlaylist() && !current->isFolder()) {
-        current = current->plParent();
-        if (current == 0) {
-            return;
-        }
+    TPlaylistWidgetItem* parent = playlistWidget->currentPlaylistWidgetItem();
+    if (parent == 0) {
+        parent = playlistWidget->root();
+    } else if (!parent->isFolder()) {
+        parent = parent->plParent();
     }
 
     QString baseName = tr("New folder");
-    QString path = current->pathPlusSep();
+    QString path = parent->playlistPathPlusSep();
     QDir dir(path);
 
     int i = 2;
@@ -1306,7 +1299,7 @@ void TPlaylist::newFolder() {
 
     if (dir.mkdir(name)) {
         TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-            current,
+            parent,
             fn,
             name,
             0,
@@ -1318,9 +1311,7 @@ void TPlaylist::newFolder() {
         WZERROR("Failed to create directory '" + fn + "'");
         QMessageBox::warning (this,
             tr("Error"),
-            tr("Failed to create folder '%1'").arg(fn),
-            QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
-
+            tr("Failed to create folder '%1'").arg(fn));
     }
 }
 
