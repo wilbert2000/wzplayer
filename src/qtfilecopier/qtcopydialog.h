@@ -52,7 +52,7 @@
 
 class QtCopyDialogPrivate;
 
-class QT_QTCOPYDIALOG_EXPORT QtCopyDialog : public QDialog
+class QtCopyDialog : public QDialog
 {
     Q_OBJECT
     Q_PROPERTY(int minimumDuration READ minimumDuration WRITE setMinimumDuration)

@@ -49,25 +49,10 @@
 
 #include <QtCore/QObject>
 
-#if defined(Q_WS_WIN)
-#  if !defined(QT_QTCOPYDIALOG_EXPORT) && !defined(QT_QTCOPYDIALOG_IMPORT)
-#    define QT_QTCOPYDIALOG_EXPORT
-#  elif defined(QT_QTCOPYDIALOG_IMPORT)
-#    if defined(QT_QTCOPYDIALOG_EXPORT)
-#      undef QT_QTCOPYDIALOG_EXPORT
-#    endif
-#    define QT_QTCOPYDIALOG_EXPORT __declspec(dllimport)
-#  elif defined(QT_QTCOPYDIALOG_EXPORT)
-#    undef QT_QTCOPYDIALOG_EXPORT
-#    define QT_QTCOPYDIALOG_EXPORT __declspec(dllexport)
-#  endif
-#else
-#  define QT_QTCOPYDIALOG_EXPORT
-#endif
 
 class QtFileCopierPrivate;
 
-class QT_QTCOPYDIALOG_EXPORT QtFileCopier : public QObject
+class QtFileCopier : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int progressInterval READ progressInterval WRITE setProgressInterval)
