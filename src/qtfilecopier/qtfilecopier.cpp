@@ -884,21 +884,32 @@ public:
     void copyStarted(int id);
     void copyFinished(int id, bool err);
     void copyCanceled();
-    int copy(const QString &sourceFile, const QString &destinationPath,
-            QtFileCopier::CopyFlags flags, bool move);
+    int copyFile(const QString &sourceFile,
+                 const QString &destinationPath,
+                 QtFileCopier::CopyFlags flags,
+                 bool move);
     QList<int> copyFiles(const QStringList &sourceFiles,
-        const QString &destinationDir, QtFileCopier::CopyFlags flags, bool move);
+                         const QString &destinationDir,
+                         QtFileCopier::CopyFlags flags,
+                         bool move);
     QList<int> copyDirectory(const QString &sourceDir,
-        const QString &destinationDir, QtFileCopier::CopyFlags flags, bool move);
+                             const QString &destinationDir,
+                             QtFileCopier::CopyFlags flags,
+                             bool move);
     QMap<int, CopyRequest> copyDirectoryContents(const QString &sourceDir,
-            const QString &destinationDir, QtFileCopier::CopyFlags flags, bool move);
+                                                 const QString &destinationDir,
+                                                 QtFileCopier::CopyFlags flags,
+                                                 bool move);
 
     void progressRequest();
 
     void removeChildren(int id);
-    CopyRequest prepareRequest(bool checkPath, const QString &sourceFile,
-            const QString &destinationPath, QtFileCopier::CopyFlags flags,
-            bool move, bool dir) const;
+    CopyRequest prepareRequest(bool checkPath,
+                               const QString &sourceFile,
+                               const QString &destinationPath,
+                               QtFileCopier::CopyFlags flags,
+                               bool move,
+                               bool dir) const;
     void startThread();
 
     QtCopyThread *copyThread;
@@ -995,8 +1006,12 @@ void QtFileCopierPrivate::copyCanceled()
     emit q->done(false);
 }
 
-CopyRequest QtFileCopierPrivate::prepareRequest(bool checkPath, const QString &sourceFile,
-        const QString &destinationPath, QtFileCopier::CopyFlags flags, bool move, bool dir) const
+CopyRequest QtFileCopierPrivate::prepareRequest(bool checkPath,
+                                                const QString &sourceFile,
+                                                const QString &destinationPath,
+                                                QtFileCopier::CopyFlags flags,
+                                                bool move,
+                                                bool dir) const
 {
     QFileInfo fis(sourceFile);
     QFileInfo fid(destinationPath);
@@ -1037,8 +1052,10 @@ void QtFileCopierPrivate::startThread()
     */
 }
 
-int QtFileCopierPrivate::copy(const QString &sourceFile, const QString &destinationPath,
-            QtFileCopier::CopyFlags flags, bool move)
+int QtFileCopierPrivate::copyFile(const QString &sourceFile,
+                                  const QString &destinationPath,
+                                  QtFileCopier::CopyFlags flags,
+                                  bool move)
 {
     CopyRequest r = prepareRequest(true, sourceFile, destinationPath, flags, move, false);
     requests[idCounter] = r;
@@ -1048,7 +1065,9 @@ int QtFileCopierPrivate::copy(const QString &sourceFile, const QString &destinat
 }
 
 QList<int> QtFileCopierPrivate::copyFiles(const QStringList &sourceFiles,
-        const QString &destinationDir, QtFileCopier::CopyFlags flags, bool move)
+                                          const QString &destinationDir,
+                                          QtFileCopier::CopyFlags flags,
+                                          bool move)
 {
     QMap<int, CopyRequest> resultList;
     QFileInfo fid(destinationDir);
@@ -1073,7 +1092,9 @@ QList<int> QtFileCopierPrivate::copyFiles(const QStringList &sourceFiles,
 }
 
 QList<int> QtFileCopierPrivate::copyDirectory(const QString &sourceDir,
-        const QString &destinationDir, QtFileCopier::CopyFlags flags, bool move)
+                                              const QString &destinationDir,
+                                              QtFileCopier::CopyFlags flags,
+                                              bool move)
 {
     QMap<int, CopyRequest> resultList;
     QFileInfo fis(sourceDir);
@@ -1106,8 +1127,11 @@ QList<int> QtFileCopierPrivate::copyDirectory(const QString &sourceDir,
     return resultList.keys();
 }
 
-QMap<int, CopyRequest> QtFileCopierPrivate::copyDirectoryContents(const QString &sourceDir,
-            const QString &destinationDir, QtFileCopier::CopyFlags flags, bool move)
+QMap<int, CopyRequest> QtFileCopierPrivate::copyDirectoryContents(
+        const QString &sourceDir,
+        const QString &destinationDir,
+        QtFileCopier::CopyFlags flags,
+        bool move)
 {
     QMap<int, CopyRequest> resultList;
     QFileInfo fis(sourceDir);
@@ -1190,10 +1214,10 @@ void QtFileCopierPrivate::progressRequest()
     copy and move operations:
 
     \list
-    \o copy()
+    \o copyFile()
     \o copyFiles()
     \o copyDirectory()
-    \o move()
+    \o moveFile()
     \o moveFiles()
     \o moveDirectory()
     \endlist
@@ -1319,9 +1343,9 @@ void QtFileCopierPrivate::progressRequest()
 
     MyClass::copy()
     {
-        copier->copy(sourceFile, destinationPath, flags);
+        copier->copyFile(sourceFile, destinationPath, flags);
         copier->copyFiles(sourceFiles, destinationDir, flags);
-        copier->move(sourceFile, destinationPath, flags);
+        copier->moveFile(sourceFile, destinationPath, flags);
     }
     \endcode
 
@@ -1335,9 +1359,9 @@ void QtFileCopierPrivate::progressRequest()
     {
         QtFileCopier copier(this);
         QtFileCopier::QtCopyFlags flags = QtFileCopier::NonInteractive;
-        copier.copy(sourceFile, destinationPath, flags);
+        copier.copyFile(sourceFile, destinationPath, flags);
         copier.copyFiles(sourceFiles, destinationDir, flags);
-        copier.move(sourceFile, destinationPath, flags);
+        copier.moveFile(sourceFile, destinationPath, flags);
     }
     \endcode
 
@@ -1423,7 +1447,7 @@ QtFileCopier::~QtFileCopier()
            links (or shortcuts on Windows) and copies the target instead
            of copying link itself.
 
-    \sa copy(), move()
+    \sa copyFile(), moveFile()
 */
 
 /*! \enum QtFileCopier::Error
@@ -1435,7 +1459,7 @@ QtFileCopier::~QtFileCopier()
     \value SourceNotExists The source file doesn't exist.
     \value DestinationExists The destination file exists.
     \value SourceDirectoryOmitted The source was supposed to be a file, but
-           the specified source is a directory (e.g. calling the copy()
+           the specified source is a directory (e.g. calling the copyFile()
            function).
     \value SourceFileOmitted The source was supposed to be a directory, but
            the specified source is a file (e.g. calling the copyDirectory()
@@ -1565,18 +1589,19 @@ QtFileCopier::~QtFileCopier()
     identifier. If the operation is not valid, or the file copier is
     not in the appropiate state, the function returns -1.
 
-    \sa copyFiles(), copyDirectory(), move()
+    \sa copyFiles(), copyDirectory(), moveFile()
 */
 
-int QtFileCopier::copy(const QString &sourceFile, const QString &destinationPath,
-                CopyFlags flags)
+int QtFileCopier::copyFile(const QString &sourceFile,
+                           const QString &destinationPath,
+                           CopyFlags flags)
 {
     if (state() != QtFileCopier::Idle)
         return -1;
     QFileInfo fis(sourceFile);
     if (fis.isDir())
         return -1; // Omitting Dir
-    return d_ptr->copy(sourceFile, destinationPath, flags, false);
+    return d_ptr->copyFile(sourceFile, destinationPath, flags, false);
 }
 
 /*!
@@ -1597,11 +1622,12 @@ int QtFileCopier::copy(const QString &sourceFile, const QString &destinationPath
     than the \a sourceFiles list in case some operations were not
     valid.
 
-    \sa copy() copyDirectory() moveFiles()
+    \sa copyFile() copyDirectory() moveFiles()
 */
 
 QList<int> QtFileCopier::copyFiles(const QStringList &sourceFiles,
-                const QString &destinationDir, CopyFlags flags)
+                                   const QString &destinationDir,
+                                   CopyFlags flags)
 {
     if (state() != QtFileCopier::Idle)
         return QList<int>();
@@ -1626,11 +1652,12 @@ QList<int> QtFileCopier::copyFiles(const QStringList &sourceFiles,
     than the number of files in \a sourceDir in case some
     operations were not valid.
 
-    \sa copy() copyFiles() moveDirectory()
+    \sa copyFile() copyFiles() moveDirectory()
 */
 
 QList<int> QtFileCopier::copyDirectory(const QString &sourceDir,
-                const QString &destinationDir, CopyFlags flags)
+                                       const QString &destinationDir,
+                                       CopyFlags flags)
 {
     if (state() != QtFileCopier::Idle)
         return QList<int>();
@@ -1658,11 +1685,12 @@ QList<int> QtFileCopier::copyDirectory(const QString &sourceDir,
     identifier. If the operation is not valid, or the file copier is
     not in the appropiate state, the function returns -1.
 
-    \sa moveFiles() moveDirectory() copy()
+    \sa moveFiles() moveDirectory() copyFile()
 */
 
-int QtFileCopier::move(const QString &sourceFile, const QString &destinationPath,
-                CopyFlags flags)
+int QtFileCopier::moveFile(const QString &sourceFile,
+                           const QString &destinationPath,
+                           CopyFlags flags)
 {
     if (flags & QtFileCopier::MakeLinks) {
         qWarning("QtFileCopier: cannot move with MakeLinks option specified, option cleared.");
@@ -1675,7 +1703,7 @@ int QtFileCopier::move(const QString &sourceFile, const QString &destinationPath
     QFileInfo fis(sourceFile);
     if (fis.isDir())
         return -1; // Omitting Dir
-    return d_ptr->copy(sourceFile, destinationPath, flags, true);
+    return d_ptr->copyFile(sourceFile, destinationPath, flags, true);
 }
 
 /*!
@@ -1700,11 +1728,12 @@ int QtFileCopier::move(const QString &sourceFile, const QString &destinationPath
     than the \a sourceFiles list in case some operations were not
     valid.
 
-    \sa move() moveDirectory() copyFiles()
+    \sa moveFile() moveDirectory() copyFiles()
 */
 
 QList<int> QtFileCopier::moveFiles(const QStringList &sourceFiles,
-                const QString &destinationDir, CopyFlags flags)
+                                   const QString &destinationDir,
+                                   CopyFlags flags)
 {
     if (flags & QtFileCopier::MakeLinks) {
         qWarning("QtFileCopier: cannot move with MakeLinks option specified, option cleared.");
@@ -1739,11 +1768,12 @@ QList<int> QtFileCopier::moveFiles(const QStringList &sourceFiles,
     than the number of files in \a sourceDir in case some operations
     were not valid.
 
-    \sa move() moveFiles() copyDirectory()
+    \sa moveFile() moveFiles() copyDirectory()
 */
 
 QList<int> QtFileCopier::moveDirectory(const QString &sourceDir,
-                const QString &destinationDir, CopyFlags flags)
+                                       const QString &destinationDir,
+                                       CopyFlags flags)
 {
     if (flags & QtFileCopier::MakeLinks) {
         qWarning("QtFileCopier: cannot move with MakeLinks option specified, option cleared.");
