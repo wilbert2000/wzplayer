@@ -1481,17 +1481,17 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
     if (!f.open(QIODevice::WriteOnly)) {
         // Ok to fail on wzplaylist
         if (wzplaylist) {
-            WZINFO("ignoring failed save of '" + filename + "'");
+            WZINFO(QString("Ignoring failed save of '%1'. %2")
+                   .arg(filename).arg(f.errorString()));
             return true;
         }
 
-        WZERROR("failed to save '" + filename + "'");
-
+        WZERROR("failed to save '" + filename + "'. " + f.errorString());
         // TODO: skip remaining  msgs...
         QMessageBox::warning(this, tr("Save failed"),
-                             tr("Failed to open \"%1\" for writing.")
-                             .arg(filename), QMessageBox::Ok);
-
+                             tr("Failed to open '%1' for writing. %2")
+                             .arg(filename).arg(f.errorString()),
+                             QMessageBox::Ok);
         return false;
     }
 
