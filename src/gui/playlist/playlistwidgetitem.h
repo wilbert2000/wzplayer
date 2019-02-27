@@ -70,8 +70,8 @@ public:
     QString filename() const { return mFilename; }
     void setFilename(const QString& fileName, const QString& baseName);
 
-    QString path() const;
-    QString pathPlusSep() const;
+    QString playlistPath() const;
+    QString playlistPathPlusSep() const;
     QString fname() const;
     int compareFilename(const TPlaylistWidgetItem& item) const;
 

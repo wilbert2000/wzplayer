@@ -177,7 +177,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
                                                  double duration,
                                                  bool protectName) {
 
-    QString parentPath = parent->path();
+    QString parentPath = parent->playlistPath();
     QString parentPathPlusSep = parentPath;
     if (!parentPathPlusSep.endsWith("/")) {
         parentPathPlusSep += "/";
@@ -224,7 +224,7 @@ TPlaylistWidgetItem* TAddFilesThread::createPath(TPlaylistWidgetItem* parent,
     // Only check last child to preserve order of playlist
     if (parent->childCount()) {
         TPlaylistWidgetItem* child = parent->plChild(parent->childCount() - 1);
-        if (child->path() == path) {
+        if (child->playlistPath() == path) {
             createPath(child, fi, name, duration, protectName);
             return child;
         }

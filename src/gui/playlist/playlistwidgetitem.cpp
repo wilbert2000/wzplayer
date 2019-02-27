@@ -362,7 +362,7 @@ bool TPlaylistWidgetItem::renameDroppedFile() {
     }
 
     if (QFileInfo(name).exists()) {
-        QString newName = plParent()->pathPlusSep() + editName();
+        QString newName = plParent()->playlistPathPlusSep() + editName();
         return renameFile(newName);
     }
 
@@ -531,7 +531,7 @@ void TPlaylistWidgetItem::setModified(bool modified,
     emitDataChanged();
 }
 
-QString TPlaylistWidgetItem::path() const {
+QString TPlaylistWidgetItem::playlistPath() const {
 
     QFileInfo fi(mFilename);
     if (mPlaylist) {
@@ -540,9 +540,9 @@ QString TPlaylistWidgetItem::path() const {
     return fi.absoluteFilePath();
 }
 
-QString TPlaylistWidgetItem::pathPlusSep() const {
+QString TPlaylistWidgetItem::playlistPathPlusSep() const {
 
-    QString p = path();
+    QString p = playlistPath();
     if (p.endsWith(QDir::separator())) {
         return p;
     }
