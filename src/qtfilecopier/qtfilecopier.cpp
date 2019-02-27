@@ -44,7 +44,7 @@
 ** 
 ****************************************************************************/
 
-#include "qtfilecopier.h"
+#include "qtfilecopier/qtfilecopier.h"
 #include <QtCore/QThread>
 #include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>

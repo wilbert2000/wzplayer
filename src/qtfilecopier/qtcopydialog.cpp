@@ -44,7 +44,7 @@
 ** 
 ****************************************************************************/
 
-#include "qtcopydialog.h"
+#include "qtfilecopier/qtcopydialog.h"
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
