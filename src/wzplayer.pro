@@ -158,6 +158,8 @@ HEADERS += wzdebug.h \
     clhelp.h \
     qtsingleapplication/qtsingleapplication.h \
     qtsingleapplication/qtlocalpeer.h \
+    qtfilecopier/qtfilecopier.h \
+    qtfilecopier/qtcopydialog.h \
     config.h \
     name.h \
     wzfiles.h \
@@ -287,6 +289,8 @@ SOURCES += wzdebug.cpp \
     clhelp.cpp \
     qtsingleapplication/qtsingleapplication.cpp \
     qtsingleapplication/qtlocalpeer.cpp \
+    qtfilecopier/qtfilecopier.cpp \
+    qtfilecopier/qtcopydialog.cpp \
     config.cpp \
     name.cpp \
     wzfiles.cpp \
@@ -319,7 +323,11 @@ FORMS = gui/logwindow.ui \
     gui/pref/drives.ui \
     gui/pref/capture.ui \
     gui/pref/performance.ui \
-    gui/pref/network.ui
+    gui/pref/network.ui \
+    qtfilecopier/qtcopydialog.ui \
+    qtfilecopier/qtoverwritedialog.ui \
+    qtfilecopier/qtotherdialog.ui
+
 
 
 win32 {
