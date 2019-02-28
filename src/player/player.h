@@ -341,7 +341,6 @@ signals:
     void videoOutResolutionChanged(int w, int h);
     void newMediaStartedPlaying();
     void mediaInfoChanged();
-    void mediaStopped();
     void mediaEOF(); // Media has arrived to the end.
     void playerError(int exitCode);
     //! Sent when requested to play, but there is no file to play

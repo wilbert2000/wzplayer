@@ -263,9 +263,6 @@ void TMainWindow::createPlayer() {
     connect(player, &Player::TPlayer::mediaInfoChanged,
             this, &TMainWindow::onMediaInfoChanged);
 
-    connect(player, &Player::TPlayer::mediaStopped,
-            this, &TMainWindow::exitFullscreenOnStop);
-
     connect(player, &Player::TPlayer::playerError,
             this, &TMainWindow::onPlayerError,
             Qt::QueuedConnection);
@@ -1316,6 +1313,7 @@ void TMainWindow::onStateChanged(Player::TState state) {
     switch (state) {
         case Player::STATE_STOPPED:
             setWindowCaption(TConfig::PROGRAM_NAME);
+            setFullscreen(false);
             msg(tr("Ready"));
             break;
         case Player::STATE_PLAYING:
@@ -1994,11 +1992,6 @@ void TMainWindow::enterFullscreenOnPlay() {
             }
         }
     }
-}
-
-// Called when the playlist has stopped
-void TMainWindow::exitFullscreenOnStop() {
-    setFullscreen(false);
 }
 
 void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {

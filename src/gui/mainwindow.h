@@ -350,7 +350,6 @@ private slots:
     void changeVideoEqualizerBySoftware(bool b);
     void updateVideoEqualizer();
 
-    void exitFullscreenOnStop();
     void checkPendingActionsToRun();
 
     void onStateChanged(Player::TState state);

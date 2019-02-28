@@ -577,7 +577,6 @@ void TPlayer::stop() {
     stopPlayer();
     WZDEBUG("entering the stopped state");
     setState(STATE_STOPPED);
-    emit mediaStopped();
 }
 
 void TPlayer::play() {
