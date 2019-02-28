@@ -9,11 +9,11 @@ namespace Gui {
 
 extern void setMessageHandler(QStatusBar* bar);
 extern void msg(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);
-
 extern void msgOSD(const QString& message,
                    int timeout = TConfig::MESSAGE_DURATION);
 extern void msg2(const QString& message,
                  int timeout = TConfig::MESSAGE_DURATION);
+extern void msgClear();
 
 
 class TMsgSlot : public QObject {

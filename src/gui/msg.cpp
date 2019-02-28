@@ -35,6 +35,13 @@ void msg2(const QString& message, int timeout) {
     }
 }
 
+void msgClear() {
+
+    if (statusbar) {
+        statusbar->clearMessage();
+    }
+}
+
 TMsgSlot* msgSlot = 0;
 
 TMsgSlot::TMsgSlot(QObject *parent) :
