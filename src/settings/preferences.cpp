@@ -361,7 +361,7 @@ void TPreferences::reset() {
 
     // If set high enough the OS will detect the "not responding state"
     // and popup a dialog...
-    time_to_kill_player = 6000;
+    time_to_kill_player = 5000;
 
     // Display frame counter in status bar timestamp
     show_frames = false;
