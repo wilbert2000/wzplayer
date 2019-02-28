@@ -156,8 +156,6 @@ private:
     bool haveUnplayedItems() const;
 
     void copySelection(const QString& actionName);
-    bool removeFromDisk(const QString& filename,
-                            const QString& playingFile);
 
     bool saveM3uFolder(TPlaylistWidgetItem* folder,
                        const QString& path,

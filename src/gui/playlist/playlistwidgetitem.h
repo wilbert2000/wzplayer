@@ -68,11 +68,13 @@ public:
     virtual void setData(int column, int role, const QVariant &value) override;
 
     QString filename() const { return mFilename; }
+    void setFilename(const QString& fileName);
     void setFilename(const QString& fileName, const QString& baseName);
 
+    QString fname() const;
+    QString path() const;
     QString playlistPath() const;
     QString playlistPathPlusSep() const;
-    QString fname() const;
     int compareFilename(const TPlaylistWidgetItem& item) const;
 
     QString baseName() const { return mBaseName; }
@@ -128,9 +130,11 @@ public:
         return static_cast<TPlaylistWidgetItem*>(child(idx));
     }
 
-    bool renameDroppedFile();
+    void renameDir(const QString& dir, const QString& newDir);
 
+    virtual TPlaylistWidgetItem* clone() const override;
     virtual bool operator<(const QTreeWidgetItem& other) const override;
+
 
 private:
     QString mFilename;
@@ -159,7 +163,6 @@ private:
 
     static QString playlistItemState(TPlaylistWidgetItemState state);
 
-    void renameDir(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);
     bool rename(const QString& newName);
 

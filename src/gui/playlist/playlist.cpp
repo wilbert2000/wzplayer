@@ -27,8 +27,8 @@
 #include "gui/msg.h"
 #include "gui/filedialog.h"
 #include "player/player.h"
-#include "images.h"
 #include "wzfiles.h"
+#include "images.h"
 #include "extensions.h"
 #include "version.h"
 
@@ -707,58 +707,6 @@ bool TPlaylist::hasPlayingItem() const {
     return playlistWidget->playing_item;
 }
 
-bool TPlaylist::removeFromDisk(const QString& filename,
-                               const QString& playingFile) {
-
-    QFileInfo fi(filename);
-    if (!fi.exists()) {
-        return true;
-    }
-
-    if (!fi.isSymLink() && fi.isDir()) {
-        if (!TWZFiles::directoryIsEmpty(filename)) {
-            QMessageBox::warning(this, tr("Warning"),
-                tr("Skipping delete of directory '%1',"
-                   " it does not seem to be empty.").arg(filename));
-            return false;
-        }
-    }
-
-    // Ask the user for confirmation
-    int res = QMessageBox::question(this, tr("Confirm delete from disk"),
-        tr("You're about to delete '%1' from your drive.").arg(filename)
-        + "<br>"+
-        tr("This action cannot be undone. Are you sure you want to proceed?"),
-        QMessageBox::Yes, QMessageBox::No);
-
-    if (res != QMessageBox::Yes) {
-        WZINFO("User canceled delete of '" + filename + "'");
-        return false;
-    }
-
-    if (fi.isSymLink() || fi.isFile()) {
-        // Cannot delete file on Windows when in use.
-        // Also mpv will go to 100% cpu when deleting a used image file.
-        if (filename == playingFile
-            && player->state() != Player::STATE_STOPPED) {
-            player->stop();
-        }
-
-        if (QFile::remove(filename)) {
-            WZINFO("Removed file '" + filename + "' from disk");
-            return true;
-        }
-    } else if (fi.dir().rmdir(fi.fileName())) {
-        WZINFO("Removed directory '" + filename + "' from disk");
-        return true;
-    }
-
-    WZERROR("Failed to remove '" + filename + "' from disk");
-    QMessageBox::warning(this, tr("Delete failed"),
-                         tr("Failed to delete '%1' from disk").arg(filename));
-    return false;
-}
-
 void TPlaylist::removeSelected(bool deleteFromDisk) {
     WZDEBUG("");
 
@@ -772,94 +720,10 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
     }
 
     disable_enableActions = true;
-
-    // Save currently playing item, which might be deleted
-    QString playing = playingFile();
-
-    // Move current out of selection
-    TPlaylistWidgetItem* newCurrent =
-            playlistWidget->currentPlaylistWidgetItem();
-    do {
-        newCurrent = playlistWidget->getNextItem(newCurrent, false);
-    } while (newCurrent && newCurrent->isSelected());
-
-    // Delete selection
-    TPlaylistWidgetItem* root = playlistWidget->root();
-    QTreeWidgetItemIterator it(playlistWidget,
-                               QTreeWidgetItemIterator::Selected);
-    while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
-        if (i != root
-            && (!deleteFromDisk
-                || removeFromDisk(i->filename(), playing))) {
-            WZINFO("removing '" + i->filename() + "' from playlist");
-
-            TPlaylistWidgetItem* parent = i->plParent();
-
-            // Blacklist item if WZPlaylist
-            if (parent
-                    && parent->isWZPlaylist()
-                    && QFileInfo(parent->filename()).absolutePath().compare(
-                        QFileInfo(i->filename()).absolutePath(),
-                        caseSensitiveFileNames) == 0) {
-
-                // A playlist may contain multiple identical items
-                bool multipleItems = false;
-                for(int c = 0; c < parent->childCount(); c++) {
-                    TPlaylistWidgetItem* s = parent->plChild(c);
-                    if (s != i && s->compareFilename(*i) == 0) {
-                        multipleItems = true;
-                        break;
-                    }
-                }
-
-                if (!multipleItems) {
-                    parent->blacklist(i->fname());
-                }
-            }
-            delete i;
-
-            // Clean up empty folders
-            while (parent && parent->childCount() == 0 && parent != root) {
-                TPlaylistWidgetItem* gp = parent->plParent();
-                if (parent == newCurrent) {
-                    newCurrent = gp;
-                }
-                if (gp && gp->isWZPlaylist()) {
-                    gp->blacklist(parent->fname());
-                }
-
-                // TODO: are you sure you want to remove empty dirs from disk?
-                if (parent->isWZPlaylist()
-                        && QFile::remove(parent->filename())) {
-                    WZINFO("removed empty dir '" + parent->filename()
-                           + "' from disk");
-                }
-
-                delete parent;
-                parent = gp;
-            }
-
-            if (parent) {
-                // Set parent modified
-                playlistWidget->setModified(parent);
-            }
-        }
-        it++;
-    }
-
-    playlistWidget->playing_item = findFilename(playing);
-    if (newCurrent && newCurrent != root) {
-        playlistWidget->setCurrentItem(newCurrent);
-    } else {
-        playlistWidget->setCurrentItem(
-            playlistWidget->firstPlaylistWidgetItem());
-    }
-
+    playlistWidget->removeSelected(deleteFromDisk);
     if (filename.isEmpty() && !playlistWidget->hasItems()) {
         playlistWidget->clearModified();
     }
-
     disable_enableActions = false;
     enableActions();
 }
@@ -1566,7 +1430,7 @@ bool TPlaylist::save() {
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
     TPlaylistWidgetItem* root = playlistWidget->root();
-    root->setFilename(filename, fi.completeBaseName());
+    root->setFilename(filename);
     setPlaylistTitle();
     Settings::pref->last_dir = fi.absolutePath();
 

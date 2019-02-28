@@ -151,7 +151,7 @@ void TAddFilesThread::run() {
         root = 0;
     } else {
         // TPlaylist uses empty filename to determine whether to save playlist
-        root->setFilename("", "");
+        root->setFilename("");
     }
 
     WZDEBUG(QString("exiting. stopped %1 aborted %2")

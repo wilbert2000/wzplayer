@@ -8,6 +8,8 @@
 
 class QTimer;
 class QSettings;
+class QtFileCopier;
+class QtCopyDialog;
 
 namespace Gui {
 
@@ -72,6 +74,7 @@ public:
 
     TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
                              TPlaylistWidgetItem* target);
+    void removeSelected(bool deleteFromDisk);
 
     void setSort(int section, Qt::SortOrder order);
 
@@ -83,7 +86,7 @@ signals:
     void refresh();
 
 protected:
-    virtual void dropEvent(QDropEvent*) override;
+    virtual void dropEvent(QDropEvent* event) override;
 
 protected slots:
     virtual void rowsAboutToBeRemoved(const QModelIndex& parent,
@@ -98,13 +101,25 @@ private:
     QTimer* wordWrapTimer;
     Gui::Action::Menu::TMenuExec* columnsMenu;
 
+    QtFileCopier *fileCopier;
+    QtCopyDialog *copyDialog;
+
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
 
     TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
                                          bool allowChild = true) const;
 
+    bool droppingOnItself(QDropEvent *event, const QModelIndex &index);
+    bool dropOn(QDropEvent *event, int *dropRow, int *dropCol,
+                QModelIndex *dropIndex);
+    bool addDroppedItem(const QString& source,
+                        const QString& dest,
+                        TPlaylistWidgetItem* item);
+    void dropSelection(TPlaylistWidgetItem* target, Qt::DropAction action);
+
     void resizeRows(QTreeWidgetItem* w, int level);
+    bool removeFromDisk(const QString& filename, const QString& playingFile);
 
 private slots:
     void onItemExpanded(QTreeWidgetItem*w);
@@ -112,6 +127,9 @@ private slots:
     void onSectionResized(int, int, int);
     void onColumnMenuTriggered(QAction* action);
     void resizeRowsEx();
+    void onCopyFinished(int id, bool error);
+    void onMoveFinished(int id, bool error);
+    void onDropDone(bool error);
 };
 
 } // namespace Playlist
