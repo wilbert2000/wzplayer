@@ -272,8 +272,8 @@ TApp::TExitCode TApp::processArgs() {
         QString argument = args[n];
         QString name = getArgName(argument);
 
-        if (name == "debug" || name == "trace") {
-
+        if (name == "info" || name == "debug" || name == "trace") {
+            // Already handled by main
         } else if (name == "send-action") {
             if (n + 1 < args.count()) {
                 n++;

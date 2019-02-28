@@ -96,7 +96,9 @@ bool isOption(const QString& arg, const QString& name) {
 void getLevelFromOption(const char* arg, Log4Qt::Level& level) {
 
     QString s(arg);
-    if (isOption(s, "debug")) {
+    if (isOption(s, "info")) {
+        level = Log4Qt::Level(Log4Qt::Level::INFO_INT);
+    } else if (isOption(s, "debug")) {
         level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
     } else if (isOption(s, "trace")) {
         level = Log4Qt::Level(Log4Qt::Level::TRACE_INT);
@@ -105,7 +107,7 @@ void getLevelFromOption(const char* arg, Log4Qt::Level& level) {
 
 Log4Qt::Level getLevel(int argc, char** argv) {
 
-    Log4Qt::Level level(Log4Qt::Level::INFO_INT);
+    Log4Qt::Level level(Log4Qt::Level::WARN_INT);
     for(int i = 0; i < argc; i++) {
         getLevelFromOption(argv[i], level);
     }

@@ -867,8 +867,8 @@ void TPreferences::load() {
     endGroup(); // Log
 
     // Update Log4Qt
-    // Command line options --debug and --trace override log level
-    if (Log4Qt::LogManager::rootLogger()->level() == Log4Qt::Level::INFO_INT) {
+    // Command line options --info, --debug and --trace override log level
+    if (Log4Qt::LogManager::rootLogger()->level() == Log4Qt::Level::WARN_INT) {
         Log4Qt::LogManager::rootLogger()->setLevel(log_level);
         Log4Qt::LogManager::qtLogger()->setLevel(log_level);
         WZINFO("log level set to " + log_level.toString());
