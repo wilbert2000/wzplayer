@@ -98,9 +98,9 @@ public:
     int copyFile(const QString &sourceFile,
                  const QString &destinationPath,
                  CopyFlags flags = 0);
-    QList<int> copyFiles(const QStringList &sourceFiles,
-                         const QString &destinationDir,
-                         CopyFlags flags = 0);
+    void copyFiles(const QStringList &sourceFiles,
+                   const QString &destinationDir,
+                   CopyFlags flags = 0);
     QList<int> copyDirectory(const QString &sourceDir,
                              const QString &destinationDir,
                              CopyFlags flags = 0);
@@ -108,9 +108,9 @@ public:
     int moveFile(const QString &sourceFile,
                  const QString &destinationPath,
                  CopyFlags flags = 0);
-    QList<int> moveFiles(const QStringList &sourceFiles,
-                         const QString &destinationDir,
-                         CopyFlags flags = 0);
+    void moveFiles(const QStringList &sourceFiles,
+                   const QString &destinationDir,
+                   CopyFlags flags = 0);
     QList<int> moveDirectory(const QString &sourceDir,
                              const QString &destinationDir,
                              CopyFlags flags = 0);
