@@ -214,7 +214,7 @@ public:
 
     QtFileCopier *fileCopier;
     bool autoClose;
-    QTimer *showTimer;
+    QTimer* showTimer;
     QTime startTime;
 
     QMap<int, Request> requests;
@@ -239,7 +239,7 @@ void QtCopyDialogPrivate::init()
 
     fileCopier = 0;
 
-    autoClose = false;
+    autoClose = true;
 
     currentFile = 0;
     totalSize = 0;
@@ -256,16 +256,17 @@ void QtCopyDialogPrivate::init()
     showTimer->setSingleShot(true);
     q->connect(showTimer, SIGNAL(timeout()),
                 q, SLOT(showDialog()));
-
 }
 
 void QtCopyDialogPrivate::error(int id, QtFileCopier::Error error, bool stopped)
 {
-    Request r = requests[id];
     if (!stopped)
         return;
+
     showProgress();
     showDialog();
+
+    Request r = requests[id];
 
     QString title;
     QString text;
@@ -624,15 +625,13 @@ void QtCopyDialogPrivate::addRequest(int id)
     window \a flags.
 */
 
-QtCopyDialog::QtCopyDialog(QWidget *parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
-{
+QtCopyDialog::QtCopyDialog(QWidget *parent, Qt::WindowFlags f) :
+    QDialog(parent, f) {
+
     d_ptr = new QtCopyDialogPrivate;
     Q_D(QtCopyDialog);
     d->q_ptr = this;
     d->init();
-
-    //setModal(false);
 }
 
 /*!
@@ -648,17 +647,17 @@ QtCopyDialog::QtCopyDialog(QWidget *parent, Qt::WindowFlags f)
     \sa setFileCopier()
 */
 
-QtCopyDialog::QtCopyDialog(QtFileCopier *copier, QWidget *parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
-{
+QtCopyDialog::QtCopyDialog(QtFileCopier *copier,
+                           QWidget *parent,
+                           Qt::WindowFlags f) :
+    QDialog(parent, f) {
+
     d_ptr = new QtCopyDialogPrivate;
     Q_D(QtCopyDialog);
     d->q_ptr = this;
     d->init();
 
     setFileCopier(copier);
-
-    //setModal(false);
 }
 
 /*!
@@ -798,13 +797,6 @@ void QtCopyDialog::reject()
         d->fileCopier->cancelAll();
     QDialog::reject();
 }
-
-
-
-
-
-
-
 
 #include "qtcopydialog.moc"
 #include "moc_qtcopydialog.cpp"
