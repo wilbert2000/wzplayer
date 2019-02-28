@@ -246,12 +246,10 @@ bool TPlayerProcess::parseLine(QString& line) {
     static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
     static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
 
-    WZDEBUG("'" + line + "'");
-
     if (quit_send) {
-        WZDEBUG("ignored, waiting for quit to arrive");
         return true;
     }
+    WZDEBUG("'" + line + "'");
 
     // VO
     if (rx_vo.indexIn(line) >= 0) {
