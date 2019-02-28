@@ -1161,13 +1161,12 @@ void TMainWindow::setFloatingToolbarsVisible(bool visible) {
 }
 
 void TMainWindow::showEvent(QShowEvent* event) {
-    WZDEBUG("");
 
     QMainWindow::showEvent(event);
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PAUSED
         && !ignore_show_hide_events) {
-        WZDEBUG("unpausing");
+        WZDEBUG("unpausing player");
         player->play();
     }
 
@@ -1175,13 +1174,12 @@ void TMainWindow::showEvent(QShowEvent* event) {
 }
 
 void TMainWindow::hideEvent(QHideEvent* event) {
-    WZDEBUG("");
 
     QMainWindow::hideEvent(event);
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PLAYING
         && !ignore_show_hide_events) {
-        WZDEBUG("pausing");
+        WZDEBUG("pausing player");
         player->pause();
     }
 
