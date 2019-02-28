@@ -38,7 +38,7 @@ class TAction;
 namespace Playlist {
 
 class TPlaylistWidget;
-class TPlaylistWidgetItem;
+class TPlaylistItem;
 class TAddFilesThread;
 
 
@@ -54,10 +54,10 @@ public:
     void playDirectory(const QString& dir);
 
     QString playingFile() const;
-    TPlaylistWidgetItem* findFilename(const QString& filename) const;
+    TPlaylistItem* findFilename(const QString& filename) const;
 
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
-    TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
+    TPlaylistItem* currentPlaylistItem() const;
     bool hasItems() const;
     bool hasPlayingItem() const;
     bool isLoading() const { return thread; }
@@ -133,7 +133,7 @@ private:
 
     TAddFilesThread* thread;
     QStringList addFilesFiles;
-    TPlaylistWidgetItem* addFilesTarget;
+    TPlaylistItem* addFilesTarget;
     QString addFilesFileToPlay;
     bool addFilesStartPlay;
     bool addFilesSearchItems;
@@ -148,21 +148,21 @@ private:
 
     void addFilesStartThread();
     void startPlay();
-    void playItem(TPlaylistWidgetItem* item);
+    void playItem(TPlaylistItem* item);
 
     void setPlaylistTitle();
 
-    TPlaylistWidgetItem* getRandomItem() const;
+    TPlaylistItem* getRandomItem() const;
     bool haveUnplayedItems() const;
 
     void copySelection(const QString& actionName);
 
-    bool saveM3uFolder(TPlaylistWidgetItem* folder,
+    bool saveM3uFolder(TPlaylistItem* folder,
                        const QString& path,
                        QTextStream& stream,
                        bool linkFolders,
                        bool& savedMetaData);
-    bool saveM3u(TPlaylistWidgetItem* folder,
+    bool saveM3u(TPlaylistItem* folder,
                  const QString& filename,
                  bool wzplaylist);
     bool saveM3u(const QString& filename, bool linkFolders);

@@ -1,5 +1,5 @@
-#ifndef GUI_PLAYLIST_PLAYLISTWIDGETITEM_H
-#define GUI_PLAYLIST_PLAYLISTWIDGETITEM_H
+#ifndef GUI_PLAYLIST_PLAYLISTITEM_H
+#define GUI_PLAYLIST_PLAYLISTITEM_H
 
 #include <QTreeWidgetItem>
 #include <QIcon>
@@ -8,7 +8,7 @@
 namespace Gui {
 namespace Playlist {
 
-enum TPlaylistWidgetItemState {
+enum TPlaylistItemState {
     PSTATE_STOPPED,
     PSTATE_LOADING,
     PSTATE_PLAYING,
@@ -25,7 +25,7 @@ const Qt::ItemFlags ROOT_FLAGS = Qt::ItemIsSelectable
                                  | Qt::ItemIsDropEnabled;
 
 
-class TPlaylistWidgetItem : public QTreeWidgetItem {
+class TPlaylistItem : public QTreeWidgetItem {
 public:
     enum TColID {
         COL_NAME = 0,
@@ -53,16 +53,16 @@ public:
                                 int level);
 
     // Create a root node
-    TPlaylistWidgetItem();
+    TPlaylistItem();
     // Copy constructor
-    TPlaylistWidgetItem(const TPlaylistWidgetItem& item);
+    TPlaylistItem(const TPlaylistItem& item);
     // Create an item from arguments
-    TPlaylistWidgetItem(QTreeWidgetItem* parent,
+    TPlaylistItem(QTreeWidgetItem* parent,
                         const QString& filename,
                         const QString& name,
                         double duration,
                         bool protectName = false);
-    virtual ~TPlaylistWidgetItem();
+    virtual ~TPlaylistItem();
 
     virtual QVariant data(int column, int role) const override;
     virtual void setData(int column, int role, const QVariant &value) override;
@@ -75,7 +75,7 @@ public:
     QString path() const;
     QString playlistPath() const;
     QString playlistPathPlusSep() const;
-    int compareFilename(const TPlaylistWidgetItem& item) const;
+    int compareFilename(const TPlaylistItem& item) const;
 
     QString baseName() const { return mBaseName; }
     void setName(const QString& baseName, const QString& ext, bool protectName);
@@ -85,8 +85,8 @@ public:
     double duration() const { return mDuration; }
     void setDuration(double d) { mDuration = d; }
 
-    TPlaylistWidgetItemState state() const { return mState; }
-    void setState(TPlaylistWidgetItemState state);
+    TPlaylistItemState state() const { return mState; }
+    void setState(TPlaylistItemState state);
 
     bool played() const { return mPlayed; }
     void setPlayed(bool played);
@@ -123,16 +123,16 @@ public:
     int getLevel() const;
 
     TPlaylistWidget* plTreeWidget() const;
-    TPlaylistWidgetItem* plParent() const {
-        return static_cast<TPlaylistWidgetItem*>(parent());
+    TPlaylistItem* plParent() const {
+        return static_cast<TPlaylistItem*>(parent());
     }
-    TPlaylistWidgetItem* plChild(int idx) const {
-        return static_cast<TPlaylistWidgetItem*>(child(idx));
+    TPlaylistItem* plChild(int idx) const {
+        return static_cast<TPlaylistItem*>(child(idx));
     }
 
     void renameDir(const QString& dir, const QString& newDir);
 
-    virtual TPlaylistWidgetItem* clone() const override;
+    virtual TPlaylistItem* clone() const override;
     virtual bool operator<(const QTreeWidgetItem& other) const override;
 
 
@@ -149,7 +149,7 @@ private:
     bool mSymLink;
     QString mTarget;
 
-    TPlaylistWidgetItemState mState;
+    TPlaylistItemState mState;
     bool mPlayed;
     bool mEdited;
     bool mModified;
@@ -161,7 +161,7 @@ private:
 
     QString editName() const;
 
-    static QString playlistItemState(TPlaylistWidgetItemState state);
+    static QString playlistItemState(TPlaylistItemState state);
 
     bool renameFile(const QString& newName);
     bool rename(const QString& newName);

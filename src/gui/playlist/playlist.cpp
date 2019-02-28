@@ -18,7 +18,7 @@
 
 #include "gui/playlist/playlist.h"
 #include "gui/playlist/playlistwidget.h"
-#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/playlistitem.h"
 #include "gui/playlist/addfilesthread.h"
 #include "gui/playlist/menucontext.h"
 #include "gui/mainwindow.h"
@@ -254,7 +254,7 @@ void TPlaylist::createActions() {
 
 void TPlaylist::getFilesToPlay(QStringList& files) const {
 
-    TPlaylistWidgetItem* root = playlistWidget->root();
+    TPlaylistItem* root = playlistWidget->root();
     if (root == 0) {
         return;
     }
@@ -267,7 +267,7 @@ void TPlaylist::getFilesToPlay(QStringList& files) const {
 
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         QString fn = i->filename();
         if (!fn.isEmpty()) {
             files.append(fn);
@@ -294,7 +294,7 @@ void TPlaylist::onThreadFinished() {
     }
 
     // Get data from thread
-    TPlaylistWidgetItem* root = thread->root;
+    TPlaylistItem* root = thread->root;
     thread->root = 0;
     if (!thread->latestDir.isEmpty()) {
         Settings::pref->last_dir = thread->latestDir;
@@ -350,7 +350,7 @@ void TPlaylist::onThreadFinished() {
 
     if (addFilesStartPlay) {
         if (!addFilesFileToPlay.isEmpty()) {
-            TPlaylistWidgetItem* w = findFilename(addFilesFileToPlay);
+            TPlaylistItem* w = findFilename(addFilesFileToPlay);
             if (w) {
                 playItem(w);
                 return;
@@ -417,7 +417,7 @@ void TPlaylist::addFiles(const QStringList& files,
 
     addFilesFiles = files;
     addFilesStartPlay = startPlay;
-    addFilesTarget = dynamic_cast<TPlaylistWidgetItem*>(target);
+    addFilesTarget = dynamic_cast<TPlaylistItem*>(target);
     addFilesFileToPlay = fileToPlay;
     addFilesSearchItems = searchForItems;
 
@@ -441,12 +441,12 @@ void TPlaylist::addCurrentFile() {
    WZDEBUG("");
 
     if (!player->mdat.filename.isEmpty()) {
-        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-            playlistWidget->root(),
-            player->mdat.filename,
-            player->mdat.name(),
-            player->mdat.duration,
-            false);
+        TPlaylistItem* i = new TPlaylistItem(
+                    playlistWidget->root(),
+                    player->mdat.filename,
+                    player->mdat.name(),
+                    player->mdat.duration,
+                    false);
         i->setPlayed(true);
         i->setModified();
     }
@@ -497,7 +497,7 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 void TPlaylist::play() {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* item = playlistWidget->currentPlaylistWidgetItem();
+    TPlaylistItem* item = playlistWidget->currentPlaylistItem();
     if (item) {
         playItem(item);
     } else {
@@ -526,7 +526,7 @@ void TPlaylist::stop() {
 
     abortThread();
     player->stop();
-    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    TPlaylistItem* i = playlistWidget->playing_item;
     if (i) {
         if (i->state() != PSTATE_STOPPED && i->state() != PSTATE_FAILED) {
             i->setState(PSTATE_STOPPED);
@@ -535,7 +535,7 @@ void TPlaylist::stop() {
     }
 }
 
-TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
+TPlaylistItem* TPlaylist::getRandomItem() const {
 
     bool foundFreeItem = false;
     int selected = (int) ((double) playlistWidget->countChildren() * qrand()
@@ -546,7 +546,7 @@ TPlaylistWidgetItem* TPlaylist::getRandomItem() const {
         int idx = 0;
         QTreeWidgetItemIterator it(playlistWidget);
         while (*it) {
-            TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+            TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
             if (!i->isFolder()) {
                 if (idx == selected) {
                     foundSelected = true;
@@ -575,7 +575,7 @@ bool TPlaylist::haveUnplayedItems() const {
 
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         if (!i->isFolder() && !i->played() && i->state() != PSTATE_FAILED) {
             return true;
         }
@@ -588,7 +588,7 @@ bool TPlaylist::haveUnplayedItems() const {
 void TPlaylist::startPlay() {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* item = playlistWidget->firstPlaylistWidgetItem();
+    TPlaylistItem* item = playlistWidget->firstPlaylistItem();
     if (item) {
         if (shuffleAct->isChecked()) {
             playItem(getRandomItem());
@@ -600,11 +600,11 @@ void TPlaylist::startPlay() {
     }
 }
 
-void TPlaylist::playItem(TPlaylistWidgetItem* item) {
+void TPlaylist::playItem(TPlaylistItem* item) {
 
     reachedEndOfPlaylist = false;
     while (item && item->isFolder()) {
-        item = playlistWidget->getNextPlaylistWidgetItem(item);
+        item = playlistWidget->getNextPlaylistItem(item);
     }
     if (item) {
         WZDEBUG("'" + item->filename() + "'");
@@ -627,7 +627,7 @@ void TPlaylist::playNext(bool loop_playlist) {
         main_window->runActionsLater("pause", false);
     }
 
-    TPlaylistWidgetItem* item;
+    TPlaylistItem* item;
     if (shuffleAct->isChecked()) {
         item = getRandomItem();
         if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
@@ -636,10 +636,10 @@ void TPlaylist::playNext(bool loop_playlist) {
             item = getRandomItem();
         }
     } else {
-        item = playlistWidget->getNextPlaylistWidgetItem();
+        item = playlistWidget->getNextPlaylistItem();
         if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
             // Select first item in playlist
-            item = playlistWidget->firstPlaylistWidgetItem();
+            item = playlistWidget->firstPlaylistItem();
         }
     }
     playItem(item);
@@ -653,14 +653,14 @@ void TPlaylist::playPrev() {
         main_window->runActionsLater("pause", false);
     }
 
-    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    TPlaylistItem* i = playlistWidget->playing_item;
     if (i && shuffleAct->isChecked()) {
         i = playlistWidget->findPreviousPlayedTime(i);
     } else {
         i = playlistWidget->getPreviousPlaylistWidgetItem();
     }
     if (i == 0) {
-        i = playlistWidget->lastPlaylistWidgetItem();
+        i = playlistWidget->lastPlaylistItem();
     }
     if (i) {
         playItem(i);
@@ -681,7 +681,7 @@ void TPlaylist::playDirectory(const QString &dir) {
 
 void TPlaylist::resumePlay() {
 
-    TPlaylistWidgetItem* item = playlistWidget->firstPlaylistWidgetItem();
+    TPlaylistItem* item = playlistWidget->firstPlaylistItem();
     if (item) {
         playItem(item);
     }
@@ -691,12 +691,12 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
-TPlaylistWidgetItem* TPlaylist::findFilename(const QString& filename) const {
+TPlaylistItem* TPlaylist::findFilename(const QString& filename) const {
     return playlistWidget->findFilename(filename);
 }
 
-TPlaylistWidgetItem* TPlaylist::currentPlaylistWidgetItem() const {
-    return playlistWidget->currentPlaylistWidgetItem();
+TPlaylistItem* TPlaylist::currentPlaylistItem() const {
+    return playlistWidget->currentPlaylistItem();
 }
 
 bool TPlaylist::hasItems() const {
@@ -756,7 +756,7 @@ void TPlaylist::refresh() {
 void TPlaylist::browseDir() {
 
     QString fn;
-    TPlaylistWidgetItem* i = playlistWidget->currentPlaylistWidgetItem();
+    TPlaylistItem* i = playlistWidget->currentPlaylistItem();
     if (i) {
         fn = i->filename();
     } else {
@@ -795,7 +795,7 @@ void TPlaylist::openInNewWindow() {
     QTreeWidgetItemIterator it(playlistWidget,
                                QTreeWidgetItemIterator::Selected);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         files << i->filename();
         ++it;
     }
@@ -815,7 +815,7 @@ void TPlaylist::openInNewWindow() {
 void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(item);
+    TPlaylistItem* i = static_cast<TPlaylistItem*>(item);
     if (i && !i->isFolder()) {
         playItem(i);
     }
@@ -844,7 +844,7 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setTextAndTip(text + "...");
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == Player::STATE_PLAYING) {
-        TPlaylistWidgetItem* playingItem = playlistWidget->playing_item;
+        TPlaylistItem* playingItem = playlistWidget->playing_item;
         disable_enableActions = true;
         if (playingItem == 0) {
             playingItem = findFilename(player->mdat.filename);
@@ -867,7 +867,7 @@ void TPlaylist::enableActions() {
     saveAct->setEnabled(e);
     saveAsAct->setEnabled(e);
     refreshAct->setEnabled(thread == 0 && !filename.isEmpty());
-    browseDirAct->setEnabled(playlistWidget->currentPlaylistWidgetItem());
+    browseDirAct->setEnabled(playlistWidget->currentPlaylistItem());
 
     stopAct->setEnabled(thread
                         || s == Player::STATE_PLAYING
@@ -900,7 +900,7 @@ void TPlaylist::enableActions() {
 void TPlaylist::onPlayerError() {
 
     if (player->state() != Player::STATE_STOPPING) {
-        TPlaylistWidgetItem* item = playlistWidget->playing_item;
+        TPlaylistItem* item = playlistWidget->playing_item;
         if (item) {
             if (item->filename() == player->mdat.filename) {
                 item->setState(PSTATE_FAILED);
@@ -930,7 +930,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         }
     } else if (filename == current_filename) {
         // Handle current item started playing
-        TPlaylistWidgetItem* item = playlistWidget->playing_item;
+        TPlaylistItem* item = playlistWidget->playing_item;
         if (item == 0) {
             return;
         }
@@ -980,7 +980,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
     if (md->disc.valid) {
         // Add disc titles without sorting
         playlistWidget->setSort(-1, Qt::AscendingOrder);
-        TPlaylistWidgetItem* root = playlistWidget->root();
+        TPlaylistItem* root = playlistWidget->root();
         root->setFilename(filename, md->name());
         // setFilename() won't recognize iso's as folder. No need to set icon.
         root->setFolder(true);
@@ -988,24 +988,24 @@ void TPlaylist::onNewMediaStartedPlaying() {
         TDiscName disc = md->disc;
         foreach(const Maps::TTitleData& title, md->titles) {
             disc.title = title.getID();
-            TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-                root,
-                disc.toString(),
-                title.getDisplayName(false),
-                title.getDuration(),
-                false /* protext name */);
+            TPlaylistItem* i = new TPlaylistItem(
+                        root,
+                        disc.toString(),
+                        title.getDisplayName(false),
+                        title.getDuration(),
+                        false /* protext name */);
             if (title.getID() == md->titles.getSelectedID()) {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
             }
         }
     } else {
         // Add current file
-        TPlaylistWidgetItem* current = new TPlaylistWidgetItem(
-            playlistWidget->root(),
-            filename,
-            md->name(),
-            md->duration,
-            false);
+        TPlaylistItem* current = new TPlaylistItem(
+                    playlistWidget->root(),
+                    filename,
+                    md->name(),
+                    md->duration,
+                    false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
     }
 
@@ -1031,7 +1031,7 @@ void TPlaylist::onTitleTrackChanged(int id) {
     disc.title = id;
     QString filename = disc.toString();
 
-    TPlaylistWidgetItem* i = playlistWidget->findFilename(filename);
+    TPlaylistItem* i = playlistWidget->findFilename(filename);
     if (i) {
         playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
     } else {
@@ -1048,7 +1048,7 @@ void TPlaylist::copySelection(const QString& actionName) {
     QTreeWidgetItemIterator it(playlistWidget,
                                QTreeWidgetItemIterator::Selected);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         text += i->filename() + "\n";
         copied++;
         it++;
@@ -1100,7 +1100,7 @@ void TPlaylist::cut() {
 void TPlaylist:: setPlaylistTitle() {
 
     QString title;
-    TPlaylistWidgetItem* root = playlistWidget->root();
+    TPlaylistItem* root = playlistWidget->root();
     if (root) {
         title = root->baseName();
         if (title.isEmpty()) {
@@ -1126,7 +1126,7 @@ void TPlaylist::onModifiedChanged() {
 void TPlaylist::editName() {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* current = playlistWidget->currentPlaylistWidgetItem();
+    TPlaylistItem* current = playlistWidget->currentPlaylistItem();
     if (current == 0) {
         WZDEBUG("Skipping edit. No current playlist item.");
         return;
@@ -1134,7 +1134,7 @@ void TPlaylist::editName() {
 
     playlistWidget->scrollToItem(current);
     current->setFlags(current->flags() | Qt::ItemIsEditable);
-    playlistWidget->editItem(current, TPlaylistWidgetItem::COL_NAME);
+    playlistWidget->editItem(current, TPlaylistItem::COL_NAME);
     current->setFlags(current->flags() & ~Qt::ItemIsEditable);
     WZDEBUG("Done");
 }
@@ -1142,7 +1142,7 @@ void TPlaylist::editName() {
 void TPlaylist::newFolder() {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* parent = playlistWidget->currentPlaylistWidgetItem();
+    TPlaylistItem* parent = playlistWidget->currentPlaylistItem();
     if (parent == 0) {
         parent = playlistWidget->root();
     } else if (!parent->isFolder()) {
@@ -1162,12 +1162,11 @@ void TPlaylist::newFolder() {
     QString fn = path + name;
 
     if (dir.mkdir(name)) {
-        TPlaylistWidgetItem* i = new TPlaylistWidgetItem(
-            parent,
-            fn,
-            name,
-            0,
-            false);
+        TPlaylistItem* i = new TPlaylistItem(parent,
+                                             fn,
+                                             name,
+                                             0,
+                                             false);
         i->setModified();
         playlistWidget->setCurrentItem(i);
         editName();
@@ -1181,7 +1180,7 @@ void TPlaylist::newFolder() {
 
 void TPlaylist::findPlayingItem() {
 
-    TPlaylistWidgetItem* i = playlistWidget->playing_item;
+    TPlaylistItem* i = playlistWidget->playing_item;
     if (i) {
         if (!isVisible()) {
             // parent is playlistdock
@@ -1271,7 +1270,7 @@ void TPlaylist::open() {
     }
 }
 
-bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
+bool TPlaylist::saveM3uFolder(TPlaylistItem* folder,
                               const QString& path,
                               QTextStream& stream,
                               bool linkFolders,
@@ -1280,7 +1279,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
-        TPlaylistWidgetItem* i = folder->plChild(idx);
+        TPlaylistItem* i = folder->plChild(idx);
         QString filename = i->filename();
 
         if (i->isPlaylist()) {
@@ -1331,7 +1330,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistWidgetItem* folder,
     return result;
 }
 
-bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
+bool TPlaylist::saveM3u(TPlaylistItem* folder,
                         const QString& filename,
                         bool wzplaylist) {
     WZDEBUG("saving '" + filename + "'");
@@ -1402,7 +1401,7 @@ bool TPlaylist::saveM3u(TPlaylistWidgetItem* folder,
 bool TPlaylist::saveM3u(const QString& filename, bool linkFolders) {
     WZDEBUG("");
 
-    TPlaylistWidgetItem* root = playlistWidget->root();
+    TPlaylistItem* root = playlistWidget->root();
     return saveM3u(root, filename, linkFolders);
 }
 
@@ -1429,7 +1428,7 @@ bool TPlaylist::save() {
     msgOSD(tr("Saving %1").arg(fi.fileName()), 0);
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
-    TPlaylistWidgetItem* root = playlistWidget->root();
+    TPlaylistItem* root = playlistWidget->root();
     root->setFilename(filename);
     setPlaylistTitle();
     Settings::pref->last_dir = fi.absolutePath();

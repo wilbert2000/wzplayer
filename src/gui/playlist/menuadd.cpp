@@ -31,7 +31,7 @@ void TAddRemovedMenu::onAboutToShow() {
 
     clear();
     int c = 0;
-    item = playlistWidget->currentPlaylistWidgetItem();
+    item = playlistWidget->currentPlaylistItem();
     if (item) {
         if (!item->isFolder()) {
             item = item->plParent();
@@ -73,7 +73,7 @@ void TAddRemovedMenu::onCurrentItemChanged(QTreeWidgetItem* current,
 
     bool e = false;
     if (current) {
-        TPlaylistWidgetItem* c = static_cast<TPlaylistWidgetItem*>(current);
+        TPlaylistItem* c = static_cast<TPlaylistItem*>(current);
         if (c->isFolder()) {
             e = c->getBlacklistCount();
         } else {

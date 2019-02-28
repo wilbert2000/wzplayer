@@ -1,4 +1,4 @@
-#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/playlistitem.h"
 #include "gui/playlist/playlistwidget.h"
 #include "gui/msg.h"
 #include "player/player.h"
@@ -20,7 +20,7 @@
 namespace Gui {
 namespace Playlist {
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistWidgetItem)
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPlaylistItem)
 
 // TODO: find the file sys func reporting case
 Qt::CaseSensitivity caseSensitiveFileNames =
@@ -39,11 +39,11 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 // Level of the root node in the tree view, where level means the number of
 // icons indenting the item. With root decoration on, toplevel items appear on
 // level 2, being ROOT_NODE_LEVEL + 1.
-const int TPlaylistWidgetItem::ROOT_NODE_LEVEL = 1;
+const int TPlaylistItem::ROOT_NODE_LEVEL = 1;
 // Width of name column. Updated by TPlaylistWidget event handlers.
-int TPlaylistWidgetItem::gNameColumnWidth = 0;
+int TPlaylistItem::gNameColumnWidth = 0;
 // Set by TPlaylistWidget constructor
-QFontMetrics TPlaylistWidgetItem::gNameFontMetrics = QFontMetrics(QFont());
+QFontMetrics TPlaylistItem::gNameFontMetrics = QFontMetrics(QFont());
 
 
 // Generate a timestamp for played items
@@ -73,7 +73,7 @@ int TTimeStamp::getStamp() {
 static TTimeStamp timeStamper;
 
 
-QString TPlaylistWidgetItem::playlistItemState(TPlaylistWidgetItemState state) {
+QString TPlaylistItem::playlistItemState(TPlaylistItemState state) {
 
     switch (state) {
         case PSTATE_STOPPED: return "stopped";
@@ -86,7 +86,7 @@ QString TPlaylistWidgetItem::playlistItemState(TPlaylistWidgetItemState state) {
 
 
 // Constructor used for root item
-TPlaylistWidgetItem::TPlaylistWidgetItem() :
+TPlaylistItem::TPlaylistItem() :
     QTreeWidgetItem(),
     mDuration(0),
     mOrder(1),
@@ -108,7 +108,7 @@ TPlaylistWidgetItem::TPlaylistWidgetItem() :
 }
 
 // Copy constructor
-TPlaylistWidgetItem::TPlaylistWidgetItem(const TPlaylistWidgetItem& item) :
+TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     QTreeWidgetItem(item),
     mFilename(item.filename()),
     mBaseName(item.baseName()),
@@ -133,11 +133,11 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(const TPlaylistWidgetItem& item) :
 }
 
 // Used for every item except the root
-TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
-                                         const QString& filename,
-                                         const QString& name,
-                                         double duration,
-                                         bool protectName) :
+TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
+                             const QString& filename,
+                             const QString& name,
+                             double duration,
+                             bool protectName) :
     QTreeWidgetItem(parent),
     mFilename(QDir::toNativeSeparators(filename)),
     mBaseName(name),
@@ -177,22 +177,22 @@ TPlaylistWidgetItem::TPlaylistWidgetItem(QTreeWidgetItem* parent,
     setIcon(COL_NAME, itemIcon);
 }
 
-TPlaylistWidgetItem *TPlaylistWidgetItem::clone() const {
+TPlaylistItem *TPlaylistItem::clone() const {
 
-    TPlaylistWidgetItem* root = 0;
+    TPlaylistItem* root = 0;
 
-    QStack<const TPlaylistWidgetItem*> stack;
-    QStack<TPlaylistWidgetItem*> parentStack;
+    QStack<const TPlaylistItem*> stack;
+    QStack<TPlaylistItem*> parentStack;
     stack.push(this);
     parentStack.push(0);
 
     while (!stack.isEmpty()) {
         // Get current item and its parent
-        const TPlaylistWidgetItem* item = stack.pop();
-        TPlaylistWidgetItem* parent = parentStack.pop();
+        const TPlaylistItem* item = stack.pop();
+        TPlaylistItem* parent = parentStack.pop();
 
         // Copy the item
-        TPlaylistWidgetItem* copy = new TPlaylistWidgetItem(*item);
+        TPlaylistItem* copy = new TPlaylistItem(*item);
 
         // Remember root
         if (!root) {
@@ -214,11 +214,11 @@ TPlaylistWidgetItem *TPlaylistWidgetItem::clone() const {
     return root;
 }
 
-TPlaylistWidgetItem::~TPlaylistWidgetItem() {
+TPlaylistItem::~TPlaylistItem() {
 }
 
 // Update fields depending on file name
-void TPlaylistWidgetItem::setFileInfo() {
+void TPlaylistItem::setFileInfo() {
 
     QFileInfo fi(mFilename);
     mPlaylist = extensions.isPlaylist(fi);
@@ -263,7 +263,7 @@ void TPlaylistWidgetItem::setFileInfo() {
     }
 }
 
-void TPlaylistWidgetItem::renameDir(const QString& dir, const QString& newDir) {
+void TPlaylistItem::renameDir(const QString& dir, const QString& newDir) {
 
     if (mFilename.startsWith(dir)) {
         mFilename = newDir + mFilename.mid(dir.length());
@@ -274,7 +274,7 @@ void TPlaylistWidgetItem::renameDir(const QString& dir, const QString& newDir) {
     }
 }
 
-bool TPlaylistWidgetItem::renameFile(const QString& newName) {
+bool TPlaylistItem::renameFile(const QString& newName) {
 
     QFileInfo fi(path());
     QString dir;
@@ -311,8 +311,7 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     }
 
     // Show message in statusbar
-    msg(qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
-                        "Renaming '%1' to '%2'")
+    msg(qApp->translate("Gui::Playlist::TPlaylistItem", "Renaming '%1' to '%2'")
         .arg(displaySource).arg(displayDest), 0);
 
     // Rename file
@@ -331,8 +330,8 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
         WZERROR("Failed to rename '" + source + "' to '" + dest + "'. "
                 + file.errorString());
         QMessageBox::warning(treeWidget(),
-            qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
-            qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
+            qApp->translate("Gui::Playlist::TPlaylistItem", "Error"),
+            qApp->translate("Gui::Playlist::TPlaylistItem",
                             "Failed to rename '%1' to '%2'. %3")
                              .arg(source).arg(dest).arg(file.errorString()));
     }
@@ -347,7 +346,7 @@ bool TPlaylistWidgetItem::renameFile(const QString& newName) {
     return result;
 }
 
-QString TPlaylistWidgetItem::editName() const {
+QString TPlaylistItem::editName() const {
 
     QString name = mBaseName;
     if (!mWZPlaylist && !mExt.isEmpty()) {
@@ -356,7 +355,7 @@ QString TPlaylistWidgetItem::editName() const {
     return name;
 }
 
-bool TPlaylistWidgetItem::rename(const QString &newName) {
+bool TPlaylistItem::rename(const QString &newName) {
     WZDEBUG(newName);
 
     if (newName.isEmpty()) {
@@ -384,14 +383,14 @@ bool TPlaylistWidgetItem::rename(const QString &newName) {
     WZERROR(QString("Cannot rename '%1' when it is not in a playlist")
             .arg(mFilename));
     QMessageBox::warning(treeWidget(),
-        qApp->translate("Gui::Playlist::TPlaylistWidgetItem", "Error"),
-        qApp->translate("Gui::Playlist::TPlaylistWidgetItem",
+        qApp->translate("Gui::Playlist::TPlaylistItem", "Error"),
+        qApp->translate("Gui::Playlist::TPlaylistItem",
                         "Cannot rename '%1' when it is not in a playlist")
                          .arg(mFilename));
     return false;
 }
 
-void TPlaylistWidgetItem::setData(int column, int role, const QVariant& value) {
+void TPlaylistItem::setData(int column, int role, const QVariant& value) {
 
     QTreeWidgetItem::setData(column, role, value);
     if (role == Qt::EditRole) {
@@ -404,7 +403,7 @@ void TPlaylistWidgetItem::setData(int column, int role, const QVariant& value) {
     }
 }
 
-QVariant TPlaylistWidgetItem::data(int column, int role) const {
+QVariant TPlaylistItem::data(int column, int role) const {
 
     if (role == Qt::DisplayRole) {
         if (column == COL_NAME) {
@@ -440,9 +439,8 @@ QVariant TPlaylistWidgetItem::data(int column, int role) const {
     } else if (role == Qt::ToolTipRole) {
         if (column == COL_NAME) {
             if (mSymLink) {
-                return QVariant(qApp->translate(
-                    "Gui::Playlist::TPlaylistWidgetItem", "Links to %1")
-                    .arg(mTarget));
+                return QVariant(qApp->translate("Gui::Playlist::TPlaylistItem",
+                                                "Links to %1").arg(mTarget));
             }
             return QVariant(mFilename);
         }
@@ -455,7 +453,7 @@ QVariant TPlaylistWidgetItem::data(int column, int role) const {
     return QTreeWidgetItem::data(column, role);
 }
 
-int TPlaylistWidgetItem::getLevel() const {
+int TPlaylistItem::getLevel() const {
 
     if (plParent() == 0) {
         return ROOT_NODE_LEVEL;
@@ -463,20 +461,20 @@ int TPlaylistWidgetItem::getLevel() const {
     return plParent()->getLevel() + 1;
 }
 
-void TPlaylistWidgetItem::setFilename(const QString& fileName) {
+void TPlaylistItem::setFilename(const QString& fileName) {
     mFilename = QDir::toNativeSeparators(fileName);
     mBaseName = QFileInfo(fileName).completeBaseName();
     setFileInfo();
 }
 
-void TPlaylistWidgetItem::setFilename(const QString& fileName,
+void TPlaylistItem::setFilename(const QString& fileName,
                                       const QString& baseName) {
     mFilename = QDir::toNativeSeparators(fileName);
     mBaseName = baseName;
     setFileInfo();
 }
 
-void TPlaylistWidgetItem::setName(const QString& baseName,
+void TPlaylistItem::setName(const QString& baseName,
                                   const QString& ext,
                                   bool protectName) {
     mBaseName = baseName;
@@ -487,7 +485,7 @@ void TPlaylistWidgetItem::setName(const QString& baseName,
     setSzHint(getLevel());
 }
 
-void TPlaylistWidgetItem::setStateIcon() {
+void TPlaylistItem::setStateIcon() {
 
     switch (mState) {
         case PSTATE_STOPPED:
@@ -509,7 +507,7 @@ void TPlaylistWidgetItem::setStateIcon() {
     }
 }
 
-void TPlaylistWidgetItem::setState(TPlaylistWidgetItemState state) {
+void TPlaylistItem::setState(TPlaylistItemState state) {
 
     if (state == PSTATE_PLAYING) {
         mPlayed = true;
@@ -526,7 +524,7 @@ void TPlaylistWidgetItem::setState(TPlaylistWidgetItemState state) {
     setStateIcon();
 }
 
-void TPlaylistWidgetItem::setPlayed(bool played) {
+void TPlaylistItem::setPlayed(bool played) {
 
     mPlayed = played;
     if (mState == PSTATE_STOPPED) {
@@ -538,7 +536,7 @@ void TPlaylistWidgetItem::setPlayed(bool played) {
     }
 }
 
-void TPlaylistWidgetItem::setModified(bool modified,
+void TPlaylistItem::setModified(bool modified,
                                       bool recurse,
                                       bool markParents) {
     WZDEBUG(QString("set modified to %1 for '%2'")
@@ -548,7 +546,7 @@ void TPlaylistWidgetItem::setModified(bool modified,
 
     if (recurse) {
         for(int c = 0; c < childCount(); c++) {
-            TPlaylistWidgetItem* child = plChild(c);
+            TPlaylistItem* child = plChild(c);
             if (child->modified() != modified) {
                 child->setModified(modified, recurse, false);
             }
@@ -562,7 +560,7 @@ void TPlaylistWidgetItem::setModified(bool modified,
     emitDataChanged();
 }
 
-QString TPlaylistWidgetItem::path() const {
+QString TPlaylistItem::path() const {
 
     if (mWZPlaylist) {
         QFileInfo fi(mFilename);
@@ -571,7 +569,7 @@ QString TPlaylistWidgetItem::path() const {
     return mFilename;
 }
 
-QString TPlaylistWidgetItem::playlistPath() const {
+QString TPlaylistItem::playlistPath() const {
 
     QFileInfo fi(mFilename);
     if (mPlaylist) {
@@ -580,7 +578,7 @@ QString TPlaylistWidgetItem::playlistPath() const {
     return fi.absoluteFilePath();
 }
 
-QString TPlaylistWidgetItem::playlistPathPlusSep() const {
+QString TPlaylistItem::playlistPathPlusSep() const {
 
     QString p = playlistPath();
     if (p.endsWith(QDir::separator())) {
@@ -589,7 +587,7 @@ QString TPlaylistWidgetItem::playlistPathPlusSep() const {
     return p + QDir::separator();
 }
 
-QString TPlaylistWidgetItem::fname() const {
+QString TPlaylistItem::fname() const {
 
     QString fn = mFilename;
     if (!fn.isEmpty()) {
@@ -603,15 +601,15 @@ QString TPlaylistWidgetItem::fname() const {
     return fn;
 }
 
-TPlaylistWidget* TPlaylistWidgetItem::plTreeWidget() const {
+TPlaylistWidget* TPlaylistItem::plTreeWidget() const {
     return static_cast<TPlaylistWidget*>(treeWidget());
 }
 
-bool TPlaylistWidgetItem::blacklisted(const QString& filename) const {
+bool TPlaylistItem::blacklisted(const QString& filename) const {
     return mBlacklist.contains(filename, caseSensitiveFileNames);
 }
 
-bool TPlaylistWidgetItem::whitelist(const QString& filename) {
+bool TPlaylistItem::whitelist(const QString& filename) {
 
     int i = mBlacklist.indexOf(QRegExp(filename,
                                        caseSensitiveFileNames,
@@ -627,11 +625,11 @@ bool TPlaylistWidgetItem::whitelist(const QString& filename) {
 }
 
 // static, return the size of the name column
-QSize TPlaylistWidgetItem::sizeColumnName(int width,
-                                          const QString& text,
-                                          const QFontMetrics& fm,
-                                          const QSize& iconSize,
-                                          int level) {
+QSize TPlaylistItem::sizeColumnName(int width,
+                                    const QString& text,
+                                    const QFontMetrics& fm,
+                                    const QSize& iconSize,
+                                    int level) {
 
     // TODO: get from style
     const int hMargin = 4; // horizontal margin
@@ -661,7 +659,7 @@ QSize TPlaylistWidgetItem::sizeColumnName(int width,
     return QSize(width, h);
 }
 
-void TPlaylistWidgetItem::setSzHint(int level) {
+void TPlaylistItem::setSzHint(int level) {
 
     if (parent()) {
         setSizeHint(COL_NAME,
@@ -673,11 +671,9 @@ void TPlaylistWidgetItem::setSzHint(int level) {
     }
 }
 
-bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
+bool TPlaylistItem::operator <(const QTreeWidgetItem& other) const {
 
-    const TPlaylistWidgetItem* o = static_cast<const TPlaylistWidgetItem*>
-                                   (&other);
-
+    const TPlaylistItem* o = static_cast<const TPlaylistItem*>(&other);
     if (o == 0) {
         return false;
     }
@@ -722,7 +718,7 @@ bool TPlaylistWidgetItem::operator <(const QTreeWidgetItem& other) const {
     }
 }
 
-int TPlaylistWidgetItem::compareFilename(const TPlaylistWidgetItem& item) const {
+int TPlaylistItem::compareFilename(const TPlaylistItem& item) const {
     return mFilename.compare(item.mFilename, caseSensitiveFileNames);
 }
 

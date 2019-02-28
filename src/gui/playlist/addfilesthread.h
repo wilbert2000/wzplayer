@@ -14,7 +14,7 @@ class QFileInfo;
 namespace Gui {
 namespace Playlist {
 
-class TPlaylistWidgetItem;
+class TPlaylistItem;
 
 
 class TAddFilesThread : public QThread {
@@ -40,7 +40,7 @@ public:
     const QStringList& files;
 
     // Outputs
-    TPlaylistWidgetItem* root;
+    TPlaylistItem* root;
     QString latestDir;
 
 signals:
@@ -62,39 +62,37 @@ private:
 
     static QDir::SortFlags getSortFlags();
 
-    TPlaylistWidgetItem* addFile(TPlaylistWidgetItem* parent,
-                                 const QFileInfo& fi);
+    TPlaylistItem* addFile(TPlaylistItem* parent, const QFileInfo& fi);
 
-    TPlaylistWidgetItem* addDirectory(TPlaylistWidgetItem* parent,
-                                      QFileInfo& fi,
-                                      QString name,
-                                      bool protectName);
+    TPlaylistItem* addDirectory(TPlaylistItem* parent,
+                                QFileInfo& fi,
+                                QString name,
+                                bool protectName);
 
-    TPlaylistWidgetItem* createPath(TPlaylistWidgetItem* parent,
-                                    const QFileInfo& fi,
-                                    const QString& name,
-                                    double duration,
-                                    bool protectName);
+    TPlaylistItem* createPath(TPlaylistItem* parent,
+                              const QFileInfo& fi,
+                              const QString& name,
+                              double duration,
+                              bool protectName);
 
-    void addNewItems(TPlaylistWidgetItem* playlistItem);
+    void addNewItems(TPlaylistItem* playlistItem);
 
-    bool openM3u(TPlaylistWidgetItem* playlistItem,
-                 const QString& fileName);
-    TPlaylistWidgetItem* openPlaylist(TPlaylistWidgetItem* parent,
-                                      const QFileInfo& fi,
-                                      const QString& name,
-                                      bool protectName);
+    bool openM3u(TPlaylistItem* playlistItem, const QString& fileName);
+    TPlaylistItem* openPlaylist(TPlaylistItem* parent,
+                                const QFileInfo& fi,
+                                const QString& name,
+                                bool protectName);
 
-    TPlaylistWidgetItem* addItemNotFound(TPlaylistWidgetItem* parent,
-                                         const QString& filename,
-                                         QString name,
-                                         bool protectName);
+    TPlaylistItem* addItemNotFound(TPlaylistItem* parent,
+                                   const QString& filename,
+                                   QString name,
+                                   bool protectName);
 
-    TPlaylistWidgetItem* addItem(TPlaylistWidgetItem* parent,
-                                 QString filename,
-                                 QString name,
-                                 double duration,
-                                 bool useBlackList);
+    TPlaylistItem* addItem(TPlaylistItem* parent,
+                           QString filename,
+                           QString name,
+                           double duration,
+                           bool useBlackList);
 
     void addFiles();
 };

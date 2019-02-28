@@ -79,7 +79,7 @@ void TMenuContext::enablePaste() {
 
 void TMenuContext::enableActions() {
 
-    bool current = playlist->currentPlaylistWidgetItem();
+    bool current = playlist->currentPlaylistItem();
     bool enable = !playlist->isLoading();
 
     editNameAct->setEnabled(enable && current);

@@ -1,7 +1,8 @@
 #ifndef GUI_PLAYLIST_PLAYLISTWIDGET_H
 #define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
-#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/playlist.h"
+#include "gui/playlist/playlistitem.h"
 #include "wzdebug.h"
 #include <QTreeWidget>
 
@@ -27,13 +28,13 @@ public:
     explicit TPlaylistWidget(QWidget* parent);
     virtual ~TPlaylistWidget();
 
-    TPlaylistWidgetItem* playing_item;
+    TPlaylistItem* playing_item;
 
-    void setPlayingItem(TPlaylistWidgetItem* item,
-                        TPlaylistWidgetItemState state = PSTATE_STOPPED);
+    void setPlayingItem(TPlaylistItem* item,
+                        TPlaylistItemState state = PSTATE_STOPPED);
 
-    TPlaylistWidgetItem* root() const {
-        return static_cast<TPlaylistWidgetItem*>(topLevelItem(0));
+    TPlaylistItem* root() const {
+        return static_cast<TPlaylistItem*>(topLevelItem(0));
     }
 
     int countItems() const;
@@ -41,23 +42,22 @@ public:
     bool hasItems() const;
     bool hasSingleItem() const;
 
-    TPlaylistWidgetItem* currentPlaylistWidgetItem() const;
-    TPlaylistWidgetItem* firstPlaylistWidgetItem() const;
-    TPlaylistWidgetItem* lastPlaylistWidgetItem() const;
+    TPlaylistItem* currentPlaylistItem() const;
+    TPlaylistItem* firstPlaylistItem() const;
+    TPlaylistItem* lastPlaylistItem() const;
 
     QString playingFile() const;
     QString currentFile() const;
-    TPlaylistWidgetItem* findFilename(const QString& filename);
+    TPlaylistItem* findFilename(const QString& filename);
 
-    TPlaylistWidgetItem* getNextItem(TPlaylistWidgetItem* w,
-                                     bool allowChild = true) const;
-    TPlaylistWidgetItem* getNextPlaylistWidgetItem(TPlaylistWidgetItem* item) const;
-    TPlaylistWidgetItem* getNextPlaylistWidgetItem() const;
+    TPlaylistItem* getNextItem(TPlaylistItem* w, bool allowChild = true) const;
+    TPlaylistItem* getNextPlaylistItem(TPlaylistItem* item) const;
+    TPlaylistItem* getNextPlaylistItem() const;
 
-    TPlaylistWidgetItem* getPreviousPlaylistWidgetItem(TPlaylistWidgetItem* w) const;
-    TPlaylistWidgetItem* getPreviousPlaylistWidgetItem() const;
+    TPlaylistItem* getPreviousPlaylistWidgetItem(TPlaylistItem* w) const;
+    TPlaylistItem* getPreviousPlaylistWidgetItem() const;
 
-    TPlaylistWidgetItem* findPreviousPlayedTime(TPlaylistWidgetItem* w);
+    TPlaylistItem* findPreviousPlayedTime(TPlaylistItem* w);
 
     void clearPlayed();
     void clr();
@@ -70,10 +70,9 @@ public:
         setModified(root(), false, true);
     }
 
-    TPlaylistWidgetItem* validateItem(TPlaylistWidgetItem* item);
+    TPlaylistItem* validateItem(TPlaylistItem* item);
 
-    TPlaylistWidgetItem* add(TPlaylistWidgetItem* item,
-                             TPlaylistWidgetItem* target);
+    TPlaylistItem* add(TPlaylistItem* item, TPlaylistItem* target);
     void removeSelected(bool deleteFromDisk);
 
     void setSort(int section, Qt::SortOrder order);
@@ -107,16 +106,16 @@ private:
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
 
-    TPlaylistWidgetItem* getPreviousItem(TPlaylistWidgetItem* w,
-                                         bool allowChild = true) const;
+    TPlaylistItem* getPreviousItem(TPlaylistItem* w,
+                                   bool allowChild = true) const;
 
     bool droppingOnItself(QDropEvent *event, const QModelIndex &index);
     bool dropOn(QDropEvent *event, int *dropRow, int *dropCol,
                 QModelIndex *dropIndex);
     bool addDroppedItem(const QString& source,
                         const QString& dest,
-                        TPlaylistWidgetItem* item);
-    void dropSelection(TPlaylistWidgetItem* target, Qt::DropAction action);
+                        TPlaylistItem* item);
+    void dropSelection(TPlaylistItem* target, Qt::DropAction action);
 
     void resizeRows(QTreeWidgetItem* w, int level);
     bool removeFromDisk(const QString& filename, const QString& playingFile);

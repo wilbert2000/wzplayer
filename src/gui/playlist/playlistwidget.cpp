@@ -1,6 +1,6 @@
 #include "gui/playlist/playlistwidget.h"
 
-#include "gui/playlist/playlistwidgetitem.h"
+#include "gui/playlist/playlistitem.h"
 #include "gui/action/menu/menuexec.h"
 #include "qtfilecopier/qtfilecopier.h"
 #include "qtfilecopier/qtcopydialog.h"
@@ -40,7 +40,7 @@ public:
     static int getLevel(const QModelIndex& index) {
 
         if (index.parent() == QModelIndex()) {
-            return TPlaylistWidgetItem::ROOT_NODE_LEVEL;
+            return TPlaylistItem::ROOT_NODE_LEVEL;
         }
         return getLevel(index.parent()) + 1;
     }
@@ -49,7 +49,7 @@ public:
                            const QModelIndex& index) const {
 
         // Return default size hint for all but column name
-        if (index.column() != TPlaylistWidgetItem::COL_NAME) {
+        if (index.column() != TPlaylistItem::COL_NAME) {
             return QStyledItemDelegate::sizeHint(option, index);
         }
 
@@ -62,8 +62,8 @@ public:
         }
 
         // Return the size of column name
-        return TPlaylistWidgetItem::sizeColumnName(
-                    header->sectionSize(TPlaylistWidgetItem::COL_NAME),
+        return TPlaylistItem::sizeColumnName(
+                    header->sectionSize(TPlaylistItem::COL_NAME),
                     text,
                     option.fontMetrics,
                     option.decorationSize,
@@ -88,21 +88,21 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setObjectName("playlistwidget");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    setColumnCount(TPlaylistWidgetItem::COL_COUNT);
+    setColumnCount(TPlaylistItem::COL_COUNT);
     setHeaderLabels(QStringList() << tr("Name") << tr("Ext") << tr("Length")
                     << tr("#"));
     header()->setStretchLastSection(false);
-    header()->setSectionResizeMode(TPlaylistWidgetItem::COL_NAME,
+    header()->setSectionResizeMode(TPlaylistItem::COL_NAME,
                                    QHeaderView::Stretch);
-    header()->setSectionResizeMode(TPlaylistWidgetItem::COL_EXT,
+    header()->setSectionResizeMode(TPlaylistItem::COL_EXT,
                                    QHeaderView::ResizeToContents);
-    header()->setSectionResizeMode(TPlaylistWidgetItem::COL_TIME,
+    header()->setSectionResizeMode(TPlaylistItem::COL_TIME,
                                    QHeaderView::ResizeToContents);
-    header()->setSectionResizeMode(TPlaylistWidgetItem::COL_ORDER,
+    header()->setSectionResizeMode(TPlaylistItem::COL_ORDER,
                                    QHeaderView::ResizeToContents);
 
-    // Create a TPlaylistWidgetItem root
-    addTopLevelItem(new TPlaylistWidgetItem());
+    // Create a TPlaylistItem root
+    addTopLevelItem(new TPlaylistItem());
     setRootIndex(model()->index(0, 0));
 
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -118,7 +118,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     // Wordwrap
     setIconSize(iconProvider.iconSize);
-    TPlaylistWidgetItem::gNameFontMetrics = fontMetrics();
+    TPlaylistItem::gNameFontMetrics = fontMetrics();
     setWordWrap(true);
     setUniformRowHeights(false);
     setItemDelegate(new TWordWrapItemDelegate(this));
@@ -176,8 +176,8 @@ void TPlaylistWidget::clr() {
 
     clear();
 
-    // Create a TPlaylistWidgetItem root
-    addTopLevelItem(new TPlaylistWidgetItem());
+    // Create a TPlaylistItem root
+    addTopLevelItem(new TPlaylistItem());
     setRootIndex(model()->index(0, 0));
 }
 
@@ -185,7 +185,7 @@ void TPlaylistWidget::setModified(QTreeWidgetItem* item,
                                   bool modified,
                                   bool recurse) {
 
-    TPlaylistWidgetItem* i = dynamic_cast<TPlaylistWidgetItem*>(item);
+    TPlaylistItem* i = dynamic_cast<TPlaylistItem*>(item);
     if (i == 0) {
         i = root();
     }
@@ -237,32 +237,32 @@ int TPlaylistWidget::countChildren() const {
 
 bool TPlaylistWidget::hasItems() const {
 
-    TPlaylistWidgetItem* r = root();
+    TPlaylistItem* r = root();
     return r && r->childCount();
 }
 
 bool TPlaylistWidget::hasSingleItem() const {
 
-    TPlaylistWidgetItem* r = root();
+    TPlaylistItem* r = root();
     return r && r->childCount() == 1 && r->child(0)->childCount() == 0;
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::currentPlaylistWidgetItem() const {
-    return static_cast<TPlaylistWidgetItem*>(currentItem());
+TPlaylistItem* TPlaylistWidget::currentPlaylistItem() const {
+    return static_cast<TPlaylistItem*>(currentItem());
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::firstPlaylistWidgetItem() const {
+TPlaylistItem* TPlaylistWidget::firstPlaylistItem() const {
 
-    TPlaylistWidgetItem* r = root();
+    TPlaylistItem* r = root();
     if (r) {
         return r->plChild(0);
     }
     return 0;
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::lastPlaylistWidgetItem() const {
+TPlaylistItem* TPlaylistWidget::lastPlaylistItem() const {
 
-    TPlaylistWidgetItem* item = root();
+    TPlaylistItem* item = root();
     while (item && item->childCount()) {
         item = item->plChild(item->childCount() - 1);
     }
@@ -282,11 +282,11 @@ QString TPlaylistWidget::playingFile() const {
 
 QString TPlaylistWidget::currentFile() const {
 
-    TPlaylistWidgetItem* w = currentPlaylistWidgetItem();
+    TPlaylistItem* w = currentPlaylistItem();
     return w ? w->filename() : "";
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
+TPlaylistItem* TPlaylistWidget::findFilename(const QString &filename) {
 
     if (filename.isEmpty()) {
         return 0;
@@ -299,7 +299,7 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
     }
     QTreeWidgetItemIterator it(this);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         QString fn = i->filename();
         if (fn == search1 || (!search2.isEmpty() && fn == search2)) {
             return i;
@@ -310,8 +310,8 @@ TPlaylistWidgetItem* TPlaylistWidget::findFilename(const QString &filename) {
     return 0;
 }
 
-void TPlaylistWidget::setPlayingItem(TPlaylistWidgetItem* item,
-                                     TPlaylistWidgetItemState state) {
+void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
+                                     TPlaylistItemState state) {
     WZDEBUG("");
 
     bool setCurrent = true;
@@ -344,7 +344,7 @@ void TPlaylistWidget::clearPlayed() {
 
     QTreeWidgetItemIterator it(this);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         if (!i->isFolder()) {
             i->setPlayed(false);
         }
@@ -352,19 +352,19 @@ void TPlaylistWidget::clearPlayed() {
     }
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getNextItem(TPlaylistWidgetItem* w,
-                                                  bool allowChild) const {
+TPlaylistItem* TPlaylistWidget::getNextItem(TPlaylistItem* w,
+                                            bool allowChild) const {
     // See also itemBelow()
 
     if (w == 0) {
-        return firstPlaylistWidgetItem();
+        return firstPlaylistItem();
     }
 
     if (allowChild && w->childCount() > 0) {
         return w->plChild(0);
     }
 
-    TPlaylistWidgetItem* parent = static_cast<TPlaylistWidgetItem*>(w->parent());
+    TPlaylistItem* parent = static_cast<TPlaylistItem*>(w->parent());
     if(parent) {
        int idx = parent->indexOfChild(w) + 1;
        if (idx < parent->childCount()) {
@@ -376,8 +376,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getNextItem(TPlaylistWidgetItem* w,
     return 0;
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getNextPlaylistWidgetItem(
-        TPlaylistWidgetItem* item) const {
+TPlaylistItem* TPlaylistWidget::getNextPlaylistItem(TPlaylistItem* item) const {
 
     do {
         item = getNextItem(item);
@@ -386,21 +385,21 @@ TPlaylistWidgetItem* TPlaylistWidget::getNextPlaylistWidgetItem(
     return item;
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getNextPlaylistWidgetItem() const {
+TPlaylistItem* TPlaylistWidget::getNextPlaylistItem() const {
 
-    TPlaylistWidgetItem* item = playing_item;
+    TPlaylistItem* item = playing_item;
     if (item == 0) {
-        item = currentPlaylistWidgetItem();
+        item = currentPlaylistItem();
     }
-    return getNextPlaylistWidgetItem(item);
+    return getNextPlaylistItem(item);
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
-                                                      bool allowChild) const {
+TPlaylistItem* TPlaylistWidget::getPreviousItem(TPlaylistItem* w,
+                                                bool allowChild) const {
     // See also itemAbove()
 
     if (w == 0) {
-        return lastPlaylistWidgetItem();
+        return lastPlaylistItem();
     }
 
     int c = w->childCount();
@@ -408,7 +407,7 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
         return w->plChild(c - 1);
     }
 
-    TPlaylistWidgetItem* parent = w->plParent();
+    TPlaylistItem* parent = w->plParent();
     if(parent) {
        int idx = parent->indexOfChild(w) - 1;
        if (idx >= 0) {
@@ -417,11 +416,11 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousItem(TPlaylistWidgetItem* w,
        return getPreviousItem(parent, false);
     }
 
-    return lastPlaylistWidgetItem();
+    return lastPlaylistItem();
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(
-        TPlaylistWidgetItem* i) const {
+TPlaylistItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(
+        TPlaylistItem* i) const {
 
     do {
         i = getPreviousItem(i);
@@ -430,22 +429,22 @@ TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem(
     return i;
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::getPreviousPlaylistWidgetItem() const {
+TPlaylistItem* TPlaylistWidget::getPreviousPlaylistWidgetItem() const {
 
-    TPlaylistWidgetItem* item = playing_item;
+    TPlaylistItem* item = playing_item;
     if (item == 0) {
-        item = currentPlaylistWidgetItem();
+        item = currentPlaylistItem();
     }
     return getPreviousPlaylistWidgetItem(item);
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::findPreviousPlayedTime(
-        TPlaylistWidgetItem* w) {
+TPlaylistItem* TPlaylistWidget::findPreviousPlayedTime(
+        TPlaylistItem* w) {
 
-    TPlaylistWidgetItem* result = 0;
+    TPlaylistItem* result = 0;
     QTreeWidgetItemIterator it(this);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         if (i->childCount() == 0
             && ((result == 0) || (i->playedTime() >= result->playedTime()))
             && (i->playedTime() < w->playedTime())) {
@@ -545,11 +544,11 @@ void TPlaylistWidget::onDropDone(bool error) {
 
 bool TPlaylistWidget::addDroppedItem(const QString& source,
                                      const QString& dest,
-                                     TPlaylistWidgetItem* item) {
+                                     TPlaylistItem* item) {
 
     QFileInfo fid(dest);
     if (fid.exists()) {
-        TPlaylistWidgetItem* parent = findFilename(fid.absolutePath());
+        TPlaylistItem* parent = findFilename(fid.absolutePath());
         if (parent) {
             if (fid.isDir()) {
                 item->renameDir(source + QDir::separator(),
@@ -591,10 +590,10 @@ void TPlaylistWidget::onCopyFinished(int id, bool error) {
         WZINFO(QString("Canceled copy '%1' to '%2' due to errors")
                .arg(source).arg(dest));
     } else {
-        TPlaylistWidgetItem* sourceItem = findFilename(source);
+        TPlaylistItem* sourceItem = findFilename(source);
         if (sourceItem) {
             // Add clone to parent
-            TPlaylistWidgetItem* destItem = sourceItem->clone();
+            TPlaylistItem* destItem = sourceItem->clone();
             if (addDroppedItem(source, dest, destItem)) {
                 setModified(destItem, true, true);
                 WZINFO(QString("Copied '%1' to '%2'").arg(source).arg(dest));
@@ -614,10 +613,10 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
         WZINFO(QString("Canceled move from '%1' to '%2' due to errors")
                .arg(source).arg(dest));
     } else {
-        TPlaylistWidgetItem* sourceItem = findFilename(source);
+        TPlaylistItem* sourceItem = findFilename(source);
         if (sourceItem) {
             // Remove it from parent
-            TPlaylistWidgetItem* parent = sourceItem->plParent();
+            TPlaylistItem* parent = sourceItem->plParent();
             int idx = parent->indexOfChild(sourceItem);
             parent->takeChild(idx);
             setModified(parent);
@@ -632,7 +631,7 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
     }
 }
 
-void TPlaylistWidget::dropSelection(TPlaylistWidgetItem* target,
+void TPlaylistWidget::dropSelection(TPlaylistItem* target,
                                     Qt::DropAction action) {
     WZDEBUG(QString("Selected target '%1'").arg(target->filename()));
 
@@ -654,11 +653,11 @@ void TPlaylistWidget::dropSelection(TPlaylistWidgetItem* target,
             Qt::QueuedConnection);
 
     // Collect the dropped files
-    // TODO: stop playing item
+    // TODO: stop playing item wheb action is move and playing item in sel
     QStringList files;
     QList<QTreeWidgetItem*> sel = selectedItems();
     for(int i = 0; i < sel.length(); i++) {
-        TPlaylistWidgetItem* item = static_cast<TPlaylistWidgetItem*>(sel.at(i));
+        TPlaylistItem* item = static_cast<TPlaylistItem*>(sel.at(i));
         files.append(item->path());
         WZDEBUG(QString("Adding '%1'").arg(item->path()));
     }
@@ -689,7 +688,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
     int col = -1;
     int row = -1;
     if (dropOn(event, &row, &col, &index)) {
-        TPlaylistWidgetItem* target = static_cast<TPlaylistWidgetItem*>(
+        TPlaylistItem* target = static_cast<TPlaylistItem*>(
                     index.internalPointer());
         if (target->isWZPlaylist() || QFileInfo(target->filename()).isDir()) {
             dropSelection(target, event->dropAction());
@@ -735,7 +734,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
 
             if (!sel.isEmpty()) {
                 // Add new parent to modified items
-                TPlaylistWidgetItem* parent = static_cast<TPlaylistWidgetItem*>(
+                TPlaylistItem* parent = static_cast<TPlaylistItem*>(
                             sel.at(0)->parent());
                 if (!modified.contains(parent)) {
                     modified.append(parent);
@@ -748,7 +747,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
 
         // Set modified
         for(int i = 0; i < modified.count(); i++) {
-            setModified(static_cast<TPlaylistWidgetItem*>(modified.at(i)));
+            setModified(static_cast<TPlaylistItem*>(modified.at(i)));
         }
     } else {
         WZDEBUG("Drop not accepted");
@@ -767,10 +766,9 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
     if (!parent.isValid()) {
         return;
     }
-    TPlaylistWidgetItem* p = static_cast<TPlaylistWidgetItem*>(
-                parent.internalPointer());
+    TPlaylistItem* p = static_cast<TPlaylistItem*>(parent.internalPointer());
 
-    if (sortSection == TPlaylistWidgetItem::COL_ORDER) {
+    if (sortSection == TPlaylistItem::COL_ORDER) {
         int d = end - start + 1;
         if (sortOrder == Qt::AscendingOrder) {
             for (int i = end + 1; i < p->childCount(); i++) {
@@ -786,7 +784,7 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
         for (int r = start; r <= end; r++) {
             int order = p->plChild(r)->order();
             for (int i = p->childCount() - 1; i >= 0; i--) {
-                TPlaylistWidgetItem* item = p->plChild(i);
+                TPlaylistItem* item = p->plChild(i);
                 int o = item->order();
                 if (o > order) {
                     item->setOrder(o - 1);
@@ -808,10 +806,9 @@ void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
         return;
     }
 
-    TPlaylistWidgetItem* p = static_cast<TPlaylistWidgetItem*>(
-                parent.internalPointer());
+    TPlaylistItem* p = static_cast<TPlaylistItem*>(parent.internalPointer());
 
-    if (sortSection == TPlaylistWidgetItem::COL_ORDER) {
+    if (sortSection == TPlaylistItem::COL_ORDER) {
         if (sortOrder == Qt::AscendingOrder) {
             for (int i = p->childCount() - 1; i >= start; i--) {
                 p->plChild(i)->setOrder(i + 1);
@@ -825,7 +822,7 @@ void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
     } else {
         int d = end - start + 1;
         for (int i = p->childCount() - 1; i > end; i--) {
-            TPlaylistWidgetItem* item = p->plChild(i);
+            TPlaylistItem* item = p->plChild(i);
             int o = item->order();
             if (o > start) {
                 item->setOrder(o + d);
@@ -835,7 +832,7 @@ void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
             p->plChild(i)->setOrder(i + 1);
         }
         for (int i = start - 1; i >= 0; i--) {
-            TPlaylistWidgetItem* item = p->plChild(i);
+            TPlaylistItem* item = p->plChild(i);
             int o = item->order();
             if (o > start) {
                 item->setOrder(o + d);
@@ -912,22 +909,22 @@ void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
     QString playing = playingFile();
 
     // Move new current out of selection
-    TPlaylistWidgetItem* newCurrent = currentPlaylistWidgetItem();
+    TPlaylistItem* newCurrent = currentPlaylistItem();
     do {
         newCurrent = getNextItem(newCurrent, false);
     } while (newCurrent && newCurrent->isSelected());
 
     // Delete the selection
-    TPlaylistWidgetItem* root = this->root();
+    TPlaylistItem* root = this->root();
     QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected);
     while (*it) {
-        TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(*it);
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
         if (i != root
             && (!deleteFromDisk
                 || removeFromDisk(i->filename(), playing))) {
             WZINFO("removing '" + i->filename() + "' from playlist");
 
-            TPlaylistWidgetItem* parent = i->plParent();
+            TPlaylistItem* parent = i->plParent();
 
             // Blacklist item if WZPlaylist
             if (!deleteFromDisk
@@ -940,7 +937,7 @@ void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
                 // A playlist may contain multiple identical items
                 bool multipleItems = false;
                 for(int c = 0; c < parent->childCount(); c++) {
-                    TPlaylistWidgetItem* s = parent->plChild(c);
+                    TPlaylistItem* s = parent->plChild(c);
                     if (s != i && s->compareFilename(*i) == 0) {
                         multipleItems = true;
                         break;
@@ -955,7 +952,7 @@ void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
 
             // Clean up wzplaylists in empty folders
             while (parent && parent->childCount() == 0 && parent != root) {
-                TPlaylistWidgetItem* gp = parent->plParent();
+                TPlaylistItem* gp = parent->plParent();
                 if (parent == newCurrent) {
                     newCurrent = gp;
                 }
@@ -980,7 +977,7 @@ void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
     if (newCurrent && newCurrent != root) {
         setCurrentItem(newCurrent);
     } else {
-        setCurrentItem(firstPlaylistWidgetItem());
+        setCurrentItem(firstPlaylistItem());
     }
 }
 
@@ -1035,7 +1032,7 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
     if (w) {
         level++;
         for(int c = 0; c < w->childCount(); c++) {
-            TPlaylistWidgetItem* cw = static_cast<TPlaylistWidgetItem*>(w->child(c));
+            TPlaylistItem* cw = static_cast<TPlaylistItem*>(w->child(c));
             if (cw) {
                 cw->setSzHint(level);
                 if (cw->isExpanded() && cw->childCount()) {
@@ -1048,36 +1045,36 @@ void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
 
 void TPlaylistWidget::resizeRowsEx() {
 
-    TPlaylistWidgetItem::gNameColumnWidth =
-            header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
-    resizeRows(root(), TPlaylistWidgetItem::ROOT_NODE_LEVEL);
+    TPlaylistItem::gNameColumnWidth =
+            header()->sectionSize(TPlaylistItem::COL_NAME);
+    resizeRows(root(), TPlaylistItem::ROOT_NODE_LEVEL);
 }
 
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 
-    if (logicalIndex == TPlaylistWidgetItem::COL_NAME) {
-        TPlaylistWidgetItem::gNameColumnWidth = newSize;
+    if (logicalIndex == TPlaylistItem::COL_NAME) {
+        TPlaylistItem::gNameColumnWidth = newSize;
         wordWrapTimer->start();
     }
 }
 
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
-    WZDEBUG("'" + w->text(TPlaylistWidgetItem::COL_NAME) + "'");
+    WZDEBUG("'" + w->text(TPlaylistItem::COL_NAME) + "'");
 
-    TPlaylistWidgetItem* i = static_cast<TPlaylistWidgetItem*>(w);
+    TPlaylistItem* i = static_cast<TPlaylistItem*>(w);
     if (i == 0) {
         return;
     }
 
     // Resize rows of expanded item
     if (!wordWrapTimer->isActive()) {
-        TPlaylistWidgetItem::gNameColumnWidth =
-                header()->sectionSize(TPlaylistWidgetItem::COL_NAME);
+        TPlaylistItem::gNameColumnWidth =
+                header()->sectionSize(TPlaylistItem::COL_NAME);
         resizeRows(i, i->getLevel());
     }
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
+TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* item) {
 
     if (item) {
         QTreeWidgetItemIterator it(this);
@@ -1092,12 +1089,12 @@ TPlaylistWidgetItem* TPlaylistWidget::validateItem(TPlaylistWidgetItem* item) {
     return 0;
 }
 
-TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
-                                          TPlaylistWidgetItem* target) {
+TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
+                                    TPlaylistItem* target) {
     WZDEBUG(QString("Child count %1").arg(item->childCount()));
 
     // Get parent and child index into parent
-    TPlaylistWidgetItem* parent;
+    TPlaylistItem* parent;
     int idx = 0;
 
     // Validate target is still valid
@@ -1124,8 +1121,8 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
             WZDEBUG("removing single folder in root");
-            TPlaylistWidgetItem* old = item;
-            item = static_cast<TPlaylistWidgetItem*>(item->takeChild(0));
+            TPlaylistItem* old = item;
+            item = static_cast<TPlaylistItem*>(item->takeChild(0));
             delete old;
         }
 
@@ -1146,10 +1143,10 @@ TPlaylistWidgetItem* TPlaylistWidget::add(TPlaylistWidgetItem* item,
 
         // Sort
         if (item->isWZPlaylist() || !item->isPlaylist()) {
-            sortSection = TPlaylistWidgetItem::COL_NAME;
+            sortSection = TPlaylistItem::COL_NAME;
             sortOrder = Qt::AscendingOrder;
         } else {
-            sortSection = TPlaylistWidgetItem::COL_ORDER;
+            sortSection = TPlaylistItem::COL_ORDER;
             sortOrder = Qt::AscendingOrder;
         }
         setSort(sortSection, sortOrder);

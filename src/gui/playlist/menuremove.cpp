@@ -34,7 +34,7 @@ TMenuRemove::TMenuRemove(TPlaylist* pl, TMainWindow* mw) :
 
 void TMenuRemove::enableRemoveFromDiskAction() {
 
-    TPlaylistWidgetItem* current = playlist->currentPlaylistWidgetItem();
+    TPlaylistItem* current = playlist->currentPlaylistItem();
     removeSelectedFromDiskAct->setEnabled(
                 !playlist->isLoading()
                 && current

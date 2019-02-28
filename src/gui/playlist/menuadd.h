@@ -19,7 +19,7 @@ namespace Playlist {
 
 class TPlaylist;
 class TPlaylistWidget;
-class TPlaylistWidgetItem;
+class TPlaylistItem;
 
 
 class TAddRemovedMenu : public Gui::Action::Menu::TMenu {
@@ -38,7 +38,7 @@ protected:
 
 private:
     TPlaylistWidget* playlistWidget;
-    TPlaylistWidgetItem* item;
+    TPlaylistItem* item;
 
 private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*);
