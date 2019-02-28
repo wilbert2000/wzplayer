@@ -68,11 +68,7 @@ namespace Log4Qt
 
 	Logger::Logger(LoggerRepository* pLoggerRepository, Level level, const QString &rName, Logger *pParent) :
 	    QObject(0),
-#if QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
-	    mObjectGuard(),
-#else
 	    mObjectGuard(QReadWriteLock::Recursive),
-#endif
 	    mName(rName),
 	    mpLoggerRepository(pLoggerRepository),
 	    mAdditivity(true),

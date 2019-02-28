@@ -36,11 +36,9 @@
  ******************************************************************************/
 
 #include <QtCore/QObject>
-#if QT_VERSION >= QT_VERSION_CHECK(4, 4, 0)
-#	include <QtCore/QAtomicPointer>
-#	ifndef Q_ATOMIC_POINTER_TEST_AND_SET_IS_ALWAYS_NATIVE
-#		//warning "QAtomicPointer test and set is not native. The class Log4Qt::ClassLogger is not thread-safe."
-#	endif
+#include <QtCore/QAtomicPointer>
+#ifndef Q_ATOMIC_POINTER_TEST_AND_SET_IS_ALWAYS_NATIVE
+#   warning "QAtomicPointer test and set is not native. The class Log4Qt::ClassLogger is not thread-safe."
 #endif
 
 
@@ -88,11 +86,7 @@ namespace Log4Qt
 	    Logger *logger(const QObject *pObject);
 
 	private:
-#if QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
-	    volatile Logger *mpLogger;
-#else
 	    mutable QAtomicPointer<Logger> mpLogger;
-#endif
 	};
 
 

@@ -66,11 +66,7 @@ namespace Log4Qt
 
 
 	Hierarchy::Hierarchy() :
-#if QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
-	    mObjectGuard(),
-#else
 	    mObjectGuard(QReadWriteLock::Recursive),
-#endif
 	    mLoggers(),
 	    mThreshold(Level::NULL_INT),
 	    mpRootLogger(logger(QString()))

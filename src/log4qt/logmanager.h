@@ -256,23 +256,15 @@ namespace Log4Qt
 		void doStartup();
 		void welcome();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         static void qtMessageHandler(QtMsgType type, const QMessageLogContext &context,
                                      const QString& rMessage);
-#else
-        static void qtMessageHandler(QtMsgType type, const char *message);
-#endif
 
 	private:
 	    mutable QMutex mObjectGuard;
 	    LoggerRepository *mpLoggerRepository;
 	    Logger *mpNullLogger;
 	    bool mHandleQtMessages;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         QtMessageHandler mOldQtMsgHandler;
-#else
-        QtMsgHandler mOldQtMsgHandler;
-#endif
 	    static LogManager *mspInstance;
 	};
 	
