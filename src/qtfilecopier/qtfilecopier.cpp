@@ -57,6 +57,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QTimer>
 #include <QtCore/QMetaType>
+#include <QtCore/QStorageInfo>
 
 struct CopyRequest {
     CopyRequest() {
@@ -177,11 +178,7 @@ private:
     bool overwriteAllRequest;
     bool cancelRequest;
     int currentId;
-#if QT_VERSION >= 0x040400
     QAtomicInt progressRequest;
-#else
-    QAtomic progressRequest;
-#endif
     bool autoReset;
 };
 
@@ -536,16 +533,26 @@ struct RenameNode : public ChainNode {
         CopyRequest &r = request();
         if (r.move) {
             QFileInfo fis(r.source);
-            QDir dir = fis.dir();
-            if (!(r.copyFlags & QtFileCopier::FollowLinks) || !r.dir && !fis.isSymLink()) {
-                if (dir.rename(fis.fileName(), r.dest)) {
-                    QFileInfo fid(r.dest);
-                    if (r.dir)
-                        while (!r.childrenQueue.isEmpty())
-                            thread()->renameChildren(r.childrenQueue.dequeue());
-                    else
-                        thread()->emitProgress(currentId(), fid.size());
-                    return true;
+            if (!(r.copyFlags & QtFileCopier::FollowLinks)
+                    || (!r.dir && !fis.isSymLink())) {
+                // QDir.rename() calls QFile.rename(), which will try to
+                // copy the file and remove the source if a simple rename fails,
+                // which leaves us without progress information during the copy.
+                // To let MoveNode handle the copy instead, only use
+                // QDir::rename() when source and destination remain on the same
+                // device.
+                QDir dir = fis.dir();
+                QStorageInfo si(dir);
+                if (si.isValid() && si == QStorageInfo(QFileInfo(r.dest).absoluteDir())) {
+                    if (dir.rename(fis.fileName(), r.dest)) {
+                        if (r.dir) {
+                            while (!r.childrenQueue.isEmpty())
+                                thread()->renameChildren(r.childrenQueue.dequeue());
+                        } else {
+                            thread()->emitProgress(currentId(), fis.size());
+                        }
+                        return true;
+                    }
                 }
             }
         }
@@ -740,16 +747,13 @@ void QtCopyThread::lockCancelChildren(int id)
 
 void QtCopyThread::cancelChildren(int id)
 {
-//    mutex.lock();
     QMap<int, Request>::ConstIterator it = requestQueue.find(id);
     if (it == requestQueue.constEnd()) {
-//        mutex.unlock();
         return;
     }
     CopyRequest r = it.value().request;
 //    int oldCurrentId = currentId;
 //    currentId = it.key();
-//    mutex.unlock();
 //    emit started(id);
 
     while (!r.childrenQueue.isEmpty()) {
@@ -762,11 +766,9 @@ void QtCopyThread::cancelChildren(int id)
 //    emit error(id, QtFileCopier::Canceled, false);
 
 //    emit finished(id, true);
-//    mutex.lock();
 //    currentId = oldCurrentId;
 
 //    requestQueue.remove(id);
-//    mutex.unlock();
 }
 
 void QtCopyThread::handle(int id)
