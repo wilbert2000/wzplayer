@@ -1406,7 +1406,7 @@ QtFileCopier::QtFileCopier(QObject *parent) : QObject(parent)
     d_ptr->q_ptr = this;
     d_ptr->copyThread = new QtCopyThread(this);
     d_ptr->progressTimer = new QTimer(this);
-    d_ptr->progressTimer->setInterval(200);
+    d_ptr->progressTimer->setInterval(300);
     connect(d_ptr->progressTimer, SIGNAL(timeout()),
                 this, SLOT(progressRequest()));
 }
@@ -2131,7 +2131,7 @@ bool QtFileCopier::autoReset() const
     \brief the time that must pass before the next dataTransferProgress()
     signal is emitted.
 
-    The default is 100 miliseconds.
+    The default is 300 miliseconds.
 
     \sa dataTransferProgress()
 */
