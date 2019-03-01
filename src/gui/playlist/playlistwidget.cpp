@@ -1073,17 +1073,15 @@ void TPlaylistWidget::onSectionClicked(int section) {
     setSort(sortSection, sortOrder);
 }
 
-void TPlaylistWidget::resizeRows(QTreeWidgetItem* w, int level) {
+void TPlaylistWidget::resizeRows(TPlaylistItem* item, int level) {
 
-    if (w) {
+    if (item) {
         level++;
-        for(int c = 0; c < w->childCount(); c++) {
-            TPlaylistItem* cw = static_cast<TPlaylistItem*>(w->child(c));
-            if (cw) {
-                cw->setSzHint(level);
-                if (cw->isExpanded() && cw->childCount()) {
-                    resizeRows(cw, level);
-                }
+        for(int i = item->childCount() - 1; i >= 0; i--) {
+            TPlaylistItem* child = item->plChild(i);
+            child->setSzHint(level);
+            if (child->isExpanded() && child->childCount()) {
+                resizeRows(child, level);
             }
         }
     }
@@ -1107,16 +1105,11 @@ void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
     WZDEBUG("'" + w->text(TPlaylistItem::COL_NAME) + "'");
 
-    TPlaylistItem* i = static_cast<TPlaylistItem*>(w);
-    if (i == 0) {
-        return;
-    }
-
-    // Resize rows of expanded item
     if (!wordWrapTimer->isActive()) {
         TPlaylistItem::gNameColumnWidth =
                 header()->sectionSize(TPlaylistItem::COL_NAME);
-        resizeRows(i, i->getLevel());
+        TPlaylistItem* item = static_cast<TPlaylistItem*>(w);
+        resizeRows(item, item->getLevel());
     }
 }
 
@@ -1199,7 +1192,6 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));
-            // call onItemExpanded on root (loads icons etc.)
             onItemExpanded(item);
         }
 

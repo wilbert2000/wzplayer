@@ -119,7 +119,7 @@ private:
                         TPlaylistItem* item);
     void dropSelection(TPlaylistItem* target, Qt::DropAction action);
 
-    void resizeRows(QTreeWidgetItem* w, int level);
+    void resizeRows(TPlaylistItem* item, int level);
     bool removeFromDisk(const QString& filename, const QString& playingFile);
 
 private slots:
