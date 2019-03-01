@@ -102,6 +102,8 @@ private:
 
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;
+    QString stoppedFilename;
+    TPlaylistItem* stoppedItem;
 
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(QTreeWidgetItem* w) const;
@@ -127,6 +129,7 @@ private slots:
     void onColumnMenuTriggered(QAction* action);
     void resizeRowsEx();
     void onCopyFinished(int id, bool error);
+    void onMoveAboutToStart(int id);
     void onMoveFinished(int id, bool error);
     void onDropDone(bool error);
 };

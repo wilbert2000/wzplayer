@@ -277,7 +277,7 @@ QString TPlaylistWidget::playingFile() const {
     if (hasItems() && playing_item) {
         return playing_item->filename();
     }
-    return "";
+    return QString();
 }
 
 QString TPlaylistWidget::currentFile() const {
@@ -594,6 +594,7 @@ void TPlaylistWidget::onCopyFinished(int id, bool error) {
         if (sourceItem) {
             // Add clone to parent
             TPlaylistItem* destItem = sourceItem->clone();
+            sourceItem->setState(PSTATE_STOPPED);
             if (addDroppedItem(source, dest, destItem)) {
                 setModified(destItem, true, true);
                 WZINFO(QString("Copied '%1' to '%2'").arg(source).arg(dest));
@@ -601,6 +602,35 @@ void TPlaylistWidget::onCopyFinished(int id, bool error) {
         } else {
             WZERROR(QString("Source '%1' not found in playlist").arg(source));
         }
+    }
+}
+
+void TPlaylistWidget::onMoveAboutToStart(int id) {
+
+    bool stopPlayer = false;
+    if (playing_item  && player->state() != Player::STATE_STOPPED) {
+        QFileInfo fip(playing_item->filename());
+        QFileInfo fis(fileCopier->sourceFilePath(id));
+        if (fis.isDir()) {
+            QString dir = fis.canonicalFilePath();
+            if (dir.right(1) != "/") {
+                dir += "/";
+            }
+            if (fip.canonicalFilePath().startsWith(dir)) {
+                stopPlayer = true;
+            }
+        } else if (fis == fip) {
+            stopPlayer = true;
+        }
+    }
+
+    if (stopPlayer) {
+        WZDEBUG("Stopping player");
+        stoppedFilename = QDir::toNativeSeparators(
+                    fileCopier->destinationFilePath(id));
+        stoppedItem = playing_item;
+        player->saveRestartState();
+        player->stop();
     }
 }
 
@@ -616,6 +646,7 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
         TPlaylistItem* sourceItem = findFilename(source);
         if (sourceItem) {
             // Remove it from parent
+            bool isCurrentItem = sourceItem == currentPlaylistItem();
             TPlaylistItem* parent = sourceItem->plParent();
             int idx = parent->indexOfChild(sourceItem);
             parent->takeChild(idx);
@@ -623,6 +654,18 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
 
             // Add it to dest
             if (addDroppedItem(source, dest, sourceItem)) {
+                if (stoppedFilename == dest) {
+                    if (player->state() == Player::STATE_STOPPED) {
+                        isCurrentItem = false;
+                        setCurrentItem(stoppedItem);
+                        WZDEBUG("Posting restart player");
+                        QTimer::singleShot(0, this->parent(), SLOT(play()));
+                    }
+                    stoppedFilename = "";
+                }
+                if (isCurrentItem) {
+                    setCurrentItem(sourceItem);
+                }
                 WZINFO(QString("Moved '%1' to '%2'").arg(source).arg(dest));
             }
         } else {
@@ -653,7 +696,6 @@ void TPlaylistWidget::dropSelection(TPlaylistItem* target,
             Qt::QueuedConnection);
 
     // Collect the dropped files
-    // TODO: stop playing item wheb action is move and playing item in sel
     QStringList files;
     QList<QTreeWidgetItem*> sel = selectedItems();
     for(int i = 0; i < sel.length(); i++) {
@@ -667,6 +709,10 @@ void TPlaylistWidget::dropSelection(TPlaylistItem* target,
 
     // Pass files to copier
     if (action == Qt::MoveAction) {
+        stoppedFilename = "";
+        stoppedItem = 0;
+        connect(fileCopier, &QtFileCopier::aboutToStart,
+                this, &TPlaylistWidget::onMoveAboutToStart);
         connect(fileCopier, &QtFileCopier::finished,
                 this, &TPlaylistWidget::onMoveFinished);
         fileCopier->moveFiles(files, target->path(), 0);
