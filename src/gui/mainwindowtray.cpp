@@ -198,7 +198,6 @@ void TMainWindowTray::showAll(bool b) {
 }
 
 void TMainWindowTray::onMediaInfoChanged() {
-    WZDEBUG("");
 
     TMainWindow::onMediaInfoChanged();
     tray->setToolTip(windowTitle());
