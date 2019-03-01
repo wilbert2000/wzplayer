@@ -47,6 +47,7 @@
 #include <QUrl>
 #include <QNetworkProxy>
 #include <QTimer>
+#include <QApplication>
 
 
 Player::TPlayer* player = 0;
@@ -191,14 +192,13 @@ void TPlayer::onProcessError(QProcess::ProcessError error) {
 }
 
 void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
-    WZDEBUG("normal exit " + QString::number(normal_exit)
-            + ", exit code " + QString::number(exit_code)
-            + ", eof " + QString::number(eof));
+    WZDEBUG(QString("Normal exit %1, exit code %2, eof %3, state %4")
+            .arg(normal_exit).arg(exit_code).arg(eof).arg(stateToString()));
 
     // Restore normal window background
     playerwindow->restoreNormalWindow(false);
 
-    if (_state == STATE_STOPPING) {
+    if (_state == STATE_STOPPING || _state == STATE_STOPPED) {
         return;
     }
 
@@ -211,14 +211,14 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
         }
     }
 
-    WZDEBUG("entering the stopped state");
+    WZDEBUG("Entering the stopped state");
     setState(STATE_STOPPED);
 
     if (eof || exit_code == Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED) {
-        WZDEBUG("emit mediaEOF()");
+        WZDEBUG("Emit mediaEOF()");
         emit mediaEOF();
     } else if (!normal_exit) {
-        WZDEBUG("emit playerError()");
+        WZDEBUG("Emit playerError()");
         emit playerError(exit_code);
     }
 }
@@ -550,38 +550,50 @@ void TPlayer::unloadAudioFile() {
 void TPlayer::stopPlayer() {
 
     if (proc->state() == QProcess::NotRunning) {
-        WZDEBUG("player not running");
         return;
     }
 
-    WZDEBUG("entering the stopping state");
+    int timeout = Settings::pref->time_to_kill_player;
+    WZDEBUG(QString("Entering the stopping state with timeout of %1 ms")
+            .arg(timeout));
     setState(STATE_STOPPING);
+    QTime time;
+    time.start();
     proc->quit(0);
 
-    // If set high enough the OS will detect the "not responding state" and
-    // popup a dialog
-    int timeout = Settings::pref->time_to_kill_player;
-    WZDEBUG("waiting " + QString::number(timeout)
-            + " ms for player to quit...");
-    if (!proc->waitForFinished(timeout)) {
-        WZWARN("player process did not finish in " + QString::number(timeout)
-               + " ms, killing it...");
+    int lastSec = timeout;
+    while (proc->state() == QProcess::Running) {
+        int elapsed = time.elapsed();
+        if (elapsed >= timeout) {
+            break;
+        }
+        int sec = qRound(float(timeout - elapsed) / 1000);
+        if (sec < lastSec) {
+            lastSec = sec;
+            Gui::msg(tr("Waiting %1 seconds for player to quit...").arg(sec));
+        }
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents, 100);
+    };
+
+    if (proc->state() == QProcess::Running) {
+        WZWARN(QString("Player did not quit in %1 ms, killing it...")
+               .arg(timeout));
         proc->kill();
     }
 
-    WZDEBUG("done");
+    WZDEBUG(QString("Player stopped in %1 ms").arg(time.elapsed()));
 }
 
 void TPlayer::stop() {
-    WZDEBUG("current state " + stateToString());
+    WZDEBUG("Current state " + stateToString());
 
     stopPlayer();
-    WZDEBUG("entering the stopped state");
+    WZDEBUG("Entering the stopped state");
     setState(STATE_STOPPED);
 }
 
 void TPlayer::play() {
-    WZDEBUG("current state " + stateToString());
+    WZDEBUG("Current state " + stateToString());
 
     switch (proc->state()) {
         case QProcess::Running:
