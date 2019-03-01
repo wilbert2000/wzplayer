@@ -154,7 +154,7 @@ public slots:
     void progress();
 signals:
     void error(int id, QtFileCopier::Error error, bool stopped);
-    void started(int id);
+    void aboutToStart(int id);
     void dataTransferProgress(int id, qint64 progress);
     void finished(int id, bool error);
     void canceled();
@@ -195,17 +195,18 @@ QtCopyThread::QtCopyThread(QtFileCopier *fileCopier)
 {
     qRegisterMetaType<QtFileCopier::Error>("QtFileCopier::Error");
     connect(this, SIGNAL(error(int, QtFileCopier::Error, bool)),
-                copier, SLOT(copyError(int, QtFileCopier::Error, bool)));
-    connect(this, SIGNAL(started(int)),
-                copier, SLOT(copyStarted(int)));
+            copier, SLOT(copyError(int, QtFileCopier::Error, bool)));
+    connect(this, SIGNAL(aboutToStart(int)),
+            copier, SLOT(copyAboutToStart(int)),
+            Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(dataTransferProgress(int, qint64)),
-                copier, SIGNAL(dataTransferProgress(int, qint64)));
+            copier, SIGNAL(dataTransferProgress(int, qint64)));
     connect(this, SIGNAL(finished(int, bool)),
-                copier, SLOT(copyFinished(int, bool)));
+            copier, SLOT(copyFinished(int, bool)));
     connect(this, SIGNAL(canceled()),
-                copier, SLOT(copyCanceled()));
+            copier, SLOT(copyCanceled()));
     connect(copier, SIGNAL(destroyed()),
-                this, SLOT(copierDestroyed()));
+            this, SLOT(copierDestroyed()));
 }
 
 QtCopyThread::~QtCopyThread()
@@ -722,7 +723,7 @@ void QtCopyThread::renameChildren(int id)
     int oldCurrentId = currentId;
     currentId = it.key();
     mutex.unlock();
-    emit started(id);
+    emit aboutToStart(id);
 
     while (!r.childrenQueue.isEmpty())
         renameChildren(r.childrenQueue.dequeue());
@@ -782,7 +783,7 @@ void QtCopyThread::handle(int id)
     currentId = it.key();
     mutex.unlock();
 
-    emit started(id);
+    emit aboutToStart(id);
     bool done = false;
     QtFileCopier::Error err = QtFileCopier::NoError;;
     while (!done) {
@@ -883,7 +884,7 @@ public:
 
     void setState(QtFileCopier::State s);
     void copyError(int id, QtFileCopier::Error error, bool stopped);
-    void copyStarted(int id);
+    void copyAboutToStart(int id);
     void copyFinished(int id, bool err);
     void copyCanceled();
     int copyFile(const QString &sourceFile,
@@ -960,12 +961,12 @@ void QtFileCopierPrivate::copyError(int id, QtFileCopier::Error error, bool stop
     emit q->error(id, error, stopped);
 }
 
-void QtFileCopierPrivate::copyStarted(int id)
+void QtFileCopierPrivate::copyAboutToStart(int id)
 {
     Q_Q(QtFileCopier);
     setState(QtFileCopier::Busy);
     currentStack.push(id);
-    emit q->started(id);
+    emit q->aboutToStart(id);
 }
 
 void QtFileCopierPrivate::copyFinished(int id, bool err)

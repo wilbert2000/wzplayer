@@ -694,7 +694,7 @@ void QtCopyDialog::setFileCopier(QtFileCopier *copier)
                 this, SLOT(error(int, QtFileCopier::Error, bool)));
         disconnect(d->fileCopier, SIGNAL(stateChanged(QtFileCopier::State)),
                 this, SLOT(stateChanged(QtFileCopier::State)));
-        disconnect(d->fileCopier, SIGNAL(started(int)),
+        disconnect(d->fileCopier, SIGNAL(aboutToStart(int)),
                 this, SLOT(started(int)));
         disconnect(d->fileCopier, SIGNAL(done(bool)),
                 this, SLOT(done(bool)));
@@ -713,7 +713,7 @@ void QtCopyDialog::setFileCopier(QtFileCopier *copier)
                 this, SLOT(error(int, QtFileCopier::Error, bool)));
         connect(d->fileCopier, SIGNAL(stateChanged(QtFileCopier::State)),
                 this, SLOT(stateChanged(QtFileCopier::State)));
-        connect(d->fileCopier, SIGNAL(started(int)),
+        connect(d->fileCopier, SIGNAL(aboutToStart(int)),
                 this, SLOT(started(int)));
         connect(d->fileCopier, SIGNAL(done(bool)),
                 this, SLOT(done(bool)));

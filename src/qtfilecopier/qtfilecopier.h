@@ -151,7 +151,7 @@ Q_SIGNALS:
     void stateChanged(QtFileCopier::State state);
 
     void done(bool error);
-    void started(int id);
+    void aboutToStart(int id);
     void dataTransferProgress(int id, qint64 progress);
     void finished(int id, bool error);
     void canceled();
@@ -162,7 +162,7 @@ private:
     Q_DECLARE_PRIVATE(QtFileCopier)
     Q_DISABLE_COPY(QtFileCopier)
 
-    Q_PRIVATE_SLOT(d_func(), void copyStarted(int))
+    Q_PRIVATE_SLOT(d_func(), void copyAboutToStart(int))
     Q_PRIVATE_SLOT(d_func(), void copyFinished(int, bool))
     Q_PRIVATE_SLOT(d_func(), void copyCanceled())
     Q_PRIVATE_SLOT(d_func(), void copyError(int, QtFileCopier::Error, bool))
