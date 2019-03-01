@@ -140,7 +140,6 @@ void TMenuBrowse::enableActions() {
 }
 
 void TMenuBrowse::updateTitles() {
-    WZDEBUG("");
 
     titleGroup->clear();
     if (player->mdat.titles.count() == 0) {
@@ -166,7 +165,6 @@ void TMenuBrowse::updateTitles() {
 }
 
 void TMenuBrowse::updateChapters() {
-    WZDEBUG("");
 
     chapterGroup->clear();
     if (player->mdat.chapters.count() > 0) {
@@ -189,7 +187,6 @@ void TMenuBrowse::updateChapters() {
 }
 
 void TMenuBrowse::updateAngles() {
-    WZDEBUG("");
 
     angleGroup->clear();
 
