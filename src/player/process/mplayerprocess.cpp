@@ -44,6 +44,7 @@ int TMPlayerProcess::dvdnav_vts_to_restore;
 int TMPlayerProcess::dvdnav_title_to_restore_vts;
 int TMPlayerProcess::dvdnav_title_to_restore;
 double TMPlayerProcess::dvdnav_time_to_restore;
+bool TMPlayerProcess::dvdnav_pause_to_restore;
 
 
 TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata) :
@@ -451,6 +452,7 @@ void TMPlayerProcess::dvdnavSave() {
         if (dvdnav_time_to_restore > md->duration) {
             dvdnav_time_to_restore = 0;
         }
+        dvdnav_pause_to_restore = paused;
 
         // Open the disc, not just the current title
         md->disc.title = 0;
@@ -471,6 +473,9 @@ void TMPlayerProcess::dvdnavRestoreTime() {
 
     // seek time, abs, exact, currently paused
     seekPlayerTime(dvdnav_time_to_restore - 5, 2, true, false);
+    if (dvdnav_pause_to_restore) {
+        setPause(dvdnav_pause_to_restore);
+    }
 }
 
 void TMPlayerProcess::dvdnavRestore() {
@@ -515,6 +520,8 @@ void TMPlayerProcess::dvdnavRestore() {
         }
         if (dvdnav_time_to_restore > 20) {
             QTimer::singleShot(500, this, SLOT(dvdnavRestoreTime()));
+        } else if (dvdnav_pause_to_restore) {
+            setPause(dvdnav_pause_to_restore);
         }
     }
 }

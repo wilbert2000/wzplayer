@@ -54,6 +54,7 @@ Player::TPlayer* player = 0;
 namespace Player {
 
 double TPlayer::restartTime = 0;
+bool TPlayer::startPausedOnce = false;
 
 TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     QObject(parent),
@@ -268,7 +269,7 @@ void TPlayer::close(TState next_state) {
     setState(next_state);
     // Clear media data
     mdat = TMediaData();
-    WZDEBUG("closed in state " + stateToString());
+    WZDEBUG("Closed in state " + stateToString());
 }
 
 void TPlayer::openDisc(TDiscName disc, bool fast_open) {
@@ -626,11 +627,10 @@ void TPlayer::playOrPause() {
 void TPlayer::restartPlayer() {
     WZDEBUG("");
 
-    // Save state proc, currently only used by TMPlayerProcess for DVDNAV
-    proc->save();
+    saveRestartState();
     stopPlayer();
 
-    WZDEBUG("entering the restarting state");
+    WZDEBUG("Entering the restarting state");
     setState(STATE_RESTARTING);
     startPlayer();
 }
@@ -642,7 +642,7 @@ void TPlayer::restart() {
     if (proc->isReady()) {
         restartPlayer();
     } else {
-        WZWARN("player not ready");
+        WZWARN("Player not ready");
     }
 }
 
@@ -650,7 +650,7 @@ void TPlayer::reload() {
     WZDEBUG("");
 
     stopPlayer();
-    WZDEBUG("entering the loading state");
+    WZDEBUG("Entering the loading state");
     setState(STATE_LOADING);
     startPlayer();
 }
@@ -848,6 +848,22 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
 }
 #endif
 
+void TPlayer::saveRestartState() {
+    WZDEBUG("");
+
+    // Note: when starting mset.current_sec is already used as start time.
+    // This static start time is used to survive restarting the app and to
+    // override start times saved in mset
+
+    // Save state proc, currently only used by TMPlayerProcess for DVDNAV.
+    // DVDNAV restores its own start time and paused state
+    proc->save();
+    if (mdat.detected_type != TMediaData::TYPE_DVDNAV) {
+        restartTime = mset.current_sec;
+        startPausedOnce = _state == STATE_PAUSED;
+    }
+}
+
 void TPlayer::startPlayer(bool loopImage) {
 
     WZDEBUG("starting time");
@@ -945,6 +961,10 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     restartTime = 0;
+    if (startPausedOnce) {
+        startPausedOnce = false;
+        proc->setOption("pause");
+    }
 
     // Setup hardware decoding for MPV.
     // First set mdat.video_hwdec, handle setting hwdec option later
@@ -2785,7 +2805,7 @@ void TPlayer::onReceivedPosition(double sec) {
     }
 }
 
-// MPlayer only
+// TMPVProcess sends it only once after initial start
 void TPlayer::onReceivedPause() {
     WZDEBUG("at " + QString::number(mset.current_sec));
     setState(STATE_PAUSED);

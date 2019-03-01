@@ -304,10 +304,12 @@ bool TPlaylistItem::renameFile(const QString& newName) {
     // Stop player if item is playing
     bool restartPlayer = false;
     if (mState == PSTATE_LOADING || mState == PSTATE_PLAYING) {
-        restartPlayer = true;
-        player->saveRestartTime();
-        WZDEBUG("Stopping player");
-        player->stop();
+        if (player->state() != Player::STATE_STOPPED) {
+            restartPlayer = true;
+            player->saveRestartState();
+            WZDEBUG("Stopping player");
+            player->stop();
+        }
     }
 
     // Show message in statusbar

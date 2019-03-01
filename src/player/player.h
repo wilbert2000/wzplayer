@@ -105,9 +105,8 @@ public:
         initial_subtitle = subtitle_file;
     }
 
-    void saveRestartTime() {
-        restartTime = mset.current_sec;
-    }
+    void setStartPausedOnce() { startPausedOnce = true; }
+    void saveRestartState();
 
     void dvdnavUpdateMousePos(const QPoint& pos);
 
@@ -375,6 +374,7 @@ signals:
 
 private:
     static double restartTime;
+    static bool startPausedOnce;
 
     Player::Process::TPlayerProcess* proc;
     Gui::TPlayerWindow* playerwindow;

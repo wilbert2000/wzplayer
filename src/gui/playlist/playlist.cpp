@@ -600,7 +600,7 @@ void TPlaylist::startPlay() {
     }
 }
 
-void TPlaylist::playItem(TPlaylistItem* item) {
+void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
 
     reachedEndOfPlaylist = false;
     while (item && item->isFolder()) {
@@ -608,6 +608,9 @@ void TPlaylist::playItem(TPlaylistItem* item) {
     }
     if (item) {
         WZDEBUG("'" + item->filename() + "'");
+        if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
+           player->setStartPausedOnce();
+        }
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         player->open(item->filename(), playlistWidget->hasSingleItem());
     } else {
@@ -621,11 +624,6 @@ void TPlaylist::playItem(TPlaylistItem* item) {
 
 void TPlaylist::playNext(bool loop_playlist) {
     WZDEBUG("");
-
-    // Keep paused images paused
-    if (player->mdat.image && player->state() == Player::TState::STATE_PAUSED) {
-        main_window->runActionsLater("pause", false);
-    }
 
     TPlaylistItem* item;
     if (shuffleAct->isChecked()) {
@@ -642,16 +640,11 @@ void TPlaylist::playNext(bool loop_playlist) {
             item = playlistWidget->firstPlaylistItem();
         }
     }
-    playItem(item);
+    playItem(item, player->mdat.image);
 }
 
 void TPlaylist::playPrev() {
     WZDEBUG("");
-
-    // Keep paused images paused
-    if (player->mdat.image && player->state() == Player::TState::STATE_PAUSED) {
-        main_window->runActionsLater("pause", false);
-    }
 
     TPlaylistItem* i = playlistWidget->playing_item;
     if (i && shuffleAct->isChecked()) {
@@ -663,7 +656,7 @@ void TPlaylist::playPrev() {
         i = playlistWidget->lastPlaylistItem();
     }
     if (i) {
-        playItem(i);
+        playItem(i, player->mdat.image);
     }
 }
 
@@ -741,10 +734,10 @@ void TPlaylist::refresh() {
     if (!filename.isEmpty() && maybeSave()) {
         QString fn = filename;
         QString current;
-        if (player->state() == Player::STATE_PLAYING) {
+        if (player->statePOP()) {
             current = playingFile();
             if (!current.isEmpty()) {
-                player->saveRestartTime();
+                player->saveRestartState();
                 player->stop();
             }
         }

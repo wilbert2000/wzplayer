@@ -148,7 +148,7 @@ private:
 
     void addFilesStartThread();
     void startPlay();
-    void playItem(TPlaylistItem* item);
+    void playItem(TPlaylistItem* item, bool keepPaused = false);
 
     void setPlaylistTitle();
 

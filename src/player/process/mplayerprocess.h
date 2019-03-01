@@ -155,6 +155,7 @@ private:
     static int dvdnav_title_to_restore_vts;
     static int dvdnav_title_to_restore;
     static double dvdnav_time_to_restore;
+    static bool dvdnav_pause_to_restore;
 
     void clearSubSources();
     void getSelectedSubtitles();
