@@ -221,7 +221,8 @@ TPlaylistItem::~TPlaylistItem() {
 void TPlaylistItem::setFileInfo() {
 
     QFileInfo fi(mFilename);
-    mPlaylist = extensions.isPlaylist(fi);
+    // Handle non-existing playlists as URL
+    mPlaylist = fi.exists() && extensions.isPlaylist(fi);
     mSymLink = fi.isSymLink();
     mTarget = fi.symLinkTarget();
     if (mSymLink) {

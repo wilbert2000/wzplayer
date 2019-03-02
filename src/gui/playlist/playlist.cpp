@@ -124,7 +124,7 @@ void TPlaylist::createActions() {
     // Open
     openAct = new TAction(main_window, "pl_open", tr("Open playlist..."), "",
                           QKeySequence("Ctrl+P"));
-    connect(openAct, &TAction::triggered, this, &TPlaylist::open);
+    connect(openAct, &TAction::triggered, this, &TPlaylist::askOpenPlaylist);
 
     // Save
     saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "save",
@@ -350,9 +350,10 @@ void TPlaylist::onThreadFinished() {
 
     if (addFilesStartPlay) {
         if (!addFilesFileToPlay.isEmpty()) {
-            TPlaylistItem* w = findFilename(addFilesFileToPlay);
-            if (w) {
-                playItem(w);
+            TPlaylistItem* item =
+                    playlistWidget->findFilename(addFilesFileToPlay);
+            if (item) {
+                playItem(item);
                 return;
             }
         }
@@ -660,18 +661,6 @@ void TPlaylist::playPrev() {
     }
 }
 
-void TPlaylist::playDirectory(const QString &dir) {
-    WZDEBUG("'" + dir + "'");
-
-    if (TWZFiles::directoryContainsDVD(dir)) {
-        // onNewMediaStartedPlaying() will pickup the playlist
-        player->open(dir);
-    } else {
-        clear();
-        addFiles(QStringList() << dir, true);
-    }
-}
-
 void TPlaylist::resumePlay() {
 
     TPlaylistItem* item = playlistWidget->firstPlaylistItem();
@@ -682,10 +671,6 @@ void TPlaylist::resumePlay() {
 
 QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
-}
-
-TPlaylistItem* TPlaylist::findFilename(const QString& filename) const {
-    return playlistWidget->findFilename(filename);
 }
 
 TPlaylistItem* TPlaylist::currentPlaylistItem() const {
@@ -840,7 +825,7 @@ void TPlaylist::enableActions() {
         TPlaylistItem* playingItem = playlistWidget->playing_item;
         disable_enableActions = true;
         if (playingItem == 0) {
-            playingItem = findFilename(player->mdat.filename);
+            playingItem = playlistWidget->findFilename(player->mdat.filename);
         }
         if (playingItem && playingItem->state() != PSTATE_PLAYING) {
             playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
@@ -894,12 +879,10 @@ void TPlaylist::onPlayerError() {
 
     if (player->state() != Player::STATE_STOPPING) {
         TPlaylistItem* item = playlistWidget->playing_item;
-        if (item) {
-            if (item->filename() == player->mdat.filename) {
-                item->setState(PSTATE_FAILED);
-                playlistWidget->setCurrentItem(item);
-                playlistWidget->scrollToItem(item);
-            }
+        if (item && item->filename() == player->mdat.filename) {
+            item->setState(PSTATE_FAILED);
+            playlistWidget->setCurrentItem(item);
+            playlistWidget->scrollToItem(item);
         }
     }
 }
@@ -917,7 +900,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
             if (cur_disc.valid
                 && cur_disc.protocol == md->disc.protocol
                 && cur_disc.device == md->disc.device) {
-                WZDEBUG("item is from current disc");
+                WZDEBUG("Item is from current disc");
                 return;
             }
         }
@@ -933,7 +916,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (!item->edited()) {
             QString name = md->name();
             if (name != item->baseName()) {
-                WZDEBUG("updating name from '" + item->baseName() + "' to '"
+                WZDEBUG("Updating name from '" + item->baseName() + "' to '"
                         + name + "'");
                 item->setName(name, item->extension(), false);
                 modified = true;
@@ -946,7 +929,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
                 && qAbs(md->duration - item->duration()) > 1) {
                 modified = true;
             }
-            WZDEBUG("updating duration from "
+            WZDEBUG("Updating duration from "
                     + QString::number(item->duration()) + " to "
                     + QString::number(md->duration));
             item->setDuration(md->duration);
@@ -955,7 +938,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (modified) {
             playlistWidget->setModified(item);
         } else {
-            WZDEBUG("item considered uptodate");
+            WZDEBUG("Item considered uptodate");
         }
 
         // Pause a single image
@@ -1003,7 +986,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
     }
 
     setPlaylistTitle();
-    WZDEBUG("created new playlist for '" + filename + "'");
+    WZDEBUG("Created new playlist for '" + filename + "'");
 }
 
 void TPlaylist::onMediaEOF() {
@@ -1243,13 +1226,107 @@ void TPlaylist::dropEvent(QDropEvent *e) {
     QWidget::dropEvent(e);
 }
 
+void TPlaylist::open(const QString &fileName, const QString& name) {
+    WZDEBUG("'" + fileName + "'");
+
+    if (fileName.isEmpty()) {
+        WZERROR("filename is empty");
+        return;
+    }
+    if (!maybeSave()) {
+        return;
+    }
+
+    QFileInfo fi(fileName);
+    if (fi.exists()) {
+        if (fi.isDir()) {
+            openDirectory(fi.absoluteFilePath());
+            return;
+        }
+        if (extensions.isPlaylist(fi)) {
+            openPlaylist(fi.absoluteFilePath());
+            return;
+        }
+        Settings::pref->last_dir = fi.absolutePath();
+    }
+
+    WZDEBUG("Starting new playlist");
+    clear();
+    playItem(new TPlaylistItem(playlistWidget->root(),
+                               fileName,
+                               name,
+                               0,
+                               !name.isEmpty()));
+    WZDEBUG("done");
+}
+
+void TPlaylist::askOpenFile() {
+    WZDEBUG("");
+
+    QString s = TFileDialog::getOpenFileName(
+        this,
+        tr("Choose a file"),
+        Settings::pref->last_dir,
+        tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
+        + tr("Video") + extensions.video().forFilter() + ";;"
+        + tr("Audio") + extensions.audio().forFilter() + ";;"
+        + tr("Playlists") + extensions.playlists().forFilter() + ";;"
+        + tr("Images") + extensions.images().forFilter() + ";;"
+        + tr("All files") +" (*.*)");
+
+    if (!s.isEmpty()) {
+        open(s);
+    }
+}
+
+
+void TPlaylist::openFiles(const QStringList& files, const QString& current) {
+    WZDEBUG("");
+
+    if (files.empty()) {
+        WZDEBUG("No files in list to open");
+        return;
+    }
+
+    if (maybeSave()) {
+        clear();
+        addFiles(files, true, 0, current);
+    }
+}
+
+void TPlaylist::openDirectory(const QString& dir) {
+    WZDEBUG("'" + dir + "'");
+
+    Settings::pref->last_dir = dir;
+    if (TWZFiles::directoryContainsDVD(dir)) {
+        // onNewMediaStartedPlaying() will clear and pickup the playlist
+        player->open(dir);
+    } else {
+        clear();
+        addFiles(QStringList() << dir, true);
+    }
+}
+
+void TPlaylist::askOpenDirectory() {
+    WZDEBUG("");
+
+    if (maybeSave()) {
+        QString s = TFileDialog::getExistingDirectory(
+                    this, tr("Choose a directory"), Settings::pref->last_dir);
+        if (!s.isEmpty()) {
+            openDirectory(s);
+        }
+    }
+}
+
 void TPlaylist::openPlaylist(const QString& filename) {
 
     Settings::pref->last_dir = QFileInfo(filename).absolutePath();
+    clear();
     addFiles(QStringList() << filename, true);
 }
 
-void TPlaylist::open() {
+void TPlaylist::askOpenPlaylist() {
 
     if (maybeSave()) {
         QString s = TFileDialog::getOpenFileName(this, tr("Choose a file"),

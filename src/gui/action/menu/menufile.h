@@ -25,11 +25,12 @@ protected slots:
     virtual void enableActions();
 
 private:
-    TMenu* recentfiles_menu;
+    TMenu* recentFilesMenu;
     TAction* clearRecentsAct;
     TAction* saveThumbnailAct;
 
 private slots:
+    void openRecent();
     void clearRecentsList();
     void onSettingsChanged();
 };

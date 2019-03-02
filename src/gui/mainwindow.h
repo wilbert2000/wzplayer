@@ -89,8 +89,6 @@ public:
     virtual void loadSettings();
     virtual void saveSettings();
 
-    void openFiles(const QStringList& files, const QString& current = "");
-
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
     QList<QAction*> getNamedActions() const { return allActions; }
 
@@ -98,11 +96,7 @@ public:
     void runActionsLater(const QString& actions, bool postCheck);
 
 public slots:
-    virtual void open(const QString& fileName); // Generic open, autodetect type
-    void openRecent();
     void openURL();
-    void openFile();
-    void openDirectory();
     void openDVD();
     void openDVDFromISO();
     void openDVDFromFolder();

@@ -1421,11 +1421,11 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
         QString arg = message.mid(pos+1);
         if (command == "open_file") {
             emit openFileRequested();
-            open(arg);
+            playlist->open(arg);
         } else if (command == "open_files") {
             QStringList file_list = arg.split(" <<sep>> ");
             emit openFileRequested();
-            openFiles(file_list);
+            playlist->openFiles(file_list);
         } else if (command == "add_to_playlist") {
             QStringList file_list = arg.split(" <<sep>> ");
             playlist->addFiles(file_list);
@@ -1469,91 +1469,6 @@ void TMainWindow::sendEnableActions() {
     emit enableActions();
 }
 
-void TMainWindow::openDirectory() {
-    WZDEBUG("");
-
-    QString s = TFileDialog::getExistingDirectory(
-                    this, tr("Choose a directory"),
-                    pref->last_dir);
-
-    if (!s.isEmpty() && playlist->maybeSave()) {
-        playlist->playDirectory(s);
-    }
-}
-
-void TMainWindow::open(const QString &fileName) {
-    WZDEBUG("'" + fileName + "'");
-
-    if (fileName.isEmpty()) {
-        WZERROR("filename is empty");
-        return;
-    }
-    if (!playlist->maybeSave()) {
-        return;
-    }
-
-    QFileInfo fi(fileName);
-    if (fi.exists()) {
-        if (fi.isDir()) {
-            playlist->playDirectory(fileName);
-            return;
-        }
-        if (extensions.isPlaylist(fi)) {
-            playlist->openPlaylist(fi.absoluteFilePath());
-            return;
-        }
-        pref->last_dir = fi.absolutePath();
-    }
-
-    player->open(fileName);
-    WZDEBUG("done");
-}
-
-void TMainWindow::openFiles(const QStringList& files, const QString& current) {
-    WZDEBUG("");
-
-    if (files.empty()) {
-        WZDEBUG("no files in list to open");
-        return;
-    }
-
-    if (playlist->maybeSave()) {
-        playlist->clear();
-        playlist->addFiles(files, true, 0, current);
-    }
-}
-
-void TMainWindow::openFile() {
-    WZDEBUG("");
-
-    QString s = TFileDialog::getOpenFileName(
-        this,
-        tr("Choose a file"),
-        pref->last_dir,
-        tr("Multimedia") + extensions.allPlayable().forFilter() + ";;"
-        + tr("Video") + extensions.video().forFilter() + ";;"
-        + tr("Audio") + extensions.audio().forFilter() + ";;"
-        + tr("Playlists") + extensions.playlists().forFilter() + ";;"
-        + tr("Images") + extensions.images().forFilter() + ";;"
-        + tr("All files") +" (*.*)");
-
-    if (!s.isEmpty()) {
-        open(s);
-    }
-}
-
-void TMainWindow::openRecent() {
-    WZDEBUG("");
-
-    QAction *a = qobject_cast<QAction *> (sender());
-    if (a) {
-        int item = a->data().toInt();
-        QString filename = pref->history_recents.getURL(item);
-        if (!filename.isEmpty())
-            open(filename);
-    }
-}
-
 void TMainWindow::openURL() {
     WZDEBUG("");
 
@@ -1574,7 +1489,7 @@ void TMainWindow::openURL() {
         QString url = dialog.url();
         if (!url.isEmpty()) {
             pref->history_urls.add(url);
-            open(url);
+            playlist->open(url);
         }
     }
 }
@@ -1596,7 +1511,7 @@ void TMainWindow::openVCD() {
         configureDiscDevices();
     } else if (playlist->maybeSave()) {
         player->openDisc(TDiscName("vcd", pref->vcd_initial_title,
-                                 pref->cdrom_device));
+                                   pref->cdrom_device));
     }
 }
 
@@ -1659,7 +1574,7 @@ void TMainWindow::openBluRay() {
 
     if (pref->bluray_device.isEmpty()) {
         configureDiscDevices();
-    } else {
+    } else if (playlist->maybeSave()) {
         player->openDisc(TDiscName("br", 0, pref->bluray_device));
     }
 }
@@ -2017,7 +1932,7 @@ void TMainWindow::dropEvent(QDropEvent *e) {
         foreach(const QUrl& url, e->mimeData()->urls()) {
             files.append(url.toString());
         }
-        openFiles(files);
+        playlist->openFiles(files);
         e->accept();
         return;
     }

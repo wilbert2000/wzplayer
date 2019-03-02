@@ -166,32 +166,32 @@ const QPixmap* TFavoriteEditor::dialogIcon() const {
     return dialog_icon->pixmap();
 }
 
-void TFavoriteEditor::setData(const TFavoriteList& list) {
+void TFavoriteEditor::setData(const QList<TFavorite*>& list) {
 
     table->setRowCount(list.count());
 
     int row = 0;
-    foreach(const TFavorite& fav, list) {
+    foreach(const TFavorite* fav, list) {
         QTableWidgetItem* item = new QTableWidgetItem;
-        item->setIcon(QIcon(fav.icon()));
-        item->setData(Qt::UserRole, fav.icon());
-        item->setData(Qt::ToolTipRole, fav.icon());
+        item->setIcon(QIcon(fav->icon()));
+        item->setData(Qt::UserRole, fav->icon());
+        item->setData(Qt::ToolTipRole, fav->icon());
         item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         table->setItem(row, COL_ICON, item);
 
         item = new QTableWidgetItem;
-        item->setText(fav.name());
+        item->setText(fav->name());
         table->setItem(row, COL_NAME, item);
 
         item = new QTableWidgetItem;
-        item->setData(Qt::ToolTipRole, fav.file());
-        item->setData(Qt::UserRole, fav.isSubentry());
-        if (fav.isSubentry()) {
+        item->setData(Qt::ToolTipRole, fav->file());
+        item->setData(Qt::UserRole, fav->isSubentry());
+        if (fav->isSubentry()) {
             item->setFlags(Qt::ItemIsSelectable);
-            item->setData(Qt::UserRole + 1, fav.file());
+            item->setData(Qt::UserRole + 1, fav->file());
             item->setText(tr("Favorite list"));
         } else {
-            item->setText(fav.file());
+            item->setText(fav->file());
         }
         table->setItem(row, COL_FILE, item);
         row++;
@@ -200,20 +200,20 @@ void TFavoriteEditor::setData(const TFavoriteList& list) {
     table->setCurrentCell(table->rowCount()-1, 0);
 }
 
-TFavoriteList TFavoriteEditor::data() {
+QList<TFavorite*> TFavoriteEditor::data() {
 
-    TFavoriteList list;
+    QList<TFavorite*> list;
 
     for (int n = 0; n < table->rowCount(); n++) {
-        TFavorite f;
-        f.setName(table->item(n, COL_NAME)->text());
-        f.setIcon(table->item(n, COL_ICON)->data(Qt::UserRole).toString());
-        f.setSubentry(table->item(n, COL_FILE)->data(Qt::UserRole).toBool());
-        if (f.isSubentry()) {
-            f.setFile(table->item(n, COL_FILE)->data(Qt::UserRole + 1)
+        TFavorite* f = new TFavorite();
+        f->setName(table->item(n, COL_NAME)->text());
+        f->setIcon(table->item(n, COL_ICON)->data(Qt::UserRole).toString());
+        f->setSubentry(table->item(n, COL_FILE)->data(Qt::UserRole).toBool());
+        if (f->isSubentry()) {
+            f->setFile(table->item(n, COL_FILE)->data(Qt::UserRole + 1)
                       .toString());
         } else {
-            f.setFile(table->item(n, COL_FILE)->text());
+            f->setFile(table->item(n, COL_FILE)->text());
         }
 
         list.append(f);

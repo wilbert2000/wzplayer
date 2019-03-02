@@ -37,7 +37,7 @@ QString TActionItem::actionNameFromListWidgetItem(QListWidgetItem* item) {
     if (i >= 0) {
         name = name.mid(i + 1);
     }
-    if (name.right(1) == ")") {
+    if (name.endsWith(")")) {
         name = name.left(name.length() - 1);
     }
     return name;

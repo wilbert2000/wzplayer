@@ -469,7 +469,7 @@ void TApp::start() {
         if (!media_title.isEmpty()) {
             player->addForcedTitle(files_to_play[0], media_title);
         }
-        main_window->openFiles(files_to_play, current_file);
+        main_window->getPlaylist()->openFiles(files_to_play, current_file);
     }
 
     main_window->runActionsLater(actions, files_to_play.count() == 0);

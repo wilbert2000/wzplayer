@@ -34,8 +34,6 @@ class TAction;
 
 namespace Menu {
 
-typedef QList<TFavorite> TFavoriteList;
-
 class TFavorites : public Menu::TMenu {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
@@ -51,39 +49,33 @@ public:
     TAction* getEditAct() const { return editAct; }
     TAction* getAddAct() const { return addAct; }
 
-
-public slots:
-    void edit();
-    void addCurrentPlaying();
-
 protected:
-    virtual void enableActions();
-
-    virtual void save();
-    virtual void updateMenu();
-    virtual void populateMenu();
-    void delete_children();
-
-    // Mark current action in the menu
-    void markCurrent();
-
-protected slots:
-    void onTriggered(QAction* action);
+    virtual void enableActions() override;
 
 private:
     QString _filename;
     // Current or last file clicked
     QString current_file;
     // Last item selected in the jump dialog
-    int last_item;
 
     TAction* editAct;
     TAction* addAct;
 
-    TFavoriteList f_list;
-    QList<TFavorites*> child;
+    QList<TFavorite*> favList;
+    QList<TFavorites*> subFavorites;
 
     void load();
+    void save();
+    void deleteFavList();
+    void deleteSubFavorites();
+    void populateMenu();
+    void updateMenu();
+    void markCurrent();
+
+private slots:
+    void onTriggered(QAction* action);
+    void edit();
+    void addCurrentPlaying();
 }; // class TFavorites
 
 } // namespace Menu

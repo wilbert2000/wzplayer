@@ -383,12 +383,12 @@ void TPlayer::open(QString filename, bool loopImage) {
 
         if (fi.isDir()) {
             if (TWZFiles::directoryContainsDVD(filename)) {
-                WZDEBUG("directory contains a dvd");
+                WZDEBUG("Directory contains a dvd");
                 disc = TDiscName(filename, Settings::pref->useDVDNAV());
                 openDisc(disc);
                 return;
             }
-            WZERROR("file is a directory, use playlist to open it");
+            WZERROR("File is a directory, use playlist to open it");
             return;
         }
 

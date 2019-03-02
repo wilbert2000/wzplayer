@@ -50,11 +50,7 @@ public:
     explicit TPlaylist(QWidget* parent, TMainWindow* mw);
     virtual ~TPlaylist();
 
-    void openPlaylist(const QString& filename);
-    void playDirectory(const QString& dir);
-
     QString playingFile() const;
-    TPlaylistItem* findFilename(const QString& filename) const;
 
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
     TPlaylistItem* currentPlaylistItem() const;
@@ -62,7 +58,6 @@ public:
     bool hasPlayingItem() const;
     bool isLoading() const { return thread; }
 
-    void clear();
     void addFiles(const QStringList& files,
                   bool startPlay = false,
                   QTreeWidgetItem* target = 0,
@@ -76,6 +71,11 @@ public:
     void saveSettings();
 
 public slots:
+    void open(const QString &fileName, const QString& name = QString());
+    void openFiles(const QStringList& files, const QString& current = "");
+    void askOpenFile();
+    void askOpenDirectory();
+
     void stop();
 
     void editName();
@@ -102,8 +102,8 @@ signals:
     void playlistTitleChanged(QString title);
 
 protected:
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual void dropEvent(QDropEvent*);
+    virtual void dragEnterEvent(QDragEnterEvent*) override;
+    virtual void dropEvent(QDropEvent*) override;
 
 private:
     TMainWindow* main_window;
@@ -128,7 +128,6 @@ private:
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
 
-
     QString filename;
 
     TAddFilesThread* thread;
@@ -146,6 +145,10 @@ private:
     void createTree();
     void createActions();
 
+    void openPlaylist(const QString& filename);
+    void openDirectory(const QString& dir);
+
+    void clear();
     void addFilesStartThread();
     void startPlay();
     void playItem(TPlaylistItem* item, bool keepPaused = false);
@@ -168,7 +171,8 @@ private:
     bool saveM3u(const QString& filename, bool linkFolders);
 
 private slots:
-    void open();
+    void askOpenPlaylist();
+
     bool save();
     bool saveAs();
     void browseDir();
