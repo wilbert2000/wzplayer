@@ -28,8 +28,7 @@ public:
     explicit TPlaylistWidget(QWidget* parent);
     virtual ~TPlaylistWidget();
 
-    TPlaylistItem* playing_item;
-
+    TPlaylistItem* playingItem;
     void setPlayingItem(TPlaylistItem* item,
                         TPlaylistItemState state = PSTATE_STOPPED);
 
@@ -42,7 +41,7 @@ public:
     bool hasItems() const;
     bool hasSingleItem() const;
 
-    TPlaylistItem* currentPlaylistItem() const;
+    TPlaylistItem* plCurrentItem() const;
     TPlaylistItem* firstPlaylistItem() const;
     TPlaylistItem* lastPlaylistItem() const;
 
@@ -62,13 +61,9 @@ public:
     void clearPlayed();
     void clr();
 
-    bool modified() { return mModified; }
-    void setModified(QTreeWidgetItem* item,
-                     bool modified = true,
-                     bool recurse = false);
-    void clearModified() {
-        setModified(root(), false, true);
-    }
+    bool modified() const { return root()->modified(); }
+    void clearModified() { root()->setModified(false, true); }
+    void emitModifiedChanged();
 
     TPlaylistItem* validateItem(TPlaylistItem* item);
 
@@ -96,9 +91,8 @@ protected slots:
 private:
     int sortSection;
     Qt::SortOrder sortOrder;
-    bool mModified;
     QTimer* wordWrapTimer;
-    Gui::Action::Menu::TMenuExec* columnsMenu;
+    Action::Menu::TMenuExec* columnsMenu;
 
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;

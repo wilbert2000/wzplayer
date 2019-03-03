@@ -47,9 +47,8 @@
 #include <QTextCodec>
 #include <QMimeData>
 #include <QClipboard>
+#include <QTimer>
 
-
-//using namespace Settings;
 
 namespace Gui {
 
@@ -64,7 +63,7 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
     main_window(mw),
     thread(0),
     restartThread(false),
-    disable_enableActions(false),
+    disableEnableActions(0),
     reachedEndOfPlaylist(false) {
 
     setAcceptDrops(true);
@@ -341,10 +340,13 @@ void TPlaylist::onThreadFinished() {
         WZDEBUG("filename set to '" + filename + "'");
         setPlaylistTitle();
 
-        // Let the player have a go at a failed file name
-        if (root->childCount() == 1
-            && root->plChild(0)->state() == PSTATE_FAILED) {
-            root->plChild(0)->setState(PSTATE_LOADING);
+        // Let the player have a go at a failed file name like http://
+        if (root->childCount() == 1) {
+            TPlaylistItem* child = root->plChild(0);
+            if (child->state() == PSTATE_FAILED) {
+                WZDEBUG("Retrying '" + child->filename() + "'");
+                child->setState(PSTATE_LOADING);
+            }
         }
     }
 
@@ -433,7 +435,6 @@ void TPlaylist::addFilesDialog() {
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
-        playlistWidget->setModified(playlistWidget->currentItem());
         addFiles(files, false, playlistWidget->currentItem());
     }
 }
@@ -467,7 +468,6 @@ void TPlaylist::addUrls() {
 
     TMultilineInputDialog d(this);
     if (d.exec() == QDialog::Accepted && d.lines().count() > 0) {
-        playlistWidget->setModified(playlistWidget->currentItem());
         addFiles(d.lines(), false, playlistWidget->currentItem());
     }
 }
@@ -498,7 +498,7 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 void TPlaylist::play() {
     WZDEBUG("");
 
-    TPlaylistItem* item = playlistWidget->currentPlaylistItem();
+    TPlaylistItem* item = playlistWidget->plCurrentItem();
     if (item) {
         playItem(item);
     } else {
@@ -515,8 +515,8 @@ void TPlaylist::playOrPause() {
         player->play();
     } else if (reachedEndOfPlaylist) {
         playNext(true);
-    } else if (playlistWidget->playing_item) {
-        playItem(playlistWidget->playing_item);
+    } else if (playlistWidget->playingItem) {
+        playItem(playlistWidget->playingItem);
     } else {
         play();
     }
@@ -527,12 +527,12 @@ void TPlaylist::stop() {
 
     abortThread();
     player->stop();
-    TPlaylistItem* i = playlistWidget->playing_item;
-    if (i) {
-        if (i->state() != PSTATE_STOPPED && i->state() != PSTATE_FAILED) {
-            i->setState(PSTATE_STOPPED);
+    TPlaylistItem* item = playlistWidget->playingItem;
+    if (item) {
+        if (item->state() != PSTATE_STOPPED && item->state() != PSTATE_FAILED) {
+            item->setState(PSTATE_STOPPED);
         }
-        playlistWidget->setCurrentItem(i);
+        playlistWidget->setCurrentItem(item);
     }
 }
 
@@ -647,17 +647,17 @@ void TPlaylist::playNext(bool loop_playlist) {
 void TPlaylist::playPrev() {
     WZDEBUG("");
 
-    TPlaylistItem* i = playlistWidget->playing_item;
-    if (i && shuffleAct->isChecked()) {
-        i = playlistWidget->findPreviousPlayedTime(i);
+    TPlaylistItem* item = playlistWidget->playingItem;
+    if (item && shuffleAct->isChecked()) {
+        item = playlistWidget->findPreviousPlayedTime(item);
     } else {
-        i = playlistWidget->getPreviousPlaylistWidgetItem();
+        item = playlistWidget->getPreviousPlaylistWidgetItem();
     }
-    if (i == 0) {
-        i = playlistWidget->lastPlaylistItem();
+    if (item == 0) {
+        item = playlistWidget->lastPlaylistItem();
     }
-    if (i) {
-        playItem(i, player->mdat.image);
+    if (item) {
+        playItem(item, player->mdat.image);
     }
 }
 
@@ -673,8 +673,8 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
-TPlaylistItem* TPlaylist::currentPlaylistItem() const {
-    return playlistWidget->currentPlaylistItem();
+TPlaylistItem* TPlaylist::plCurrentItem() const {
+    return playlistWidget->plCurrentItem();
 }
 
 bool TPlaylist::hasItems() const {
@@ -682,7 +682,7 @@ bool TPlaylist::hasItems() const {
 }
 
 bool TPlaylist::hasPlayingItem() const {
-    return playlistWidget->playing_item;
+    return playlistWidget->playingItem;
 }
 
 void TPlaylist::removeSelected(bool deleteFromDisk) {
@@ -697,12 +697,12 @@ void TPlaylist::removeSelected(bool deleteFromDisk) {
         return;
     }
 
-    disable_enableActions = true;
+    disableEnableActions++;
     playlistWidget->removeSelected(deleteFromDisk);
     if (filename.isEmpty() && !playlistWidget->hasItems()) {
         playlistWidget->clearModified();
     }
-    disable_enableActions = false;
+    disableEnableActions--;
     enableActions();
 }
 
@@ -716,25 +716,24 @@ void TPlaylist::removeAll() {
 
 void TPlaylist::refresh() {
 
+
     if (!filename.isEmpty() && maybeSave()) {
-        QString fn = filename;
         QString current;
         if (player->statePOP()) {
             current = playingFile();
             if (!current.isEmpty()) {
                 player->saveRestartState();
-                player->stop();
             }
         }
         clear();
-        addFiles(QStringList() << fn, !current.isEmpty(), 0, current);
+        addFiles(QStringList() << filename, !current.isEmpty(), 0, current);
     }
 }
 
 void TPlaylist::browseDir() {
 
     QString fn;
-    TPlaylistItem* i = playlistWidget->currentPlaylistItem();
+    TPlaylistItem* i = playlistWidget->plCurrentItem();
     if (i) {
         fn = i->filename();
     } else {
@@ -801,7 +800,7 @@ void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
 
 void TPlaylist::enableActions() {
 
-    if (disable_enableActions) {
+    if (disableEnableActions) {
         return;
     }
     WZDEBUG("state " + player->stateToString());
@@ -822,17 +821,17 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setTextAndTip(text + "...");
         playOrPauseAct->setIcon(Images::icon("loading"));
     } else if (s == Player::STATE_PLAYING) {
-        TPlaylistItem* playingItem = playlistWidget->playing_item;
-        disable_enableActions = true;
+        TPlaylistItem* playingItem = playlistWidget->playingItem;
         if (playingItem == 0) {
             playingItem = playlistWidget->findFilename(player->mdat.filename);
         }
         if (playingItem && playingItem->state() != PSTATE_PLAYING) {
+            disableEnableActions++;
             playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
+            disableEnableActions--;
         }
         playOrPauseAct->setTextAndTip(tr("&Pause"));
         playOrPauseAct->setIcon(Images::icon("pause"));
-        disable_enableActions = false;
     } else {
         playOrPauseAct->setTextAndTip(tr("&Play"));
         playOrPauseAct->setIcon(Images::icon("play"));
@@ -845,7 +844,7 @@ void TPlaylist::enableActions() {
     saveAct->setEnabled(e);
     saveAsAct->setEnabled(e);
     refreshAct->setEnabled(thread == 0 && !filename.isEmpty());
-    browseDirAct->setEnabled(playlistWidget->currentPlaylistItem());
+    browseDirAct->setEnabled(playlistWidget->plCurrentItem());
 
     stopAct->setEnabled(thread
                         || s == Player::STATE_PLAYING
@@ -878,7 +877,7 @@ void TPlaylist::enableActions() {
 void TPlaylist::onPlayerError() {
 
     if (player->state() != Player::STATE_STOPPING) {
-        TPlaylistItem* item = playlistWidget->playing_item;
+        TPlaylistItem* item = playlistWidget->playingItem;
         if (item && item->filename() == player->mdat.filename) {
             item->setState(PSTATE_FAILED);
             playlistWidget->setCurrentItem(item);
@@ -906,7 +905,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         }
     } else if (filename == current_filename) {
         // Handle current item started playing
-        TPlaylistItem* item = playlistWidget->playing_item;
+        TPlaylistItem* item = playlistWidget->playingItem;
         if (item == 0) {
             return;
         }
@@ -916,8 +915,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (!item->edited()) {
             QString name = md->name();
             if (name != item->baseName()) {
-                WZDEBUG("Updating name from '" + item->baseName() + "' to '"
-                        + name + "'");
+                WZDEBUG(QString("Updating name from '%1' to '%2'")
+                        .arg(item->baseName()).arg(name));
                 item->setName(name, item->extension(), false);
                 modified = true;
             }
@@ -929,16 +928,15 @@ void TPlaylist::onNewMediaStartedPlaying() {
                 && qAbs(md->duration - item->duration()) > 1) {
                 modified = true;
             }
-            WZDEBUG("Updating duration from "
-                    + QString::number(item->duration()) + " to "
-                    + QString::number(md->duration));
+            WZDEBUG(QString("Updating duration from %1 to %2")
+                    .arg(item->duration()).arg(md->duration));
             item->setDuration(md->duration);
         }
 
         if (modified) {
-            playlistWidget->setModified(item);
+            item->setModified();
         } else {
-            WZDEBUG("Item considered uptodate");
+            WZDEBUG("Considered item uptodate");
         }
 
         // Pause a single image
@@ -1058,12 +1056,11 @@ void TPlaylist::paste() {
     QStringList files = QApplication::clipboard()->text()
                         .split("\n",  QString::SkipEmptyParts);
     if (files.count()) {
-        QTreeWidgetItem* parent = playlistWidget->currentItem();
-        if (parent && parent->childCount() == 0) {
-            parent = parent->parent();
+        TPlaylistItem* parent = playlistWidget->plCurrentItem();
+        if (parent && !parent->isFolder()) {
+            parent = parent->plParent();
         }
-        playlistWidget->setModified(parent);
-        addFiles(files, false, playlistWidget->currentItem(), "", true);
+        addFiles(files, false, parent, "", true);
     }
 }
 
@@ -1102,9 +1099,9 @@ void TPlaylist::onModifiedChanged() {
 void TPlaylist::editName() {
     WZDEBUG("");
 
-    TPlaylistItem* current = playlistWidget->currentPlaylistItem();
+    TPlaylistItem* current = playlistWidget->plCurrentItem();
     if (current == 0) {
-        WZDEBUG("Skipping edit. No current playlist item.");
+        WZWARN("Skipping edit. No current playlist item.");
         return;
     }
 
@@ -1118,45 +1115,66 @@ void TPlaylist::editName() {
 void TPlaylist::newFolder() {
     WZDEBUG("");
 
-    TPlaylistItem* parent = playlistWidget->currentPlaylistItem();
+    TPlaylistItem* parent = playlistWidget->plCurrentItem();
     if (parent == 0) {
         parent = playlistWidget->root();
     } else if (!parent->isFolder()) {
         parent = parent->plParent();
     }
 
-    QString baseName = tr("New folder");
-    QString path = parent->playlistPathPlusSep();
-    QDir dir(path);
+    QString path = parent->filename();
+    if (path.isEmpty()) {
+        if (QMessageBox::question(this, tr("Save playlist?"),
+                tr("To create folders the playlist needs to be saved first."
+                   " Do you want to save it now?"),
+                QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+            if (saveAs()) {
+                QTimer::singleShot(0, this, &TPlaylist::newFolder);
+            }
+        }
+        return;
+    }
 
+    QFileInfo fi(path);
+    if (!fi.exists()) {
+        QMessageBox::information(this, tr("Information"),
+            tr("Failed to create a new folder. Could not find '%1'").arg(path));
+        return;
+    }
+
+    if (!fi.isDir()) {
+        // TODO: confirm for non wzplaylist?
+        path = fi.absolutePath();
+    }
+
+    QString baseName = tr("New folder");
+    QDir dir(path);
     int i = 2;
     QString name = baseName;
     while (dir.exists(name)) {
         name = baseName + " " + QString::number(i++);
     }
 
-    QString fn = path + name;
-
-    if (dir.mkdir(name)) {
-        TPlaylistItem* i = new TPlaylistItem(parent,
-                                             fn,
-                                             name,
-                                             0,
-                                             false);
-        i->setModified();
-        playlistWidget->setCurrentItem(i);
-        editName();
-    } else {
-        WZERROR("Failed to create directory '" + fn + "'");
-        QMessageBox::warning (this,
-            tr("Error"),
-            tr("Failed to create folder '%1'").arg(fn));
+    if (!dir.mkdir(name)) {
+        QString error = strerror(errno);
+        WZERROR(QString("Failed to create directory '%1' in '%2'. %3")
+                .arg(name).arg(path).arg(error));
+        QMessageBox::warning (this, tr("Error"),
+                              tr("Failed to create folder '%1' in '%2'. %3")
+                              .arg(name).arg(path).arg(error));
+        return;
     }
+
+    TPlaylistItem* item = new TPlaylistItem(parent, path + "/" + baseName,
+                                            baseName, 0, false);
+    item->setModified();
+    playlistWidget->setCurrentItem(item);
+    editName();
 }
 
 void TPlaylist::findPlayingItem() {
 
-    TPlaylistItem* i = playlistWidget->playing_item;
+    TPlaylistItem* i = playlistWidget->playingItem;
     if (i) {
         if (!isVisible()) {
             // parent is playlistdock
@@ -1206,17 +1224,6 @@ void TPlaylist::dropEvent(QDropEvent *e) {
                         e->pos()
                         - playlistWidget->pos()
                         - playlistWidget->viewport()->pos());
-
-            if (target) {
-                QTreeWidgetItem* parent;
-                if (target->childCount()) {
-                    parent = target;
-                } else {
-                    parent = target->parent();
-                }
-                playlistWidget->setModified(parent);
-            }
-
             addFiles(files, false, target);
         }
 
@@ -1490,7 +1497,7 @@ bool TPlaylist::save() {
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
         wzplaylist = true;
     } else if (player->mdat.disc.valid) {
-        // Save as adds playlist extension
+        // saveAs() force adds the playlist extension
         if (!extensions.isPlaylist(fi)) {
             return saveAs();
         }
@@ -1526,9 +1533,10 @@ bool TPlaylist::saveAs() {
         return false;
     }
 
-    // If filename has no extension, add it
+    // If filename has no extension, force add it. save() depends om it
+    // when saving a playlist for discs.
     QFileInfo fi(s);
-    if (fi.suffix().isEmpty() || !extensions.isPlaylist(fi)) {
+    if (fi.suffix().toLower() != "m3u8") {
         fi.setFile(s + ".m3u8");
     }
 
@@ -1545,52 +1553,53 @@ bool TPlaylist::saveAs() {
     }
 
     filename = fi.absoluteFilePath();
+    playlistWidget->root()->setFilename(filename);
     return save();
 }
 
 bool TPlaylist::maybeSave() {
 
     if (!playlistWidget->modified()) {
-        WZDEBUG("playlist not modified");
+        WZDEBUG("Playlist not modified");
         return true;
     }
 
     if (filename.isEmpty()) {
-        WZDEBUG("discarding changes to unnamed playlist");
+        WZDEBUG("Discarding unnamed playlist");
         return true;
     }
 
-    if (QFileInfo(filename).fileName() == TConfig::WZPLAYLIST) {
-        WZDEBUG("auto saving wzplaylist.m3u8");
+    QFileInfo fi(filename);
+    if (fi.fileName().compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
+            == 0) {
         return save();
     }
 
-    if (!playlistWidget->root()->isPlaylist()) {
-        // Directorie
+    if (fi.isDir()) {
         if (Settings::pref->useDirectoriePlaylists) {
-            WZDEBUG("auto saving directorie");
             return save();
         }
-        WZDEBUG("discarding changes to directorie playlist");
+        WZDEBUG("Discarding changes. Saving directorie playlists is disabled.");
         return true;
+
     }
 
     int res = QMessageBox::question(this, tr("Playlist modified"),
-                                    tr("The playlist has been modified, do you"
-                                       " want to save the changes to \"%1\"?")
-                                    .arg(filename),
-                                    QMessageBox::Yes, QMessageBox::No,
-                                    QMessageBox::Cancel);
+        tr("The playlist has been modified, do you want to save the changes to"
+           " \"%1\"?").arg(filename),
+        QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
 
     switch (res) {
         case QMessageBox::No:
             playlistWidget->clearModified();
-            WZINFO("selected no save");
+            WZINFO("Selected no save");
             return true;
         case QMessageBox::Cancel:
-            WZINFO("selected canceling save");
+            WZINFO("Selected cancel save");
             return false;
-        default: return save();
+        default:
+            WZINFO("Selected save");
+            return save();
     }
 }
 

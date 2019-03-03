@@ -139,7 +139,7 @@ TAddFilesThread::~TAddFilesThread() {
 void TAddFilesThread::run() {
 
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
-    WZDEBUG("running in '" + playlistPath + "'");
+    WZDEBUG("Running in '" + playlistPath + "'");
 
     root = new TPlaylistItem(0, playlistPath, "", 0);
     root->setFlags(ROOT_FLAGS);
@@ -154,7 +154,7 @@ void TAddFilesThread::run() {
         root->setFilename("");
     }
 
-    WZDEBUG(QString("exiting. stopped %1 aborted %2")
+    WZDEBUG(QString("Exiting. Stopped %1, aborted %2")
             .arg(stopRequested).arg(abortRequested));
 }
 
@@ -579,40 +579,40 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
     }
 
     QFileInfo fi(playlistPath, filename);
-    if (fi.exists()) {
-        //WZTRACE("found '" + fi.absoluteFilePath() + "'");
-    } else if (fi.fileName().compare(TConfig::WZPLAYLIST,
-                                     caseSensitiveFileNames) == 0) {
-        // Non-existing wzplaylist
-        parent->setModified();
+    if (!fi.exists()) {
+        if (fi.fileName().compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
+                == 0) {
+            // Non-existing wzplaylist
+            parent->setModified();
 
-        // Try the directory
-        if (fi.dir().exists()) {
-            QString dir = fi.dir().absolutePath();
-            if (dir.compare(playlistPath, caseSensitiveFileNames) == 0) {
-                WZERROR("skipping self referencing folder '" + dir
-                        + "' in playlist '" + filename + "'");
+            // Try the directory
+            QDir dir = fi.dir();
+            if (dir.exists()) {
+                if (dir == QDir(playlistPath)) {
+                    WZERROR(QString("Skipping self referencing folder in"
+                                    " playlist '%1'").arg(filename));
+                    return 0;
+                }
+
+                fi.setFile(dir.absolutePath());
+                name = "";
+                protectName = false;
+                WZINFO(QString("'%1' no longer exists. Adding directory '%2'"
+                               " instead")
+                       .arg(filename).arg(fi.absoluteFilePath()));
+            } else {
+                WZINFO("Ignoring no longer existing playlist '" + filename + "'");
                 return 0;
             }
-
-            fi.setFile(dir);
-            name = "";
-            protectName = false;
-            WZINFO("'" + filename + "' no longer exists. Adding directory '"
-                   + fi.absoluteFilePath() + "' instead");
         } else {
-            WZINFO("ignoring no longer existing playlist '" + filename + "'");
-            return 0;
+            return addItemNotFound(parent, filename, name, protectName);
         }
-    } else {
-        return addItemNotFound(parent, filename, name, protectName);
     }
 
     // Check against blacklist
     if (useBlackList && nameBlackListed(fi.absoluteFilePath())) {
-        if (parent->isWZPlaylist()) {
-            parent->setModified();
-        }
+        // An item in the playlist matches the blacklist. Signal we dropped it.
+        parent->setModified();
         return 0;
     }
 
@@ -623,12 +623,14 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
         item = addDirectory(parent, fi, name, protectName);
     } else {
         if (name.isEmpty()) {
+            // Prefer using the real base name over TPlaylistItem's use of
+            // TName::nameForURL(filename) for an empty base name.
             name = fi.completeBaseName();
         }
         if (extensions.isPlaylist(fi)) {
             item = openPlaylist(parent, fi, name, protectName);
         } else {
-            // For Windows shortcuts, follow the link...
+            // For Windows shortcuts, follow the link
             if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
                 fi.setFile(fi.symLinkTarget());
             }
@@ -648,21 +650,22 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
 
 void TAddFilesThread::addFiles() {
 
-    foreach(const QString& filename, files) {
+    for(int i = 0; i < files.count(); i++) {
         if (stopRequested) {
             break;
         }
+
+        QString filename = files.at(i);
         if (filename.isEmpty()) {
             continue;
         }
-        TPlaylistItem* result = addItem(root,
-                                        filename,
-                                        "" /* name */,
-                                        0 /* duartion */,
-                                        false /* use black list */);
-        if (result) {
-            result->setSelected(true);
-        }
+
+        // Note: explicitly added items are not blacklisted
+        addItem(root,
+                filename,
+                "" /* name */,
+                0 /* duartion */,
+                false /* use blacklist */);
     }
 }
 

@@ -50,10 +50,9 @@ public:
     explicit TPlaylist(QWidget* parent, TMainWindow* mw);
     virtual ~TPlaylist();
 
+    TPlaylistItem* plCurrentItem() const;
     QString playingFile() const;
-
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
-    TPlaylistItem* currentPlaylistItem() const;
     bool hasItems() const;
     bool hasPlayingItem() const;
     bool isLoading() const { return thread; }
@@ -138,7 +137,7 @@ private:
     bool addFilesSearchItems;
     bool restartThread;
 
-    bool disable_enableActions;
+    int disableEnableActions;
     bool reachedEndOfPlaylist;
 
 

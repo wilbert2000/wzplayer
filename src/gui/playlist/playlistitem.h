@@ -70,6 +70,7 @@ public:
     QString filename() const { return mFilename; }
     void setFilename(const QString& fileName);
     void setFilename(const QString& fileName, const QString& baseName);
+    void updateFilename(const QString& source, const QString& dest);
 
     QString fname() const;
     QString path() const;
@@ -122,15 +123,16 @@ public:
     void setSzHint(int level);
     int getLevel() const;
 
-    TPlaylistWidget* plTreeWidget() const;
     TPlaylistItem* plParent() const {
         return static_cast<TPlaylistItem*>(parent());
     }
     TPlaylistItem* plChild(int idx) const {
         return static_cast<TPlaylistItem*>(child(idx));
     }
-
-    void renameDir(const QString& dir, const QString& newDir);
+    TPlaylistWidget* plTreeWidget() const;
+    TPlaylistItem* plTakeChild(int idx) {
+        return static_cast<TPlaylistItem*>(takeChild(idx));
+    }
 
     virtual TPlaylistItem* clone() const override;
     virtual bool operator<(const QTreeWidgetItem& other) const override;
@@ -143,9 +145,16 @@ private:
     double mDuration;
     int mOrder;
 
+    // Anything that can contain something else, like a directory, a playlist,
+    // a disc, the root node.
     bool mFolder;
+
+    // A local file or link to a local file with the extensio m3u8 or m3u
     bool mPlaylist;
+
+    // A playlist with the name wzplayer.m3u8
     bool mWZPlaylist;
+
     bool mSymLink;
     QString mTarget;
 
@@ -160,9 +169,9 @@ private:
     void setStateIcon();
 
     QString editName() const;
+    QString stateString();
 
-    static QString playlistItemState(TPlaylistItemState state);
-
+    void renameDir(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);
     bool rename(const QString& newName);
 

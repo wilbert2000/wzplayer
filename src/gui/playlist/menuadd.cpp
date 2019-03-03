@@ -31,7 +31,7 @@ void TAddRemovedMenu::onAboutToShow() {
 
     clear();
     int c = 0;
-    item = playlistWidget->currentPlaylistItem();
+    item = playlistWidget->plCurrentItem();
     if (item) {
         if (!item->isFolder()) {
             item = item->plParent();
@@ -59,10 +59,8 @@ void TAddRemovedMenu::onTriggered(QAction* action) {
     if (!s.isEmpty()) {
         // Check item still valid
         item = playlistWidget->validateItem(item);
-        if (!item) {
-            WZWARN("Owner of blacklist no longer existing");
-        } else if (item->whitelist(s)) {
-            playlistWidget->setModified(item);
+        if (item && item->whitelist(s)) {
+            item->setModified();
             emit addRemovedItem(s);
         }
     }
