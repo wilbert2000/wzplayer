@@ -105,7 +105,8 @@ void TPlaylist::createTree() {
     playlistWidget->setObjectName("playlist_tree");
 
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
-            this, &TPlaylist::onModifiedChanged);
+            this, &TPlaylist::onModifiedChanged,
+            Qt::QueuedConnection);
     connect(playlistWidget, &TPlaylistWidget::itemActivated,
              this, &TPlaylist::onItemActivated);
     connect(playlistWidget, &TPlaylistWidget::currentItemChanged,
