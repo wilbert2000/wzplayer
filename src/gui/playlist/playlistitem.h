@@ -40,11 +40,6 @@ public:
     // on level 2, being ROOT_NODE_LEVEL + 1.
     static const int ROOT_NODE_LEVEL;
 
-    // Handle resizing name column
-    // Updated by TPlaylistWidget event handlers.
-    static int gNameColumnWidth;
-    // Set by TPlaylistWidget constructor.
-    static QFontMetrics gNameFontMetrics;
     // Get size for name column
     static QSize sizeColumnName(int width,
                                 const QString& text,

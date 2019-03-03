@@ -41,10 +41,6 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 // icons indenting the item. With root decoration on, toplevel items appear on
 // level 2, being ROOT_NODE_LEVEL + 1.
 const int TPlaylistItem::ROOT_NODE_LEVEL = 1;
-// Width of name column. Updated by TPlaylistWidget event handlers.
-int TPlaylistItem::gNameColumnWidth = 0;
-// Set by TPlaylistWidget constructor
-QFontMetrics TPlaylistItem::gNameFontMetrics = QFontMetrics(QFont());
 
 
 static int timeStamper = 0;
@@ -666,14 +662,20 @@ QSize TPlaylistItem::sizeColumnName(int width,
 
 void TPlaylistItem::setSzHint(int level) {
 
-    if (parent()) {
-        setSizeHint(COL_NAME,
-                    sizeColumnName(gNameColumnWidth,
-                                   text(COL_NAME),
-                                   gNameFontMetrics,
-                                   iconProvider.iconSize,
-                                   level));
+    int width;
+    if (treeWidget()) {
+        width = treeWidget()->header()->sectionSize(COL_NAME);
+    } else {
+        width = 512;
     }
+    setSizeHint(COL_NAME,
+                sizeColumnName(width,
+                               text(COL_NAME),
+                               QFontMetrics(treeWidget()
+                                           ? treeWidget()->font()
+                                           : qApp->font()),
+                               iconProvider.iconSize,
+                               level));
 }
 
 bool TPlaylistItem::operator <(const QTreeWidgetItem& other) const {

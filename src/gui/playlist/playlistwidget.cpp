@@ -117,7 +117,6 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     // Wordwrap
     setIconSize(iconProvider.iconSize);
-    TPlaylistItem::gNameFontMetrics = fontMetrics();
     setWordWrap(true);
     setUniformRowHeights(false);
     setItemDelegate(new TWordWrapItemDelegate(this));
@@ -1073,15 +1072,12 @@ void TPlaylistWidget::resizeRows(TPlaylistItem* item, int level) {
 
 void TPlaylistWidget::resizeRowsEx() {
 
-    TPlaylistItem::gNameColumnWidth =
-            header()->sectionSize(TPlaylistItem::COL_NAME);
     resizeRows(root(), TPlaylistItem::ROOT_NODE_LEVEL);
 }
 
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
 
     if (logicalIndex == TPlaylistItem::COL_NAME) {
-        TPlaylistItem::gNameColumnWidth = newSize;
         wordWrapTimer->start();
     }
 }
@@ -1090,8 +1086,6 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
     WZDEBUG("'" + w->text(TPlaylistItem::COL_NAME) + "'");
 
     if (!wordWrapTimer->isActive()) {
-        TPlaylistItem::gNameColumnWidth =
-                header()->sectionSize(TPlaylistItem::COL_NAME);
         TPlaylistItem* item = static_cast<TPlaylistItem*>(w);
         resizeRows(item, item->getLevel());
     }
