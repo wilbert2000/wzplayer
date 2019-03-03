@@ -28,10 +28,10 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     //urlIcon = Images::icon("type_url", iconSize.width());
 
     iconSize = folderIcon.actualSize(QSize(22, 22));
-    okIcon = Images::icon("ok", iconSize.width());
-    loadingIcon = Images::icon("loading", iconSize.width());
-    playIcon = Images::icon("play", iconSize.width());
-    failedIcon = Images::icon("failed", iconSize.width());
+    iconPlayed = Images::icon("played", iconSize.width());
+    iconLoading = Images::icon("loading", iconSize.width());
+    iconPlaying = Images::icon("play", iconSize.width());
+    iconFailed = Images::icon("failed", iconSize.width());
 }
 
 /* No longer used

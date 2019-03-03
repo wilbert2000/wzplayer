@@ -42,7 +42,8 @@
         <file>default-theme/mouse.png</file>
         <file>default-theme/mute.png</file>
         <file>default-theme/loading.png</file>
-        <file>default-theme/ok.png</file>
+        <file>default-theme/stopping.png</file>
+        <file>default-theme/played.png</file>
         <file>default-theme/failed.png</file>
         <file>default-theme/open.png</file>
         <file>default-theme/open_directory.png</file>

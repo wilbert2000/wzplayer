@@ -190,7 +190,7 @@ private slots:
 
     void enableActions();
 
-    void onItemActivated(QTreeWidgetItem* item, int);
+    void onItemActivated(QTreeWidgetItem* i, int);
     void onPlayerError();
     void onModifiedChanged();
     void onNewMediaStartedPlaying();

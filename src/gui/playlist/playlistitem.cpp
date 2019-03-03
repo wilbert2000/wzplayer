@@ -480,19 +480,19 @@ void TPlaylistItem::setStateIcon() {
     switch (mState) {
         case PSTATE_STOPPED:
             if (mPlayed) {
-                setIcon(COL_NAME, iconProvider.okIcon);
+                setIcon(COL_NAME, iconProvider.iconPlayed);
             } else {
                 setIcon(COL_NAME, itemIcon);
             }
             break;
         case PSTATE_LOADING:
-            setIcon(COL_NAME, iconProvider.loadingIcon);
+            setIcon(COL_NAME, iconProvider.iconLoading);
             break;
         case PSTATE_PLAYING:
-            setIcon(COL_NAME, iconProvider.playIcon);
+            setIcon(COL_NAME, iconProvider.iconPlaying);
             break;
         case PSTATE_FAILED:
-            setIcon(COL_NAME, iconProvider.failedIcon);
+            setIcon(COL_NAME, iconProvider.iconFailed);
             break;
     }
 }
@@ -515,7 +515,7 @@ void TPlaylistItem::setPlayed(bool played) {
     mPlayed = played;
     if (mState == PSTATE_STOPPED) {
         if (mPlayed) {
-            setIcon(COL_NAME, iconProvider.okIcon);
+            setIcon(COL_NAME, iconProvider.iconPlayed);
         } else {
             setIcon(COL_NAME, itemIcon);
         }

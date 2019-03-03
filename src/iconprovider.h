@@ -23,10 +23,10 @@ public:
     //QIcon driveDVDIcon;
     //QIcon urlIcon;
 
-    QIcon okIcon;
-    QIcon loadingIcon;
-    QIcon playIcon;
-    QIcon failedIcon;
+    QIcon iconPlayed;
+    QIcon iconLoading;
+    QIcon iconPlaying;
+    QIcon iconFailed;
 
     //QIcon icon(const QFileInfo& info) const;
     //QIcon iconForFile(const QString& filename) const;

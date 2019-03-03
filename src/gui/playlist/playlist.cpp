@@ -717,7 +717,6 @@ void TPlaylist::removeAll() {
 
 void TPlaylist::refresh() {
 
-
     if (!filename.isEmpty() && maybeSave()) {
         QString current;
         if (player->statePOP()) {
@@ -758,8 +757,8 @@ void TPlaylist::browseDir() {
 
     if (!QDesktopServices::openUrl(url)) {
         QMessageBox::warning(this, tr("Open URL failed"),
-            tr("Failed to open URL '%1'").arg(url.toString(QUrl::None)),
-            QMessageBox::Ok);
+                             tr("Failed to open URL '%1'")
+                             .arg(url.toString(QUrl::None)));
     }
 }
 
@@ -790,12 +789,12 @@ void TPlaylist::openInNewWindow() {
     }
 }
 
-void TPlaylist::onItemActivated(QTreeWidgetItem* item, int) {
+void TPlaylist::onItemActivated(QTreeWidgetItem* i, int) {
     WZDEBUG("");
 
-    TPlaylistItem* i = static_cast<TPlaylistItem*>(item);
-    if (i && !i->isFolder()) {
-        playItem(i);
+    TPlaylistItem* item = static_cast<TPlaylistItem*>(i);
+    if (item && !item->isFolder()) {
+        playItem(item);
     }
 }
 
@@ -815,12 +814,16 @@ void TPlaylist::enableActions() {
     if (!enable) {
         QString text;
         if (thread) {
-            text = tr("loading");
+            text = tr("Loading");
         } else {
             text = player->stateToString();
         }
-        playOrPauseAct->setTextAndTip(text + "...");
-        playOrPauseAct->setIcon(Images::icon("loading"));
+        playOrPauseAct->setTextAndTip(tr("%1...").arg(text));
+        if (s == Player::STATE_STOPPING) {
+            playOrPauseAct->setIcon(Images::icon("stopping"));
+        } else {
+            playOrPauseAct->setIcon(Images::icon("loading"));
+        }
     } else if (s == Player::STATE_PLAYING) {
         TPlaylistItem* playingItem = playlistWidget->playingItem;
         if (playingItem == 0) {
@@ -834,6 +837,7 @@ void TPlaylist::enableActions() {
         playOrPauseAct->setTextAndTip(tr("&Pause"));
         playOrPauseAct->setIcon(Images::icon("pause"));
     } else {
+        // STATE_PAUSED
         playOrPauseAct->setTextAndTip(tr("&Play"));
         playOrPauseAct->setIcon(Images::icon("play"));
     }
@@ -844,7 +848,7 @@ void TPlaylist::enableActions() {
     openAct->setEnabled(thread == 0);
     saveAct->setEnabled(e);
     saveAsAct->setEnabled(e);
-    refreshAct->setEnabled(thread == 0 && !filename.isEmpty());
+    refreshAct->setEnabled(!filename.isEmpty());
     browseDirAct->setEnabled(playlistWidget->plCurrentItem());
 
     stopAct->setEnabled(thread
