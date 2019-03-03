@@ -72,8 +72,8 @@ public:
 public slots:
     void open(const QString &fileName, const QString& name = QString());
     void openFiles(const QStringList& files, const QString& current = "");
-    void askOpenFile();
-    void askOpenDirectory();
+    void openFileDialog();
+    void openDirectoryDialog();
 
     void stop();
 

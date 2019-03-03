@@ -1267,7 +1267,7 @@ void TPlaylist::open(const QString &fileName, const QString& name) {
     WZDEBUG("done");
 }
 
-void TPlaylist::askOpenFile() {
+void TPlaylist::openFileDialog() {
     WZDEBUG("");
 
     QString s = TFileDialog::getOpenFileName(
@@ -1314,7 +1314,7 @@ void TPlaylist::openDirectory(const QString& dir) {
     }
 }
 
-void TPlaylist::askOpenDirectory() {
+void TPlaylist::openDirectoryDialog() {
     WZDEBUG("");
 
     if (maybeSave()) {

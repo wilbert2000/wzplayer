@@ -106,14 +106,14 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
                      Qt::CTRL | Qt::Key_F);
     addAction(a);
     connect(a, &TAction::triggered,
-            mw->getPlaylist(), &Playlist::TPlaylist::askOpenFile);
+            mw->getPlaylist(), &Playlist::TPlaylist::openFileDialog);
 
     // Open dir
     a = new TAction(mw, "open_directory", tr("Open directory..."), "",
                     QKeySequence("Ctrl+D"));
     addAction(a);
     connect(a, &TAction::triggered,
-            mw->getPlaylist(), &Playlist::TPlaylist::askOpenDirectory);
+            mw->getPlaylist(), &Playlist::TPlaylist::openDirectoryDialog);
 
     // Disc submenu
     addMenu(new TMenuDisc(mw));
