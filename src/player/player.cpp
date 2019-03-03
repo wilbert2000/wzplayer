@@ -232,15 +232,14 @@ void TPlayer::onReceivedMessage(const QString& s) {
 
 void TPlayer::saveMediaSettings() {
 
-    if (!Settings::pref->remember_media_settings) {
-        WZDEBUG("save settings per file is disabled");
-        return;
-    }
     if (mdat.filename.isEmpty()) {
-        WZDEBUG("nothing to save");
         return;
     }
-    WZINFO("saving settings for '" + mdat.filename + "'");
+    if (!Settings::pref->remember_media_settings) {
+        WZDEBUG("Save settings per file is disabled");
+        return;
+    }
+    WZINFO("Saving settings for '" + mdat.filename + "'");
     Gui::msg(tr("Saving settings for %1").arg(mdat.filename), 0);
 
     if (mdat.selected_type == TMediaData::TYPE_FILE) {

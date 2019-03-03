@@ -1352,7 +1352,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistItem* folder,
                               QTextStream& stream,
                               bool linkFolders,
                               bool& savedMetaData) {
-    WZDEBUG("saving '" + folder->filename() + "'");
+    WZDEBUG("Saving '" + folder->filename() + "'");
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
@@ -1365,7 +1365,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistItem* folder,
                     result = false;
                 }
             } else {
-                WZINFO("playlist '" + filename + "' not modified");
+                WZINFO("Playlist '" + filename + "' not modified");
             }
         } else if (i->isFolder()) {
             if (linkFolders) {
@@ -1376,13 +1376,13 @@ bool TPlaylist::saveM3uFolder(TPlaylistItem* folder,
                         result = false;
                     }
                 } else {
-                    WZINFO("folder not modified '" + filename + "'");
+                    WZINFO("Folder '" + filename + "' not modified");
                 }
             } else {
                 // Note: savedMetaData destroyed as dummy here.
                 // It is only used for WZPlaylists.
                 if (saveM3uFolder(i, path, stream, linkFolders, savedMetaData)) {
-                    WZINFO("succesfully saved '" + filename + "'");
+                    WZINFO("Succesfully saved '" + filename + "'");
                 } else {
                     result = false;
                 }

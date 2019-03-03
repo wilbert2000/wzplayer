@@ -139,6 +139,8 @@ public:
 
 
 private:
+    static QString stateString(TPlaylistItemState state);
+
     QString mFilename;
     QString mBaseName;
     QString mExt;
@@ -169,7 +171,6 @@ private:
     void setStateIcon();
 
     QString editName() const;
-    QString stateString();
 
     void renameDir(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);

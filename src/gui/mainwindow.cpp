@@ -1463,7 +1463,7 @@ void TMainWindow::closeWindow() {
 }
 
 void TMainWindow::sendEnableActions() {
-    WZDEBUG("state " + player->stateToString());
+    WZDEBUG("State " + player->stateToString());
 
     timeslider_action->enable(player->statePOP());
     emit enableActions();
@@ -1793,7 +1793,6 @@ void TMainWindow::exitFullscreen() {
 }
 
 void TMainWindow::setFullscreen(bool b) {
-    WZDEBUG(QString::number(b));
 
     if (b == pref->fullscreen) {
         return;
@@ -2269,7 +2268,6 @@ void TMainWindow::setStayOnTop(bool b) {
 
     bool stay_on_top = windowFlags() & Qt::WindowStaysOnTopHint;
     if (b == stay_on_top) {
-        WZDEBUG(QString("already set to %1").arg(b));
         return;
     }
     WZDEBUG(QString::number(b));
@@ -2292,7 +2290,6 @@ void TMainWindow::setStayOnTop(bool b) {
 }
 
 void TMainWindow::changeStayOnTop(int stay_on_top) {
-    WZDEBUG(QString::number(stay_on_top));
 
     switch (stay_on_top) {
         case TPreferences::AlwaysOnTop : setStayOnTop(true); break;

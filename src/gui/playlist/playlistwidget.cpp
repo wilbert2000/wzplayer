@@ -297,7 +297,6 @@ TPlaylistItem* TPlaylistWidget::findFilename(const QString &filename) {
 
 void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
                                      TPlaylistItemState state) {
-    WZDEBUG("");
 
     bool setCurrent = true;
     if (playingItem) {
@@ -764,8 +763,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
                 }
             }
         } else {
-            WZDEBUG("Selection not moved");
-            // TODO:
+            WZDEBUG("Selection did not move");
         }
 
         // Add new parent to modified items

@@ -240,9 +240,9 @@ void TPlaylistItem::setFileInfo() {
     }
 }
 
-QString TPlaylistItem::stateString() {
+QString TPlaylistItem::stateString(TPlaylistItemState state) {
 
-    switch (mState) {
+    switch (state) {
         case PSTATE_STOPPED: return "stopped";
         case PSTATE_LOADING: return "loading";
         case PSTATE_PLAYING: return "playing";
@@ -506,12 +506,9 @@ void TPlaylistItem::setState(TPlaylistItemState state) {
     if (state == PSTATE_PLAYING) {
         mPlayed = true;
         mPlayedTime = timeStamper++;
-        WZDEBUG(QString("Set state to playing at %1 for '%2'")
-                .arg(mPlayedTime).arg(mFilename));
-    } else {
-        WZDEBUG(QString("Setting state to %1 for '%2'")
-                .arg(stateString()).arg(mFilename));
     }
+    WZDEBUG(QString("Changing state from %1 to %2 for '%3'")
+            .arg(stateString(mState)).arg(stateString(state)).arg(mFilename));
 
     mState = state;
     setStateIcon();
