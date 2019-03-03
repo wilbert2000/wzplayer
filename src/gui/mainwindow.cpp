@@ -1563,8 +1563,7 @@ void TMainWindow::openDVDFromFolder() {
             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (!dir.isEmpty()) {
             pref->last_dvd_directory = dir;
-            player->openDisc(TDiscName(pref->last_dvd_directory,
-                                       pref->useDVDNAV()));
+            player->openDisc(TDiscName(dir, pref->useDVDNAV()));
         }
     }
 }
