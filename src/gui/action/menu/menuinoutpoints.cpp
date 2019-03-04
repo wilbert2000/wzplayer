@@ -61,11 +61,12 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::seekOutPoint);
 
+
     addSeparator();
     repeatInOutAct = new TAction(mw, "repeat_in_out", tr("Repeat in-out"),
                                  "repeat", Qt::Key_Backslash);
-    addAction(a);
     repeatInOutAct->setCheckable(true);
+    addAction(repeatInOutAct);
     group->addAction(repeatInOutAct);
     connect(repeatInOutAct, &TAction::triggered,
             player, &Player::TPlayer::setRepeat);
