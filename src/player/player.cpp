@@ -157,7 +157,7 @@ TPlayer::~TPlayer() {
 void TPlayer::setState(TState s) {
 
     if (s != _state) {
-        WZDEBUG(QString("state changed from %1 to %2 at %3")
+        WZDEBUG(QString("State changed from %1 to %2 at %3")
                 .arg(stateToString())
                 .arg(stateToString(s))
                 .arg(mset.current_sec));
@@ -258,17 +258,21 @@ void TPlayer::saveMediaSettings() {
     Gui::msg(tr("Saved settings for %1").arg(mdat.filename));
 } // saveMediaSettings
 
-void TPlayer::close(TState next_state) {
+void TPlayer::close(TState nextState) {
     WZDEBUG("");
 
     stopPlayer();
     // Save data previous file:
     saveMediaSettings();
     // Set state
-    setState(next_state);
+    if (_state == nextState) {
+        WZDEBUG("Closed");
+    } else {
+        WZDEBUG("Closed. Entering state " + stateToString(nextState));
+        setState(nextState);
+    }
     // Clear media data
     mdat = TMediaData();
-    WZDEBUG("Closed in state " + stateToString());
 }
 
 void TPlayer::openDisc(TDiscName disc, bool fast_open) {
@@ -711,7 +715,6 @@ void TPlayer::onPlayingStartedNewMedia() {
         mset.list();
     }
 
-    WZDEBUG("emit newMediaStartedPlaying()");
     emit newMediaStartedPlaying();
 }
 
@@ -789,14 +792,19 @@ void TPlayer::screenshot() {
 void TPlayer::screenshots() {
     WZDEBUG("");
 
-    if (Settings::pref->use_screenshot
-        && !Settings::pref->screenshot_directory.isEmpty()) {
-        proc->takeScreenshot(Player::Process::TPlayerProcess::Multiple,
-                             Settings::pref->subtitles_on_screenshots);
-    } else {
-        WZWARN("directory for screenshots not valid or enabled");
-        Gui::msg(tr("Screenshots NOT taken, folder not configured or enabled"));
+    if (!Settings::pref->use_screenshot) {
+        WZWARN("Screenshots are disabled in capture section of settings");
+        Gui::msg(tr("Screenshots are disabled in capture section of settings"));
+        return;
     }
+    if (Settings::pref->screenshot_directory.isEmpty()) {
+        WZWARN("Directory not set in capture section of settings");
+        Gui::msg(tr("Directory not set in capture section of settings"));
+        return;
+    }
+
+    proc->takeScreenshot(Player::Process::TPlayerProcess::Multiple,
+                         Settings::pref->subtitles_on_screenshots);
 }
 
 void TPlayer::switchCapturing() {

@@ -91,7 +91,7 @@ public:
     void openDisc(TDiscName disc, bool fast_open = false);
 
     // Stop player if running and save MediaInfo
-    void close(TState next_state);
+    void close(TState nextState);
 
     void restart();
 
