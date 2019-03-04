@@ -53,6 +53,8 @@ private:
 
 private slots:
     void onFullscreenChanged();
+    void startStopScreenshots();
+    void startStopCapture();
 }; // class TMenuVideo
 
 } // namespace Menu

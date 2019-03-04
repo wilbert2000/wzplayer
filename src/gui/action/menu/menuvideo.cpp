@@ -347,19 +347,42 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
 
     // Multiple
     screenshotsAct = new TAction(mw, "multiple_screenshots",
-        tr("Start/stop taking screenshots"), "screenshots",
-        Qt::SHIFT | Qt::Key_R);
+        tr("Start screenshots"), "screenshots", Qt::SHIFT | Qt::Key_R);
+    screenshotsAct->setCheckable(true);
+    screenshotsAct->setChecked(false);
     addAction(screenshotsAct);
     connect(screenshotsAct, &TAction::triggered,
-            player, &Player::TPlayer::screenshots);
+            this, &TMenuVideo::startStopScreenshots);
 
     // Capture
     capturingAct = new TAction(mw, "capture_stream",
-                               tr("Start/stop capturing stream"),
+                               tr("Start capture"),
                                "record", Qt::CTRL | Qt::Key_R);
+    capturingAct->setCheckable(true);
+    capturingAct->setChecked(false);
     addAction(capturingAct);
     connect(capturingAct, &TAction::triggered,
-            player, &Player::TPlayer::switchCapturing);
+            this, &TMenuVideo::startStopCapture);
+}
+
+void TMenuVideo::startStopScreenshots() {
+
+    if (screenshotAct->isChecked()) {
+        screenshotsAct->setText(tr("Start screenshots"));
+    } else {
+        screenshotsAct->setText(tr("Stop screenshots"));
+    }
+    player->screenshots();
+}
+
+void TMenuVideo::startStopCapture() {
+
+    if (capturingAct->isChecked()) {
+        capturingAct->setText(tr("Start capture"));
+    } else {
+        capturingAct->setText(tr("Stop capture"));
+    }
+    player->switchCapturing();
 }
 
 void TMenuVideo::enableActions() {
