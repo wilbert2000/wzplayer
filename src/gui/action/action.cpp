@@ -59,7 +59,7 @@ TAction::TAction (QObject* parent,
     setShortcut(shortCut);
     setTextAndTip(text);
     QString iconName = icon.isEmpty() ? name : icon;
-    if (!iconName.isEmpty() && iconName != "noicon")
+    if (iconName != "noicon")
         setIcon(Images::icon(iconName));
     if (autoAdd)
         addActionToParent();
