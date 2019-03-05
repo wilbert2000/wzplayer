@@ -132,12 +132,14 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     // Browse dir
     addAction(mw->findChild<TAction*>("pl_browse_dir"));
 
+#ifdef Q_OS_LINUX
     // Save thumbnail
     saveThumbnailAct  = new TAction(mw, "save_thumbnail", tr("Save thumbnail"),
                                     "", Qt::CTRL | Qt::Key_I);
     connect(saveThumbnailAct, &TAction::triggered,
             mw, &TMainWindow::saveThumbnail);
     addAction(saveThumbnailAct);
+#endif
 
     addSeparator();
 
