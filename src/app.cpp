@@ -65,8 +65,6 @@ TApp::TApp(int& argc, char** argv) :
 
     setOrganizationName(TConfig::PROGRAM_ORG);
     setApplicationName(TConfig::PROGRAM_ID);
-    //setOrganizationDomain();
-    //setApplicationVersion(TConfig::PROGRAM_VERSION);
 
     // Enable icons in menus
     setAttribute(Qt::AA_DontShowIconsInMenus, false);
