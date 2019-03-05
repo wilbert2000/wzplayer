@@ -1304,7 +1304,7 @@ void TMainWindow::onPlayerError(int exit_code) {
 }
 
 void TMainWindow::onStateChanged(Player::TState state) {
-    WZDEBUG("new state " + player->stateToString());
+    WZDEBUG("New state " + player->stateToString());
 
     sendEnableActions();
     auto_hide_timer->setAutoHideMouse(state == Player::STATE_PLAYING);

@@ -1328,15 +1328,15 @@ void TPreferences::setupScreenshotFolder() {
     if (screenshot_directory.isEmpty()) {
         QString pdir = TPaths::location(TPaths::PicturesLocation);
         if (pdir.isEmpty()) {
-            WZDEBUG("no PicturesLocation");
+            WZDEBUG("No PicturesLocation");
             pdir = TPaths::location(TPaths::DocumentsLocation);
         }
         if (pdir.isEmpty()) {
-            WZDEBUG("no DocumentsLocation");
+            WZDEBUG("No DocumentsLocation");
             pdir = TPaths::location(TPaths::HomeLocation);
         }
         if (pdir.isEmpty()) {
-            WZDEBUG("no HomeLocation");
+            WZDEBUG("No HomeLocation");
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
@@ -1347,10 +1347,10 @@ void TPreferences::setupScreenshotFolder() {
     if (screenshot_directory.isEmpty()) {
         use_screenshot = false;
     } else if (QDir(screenshot_directory).exists()) {
-        WZINFO("using folder '" + screenshot_directory + "'");
+        WZINFO("Using folder '" + screenshot_directory + "'");
     } else {
-        WZINFO("folder '" + screenshot_directory
-               + "' not found, disabling screenshots");
+        WZINFO(QString("Folder '%1' not found, disabling screenshots")
+               .arg(screenshot_directory));
         use_screenshot = false;
         screenshot_directory = "";
     }

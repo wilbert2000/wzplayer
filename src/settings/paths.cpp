@@ -50,7 +50,7 @@ QString TPaths::location(TLocation type) {
         static_cast<QStandardPaths::StandardLocation>(type));
 #endif
 
-    WZDEBUG("returning '" +path + "' for " + QString::number(type));
+    WZDEBUG(QString("Returning '%1' for %2").arg(path).arg(type));
     return path;
 }
 
@@ -64,20 +64,22 @@ void TPaths::setConfigPath() {
 #else
     const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
     if (XDG_CONFIG_HOME == NULL) {
-        config_path = QDir::homePath() + "/.config/" + TConfig::PROGRAM_ID;
+        config_path = QDir::homePath() + "/.config";
     } else {
-        config_path = QString(XDG_CONFIG_HOME) + "/" + TConfig::PROGRAM_ID;
+        config_path = QString(XDG_CONFIG_HOME);
     }
+    config_path = config_path + "/" + TConfig::PROGRAM_ID;
 #endif
 #endif
 
-    WZINFO("config path set to '" + config_path + "'");
+    WZINFO(QString("Config path set to '%1'").arg(config_path));
 
     // Create config directory
 #ifndef PORTABLE_APP
     QDir dir(config_path);
     if (!dir.mkpath(config_path)) {
-        WZERROR("failed to create '" + config_path + "'");
+        WZERROR(QString("Failed to create configuration directory '%1'. %2")
+                .arg(config_path).arg(strerror(errno)));
     }
 #endif
 

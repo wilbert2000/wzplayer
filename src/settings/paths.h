@@ -31,7 +31,6 @@ public:
     enum TLocation {
         DataLocation = QStandardPaths::DataLocation,
         AppDataLocation = QStandardPaths::AppDataLocation,
-        // GenericCacheLocation = QStandardPaths::GenericCacheLocation,
         PicturesLocation = QStandardPaths::PicturesLocation,
         DocumentsLocation = QStandardPaths::DocumentsLocation,
         HomeLocation = QStandardPaths::HomeLocation
