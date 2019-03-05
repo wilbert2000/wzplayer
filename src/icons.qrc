@@ -5,7 +5,6 @@
         <file>default-theme/cdda.png</file>
         <file>default-theme/cdrom_drive.png</file>
         <file>default-theme/chapter.png</file>
-        <file>default-theme/close.png</file>
         <file>default-theme/conflict.png</file>
         <file>default-theme/contrast.png</file>
         <file>default-theme/copy.png</file>
@@ -43,7 +42,6 @@
         <file>default-theme/mute.png</file>
         <file>default-theme/loading.png</file>
         <file>default-theme/stopping.png</file>
-        <file>default-theme/played.png</file>
         <file>default-theme/failed.png</file>
         <file>default-theme/open.png</file>
         <file>default-theme/open_directory.png</file>

@@ -33,6 +33,9 @@ class TMainWindow;
 
 namespace Action {
 class TAction;
+namespace Menu {
+class TMenu;
+}
 }
 
 namespace Playlist {
@@ -111,7 +114,7 @@ private:
     QToolButton* add_button;
     QToolButton* remove_button;
 
-    Action::TAction* openAct;
+    Action::TAction* openPlaylistAct;
     Action::TAction* saveAct;
     Action::TAction* saveAsAct;
     Action::TAction* refreshAct;
@@ -126,6 +129,18 @@ private:
     Action::TAction* playPrevAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
+
+    Action::TAction* editNameAct;
+    Action::TAction* newFolderAct;
+    Action::TAction* findPlayingAct;
+
+    Action::TAction* cutAct;
+    Action::TAction* copyAct;
+    Action::TAction* pasteAct;
+
+    Action::Menu::TMenu* playlistAddMenu;
+    Action::Menu::TMenu* playlistRemoveMenu;
+
 
     QString filename;
 
@@ -188,6 +203,7 @@ private slots:
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
 
+    void enablePaste();
     void enableActions();
 
     void onItemActivated(QTreeWidgetItem* i, int);

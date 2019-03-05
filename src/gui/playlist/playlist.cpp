@@ -20,7 +20,8 @@
 #include "gui/playlist/playlistwidget.h"
 #include "gui/playlist/playlistitem.h"
 #include "gui/playlist/addfilesthread.h"
-#include "gui/playlist/menucontext.h"
+#include "gui/playlist/menuadd.h"
+#include "gui/playlist/menuremove.h"
 #include "gui/mainwindow.h"
 #include "gui/multilineinputdialog.h"
 #include "gui/action/action.h"
@@ -115,37 +116,41 @@ void TPlaylist::createTree() {
 
 void TPlaylist::createActions() {
 
-    // Connect of enableActions() needs to be done before creation of menus
-    // because enableActions() can set the currently playing item, which can be
-    // used by TMenu::enableActions()
+    // Connect enableActions() before creation of actions in menus, because
+    // enableActions() can set the currently playing item, which can be used
+    // by actions to decide whether to enable or not.
     connect(main_window, &TMainWindow::enableActions,
             this, &TPlaylist::enableActions);
 
-    // Open
-    openAct = new TAction(main_window, "pl_open", tr("Open playlist..."), "",
-                          QKeySequence("Ctrl+P"));
-    connect(openAct, &TAction::triggered, this, &TPlaylist::askOpenPlaylist);
+    // Open playlist
+    openPlaylistAct = new TAction(main_window, "pl_open", tr("Open playlist..."),
+                          "noicon", QKeySequence("Ctrl+P"));
+    openPlaylistAct->setIcon(style()->standardPixmap(QStyle::SP_DialogOpenButton));
+    connect(openPlaylistAct, &TAction::triggered, this, &TPlaylist::askOpenPlaylist);
 
-    // Save
-    saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "save",
+    // Save plsylist
+    saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "noicon",
                           QKeySequence("Ctrl+S"));
+    saveAct->setIcon(style()->standardPixmap(QStyle::SP_DialogSaveButton));
     connect(saveAct, &TAction::triggered, this, &TPlaylist::save);
 
     // SaveAs
     saveAsAct = new TAction(main_window, "pl_saveas",
-                            tr("Save playlist as..."), "saveas");
+                            tr("Save playlist as..."), "noicon");
+    saveAsAct->setIcon(style()->standardPixmap(QStyle::SP_DriveHDIcon));
     connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
     // Refresh
     refreshAct = new TAction(main_window, "pl_refresh", tr("Refresh playlist"),
-                             "", Qt::Key_F5);
+                             "noicon", Qt::Key_F5);
+    refreshAct->setIcon(style()->standardPixmap(QStyle::SP_BrowserReload));
     connect(refreshAct, &TAction::triggered, this, &TPlaylist::refresh);
     connect(playlistWidget, &TPlaylistWidget::refresh,
             this, &TPlaylist::refresh, Qt::QueuedConnection);
 
     // Browse directory
     browseDirAct = new TAction(main_window, "pl_browse_dir",
-                               tr("Browse directory"));
+                               tr("Browse directory"), "noicon");
     browseDirAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
     connect(browseDirAct, &TAction::triggered, this, &TPlaylist::browseDir);
 
@@ -207,45 +212,106 @@ void TPlaylist::createActions() {
     connect(shuffleAct, &TAction::triggered,
             this, &TPlaylist::onShuffleToggled);
 
+
     // Context menu
-    TMenuContext* contextMenu = new TMenuContext(this, main_window);
+    Action::Menu::TMenu* contextMenu = new Action::Menu::TMenu(
+        this, main_window, "pl_context_menu", tr("Playlist context menu"));
+    connect(contextMenu, &Action::Menu::TMenu::aboutToShow,
+            this, &TPlaylist::enableActions);
 
-    contextMenu->addAction(refreshAct);
-
-    contextMenu->addSeparator();
     contextMenu->addAction(playAct);
     contextMenu->addAction(playNewAct);
 
     contextMenu->addSeparator();
-    contextMenu->addAction(browseDirAct);
+    // Edit name
+    editNameAct = new TAction(this, "pl_edit_name", tr("Edit name..."), "",
+                              Qt::Key_F2);
+    connect(editNameAct, &TAction::triggered, this, &TPlaylist::editName);
+    contextMenu->addAction(editNameAct);
+    addAction(editNameAct);
+
+    // New folder
+    newFolderAct = new TAction(this, "pl_new_folder", tr("New folder"), "noicon",
+                               Qt::Key_F10);
+    newFolderAct->setIcon(style()->standardPixmap(QStyle::SP_FileDialogNewFolder));
+    connect(newFolderAct, &TAction::triggered, this, &TPlaylist::newFolder);
+    contextMenu->addAction(newFolderAct);
+    addAction(newFolderAct);
+
+    // Find playing
+    findPlayingAct = new TAction(this, "pl_find_playing",
+                                 tr("Find playing item"), "", Qt::Key_F3);
+    connect(findPlayingAct, &TAction::triggered,
+            this, &TPlaylist::findPlayingItem);
+    contextMenu->addAction(findPlayingAct);
+    main_window->addAction(findPlayingAct);
+
+
+    contextMenu->addSeparator();
+    // Cut
+    cutAct = new TAction(this, "pl_cut", tr("Cut file name(s)"), "",
+                         QKeySequence("Ctrl+X"));
+    connect(cutAct, &TAction::triggered, this, &TPlaylist::cut);
+    contextMenu->addAction(cutAct);
+    addAction(cutAct);
+
+    // Copy
+    copyAct = new TAction(this, "pl_copy", tr("Copy file name(s)"), "",
+                          QKeySequence("Ctrl+C"));
+    connect(copyAct, &TAction::triggered, this, &TPlaylist::copySelected);
+    contextMenu->addAction(copyAct);
+    main_window->addAction(copyAct);
+
+    // Paste
+    pasteAct = new TAction(this, "pl_paste", tr("Paste file name(s)"), "",
+                           QKeySequence("Ctrl+V"));
+    connect(pasteAct, &TAction::triggered, this, &TPlaylist::paste);
+    connect(QApplication::clipboard(), &QClipboard::dataChanged,
+            this, &TPlaylist::enablePaste);
+    contextMenu->addAction(pasteAct);
+    main_window->addAction(pasteAct);
+
+    contextMenu->addSeparator();
+    // Add menu
+    playlistAddMenu = new TMenuAdd(this, main_window);
+    contextMenu->addMenu(playlistAddMenu);
+
+    // Remove menu
+    playlistRemoveMenu = new TMenuRemove(this, main_window);
+    contextMenu->addMenu(playlistRemoveMenu);
 
     playlistWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playlistWidget, &TPlaylistWidget::customContextMenuRequested,
-            contextMenu, &TMenuContext::execSlot);
+            contextMenu, &Action::Menu::TMenu::execSlot);
+
+    contextMenu->addSeparator();
+    contextMenu->addAction(refreshAct);
+    contextMenu->addAction(browseDirAct);
 
     // Toolbar
     toolbar = new QToolBar(this);
     toolbar->setObjectName("playlisttoolbar");
 
-    toolbar->addAction(openAct);
+    toolbar->addAction(openPlaylistAct);
     toolbar->addAction(saveAct);;
     toolbar->addAction(saveAsAct);
-    toolbar->addAction(browseDirAct);
 
     toolbar->addSeparator();
-
     add_button = new QToolButton(this);
-    add_button->setMenu(contextMenu->addToPlaylistMenu);
+    add_button->setMenu(playlistAddMenu);
     add_button->setPopupMode(QToolButton::InstantPopup);
-    add_button->setDefaultAction(contextMenu->addToPlaylistMenu->menuAction());
+    add_button->setDefaultAction(playlistAddMenu->menuAction());
     toolbar->addWidget(add_button);
 
     remove_button = new QToolButton(this);
-    remove_button->setMenu(contextMenu->removeFromPlaylistMenu);
+    remove_button->setMenu(playlistRemoveMenu);
     remove_button->setPopupMode(QToolButton::InstantPopup);
-    remove_button->setDefaultAction(
-                contextMenu->removeFromPlaylistMenu->menuAction());
+    remove_button->setDefaultAction(playlistRemoveMenu->menuAction());
     toolbar->addWidget(remove_button);
+
+    toolbar->addSeparator();
+    toolbar->addAction(refreshAct);
+    toolbar->addAction(browseDirAct);
 
     toolbar->addSeparator();
     toolbar->addAction(shuffleAct);
@@ -798,12 +864,17 @@ void TPlaylist::onItemActivated(QTreeWidgetItem* i, int) {
     }
 }
 
+void TPlaylist::enablePaste() {
+    pasteAct->setEnabled(thread == 0
+                         && QApplication::clipboard()->mimeData()->hasText());
+}
+
 void TPlaylist::enableActions() {
 
     if (disableEnableActions) {
         return;
     }
-    WZDEBUG("state " + player->stateToString());
+    WZDEBUG("State " + player->stateToString());
 
     Player::TState s = player->state();
     bool enable = (s == Player::STATE_STOPPED
@@ -845,7 +916,7 @@ void TPlaylist::enableActions() {
     bool haveItems = playlistWidget->hasItems();
     bool e = enable && haveItems;
 
-    openAct->setEnabled(thread == 0);
+    openPlaylistAct->setEnabled(thread == 0);
     saveAct->setEnabled(e);
     saveAsAct->setEnabled(e);
     refreshAct->setEnabled(!filename.isEmpty());
@@ -875,6 +946,16 @@ void TPlaylist::enableActions() {
         // Update forward/rewind menus
         emit enablePrevNextChanged();
     }
+
+    // Context menu
+    bool current = plCurrentItem();
+    editNameAct->setEnabled(enable && current);
+    newFolderAct->setEnabled(enable);
+    findPlayingAct->setEnabled(playlistWidget->playingItem);
+
+    cutAct->setEnabled(enable && current);
+    copyAct->setEnabled(current || !player->mdat.filename.isEmpty());
+    enablePaste();
 
     // Repeat and shuffle are always enabled
 }

@@ -28,7 +28,7 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     //urlIcon = Images::icon("type_url", iconSize.width());
 
     iconSize = folderIcon.actualSize(QSize(22, 22));
-    iconPlayed = Images::icon("played", iconSize.width());
+    iconPlayed =  QIcon(style->standardPixmap(QStyle::SP_DialogOkButton));
     iconLoading = Images::icon("loading", iconSize.width());
     iconPlaying = Images::icon("play", iconSize.width());
     iconFailed = Images::icon("failed", iconSize.width());
