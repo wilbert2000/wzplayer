@@ -9,6 +9,7 @@
 #include "name.h"
 
 #include <QMessageBox>
+#include <QStyle>
 
 
 using namespace Settings;
@@ -142,7 +143,8 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
 
     // Close
     // Memo: Quit added by TMainwindowTray
-    a = new TAction(mw, "close", tr("Close"));
+    a = new TAction(mw, "close", tr("Close"), "noicon");
+    a->setIcon(style()->standardPixmap(QStyle::SP_DialogCloseButton));
     addAction(a);
     connect(a, &TAction::triggered, mw, &TMainWindow::closeWindow);
 }
