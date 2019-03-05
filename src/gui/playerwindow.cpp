@@ -28,7 +28,7 @@
 #include <QLabel>
 
 #include "gui/msg.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "player/player.h"
 #include "settings/preferences.h"
 #include "colorutils.h"

@@ -27,7 +27,7 @@
 
 #include "wzdebug.h"
 #include "config.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "images.h"
 #include "gui/filedialog.h"
 #include "settings/preferences.h"

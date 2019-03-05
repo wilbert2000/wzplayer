@@ -18,7 +18,7 @@
 
 #include "gui/helpwindow.h"
 #include "config.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "images.h"
 
 #include <QCloseEvent>

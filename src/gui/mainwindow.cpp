@@ -19,7 +19,7 @@
 #include "gui/mainwindow.h"
 #include "gui/playerwindow.h"
 #include "gui/filedialog.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "gui/logwindow.h"
 #include "gui/helpwindow.h"
 #include "gui/autohidetimer.h"

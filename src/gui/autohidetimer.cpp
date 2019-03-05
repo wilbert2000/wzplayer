@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QMouseEvent>
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "settings/preferences.h"
 
 

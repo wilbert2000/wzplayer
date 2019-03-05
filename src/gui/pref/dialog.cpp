@@ -23,7 +23,7 @@
 #include "config.h"
 #include "images.h"
 #include "settings/preferences.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "gui/pref/section.h"
 #include "gui/pref/playersection.h"
 #include "gui/pref/demuxer.h"

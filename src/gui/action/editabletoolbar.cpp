@@ -25,7 +25,7 @@
 #include "gui/action/menu/menu.h"
 
 #include "gui/mainwindow.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 #include "settings/preferences.h"
 
 #include <QMenu>

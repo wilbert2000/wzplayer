@@ -22,7 +22,7 @@
 
 #include "gui/playerwindow.h"
 #include "gui/msg.h"
-#include "gui/desktop.h"
+#include "desktop.h"
 
 #include "settings/preferences.h"
 #include "settings/mediasettings.h"

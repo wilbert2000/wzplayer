@@ -67,7 +67,7 @@ HEADERS += wzdebug.h \
     settings/updatecheckerdata.h \
     iconprovider.h \
     images.h \
-    gui/desktop.h \
+    desktop.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
     gui/action/actionlist.h \
@@ -199,7 +199,7 @@ SOURCES += wzdebug.cpp \
     settings/updatecheckerdata.cpp \
     iconprovider.cpp \
     images.cpp \
-    gui/desktop.cpp \
+    desktop.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \
     gui/action/slider.cpp \
