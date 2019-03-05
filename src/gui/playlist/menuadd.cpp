@@ -87,7 +87,9 @@ void TAddRemovedMenu::onCurrentItemChanged(QTreeWidgetItem* current,
 
 TMenuAdd::TMenuAdd(TPlaylist* playlist, TMainWindow* mw) :
     Gui::Action::Menu::TMenu(playlist, mw, "pl_add_menu",
-                             tr("Add to playlist"), "plus") {
+                             tr("Add to playlist"), "noicon") {
+
+    menuAction()->setIcon(style()->standardPixmap(QStyle::SP_DialogOkButton));
 
     using namespace Gui::Action;
 
