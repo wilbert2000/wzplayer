@@ -13,6 +13,8 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     style = aStyle;
 
+    iconSize = QSize(22, 22);
+
     fileIcon = QIcon(style->standardPixmap(QStyle::SP_FileIcon));
     fileLinkIcon = QIcon(style->standardPixmap(QStyle::SP_FileLinkIcon));
 
@@ -27,7 +29,6 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     //driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
     //urlIcon = Images::icon("type_url", iconSize.width());
 
-    iconSize = folderIcon.actualSize(QSize(22, 22));
     iconPlayed =  QIcon(style->standardPixmap(QStyle::SP_DialogOkButton));
     iconLoading = Images::icon("loading", iconSize.width());
     iconPlaying = Images::icon("play", iconSize.width());

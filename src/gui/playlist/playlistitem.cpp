@@ -15,7 +15,6 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QStack>
-#include <QThread>
 
 
 namespace Gui {
@@ -36,12 +35,6 @@ const int TEXT_ALIGN_NAME = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap;
 const int TEXT_ALIGN_TYPE = Qt::AlignLeft | Qt::AlignVCenter;
 const int TEXT_ALIGN_TIME = Qt::AlignRight | Qt::AlignVCenter;
 const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
-
-// Level of the root node in the tree view, where level means the number of
-// icons indenting the item. With root decoration on, toplevel items appear on
-// level 2, being ROOT_NODE_LEVEL + 1.
-const int TPlaylistItem::ROOT_NODE_LEVEL = 1;
-
 
 static int timeStamper = 0;
 
@@ -135,6 +128,10 @@ TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
 
     setIcon(COL_NAME, itemIcon);
+
+    if (treeWidget()) {
+        setSizeHintName();
+    }
 }
 
 TPlaylistItem *TPlaylistItem::clone() const {
@@ -443,36 +440,31 @@ QVariant TPlaylistItem::data(int column, int role) const {
     return QTreeWidgetItem::data(column, role);
 }
 
-int TPlaylistItem::getLevel() const {
-
-    if (plParent() == 0) {
-        return ROOT_NODE_LEVEL;
-    }
-    return plParent()->getLevel() + 1;
-}
-
 void TPlaylistItem::setFilename(const QString& fileName) {
+
     mFilename = QDir::toNativeSeparators(fileName);
     mBaseName = QFileInfo(fileName).completeBaseName();
     setFileInfo();
 }
 
 void TPlaylistItem::setFilename(const QString& fileName,
-                                      const QString& baseName) {
+                                const QString& baseName) {
+
     mFilename = QDir::toNativeSeparators(fileName);
     mBaseName = baseName;
     setFileInfo();
 }
 
 void TPlaylistItem::setName(const QString& baseName,
-                                  const QString& ext,
-                                  bool protectName) {
+                            const QString& ext,
+                            bool protectName) {
+
     mBaseName = baseName;
     mExt = ext;
     if (protectName) {
         mEdited = true;
     }
-    setSzHint(getLevel());
+    setSizeHintName();
 }
 
 void TPlaylistItem::setStateIcon() {
@@ -538,26 +530,22 @@ void TPlaylistItem::setModified(bool modified,
         }
     }
 
-    if (mModified && markParents && plParent() && !plParent()->modified()) {
-        plParent()->setModified(true, false, true);
+    TPlaylistItem* parent = plParent();
+    if (mModified && markParents && parent && !parent->modified()) {
+        parent->setModified(true, false, true);
     }
 
     if (modifiedChanged) {
-        bool onMainThread = QThread::currentThread() == qApp->thread();
-        // TODO: remove "while..."
-        WZINFO(QString("Modified %1 for '%2'%3")
-               .arg(modified ? "set" : "cleared")
-               .arg(mFilename)
-               .arg(onMainThread ? "" : " while not running on main thread"));
-        if (onMainThread) {
-            TPlaylistWidget* tree = plTreeWidget();
-            if (tree) {
-                emitDataChanged();
-                if (plParent() == 0) {
-                    tree->emitModifiedChanged();
-                }
+        TPlaylistWidget* tree = plTreeWidget();
+        if (tree) {
+            setSizeHintName();
+            emitDataChanged();
+            if (parent == 0) {
+                tree->emitModifiedChanged();
             }
         }
+        WZINFO(QString("Modified %1 for '%2'")
+               .arg(modified ? "set" : "cleared").arg(mFilename));
     }
 }
 
@@ -625,20 +613,40 @@ bool TPlaylistItem::whitelist(const QString& filename) {
     return false;
 }
 
+int TPlaylistItem::getLevel() const {
+
+    if (plParent() == 0) {
+        return 0;
+    }
+    return plParent()->getLevel() + 1;
+}
+
+// Initialised by constructor TPlaylistWidget by calling setSpacing()
+int TPlaylistItem::indentation = 20;
+int TPlaylistItem::hSpacing = 12;
+int TPlaylistItem::vSpacing = 8;
+QSize TPlaylistItem::minSize(28, 28);
+
+void TPlaylistItem::setSpacing(int indent, int rowHeight, int lineSpacing) {
+
+    indentation = indent;
+
+    vSpacing = rowHeight - lineSpacing;
+    // hSpacing needs space for icon too, hence space / 2 * 3
+    hSpacing = (vSpacing / 2) * 3;
+
+    minSize.rwidth() = rowHeight;
+    minSize.rheight() = rowHeight;
+}
+
 // static, return the size of the name column
-QSize TPlaylistItem::sizeColumnName(int width,
-                                    const QString& text,
-                                    const QFontMetrics& fm,
-                                    const QSize& iconSize,
-                                    int level) {
+QSize TPlaylistItem::getSizeColumnName(int width,
+                                       const QString& text,
+                                       const QFontMetrics& fm) {
 
-    // TODO: get from style
-    const int hMargin = 4; // horizontal margin
-    const int vMargin = 2; // vertical margin
-    const QSize minSize = iconSize;
-
-    // Get availlable width for text
-    int w = width - level * (iconSize.width() + hMargin) - 2 * hMargin;
+    // Substract icon and spacing from availlable width for text
+    int d = iconProvider.iconSize.width() + hSpacing;
+    int w = width - d;
 
     // Return minimal size if no space available
     if (w <= minSize.width()) {
@@ -650,32 +658,40 @@ QSize TPlaylistItem::sizeColumnName(int width,
     QRect r = QRect(QPoint(), QSize(w, maxHeight));
     QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text);
 
-    // Pick up the height from the bounding rect
-    int h = br.height() + 2 * vMargin;
+    // Pick up the height from bounding rect
+    int h = br.height() + vSpacing;
     if (h < minSize.height()) {
         h = minSize.height();
     }
+    // Pick up the width from bounding rect
+    if (br.width() < w) {
+        width = br.width() + d;
+    }
 
-    // Return original width and new height needed by text
     return QSize(width, h);
 }
 
-void TPlaylistItem::setSzHint(int level) {
+QSize TPlaylistItem::getSizeHintName(int level) const {
 
-    int width;
-    if (treeWidget()) {
-        width = treeWidget()->header()->sectionSize(COL_NAME);
-    } else {
-        width = 512;
+    static int width = 512;
+
+    QTreeWidget* tree = treeWidget();
+    if (tree) {
+        width = tree->header()->sectionSize(COL_NAME);
+        indentation = tree->indentation();
     }
-    setSizeHint(COL_NAME,
-                sizeColumnName(width,
-                               text(COL_NAME),
-                               QFontMetrics(treeWidget()
-                                           ? treeWidget()->font()
-                                           : qApp->font()),
-                               iconProvider.iconSize,
-                               level));
+
+    return getSizeColumnName(width - level * indentation,
+                             text(COL_NAME),
+                             QFontMetrics(font(COL_NAME)));
+}
+
+void TPlaylistItem::setSizeHintName(int level) {
+    setSizeHint(COL_NAME, getSizeHintName(level));
+}
+
+void TPlaylistItem::setSizeHintName() {
+    setSizeHintName(getLevel());
 }
 
 bool TPlaylistItem::operator <(const QTreeWidgetItem& other) const {

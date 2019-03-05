@@ -35,17 +35,8 @@ public:
         COL_COUNT = 4
     };
 
-    // Level of the root node in the tree view, where level means the number of
-    // icons indenting the item. With root decoration on, toplevel items appear
-    // on level 2, being ROOT_NODE_LEVEL + 1.
-    static const int ROOT_NODE_LEVEL;
-
-    // Get size for name column
-    static QSize sizeColumnName(int width,
-                                const QString& text,
-                                const QFontMetrics& fm,
-                                const QSize& iconSize,
-                                int level);
+    // Pass indentation and spacing from QTreeWidget to items
+    static void setSpacing(int indent, int rowHeight, int lineSpacing);
 
     // Create a root node
     TPlaylistItem();
@@ -115,8 +106,9 @@ public:
     int getBlacklistCount() const { return mBlacklist.count(); }
     bool whitelist(const QString& filename);
 
-    void setSzHint(int level);
     int getLevel() const;
+    void setSizeHintName(int level);
+    void setSizeHintName();
 
     TPlaylistItem* plParent() const {
         return static_cast<TPlaylistItem*>(parent());
@@ -134,6 +126,14 @@ public:
 
 
 private:
+    static int indentation;
+    static int hSpacing;
+    static int vSpacing;
+    static QSize minSize;
+
+    static QSize getSizeColumnName(int width,
+                                   const QString& text,
+                                   const QFontMetrics& fm);
     static QString stateString(TPlaylistItemState state);
 
     QString mFilename;
@@ -166,6 +166,7 @@ private:
     void setStateIcon();
 
     QString editName() const;
+    QSize getSizeHintName(int level) const;
 
     void renameDir(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);

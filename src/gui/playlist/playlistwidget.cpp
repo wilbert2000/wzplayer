@@ -26,55 +26,6 @@
 namespace Gui {
 namespace Playlist {
 
-
-class TWordWrapItemDelegate : public QStyledItemDelegate {
-public:
-    TWordWrapItemDelegate(TPlaylistWidget* parent) :
-        QStyledItemDelegate(parent),
-        header(parent->header()) {
-    }
-
-    virtual ~TWordWrapItemDelegate() {
-    }
-
-    static int getLevel(const QModelIndex& index) {
-
-        if (index.parent() == QModelIndex()) {
-            return TPlaylistItem::ROOT_NODE_LEVEL;
-        }
-        return getLevel(index.parent()) + 1;
-    }
-
-    virtual QSize sizeHint(const QStyleOptionViewItem& option,
-                           const QModelIndex& index) const {
-
-        // Return default size hint for all but column name
-        if (index.column() != TPlaylistItem::COL_NAME) {
-            return QStyledItemDelegate::sizeHint(option, index);
-        }
-
-        // Column name
-        QString text = index.model()->data(index).toString();
-
-        // Return default for no name
-        if (text.isEmpty()) {
-            return QStyledItemDelegate::sizeHint(option, index);
-        }
-
-        // Return the size of column name
-        return TPlaylistItem::sizeColumnName(
-                    header->sectionSize(TPlaylistItem::COL_NAME),
-                    text,
-                    option.fontMetrics,
-                    option.decorationSize,
-                    getLevel(index));
-    }
-
-private:
-    QHeaderView* header;
-}; // class TWordWrapItemDelegate
-
-
 TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     QTreeWidget(parent),
     debug(logger()),
@@ -102,8 +53,13 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     // Create a TPlaylistItem root
     addTopLevelItem(new TPlaylistItem());
-    setRootIndex(model()->index(0, 0));
 
+    // Pass item spacing for TPlaylistItem::getSizeColumnName()
+    TPlaylistItem::setSpacing(indentation(),
+                              visualRect(model()->index(0,0)).height(),
+                              QFontMetrics(font()).lineSpacing());
+
+    setRootIndex(model()->index(0, 0));
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     // Drag and drop
@@ -119,12 +75,6 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setIconSize(iconProvider.iconSize);
     setWordWrap(true);
     setUniformRowHeights(false);
-    setItemDelegate(new TWordWrapItemDelegate(this));
-    wordWrapTimer = new QTimer(this);
-    wordWrapTimer->setInterval(500);
-    wordWrapTimer->setSingleShot(true);
-    connect(wordWrapTimer, &QTimer::timeout,
-            this, &TPlaylistWidget::resizeRowsEx);
 
     setAutoExpandDelay(750);
     connect(this, &TPlaylistWidget::itemExpanded,
@@ -238,7 +188,7 @@ TPlaylistItem* TPlaylistWidget::plCurrentItem() const {
 TPlaylistItem* TPlaylistWidget::firstPlaylistItem() const {
 
     TPlaylistItem* r = root();
-    if (r) {
+    if (r && r->childCount()) {
         return r->plChild(0);
     }
     return 0;
@@ -1056,38 +1006,30 @@ void TPlaylistWidget::onSectionClicked(int section) {
     setSort(sortSection, sortOrder);
 }
 
-void TPlaylistWidget::resizeRows(TPlaylistItem* item, int level) {
+void TPlaylistWidget::resizeNameColumn(TPlaylistItem* item, int level) {
 
     if (item) {
         level++;
-        for(int i = item->childCount() - 1; i >= 0; i--) {
+        for(int i = 0; i < item->childCount(); i++) {
             TPlaylistItem* child = item->plChild(i);
-            child->setSzHint(level);
+            child->setSizeHintName(level);
             if (child->isExpanded() && child->childCount()) {
-                resizeRows(child, level);
+                resizeNameColumn(child, level);
             }
         }
     }
 }
 
-void TPlaylistWidget::resizeRowsEx() {
+void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* i) {
 
-    resizeRows(root(), TPlaylistItem::ROOT_NODE_LEVEL);
+    TPlaylistItem* item = static_cast<TPlaylistItem*>(i);
+    resizeNameColumn(item, item->getLevel());
 }
 
-void TPlaylistWidget::onSectionResized(int logicalIndex, int, int newSize) {
+void TPlaylistWidget::onSectionResized(int logicalIndex, int, int) {
 
     if (logicalIndex == TPlaylistItem::COL_NAME) {
-        wordWrapTimer->start();
-    }
-}
-
-void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* w) {
-    WZDEBUG("'" + w->text(TPlaylistItem::COL_NAME) + "'");
-
-    if (!wordWrapTimer->isActive()) {
-        TPlaylistItem* item = static_cast<TPlaylistItem*>(w);
-        resizeRows(item, item->getLevel());
+        resizeNameColumn(root(), 0);
     }
 }
 
@@ -1113,7 +1055,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
     // Validate target is still valid
     target = validateItem(target);
 
-    // Get parent to insert into and the target child index into parent
+    // Get parent to insert into and index into parent
     TPlaylistItem* parent;
     int idx = 0;
     if (target) {
@@ -1147,6 +1089,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         // Delete old root
         setRootIndex(QModelIndex());
         delete takeTopLevelItem(0);
+        clearSelection();
 
         // Disable sort
         setSort(-1, sortOrder);
@@ -1167,16 +1110,16 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         setSort(sortSection, sortOrder);
 
         if (item->childCount()) {
-            clearSelection();
             setCurrentItem(item->child(0));
-            onItemExpanded(item);
+            resizeNameColumn(item, 0);
         }
 
         if (item->modified()) {
             emit modifiedChanged();
         }
     } else {
-        // Collect children of item
+        // Collect and prepare children of item
+        clearSelection();
         QList<QTreeWidgetItem*> children;
         while (item->childCount()) {
             TPlaylistItem* child = item->plTakeChild(0);
@@ -1184,9 +1127,9 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
             child->setSelected(true);
             children.append(child);
         }
-        clearSelection();
 
         delete item;
+        // Notify TPlaylist::onThreadFinished() root is still alive
         item = 0;
 
         // Disable sort
@@ -1196,6 +1139,13 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         // Insert children
         parent->insertChildren(idx, children);
         setSort(savedSortSection, sortOrder);
+
+        // Update size hint name column
+        int level = parent->getLevel() + 1;
+        for(int i = 0; i < children.count(); i++) {
+            static_cast<TPlaylistItem*>(children.at(i))->setSizeHintName(level);
+        }
+
         parent->setModified();
     }
 

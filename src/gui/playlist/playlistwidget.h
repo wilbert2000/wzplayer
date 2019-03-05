@@ -7,7 +7,6 @@
 #include <QTreeWidget>
 
 
-class QTimer;
 class QSettings;
 class QtFileCopier;
 class QtCopyDialog;
@@ -91,7 +90,6 @@ protected slots:
 private:
     int sortSection;
     Qt::SortOrder sortOrder;
-    QTimer* wordWrapTimer;
     Action::Menu::TMenuExec* columnsMenu;
 
     QtFileCopier *fileCopier;
@@ -113,15 +111,14 @@ private:
                         TPlaylistItem* item);
     void dropSelection(TPlaylistItem* target, Qt::DropAction action);
 
-    void resizeRows(TPlaylistItem* item, int level);
+    void resizeNameColumn(TPlaylistItem* item, int level);
     bool removeFromDisk(const QString& filename, const QString& playingFile);
 
 private slots:
-    void onItemExpanded(QTreeWidgetItem*w);
+    void onItemExpanded(QTreeWidgetItem* i);
     void onSectionClicked(int section);
     void onSectionResized(int, int, int);
     void onColumnMenuTriggered(QAction* action);
-    void resizeRowsEx();
     void onCopyFinished(int id, bool error);
     void onMoveAboutToStart(int id);
     void onMoveFinished(int id, bool error);
