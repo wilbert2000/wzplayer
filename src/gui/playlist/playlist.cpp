@@ -355,7 +355,7 @@ void TPlaylist::onThreadFinished() {
 
     if (thread == 0) {
         // Only during destruction, so no need to enable actions
-        WZDEBUG("thread is gone");
+        WZDEBUG("Thread is gone");
         return;
     }
 
@@ -373,54 +373,43 @@ void TPlaylist::onThreadFinished() {
     if (root == 0) {
         // Thread aborted
         if (restartThread) {
-            WZDEBUG("thread aborted, starting new request");
-            addFilesStartThread();
+            WZDEBUG("Thread aborted, starting new request");
+            addStartThread();
         } else {
-            WZDEBUG("thread aborted");
-            addFilesFiles.clear();
+            WZDEBUG("Thread aborted");
+            addFiles.clear();
             enableActions();
         }
         return;
     }
 
-    QString msg = addFilesFiles.count() == 1 ? addFilesFiles[0] : "";
-    addFilesFiles.clear();
+    QString msg = addFiles.count() == 1 ? addFiles.at(0) : "";
+    addFiles.clear();
 
     if (root->childCount() == 0) {
+        delete root;
         if (msg.isEmpty()) {
             msg = tr("Found nothing to play.");
         } else {
             msg = tr("Found no files to play in '%1'.").arg(msg);
         }
-
-        delete root;
-        enableActions();
-
+        WZINFO(msg);
         QMessageBox::information(this, tr("Nothing to play"), msg);
+        enableActions();
         return;
     }
 
-    // Returns a newly created root
-    root = playlistWidget->add(root, addFilesTarget);
+    // Returns a newly created root when all items are replaced
+    root = playlistWidget->add(root, addTarget);
     if (root) {
         filename = root->filename();
-        WZDEBUG("filename set to '" + filename + "'");
+        WZINFO("Filename set to '" + filename + "'");
         setPlaylistTitle();
-
-        // Let the player have a go at a failed file name like http://
-        if (root->childCount() == 1) {
-            TPlaylistItem* child = root->plChild(0);
-            if (child->state() == PSTATE_FAILED) {
-                WZDEBUG("Retrying '" + child->filename() + "'");
-                child->setState(PSTATE_LOADING);
-            }
-        }
     }
 
-    if (addFilesStartPlay) {
-        if (!addFilesFileToPlay.isEmpty()) {
-            TPlaylistItem* item =
-                    playlistWidget->findFilename(addFilesFileToPlay);
+    if (addStartPlay) {
+        if (!addFileToPlay.isEmpty()) {
+            TPlaylistItem* item = playlistWidget->findFilename(addFileToPlay);
             if (item) {
                 playItem(item);
                 return;
@@ -436,31 +425,31 @@ void TPlaylist::onThreadFinished() {
 void TPlaylist::abortThread() {
 
     if (thread) {
-        WZDEBUG("aborting add files thread");
-        addFilesStartPlay = false;
+        WZDEBUG("Aborting add files thread");
+        addStartPlay = false;
         restartThread = false;
         thread->abort();
     }
 }
 
-void TPlaylist::addFilesStartThread() {
+void TPlaylist::addStartThread() {
 
     if (thread) {
         // Thread still running, abort it and restart it in onThreadFinished()
-        WZDEBUG("add files thread still running. Aborting it...");
+        WZDEBUG("Add files thread still running. Aborting it...");
         restartThread = true;
         thread->abort();
     } else {
-        WZDEBUG("starting add files thread");
+        WZDEBUG("Starting add files thread");
         restartThread = false;
 
         // Allow single image
         bool addImages = Settings::pref->addImages
-                         || ((addFilesFiles.count() == 1)
-                             && extensions.isImage(addFilesFiles.at(0)));
+                         || ((addFiles.count() == 1)
+                             && extensions.isImage(addFiles.at(0)));
 
         thread = new TAddFilesThread(this,
-                                     addFilesFiles,
+                                     addFiles,
                                      Settings::pref->nameBlacklist,
                                      Settings::pref->addDirectories,
                                      Settings::pref->addVideo,
@@ -478,20 +467,18 @@ void TPlaylist::addFilesStartThread() {
     }
 }
 
-void TPlaylist::addFiles(const QStringList& files,
-                         bool startPlay,
-                         QTreeWidgetItem* target,
-                         const QString& fileToPlay,
-                         bool searchForItems) {
-    debug << "addFiles: files" << files << "startPlay" << startPlay << debug;
+void TPlaylist::add(const QStringList& files,
+                    bool startPlay,
+                    TPlaylistItem* target,
+                    const QString& fileToPlay) {
+    debug << "add files" << files << "startPlay" << startPlay << debug;
 
-    addFilesFiles = files;
-    addFilesStartPlay = startPlay;
-    addFilesTarget = dynamic_cast<TPlaylistItem*>(target);
-    addFilesFileToPlay = fileToPlay;
-    addFilesSearchItems = searchForItems;
+    addFiles = files;
+    addStartPlay = startPlay;
+    addTarget = target;
+    addFileToPlay = fileToPlay;
 
-    addFilesStartThread();
+    addStartThread();
 }
 
 void TPlaylist::addFilesDialog() {
@@ -502,32 +489,25 @@ void TPlaylist::addFilesDialog() {
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
-        addFiles(files, false, playlistWidget->currentItem());
+        add(files, false, playlistWidget->plCurrentItem());
     }
 }
 
 void TPlaylist::addCurrentFile() {
    WZDEBUG("");
 
-    if (!player->mdat.filename.isEmpty()) {
-        TPlaylistItem* i = new TPlaylistItem(
-                    playlistWidget->root(),
-                    player->mdat.filename,
-                    player->mdat.name(),
-                    player->mdat.duration,
-                    false);
-        i->setPlayed(true);
-        i->setModified();
-    }
+   QString fn = player->mdat.filename;
+   if (!fn.isEmpty()) {
+       add(QStringList() << fn, false, playlistWidget->plCurrentItem());
+   }
 }
 
 void TPlaylist::addDirectory() {
 
-    QString s = TFileDialog::getExistingDirectory(this,
-                    tr("Choose a directory"), Settings::pref->last_dir);
-
+    QString s = TFileDialog::getExistingDirectory(
+                this, tr("Choose a directory"), Settings::pref->last_dir);
     if (!s.isEmpty()) {
-        addFiles(QStringList() << s, false, playlistWidget->currentItem());
+        add(QStringList() << s, false, playlistWidget->plCurrentItem());
     }
 }
 
@@ -535,7 +515,7 @@ void TPlaylist::addUrls() {
 
     TMultilineInputDialog d(this);
     if (d.exec() == QDialog::Accepted && d.lines().count() > 0) {
-        addFiles(d.lines(), false, playlistWidget->currentItem());
+        add(d.lines(), false, playlistWidget->plCurrentItem());
     }
 }
 
@@ -576,16 +556,26 @@ void TPlaylist::play() {
 void TPlaylist::playOrPause() {
     WZDEBUG("state " + player->stateToString());
 
-    if (player->state() == Player::STATE_PLAYING) {
-        player->pause();
-    } else if (player->state() == Player::STATE_PAUSED) {
-        player->play();
-    } else if (reachedEndOfPlaylist) {
-        playNext(true);
-    } else if (playlistWidget->playingItem) {
-        playItem(playlistWidget->playingItem);
-    } else {
-        play();
+    switch (player->state()) {
+        case Player::STATE_PLAYING: player->pause(); break;
+        case Player::STATE_PAUSED: player->play(); break;
+
+        case Player::STATE_STOPPING:
+        case Player::STATE_RESTARTING:
+        case Player::STATE_LOADING: break;
+
+        case Player::STATE_STOPPED:
+        default:
+            if (reachedEndOfPlaylist) {
+                playNext(true);
+            } else if (playlistWidget->playingItem) {
+                playItem(playlistWidget->playingItem);
+            } else if (playlistWidget->plCurrentItem()) {
+                playItem(playlistWidget->plCurrentItem());
+            } else {
+                player->play();
+            }
+            break;
     }
 }
 
@@ -664,7 +654,7 @@ void TPlaylist::startPlay() {
             playItem(item);
         }
     } else {
-        WZINFO("nothing to play");
+        WZINFO("Nothing to play");
     }
 }
 
@@ -748,10 +738,6 @@ bool TPlaylist::hasItems() const {
     return playlistWidget->hasItems();
 }
 
-bool TPlaylist::hasPlayingItem() const {
-    return playlistWidget->playingItem;
-}
-
 void TPlaylist::removeSelected(bool deleteFromDisk) {
     WZDEBUG("");
 
@@ -784,26 +770,26 @@ void TPlaylist::removeAll() {
 void TPlaylist::refresh() {
 
     if (!filename.isEmpty() && maybeSave()) {
-        QString current;
+        QString playing;
         if (player->statePOP()) {
-            current = playingFile();
-            if (!current.isEmpty()) {
+            playing = playingFile();
+            if (!playing.isEmpty()) {
                 player->saveRestartState();
             }
         }
         clear();
-        addFiles(QStringList() << filename, !current.isEmpty(), 0, current);
+        add(QStringList() << filename, !playing.isEmpty(), 0, playing);
     }
 }
 
 void TPlaylist::browseDir() {
 
-    QString fn;
-    TPlaylistItem* i = playlistWidget->plCurrentItem();
-    if (i) {
-        fn = i->filename();
-    } else {
-        fn = player->mdat.filename;
+    QString fn = player->mdat.filename;
+    if (isVisible()) {
+        TPlaylistItem* item = playlistWidget->plCurrentItem();
+        if (item) {
+            fn = item->filename();
+        }
     }
     if (fn.isEmpty()) {
         return;
@@ -1022,7 +1008,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (modified) {
             item->setModified();
         } else {
-            WZDEBUG("Considered item uptodate");
+            WZDEBUG("Item considered uptodate");
         }
 
         // Pause a single image
@@ -1042,7 +1028,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
         playlistWidget->setSort(-1, Qt::AscendingOrder);
         TPlaylistItem* root = playlistWidget->root();
         root->setFilename(filename, md->name());
-        // setFilename() won't recognize iso's as folder. No need to set icon.
+        // setFilename() won't recognize iso's as folder.
+        // No need to set icon as it is not visible
         root->setFolder(true);
 
         TDiscName disc = md->disc;
@@ -1146,7 +1133,7 @@ void TPlaylist::paste() {
         if (parent && !parent->isFolder()) {
             parent = parent->plParent();
         }
-        addFiles(files, false, parent, "", true);
+        add(files, false, parent);
     }
 }
 
@@ -1310,7 +1297,7 @@ void TPlaylist::dropEvent(QDropEvent *e) {
                         e->pos()
                         - playlistWidget->pos()
                         - playlistWidget->viewport()->pos());
-            addFiles(files, false, target);
+            add(files, false, static_cast<TPlaylistItem*>(target));
         }
 
         e->accept();
@@ -1373,7 +1360,7 @@ void TPlaylist::openFileDialog() {
 }
 
 
-void TPlaylist::openFiles(const QStringList& files, const QString& current) {
+void TPlaylist::openFiles(const QStringList& files, const QString& fileToPlay) {
     WZDEBUG("");
 
     if (files.empty()) {
@@ -1383,7 +1370,7 @@ void TPlaylist::openFiles(const QStringList& files, const QString& current) {
 
     if (maybeSave()) {
         clear();
-        addFiles(files, true, 0, current);
+        add(files, true, 0, fileToPlay);
     }
 }
 
@@ -1396,7 +1383,7 @@ void TPlaylist::openDirectory(const QString& dir) {
         player->open(dir);
     } else {
         clear();
-        addFiles(QStringList() << dir, true);
+        add(QStringList() << dir, true);
     }
 }
 
@@ -1416,7 +1403,7 @@ void TPlaylist::openPlaylist(const QString& filename) {
 
     Settings::pref->last_dir = QFileInfo(filename).absolutePath();
     clear();
-    addFiles(QStringList() << filename, true);
+    add(QStringList() << filename, true);
 }
 
 void TPlaylist::askOpenPlaylist() {
@@ -1591,8 +1578,7 @@ bool TPlaylist::save() {
     msgOSD(tr("Saving %1").arg(fi.fileName()), 0);
 
     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
-    TPlaylistItem* root = playlistWidget->root();
-    root->setFilename(filename);
+    playlistWidget->root()->setFilename(filename);
     setPlaylistTitle();
     Settings::pref->last_dir = fi.absolutePath();
 

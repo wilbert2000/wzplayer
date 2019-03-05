@@ -1428,7 +1428,7 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
             playlist->openFiles(file_list);
         } else if (command == "add_to_playlist") {
             QStringList file_list = arg.split(" <<sep>> ");
-            playlist->addFiles(file_list);
+            playlist->add(file_list);
         } else if (command == "media_title") {
             QStringList list = arg.split(" <<sep>> ");
             player->addForcedTitle(list[0], list[1]);

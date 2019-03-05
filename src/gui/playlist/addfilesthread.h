@@ -83,11 +83,6 @@ private:
                                 const QString& name,
                                 bool protectName);
 
-    TPlaylistItem* addItemNotFound(TPlaylistItem* parent,
-                                   const QString& filename,
-                                   QString name,
-                                   bool protectName);
-
     TPlaylistItem* addItem(TPlaylistItem* parent,
                            QString filename,
                            QString name,

@@ -57,14 +57,12 @@ public:
     QString playingFile() const;
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
     bool hasItems() const;
-    bool hasPlayingItem() const;
     bool isLoading() const { return thread; }
 
-    void addFiles(const QStringList& files,
+    void add(const QStringList& files,
                   bool startPlay = false,
-                  QTreeWidgetItem* target = 0,
-                  const QString& fileToPlay = "",
-                  bool searchForItems = false);
+                  TPlaylistItem* target = 0,
+                  const QString& fileToPlay = "");
     void getFilesToPlay(QStringList& files) const;
     void abortThread();
 
@@ -74,7 +72,7 @@ public:
 
 public slots:
     void open(const QString &fileName, const QString& name = QString());
-    void openFiles(const QStringList& files, const QString& current = "");
+    void openFiles(const QStringList& files, const QString& fileToPlay = "");
     void openFileDialog();
     void openDirectoryDialog();
 
@@ -145,11 +143,10 @@ private:
     QString filename;
 
     TAddFilesThread* thread;
-    QStringList addFilesFiles;
-    TPlaylistItem* addFilesTarget;
-    QString addFilesFileToPlay;
-    bool addFilesStartPlay;
-    bool addFilesSearchItems;
+    QStringList addFiles;
+    TPlaylistItem* addTarget;
+    QString addFileToPlay;
+    bool addStartPlay;
     bool restartThread;
 
     int disableEnableActions;
@@ -163,7 +160,7 @@ private:
     void openDirectory(const QString& dir);
 
     void clear();
-    void addFilesStartThread();
+    void addStartThread();
     void startPlay();
     void playItem(TPlaylistItem* item, bool keepPaused = false);
 

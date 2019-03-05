@@ -537,35 +537,6 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
     return dirItem;
 }
 
-TPlaylistItem* TAddFilesThread::addItemNotFound(TPlaylistItem* parent,
-                                                const QString& filename,
-                                                QString name,
-                                                bool protectName) {
-
-    TDiscName disc(filename);
-    if (disc.valid) {
-        if (name.isEmpty()) {
-            name = disc.displayName();
-        }
-    } else if (parent->isWZPlaylist()){
-
-#ifdef Q_OS_WIN
-        bool localFile = true;
-#else
-        bool localFile = QUrl(filename).scheme().isEmpty();
-#endif
-
-        if (localFile) {
-            WZINFO("ignoring no longer existing playlist item '" + filename
-                   + "'");
-            parent->setModified();
-            return 0;
-         }
-    }
-
-    return new TPlaylistItem(parent, filename, name, 0, protectName);
-}
-
 TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                                         QString filename,
                                         QString name,
@@ -605,10 +576,24 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                 return 0;
             }
         } else {
-            return addItemNotFound(parent, filename, name, protectName);
+            TDiscName disc(filename);
+            if (disc.valid) {
+                if (name.isEmpty()) {
+                    name = disc.displayName();
+                }
+            } else if (QUrl(filename).scheme().isEmpty()
+                       && parent->isWZPlaylist()) {
+                WZINFO(QString("Ignoring no longer existing file '%1'")
+                       .arg(filename));
+                parent->setModified();
+                return 0;
+            }
+            return new TPlaylistItem(parent, filename, name, duration,
+                                     protectName);
         }
     }
 
+    // Existing item
     // Check against blacklist
     if (useBlackList && nameBlackListed(fi.absoluteFilePath())) {
         // An item in the playlist matches the blacklist. Signal we dropped it.
