@@ -216,6 +216,11 @@ void TPlaylistItem::setFileInfo() {
                                                 caseSensitiveFileNames) == 0;
             if (mWZPlaylist) {
                 mBaseName = fi.dir().dirName();
+                fi.setFile(fi.absolutePath());
+                if (fi.isSymLink()) {
+                    mSymLink = true;
+                    mTarget = fi.symLinkTarget();
+                }
             }
         }
     }
