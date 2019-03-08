@@ -5,6 +5,7 @@
 #include "gui/playlist/playlistitem.h"
 #include "wzdebug.h"
 #include <QTreeWidget>
+#include <QTimer>
 
 
 class QSettings;
@@ -95,6 +96,8 @@ private:
     Qt::SortOrder sortOrder;
     Action::Menu::TMenuExec* columnsMenu;
 
+    QTimer wordWrapTimer;
+
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;
     QString stoppedFilename;
@@ -118,9 +121,10 @@ private:
     bool removeFromDisk(const QString& filename, const QString& playingFile);
 
 private slots:
+    void resizeNameColumnAll();
     void onItemExpanded(QTreeWidgetItem* i);
     void onSectionClicked(int section);
-    void onSectionResized(int, int, int);
+    void onSectionResized(int logicalIndex, int oldSize, int newSize);
     void onColumnMenuTriggered(QAction* action);
     void onCopyFinished(int id, bool error);
     void onMoveAboutToStart(int id);

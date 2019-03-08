@@ -13,8 +13,6 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     style = aStyle;
 
-    iconSize = QSize(22, 22);
-
     fileIcon = QIcon(style->standardPixmap(QStyle::SP_FileIcon));
     fileLinkIcon = QIcon(style->standardPixmap(QStyle::SP_FileLinkIcon));
 
@@ -24,15 +22,23 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
 
-    folderLinkIcon = QIcon(style->standardPixmap(QStyle::SP_DirLinkIcon));
+    folderLinkIcon = QIcon();
+    folderLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkIcon),
+                             QIcon::Normal, QIcon::Off);
+    folderLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkOpenIcon),
+                             QIcon::Normal, QIcon::On);
+
     //driveCDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveCDIcon));
     //driveDVDIcon = QIcon(style->standardPixmap(QStyle::SP_DriveDVDIcon));
     //urlIcon = Images::icon("type_url", iconSize.width());
 
     iconPlayed =  QIcon(style->standardPixmap(QStyle::SP_DialogOkButton));
-    iconLoading = Images::icon("loading", iconSize.width());
-    iconPlaying = Images::icon("play", iconSize.width());
-    iconFailed = Images::icon("failed", iconSize.width());
+    iconLoading =  QIcon(style->standardPixmap(QStyle::SP_MessageBoxQuestion));
+    iconPlaying =  QIcon(style->standardPixmap(QStyle::SP_MediaPlay));
+    iconFailed =  QIcon(style->standardPixmap(QStyle::SP_MessageBoxWarning));
+
+    // TODO: fix "device independant pixels"?
+    iconSize = folderIcon.actualSize(QSize(22, 22));
 }
 
 /* No longer used

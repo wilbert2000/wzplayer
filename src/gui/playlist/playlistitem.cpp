@@ -58,6 +58,8 @@ TPlaylistItem::TPlaylistItem() :
     setTextAlignment(COL_EXT, TEXT_ALIGN_TYPE);
     setTextAlignment(COL_TIME, TEXT_ALIGN_TIME);
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
+
+    setIcon(COL_NAME, iconProvider.folderIcon);
 }
 
 // Copy constructor
@@ -627,67 +629,81 @@ int TPlaylistItem::getLevel() const {
     return plParent()->getLevel() + 1;
 }
 
-// Initialised by constructor TPlaylistWidget by calling setSpacing()
-int TPlaylistItem::indentation = 20;
-int TPlaylistItem::hSpacing = 12;
-int TPlaylistItem::vSpacing = 8;
-QSize TPlaylistItem::minSize(28, 28);
+// Initialised in constructor TPlaylistWidget by calling setSpacing() on root
+int TPlaylistItem::hSpacing = 28;
+int TPlaylistItem::vSpacing = 6;
+int TPlaylistItem::bounding = 2;
 
-void TPlaylistItem::setSpacing(int indent, int rowHeight, int lineSpacing) {
+void TPlaylistItem::setSpacing() {
 
-    indentation = indent;
+    QString txt = "Hello";
+    setText(COL_NAME, txt);
+    QStyleOptionViewItem opt;
+    opt.features = QStyleOptionViewItem::HasDisplay
+            | QStyleOptionViewItem::HasDecoration;
+    opt.text = txt;
+    opt.font = font(COL_NAME);
+    opt.fontMetrics = QFontMetrics(opt.font);
+    opt.icon = icon(COL_NAME);
+    opt.decorationSize = treeWidget()->iconSize();
+    opt.index = treeWidget()->model()->index(0, 0);
+    QAbstractItemDelegate* del = treeWidget()->itemDelegate();
+    QSize size = del->sizeHint(opt, opt.index);
 
-    vSpacing = rowHeight - lineSpacing;
-    // hSpacing needs space for icon too, hence space / 2 * 3
-    hSpacing = (vSpacing / 2) * 3;
+    QRect r(QPoint(), QSize(512, 512));
+    QRect br = opt.fontMetrics.boundingRect(r, TEXT_ALIGN_NAME, txt);
 
-    minSize.rwidth() = rowHeight;
-    minSize.rheight() = rowHeight;
+    int ffm = treeWidget()->style()->pixelMetric(
+                QStyle::PM_FocusFrameHMargin, 0, treeWidget());
+    // Note: QItemDelegate adds 2 * (QStyle::PM_FocusFrameHMargin + 1) to
+    // the width of the text
+    hSpacing = size.width() - br.width() - 2 * (ffm + 1);
+    vSpacing = size.height() - br.height() - ffm;
+    bounding = br.height() - opt.fontMetrics.lineSpacing();
+
+    WZDEBUG(QString("%1 %2 -> %3 %4 hSpacing %5 vSpacing %6 bounding %7")
+            .arg(br.width()).arg(br.height())
+            .arg(size.width()).arg(size.height())
+            .arg(hSpacing).arg(vSpacing).arg(bounding));
+
+    setText(COL_NAME, "");
 }
 
-// static, return the size of the name column
+// Return the size of the name column given the available width
 QSize TPlaylistItem::getSizeColumnName(int width,
                                        const QString& text,
                                        const QFontMetrics& fm) {
 
-    // Substract icon and spacing from availlable width for text
-    int d = iconProvider.iconSize.width() + hSpacing;
-    int w = width - d;
-
     // Return minimal size if no space available
-    if (w <= minSize.width()) {
-        return minSize;
+    if (width <= hSpacing) {
+        return QSize(hSpacing, iconProvider.iconSize.height() + vSpacing);
     }
+
+    // Substract spacing from availlable width for text
+    int maxWidth = width - hSpacing;
+    // Allow 4 lines of text
+    int maxHeight = 4 * fm.lineSpacing() + bounding;
 
     // Get bounding rect of text
-    int maxHeight = 4 * fm.lineSpacing();
-    QRect r = QRect(QPoint(), QSize(w, maxHeight));
+    QRect r = QRect(QPoint(), QSize(maxWidth, maxHeight));
     QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text);
 
-    // Pick up the height from bounding rect
-    int h = br.height() + vSpacing;
-    if (h < minSize.height()) {
-        h = minSize.height();
-    }
-    // Pick up the width from bounding rect
-    if (br.width() < w) {
-        width = br.width() + d;
+    if (br.height() > maxHeight) {
+       br.setHeight(maxHeight);
     }
 
-    return QSize(width, h);
+    return QSize(width, br.height() + vSpacing);
 }
 
 QSize TPlaylistItem::getSizeHintName(int level) const {
 
-    static int width = 512;
-
     QTreeWidget* tree = treeWidget();
-    if (tree) {
-        width = tree->header()->sectionSize(COL_NAME);
-        indentation = tree->indentation();
+    if (!tree) {
+        return QSize(-1, -1);
     }
 
-    return getSizeColumnName(width - level * indentation,
+    return getSizeColumnName(tree->header()->sectionSize(COL_NAME)
+                             - level * tree->indentation(),
                              text(COL_NAME),
                              QFontMetrics(font(COL_NAME)));
 }

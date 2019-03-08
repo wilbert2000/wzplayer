@@ -35,9 +35,6 @@ public:
         COL_COUNT = 4
     };
 
-    // Pass indentation and spacing from QTreeWidget to items
-    static void setSpacing(int indent, int rowHeight, int lineSpacing);
-
     // Create a root node
     TPlaylistItem();
     // Copy constructor
@@ -124,12 +121,12 @@ public:
     virtual TPlaylistItem* clone() const override;
     virtual bool operator<(const QTreeWidgetItem& other) const override;
 
+    void setSpacing();
 
 private:
-    static int indentation;
     static int hSpacing;
     static int vSpacing;
-    static QSize minSize;
+    static int bounding;
 
     static QSize getSizeColumnName(int width,
                                    const QString& text,

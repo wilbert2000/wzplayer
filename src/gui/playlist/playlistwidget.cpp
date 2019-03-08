@@ -21,6 +21,7 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QMimeData>
+#include <QApplication>
 
 
 namespace Gui {
@@ -37,6 +38,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     setObjectName("playlistwidget");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setIconSize(iconProvider.iconSize);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
     setEditTriggers(QAbstractItemView::EditKeyPressed);
 
     setColumnCount(TPlaylistItem::COL_COUNT);
@@ -53,15 +56,11 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
                                    QHeaderView::ResizeToContents);
 
     // Create a TPlaylistItem root
-    addTopLevelItem(new TPlaylistItem());
-
-    // Pass item spacing for TPlaylistItem::getSizeColumnName()
-    TPlaylistItem::setSpacing(indentation(),
-                              visualRect(model()->index(0,0)).height(),
-                              QFontMetrics(font()).lineSpacing());
-
+    TPlaylistItem* root = new TPlaylistItem();
+    addTopLevelItem(root);
+    // Setup spacing playlist items for wordwrap
+    root->setSpacing();
     setRootIndex(model()->index(0, 0));
-    setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     // Drag and drop
     setDragEnabled(true);
@@ -73,15 +72,17 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     setDefaultDropAction(Qt::MoveAction);
 
     // Wordwrap
-    setIconSize(iconProvider.iconSize);
     setWordWrap(true);
     setUniformRowHeights(false);
+    wordWrapTimer.setSingleShot(true);
+    connect(&wordWrapTimer, &QTimer::timeout,
+            this, &TPlaylistWidget::resizeNameColumnAll);
+    connect(header(), &QHeaderView::sectionResized,
+            this, &TPlaylistWidget::onSectionResized);
 
     setAutoExpandDelay(750);
     connect(this, &TPlaylistWidget::itemExpanded,
             this, &TPlaylistWidget::onItemExpanded);
-    connect(header(), &QHeaderView::sectionResized,
-            this, &TPlaylistWidget::onSectionResized);
 
     header()->setSectionsClickable(true);
     connect(header(), &QHeaderView::sectionClicked,
@@ -1045,16 +1046,22 @@ void TPlaylistWidget::resizeNameColumn(TPlaylistItem* item, int level) {
     }
 }
 
+void TPlaylistWidget::resizeNameColumnAll() {
+    resizeNameColumn(root(), 0);
+}
+
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* i) {
 
     TPlaylistItem* item = static_cast<TPlaylistItem*>(i);
-    resizeNameColumn(item, item->getLevel());
+    if (!wordWrapTimer.isActive()) {
+        resizeNameColumn(item, item->getLevel());
+    }
 }
 
 void TPlaylistWidget::onSectionResized(int logicalIndex, int, int) {
 
     if (logicalIndex == TPlaylistItem::COL_NAME) {
-        resizeNameColumn(root(), 0);
+        wordWrapTimer.start();
     }
 }
 
@@ -1136,7 +1143,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         if (item->childCount()) {
             setCurrentItem(item->child(0));
-            resizeNameColumn(item, 0);
+            wordWrapTimer.start();
         }
 
         if (item->modified()) {
