@@ -551,6 +551,9 @@ void TPlaylistWidget::onCopyFinished(int id, bool error) {
             if (addDroppedItem(source, dest, destItem)) {
                 destItem->setState(PSTATE_STOPPED);
                 destItem->setModified(true, true);
+                if (sourceItem == plCurrentItem()) {
+                    setCurrentItem(destItem);
+                }
                 WZINFO(QString("Copied '%1' to '%2'").arg(source).arg(dest));
             }
         } else {
