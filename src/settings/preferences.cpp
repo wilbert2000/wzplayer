@@ -92,13 +92,7 @@ void TPreferences::reset() {
 
     // Advanced tab
     actions_to_run = "";
-
-#ifdef PORTABLE_APP
-    player_additional_options = "-nofontconfig";
-#else
     player_additional_options = "";
-#endif
-
     player_additional_video_filters = "";
     player_additional_audio_filters = "";
 
@@ -358,9 +352,6 @@ void TPreferences::reset() {
 
     // Misc
     use_edl_files = true;
-
-    // If set high enough the OS will detect the "not responding state"
-    // and popup a dialog...
     time_to_kill_player = 5000;
 
     // Display frame counter in status bar timestamp
@@ -804,13 +795,13 @@ void TPreferences::setPlayerBin(QString bin,
         }
 
         if (found_bin.isEmpty()) {
-            WZWARN("failed to find player '" + bin + "'");
+            WZWARN("Failed to find player '" + bin + "'");
         } else if (allow_other_player || found_id == wanted_player) {
-            WZWARN("failed to find player '" + bin
+            WZWARN("Failed to find player '" + bin
                    + "', selecting '" + found_bin + "'");
             bin = found_bin;
         } else {
-            WZWARN("failed to find player '" + bin
+            WZWARN("Failed to find player '" + bin
                    + "'. Maybe try '" + found_bin + "' instead.");
         }
     } else {
@@ -835,7 +826,7 @@ void TPreferences::setPlayerBin(QString bin,
         }
     }
 
-    WZINFO("selected player '" + bin + "'");
+    WZINFO("Selected player '" + bin + "'");
     WZDEBUG("mplayer vo '" + mplayer_vo
             + "' ao '" + mplayer_ao
             + "' options '" + mplayer_additional_options + "'");
@@ -868,12 +859,13 @@ void TPreferences::load() {
 
     // Update Log4Qt
     // Command line options --info, --debug and --trace override log level
+    // If current level is still warn, there are no cmd line overrides
     if (Log4Qt::LogManager::rootLogger()->level() == Log4Qt::Level::WARN_INT) {
         Log4Qt::LogManager::rootLogger()->setLevel(log_level);
         Log4Qt::LogManager::qtLogger()->setLevel(log_level);
-        WZINFO("log level set to " + log_level.toString());
+        WZINFO("Log level set to " + log_level.toString());
     } else {
-        WZINFO("log level overriden by command line");
+        WZINFO("Log level overriden by command line");
     }
 
 
@@ -1273,14 +1265,14 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    WZINFO("loaded config file version " + QString::number(config_version)
-           + ", executable CURRENT_CONFIG_VERSION "
-           + QString::number(CURRENT_CONFIG_VERSION));
+    WZINFO(QString("Loaded config file version %1,"
+                   " executable CURRENT_CONFIG_VERSION is %2")
+           .arg(config_version).arg(CURRENT_CONFIG_VERSION));
 
     // Check config version
     if (config_version < CURRENT_CONFIG_VERSION) {
         if (config_version > 0) {
-            WZINFO("config is old, updating it");
+            WZINFO("Config is old, updating it");
         }
         clean_config = true;
         config_version = CURRENT_CONFIG_VERSION;
@@ -1307,19 +1299,18 @@ double TPreferences::monitorAspectDouble() {
     if (exp.indexIn(monitor_aspect) >= 0) {
         int w = exp.cap(1).toInt();
         int h = exp.cap(2).toInt();
-        WZINFO("monitor aspect set to " + QString::number(w)
-               + ":" + QString::number(h));
-        return h <= 0.01 ? 0 : (double) w / h;
+        WZINFO(QString("Monitor aspect set to %1:%2").arg(w).arg(h));
+        return h <= 0 ? 0 : (double) w / h;
     }
 
     bool ok;
     double res = monitor_aspect.toDouble(&ok);
     if (ok) {
-        WZINFO("monitor aspect set to " + QString::number(res));
+        WZINFO("Monitor aspect ratio set to " + QString::number(res));
         return res;
     }
 
-    WZWARN("failed to parse monitor aspect ratio, reset to auto detect");
+    WZWARN("Failed to parse monitor aspect ratio, reset to auto detect");
     return 0;
 }
 
@@ -1365,10 +1356,10 @@ void TPreferences::compileTitleBlackList() {
         if (!s.isEmpty()) {
             rx.setPattern(s);
             if (rx.isValid()) {
-                WZDEBUG("adding '" + rx.pattern() + "'");
+                WZDEBUG("Adding '" + rx.pattern() + "'");
                 rxTitleBlacklist.append(rx);
             } else {
-                WZERROR("failed to parse regular expression '" + s + "'");
+                WZWARN("Failed to parse regular expression '" + s + "'");
             }
         }
     }
