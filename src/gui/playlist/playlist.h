@@ -53,11 +53,7 @@ public:
     explicit TPlaylist(QWidget* parent, TMainWindow* mw);
     virtual ~TPlaylist();
 
-    TPlaylistItem* plCurrentItem() const;
     QString playingFile() const;
-    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
-    bool hasItems() const;
-    bool isLoading() const { return thread; }
 
     void add(const QStringList& files,
                   bool startPlay = false,
@@ -78,22 +74,7 @@ public slots:
 
     void stop();
 
-    void newFolder();
-    void findPlayingItem();
-
-    void addCurrentFile();
-    void addFilesDialog();
-    void addDirectory();
-    void addUrls();
     void addRemovedItem(const QString& s);
-
-    void cut();
-    void copySelected();
-    void paste();
-
-    void removeSelected(bool deleteFromDisk = false);
-    void removeSelectedFromDisk();
-    void removeAll();
 
 signals:
     void playlistFinished();
@@ -136,7 +117,12 @@ private:
     Action::TAction* pasteAct;
 
     Action::Menu::TMenu* playlistAddMenu;
+    Action::TAction* addPlayingFileAct;
+
     Action::Menu::TMenu* playlistRemoveMenu;
+    Action::TAction* removeSelectedAct;
+    Action::TAction* removeSelectedFromDiskAct;
+    Action::TAction* removeAllAct;
 
 
     QString filename;
@@ -185,9 +171,17 @@ private slots:
 
     bool save();
     bool saveAs();
+    void refresh();
     void browseDir();
 
-    void refresh();
+    void addPlayingFile();
+    void addFilesDialog();
+    void addDirectory();
+    void addUrls();
+
+    void removeSelected(bool deleteFromDisk = false);
+    void removeSelectedFromDisk();
+    void removeAll();
 
     void play();
     void playOrPause();
@@ -196,11 +190,20 @@ private slots:
     void openInNewWindow();
     void resumePlay();
 
-    void onRepeatToggled(bool toggled);
-    void onShuffleToggled(bool toggled);
+    void findPlayingItem();
+    void newFolder();
+
+    void cut();
+    void copySelected();
+    void paste();
 
     void enablePaste();
+    void enableRemoveFromDiskAction();
+    void enableRemoveMenu();
     void enableActions();
+
+    void onRepeatToggled(bool toggled);
+    void onShuffleToggled(bool toggled);
 
     void onItemActivated(QTreeWidgetItem* i, int);
     void onPlayerError();

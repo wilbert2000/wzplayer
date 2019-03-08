@@ -1,8 +1,7 @@
-#ifndef GUI_PLAYLIST_MENUADD_H
-#define GUI_PLAYLIST_MENUADD_H
+#ifndef GUI_PLAYLIST_MENUADDREMOVED_H
+#define GUI_PLAYLIST_MENUADDREMOVED_H
 
 #include "gui/action/menu/menu.h"
-#include "wzdebug.h"
 
 
 class QTreeWidgetItem;
@@ -11,10 +10,6 @@ namespace Gui {
 
 class TMainWindow;
 
-namespace Action {
-class TAction;
-}
-
 namespace Playlist {
 
 class TPlaylist;
@@ -22,13 +17,12 @@ class TPlaylistWidget;
 class TPlaylistItem;
 
 
-class TAddRemovedMenu : public Gui::Action::Menu::TMenu {
+class TMenuAddRemoved : public Gui::Action::Menu::TMenu {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-    explicit TAddRemovedMenu(QWidget* parent, TMainWindow* w,
-                             TPlaylist* playlist);
-    virtual ~TAddRemovedMenu();
+    explicit TMenuAddRemoved(TPlaylist* playlist, TMainWindow* w,
+                             TPlaylistWidget* plw);
+    virtual ~TMenuAddRemoved();
 
 signals:
     void addRemovedItem(QString s);
@@ -45,15 +39,7 @@ private slots:
     void onTriggered(QAction* action);
 };
 
-
-class TMenuAdd : public Gui::Action::Menu::TMenu {
-public:
-    explicit TMenuAdd(TPlaylist* playlist, TMainWindow* w);
-    virtual ~TMenuAdd();
-};
-
-
 } // namespace Playlist
 } // namespace Gui
 
-#endif // GUI_PLAYLIST_MENUADD_H
+#endif // GUI_PLAYLIST_MENUADDREMOVED_H

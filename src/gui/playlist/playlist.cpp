@@ -20,8 +20,7 @@
 #include "gui/playlist/playlistwidget.h"
 #include "gui/playlist/playlistitem.h"
 #include "gui/playlist/addfilesthread.h"
-#include "gui/playlist/menuadd.h"
-#include "gui/playlist/menuremove.h"
+#include "gui/playlist/menuaddremoved.h"
 #include "gui/mainwindow.h"
 #include "gui/multilineinputdialog.h"
 #include "gui/action/action.h"
@@ -272,11 +271,76 @@ void TPlaylist::createActions() {
 
     contextMenu->addSeparator();
     // Add menu
-    playlistAddMenu = new TMenuAdd(this, main_window);
+    playlistAddMenu = new Menu::TMenu(this, main_window, "pl_add_menu",
+                                      tr("Add to playlist"), "noicon");
+    playlistAddMenu->menuAction()->setIcon(style()->standardPixmap(
+                                               QStyle::SP_DialogOkButton));
+
+    // Add playing
+    addPlayingFileAct = new TAction(this, "pl_add_playing",
+                                    tr("Add playing file"));
+    playlistAddMenu->addAction(addPlayingFileAct);
+    connect(addPlayingFileAct, &TAction::triggered,
+            this, &TPlaylist::addPlayingFile);
+
+    // Add files
+    TAction* a = new TAction(this, "pl_add_files", tr("Add file(s)..."),
+                             "noicon");
+    a->setIcon(style()->standardPixmap(QStyle::SP_FileIcon));
+    playlistAddMenu->addAction(a);
+    connect(a, &TAction::triggered, this, &TPlaylist::addFilesDialog);
+
+    // Add dir
+    a = new TAction(this, "pl_add_directory", tr("Add directory..."), "noicon");
+    a->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
+    playlistAddMenu->addAction(a);
+    connect(a, &TAction::triggered, this, &TPlaylist::addDirectory);
+
+    // Add URLs
+    a = new TAction(this, "pl_add_urls", tr("Add URL(s)..."));
+    playlistAddMenu->addAction(a);
+    connect(a, &TAction::triggered, this, &TPlaylist::addUrls);
+
+    // Add removed sub menu
+    playlistAddMenu->addMenu(new TMenuAddRemoved(this, main_window,
+                                                 playlistWidget));
+
     contextMenu->addMenu(playlistAddMenu);
 
     // Remove menu
-    playlistRemoveMenu = new TMenuRemove(this, main_window);
+    playlistRemoveMenu = new Menu::TMenu(this, main_window, "pl_remove_menu",
+                                         tr("Remove from playlist"), "noicon");
+    playlistRemoveMenu->menuAction()->setIcon(style()->standardPixmap(
+                                                QStyle::SP_DialogCancelButton));
+    connect(playlistRemoveMenu, &Menu::TMenu::aboutToShow,
+            this, &TPlaylist::enableRemoveMenu);
+
+    // Delete from playlist
+    removeSelectedAct = new TAction(this, "pl_delete",
+        tr("Delete from playlist"), "noicon", Qt::Key_Delete);
+    removeSelectedAct->setIcon(style()->standardPixmap(QStyle::SP_TrashIcon));
+    playlistRemoveMenu->addAction(removeSelectedAct);
+    connect(removeSelectedAct, &TAction::triggered,
+            this, &TPlaylist::removeSelected);
+
+    // Delete from disk
+    removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk",
+        tr("Delete from disk..."), "noicon", Qt::SHIFT | Qt::Key_Delete);
+    removeSelectedFromDiskAct->setIcon(style()->standardPixmap(
+                                           QStyle::SP_DialogDiscardButton));
+    playlistRemoveMenu->addAction(removeSelectedFromDiskAct);
+    connect(removeSelectedFromDiskAct, &TAction::triggered,
+            this, &TPlaylist::removeSelectedFromDisk);
+    connect(playlistWidget, &TPlaylistWidget::currentItemChanged,
+            this, &TPlaylist::enableRemoveFromDiskAction);
+
+    // Clear playlist
+    removeAllAct = new TAction(this, "pl_clear", tr("Clear playlist"),
+                               "noicon", Qt::CTRL | Qt::Key_Delete);
+    removeAllAct->setIcon(style()->standardPixmap(QStyle::SP_DialogResetButton));
+    playlistRemoveMenu->addAction(removeAllAct);
+    connect(removeAllAct, &TAction::triggered, this, &TPlaylist::removeAll);
+
     contextMenu->addMenu(playlistRemoveMenu);
 
     playlistWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -492,7 +556,7 @@ void TPlaylist::addFilesDialog() {
     }
 }
 
-void TPlaylist::addCurrentFile() {
+void TPlaylist::addPlayingFile() {
    WZDEBUG("");
 
    QString fn = player->mdat.filename;
@@ -729,14 +793,6 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
-TPlaylistItem* TPlaylist::plCurrentItem() const {
-    return playlistWidget->plCurrentItem();
-}
-
-bool TPlaylist::hasItems() const {
-    return playlistWidget->hasItems();
-}
-
 void TPlaylist::removeSelected(bool deleteFromDisk) {
     WZDEBUG("");
 
@@ -854,6 +910,27 @@ void TPlaylist::enablePaste() {
                          && QApplication::clipboard()->mimeData()->hasText());
 }
 
+void TPlaylist::enableRemoveFromDiskAction() {
+
+    TPlaylistItem* current = playlistWidget->plCurrentItem();
+    removeSelectedFromDiskAct->setEnabled(
+                thread == 0
+                && current
+                && (!current->isWZPlaylist()
+                    || current->isSymLink()
+                    || current->childCount() == 0));
+    // Leaving test for non media files in directory to deleteFileFromDisk()
+}
+
+void TPlaylist::enableRemoveMenu() {
+
+    bool e = thread == 0 && playlistWidget->hasItems();
+    removeSelectedAct->setEnabled(e);
+    removeAllAct->setEnabled(e);
+    enableRemoveFromDiskAction();
+}
+
+
 void TPlaylist::enableActions() {
 
     if (disableEnableActions) {
@@ -933,7 +1010,7 @@ void TPlaylist::enableActions() {
     }
 
     // Context menu
-    bool current = plCurrentItem();
+    bool current = playlistWidget->plCurrentItem();
     editNameAct->setEnabled(enable && current);
     newFolderAct->setEnabled(enable);
     findPlayingAct->setEnabled(playlistWidget->playingItem);
@@ -941,6 +1018,11 @@ void TPlaylist::enableActions() {
     cutAct->setEnabled(enable && current);
     copyAct->setEnabled(current || !player->mdat.filename.isEmpty());
     enablePaste();
+
+    // Add menu
+    addPlayingFileAct->setEnabled(!player->mdat.filename.isEmpty());
+    // Remove menu
+    enableRemoveMenu();
 
     // Repeat and shuffle are always enabled
 }
