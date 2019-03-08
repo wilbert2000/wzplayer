@@ -122,25 +122,25 @@ void TPlaylist::createActions() {
     // Open playlist
     openPlaylistAct = new TAction(main_window, "pl_open", tr("Open playlist..."),
                           "noicon", QKeySequence("Ctrl+P"));
-    openPlaylistAct->setIcon(style()->standardPixmap(QStyle::SP_DialogOpenButton));
+    openPlaylistAct->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
     connect(openPlaylistAct, &TAction::triggered, this, &TPlaylist::askOpenPlaylist);
 
     // Save plsylist
     saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "noicon",
                           QKeySequence("Ctrl+S"));
-    saveAct->setIcon(style()->standardPixmap(QStyle::SP_DialogSaveButton));
+    saveAct->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     connect(saveAct, &TAction::triggered, this, &TPlaylist::save);
 
     // SaveAs
     saveAsAct = new TAction(main_window, "pl_saveas",
                             tr("Save playlist as..."), "noicon");
-    saveAsAct->setIcon(style()->standardPixmap(QStyle::SP_DriveHDIcon));
+    saveAsAct->setIcon(style()->standardIcon(QStyle::SP_DriveHDIcon));
     connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
     // Refresh
     refreshAct = new TAction(main_window, "pl_refresh", tr("Refresh playlist"),
                              "noicon", Qt::Key_F5);
-    refreshAct->setIcon(style()->standardPixmap(QStyle::SP_BrowserReload));
+    refreshAct->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
     connect(refreshAct, &TAction::triggered, this, &TPlaylist::refresh);
     connect(playlistWidget, &TPlaylistWidget::refresh,
             this, &TPlaylist::refresh, Qt::QueuedConnection);
@@ -148,7 +148,7 @@ void TPlaylist::createActions() {
     // Browse directory
     browseDirAct = new TAction(main_window, "pl_browse_dir",
                                tr("Browse directory"), "noicon");
-    browseDirAct->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
+    browseDirAct->setIcon(QIcon(style()->standardIcon(QStyle::SP_DirOpenIcon)));
     connect(browseDirAct, &TAction::triggered, this, &TPlaylist::browseDir);
 
     // Stop
@@ -231,7 +231,7 @@ void TPlaylist::createActions() {
     // New folder
     newFolderAct = new TAction(this, "pl_new_folder", tr("New folder"), "noicon",
                                Qt::Key_F10);
-    newFolderAct->setIcon(style()->standardPixmap(QStyle::SP_FileDialogNewFolder));
+    newFolderAct->setIcon(style()->standardIcon(QStyle::SP_FileDialogNewFolder));
     connect(newFolderAct, &TAction::triggered, this, &TPlaylist::newFolder);
     contextMenu->addAction(newFolderAct);
     addAction(newFolderAct);
@@ -273,7 +273,7 @@ void TPlaylist::createActions() {
     // Add menu
     playlistAddMenu = new Menu::TMenu(this, main_window, "pl_add_menu",
                                       tr("Add to playlist"), "noicon");
-    playlistAddMenu->menuAction()->setIcon(style()->standardPixmap(
+    playlistAddMenu->menuAction()->setIcon(style()->standardIcon(
                                                QStyle::SP_DialogOkButton));
 
     // Add playing
@@ -286,13 +286,13 @@ void TPlaylist::createActions() {
     // Add files
     TAction* a = new TAction(this, "pl_add_files", tr("Add file(s)..."),
                              "noicon");
-    a->setIcon(style()->standardPixmap(QStyle::SP_FileIcon));
+    a->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
     playlistAddMenu->addAction(a);
     connect(a, &TAction::triggered, this, &TPlaylist::addFilesDialog);
 
     // Add dir
     a = new TAction(this, "pl_add_directory", tr("Add directory..."), "noicon");
-    a->setIcon(style()->standardPixmap(QStyle::SP_DirOpenIcon));
+    a->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
     playlistAddMenu->addAction(a);
     connect(a, &TAction::triggered, this, &TPlaylist::addDirectory);
 
@@ -310,7 +310,7 @@ void TPlaylist::createActions() {
     // Remove menu
     playlistRemoveMenu = new Menu::TMenu(this, main_window, "pl_remove_menu",
                                          tr("Remove from playlist"), "noicon");
-    playlistRemoveMenu->menuAction()->setIcon(style()->standardPixmap(
+    playlistRemoveMenu->menuAction()->setIcon(style()->standardIcon(
                                                 QStyle::SP_DialogCancelButton));
     connect(playlistRemoveMenu, &Menu::TMenu::aboutToShow,
             this, &TPlaylist::enableRemoveMenu);
@@ -318,7 +318,7 @@ void TPlaylist::createActions() {
     // Delete from playlist
     removeSelectedAct = new TAction(this, "pl_delete",
         tr("Delete from playlist"), "noicon", Qt::Key_Delete);
-    removeSelectedAct->setIcon(style()->standardPixmap(QStyle::SP_TrashIcon));
+    removeSelectedAct->setIcon(style()->standardIcon(QStyle::SP_TrashIcon));
     playlistRemoveMenu->addAction(removeSelectedAct);
     connect(removeSelectedAct, &TAction::triggered,
             this, &TPlaylist::removeSelected);
@@ -326,7 +326,7 @@ void TPlaylist::createActions() {
     // Delete from disk
     removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk",
         tr("Delete from disk..."), "noicon", Qt::SHIFT | Qt::Key_Delete);
-    removeSelectedFromDiskAct->setIcon(style()->standardPixmap(
+    removeSelectedFromDiskAct->setIcon(style()->standardIcon(
                                            QStyle::SP_DialogDiscardButton));
     playlistRemoveMenu->addAction(removeSelectedFromDiskAct);
     connect(removeSelectedFromDiskAct, &TAction::triggered,
@@ -337,7 +337,7 @@ void TPlaylist::createActions() {
     // Clear playlist
     removeAllAct = new TAction(this, "pl_clear", tr("Clear playlist"),
                                "noicon", Qt::CTRL | Qt::Key_Delete);
-    removeAllAct->setIcon(style()->standardPixmap(QStyle::SP_DialogResetButton));
+    removeAllAct->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
     playlistRemoveMenu->addAction(removeAllAct);
     connect(removeAllAct, &TAction::triggered, this, &TPlaylist::removeAll);
 

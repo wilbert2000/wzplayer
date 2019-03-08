@@ -11,7 +11,7 @@ TMenuAddRemoved::TMenuAddRemoved(TPlaylist* playlist, TMainWindow* w,
     TMenu(playlist, w, "pl_add_removed_menu", tr("Add removed item"), "noicon"),
     playlistWidget(plw) {
 
-    menuAction()->setIcon(style()->standardPixmap(QStyle::SP_TrashIcon));
+    menuAction()->setIcon(style()->standardIcon(QStyle::SP_TrashIcon));
 
     connect(this, &TMenuAddRemoved::triggered,
             this, &TMenuAddRemoved::onTriggered);

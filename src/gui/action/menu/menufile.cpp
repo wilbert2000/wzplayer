@@ -146,7 +146,7 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     // Close
     // Memo: Quit added by TMainwindowTray
     a = new TAction(mw, "close", tr("Close"), "noicon");
-    a->setIcon(style()->standardPixmap(QStyle::SP_DialogCloseButton));
+    a->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
     addAction(a);
     connect(a, &TAction::triggered, mw, &TMainWindow::closeWindow);
 }
