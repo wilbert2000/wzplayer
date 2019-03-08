@@ -390,7 +390,7 @@ TPlaylistItem* TPlaylistWidget::findPreviousPlayedTime(
     return result;
 }
 
-void TPlaylistWidget::startEdit() {
+void TPlaylistWidget::editName() {
     WZDEBUG("");
 
     TPlaylistItem* cur = plCurrentItem();
@@ -401,12 +401,14 @@ void TPlaylistWidget::startEdit() {
         QKeyEvent event(QEvent::KeyPress, Qt::Key_F2, Qt::NoModifier);
         keyPressEvent(&event);
         // Unselect extension
-        QString ext = cur->extension();
-        if (!ext.isEmpty()) {
-            QKeyEvent ev(QEvent::KeyPress, Qt::Key_Left, Qt::ShiftModifier);
-            QWidget* editor = qApp->focusWidget();
-            for(int i = ext.length(); i >= 0; i--) {
-                qApp->sendEvent(editor, &ev);
+        if (!cur->isWZPlaylist()) {
+            QString ext = cur->extension();
+            if (!ext.isEmpty()) {
+                QKeyEvent ev(QEvent::KeyPress, Qt::Key_Left, Qt::ShiftModifier);
+                QWidget* editor = qApp->focusWidget();
+                for(int i = ext.length(); i >= 0; i--) {
+                    qApp->sendEvent(editor, &ev);
+                }
             }
         }
     }

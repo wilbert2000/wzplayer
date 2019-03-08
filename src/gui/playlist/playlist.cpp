@@ -225,7 +225,7 @@ void TPlaylist::createActions() {
     editNameAct = new TAction(this, "pl_edit_name", tr("Edit name..."), "",
                               Qt::Key_F2);
     connect(editNameAct, &TAction::triggered,
-            playlistWidget, &TPlaylistWidget::startEdit);
+            playlistWidget, &TPlaylistWidget::editName);
     contextMenu->addAction(editNameAct);
     addAction(editNameAct);
 
@@ -1225,7 +1225,7 @@ void TPlaylist::newFolder() {
                                             baseName, 0, false);
     item->setModified();
     playlistWidget->setCurrentItem(item);
-    playlistWidget->startEdit();
+    playlistWidget->editName();
 }
 
 void TPlaylist::findPlayingItem() {

@@ -75,7 +75,7 @@ public:
     void loadSettings(QSettings* pref);
 
 public slots:
-    void startEdit();
+    void editName();
 
 signals:
     void modifiedChanged();
