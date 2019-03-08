@@ -17,12 +17,15 @@ TMenuRemove::TMenuRemove(TPlaylist* pl, TMainWindow* mw) :
     using namespace Gui::Action;
 
     removeSelectedAct = new TAction(this, "pl_delete",
-        tr("Delete from playlist"), "", Qt::Key_Delete);
+        tr("Delete from playlist"), "noicon", Qt::Key_Delete);
+    removeSelectedAct->setIcon(style()->standardPixmap(QStyle::SP_TrashIcon));
     connect(removeSelectedAct, &TAction::triggered,
             playlist, &TPlaylist::removeSelected);
 
     removeSelectedFromDiskAct = new TAction(this, "pl_delete_from_disk",
-        tr("Delete from disk..."), "", Qt::SHIFT | Qt::Key_Delete);
+        tr("Delete from disk..."), "noicon", Qt::SHIFT | Qt::Key_Delete);
+    removeSelectedFromDiskAct->setIcon(style()->standardPixmap(
+                                           QStyle::SP_DialogDiscardButton));
     connect(removeSelectedFromDiskAct, &TAction::triggered,
             playlist, &TPlaylist::removeSelectedFromDisk);
     connect(playlist->getPlaylistWidget(), &TPlaylistWidget::currentItemChanged,
@@ -30,7 +33,8 @@ TMenuRemove::TMenuRemove(TPlaylist* pl, TMainWindow* mw) :
 
 
     removeAllAct = new TAction(this, "pl_clear", tr("Clear playlist"),
-                               "", Qt::CTRL | Qt::Key_Delete);
+                               "noicon", Qt::CTRL | Qt::Key_Delete);
+    removeAllAct->setIcon(style()->standardPixmap(QStyle::SP_DialogResetButton));
     connect(removeAllAct, &TAction::triggered, playlist, &TPlaylist::removeAll);
 }
 

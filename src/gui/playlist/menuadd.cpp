@@ -11,8 +11,10 @@ namespace Playlist {
 
 TAddRemovedMenu::TAddRemovedMenu(QWidget* parent, TMainWindow* w,
                                  TPlaylist* playlist) :
-    TMenu(parent, w, "pl_add_removed_menu", tr("Add removed item")),
+    TMenu(parent, w, "pl_add_removed_menu", tr("Add removed item"), "noicon"),
     playlistWidget(playlist->getPlaylistWidget()) {
+
+    menuAction()->setIcon(style()->standardPixmap(QStyle::SP_TrashIcon));
 
     connect(this, &TAddRemovedMenu::triggered,
             this, &TAddRemovedMenu::onTriggered);
