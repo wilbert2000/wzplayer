@@ -37,6 +37,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     setObjectName("playlistwidget");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setEditTriggers(QAbstractItemView::EditKeyPressed);
 
     setColumnCount(TPlaylistItem::COL_COUNT);
     setHeaderLabels(QStringList() << tr("Name") << tr("Ext") << tr("Length")
@@ -387,6 +388,28 @@ TPlaylistItem* TPlaylistWidget::findPreviousPlayedTime(
     }
 
     return result;
+}
+
+void TPlaylistWidget::startEdit() {
+    WZDEBUG("");
+
+    TPlaylistItem* cur = plCurrentItem();
+    if (cur) {
+        // Select COL_NAME
+        setCurrentItem(cur, TPlaylistItem::COL_NAME);
+        // Start editor
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_F2, Qt::NoModifier);
+        keyPressEvent(&event);
+        // Unselect extension
+        QString ext = cur->extension();
+        if (!ext.isEmpty()) {
+            QKeyEvent ev(QEvent::KeyPress, Qt::Key_Left, Qt::ShiftModifier);
+            QWidget* editor = qApp->focusWidget();
+            for(int i = ext.length(); i >= 0; i--) {
+                qApp->sendEvent(editor, &ev);
+            }
+        }
+    }
 }
 
 bool TPlaylistWidget::droppingOnItself(QDropEvent *event,

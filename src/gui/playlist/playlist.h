@@ -78,7 +78,6 @@ public slots:
 
     void stop();
 
-    void editName();
     void newFolder();
     void findPlayingItem();
 

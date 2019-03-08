@@ -103,8 +103,6 @@ TPlaylist::~TPlaylist() {
 void TPlaylist::createTree() {
 
     playlistWidget = new TPlaylistWidget(this);
-    playlistWidget->setObjectName("playlist_tree");
-
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
             this, &TPlaylist::onModifiedChanged,
             Qt::QueuedConnection);
@@ -226,7 +224,8 @@ void TPlaylist::createActions() {
     // Edit name
     editNameAct = new TAction(this, "pl_edit_name", tr("Edit name..."), "",
                               Qt::Key_F2);
-    connect(editNameAct, &TAction::triggered, this, &TPlaylist::editName);
+    connect(editNameAct, &TAction::triggered,
+            playlistWidget, &TPlaylistWidget::startEdit);
     contextMenu->addAction(editNameAct);
     addAction(editNameAct);
 
@@ -1169,22 +1168,6 @@ void TPlaylist::onModifiedChanged() {
     setPlaylistTitle();
 }
 
-void TPlaylist::editName() {
-    WZDEBUG("");
-
-    TPlaylistItem* current = playlistWidget->plCurrentItem();
-    if (current == 0) {
-        WZWARN("Skipping edit. No current playlist item.");
-        return;
-    }
-
-    playlistWidget->scrollToItem(current);
-    current->setFlags(current->flags() | Qt::ItemIsEditable);
-    playlistWidget->editItem(current, TPlaylistItem::COL_NAME);
-    current->setFlags(current->flags() & ~Qt::ItemIsEditable);
-    WZDEBUG("Done");
-}
-
 void TPlaylist::newFolder() {
     WZDEBUG("");
 
@@ -1242,7 +1225,7 @@ void TPlaylist::newFolder() {
                                             baseName, 0, false);
     item->setModified();
     playlistWidget->setCurrentItem(item);
-    editName();
+    playlistWidget->startEdit();
 }
 
 void TPlaylist::findPlayingItem() {

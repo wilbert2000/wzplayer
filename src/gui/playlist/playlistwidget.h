@@ -74,6 +74,9 @@ public:
     void saveSettings(QSettings* pref);
     void loadSettings(QSettings* pref);
 
+public slots:
+    void startEdit();
+
 signals:
     void modifiedChanged();
     void refresh();

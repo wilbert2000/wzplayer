@@ -114,7 +114,8 @@ TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
 
     Qt::ItemFlags flags = Qt::ItemIsSelectable
                           | Qt::ItemIsEnabled
-                          | Qt::ItemIsDragEnabled;
+                          | Qt::ItemIsDragEnabled
+                          | Qt::ItemIsEditable;
 
     if (mFolder) {
         setFlags(flags | Qt::ItemIsDropEnabled);
@@ -605,7 +606,7 @@ bool TPlaylistItem::whitelist(const QString& filename) {
                                        QRegExp::FixedString));
     if (i >= 0) {
         mBlacklist.removeAt(i);
-        WZINFO("removed '" + filename + "' from blacklist");
+        WZINFO("Removed '" + filename + "' from blacklist");
         return true;
     }
 
