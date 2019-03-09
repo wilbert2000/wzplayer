@@ -159,9 +159,7 @@ signals:
     void didExitFullscreenSignal();
 
     void stayOnTopChanged(int);
-
-    //! Sent when another instance requested to play a file
-    void openFileRequested();
+    void gotMessageFromOtherInstance();
     void requestRestart();
 
 protected:

@@ -1410,15 +1410,14 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
     WZDEBUG("msg + '" + message + "'");
 
     int pos = message.indexOf(' ');
-    if (pos > -1) {
+    if (pos >= 0) {
+        emit gotMessageFromOtherInstance();
         QString command = message.left(pos);
-        QString arg = message.mid(pos+1);
+        QString arg = message.mid(pos + 1);
         if (command == "open_file") {
-            emit openFileRequested();
             playlist->open(arg);
         } else if (command == "open_files") {
             QStringList file_list = arg.split(" <<sep>> ");
-            emit openFileRequested();
             playlist->openFiles(file_list);
         } else if (command == "add_to_playlist") {
             QStringList file_list = arg.split(" <<sep>> ");
@@ -1433,7 +1432,11 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
             if (player->statePOP()) {
                 player->loadSub(arg);
             }
+        } else {
+            WZWARN(QString("Received unknown command '%1'").arg(message));
         }
+    } else {
+        WZWARN(QString("Received message '%1' without arguments").arg(message));
     }
 }
 

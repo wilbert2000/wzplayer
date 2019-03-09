@@ -76,12 +76,21 @@ TMainWindowTray::TMainWindowTray() :
     menu->addAction(quitAct);
     tray->setContextMenu(menu);
 
-    connect(this, &TMainWindowTray::openFileRequested,
+    connect(this, &TMainWindowTray::gotMessageFromOtherInstance,
             this, &TMainWindowTray::showMainWin);
 }
 
 TMainWindowTray::~TMainWindowTray() {
     tray->hide();
+}
+
+bool TMainWindowTray::startHidden() const {
+
+#if defined(Q_OS_WIN)
+    return false;
+#else
+    return hideMainWindowOnStartup && showTrayAct->isChecked();
+#endif
 }
 
 void TMainWindowTray::setWindowCaption(const QString& title) {
@@ -99,16 +108,8 @@ void TMainWindowTray::updateShowMainWindowAct() {
     }
 }
 
-bool TMainWindowTray::startHidden() const {
-
-#if defined(Q_OS_WIN)
-    return false;
-#else
-    return hideMainWindowOnStartup && showTrayAct->isChecked();
-#endif
-}
-
 void TMainWindowTray::switchToTray() {
+    WZTRACE("");
 
     exitFullscreen();
     showMainWindow(false);
@@ -139,6 +140,47 @@ void TMainWindowTray::quit() {
     TMainWindow::closeWindow();
 }
 
+void TMainWindowTray::onSystemTrayIconActivated(
+        QSystemTrayIcon::ActivationReason reason) {
+    WZDEBUG(QString::number(reason));
+
+    updateShowMainWindowAct();
+
+    if (reason == QSystemTrayIcon::Trigger) {
+        toggleShowMainWindow();
+    } else if (reason == QSystemTrayIcon::MiddleClick) {
+        player->playOrPause();
+    }
+}
+
+void TMainWindowTray::showMainWindow(bool b) {
+
+    setVisible(b);
+    updateShowMainWindowAct();
+}
+
+void TMainWindowTray::toggleShowMainWindow() {
+    WZTRACE("");
+
+    // If tray not visible, ignore the action cause we would end up with no GUI
+    if (tray->isVisible()) {
+        showMainWindow(!isVisible());
+    }
+}
+
+void TMainWindowTray::showMainWin() {
+
+    if (!isVisible()) {
+        showMainWindow(true);
+    }
+}
+
+void TMainWindowTray::onMediaInfoChanged() {
+
+    TMainWindow::onMediaInfoChanged();
+    tray->setToolTip(windowTitle());
+}
+
 void TMainWindowTray::saveSettings() {
     WZTRACE("");
 
@@ -162,46 +204,6 @@ void TMainWindowTray::loadSettings() {
     pref->endGroup();
 
     updateShowMainWindowAct();
-}
-
-void TMainWindowTray::onSystemTrayIconActivated(
-        QSystemTrayIcon::ActivationReason reason) {
-    WZDEBUG(QString::number(reason));
-
-    updateShowMainWindowAct();
-
-    if (reason == QSystemTrayIcon::Trigger) {
-        toggleShowMainWindow();
-    } else if (reason == QSystemTrayIcon::MiddleClick) {
-        player->playOrPause();
-    }
-}
-
-void TMainWindowTray::showMainWin() {
-
-    if (!isVisible()) {
-        showMainWindow(true);
-    }
-}
-
-void TMainWindowTray::showMainWindow(bool b) {
-
-    setVisible(b);
-    updateShowMainWindowAct();
-}
-
-void TMainWindowTray::toggleShowMainWindow() {
-
-    // TODO: why check?
-    if (tray->isVisible()) {
-        showMainWindow(!isVisible());
-    }
-}
-
-void TMainWindowTray::onMediaInfoChanged() {
-
-    TMainWindow::onMediaInfoChanged();
-    tray->setToolTip(windowTitle());
 }
 
 } // namespace Gui
