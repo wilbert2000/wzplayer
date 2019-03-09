@@ -140,7 +140,7 @@ void TMainWindowTray::quit() {
 }
 
 void TMainWindowTray::saveSettings() {
-    WZDEBUG("");
+    WZTRACE("");
 
     TMainWindow::saveSettings();
 
@@ -151,7 +151,7 @@ void TMainWindowTray::saveSettings() {
 }
 
 void TMainWindowTray::loadSettings() {
-    WZDEBUG("");
+    WZTRACE("");
 
     TMainWindow::loadSettings();
 

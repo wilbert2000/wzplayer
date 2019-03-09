@@ -45,7 +45,7 @@ TMediaSettings::~TMediaSettings() {
 }
 
 void TMediaSettings::reset() {
-    WZDEBUG("");
+    WZTRACE("");
 
     player_id = pref->player_id;
 

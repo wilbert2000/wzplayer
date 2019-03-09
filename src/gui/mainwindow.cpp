@@ -343,7 +343,6 @@ void TMainWindow::createAudioEqualizer() {
 }
 
 void TMainWindow::createActions() {
-    WZDEBUG("createActions");
 
     // Time slider
     timeslider_action = new Action::TTimeSliderAction(this);
@@ -451,7 +450,6 @@ Action::Menu::TMenuExec* TMainWindow::createContextMenu() {
 }
 
 void TMainWindow::createMenus() {
-    WZDEBUG("");
 
     fileMenu = new Action::Menu::TMenuFile(this);
     menuBar()->addMenu(fileMenu);
@@ -502,7 +500,6 @@ void TMainWindow::createMenus() {
 } // createMenus()
 
 Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
-    WZDEBUG("");
 
     Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, this, name,
         tr("Toolbars"), "toolbars");
@@ -537,7 +534,6 @@ QMenu* TMainWindow::createPopupMenu() {
 }
 
 void TMainWindow::createToolbars() {
-    WZDEBUG("");
 
     menuBar()->setObjectName("menubar");
 
@@ -646,7 +642,6 @@ void TMainWindow::setupNetworkProxy() {
     } else {
         // No proxy
         proxy.setType(QNetworkProxy::NoProxy);
-        WZDEBUG("no proxy");
     }
 
     QNetworkProxy::setApplicationProxy(proxy);
@@ -665,7 +660,6 @@ void TMainWindow::createSettingsDialog() {
 }
 
 void TMainWindow::showSettingsDialog() {
-    WZDEBUG("");
 
     if (!prefDialog) {
         createSettingsDialog();
@@ -696,7 +690,7 @@ void TMainWindow::restartApplication() {
 
 // The user has pressed OK in settings dialog
 void TMainWindow::applyNewSettings() {
-    WZDEBUG("");
+    WZTRACE("");
 
     // Get pref from dialog
     prefDialog->getData(pref, allActions);
@@ -934,10 +928,10 @@ QList<QAction*> TMainWindow::findNamedActions() const {
             WZTRACE(QString("Skipping action '' '%1' %2")
                     .arg(action->text()).arg(parentOrMenuName(action)));
         } else if (action->objectName() == "_q_qlineeditclearaction") {
-            WZTRACE("Skipping action '_q_qlineeditclearaction'");
+            WZTRACE("Skipping action _q_qlineeditclearaction");
         } else {
             selectedActions.append(action);
-            WZTRACE(QString("Selected action '%1' '%2' %3")
+            WZTRACE(QString("Selected action %1 ('%2') %3")
                         .arg(action->objectName())
                         .arg(action->text())
                         .arg(parentOrMenuName(action)));
@@ -1463,14 +1457,13 @@ void TMainWindow::closeWindow() {
 }
 
 void TMainWindow::sendEnableActions() {
-    WZDEBUG("State " + player->stateToString());
+    WZTRACE("State " + player->stateToString());
 
     timeslider_action->enable(player->statePOP());
     emit enableActions();
 }
 
 void TMainWindow::openURL() {
-    WZDEBUG("");
 
     TInputURL dialog(this);
 

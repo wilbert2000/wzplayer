@@ -586,7 +586,7 @@ QString TActionsEditor::actionToString(QAction *action) {
 
 void TActionsEditor::saveSettings(QSettings* set,
                                   const QList<QAction*>& allActions) {
-    WZDEBUG("");
+    WZTRACE("");
 
     set->beginGroup("actions");
     // Clear group to remove actions no longer modified
@@ -687,7 +687,7 @@ void TActionsEditor::setActionFromString(QAction* action,
 
 void TActionsEditor::loadSettings(QSettings* pref,
                                   const QList<QAction*>& allActions) {
-    WZDEBUG("");
+    WZTRACE("");
 
     pref->beginGroup("actions");
     QStringList actions = pref->childKeys();

@@ -66,6 +66,7 @@ TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
     disableEnableActions(0),
     reachedEndOfPlaylist(false) {
 
+    setObjectName("playlist");
     setAcceptDrops(true);
 
     createTree();
@@ -270,6 +271,7 @@ void TPlaylist::createActions() {
     main_window->addAction(pasteAct);
 
     contextMenu->addSeparator();
+
     // Add menu
     playlistAddMenu = new Menu::TMenu(this, main_window, "pl_add_menu",
                                       tr("Add to playlist"), "noicon");
@@ -936,7 +938,7 @@ void TPlaylist::enableActions() {
     if (disableEnableActions) {
         return;
     }
-    WZDEBUG("State " + player->stateToString());
+    WZTRACE("State " + player->stateToString());
 
     Player::TState s = player->state();
     bool enable = (s == Player::STATE_STOPPED
