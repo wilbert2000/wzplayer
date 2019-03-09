@@ -55,7 +55,7 @@ TMainWindowTray::TMainWindowTray() :
     fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
-                                      tr("Show icon in system tray"));
+                                      tr("Show in system tray"));
     showTrayAct->setCheckable(true);
     connect(showTrayAct, &Gui::Action::TAction::toggled,
             tray, &QSystemTrayIcon::setVisible);
@@ -65,19 +65,19 @@ TMainWindowTray::TMainWindowTray() :
     viewMenu->addSeparator();
     viewMenu->addAction(showTrayAct);
 
-    showAllAct = new Action::TAction(this, "tray_restore_hide", tr("Hide"));
-    updateShowAllAct();
-    connect(showAllAct, &Action::TAction::triggered,
-            this, &TMainWindowTray::toggleShowAll);
+    showMainWindowAct = new Action::TAction(this, "tray_restore_hide", "");
+    updateShowMainWindowAct();
+    connect(showMainWindowAct, &Action::TAction::triggered,
+            this, &TMainWindowTray::toggleShowMainWindow);
 
     QMenu* menu = createContextMenu();
     menu->addSeparator();
-    menu->addAction(showAllAct);
+    menu->addAction(showMainWindowAct);
     menu->addAction(quitAct);
     tray->setContextMenu(menu);
 
     connect(this, &TMainWindowTray::openFileRequested,
-            this, &TMainWindowTray::showMainWindow);
+            this, &TMainWindowTray::showMainWin);
 }
 
 TMainWindowTray::~TMainWindowTray() {
@@ -90,12 +90,12 @@ void TMainWindowTray::setWindowCaption(const QString& title) {
     tray->setToolTip(title);
 }
 
-void TMainWindowTray::updateShowAllAct() {
+void TMainWindowTray::updateShowMainWindowAct() {
 
     if (isVisible()) {
-        showAllAct->setTextAndTip(tr("Hide"));
+        showMainWindowAct->setTextAndTip(tr("Hide in system tray"));
     } else {
-        showAllAct->setTextAndTip(tr("Restore"));
+        showMainWindowAct->setTextAndTip(tr("Restore from system tray"));
     }
 }
 
@@ -111,7 +111,7 @@ bool TMainWindowTray::startHidden() const {
 void TMainWindowTray::switchToTray() {
 
     exitFullscreen();
-    showAll(false); // Hide windows
+    showMainWindow(false);
     playlist->stop();
 
     if (pref->balloon_count > 0) {
@@ -161,40 +161,41 @@ void TMainWindowTray::loadSettings() {
                                           hideMainWindowOnStartup).toBool();
     pref->endGroup();
 
-    updateShowAllAct();
+    updateShowMainWindowAct();
 }
 
-void TMainWindowTray::onSystemTrayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+void TMainWindowTray::onSystemTrayIconActivated(
+        QSystemTrayIcon::ActivationReason reason) {
     WZDEBUG(QString::number(reason));
 
-    updateShowAllAct();
+    updateShowMainWindowAct();
 
     if (reason == QSystemTrayIcon::Trigger) {
-        toggleShowAll();
+        toggleShowMainWindow();
     } else if (reason == QSystemTrayIcon::MiddleClick) {
         player->playOrPause();
     }
 }
 
-void TMainWindowTray::toggleShowAll() {
-
-    // Ignore if tray is not visible
-    if (tray->isVisible()) {
-        showAll(!isVisible());
-    }
-}
-
-void TMainWindowTray::showMainWindow() {
+void TMainWindowTray::showMainWin() {
 
     if (!isVisible()) {
-        showAll(true);
+        showMainWindow(true);
     }
 }
 
-void TMainWindowTray::showAll(bool b) {
+void TMainWindowTray::showMainWindow(bool b) {
 
     setVisible(b);
-    updateShowAllAct();
+    updateShowMainWindowAct();
+}
+
+void TMainWindowTray::toggleShowMainWindow() {
+
+    // TODO: why check?
+    if (tray->isVisible()) {
+        showMainWindow(!isVisible());
+    }
 }
 
 void TMainWindowTray::onMediaInfoChanged() {

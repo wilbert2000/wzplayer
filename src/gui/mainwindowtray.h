@@ -52,22 +52,19 @@ protected slots:
 
 private:
     QSystemTrayIcon* tray;
-
     Action::TAction* quitAct;
     Action::TAction* showTrayAct;
-    Action::TAction* showAllAct;
-
-    // To save state
+    Action::TAction* showMainWindowAct;
     bool hideMainWindowOnStartup;
 
     void switchToTray();
-    void updateShowAllAct();
-    void showAll(bool b);
+    void updateShowMainWindowAct();
+    void showMainWindow(bool b);
 
 private slots:
     void onSystemTrayIconActivated(QSystemTrayIcon::ActivationReason);
-    void showMainWindow();
-    void toggleShowAll();
+    void showMainWin();
+    void toggleShowMainWindow();
 };
 
 } // namespace Gui
