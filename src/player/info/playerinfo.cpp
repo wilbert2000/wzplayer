@@ -21,6 +21,7 @@
 #include <QFileInfo>
 #include <QDateTime>
 #include <QSettings>
+#include <QDir>
 
 #include "settings/preferences.h"
 #include "settings/paths.h"
@@ -107,7 +108,13 @@ void TPlayerInfo::getInfo(const QString& path) {
     bin_size = size;
 
     // Get info from ini file
-    QString inifile = TPaths::configPath() + "/player_info_version_"
+    QString dataPath = TPaths::dataPath();
+    if (!QDir().mkpath(dataPath)) {
+        WZERROR(QString("Failed to create data directory '%1'. %2")
+                .arg(dataPath).arg(strerror(errno)));
+    }
+
+    QString inifile = dataPath + "/player_info_version_"
                       + QString::number(INFOREADER_SAVE_VERSION) + ".ini";
     QSettings set(inifile, QSettings::IniFormat);
     set.beginGroup(getGroup());
@@ -121,7 +128,7 @@ void TPlayerInfo::getInfo(const QString& path) {
         vf_list = set.value("vf_list").toStringList();
         option_list = set.value("option_list").toStringList();
 
-        WZDEBUG("loaded player info from '" + inifile + "'");
+        WZINFO("Loaded player info from '" + inifile + "'");
         return;
     }
 
@@ -148,7 +155,7 @@ void TPlayerInfo::getInfo(const QString& path) {
         option_list = ir.optionList();
     }
 
-    WZINFO("saving player info to '" + inifile + "'");
+    WZINFO("Saving player info to '" + inifile + "'");
     set.setValue("size", bin_size);
     set.setValue("date", fi.lastModified());
     set.setValue("vo_list", convertInfoListToList(vo_list));
@@ -158,6 +165,7 @@ void TPlayerInfo::getInfo(const QString& path) {
     set.setValue("ac_list", convertInfoListToList(ac_list));
     set.setValue("vf_list", vf_list);
     set.setValue("option_list", option_list);
+    set.sync();
 }
 
 QStringList TPlayerInfo::convertInfoListToList(const InfoList& l) {

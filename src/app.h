@@ -92,12 +92,12 @@ private:
                      const QString& locale,
                      const QString& dir);
     void loadTranslation();
-    void loadConfig();
+    void loadConfig(bool portable);
     QString loadStyleSheet(const QString& filename);
     void changeStyleSheet(const QString& style);
     void setupStyle();
     void createGUI();
-    bool processArgName(const QString& arg, const QStringList& args) const;
+    bool processArgName(const QString& arg, QStringList& args) const;
     void logInfo();
 
 private slots:

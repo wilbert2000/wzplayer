@@ -40,7 +40,6 @@
 
 
 #ifdef Q_OS_WIN
-#include "settings/paths.h"
 #if USE_ASSOCIATIONS
 #include "extensions.h"
 #include "winfileassoc.h" // Required for uninstall
@@ -187,11 +186,11 @@ void TApp::loadTranslation() {
     loadCatalog(app_trans, TConfig::PROGRAM_ID, locale, trans_path);
 }
 
-void TApp::loadConfig() {
+void TApp::loadConfig(bool portable) {
     WZDEBUG("");
 
-    // Setup config directory
-    Settings::TPaths::setConfigPath();
+    // Setup config dir
+    Settings::TPaths::setConfigPath(portable);
     // Create settings
     Settings::pref = new Settings::TPreferences();
     // Load settings
@@ -223,10 +222,11 @@ QString getArgName(const QString& arg) {
     return "";
 }
 
-bool TApp::processArgName(const QString& name, const QStringList& args) const {
+bool TApp::processArgName(const QString& name, QStringList& args) const {
 
     for (int i = 0; i < args.size(); i++) {
         if (getArgName(args.at(i)) == name) {
+            args.takeAt(i);
             return true;
         }
     }
@@ -247,14 +247,14 @@ TApp::TExitCode TApp::processArgs() {
         QStringList regExts;
         RegAssoc.GetRegisteredExtensions(extensions.allPlayable(), regExts);
         RegAssoc.RestoreFileAssociations(regExts);
-        WZINFO("restored associations");
+        WZINFO("Restored associations");
 #endif
         return NoError;
     }
 #endif
 
     // Load preferences, set style and load translation
-    loadConfig();
+    loadConfig(processArgName("portable", args));
 
     if (processArgName("delete-config", args)) {
         Settings::TCleanConfig::clean();
@@ -270,8 +270,9 @@ TApp::TExitCode TApp::processArgs() {
         QString argument = args[n];
         QString name = getArgName(argument);
 
-        if (name == "info" || name == "debug" || name == "trace") {
+        if (name == "loglevel") {
             // Already handled by main
+            n++;
         } else if (name == "send-action") {
             if (n + 1 < args.count()) {
                 n++;
@@ -395,11 +396,11 @@ TApp::TExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-    WZDEBUG("creating main window");
+    WZDEBUG("Creating main window");
 
     main_window = new Gui::TMainWindowTray();
 
-    WZDEBUG("loading window config");
+    WZDEBUG("Loading window config");
     main_window->loadSettings();
 
     main_window->setForceCloseOnFinish(close_at_end);
@@ -418,7 +419,7 @@ void TApp::createGUI() {
         main_window->resize(gui_size);
     }
 
-    WZDEBUG("created main window");
+    WZDEBUG("Created main window");
 } // createGUI()
 
 bool TApp::acceptClipboardAsURL() {
@@ -537,12 +538,13 @@ void TApp::logInfo() {
     WZINFO(s);
     WZINFO(QString("Compiled with Qt version " QT_VERSION_STR
            ", running on Qt version ") + qVersion());
-    WZINFO("application dir '" + applicationDirPath() + "'");
-    WZINFO("translation dir '" + Settings::TPaths::translationPath() + "'");
-    WZINFO("themes dir '" + Settings::TPaths::themesPath() + "'");
-    WZINFO("shortcuts dir '" + Settings::TPaths::shortcutsPath() + "'");
-    WZINFO("config dir '" + Settings::TPaths::configPath() + "'");
-    WZINFO("current dir '" + QDir::currentPath() + "'");
+    WZINFO("Application dir '" + applicationDirPath() + "'");
+    WZINFO("Configuration dir '" + Settings::TPaths::configPath() + "'");
+    WZINFO("Data dir '" + Settings::TPaths::dataPath() + "'");
+    WZINFO("Translation dir '" + Settings::TPaths::translationPath() + "'");
+    WZINFO("Themes dir '" + Settings::TPaths::themesPath() + "'");
+    WZINFO("Shortcuts dir '" + Settings::TPaths::shortcutsPath() + "'");
+    WZINFO("Current dir '" + QDir::currentPath() + "'");
 }
 
 #include "moc_app.cpp"

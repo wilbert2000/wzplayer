@@ -33,11 +33,12 @@ bool TWZFiles::directoryIsEmpty(const QString& directory) {
     return c == 0;
 }
 
+// TODO: see QStandardPaths::findExecutable()
 QString TWZFiles::findExecutable(const QString& name) {
 
     QFileInfo fi(name);
     if (fi.isFile() && fi.isExecutable()) {
-        WZDEBUG("found '" + name + "'");
+        WZDEBUG("Found '" + name + "'");
         return fi.absoluteFilePath();
     }
 
@@ -72,13 +73,12 @@ QString TWZFiles::findExecutable(const QString& name) {
         QString candidate = search_paths[n] + "/" + name;
         fi.setFile(candidate);
         if (fi.isFile() && fi.isExecutable()) {
-            WZINFO("found '" + fi.absoluteFilePath() + "'");
+            WZINFO("Found '" + fi.absoluteFilePath() + "'");
             return fi.absoluteFilePath();
         }
-        WZDEBUG("'" + candidate + "' not executable");
     }
 
     // Name not found
-    WZINFO("name '" + name + "' not found");
+    WZINFO("Executable '" + name + "' not found");
     return QString();
 }

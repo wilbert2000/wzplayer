@@ -52,9 +52,6 @@ TAbout::TAbout(QWidget* parent)
             .arg("<a href=\"http://www.mpv.io\">MPV</a>")
             .arg("<a href=\""  + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
         + "<br><br><b>" + tr("Version: %1").arg(TVersion::version) + "</b>"
-#if PORTABLE_APP
-                + " (" + tr("Portable Edition") + ")"
-#endif
         + "<br>" + tr("Using Qt %1 (compiled with Qt %2)")
                    .arg(qVersion()).arg(QT_VERSION_STR)
         + "<br><br><b>"+ tr("Links:") +"</b><br>"

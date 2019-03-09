@@ -42,8 +42,10 @@
 namespace Settings {
 
 static const int CURRENT_CONFIG_VERSION = 24;
+const Log4Qt::Level TPreferences::log_default_level = Log4Qt::Level::DEBUG_INT;
 
 TPreferences* pref = 0;
+bool TPreferences::log_override = false;
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TPreferences)
 
@@ -86,7 +88,7 @@ void TPreferences::reset() {
 
     // Log
     log_verbose = false;
-    log_level = Log4Qt::Level::DEBUG_INT;
+    log_level = log_default_level;
     log_window_max_events = 1000;
 
 
@@ -845,7 +847,7 @@ void TPreferences::load() {
     log_level = Log4Qt::Level::fromString(
         value("log_level", log_level.toString()).toString());
     if (log_level < Log4Qt::Level::TRACE_INT) {
-        log_level = Log4Qt::Level(Log4Qt::Level::DEBUG_INT);
+        log_level = log_default_level;
     }
     log_verbose = value("log_verbose", log_verbose).toBool();
     log_window_max_events = value("log_window_max_events",
@@ -857,17 +859,16 @@ void TPreferences::load() {
     }
     endGroup(); // Log
 
-    // Update Log4Qt
-    // Command line options --info, --debug and --trace override log level
-    // If current level is still warn, there are no cmd line overrides
-    if (Log4Qt::LogManager::rootLogger()->level() == Log4Qt::Level::WARN_INT) {
+    // Update Log4Qt. Command line options --loglevel override log level.
+    if (log_override) {
+        WZINFO(QString("Log level %1 overriden by command line level %2")
+               .arg(log_level.toString())
+               .arg(Log4Qt::LogManager::rootLogger()->level().toString()));
+    } else {
         Log4Qt::LogManager::rootLogger()->setLevel(log_level);
         Log4Qt::LogManager::qtLogger()->setLevel(log_level);
         WZINFO("Log level set to " + log_level.toString());
-    } else {
-        WZINFO("Log level overriden by command line");
     }
-
 
     // Players
     beginGroup("players");
@@ -1317,17 +1318,17 @@ double TPreferences::monitorAspectDouble() {
 void TPreferences::setupScreenshotFolder() {
 
     if (screenshot_directory.isEmpty()) {
-        QString pdir = TPaths::location(TPaths::PicturesLocation);
+        QString pdir = TPaths::location(QStandardPaths::PicturesLocation);
         if (pdir.isEmpty()) {
-            WZDEBUG("No PicturesLocation");
-            pdir = TPaths::location(TPaths::DocumentsLocation);
+            WZDEBUG("No pictures location");
+            pdir = TPaths::location(QStandardPaths::DocumentsLocation);
         }
         if (pdir.isEmpty()) {
-            WZDEBUG("No DocumentsLocation");
-            pdir = TPaths::location(TPaths::HomeLocation);
+            WZDEBUG("No documents location");
+            pdir = TPaths::location(QStandardPaths::HomeLocation);
         }
         if (pdir.isEmpty()) {
-            WZDEBUG("No HomeLocation");
+            WZDEBUG("No home location");
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");

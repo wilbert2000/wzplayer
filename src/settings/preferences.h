@@ -59,7 +59,6 @@ public:
         IP_PREFER_6
     };
 
-
     TPreferences();
     virtual ~TPreferences();
 
@@ -256,7 +255,8 @@ public:
     bool log_verbose;
     Log4Qt::Level log_level;
     int log_window_max_events;
-
+    static bool log_override;
+    static const Log4Qt::Level log_default_level;
     // History
     TRecents history_recents;
     TLRUList history_urls;

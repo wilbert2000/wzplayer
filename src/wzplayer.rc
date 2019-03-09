@@ -11,11 +11,7 @@ FILETYPE            VFT_APP
     BLOCK "000004b0"
     {
       VALUE "CompanyName", "Wilbert Hengst\0"
-      #ifdef PORTABLE_APP
-      VALUE "FileDescription", "WZPlayer (Portable Edition)\0"
-      #else
       VALUE "FileDescription", "WZPlayer\0"
-      #endif
       VALUE "FileVersion", "2017,2,6,0\0"
       VALUE "InternalName", "wzplayer\0"
       VALUE "LegalCopyright", "Copyright (c) Wilbert Hengst\0"

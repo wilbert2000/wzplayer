@@ -27,22 +27,12 @@ namespace Settings {
 
 class TPaths {
 public:
+    static QString location(QStandardPaths::StandardLocation type);
 
-    enum TLocation {
-        DataLocation = QStandardPaths::DataLocation,
-        AppDataLocation = QStandardPaths::AppDataLocation,
-        PicturesLocation = QStandardPaths::PicturesLocation,
-        DocumentsLocation = QStandardPaths::DocumentsLocation,
-        HomeLocation = QStandardPaths::HomeLocation
-    };
-
-    static QString location(TLocation type);
-
-    static void setConfigPath();
-    //! Return the path where wzplayer should save its config files
+    static void setConfigPath(bool portable);
     static QString configPath() { return config_path; }
-
     static QString iniFileName();
+    static QString dataPath();
     static QString themesPath();
     static QString shortcutsPath();
     static QString translationPath();
@@ -52,6 +42,9 @@ public:
 
 private:
     static QString config_path;
+    static bool portable;
+
+    static QString getDataSubDir(const QString& subdir);
 };
 
 } // namespace Settings

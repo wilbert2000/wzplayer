@@ -243,17 +243,19 @@ QString TPlayerSection::fileSettingsMethod() {
 
 void TPlayerSection::setLogLevel(Log4Qt::Level level) {
 
+    using namespace Log4Qt;
+
     int idx;
     switch (level.toInt()) {
-        case Log4Qt::Level::NULL_INT:
-        case Log4Qt::Level::ALL_INT:
-        case Log4Qt::Level::TRACE_INT: idx = 0; break;
-        case Log4Qt::Level::DEBUG_INT: idx = 1; break;
-        case Log4Qt::Level::INFO_INT: idx = 2; break;
-        case Log4Qt::Level::WARN_INT: idx = 3; break;
-        case Log4Qt::Level::ERROR_INT: idx = 4; break;
-        case Log4Qt::Level::FATAL_INT: idx = 5; break;
-        case Log4Qt::Level::OFF_INT: idx = 6; break;
+        case Level::NULL_INT:
+        case Level::ALL_INT:
+        case Level::TRACE_INT: idx = 0; break;
+        case Level::DEBUG_INT: idx = 1; break;
+        case Level::INFO_INT: idx = 2; break;
+        case Level::WARN_INT: idx = 3; break;
+        case Level::ERROR_INT: idx = 4; break;
+        case Level::FATAL_INT: idx = 5; break;
+        case Level::OFF_INT: idx = 6; break;
         default: idx = 1;
     }
 
@@ -262,16 +264,18 @@ void TPlayerSection::setLogLevel(Log4Qt::Level level) {
 
 Log4Qt::Level TPlayerSection::logLevel() {
 
-    Log4Qt::Level level;
+    using namespace Log4Qt;
+
+    Level level;
     switch (log_level_combo->currentIndex()) {
-        case 0: level = Log4Qt::Level::TRACE_INT; break;
-        case 1: level = Log4Qt::Level::DEBUG_INT; break;
-        case 2: level = Log4Qt::Level::INFO_INT; break;
-        case 3: level = Log4Qt::Level::WARN_INT;break;
-        case 4: level = Log4Qt::Level::ERROR_INT; break;
-        case 5: level = Log4Qt::Level::FATAL_INT; break;
-        case 6: level = Log4Qt::Level::OFF_INT; break;
-        default: level =Log4Qt::Level:: DEBUG_INT;
+        case 0: level = Level::TRACE_INT; break;
+        case 1: level = Level::DEBUG_INT; break;
+        case 2: level = Level::INFO_INT; break;
+        case 3: level = Level::WARN_INT;break;
+        case 4: level = Level::ERROR_INT; break;
+        case 5: level = Level::FATAL_INT; break;
+        case 6: level = Level::OFF_INT; break;
+        default: level =Level:: DEBUG_INT;
     }
 
     return level;

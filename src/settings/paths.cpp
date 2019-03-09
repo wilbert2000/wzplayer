@@ -29,61 +29,48 @@
 namespace Settings {
 
 QString TPaths::config_path;
+bool TPaths::portable;
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TPaths)
 
 
-QString TPaths::location(TLocation type) {
+QString TPaths::location(QStandardPaths::StandardLocation type) {
 
-    QString path;
-
-#ifdef PORTABLE_APP
-    path = qApp->applicationDirPath();
-#else
-
-    // Switch to roaming on Windows
-    if (type == DataLocation) {
-        type = AppDataLocation;
+    if (portable) {
+        return qApp->applicationDirPath();
     }
-
-    path = QStandardPaths::writableLocation(
-        static_cast<QStandardPaths::StandardLocation>(type));
-#endif
-
-    WZDEBUG(QString("Returning '%1' for %2").arg(path).arg(type));
-    return path;
+    return QStandardPaths::writableLocation(type);
 }
 
-void TPaths::setConfigPath() {
+void TPaths::setConfigPath(bool portable) {
 
-#if defined(PORTABLE_APP)
-    config_path = qApp->applicationDirPath();
-#else
-#if defined(Q_OS_WIN)
-    config_path = location(TLocation::DataLocation);
-#else
-    const char* XDG_CONFIG_HOME = getenv("XDG_CONFIG_HOME");
-    if (XDG_CONFIG_HOME == NULL) {
-        config_path = QDir::homePath() + "/.config";
+    TPaths::portable = portable;
+    if (portable) {
+        config_path = qApp->applicationDirPath();
     } else {
-        config_path = QString(XDG_CONFIG_HOME);
+        config_path = QStandardPaths::writableLocation(
+                    QStandardPaths::AppConfigLocation);
+        // Create config directory
+        QDir dir(config_path);
+        if (!dir.mkpath(config_path)) {
+            WZERROR(QString("Failed to create configuration directory '%1'. %2")
+                    .arg(config_path).arg(strerror(errno)));
+        }
     }
-    config_path = config_path + "/" + TConfig::PROGRAM_ID;
-#endif
-#endif
-
     WZINFO(QString("Config path set to '%1'").arg(config_path));
+}
 
-    // Create config directory
-#ifndef PORTABLE_APP
-    QDir dir(config_path);
-    if (!dir.mkpath(config_path)) {
-        WZERROR(QString("Failed to create configuration directory '%1'. %2")
-                .arg(config_path).arg(strerror(errno)));
+QString TPaths::iniFileName() {
+    return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
+}
+
+QString TPaths::dataPath() {
+
+    if (portable) {
+        return qApp->applicationDirPath();
     }
-#endif
-
-} // void TPaths::setConfigPath()
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+}
 
 QString TPaths::genericCachePath() {
 
@@ -97,13 +84,17 @@ QString TPaths::genericCachePath() {
     return cache;
 }
 
-static QString getDataSubDir(const QString& subdir) {
+QString TPaths::getDataSubDir(const QString& subdir) {
 
-#if defined(Q_OS_WIN) || defined(PORTABLE_APP)
+    if (TPaths::portable) {
+        return qApp->applicationDirPath() + "/" + subdir;
+    }
+
+#if defined(Q_OS_WIN)
     return qApp->applicationDirPath() + "/" + subdir;
 #else
-
-    QString share = "/" + TConfig::PROGRAM_ID + "/" + subdir;
+    QString share = "/" + TConfig::PROGRAM_ORG + "/" + TConfig::PROGRAM_ID
+            + "/" + subdir;
 
     // Try ~/.local
     const char* XDG_DATA_HOME = getenv("XDG_DATA_HOME");
@@ -144,10 +135,6 @@ QString TPaths::shortcutsPath() {
 
 QString TPaths::qtTranslationPath() {
     return QLibraryInfo::location(QLibraryInfo::TranslationsPath);
-}
-
-QString TPaths::iniFileName() {
-    return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
 }
 
 QString TPaths::subtitleStyleFileName() {

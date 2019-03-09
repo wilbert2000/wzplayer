@@ -17,6 +17,7 @@
 */
 
 #include "clhelp.h"
+#include "config.h"
 #include <QObject>
 #include <QApplication>
 #include <QFileInfo>
@@ -82,17 +83,15 @@ QString CLHelp::formatHelp(QString parameter, QString help, bool html) {
 
 QString CLHelp::help(bool html) {
 
-    QString app_name = QFileInfo(qApp->applicationFilePath()).baseName();
-
-    QString options = QString("%1 [--debug] [--trace]"
+    QString options = QString("%1 [--help] [--loglevel warn|info|debug|trace]"
                               " [--send-action %2] [--actions %3]"
                               " [--close-at-end] [--no-close-at-end]"
                               " [--fullscreen] [--no-fullscreen]"
                               " [--ontop] [--no-ontop]"
                               " [--sub %4] [--pos x y] [--size %5 %6]"
-                              " [--add-to-playlist] [--help]"
+                              " [--portable] [--add-to-playlist]"
                               " [%7] [%7]...")
-                      .arg(app_name)
+                      .arg(TConfig::PROGRAM_ID)
                       .arg(QObject::tr("action_name"))
                       .arg(QObject::tr("action_list"))
                       .arg(QObject::tr("subtitle_file"))
@@ -109,12 +108,13 @@ QString CLHelp::help(bool html) {
         s += "\n\n";
     }
 
-    s += formatHelp("--debug", QObject::tr(
-        "Logs debug message to the console."), html);
+    s += formatHelp("--help", QObject::tr(
+        "Show this message and exit."), html);
 
-    s += formatHelp("--trace", QObject::tr(
-        "Logs trace message to the console."), html);
-
+    s += formatHelp("--loglevel", QObject::tr(
+        "Set log level to warn, info, debug or trace and log messages to the"
+        " console. Without --loglevel messages will not be logged to the"
+        " console."), html);
 
 #ifdef Q_OS_WIN
     s += formatHelp("--uninstall", QObject::tr(
@@ -160,8 +160,10 @@ QString CLHelp::help(bool html) {
     s += formatHelp("--size", QObject::tr(
         "Specifies the size of the main window."), html);
 
-    s += formatHelp("--help", QObject::tr(
-        "Show this message and exit."), html);
+    s += formatHelp("--portable", QObject::tr(
+        "Run %1 as portable application. Configuration files will be loaded and"
+        " stored in the directory the program is running from.")
+                    .arg(TConfig::PROGRAM_NAME), html);
 
     s += formatHelp("--add-to-playlist", QObject::tr(
         "If there's another instance running, the media will be added "
@@ -170,7 +172,7 @@ QString CLHelp::help(bool html) {
 
     s += formatHelp(QObject::tr("media"), QObject::tr(
         "'Media' is any kind of file that WZPlayer can open. It can "
-        "be a local file, a DVD (e.g. dvd:// or dvdnav://), an Internet stream "
+        "be a local file, a DVD (e.g. dvd:// or dvdnav://), an internet stream "
         "(e.g. mms://....) or a local playlist in format m3u or m3u8."), html);
 
     if (html)
