@@ -2,6 +2,7 @@
 #include "gui/mainwindow.h"
 #include "player/player.h"
 #include "gui/action/action.h"
+#include <QStyle>
 
 
 using namespace Settings;
@@ -51,7 +52,8 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
     connect(a, &TAction::triggered, player, &Player::TPlayer::clearInOutPoints);
 
     addSeparator();
-    a  = new TAction(mw, "seek_in", tr("Seek to in"), "", Qt::Key_Home);
+    a  = new TAction(mw, "seek_in", tr("Seek to in"), "noicon", Qt::Key_Home);
+    a->setIcon(style()->standardIcon(QStyle::SP_DirHomeIcon));
     addAction(a);
     group->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::seekInPoint);

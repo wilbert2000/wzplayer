@@ -735,7 +735,7 @@ void TMainWindow::createToolbars() {
             << "stop"
             << "seek_rewind_menu"
             << "seek_forward_menu"
-            << "in_out_points_menu|0|1"
+            << "in_out_menu|0|1"
             << "timeslider_action"
             << "separator|0|1"
             << "deinterlace_menu|0|1"

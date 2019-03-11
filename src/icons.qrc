@@ -139,12 +139,12 @@
         <file>default-theme/mirror.png</file>
         <file>default-theme/favorite.png</file>
         <file>default-theme/favorites_menu.png</file>
-        <file>default-theme/set_in_point.png</file>
-        <file>default-theme/set_out_point.png</file>
-        <file>default-theme/clear_in_point.png</file>
-        <file>default-theme/clear_out_point.png</file>
-        <file>default-theme/clear_in_out_points.png</file>
-        <file>default-theme/in_out_points_menu.png</file>
+        <file>default-theme/set_in.png</file>
+        <file>default-theme/set_out.png</file>
+        <file>default-theme/clear_in.png</file>
+        <file>default-theme/clear_out.png</file>
+        <file>default-theme/clear_in_out.png</file>
+        <file>default-theme/in_out_menu.png</file>
         <file>default-theme/bookmark_add.png</file>
         <file>default-theme/bookmark_folder.png</file>
         <file>default-theme/trash.png</file>
