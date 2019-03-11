@@ -103,7 +103,7 @@ private:
     Action::TAction* stopAct;
     Action::TAction* playAct;
     Action::TAction* playOrPauseAct;
-    Action::TAction* playNewAct;
+    Action::TAction* openInNewWindowAct;
     Action::TAction* pauseAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
@@ -125,7 +125,7 @@ private:
     Action::TAction* removeAllAct;
 
 
-    QString filename;
+    QString playlistFilename;
 
     TAddFilesThread* thread;
     QStringList addFiles;
@@ -136,7 +136,6 @@ private:
 
     int disableEnableActions;
     bool reachedEndOfPlaylist;
-
 
     void createTree();
     void createActions();
@@ -166,8 +165,10 @@ private:
                  bool wzplaylist);
     bool saveM3u(const QString& filename, bool linkFolders);
 
+    bool browseDirEnabled();
+
 private slots:
-    void askOpenPlaylist();
+    void openPlaylistDialog();
 
     bool save();
     bool saveAs();
