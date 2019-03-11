@@ -1,9 +1,7 @@
 #include "gui/action/menu/menuplay.h"
 #include "gui/mainwindow.h"
-#include "gui/action/menu/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "settings/preferences.h"
-#include "player/player.h"
 
 
 using namespace Settings;
@@ -97,6 +95,28 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     addAction(main_window->findChild<TAction*>("speed_inc_1"));
 }
 
+class TMenuInOut : public TMenu {
+public:
+    explicit TMenuInOut(TMainWindow* mw);
+};
+
+TMenuInOut::TMenuInOut(TMainWindow* mw)
+    : TMenu(mw, mw, "in_out_menu", tr("In-out points")) {
+
+    addAction(main_window->findChild<TAction*>("set_in"));
+    addAction(main_window->findChild<TAction*>("set_out"));
+    addSeparator();
+    addAction(main_window->findChild<TAction*>("clear_in"));
+    addAction(main_window->findChild<TAction*>("clear_out"));
+    addAction(main_window->findChild<TAction*>("clear_in_out"));
+    addSeparator();
+    addAction(main_window->findChild<TAction*>("seek_in"));
+    addAction(main_window->findChild<TAction*>("seek_out"));
+    addSeparator();
+    addAction(main_window->findChild<TAction*>("repeat_in_out"));
+    addAction(main_window->findChild<TAction*>("pl_repeat"));
+    addAction(main_window->findChild<TAction*>("pl_shuffle"));
+}
 
 // Create main play menu
 TMenuPlay::TMenuPlay(TMainWindow* mw)

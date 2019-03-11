@@ -237,6 +237,9 @@ private:
 
     // Play speed menu
     QActionGroup* playSpeedGroup;
+    // In-out menu
+    QActionGroup* inOutGroup;
+    Action::TAction* repeatInOutAct;
 
     // Help menu
     QMenu* helpMenu;
@@ -376,6 +379,8 @@ private slots:
 
     void applyFileProperties();
     void applyNewSettings();
+
+    void updateInOutMenu();
 
     void setDefaultValuesFromVideoEqualizer();
     void changeVideoEqualizerBySoftware(bool b);

@@ -528,6 +528,55 @@ void TMainWindow::createActions() {
     playSpeedGroup->addAction(a);
     connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed1);
 
+    // Menu in-out
+    // Put in group to enable/disable together, if we disable the menu users
+    // cannot discover the menu because it won't open.
+    inOutGroup = new QActionGroup(this);
+    inOutGroup->setExclusive(false);
+    inOutGroup->setEnabled(false);
+
+    a  = new TAction(this, "set_in", tr("Set in"), "", QKeySequence("["));
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::setInPoint);
+
+    a = new TAction(this, "set_out", tr("Set out and repeat"), "",
+                    QKeySequence("]"));
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::setOutPoint);
+
+    a  = new TAction(this, "clear_in", tr("Clear in"), "",
+                     QKeySequence("Shift+["));
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::clearInPoint);
+
+    a = new TAction(this, "clear_out", tr("Clear out and repeat"), "",
+                    QKeySequence("Shift+]"));
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::clearOutPoint);
+
+    a = new TAction(this, "clear_in_out", tr("Clear in-out and repeat"), "",
+                    Qt::Key_Backspace);
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::clearInOutPoints);
+
+    a  = new TAction(this, "seek_in", tr("Seek to in"), "noicon", Qt::Key_Home);
+    a->setIcon(style()->standardIcon(QStyle::SP_DirHomeIcon));
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::seekInPoint);
+
+    a = new TAction(this, "seek_out", tr("Seek to out"), "", Qt::Key_End);
+    inOutGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::seekOutPoint);
+
+    repeatInOutAct = new TAction(this, "repeat_in_out", tr("Repeat in-out"),
+                                 "repeat", Qt::Key_Backslash);
+    repeatInOutAct->setCheckable(true);
+    inOutGroup->addAction(repeatInOutAct);
+    connect(repeatInOutAct, &TAction::triggered,
+            player, &Player::TPlayer::setRepeat);
+    connect(player, &Player::TPlayer::InOutPointsChanged,
+            this, &TMainWindow::updateInOutMenu);
+
 
     // View playlist
     QAction* viewPlaylistAct = playlistDock->toggleViewAction();
@@ -1417,9 +1466,15 @@ void TMainWindow::updateAudioEqualizer() {
     audio_equalizer->setEqualizer(player->getAudioEqualizer());
 }
 
+void TMainWindow::updateInOutMenu() {
+    repeatInOutAct->setChecked(player->mset.loop);
+}
+
 // Slot called when media settings reset or loaded
 void TMainWindow::onMediaSettingsChanged() {
     WZDEBUG("");
+
+    updateInOutMenu();
 
     emit mediaSettingsChanged(&player->mset);
 
@@ -1738,6 +1793,8 @@ void TMainWindow::setEnableActions() {
     // Play speed
     playSpeedGroup->setEnabled(enable);
 
+    // In-out menu
+    inOutGroup->setEnabled(enable);
 
     // Time slider
     timeslider_action->enable(enable);
