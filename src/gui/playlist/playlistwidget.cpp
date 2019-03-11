@@ -271,6 +271,7 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
         setCurrentItem(playingItem);
     } else {
         // Hack to trigger playlist enableActions...
+        // TODO: remove hack
         emit currentItemChanged(currentItem(), currentItem());
     }
 }

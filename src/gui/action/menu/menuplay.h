@@ -8,10 +8,6 @@ namespace Gui {
 
 class TMainWindow;
 
-namespace Playlist {
-class TPlaylist;
-}
-
 namespace Action {
 
 class TAction;
@@ -24,33 +20,12 @@ public:
     explicit TMenuSeek(TMainWindow* mnw,
                        const QString& name,
                        const QString& text,
-                       const QString& sign);
+                       int seekIntOffset);
 
 public slots:
-    void updateDefaultAction();
-
-protected:
-    TAction* frameAct;
-    TAction* seek1Act;
-    TAction* seek2Act;
-    TAction* seek3Act;
-    TAction* plAct;
-
-    virtual void enableActions();
-
-    int actionToInt(QAction* action) const;
-    TAction* intToAction(int i) const;
-
-protected slots:
-    void setJumpTexts();
-
-private:
-    QString seek_sign;
-
-    QString timeForJumps(int secs) const;
-
-private slots:
-    void onTriggered(QAction* action);
+    void updateDefaultAction(QAction* action);
+signals:
+    void defaultActionChanged(QAction* action);
 };
 
 

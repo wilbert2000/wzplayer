@@ -57,14 +57,14 @@ void TInput::createMouseCombos() {
     left_click_combo->addItem(tr("Play / Pause"), "play_or_pause");
     left_click_combo->addItem(tr("Pause"), "pause");
     left_click_combo->addItem(tr("Stop"), "stop");
-    left_click_combo->addItem(tr("Frame back step"), "frame_back_step");
-    left_click_combo->addItem(tr("Go backward (short)"), "rewind1");
-    left_click_combo->addItem(tr("Go backward (medium)"), "rewind2");
-    left_click_combo->addItem(tr("Go backward (long)"), "rewind3");
-    left_click_combo->addItem(tr("Frame step"), "frame_step");
-    left_click_combo->addItem(tr("Go forward (short)"), "forward1");
-    left_click_combo->addItem(tr("Go forward (medium)"), "forward2");
-    left_click_combo->addItem(tr("Go forward (long)"), "forward3");
+    left_click_combo->addItem(tr("Frame back step"), "seek_rewind_frame");
+    left_click_combo->addItem(tr("Go backward (short)"), "seek_rewind1");
+    left_click_combo->addItem(tr("Go backward (medium)"), "seek_rewind2");
+    left_click_combo->addItem(tr("Go backward (long)"), "seek_rewind3");
+    left_click_combo->addItem(tr("Frame step"), "seek_forward_frame");
+    left_click_combo->addItem(tr("Go forward (short)"), "seek_forward1");
+    left_click_combo->addItem(tr("Go forward (medium)"), "seek_forward2");
+    left_click_combo->addItem(tr("Go forward (long)"), "seek_forward3");
     left_click_combo->addItem(tr("Increase volume"), "increase_volume");
     left_click_combo->addItem(tr("Decrease volume"), "decrease_volume");
     left_click_combo->addItem(tr("Fullscreen"), "fullscreen");
@@ -156,9 +156,9 @@ void TInput::retranslateStrings() {
     wheel_function_speed->setText(tr("&Change speed"));
 
     // Seek tab
-    seek1_icon->setPixmap(Images::icon("forward1", 32));
-    seek2_icon->setPixmap(Images::icon("forward2", 32));
-    seek3_icon->setPixmap(Images::icon("forward3", 32));
+    seek1_icon->setPixmap(Images::icon("seek_forward1", 32));
+    seek2_icon->setPixmap(Images::icon("seek_forward2", 32));
+    seek3_icon->setPixmap(Images::icon("seek_forward3", 32));
     seek4_icon->setPixmap(Images::icon("mouse", 32));
 
     timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);

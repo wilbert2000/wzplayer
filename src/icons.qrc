@@ -19,13 +19,16 @@
         <file>default-theme/bluray_hd.png</file>
         <file>default-theme/dvd_hd.png</file>
         <file>default-theme/exit.png</file>
-        <file>default-theme/frame_step.png</file>
-        <file>default-theme/frame_back_step.png</file>
-        <file>default-theme/forward3.png</file>
-        <file>default-theme/forward1.png</file>
-        <file>default-theme/forward2.png</file>
-        <file>default-theme/forward_menu.png</file>
-        <file>default-theme/rewind_menu.png</file>
+        <file>default-theme/seek_forward_menu.png</file>
+        <file>default-theme/seek_forward_frame.png</file>
+        <file>default-theme/seek_forward1.png</file>
+        <file>default-theme/seek_forward2.png</file>
+        <file>default-theme/seek_forward3.png</file>
+        <file>default-theme/seek_rewind_menu.png</file>
+        <file>default-theme/seek_rewind_frame.png</file>
+        <file>default-theme/seek_rewind1.png</file>
+        <file>default-theme/seek_rewind2.png</file>
+        <file>default-theme/seek_rewind3.png</file>
         <file>default-theme/fullscreen.png</file>
         <file>default-theme/normalscreen.png</file>
         <file>default-theme/gamma.png</file>
@@ -85,9 +88,6 @@
         <file>default-theme/refresh.png</file>
         <file>default-theme/download.png</file>
         <file>default-theme/resize_window.png</file>
-        <file>default-theme/rewind3.png</file>
-        <file>default-theme/rewind1.png</file>
-        <file>default-theme/rewind2.png</file>
         <file>default-theme/title.png</file>
         <file>default-theme/type_audio.png</file>
         <file>default-theme/type_cdda.png</file>

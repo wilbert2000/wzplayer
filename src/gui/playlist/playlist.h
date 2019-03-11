@@ -53,6 +53,9 @@ public:
     explicit TPlaylist(QWidget* parent, TMainWindow* mw);
     virtual ~TPlaylist();
 
+    Action::TAction* playNextAct;
+    Action::TAction* playPrevAct;
+
     QString playingFile() const;
 
     void add(const QStringList& files,
@@ -78,7 +81,6 @@ public slots:
 
 signals:
     void playlistFinished();
-    void enablePrevNextChanged();
     void playlistTitleChanged(QString title);
 
 protected:
@@ -103,8 +105,6 @@ private:
     Action::TAction* playOrPauseAct;
     Action::TAction* playNewAct;
     Action::TAction* pauseAct;
-    Action::TAction* playNextAct;
-    Action::TAction* playPrevAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
 

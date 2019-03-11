@@ -62,7 +62,7 @@ private:
     void showMainWindow(bool b);
 
 private slots:
-    void onSystemTrayIconActivated(QSystemTrayIcon::ActivationReason);
+    void onSystemTrayActivated(QSystemTrayIcon::ActivationReason);
     void showMainWin();
     void toggleShowMainWindow();
 };

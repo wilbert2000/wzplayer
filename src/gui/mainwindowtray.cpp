@@ -46,7 +46,7 @@ TMainWindowTray::TMainWindowTray() :
     tray->setIcon(Images::icon("logo", 22));
     tray->setToolTip(TConfig::PROGRAM_NAME);
     connect(tray, &QSystemTrayIcon::activated,
-            this, &TMainWindowTray::onSystemTrayIconActivated);
+            this, &TMainWindowTray::onSystemTrayActivated);
 
     quitAct = new Action::TAction(this, "quit", tr("Quit"), "exit",
                                   QKeySequence("Ctrl+Q"));
@@ -117,7 +117,7 @@ void TMainWindowTray::switchToTray() {
 
     if (pref->balloon_count > 0) {
         tray->showMessage(TConfig::PROGRAM_NAME,
-            tr("%1 is still running here").arg(TConfig::PROGRAM_NAME),
+            tr("%1 is running here").arg(TConfig::PROGRAM_NAME),
             QSystemTrayIcon::Information, TConfig::MESSAGE_DURATION);
         pref->balloon_count--;
     }
@@ -140,11 +140,9 @@ void TMainWindowTray::quit() {
     TMainWindow::closeWindow();
 }
 
-void TMainWindowTray::onSystemTrayIconActivated(
+void TMainWindowTray::onSystemTrayActivated(
         QSystemTrayIcon::ActivationReason reason) {
     WZDEBUG(QString::number(reason));
-
-    updateShowMainWindowAct();
 
     if (reason == QSystemTrayIcon::Trigger) {
         toggleShowMainWindow();
@@ -162,9 +160,12 @@ void TMainWindowTray::showMainWindow(bool b) {
 void TMainWindowTray::toggleShowMainWindow() {
     WZTRACE("");
 
-    // If tray not visible, ignore the action cause we would end up with no GUI
     if (tray->isVisible()) {
         showMainWindow(!isVisible());
+    } else {
+        // Never end up without GUI
+        showMainWin();
+        updateShowMainWindowAct();
     }
 }
 

@@ -19,19 +19,13 @@ class TMenuFile : public TMenu {
 public:
     explicit TMenuFile(TMainWindow* mw);
     virtual ~TMenuFile();
-    void updateRecents();
-
-protected slots:
-    virtual void enableActions();
 
 private:
     TMenu* recentFilesMenu;
-    TAction* clearRecentsAct;
-    TAction* saveThumbnailAct;
+    void updateRecents();
 
 private slots:
-    void openRecent();
-    void clearRecentsList();
+    void onRecentsChanged();
     void onSettingsChanged();
 };
 

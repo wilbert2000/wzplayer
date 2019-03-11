@@ -160,8 +160,8 @@ void TMainWindow::createPanel() {
 void TMainWindow::createLogDock() {
 
     logDock = new TDockWidget(tr("Log"), this, "logdock");
-    log_window = new TLogWindow(logDock);
-    logDock->setWidget(log_window);
+    logWindow = new TLogWindow(logDock);
+    logDock->setWidget(logWindow);
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
 }
 
@@ -344,95 +344,230 @@ void TMainWindow::createAudioEqualizer() {
 
 void TMainWindow::createActions() {
 
+    using namespace Action;
+
+    // Create auto hide timer
+    autoHideTimer = new TAutoHideTimer(this, playerwindow);
+
+
+    // TODO: Favorites
+
+    // Clear recents
+    clearRecentsAct = new TAction(this, "recents_clear", tr("Clear recents"),
+                                  "delete");
+    connect(clearRecentsAct, &TAction::triggered,
+            this, &TMainWindow::clearRecentsListDialog);
+
+    // Open URL
+    TAction* a = new TAction(this, "open_url", tr("Open URL..."), "",
+                             QKeySequence("Ctrl+U"));
+    connect(a, &TAction::triggered, this, &TMainWindow::openURL);
+
+    // Open file
+    a  = new TAction(this, "open_file", tr("Open file..."), "open",
+                     Qt::CTRL | Qt::Key_F);
+    connect(a, &TAction::triggered,
+            playlist, &Playlist::TPlaylist::openFileDialog);
+
+    // Open dir
+    a = new TAction(this, "open_directory", tr("Open directory..."), "",
+                    QKeySequence("Ctrl+D"));
+    connect(a, &TAction::triggered,
+            playlist, &Playlist::TPlaylist::openDirectoryDialog);
+
+    // Open disc menu
+    // DVD
+    a = new TAction(this, "open_dvd_disc", tr("Open DVD disc"), "dvd");
+    connect(a, &TAction::triggered, this, &TMainWindow::openDVD);
+
+    a = new TAction(this, "open_dvd_iso", tr("Open DVD ISO file..."), "dvd_iso");
+    connect(a, &TAction::triggered, this, &TMainWindow::openDVDFromISO);
+
+    a = new TAction(this, "open_dvd_disc_folder", tr("Open DVD folder..."), "dvd_hd");
+    connect(a, &TAction::triggered, this, &TMainWindow::openDVDFromFolder);
+
+    // BluRay
+    a = new TAction(this, "open_bluray_disc", tr("Open Blu-ray disc"), "bluray");
+    connect(a, &TAction::triggered, this, &TMainWindow::openBluRay);
+
+    a = new TAction(this, "open_bluray_iso", tr("Open Blu-ray ISO file..."),
+                    "bluray_iso");
+    connect(a, &TAction::triggered, this, &TMainWindow::openBluRayFromISO);
+
+    a = new TAction(this, "open_bluray_folder", tr("Open Blu-ray folder..."),
+                    "bluray_hd");
+    connect(a, &TAction::triggered, this, &TMainWindow::openBluRayFromFolder);
+
+    // VCD
+    a = new TAction(this, "open_vcd", tr("Open video CD"), "vcd");
+    connect(a, &TAction::triggered, this, &TMainWindow::openVCD);
+
+    // Audio
+    a = new TAction(this, "open_audio_cd", tr("Open audio CD"), "cdda");
+    connect(a, &TAction::triggered, this, &TMainWindow::openAudioCD);
+
+    // Save thumbnail
+#ifdef Q_OS_LINUX
+    saveThumbnailAct  = new TAction(this, "save_thumbnail",
+                                    tr("Save thumbnail"), "",
+                                    Qt::CTRL | Qt::Key_I);
+    connect(saveThumbnailAct, &TAction::triggered,
+            this, &TMainWindow::saveThumbnail);
+#endif
+
+    // Close
+    // Memo: Quit added by TMainwindowTray
+    a = new TAction(this, "close", tr("Close"), "noicon");
+    a->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
+    connect(a, &TAction::triggered, this, &TMainWindow::closeWindow);
+
+    // Play menu
+    // Seek forward
+    seekFrameAct = new TAction(this, "seek_forward_frame", tr("Frame step"), "",
+                               Qt::ALT | Qt::Key_Right);
+    seekFrameAct->setData(0);
+    connect(seekFrameAct, &TAction::triggered,
+            player, &Player::TPlayer::frameStep);
+
+    seek1Act = new TAction(this, "seek_forward1", "", "", Qt::Key_Right);
+    seek1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
+    seek1Act->setData(1);
+    connect(seek1Act, &TAction::triggered, player, &Player::TPlayer::forward1);
+
+    seek2Act = new TAction(this, "seek_forward2", "", "",
+                           Qt::SHIFT | Qt::Key_Right);
+    seek2Act->setData(2);
+    connect(seek2Act, &TAction::triggered, player, &Player::TPlayer::forward2);
+
+    seek3Act = new TAction(this, "seek_forward3", "", "",
+                           Qt::CTRL | Qt::Key_Right);
+    seek3Act->setData(3);
+    connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::forward3);
+
+
+    // Seek backward
+    seekBackFrameAct = new TAction(this, "seek_rewind_frame",
+                                   tr("Frame back step"), "",
+                                   Qt::ALT | Qt::Key_Left);
+    seekBackFrameAct->setData(0);
+    connect(seekBackFrameAct, &TAction::triggered, player,
+            &Player::TPlayer::frameBackStep);
+
+    seekBack1Act = new TAction(this, "seek_rewind1", "", "", Qt::Key_Left);
+    seekBack1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
+    seekBack1Act->setData(1);
+    connect(seekBack1Act, &TAction::triggered,
+            player, &Player::TPlayer::rewind1);
+
+    seekBack2Act = new TAction(this, "seek_rewind2", "", "",
+                               Qt::SHIFT | Qt::Key_Left);
+    seekBack2Act->setData(2);
+    connect(seekBack2Act, &TAction::triggered,
+            player, &Player::TPlayer::rewind2);
+
+    seekBack3Act = new TAction(this, "seek_rewind3", "", "",
+                               Qt::CTRL | Qt::Key_Left);
+    seekBack3Act->setData(3);
+    connect(seekBack3Act, &TAction::triggered,
+            player, &Player::TPlayer::rewind3);
+
+    setSeekTexts();
+
+
+    // View playlist
+    QAction* viewPlaylistAct = playlistDock->toggleViewAction();
+    viewPlaylistAct->setObjectName("view_playlist");
+    viewPlaylistAct->setIcon(Images::icon("playlist"));
+    viewPlaylistAct->setShortcut(Qt::Key_P);
+    updateToolTip(viewPlaylistAct);
+    addAction(viewPlaylistAct);
+    autoHideTimer->add(viewPlaylistAct, playlistDock);
+
+
     // Time slider
-    timeslider_action = new Action::TTimeSliderAction(this);
+    timeslider_action = new TTimeSliderAction(this);
     timeslider_action->setObjectName("timeslider_action");
     timeslider_action->setText(tr("Time slider"));
 
     connect(player, &Player::TPlayer::positionChanged,
-            timeslider_action, &Action::TTimeSliderAction::setPosition);
+            timeslider_action, &TTimeSliderAction::setPosition);
     connect(player, &Player::TPlayer::durationChanged,
-            timeslider_action, &Action::TTimeSliderAction::setDuration);
+            timeslider_action, &TTimeSliderAction::setDuration);
 
-    connect(timeslider_action, &Action::TTimeSliderAction::positionChanged,
+    connect(timeslider_action, &TTimeSliderAction::positionChanged,
             player, &Player::TPlayer::seekTime);
-    connect(timeslider_action, &Action::TTimeSliderAction::percentageChanged,
+    connect(timeslider_action, &TTimeSliderAction::percentageChanged,
             player, &Player::TPlayer::seekPercentage);
-    connect(timeslider_action, &Action::TTimeSliderAction::dragPositionChanged,
+    connect(timeslider_action, &TTimeSliderAction::dragPositionChanged,
             this, &TMainWindow::onDragPositionChanged);
 
-    connect(timeslider_action, &Action::TTimeSliderAction::wheelUp,
+    connect(timeslider_action, &TTimeSliderAction::wheelUp,
             player, &Player::TPlayer::wheelUpSeeking);
-    connect(timeslider_action, &Action::TTimeSliderAction::wheelDown,
+    connect(timeslider_action, &TTimeSliderAction::wheelDown,
             player, &Player::TPlayer::wheelDownSeeking);
 
     // Volume slider action
-    volumeslider_action = new Action::TVolumeSliderAction(this,
-                                                          player->getVolume());
+    volumeslider_action = new TVolumeSliderAction(this, player->getVolume());
     volumeslider_action->setObjectName("volumeslider_action");
     volumeslider_action->setText(tr("Volume slider"));
 
-    connect(volumeslider_action, &Action::TVolumeSliderAction::valueChanged,
+    connect(volumeslider_action, &TVolumeSliderAction::valueChanged,
             player, &Player::TPlayer::setVolume);
     connect(player, &Player::TPlayer::volumeChanged,
-            volumeslider_action, &Action::TVolumeSliderAction::setValue);
+            volumeslider_action, &TVolumeSliderAction::setValue);
 
     // Menu bar
-    viewMenuBarAct = new Action::TAction(this, "toggle_menubar",
-                                         tr("Menu bar"), "",
-                                         Qt::SHIFT | Qt::Key_F2);
+    viewMenuBarAct = new TAction(this, "toggle_menubar", tr("Menu bar"), "",
+                                 Qt::SHIFT | Qt::Key_F2);
     viewMenuBarAct->setCheckable(true);
     viewMenuBarAct->setChecked(true);
-    connect(viewMenuBarAct, &Action::TAction::toggled,
+    connect(viewMenuBarAct, &TAction::toggled,
             menuBar(), &QMenuBar::setVisible);
 
     // Toolbars
-    editToolbarAct = new Action::TAction(this, "edit_toolbar1",
-                                         tr("Edit main toolbar..."));
-    editToolbar2Act = new Action::TAction(this, "edit_toolbar2",
-                                          tr("Edit extra toolbar..."));
+    editToolbarAct = new TAction(this, "edit_toolbar1",
+                                 tr("Edit main toolbar..."));
+    editToolbar2Act = new TAction(this, "edit_toolbar2",
+                                  tr("Edit extra toolbar..."));
     // Control bar
-    editControlBarAct = new Action::TAction(this, "edit_controlbar",
-                                            tr("Edit control bar..."));
+    editControlBarAct = new TAction(this, "edit_controlbar",
+                                    tr("Edit control bar..."));
     // Status bar
-    viewStatusBarAct = new Action::TAction(this, "toggle_statusbar",
-                                           tr("Status bar"), "",
-                                           Qt::SHIFT | Qt::Key_F7);
+    viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("Status bar"),
+                                   "", Qt::SHIFT | Qt::Key_F7);
     viewStatusBarAct->setCheckable(true);
     viewStatusBarAct->setChecked(true);
-    connect(viewStatusBarAct, &Action::TAction::toggled,
+    connect(viewStatusBarAct, &TAction::toggled,
             statusBar(), &QStatusBar::setVisible);
 
-    viewVideoInfoAct = new Action::TAction(this, "toggle_video_info",
-                                           tr("Video info"));
+    viewVideoInfoAct = new TAction(this, "toggle_video_info", tr("Video info"));
     viewVideoInfoAct->setCheckable(true);
     viewVideoInfoAct->setChecked(true);
-    connect(viewVideoInfoAct, &Action::TAction::toggled,
+    connect(viewVideoInfoAct, &TAction::toggled,
             video_info_label, &QLabel::setVisible);
 
-    viewInOutPointsAct = new Action::TAction(this, "toggle_in_out_points",
-                                             tr("In-out points"));
+    viewInOutPointsAct = new TAction(this, "toggle_in_out_points",
+                                     tr("In-out points"));
     viewInOutPointsAct->setCheckable(true);
     viewInOutPointsAct->setChecked(true);
-    connect(viewInOutPointsAct, &Action::TAction::toggled,
+    connect(viewInOutPointsAct, &TAction::toggled,
             in_out_points_label, &QLabel::setVisible);
 
-    viewVideoTimeAct = new Action::TAction(this, "toggle_video_time",
-                                           tr("Video time"));
+    viewVideoTimeAct = new TAction(this, "toggle_video_time", tr("Video time"));
     viewVideoTimeAct->setCheckable(true);
     viewVideoTimeAct->setChecked(true);
-    connect(viewVideoTimeAct, &Action::TAction::toggled,
+    connect(viewVideoTimeAct, &TAction::toggled,
             time_label, &QLabel::setVisible);
 
-    viewFramesAct = new Action::TAction(this, "toggle_frames", tr("Frames"));
+    viewFramesAct = new TAction(this, "toggle_frames", tr("Frames"));
     viewFramesAct->setCheckable(true);
     viewFramesAct->setChecked(false);
-    connect(viewFramesAct, &Action::TAction::toggled,
+    connect(viewFramesAct, &TAction::toggled,
             this, &TMainWindow::displayFrames);
 
-    Action::TAction* a = new Action::TAction(this, "next_wheel_function",
-                                       tr("Next wheel function"), 0, Qt::Key_W);
-    connect(a, &Action::TAction::triggered,
+    viewPlaylistAct = new Action::TAction(this, "next_wheel_function",
+                            tr("Next wheel function"), 0, Qt::Key_W);
+    connect(viewPlaylistAct, &Action::TAction::triggered,
             player, &Player::TPlayer::nextWheelFunction);
 } // createActions
 
@@ -451,18 +586,19 @@ Action::Menu::TMenuExec* TMainWindow::createContextMenu() {
 
 void TMainWindow::createMenus() {
 
-    fileMenu = new Action::Menu::TMenuFile(this);
+    using namespace Action;
+
+    fileMenu = new Menu::TMenuFile(this);
     menuBar()->addMenu(fileMenu);
-    playMenu = new Action::Menu::TMenuPlay(this);
+    playMenu = new Menu::TMenuPlay(this);
     menuBar()->addMenu(playMenu);
-    videoMenu = new Action::Menu::TMenuVideo(this, playerwindow,
-                                             video_equalizer);
+    videoMenu = new Menu::TMenuVideo(this, playerwindow, video_equalizer);
     menuBar()->addMenu(videoMenu);
-    audioMenu = new Action::Menu::TMenuAudio(this, audio_equalizer);
+    audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
-    subtitleMenu = new Action::Menu::TMenuSubtitle(this);
+    subtitleMenu = new Menu::TMenuSubtitle(this);
     menuBar()->addMenu(subtitleMenu);
-    browseMenu = new Action::Menu::TMenuBrowse(this);
+    browseMenu = new Menu::TMenuBrowse(this);
     menuBar()->addMenu(browseMenu);
 
     // statusbar_menu added to toolbar_menu by createToolbarMenu()
@@ -475,25 +611,22 @@ void TMainWindow::createMenus() {
     statusbar_menu->addAction(viewVideoTimeAct);
     statusbar_menu->addAction(viewFramesAct);
 
-    Action::Menu::TMenu* toolbarMenu = createToolbarMenu("toolbar_menu");
+    // Create the only toolbar menu with a name
+    Menu::TMenu* toolbarMenu = createToolbarMenu("toolbar_menu");
     statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(statusBar(), &QStatusBar::customContextMenuRequested,
-            toolbarMenu, &Action::Menu::TMenu::execSlot);
+            toolbarMenu, &Menu::TMenu::execSlot);
 
-    viewMenu = new Action::Menu::TMenuView(this, toolbarMenu,
-                                           playlistDock, logDock,
-                                           auto_hide_timer);
+    viewMenu = new Menu::TMenuView(this, toolbarMenu, logDock, autoHideTimer);
     menuBar()->addMenu(viewMenu);
 
-    helpMenu = new Action::Menu::TMenuHelp(this);
+    helpMenu = new Menu::TMenuHelp(this);
     menuBar()->addMenu(helpMenu);
 
     // Context menu
     contextMenu = createContextMenu();
-    Action::TAction* a = new Action::TAction(this, "show_context_menu",
-                                             tr("Show context menu"));
-    connect(a, &Action::TAction::triggered,
-            contextMenu, &Action::Menu::TMenuExec::execSlot);
+    TAction* a = new TAction(this, "show_context_menu", tr("Show context menu"));
+    connect(a, &TAction::triggered, contextMenu, &Menu::TMenuExec::execSlot);
     playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playerwindow, &TPlayerWindow::customContextMenuRequested,
             this, &TMainWindow::showContextMenu);
@@ -502,7 +635,7 @@ void TMainWindow::createMenus() {
 Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
 
     Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, this, name,
-        tr("Toolbars"), "toolbars");
+        tr("Toolbars menu"), "toolbars");
 
     menu->addAction(viewMenuBarAct);
     menu->addAction(toolbar->toggleViewAction());
@@ -519,16 +652,16 @@ Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
     menu->addMenu(statusbar_menu);
 
     connect(menu, &QMenu::aboutToShow,
-            auto_hide_timer, &TAutoHideTimer::disable);
+            autoHideTimer, &TAutoHideTimer::disable);
     connect(menu, &QMenu::aboutToHide,
-            auto_hide_timer, &TAutoHideTimer::enable);
+            autoHideTimer, &TAutoHideTimer::enable);
 
     return menu;
 } // createToolbarMenu
 
 // Called by main window to show context popup on toolbars and dock widgets.
 // The main window takes ownership of the returned menu and will delete it
-// after use, hence the need to create a new one every time.
+// after use, hence the need to create a new menu every time.
 QMenu* TMainWindow::createPopupMenu() {
     return createToolbarMenu("");
 }
@@ -545,8 +678,8 @@ void TMainWindow::createToolbars() {
     QStringList actions;
     actions << "play_or_pause"
             << "stop"
-            << "rewind_menu"
-            << "forward_menu"
+            << "seek_rewind_menu"
+            << "seek_forward_menu"
             << "in_out_points_menu|0|1"
             << "timeslider_action"
             << "separator|0|1"
@@ -612,15 +745,14 @@ void TMainWindow::createToolbars() {
     statusBar()->setObjectName("statusbar");
 
     // Add toolbars to auto_hide_timer
-    auto_hide_timer = new TAutoHideTimer(this, playerwindow);
-    auto_hide_timer->add(controlbar->toggleViewAction(), controlbar);
-    auto_hide_timer->add(toolbar->toggleViewAction(), toolbar);
-    auto_hide_timer->add(toolbar2->toggleViewAction(), toolbar2);
-    auto_hide_timer->add(viewMenuBarAct, menuBar());
-    auto_hide_timer->add(viewStatusBarAct, statusBar());
-    // Docks added to auto hide timer by TMenuView constructor
+    // Docks already added by createActions()
+    autoHideTimer->add(controlbar->toggleViewAction(), controlbar);
+    autoHideTimer->add(toolbar->toggleViewAction(), toolbar);
+    autoHideTimer->add(toolbar2->toggleViewAction(), toolbar2);
+    autoHideTimer->add(viewMenuBarAct, menuBar());
+    autoHideTimer->add(viewStatusBarAct, statusBar());
     connect(playerwindow, &TPlayerWindow::draggingChanged,
-            auto_hide_timer, &TAutoHideTimer::setDraggingPlayerWindow);
+            autoHideTimer, &TAutoHideTimer::setDraggingPlayerWindow);
 }
 
 void TMainWindow::setupNetworkProxy() {
@@ -723,21 +855,22 @@ void TMainWindow::applyNewSettings() {
         panel->show();
     }
     // Hide toolbars delay
-    auto_hide_timer->setInterval(pref->floating_hide_delay);
+    autoHideTimer->setInterval(pref->floating_hide_delay);
 
     // Keyboard and mouse
     playerwindow->setDelayLeftClick(pref->delay_left_click);
+    setSeekTexts();
 
     // Network
     setupNetworkProxy();
 
     // Update log window edit control
-    log_window->edit->setMaximumBlockCount(pref->log_window_max_events);
+    logWindow->edit->setMaximumBlockCount(pref->log_window_max_events);
 
     emit settingsChanged();
 
     // Enable actions to reflect changes
-    sendEnableActions();
+    setEnableActions();
 
     // Restart video if needed
     if (prefDialog->requiresRestartPlayer()) {
@@ -948,7 +1081,7 @@ void TMainWindow::loadSettings() {
     WZDEBUG("");
 
     // Disable actions
-    sendEnableActions();
+    setEnableActions();
 
     // Get all actions with a name
     allActions = findNamedActions();
@@ -1260,7 +1393,7 @@ void TMainWindow::onNewMediaStartedPlaying() {
     // Recents
     pref->history_recents.addRecent(player->mdat.filename,
                                     player->mdat.displayName());
-    fileMenu->updateRecents();
+    emit recentsChanged();
 
     checkPendingActionsToRun();
 }
@@ -1298,14 +1431,13 @@ void TMainWindow::onPlayerError(int exit_code) {
 }
 
 void TMainWindow::onStateChanged(Player::TState state) {
-    WZDEBUG("New state " + player->stateToString());
+    WZTRACE("New state " + player->stateToString());
 
-    sendEnableActions();
-    auto_hide_timer->setAutoHideMouse(state == Player::STATE_PLAYING);
+    setEnableActions();
+    autoHideTimer->setAutoHideMouse(state == Player::STATE_PLAYING);
     switch (state) {
         case Player::STATE_STOPPED:
             setWindowCaption(TConfig::PROGRAM_NAME);
-            setFullscreen(false);
             msg(tr("Ready"));
             break;
         case Player::STATE_PLAYING:
@@ -1363,6 +1495,70 @@ void TMainWindow::setTimeLabel(double sec, bool changed) {
 
     if (changed) {
         time_label->setText(positionText + frames + durationText);
+    }
+}
+
+// Return seek string to use in menu
+QString TMainWindow::timeForJumps(int secs, const QString& seekSign) const {
+
+    int minutes = (int) secs / 60;
+    int seconds = secs % 60;
+    QString m = tr("%1 minute(s)").arg(minutes);
+    QString s = tr("%1 second(s)").arg(seconds);
+
+    QString txt;
+    if (minutes == 0) {
+        txt = s;
+    } else if (seconds == 0) {
+        txt = m;
+    } else {
+        txt = tr("%1 and %2", "combine minutes (%1) and secs (%2)")
+              .arg(m).arg(s);
+    }
+    return tr("%1%2", "add + or - sign (%1) to seek text (%2)")
+            .arg(seekSign).arg(txt);
+}
+
+void TMainWindow::setSeekTexts() {
+
+    QString seekSign = tr("+", "sign to use in menu for forward seeking");
+    seek1Act->setTextAndTip(timeForJumps(pref->seeking1, seekSign));
+    seek2Act->setTextAndTip(timeForJumps(pref->seeking2, seekSign));
+    seek3Act->setTextAndTip(timeForJumps(pref->seeking3, seekSign));
+
+    seekSign = tr("-", "sign to use in menu for rewind seeking");
+    seekBack1Act->setTextAndTip(timeForJumps(pref->seeking1, seekSign));
+    seekBack2Act->setTextAndTip(timeForJumps(pref->seeking2, seekSign));
+    seekBack3Act->setTextAndTip(timeForJumps(pref->seeking3, seekSign));
+}
+
+Action::TAction* TMainWindow::seekIntToAction(int i) const {
+
+    switch (i) {
+        case 0: return seekFrameAct;
+        case 1: return seek1Act;
+        case 2: return seek2Act;
+        case 3: return seek3Act;
+        case 4: return playlist->playNextAct;
+        case 5: return seekBackFrameAct;
+        case 6: return seekBack1Act;
+        case 7: return seekBack2Act;
+        case 8: return seekBack3Act;
+        case 9: return playlist->playPrevAct;
+        default:
+            WZERROR(QString("Undefined seek action %1. Returning seek2Act")
+                    .arg(i));
+            return seek2Act;
+    }
+}
+
+void TMainWindow::updateSeekDefaultAction(QAction* action) {
+
+    int seekInt = action->data().toInt();
+    if (pref->seeking_current_action != seekInt) {
+        pref->seeking_current_action = seekInt;
+        emit seekForwardDefaultActionChanged(seekIntToAction(seekInt));
+        emit seekRewindDefaultActionChanged(seekIntToAction(seekInt + 5));
     }
 }
 
@@ -1459,11 +1655,54 @@ void TMainWindow::closeWindow() {
     close();
 }
 
-void TMainWindow::sendEnableActions() {
+void TMainWindow::setEnableActions() {
     WZTRACE("State " + player->stateToString());
 
-    timeslider_action->enable(player->statePOP());
+    // Clear recent action is always enabled
+
+    // Save thumbnail action
+    saveThumbnailAct->setEnabled(
+                player->mdat.selected_type == TMediaData::TYPE_FILE
+                && !player->mdat.filename.isEmpty());
+
+    // Seeking
+    bool enable = player->statePOP();
+    seekFrameAct->setEnabled(enable);
+    seek1Act->setEnabled(enable);
+    seek2Act->setEnabled(enable);
+    seek3Act->setEnabled(enable);
+
+    seekBackFrameAct->setEnabled(enable);
+    seekBack1Act->setEnabled(enable);
+    seekBack2Act->setEnabled(enable);
+    seekBack3Act->setEnabled(enable);
+
+    // Time slider
+    timeslider_action->enable(enable);
+
     emit enableActions();
+}
+
+void TMainWindow::clearRecentsListDialog() {
+
+    int ret = QMessageBox::question(this, tr("Confirm deletion - %1")
+                                    .arg(TConfig::PROGRAM_NAME),
+                                    tr("Delete the list of recent files?"),
+                                    QMessageBox::Cancel, QMessageBox::Ok);
+
+    if (ret == QMessageBox::Ok) {
+        pref->history_recents.clear();
+        emit recentsChanged();
+    }
+}
+
+void TMainWindow::openRecent() {
+
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        int i = action->data().toInt();
+        playlist->open(pref->history_recents.getURL(i));
+    }
 }
 
 void TMainWindow::openURL() {
@@ -1846,12 +2085,12 @@ void TMainWindow::didEnterFullscreen() {
 
     emit didEnterFullscreenSignal();
 
-    auto_hide_timer->start();
+    autoHideTimer->start();
 }
 
 void TMainWindow::aboutToExitFullscreen() {
 
-    auto_hide_timer->stop();
+    autoHideTimer->stop();
 
     // Save fullscreen state
     fullscreen_menubar_visible = !menuBar()->isHidden();

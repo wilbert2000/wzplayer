@@ -26,47 +26,16 @@ public:
 TMenuDisc::TMenuDisc(TMainWindow* mw)
     : TMenu(mw, mw, "opem_disc_menu", tr("Open disc"), "open_disc") {
 
-    // DVD
-    TAction* a = new TAction(mw, "open_dvd", tr("Open DVD"), "dvd");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openDVD);
-
-    a = new TAction(mw, "open_dvd_iso", tr("Open DVD ISO file..."), "dvd_iso");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openDVDFromISO);
-
-    a = new TAction(mw, "open_dvd_folder", tr("Open DVD folder..."), "dvd_hd");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openDVDFromFolder);
-
-
+    addAction(mw->findChild<TAction*>("open_dvd_disc"));
+    addAction(mw->findChild<TAction*>("open_dvd_iso"));
+    addAction(mw->findChild<TAction*>("open_dvd_folder"));
     addSeparator();
-    // BluRay
-    a = new TAction(mw, "open_bluray", tr("Open Blu-ray"), "bluray");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openBluRay);
-
-    a = new TAction(mw, "open_bluray_iso", tr("Open Blu-ray ISO file..."),
-                    "bluray_iso");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openBluRayFromISO);
-
-    a = new TAction(mw, "open_bluray_folder", tr("Open Blu-ray folder..."),
-                    "bluray_hd");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openBluRayFromFolder);
-
-
+    addAction(mw->findChild<TAction*>("open_bluray_disc"));
+    addAction(mw->findChild<TAction*>("open_bluray_iso"));
+    addAction(mw->findChild<TAction*>("open_bluray_folder"));
     addSeparator();
-    // VCD
-    a = new TAction(mw, "open_vcd", tr("Open video CD"), "vcd");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openVCD);
-
-    // Audio
-    a = new TAction(mw, "open_audio_cd", tr("Open audio CD"), "cdda");
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openAudioCD);
+    addAction(mw->findChild<TAction*>("open_vcd"));
+    addAction(mw->findChild<TAction*>("open_audio_cd"));
 }
 
 
@@ -84,92 +53,43 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
 
     // Recents
     recentFilesMenu = new TMenu(mw, mw, "recent_menu", tr("Recent files"));
-    clearRecentsAct = new TAction(mw, "recents_clear", tr("Clear recents"),
-                                  "delete");
-    connect(clearRecentsAct, &TAction::triggered,
-            this, &TMenuFile::clearRecentsList);
-    addMenu(recentFilesMenu);
     updateRecents();
+    addMenu(recentFilesMenu);
+    connect(mw, &TMainWindow::recentsChanged,
+            this, &TMenuFile::onRecentsChanged);
     connect(mw, &TMainWindow::settingsChanged,
             this, &TMenuFile::onSettingsChanged);
 
     addSeparator();
-
-
-    // Open URL
-    TAction* a = new TAction(mw, "open_url", tr("Open URL..."), "",
-                             QKeySequence("Ctrl+U"));
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::openURL);
-
-    // Open file
-    a  = new TAction(mw, "open_file", tr("Open file..."), "open",
-                     Qt::CTRL | Qt::Key_F);
-    addAction(a);
-    connect(a, &TAction::triggered,
-            mw->getPlaylist(), &Playlist::TPlaylist::openFileDialog);
-
-    // Open dir
-    a = new TAction(mw, "open_directory", tr("Open directory..."), "",
-                    QKeySequence("Ctrl+D"));
-    addAction(a);
-    connect(a, &TAction::triggered,
-            mw->getPlaylist(), &Playlist::TPlaylist::openDirectoryDialog);
+    addAction(mw->findChild<TAction*>("open_url"));
+    addAction(mw->findChild<TAction*>("open_file"));
+    addAction(mw->findChild<TAction*>("open_directory"));
 
     // Disc submenu
     addMenu(new TMenuDisc(mw));
 
-    addSeparator();
-
     // Playlist
+    addSeparator();
     addAction(mw->findChild<TAction*>("pl_open"));
     addAction(mw->findChild<TAction*>("pl_save"));
     addAction(mw->findChild<TAction*>("pl_saveas"));
     addAction(mw->findChild<TAction*>("pl_refresh"));
 
     addSeparator();
-
     // Browse dir
     addAction(mw->findChild<TAction*>("pl_browse_dir"));
-
-#ifdef Q_OS_LINUX
     // Save thumbnail
-    saveThumbnailAct  = new TAction(mw, "save_thumbnail", tr("Save thumbnail"),
-                                    "", Qt::CTRL | Qt::Key_I);
-    connect(saveThumbnailAct, &TAction::triggered,
-            mw, &TMainWindow::saveThumbnail);
-    addAction(saveThumbnailAct);
+#ifdef Q_OS_LINUX
+    addAction(mw->findChild<TAction*>("save_thumbnail"));
 #endif
 
-    addSeparator();
-
     // Close
-    // Memo: Quit added by TMainwindowTray
-    a = new TAction(mw, "close", tr("Close"), "noicon");
-    a->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
-    addAction(a);
-    connect(a, &TAction::triggered, mw, &TMainWindow::closeWindow);
+    addSeparator();
+    addAction(mw->findChild<TAction*>("close"));
+    // Note: Quit added by TMainwindowTray
 }
 
 TMenuFile::~TMenuFile() {
-}
-
-void TMenuFile::enableActions() {
-    saveThumbnailAct->setEnabled(
-                player->mdat.selected_type == TMediaData::TYPE_FILE
-                && !player->mdat.filename.isEmpty());
-}
-
-void TMenuFile::openRecent() {
-
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action) {
-        int i = action->data().toInt();
-        QString filename = pref->history_recents.getURL(i);
-        if (!filename.isEmpty()) {
-            main_window->getPlaylist()->open(filename);
-        }
-    }
 }
 
 void TMenuFile::updateRecents() {
@@ -192,36 +112,24 @@ void TMenuFile::updateRecents() {
         QAction* a = new QAction(name, recentFilesMenu);
         a->setStatusTip(url);
         a->setData(i);
-        connect(a, &QAction::triggered, this, &TMenuFile::openRecent);
+        connect(a, &QAction::triggered, main_window, &TMainWindow::openRecent);
         recentFilesMenu->addAction(a);
     }
 
     int count = recentFilesMenu->actions().count();
     if (count > 0) {
         recentFilesMenu->addSeparator();
-        recentFilesMenu->addAction(clearRecentsAct);
-    } else {
-        recentFilesMenu->menuAction()->setVisible(false);
     }
+    recentFilesMenu->addAction(main_window->findChild<TAction*>("recents_clear"));
+}
+
+void TMenuFile::onRecentsChanged() {
+    updateRecents();
 }
 
 void TMenuFile::onSettingsChanged() {
     // Number of recent items might have changed
     updateRecents();
-}
-
-void TMenuFile::clearRecentsList() {
-
-    int ret = QMessageBox::question(main_window,
-                                    tr("Confirm deletion - WZPlayer"),
-                                    tr("Delete the list of recent files?"),
-                                    QMessageBox::Cancel, QMessageBox::Ok);
-
-    if (ret == QMessageBox::Ok) {
-        // Delete items in menu
-        pref->history_recents.clear();
-        updateRecents();
-    }
 }
 
 } // namespace Menu

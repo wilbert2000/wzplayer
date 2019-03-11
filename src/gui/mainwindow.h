@@ -92,10 +92,13 @@ public:
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
     QList<QAction*> getNamedActions() const { return allActions; }
 
+    Action::TAction* seekIntToAction(int i) const;
+
     //! Execute all the actions after the video has started to play
     void runActionsLater(const QString& actions, bool postCheck);
 
 public slots:
+    void openRecent();
     void openURL();
     void openDVD();
     void openDVDFromISO();
@@ -119,6 +122,8 @@ public slots:
 
     virtual void showSettingsDialog();
     virtual void showFilePropertiesDialog(bool checked);
+
+    void updateSeekDefaultAction(QAction* action);
 
     virtual void showSeekToDialog();
     virtual void showSubDelayDialog();
@@ -152,6 +157,7 @@ signals:
 
     void settingsChanged();
     void mediaSettingsChanged(Settings::TMediaSettings* mset);
+    void recentsChanged();
 
     void fullscreenChanged();
     void aboutToEnterFullscreenSignal();
@@ -161,6 +167,9 @@ signals:
     void stayOnTopChanged(int);
     void gotMessageFromOtherInstance();
     void requestRestart();
+
+    void seekForwardDefaultActionChanged(QAction* action);
+    void seekRewindDefaultActionChanged(QAction* action);
 
 protected:
     Playlist::TPlaylist* playlist;
@@ -201,10 +210,28 @@ private:
     TPlayerWindow* playerwindow;
     TDockWidget* playlistDock;
     TDockWidget* logDock;
-    TLogWindow* log_window;
+    TLogWindow* logWindow;
 
     QList<QAction*> allActions;
 
+    // File menu
+    Action::TAction* clearRecentsAct;
+#ifdef Q_OS_LINUX
+    Action::TAction* saveThumbnailAct;
+#endif
+
+    // Play menu
+    Action::TAction* seekFrameAct;
+    Action::TAction* seek1Act;
+    Action::TAction* seek2Act;
+    Action::TAction* seek3Act;
+
+    Action::TAction* seekBackFrameAct;
+    Action::TAction* seekBack1Act;
+    Action::TAction* seekBack2Act;
+    Action::TAction* seekBack3Act;
+
+    // Help menu
     QMenu* helpMenu;
     Action::Menu::TMenuExec* contextMenu;
 
@@ -268,7 +295,7 @@ private:
     bool center_window;
     QPoint center_window_pos;
 
-    TAutoHideTimer* auto_hide_timer;
+    TAutoHideTimer* autoHideTimer;
     TUpdateChecker* update_checker;
 
     static QString settingsGroupName() { return "mainwindow"; }
@@ -292,9 +319,12 @@ private:
     void setupNetworkProxy();
     void setTimeLabel(double sec, bool changed);
 
+    QString timeForJumps(int secs, const QString& seekSign) const;
+    void setSeekTexts();
+
     QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
-    void sendEnableActions();
+    void setEnableActions();
     //! Execute all actions in \a actions. The actions should be
     //! separated by spaces. Checkable actions could have a parameter:
     //! true or false.
@@ -320,6 +350,8 @@ private:
 
 private slots:
     void onPlayerError(int exit_code);
+
+    void clearRecentsListDialog();
 
     // Mouse buttons
     void leftClickFunction();

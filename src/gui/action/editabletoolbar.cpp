@@ -23,6 +23,7 @@
 #include "gui/action/actionseditor.h"
 #include "gui/action/toolbareditor.h"
 #include "gui/action/menu/menu.h"
+#include "gui/action/menu/menuplay.h"
 
 #include "gui/mainwindow.h"
 #include "desktop.h"
@@ -63,17 +64,13 @@ void TEditableToolbar::addMenu(QAction* action) {
     if (action->objectName() == "stay_on_top_menu") {
         button->setPopupMode(QToolButton::MenuButtonPopup);
         button->setDefaultAction(menu->defaultAction());
-    } else if (action->objectName() == "forward_menu"
-        || action->objectName() == "rewind_menu") {
+    } else if (action->objectName() == "seek_forward_menu"
+        || action->objectName() == "seek_rewind_menu") {
         button->setPopupMode(QToolButton::MenuButtonPopup);
         button->setDefaultAction(menu->defaultAction());
-        // Set triggered action as default action
-        connect(menu, &QMenu::triggered,
+        connect(static_cast<Menu::TMenuSeek*>(menu),
+                &Menu::TMenuSeek::defaultActionChanged,
                 button, &QToolButton::setDefaultAction);
-        // Show menu when action disabled
-        connect(action, &QAction::triggered,
-                button, &QToolButton::showMenu,
-                Qt::QueuedConnection);
     } else {
         // Default, use instant popup
         button->setPopupMode(QToolButton::InstantPopup);

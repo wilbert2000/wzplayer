@@ -114,7 +114,7 @@ void TPlaylist::createTree() {
 
 void TPlaylist::createActions() {
 
-    // Connect enableActions() before creation of actions in menus, because
+    // Connect enableActions() before creation of actions, because
     // enableActions() can set the currently playing item, which can be used
     // by actions to decide whether to enable or not.
     connect(main_window, &TMainWindow::enableActions,
@@ -126,7 +126,7 @@ void TPlaylist::createActions() {
     openPlaylistAct->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
     connect(openPlaylistAct, &TAction::triggered, this, &TPlaylist::askOpenPlaylist);
 
-    // Save plsylist
+    // Save playlist
     saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "noicon",
                           QKeySequence("Ctrl+S"));
     saveAct->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
@@ -187,6 +187,7 @@ void TPlaylist::createActions() {
                               QKeySequence(">"));
     playNextAct->addShortcut(QKeySequence("."));
     playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
+    playNextAct->setData(4);
     connect(playNextAct, &TAction::triggered, this, &TPlaylist::playNext);
 
     // Play prev
@@ -194,6 +195,7 @@ void TPlaylist::createActions() {
                               "previous", QKeySequence("<"));
     playPrevAct->addShortcut(QKeySequence(","));
     playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
+    playPrevAct->setData(4);
     connect(playPrevAct, &TAction::triggered, this, &TPlaylist::playPrev);
 
     // Repeat
@@ -377,8 +379,6 @@ void TPlaylist::createActions() {
     toolbar->addSeparator();
     toolbar->addAction(refreshAct);
     toolbar->addAction(browseDirAct);
-
-    toolbar->addSeparator();
     toolbar->addAction(shuffleAct);
     toolbar->addAction(repeatAct);
 }
@@ -656,6 +656,8 @@ void TPlaylist::stop() {
         }
         playlistWidget->setCurrentItem(item);
     }
+
+    // TODO: maybe add playlistWidget->stop() for copyThread?
 }
 
 TPlaylistItem* TPlaylist::getRandomItem() const {
@@ -996,20 +998,8 @@ void TPlaylist::enableActions() {
     playNewAct->setEnabled(e);
     pauseAct->setEnabled(s == Player::STATE_PLAYING);
 
-    // Prev/Next
-    bool changed = false;
-    if (e != playNextAct->isEnabled()) {
-        playNextAct->setEnabled(e);
-        changed = true;
-    }
-    if (e != playPrevAct->isEnabled()) {
-        playPrevAct->setEnabled(e);
-        changed = true;
-    }
-    if (changed) {
-        // Update forward/rewind menus
-        emit enablePrevNextChanged();
-    }
+    playNextAct->setEnabled(e);
+    playPrevAct->setEnabled(e);
 
     // Context menu
     bool current = playlistWidget->plCurrentItem();
@@ -1377,7 +1367,7 @@ void TPlaylist::open(const QString &fileName, const QString& name) {
     WZDEBUG("'" + fileName + "'");
 
     if (fileName.isEmpty()) {
-        WZERROR("filename is empty");
+        WZDEBUG("Nothing to play");
         return;
     }
     if (!maybeSave()) {

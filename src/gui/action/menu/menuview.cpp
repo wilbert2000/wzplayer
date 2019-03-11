@@ -155,7 +155,6 @@ void TMenuStayOnTop::onAboutToShow() {
 
 TMenuView::TMenuView(TMainWindow* mw,
                      QMenu* toolBarMenu,
-                     TDockWidget* playlistDock,
                      TDockWidget* logDock,
                      TAutoHideTimer* autoHideTimer)
     : TMenu(mw, mw, "view_menu", tr("View"), "noicon") {
@@ -178,17 +177,10 @@ TMenuView::TMenuView(TMainWindow* mw,
     addAction(propertiesAct);
 
     // View playlist
-    QAction* a = playlistDock->toggleViewAction();
-    a->setObjectName("view_playlist");
-    a->setIcon(Images::icon("playlist"));
-    a->setShortcut(Qt::Key_P);
-    updateToolTip(a);
-    addAction(a);
-    mw->addAction(a);
-    autoHideTimer->add(a, playlistDock);
+    addAction(mw->findChild<QAction*>("view_playlist"));
 
     // View log
-    a = logDock->toggleViewAction();
+    QAction* a = logDock->toggleViewAction();
     a->setObjectName("view_log");
     a->setIcon(Images::icon("log"));
     a->setShortcut(QKeySequence("L"));

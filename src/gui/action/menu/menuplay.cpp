@@ -1,9 +1,5 @@
 #include "gui/action/menu/menuplay.h"
-
-#include <QToolButton>
-
 #include "gui/mainwindow.h"
-#include "gui/playlist/playlist.h"
 #include "gui/action/menu/menuinoutpoints.h"
 #include "gui/action/action.h"
 #include "settings/preferences.h"
@@ -20,117 +16,20 @@ namespace Menu {
 TMenuSeek::TMenuSeek(TMainWindow* mw,
                      const QString& name,
                      const QString& text,
-                     const QString& sign) :
-    TMenu(mw, mw, name, text),
-    seek_sign(sign) {
+                     int seekIntOffset) :
+    TMenu(mw, mw, name, text) {
 
-    setDefaultAction(menuAction());
-    connect(this, &TMenuSeek::triggered, this, &TMenuSeek::onTriggered);
-    connect(main_window, &TMainWindow::settingsChanged,
-            this, &TMenuSeek::setJumpTexts);
-    connect(main_window->getPlaylist(),
-            &Playlist::TPlaylist::enablePrevNextChanged,
-            this, &TMenuSeek::updateDefaultAction);
+    setDefaultAction(main_window->seekIntToAction(
+                         pref->seeking_current_action + seekIntOffset));
+    connect(this, &TMenuSeek::triggered,
+            main_window, &TMainWindow::updateSeekDefaultAction);
 }
 
-// Map int to action
-TAction* TMenuSeek::intToAction(int i) const {
-
-    switch (i) {
-    case 0: return frameAct;
-    case 1: return seek1Act;
-    case 2: return seek2Act;
-    case 3: return seek3Act;
-    default: return plAct;
-    }
-}
-
-// Return int for action
-int TMenuSeek::actionToInt(QAction* action) const {
-
-    QString name = action->objectName();
-    if (name.startsWith("frame")) {
-        return 0;
-    }
-    if (name.endsWith("1")) {
-        return 1;
-    }
-    if (name.endsWith("2")) {
-        return 2;
-    }
-    if (name.endsWith("3")) {
-        return 3;
-    }
-    return 4;
-}
-
-// Set default action and pref when menu triggered
-void TMenuSeek::onTriggered(QAction* action) {
+void TMenuSeek::updateDefaultAction(QAction* action) {
 
     setDefaultAction(action);
-    pref->seeking_current_action = actionToInt(action);
-}
-
-// Update default actions menu and associated tool buttons
-void TMenuSeek::updateDefaultAction() {
-
-    QAction* action = intToAction(pref->seeking_current_action);
-    if (!action->isEnabled()) {
-        action = menuAction();
-    }
-
-    if (action != defaultAction()) {
-        setDefaultAction(action);
-        menuAction()->setIcon(action->icon());
-
-        // Set default action asscociated tool buttons.
-        QString name = menuAction()->objectName() + "_toolbutton";
-        QList<QToolButton*> buttons =
-                main_window->findChildren<QToolButton*>(name);
-        foreach(QToolButton* button, buttons) {
-            button->setDefaultAction(action);
-        }
-    }
-}
-
-void TMenuSeek::enableActions() {
-
-    bool e = player->statePOP();
-    frameAct->setEnabled(e);
-    seek1Act->setEnabled(e);
-    seek2Act->setEnabled(e);
-    seek3Act->setEnabled(e);
-
-    updateDefaultAction();
-}
-
-// Return seek string to use in menu
-QString TMenuSeek::timeForJumps(int secs) const {
-
-    int minutes = (int) secs / 60;
-    int seconds = secs % 60;
-    QString m = tr("%1 minute(s)").arg(minutes);
-    QString s = tr("%1 second(s)").arg(seconds);
-
-    QString txt;
-    if (minutes == 0) {
-        txt = s;
-    } else if (seconds == 0) {
-        txt = m;
-    } else {
-        txt = tr("%1 and %2", "combine minutes (%1) and secs (%2)")
-              .arg(m).arg(s);
-    }
-    return tr("%1%2", "add + or - sign (%1) to seek text (%2)")
-            .arg(seek_sign).arg(txt);
-}
-
-// Set seek actions text from preferences
-void TMenuSeek::setJumpTexts() {
-
-    seek1Act->setTextAndTip(timeForJumps(pref->seeking1));
-    seek2Act->setTextAndTip(timeForJumps(pref->seeking2));
-    seek3Act->setTextAndTip(timeForJumps(pref->seeking3));
+    // Update default action associated tool buttons
+    emit defaultActionChanged(action);
 }
 
 
@@ -140,35 +39,18 @@ public:
 };
 
 TMenuSeekForward::TMenuSeekForward(TMainWindow* mw) :
-    TMenuSeek(mw, "forward_menu", tr("Forward"),
-              tr("+", "sign to use in menu for forward seeking")) {
+    TMenuSeek(mw, "seek_forward_menu", tr("Seek forward"), 0) {
 
-    frameAct = new TAction(main_window, "frame_step", tr("Frame step"), "",
-                           Qt::ALT | Qt::Key_Right);
-    addAction(frameAct);
-    connect(frameAct, &TAction::triggered, player, &Player::TPlayer::frameStep);
-
+    addAction(main_window->findChild<TAction*>("seek_forward_frame"));
     addSeparator();
-    seek1Act = new TAction(main_window, "forward1", "", "", Qt::Key_Right);
-    seek1Act->addShortcut(QKeySequence("Shift+Ctrl+F")); // MCE remote key
-    addAction(seek1Act);
-    connect(seek1Act, &TAction::triggered, player, &Player::TPlayer::forward1);
-
-    seek2Act = new TAction(main_window, "forward2", "", "",
-                           Qt::SHIFT | Qt::Key_Right);
-    connect(seek2Act, &TAction::triggered, player, &Player::TPlayer::forward2);
-    addAction(seek2Act);
-
-    seek3Act = new TAction(main_window, "forward3", "", "",
-                           Qt::CTRL | Qt::Key_Right);
-    addAction(seek3Act);
-    connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::forward3);
-
+    addAction(main_window->findChild<TAction*>("seek_forward1"));
+    addAction(main_window->findChild<TAction*>("seek_forward2"));
+    addAction(main_window->findChild<TAction*>("seek_forward3"));
     addSeparator();
-    plAct = main_window->findChild<TAction*>("play_next");
-    addAction(plAct);
+    addAction(main_window->findChild<TAction*>("play_next"));
 
-    setJumpTexts();
+    connect(main_window, &TMainWindow::seekForwardDefaultActionChanged,
+            this, &TMenuSeekForward::updateDefaultAction);
 }
 
 
@@ -177,40 +59,20 @@ public:
     explicit TMenuSeekRewind(TMainWindow* mw);
 };
 
-// Create rewind menu as descendant from TMenuSeek
 TMenuSeekRewind::TMenuSeekRewind(TMainWindow* mw) :
-    TMenuSeek(mw, "rewind_menu", tr("Rewind"),
-              tr("-", "sign to use in menu for rewind seeking")) {
+    TMenuSeek(mw, "seek_rewind_menu", tr("Seek backwards"), 5) {
 
-    frameAct = new TAction(main_window, "frame_back_step",
-                           tr("Frame back step"), "", Qt::ALT | Qt::Key_Left);
-    addAction(frameAct);
-    connect(frameAct, &TAction::triggered, player,
-            &Player::TPlayer::frameBackStep);
-
+    addAction(main_window->findChild<TAction*>("seek_rewind_frame"));
     addSeparator();
-    seek1Act = new TAction(main_window, "rewind1", "", "", Qt::Key_Left);
-    seek1Act->addShortcut(QKeySequence("Shift+Ctrl+B")); // MCE remote key
-    addAction(seek1Act);
-    connect(seek1Act, &TAction::triggered, player, &Player::TPlayer::rewind1);
-
-    seek2Act = new TAction(main_window, "rewind2", "", "",
-                           Qt::SHIFT | Qt::Key_Left);
-    addAction(seek2Act);
-    connect(seek2Act, &TAction::triggered, player, &Player::TPlayer::rewind2);
-
-    seek3Act = new TAction(main_window, "rewind3", "", "",
-                           Qt::CTRL | Qt::Key_Left);
-    addAction(seek3Act);
-    connect(seek3Act, &TAction::triggered, player, &Player::TPlayer::rewind3);
-
+    addAction(main_window->findChild<TAction*>("seek_rewind1"));
+    addAction(main_window->findChild<TAction*>("seek_rewind2"));
+    addAction(main_window->findChild<TAction*>("seek_rewind3"));
     addSeparator();
-    plAct = main_window->findChild<TAction*>("play_prev");
-    addAction(plAct);
+    addAction(main_window->findChild<TAction*>("play_prev"));
 
-    setJumpTexts();
+    connect(main_window, &TMainWindow::seekRewindDefaultActionChanged,
+            this, &TMenuSeekRewind::updateDefaultAction);
 }
-
 
 class TMenuPlaySpeed : public TMenu {
 public:
@@ -228,7 +90,6 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     group = new QActionGroup(mw);
     group->setExclusive(false);
     group->setEnabled(false);
-
 
     TAction* a = new TAction(mw, "speed_normal", tr("Normal speed"), "",
                              Qt::Key_Z);
@@ -306,17 +167,9 @@ TMenuPlay::TMenuPlay(TMainWindow* mw)
     addSeparator();
 
     // Forward menu
-    TMenuSeek* forward_menu = new TMenuSeekForward(main_window);
-    addMenu(forward_menu);
+    addMenu(new TMenuSeekForward(main_window));
     // Rewind menu
-    TMenuSeek* rewind_menu = new TMenuSeekRewind(main_window);
-    addMenu(rewind_menu);
-    // Let forward and rewind work in tandem
-    connect(forward_menu, &TMenuSeek::triggered,
-            rewind_menu, &TMenuSeek::updateDefaultAction);
-    connect(rewind_menu, &TMenuSeek::triggered,
-            forward_menu, &TMenuSeek::updateDefaultAction);
-
+    addMenu(new TMenuSeekRewind(main_window));
     // Seek to...
     seekToAct = new TAction(main_window, "seek_to", tr("Seek to..."), "",
                             QKeySequence("Ctrl+G"));

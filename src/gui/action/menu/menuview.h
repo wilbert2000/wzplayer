@@ -39,7 +39,6 @@ class TMenuView : public TMenu {
 public:
     explicit TMenuView(TMainWindow* mw,
                        QMenu* toolBarMenu,
-                       TDockWidget* playlistDock,
                        TDockWidget* logDock,
                        TAutoHideTimer* autoHideTimer);
 
