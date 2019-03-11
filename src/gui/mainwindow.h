@@ -221,15 +221,22 @@ private:
 #endif
 
     // Play menu
+    // Seek forward menu
     Action::TAction* seekFrameAct;
     Action::TAction* seek1Act;
     Action::TAction* seek2Act;
     Action::TAction* seek3Act;
 
+    // Seek backwards menu
     Action::TAction* seekBackFrameAct;
     Action::TAction* seekBack1Act;
     Action::TAction* seekBack2Act;
     Action::TAction* seekBack3Act;
+
+    Action::TAction* seekToTimeAct;
+
+    // Play speed menu
+    QActionGroup* playSpeedGroup;
 
     // Help menu
     QMenu* helpMenu;

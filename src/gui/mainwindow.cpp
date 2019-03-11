@@ -473,6 +473,61 @@ void TMainWindow::createActions() {
 
     setSeekTexts();
 
+    // Seek to time
+    seekToTimeAct = new TAction(this, "seek_to_time", tr("Seek to time..."), "",
+                                QKeySequence("Ctrl+G"));
+    connect(seekToTimeAct, &TAction::triggered,
+            this, &TMainWindow::showSeekToDialog);
+
+    // Speed menu
+    playSpeedGroup = new QActionGroup(this);
+    playSpeedGroup->setExclusive(false);
+    playSpeedGroup->setEnabled(false);
+
+    a = new TAction(this, "speed_normal", tr("Normal speed"), "", Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::normalSpeed);
+
+    a = new TAction(this, "spedd_half", tr("Half speed"), "",
+                    Qt::META | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::halveSpeed);
+
+    a = new TAction(this, "speed_double", tr("Double speed"), "",
+                    Qt::ALT | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::doubleSpeed);
+
+    a = new TAction(this, "speed_dec_10", tr("Speed -10%"), "",
+                    Qt::SHIFT | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed10);
+
+    a = new TAction(this, "speed_inc_10", tr("Speed +10%"), "",
+                    Qt::CTRL | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed10);
+
+    a = new TAction(this, "speed_dec_4", tr("Speed -4%"), "",
+                    Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed4);
+
+    a = new TAction(this, "speed_inc_4", tr("Speed +4%"), "",
+                    Qt::ALT | Qt::CTRL | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed4);
+
+    a = new TAction(this, "speed_dec_1", tr("Speed -1%"), "",
+                    Qt::SHIFT | Qt::META | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed1);
+
+    a = new TAction(this, "speed_inc_1", tr("Speed +1%"), "",
+                    Qt::CTRL | Qt::META | Qt::Key_Z);
+    playSpeedGroup->addAction(a);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed1);
+
 
     // View playlist
     QAction* viewPlaylistAct = playlistDock->toggleViewAction();
@@ -1665,17 +1720,24 @@ void TMainWindow::setEnableActions() {
                 player->mdat.selected_type == TMediaData::TYPE_FILE
                 && !player->mdat.filename.isEmpty());
 
-    // Seeking
+    // Seek forward
     bool enable = player->statePOP();
     seekFrameAct->setEnabled(enable);
     seek1Act->setEnabled(enable);
     seek2Act->setEnabled(enable);
     seek3Act->setEnabled(enable);
-
+    // Seek backwards
     seekBackFrameAct->setEnabled(enable);
     seekBack1Act->setEnabled(enable);
     seekBack2Act->setEnabled(enable);
     seekBack3Act->setEnabled(enable);
+
+    // Seek to time
+    seekToTimeAct->setEnabled(enable);
+
+    // Play speed
+    playSpeedGroup->setEnabled(enable);
+
 
     // Time slider
     timeslider_action->enable(enable);

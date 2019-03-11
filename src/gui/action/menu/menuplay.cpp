@@ -77,82 +77,24 @@ TMenuSeekRewind::TMenuSeekRewind(TMainWindow* mw) :
 class TMenuPlaySpeed : public TMenu {
 public:
     explicit TMenuPlaySpeed(TMainWindow* mw);
-protected:
-    virtual void enableActions();
-private:
-    QActionGroup* group;
 };
 
-
 TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
-    : TMenu(mw, mw, "speed_menu", tr("Speed"), "speed") {
+    : TMenu(mw, mw, "play_speed_menu", tr("Play speed")) {
 
-    group = new QActionGroup(mw);
-    group->setExclusive(false);
-    group->setEnabled(false);
-
-    TAction* a = new TAction(mw, "speed_normal", tr("Normal speed"), "",
-                             Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::normalSpeed);
-
+    addAction(main_window->findChild<TAction*>("speed_normal"));
     addSeparator();
-    a = new TAction(mw, "spedd_half", tr("Half speed"), "",
-                    Qt::META | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::halveSpeed);
-
-    a = new TAction(mw, "speed_double", tr("Double speed"), "",
-                    Qt::ALT | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::doubleSpeed);
-
+    addAction(main_window->findChild<TAction*>("spedd_half"));
+    addAction(main_window->findChild<TAction*>("speed_double"));
     addSeparator();
-    a = new TAction(mw, "speed_dec_10", tr("Speed -10%"), "",
-                    Qt::SHIFT | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed10);
-
-    a = new TAction(mw, "speed_inc_10", tr("Speed +10%"), "",
-                    Qt::CTRL | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed10);
-
+    addAction(main_window->findChild<TAction*>("speed_dec_10"));
+    addAction(main_window->findChild<TAction*>("speed_inc_10"));
     addSeparator();
-    a = new TAction(mw, "speed_dec_4", tr("Speed -4%"), "",
-                    Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed4);
-
-    a = new TAction(mw, "speed_inc_4", tr("Speed +4%"), "",
-                    Qt::ALT | Qt::CTRL | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed4);
-
+    addAction(main_window->findChild<TAction*>("speed_dec_4"));
+    addAction(main_window->findChild<TAction*>("speed_inc_4"));
     addSeparator();
-    a = new TAction(mw, "speed_dec_1", tr("Speed -1%"), "",
-                    Qt::SHIFT | Qt::META | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed1);
-
-    a = new TAction(main_window, "speed_inc_1", tr("Speed +1%"), "",
-                    Qt::CTRL | Qt::META | Qt::Key_Z);
-    addAction(a);
-    group->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed1);
-}
-
-void TMenuPlaySpeed::enableActions() {
-    // Using mset, so useless to set if stopped
-    group->setEnabled(player->statePOP());
+    addAction(main_window->findChild<TAction*>("speed_dec_1"));
+    addAction(main_window->findChild<TAction*>("speed_inc_1"));
 }
 
 
@@ -165,31 +107,18 @@ TMenuPlay::TMenuPlay(TMainWindow* mw)
     addAction(main_window->findChild<TAction*>("play_new_window"));
 
     addSeparator();
-
     // Forward menu
     addMenu(new TMenuSeekForward(main_window));
     // Rewind menu
     addMenu(new TMenuSeekRewind(main_window));
-    // Seek to...
-    seekToAct = new TAction(main_window, "seek_to", tr("Seek to..."), "",
-                            QKeySequence("Ctrl+G"));
-    addAction(seekToAct);
-    connect(seekToAct, &TAction::triggered,
-            main_window, &TMainWindow::showSeekToDialog);
+    // Seek to time
+    addAction(main_window->findChild<TAction*>("seek_to_time"));
 
-    // Speed submenu
     addSeparator();
+    // Speed submenu
     addMenu(new TMenuPlaySpeed(main_window));
-
     // In-out point submenu
     addMenu(new TMenuInOut(main_window));
-}
-
-void TMenuPlay::enableActions() {
-
-    Player::TState s = player->state();
-    seekToAct->setEnabled(s == Player::STATE_PLAYING
-                          || s == Player::STATE_PAUSED);
 }
 
 } // namespace Menu

@@ -33,12 +33,6 @@ class TMenuPlay : public TMenu {
     Q_OBJECT
 public:
     explicit TMenuPlay(TMainWindow* mw);
-
-protected:
-    virtual void enableActions();
-
-private:
-    TAction* seekToAct;
 }; // class TMenuPlay
 
 } // namespace Menu
