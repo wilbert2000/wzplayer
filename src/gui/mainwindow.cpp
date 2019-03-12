@@ -659,6 +659,73 @@ void TMainWindow::createActions() {
     connect(resizeOnLoadAct, &TAction::triggered,
             this, &TMainWindow::onResizeOnLoadTriggered);
 
+    // Menu zoom and pan
+    zoomAndPanGroup = new Menu::TZoomAndPanGroup(this);
+
+    // Video equalizer
+    equalizerAct = new TAction(this, "video_equalizer", tr("Equalizer"), "",
+                               QKeySequence("E"));
+    equalizerAct->setCheckable(true);
+    equalizerAct->setChecked(video_equalizer->isVisible());
+    connect(equalizerAct, &TAction::triggered,
+            video_equalizer, &TVideoEqualizer::setVisible);
+    connect(video_equalizer, &TVideoEqualizer::visibilityChanged,
+            equalizerAct, &TAction::setChecked);
+
+    resetVideoEqualizerAct = new TAction(this, "reset_video_equalizer",
+                                         tr("Reset video equalizer"), "",
+                                         QKeySequence("Shift+E"));
+    connect(resetVideoEqualizerAct, &TAction::triggered,
+            video_equalizer, &TVideoEqualizer::reset);
+
+    // Short cuts equalizer (not in menu)
+    decContrastAct = new TAction(this, "dec_contrast", tr("Dec contrast"), "",
+                                 Qt::ALT | Qt::Key_1);
+    connect(decContrastAct, &TAction::triggered,
+            player, &Player::TPlayer::decContrast);
+
+    incContrastAct = new TAction(this, "inc_contrast", tr("Inc contrast"), "",
+                                 Qt::ALT | Qt::Key_2);
+    connect(incContrastAct, &TAction::triggered,
+            player, &Player::TPlayer::incContrast);
+
+    decBrightnessAct = new TAction(this, "dec_brightness", tr("Dec brightness"),
+                                   "", Qt::ALT | Qt::Key_3);
+    connect(decBrightnessAct, &TAction::triggered,
+            player, &Player::TPlayer::decBrightness);
+
+    incBrightnessAct = new TAction(this, "inc_brightness", tr("Inc brightness"),
+                                   "", Qt::ALT | Qt::Key_4);
+    connect(incBrightnessAct, &TAction::triggered,
+            player, &Player::TPlayer::incBrightness);
+
+    decHueAct = new TAction(this, "dec_hue", tr("Dec hue"), "",
+                            Qt::ALT | Qt::Key_5);
+    connect(decHueAct, &TAction::triggered, player, &Player::TPlayer::decHue);
+
+    incHueAct = new TAction(this, "inc_hue", tr("Inc hue"), "",
+                            Qt::ALT | Qt::Key_6);
+    connect(incHueAct, &TAction::triggered, player, &Player::TPlayer::incHue);
+
+    decSaturationAct = new TAction(this, "dec_saturation", tr("Dec saturation"),
+                                   "", Qt::ALT | Qt::Key_7);
+    connect(decSaturationAct, &TAction::triggered,
+            player, &Player::TPlayer::decSaturation);
+
+    incSaturationAct = new TAction(this, "inc_saturation", tr("Inc saturation"),
+                                   "", Qt::ALT | Qt::Key_8);
+    connect(incSaturationAct, &TAction::triggered,
+            player, &Player::TPlayer::incSaturation);
+
+    decGammaAct = new TAction(this, "dec_gamma", tr("Dec gamma"), "",
+                              Qt::ALT | Qt::Key_9);
+    connect(decGammaAct, &TAction::triggered,
+            player, &Player::TPlayer::decGamma);
+
+    incGammaAct = new TAction(this, "inc_gamma", tr("Inc gamma"), "",
+                              Qt::ALT | Qt::Key_0);
+    connect(incGammaAct, &TAction::triggered,
+            player, &Player::TPlayer::incGamma);
 
 
     // View playlist
@@ -779,7 +846,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(fileMenu);
     playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
-    videoMenu = new Menu::TMenuVideo(this, video_equalizer);
+    videoMenu = new Menu::TMenuVideo(this);
     menuBar()->addMenu(videoMenu);
     audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
@@ -1936,6 +2003,24 @@ void TMainWindow::setEnableActions() {
     doubleSizeAct->setEnabled(enable);
     optimizeSizeAct->setEnabled(enable);
     // Resize on load always enabled
+
+    // Zoom and pan
+    zoomAndPanGroup->setEnabled(e);
+
+    // Video equalizer
+    equalizerAct->setEnabled(e);
+    resetVideoEqualizerAct->setEnabled(e);
+    decContrastAct->setEnabled(e);
+    incContrastAct->setEnabled(e);
+    decBrightnessAct->setEnabled(e);
+    incBrightnessAct->setEnabled(e);
+    decHueAct->setEnabled(e);
+    incHueAct->setEnabled(e);
+    decSaturationAct->setEnabled(e);
+    incSaturationAct->setEnabled(e);
+    decGammaAct->setEnabled(e);
+    incGammaAct->setEnabled(e);
+
 
     // Time slider
     timeslider_action->enable(enable);

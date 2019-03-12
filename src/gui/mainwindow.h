@@ -53,6 +53,7 @@ class TMenu;
 class TMenuFile;
 class TMenuPlay;
 class TWindowSizeGroup;
+class TZoomAndPanGroup;
 class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
@@ -263,16 +264,37 @@ private:
 
     // Video menu
     Action::TAction* fullscreenAct;
+
     // Aspect menu
     Action::TActionGroup* aspectGroup;
     Action::TAction* aspectAutoAct;
     Action::TAction* aspectDisabledAct;
     Action::TAction* nextAspectAct;
+
     // Window size menu
     Action::Menu::TWindowSizeGroup* windowSizeGroup;
     Action::TAction* doubleSizeAct;
     Action::TAction* optimizeSizeAct;
     Action::TAction* resizeOnLoadAct;
+
+    // Zoom and pan
+    Action::Menu::TZoomAndPanGroup* zoomAndPanGroup;
+
+    // Video equalizer
+    Action::TAction* equalizerAct;
+    Action::TAction* resetVideoEqualizerAct;
+
+    Action::TAction* decContrastAct;
+    Action::TAction* incContrastAct;
+    Action::TAction* decBrightnessAct;
+    Action::TAction* incBrightnessAct;
+    Action::TAction* decHueAct;
+    Action::TAction* incHueAct;
+    Action::TAction* decSaturationAct;
+    Action::TAction* incSaturationAct;
+    Action::TAction* decGammaAct;
+    Action::TAction* incGammaAct;
+
 
     // Help menu
     QMenu* helpMenu;

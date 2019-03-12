@@ -2,6 +2,7 @@
 #define GUI_VIDEOMENU_H
 
 #include "gui/action/menu/menu.h"
+#include <QActionGroup>
 
 
 namespace Gui {
@@ -29,30 +30,21 @@ private slots:
     void setAspectToolTip(QString tip);
 };
 
+class TZoomAndPanGroup : public QActionGroup {
+    Q_OBJECT
+public:
+    explicit TZoomAndPanGroup(TMainWindow* mw);
+};
 
 class TMenuVideo : public TMenu {
     Q_OBJECT
 public:
-    TMenuVideo(TMainWindow* mw, TVideoEqualizer* videoEqualizer);
+    TMenuVideo(TMainWindow* mw);
 
 protected:
     virtual void enableActions();
 
 private:
-    TAction* equalizerAct;
-    TAction* resetVideoEqualizerAct;
-
-    TAction* decContrastAct;
-    TAction* incContrastAct;
-    TAction* decBrightnessAct;
-    TAction* incBrightnessAct;
-    TAction* decHueAct;
-    TAction* incHueAct;
-    TAction* decSaturationAct;
-    TAction* incSaturationAct;
-    TAction* decGammaAct;
-    TAction* incGammaAct;
-
     TAction* stereo3DAct;
 
     TAction* screenshotAct;
