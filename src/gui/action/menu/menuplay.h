@@ -17,7 +17,8 @@ namespace Menu {
 class TMenuSeek: public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuSeek(TMainWindow* mnw,
+    explicit TMenuSeek(QWidget* parent,
+                       TMainWindow* mnw,
                        const QString& name,
                        const QString& text,
                        int seekIntOffset);
@@ -31,7 +32,7 @@ signals:
 
 class TMenuPlay : public TMenu {
 public:
-    explicit TMenuPlay(TMainWindow* mw);
+    explicit TMenuPlay(QWidget* parent, TMainWindow* mw);
 }; // class TMenuPlay
 
 } // namespace Menu

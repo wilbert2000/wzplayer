@@ -36,12 +36,13 @@ namespace Gui {
 namespace Action {
 namespace Menu {
 
-TFavorites::TFavorites(TMainWindow* mw,
+TFavorites::TFavorites(QWidget* parent,
+                       TMainWindow* mw,
                        const QString& name,
                        const QString& text,
                        const QString& icon,
                        const QString& filename)
-    : TMenu(mw, mw, name, text, icon)
+    : TMenu(parent, mw, name, text, icon)
     , _filename(filename) {
 
     // Warning: also used for submenus. See TMenuFile for more.
@@ -96,7 +97,7 @@ void TFavorites::populateMenu() {
                 break;
             }
 
-            TFavorites* sub = new TFavorites(main_window, "", fav->name(),
+            TFavorites* sub = new TFavorites(this, main_window, "", fav->name(),
                                              fav->icon(), fav->file());
             subFavorites.append(sub);
             addMenu(sub);
@@ -157,9 +158,7 @@ void TFavorites::markCurrent() {
 void TFavorites::addCurrentPlaying() {
 
     QString file = player->mdat.filename;
-    if (file.isEmpty()) {
-        WZWARN("No filename available to add to favorites");
-    } else {
+    if (!file.isEmpty()) {
         TFavorite* fav = new TFavorite(
                     player->mdat.displayName().replace(",", ""), file);
         favList.append(fav);
@@ -186,7 +185,7 @@ void TFavorites::save() {
         }
         f.close();
     } else {
-        WZERROR(QString("failed to save '%1'").arg(_filename));
+        WZERROR(QString("Failed to save '%1'").arg(_filename));
     }
 }
 

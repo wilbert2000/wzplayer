@@ -39,7 +39,8 @@ class TFavorites : public Menu::TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TFavorites(TMainWindow* mw,
+    TFavorites(QWidget* parent,
+               TMainWindow* mw,
                const QString& name,
                const QString& text,
                const QString& icon,

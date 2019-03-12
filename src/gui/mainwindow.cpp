@@ -692,9 +692,9 @@ void TMainWindow::createMenus() {
 
     using namespace Action;
 
-    fileMenu = new Menu::TMenuFile(this);
+    fileMenu = new Menu::TMenuFile(this, this);
     menuBar()->addMenu(fileMenu);
-    playMenu = new Menu::TMenuPlay(this);
+    playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
     videoMenu = new Menu::TMenuVideo(this, playerwindow, video_equalizer);
     menuBar()->addMenu(videoMenu);
@@ -1179,6 +1179,18 @@ QList<QAction*> TMainWindow::findNamedActions() const {
             .arg(selectedActions.count()).arg(allActions.count()));
 
     return selectedActions;
+}
+
+QAction* TMainWindow::getAction(const QString &name) {
+
+    QAction* action = findChild<QAction*>(name);
+    if (action) {
+        return action;
+    }
+
+    WZERROR(QString("Action '%1' not found").arg(name));
+    Q_ASSERT(false);
+    return action;
 }
 
 void TMainWindow::loadSettings() {

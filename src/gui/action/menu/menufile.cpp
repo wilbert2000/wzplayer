@@ -21,31 +21,31 @@ namespace Menu {
 
 class TMenuDisc : public TMenu {
 public:
-    explicit TMenuDisc(TMainWindow* mw);
+    explicit TMenuDisc(QWidget* parent, TMainWindow* mw);
 };
 
-TMenuDisc::TMenuDisc(TMainWindow* mw)
-    : TMenu(mw, mw, "opem_disc_menu", tr("Open disc"), "open_disc") {
+TMenuDisc::TMenuDisc(QWidget* parent, TMainWindow* mw)
+    : TMenu(parent, mw, "opem_disc_menu", tr("Open disc"), "open_disc") {
 
-    addAction(mw->findChild<TAction*>("open_dvd_disc"));
-    addAction(mw->findChild<TAction*>("open_dvd_iso"));
-    addAction(mw->findChild<TAction*>("open_dvd_folder"));
+    addAction(mw->getAction("open_dvd_disc"));
+    addAction(mw->getAction("open_dvd_iso"));
+    addAction(mw->getAction("open_dvd_folder"));
     addSeparator();
-    addAction(mw->findChild<TAction*>("open_bluray_disc"));
-    addAction(mw->findChild<TAction*>("open_bluray_iso"));
-    addAction(mw->findChild<TAction*>("open_bluray_folder"));
+    addAction(mw->getAction("open_bluray_disc"));
+    addAction(mw->getAction("open_bluray_iso"));
+    addAction(mw->getAction("open_bluray_folder"));
     addSeparator();
-    addAction(mw->findChild<TAction*>("open_vcd"));
-    addAction(mw->findChild<TAction*>("open_audio_cd"));
+    addAction(mw->getAction("open_vcd"));
+    addAction(mw->getAction("open_audio_cd"));
 }
 
 
-TMenuFile::TMenuFile(TMainWindow* mw) :
-    TMenu(mw, mw, "file_menu", tr("File"), "noicon") {
+TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw) :
+    TMenu(parent, mw, "file_menu", tr("File"), "noicon") {
 
     // Favorites
-    TFavorites* fav = new TFavorites(mw, "favorites_menu", tr("Favorites"), "",
-                                     TPaths::configPath() + "/favorites.m3u8");
+    TFavorites* fav = new TFavorites(this, mw, "favorites_menu",
+        tr("Favorites"), "", TPaths::dataPath() + "/favorites.m3u8");
     fav->getAddAct()->setObjectName("favorites_add");
     mw->addAction(fav->getAddAct());
     fav->getEditAct()->setObjectName("favorites_edit");
@@ -63,31 +63,31 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
             this, &TMenuFile::onSettingsChanged);
 
     addSeparator();
-    addAction(mw->findChild<TAction*>("open_url"));
-    addAction(mw->findChild<TAction*>("open_file"));
-    addAction(mw->findChild<TAction*>("open_directory"));
+    addAction(mw->getAction("open_url"));
+    addAction(mw->getAction("open_file"));
+    addAction(mw->getAction("open_directory"));
 
     // Disc submenu
-    addMenu(new TMenuDisc(mw));
+    addMenu(new TMenuDisc(this, mw));
 
     // Playlist
     addSeparator();
-    addAction(mw->findChild<TAction*>("pl_open"));
-    addAction(mw->findChild<TAction*>("pl_save"));
-    addAction(mw->findChild<TAction*>("pl_saveas"));
-    addAction(mw->findChild<TAction*>("pl_refresh"));
+    addAction(mw->getAction("pl_open"));
+    addAction(mw->getAction("pl_save"));
+    addAction(mw->getAction("pl_saveas"));
+    addAction(mw->getAction("pl_refresh"));
 
     addSeparator();
     // Browse dir
-    addAction(mw->findChild<TAction*>("pl_browse_dir"));
+    addAction(mw->getAction("pl_browse_dir"));
     // Save thumbnail
 #ifdef Q_OS_LINUX
-    addAction(mw->findChild<TAction*>("save_thumbnail"));
+    addAction(mw->getAction("save_thumbnail"));
 #endif
 
     // Close
     addSeparator();
-    addAction(mw->findChild<TAction*>("close"));
+    addAction(mw->getAction("close"));
     // Note: Quit added by TMainwindowTray
 }
 
@@ -125,7 +125,7 @@ void TMenuFile::updateRecents() {
     if (count > 0) {
         recentFilesMenu->addSeparator();
     }
-    recentFilesMenu->addAction(main_window->findChild<TAction*>("recents_clear"));
+    recentFilesMenu->addAction(main_window->getAction("recents_clear"));
 }
 
 void TMenuFile::onRecentsChanged() {

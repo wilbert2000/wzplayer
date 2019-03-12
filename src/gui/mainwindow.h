@@ -91,6 +91,7 @@ public:
 
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
     QList<QAction*> getNamedActions() const { return allActions; }
+    QAction* getAction(const QString& name);
 
     Action::TAction* seekIntToAction(int i) const;
 
