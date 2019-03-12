@@ -25,15 +25,14 @@
 namespace Settings {
 
 class TRecents : public TLRUList {
-
 public:
     TRecents();
     virtual ~TRecents();
 
-    virtual void addRecent(QString s, const QString& title);
+    void addRecent(QString url, const QString& title);
 
-    virtual QString getURL(int n);
-    virtual QString getTitle(int n);
+    QString getURL(int n);
+    QString getTitle(int n);
 };
 
 } // namespace Settings

@@ -37,6 +37,7 @@ typedef QList<QVariant> TAudioEqualizerList;
 
 
 class TPreferences : public QSettings {
+    Q_OBJECT
 public:
     enum TPlayerID { ID_MPLAYER = 0, ID_MPV = 1 };
     enum TOSDLevel { None = 0, Seek = 1, SeekTimer = 2, SeekTimerTotal = 3 };
@@ -396,6 +397,12 @@ public:
     TFilters filters;
 
     bool clean_config;
+
+    void clearRecents();
+    void addRecent(const QString& url, const QString& title = QString());
+
+signals:
+    void recentsChanged();
 
 private:
     void reset();

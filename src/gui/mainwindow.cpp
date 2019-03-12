@@ -1501,10 +1501,7 @@ void TMainWindow::onNewMediaStartedPlaying() {
     enterFullscreenOnPlay();
 
     // Recents
-    pref->history_recents.addRecent(player->mdat.filename,
-                                    player->mdat.displayName());
-    emit recentsChanged();
-
+    pref->addRecent(player->mdat.filename, player->mdat.displayName());
     checkPendingActionsToRun();
 }
 
@@ -1810,8 +1807,7 @@ void TMainWindow::clearRecentsListDialog() {
                                     QMessageBox::Cancel, QMessageBox::Ok);
 
     if (ret == QMessageBox::Ok) {
-        pref->history_recents.clear();
-        emit recentsChanged();
+        pref->clearRecents();
     }
 }
 

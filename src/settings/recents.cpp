@@ -29,15 +29,15 @@ TRecents::TRecents() {
 TRecents::~TRecents() {
 }
 
-void TRecents::addRecent(QString s, const QString& title) {
+void TRecents::addRecent(QString url, const QString& title) {
 
-    s += TITLE_SEP;
+    url += TITLE_SEP;
 
     // Remove existing item
     {
         QStringList::iterator iterator = begin();
         while (iterator != end()) {
-            if ((*iterator).startsWith(s)) {
+            if ((*iterator).startsWith(url)) {
                 erase(iterator);
                 break;
             }
@@ -45,7 +45,7 @@ void TRecents::addRecent(QString s, const QString& title) {
         }
     }
 
-    prepend(s + title);
+    prepend(url + title);
 
     if (count() > getMaxItems()) {
         removeLast();

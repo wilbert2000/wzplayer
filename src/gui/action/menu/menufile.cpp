@@ -6,6 +6,7 @@
 #include "gui/action/action.h"
 #include "player/player.h"
 #include "settings/paths.h"
+#include "settings/preferences.h"
 #include "name.h"
 
 #include <QMessageBox>
@@ -52,11 +53,12 @@ TMenuFile::TMenuFile(TMainWindow* mw) :
     addMenu(fav);
 
     // Recents
-    recentFilesMenu = new TMenu(mw, mw, "recent_menu", tr("Recent files"));
+    recentFilesMenu = new TMenu(this, mw, "recent_menu", tr("Recent files"));
     updateRecents();
     addMenu(recentFilesMenu);
-    connect(mw, &TMainWindow::recentsChanged,
-            this, &TMenuFile::onRecentsChanged);
+    connect(pref, &TPreferences::recentsChanged,
+            this, &TMenuFile::onRecentsChanged,
+            Qt::QueuedConnection);
     connect(mw, &TMainWindow::settingsChanged,
             this, &TMenuFile::onSettingsChanged);
 
@@ -98,6 +100,9 @@ void TMenuFile::updateRecents() {
 
     for (int i = 0; i < pref->history_recents.count(); i++) {
         QString url = pref->history_recents.getURL(i);
+        if (url.isEmpty()) {
+            continue;
+        }
         QString name = pref->history_recents.getTitle(i);
         if (name.isEmpty()) {
             name = TName::nameForURL(url);
@@ -105,8 +110,8 @@ void TMenuFile::updateRecents() {
                 continue;
             }
         }
-        if (name.size() > 35) {
-            name = name.left(32) + "...";
+        if (name.size() > 50) {
+            name = name.left(47) + "...";
         }
 
         QAction* a = new QAction(name, recentFilesMenu);

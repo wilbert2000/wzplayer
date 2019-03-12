@@ -468,8 +468,9 @@ void TPlaylist::onThreadFinished() {
     root = playlistWidget->add(root, addTarget);
     if (root) {
         playlistFilename = root->filename();
-        WZINFO("Filename set to '" + playlistFilename + "'");
+        WZINFO("Playlist filename set to '" + playlistFilename + "'");
         setPlaylistTitle();
+        Settings::pref->addRecent(playlistFilename, root->fname());
     }
 
     if (addStartPlay) {

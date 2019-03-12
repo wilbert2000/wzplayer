@@ -157,7 +157,6 @@ signals:
 
     void settingsChanged();
     void mediaSettingsChanged(Settings::TMediaSettings* mset);
-    void recentsChanged();
 
     void fullscreenChanged();
     void aboutToEnterFullscreenSignal();

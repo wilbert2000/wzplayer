@@ -367,7 +367,7 @@ void TPreferences::reset() {
 }
 
 void TPreferences::save() {
-    WZDEBUG("");
+    WZTRACE("");
 
     setValue("config_version", config_version);
 
@@ -1280,6 +1280,18 @@ void TPreferences::load() {
     }
 } // load()
 
+void TPreferences::clearRecents() {
+
+    history_recents.clear();
+    emit recentsChanged();
+}
+
+void TPreferences::addRecent(const QString& url, const QString& title) {
+
+    history_recents.addRecent(url, title);
+    emit recentsChanged();
+}
+
 bool TPreferences::useColorKey() const {
 
 #if defined(Q_OS_WIN)
@@ -1357,7 +1369,7 @@ void TPreferences::compileTitleBlackList() {
         if (!s.isEmpty()) {
             rx.setPattern(s);
             if (rx.isValid()) {
-                WZDEBUG("Adding '" + rx.pattern() + "'");
+                WZTRACE("Adding '" + rx.pattern() + "'");
                 rxTitleBlacklist.append(rx);
             } else {
                 WZWARN("Failed to parse regular expression '" + s + "'");
