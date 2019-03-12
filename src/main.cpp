@@ -69,8 +69,9 @@ void initLog4Qt(Log4Qt::Level level) {
     }
 
     // Let Log4Qt handle qDebug(), qWarning(), qCritical() and qFatal()
-    LogManager::setHandleQtMessages(true);
-    LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
+    // No longer works
+    //LogManager::setHandleQtMessages(true);
+    //LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
 
     // Create appender A2 for log window
     Gui::TLogWindow::appender = new Gui::TLogWindowAppender(layout);
@@ -139,18 +140,18 @@ int main(int argc, char** argv) {
 
     int exitCode;
     do {
-        WZDEBUG("Creating application");
+        WZTRACE("Creating application");
         TApp app(argc, argv);
-        WZDEBUG("Initializing application");
+        WZTRACE("Initializing application");
         exitCode = app.processArgs();
         if (exitCode == TApp::START_APP) {
-            WZDEBUG("Starting application");
+            WZTRACE("Starting application");
             app.start();
-            WZDEBUG("Executing application");
+            WZINFO("Executing application");
             exitCode = app.exec();
         }
     } while (exitCode == TApp::START_APP);
 
-    WZDEBUG("Returning exit code " + QString::number(exitCode));
+    WZTRACE("Returning exit code " + QString::number(exitCode));
     return exitCode;
 }
