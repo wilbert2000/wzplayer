@@ -209,36 +209,36 @@ void TMainWindow::createStatusBar() {
 
 void TMainWindow::createPlayerWindow() {
 
-    playerwindow = new TPlayerWindow(panel);
-    playerwindow->setObjectName("playerwindow");
+    playerWindow = new TPlayerWindow(panel);
+    playerWindow->setObjectName("playerwindow");
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
     layout->setMargin(0);
-    layout->addWidget(playerwindow);
+    layout->addWidget(playerWindow);
     panel->setLayout(layout);
 
     // Connect player window mouse events
-    connect(playerwindow, &Gui::TPlayerWindow::leftClicked,
+    connect(playerWindow, &Gui::TPlayerWindow::leftClicked,
             this, &TMainWindow::leftClickFunction);
-    connect(playerwindow, &Gui::TPlayerWindow::rightClicked,
+    connect(playerWindow, &Gui::TPlayerWindow::rightClicked,
             this, &TMainWindow::rightClickFunction);
-    connect(playerwindow, &Gui::TPlayerWindow::doubleClicked,
+    connect(playerWindow, &Gui::TPlayerWindow::doubleClicked,
             this, &TMainWindow::doubleClickFunction);
-    connect(playerwindow, &Gui::TPlayerWindow::middleClicked,
+    connect(playerWindow, &Gui::TPlayerWindow::middleClicked,
             this, &TMainWindow::middleClickFunction);
-    connect(playerwindow, &Gui::TPlayerWindow::xbutton1Clicked,
+    connect(playerWindow, &Gui::TPlayerWindow::xbutton1Clicked,
             this, &TMainWindow::xbutton1ClickFunction);
-    connect(playerwindow, &Gui::TPlayerWindow::xbutton2Clicked,
+    connect(playerWindow, &Gui::TPlayerWindow::xbutton2Clicked,
             this, &TMainWindow::xbutton2ClickFunction);
 
-    connect(playerwindow, &Gui::TPlayerWindow::videoOutChanged,
+    connect(playerWindow, &Gui::TPlayerWindow::videoOutChanged,
             this, &TMainWindow::displayVideoInfo, Qt::QueuedConnection);
 }
 
 void TMainWindow::createPlayer() {
 
-    new Player::TPlayer(this, playerwindow);
+    new Player::TPlayer(this, playerWindow);
 
     connect(player, &Player::TPlayer::positionChanged,
             this, &TMainWindow::onPositionChanged);
@@ -347,7 +347,7 @@ void TMainWindow::createActions() {
     using namespace Action;
 
     // Create auto hide timer
-    autoHideTimer = new TAutoHideTimer(this, playerwindow);
+    autoHideTimer = new TAutoHideTimer(this, playerWindow);
 
 
     // TODO: Favorites
@@ -752,7 +752,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(fileMenu);
     playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
-    videoMenu = new Menu::TMenuVideo(this, playerwindow, video_equalizer);
+    videoMenu = new Menu::TMenuVideo(this, playerWindow, video_equalizer);
     menuBar()->addMenu(videoMenu);
     audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
@@ -787,8 +787,8 @@ void TMainWindow::createMenus() {
     contextMenu = createContextMenu();
     TAction* a = new TAction(this, "show_context_menu", tr("Show context menu"));
     connect(a, &TAction::triggered, contextMenu, &Menu::TMenuExec::execSlot);
-    playerwindow->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(playerwindow, &TPlayerWindow::customContextMenuRequested,
+    playerWindow->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(playerWindow, &TPlayerWindow::customContextMenuRequested,
             this, &TMainWindow::showContextMenu);
 } // createMenus()
 
@@ -911,7 +911,7 @@ void TMainWindow::createToolbars() {
     autoHideTimer->add(toolbar2->toggleViewAction(), toolbar2);
     autoHideTimer->add(viewMenuBarAct, menuBar());
     autoHideTimer->add(viewStatusBarAct, statusBar());
-    connect(playerwindow, &TPlayerWindow::draggingChanged,
+    connect(playerWindow, &TPlayerWindow::draggingChanged,
             autoHideTimer, &TAutoHideTimer::setDraggingPlayerWindow);
 }
 
@@ -1000,7 +1000,7 @@ void TMainWindow::applyNewSettings() {
     }
 
     // Set color key, depends on VO
-    playerwindow->setColorKey();
+    playerWindow->setColorKey();
 
     // Forced demuxer
     player->mset.forced_demuxer = pref->use_lavf_demuxer ? "lavf" : "";
@@ -1018,7 +1018,7 @@ void TMainWindow::applyNewSettings() {
     autoHideTimer->setInterval(pref->floating_hide_delay);
 
     // Keyboard and mouse
-    playerwindow->setDelayLeftClick(pref->delay_left_click);
+    playerWindow->setDelayLeftClick(pref->delay_left_click);
     setSeekTexts();
 
     // Network
@@ -1406,7 +1406,7 @@ void TMainWindow::displayVideoInfo() {
     if (player->mdat.noVideo()) {
         video_info_label->setText("");
     } else {
-        QSize video_out_size = playerwindow->lastVideoOutSize();
+        QSize video_out_size = playerWindow->lastVideoOutSize();
         video_info_label->setText(tr("%1x%2", "video source width x height")
             .arg(player->mdat.video_width)
             .arg(player->mdat.video_height)
@@ -2433,7 +2433,7 @@ void TMainWindow::hidePanel() {
 double TMainWindow::optimizeSize(double size) const {
     WZDEBUG("size in " + QString::number(size));
 
-    QSize res = playerwindow->resolution();
+    QSize res = playerWindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
         return size;
     }
@@ -2580,7 +2580,7 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
             resizeStickyWindow(w, h);
         } else {
             // Adjust the size factor to the current window size
-            playerwindow->updateSizeFactor();
+            playerWindow->updateSizeFactor();
             WZDEBUG("adjusted size factor to "
                     + QString::number(pref->size_factor));
         }

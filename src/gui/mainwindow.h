@@ -196,7 +196,7 @@ private:
     static QString settingsGroupName() { return "mainwindow"; }
 
     QWidget* panel;
-    TPlayerWindow* playerwindow;
+    TPlayerWindow* playerWindow;
     TDockWidget* playlistDock;
     TDockWidget* logDock;
     TLogWindow* logWindow;
