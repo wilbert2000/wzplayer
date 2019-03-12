@@ -17,6 +17,19 @@ class TActionGroup;
 
 namespace Menu {
 
+class TMenuAspect : public TMenu {
+    Q_OBJECT
+public:
+    explicit TMenuAspect(QWidget* parent, TMainWindow* mw);
+
+protected:
+    virtual void onAboutToShow() override;
+
+private slots:
+    void setAspectMenuToolTip(const QString& tip);
+};
+
+
 class TMenuVideo : public TMenu {
     Q_OBJECT
 public:
@@ -28,9 +41,6 @@ protected:
     virtual void enableActions();
 
 private:
-    TAction* fullscreenAct;
-    TAction* exitFullscreenAct;
-
     TAction* equalizerAct;
     TAction* resetVideoEqualizerAct;
 
@@ -52,7 +62,6 @@ private:
     TAction* capturingAct;
 
 private slots:
-    void onFullscreenChanged();
     void startStopScreenshots();
     void startStopCapture();
 }; // class TMenuVideo

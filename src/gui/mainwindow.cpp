@@ -578,6 +578,62 @@ void TMainWindow::createActions() {
             this, &TMainWindow::updateInOutMenu);
 
 
+    // Menu video
+    // Fullscreen
+    fullscreenAct = new TAction(this, "fullscreen", tr("Fullscreen"), "",
+                                Qt::Key_F);
+    fullscreenAct->setCheckable(true);
+    connect(fullscreenAct, &TAction::triggered,
+            this, &TMainWindow::toggleFullscreen);
+    // Exit fullscreen (not in menu)
+    a = new TAction(this, "exit_fullscreen", tr("Exit fullscreen"), "",
+                    Qt::Key_Escape);
+    connect(a, &TAction::triggered, this, &TMainWindow::exitFullscreen);
+
+    // Aspect menu
+    aspectGroup = new TActionGroup(this, "aspectgroup");
+    aspectGroup->setEnabled(false);
+    aspectAutoAct = new TActionGroupItem(this, aspectGroup, "aspect_detect",
+                                         tr("Auto"), TAspectRatio::AspectAuto);
+
+    new TActionGroupItem(this, aspectGroup, "aspect_1_1",
+        TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
+    new TActionGroupItem(this, aspectGroup, "aspect_5_4",
+        TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54);
+    new TActionGroupItem(this, aspectGroup, "aspect_4_3",
+        TAspectRatio::aspectIDToString(2), TAspectRatio::Aspect43);
+    new TActionGroupItem(this, aspectGroup, "aspect_11_8",
+        TAspectRatio::aspectIDToString(3), TAspectRatio::Aspect118);
+    new TActionGroupItem(this, aspectGroup, "aspect_14_10",
+        TAspectRatio::aspectIDToString(4), TAspectRatio::Aspect1410);
+    new TActionGroupItem(this, aspectGroup, "aspect_3_2",
+        TAspectRatio::aspectIDToString(5), TAspectRatio::Aspect32);
+    new TActionGroupItem(this, aspectGroup, "aspect_14_9",
+        TAspectRatio::aspectIDToString(6), TAspectRatio::Aspect149);
+    new TActionGroupItem(this, aspectGroup, "aspect_16_10",
+        TAspectRatio::aspectIDToString(7), TAspectRatio::Aspect1610);
+    new TActionGroupItem(this, aspectGroup, "aspect_16_9",
+        TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
+    new TActionGroupItem(this, aspectGroup, "aspect_2_1",
+        TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect2);
+    new TActionGroupItem(this, aspectGroup, "aspect_2.35_1",
+        TAspectRatio::aspectIDToString(10), TAspectRatio::Aspect235);
+
+    aspectDisabledAct = new TActionGroupItem(this, aspectGroup, "aspect_none",
+        tr("Disabled"), TAspectRatio::AspectNone);
+
+    connect(aspectGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setAspectRatio);
+    connect(player, &Player::TPlayer::aspectRatioChanged,
+            this, &TMainWindow::updateAspectMenu,
+            Qt::QueuedConnection);
+
+    nextAspectAct = new TAction(this, "aspect_next", tr("Next aspect ratio"),
+                                "", Qt::Key_A);
+    connect(nextAspectAct, &TAction::triggered,
+            player, &Player::TPlayer::nextAspectRatio);
+
+
     // View playlist
     QAction* viewPlaylistAct = playlistDock->toggleViewAction();
     viewPlaylistAct->setObjectName("view_playlist");
@@ -1181,7 +1237,7 @@ QList<QAction*> TMainWindow::findNamedActions() const {
     return selectedActions;
 }
 
-QAction* TMainWindow::getAction(const QString &name) {
+QAction* TMainWindow::findAction(const QString &name) {
 
     QAction* action = findChild<QAction*>(name);
     if (action) {
@@ -1464,7 +1520,6 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
 }
 
 void TMainWindow::updateVideoEqualizer() {
-    WZTRACE("");
 
     video_equalizer->setContrast(player->mset.contrast);
     video_equalizer->setBrightness(player->mset.brightness);
@@ -1474,7 +1529,6 @@ void TMainWindow::updateVideoEqualizer() {
 }
 
 void TMainWindow::updateAudioEqualizer() {
-    WZTRACE("");
     audio_equalizer->setEqualizer(player->getAudioEqualizer());
 }
 
@@ -1482,11 +1536,29 @@ void TMainWindow::updateInOutMenu() {
     repeatInOutAct->setChecked(player->mset.loop);
 }
 
+void TMainWindow::updateAspectMenu() {
+
+    aspectGroup->setChecked(player->mset.aspect_ratio.ID());
+
+    double aspect = player->mset.aspectToDouble();
+    QString s = TAspectRatio::doubleToString(aspect);
+    emit setAspectMenuToolTip(tr("Aspect ratio %1").arg(s));
+
+    s = tr("Auto") + "\t"
+        + TAspectRatio::doubleToString(player->mdat.video_aspect_original);
+    aspectAutoAct->setTextAndTip(s);
+
+    s = tr("Disabled") + "\t" + TAspectRatio::doubleToString(
+            (double) player->mdat.video_width / player->mdat.video_height);
+    aspectDisabledAct->setTextAndTip(s);
+}
+
 // Slot called when media settings reset or loaded
 void TMainWindow::onMediaSettingsChanged() {
     WZDEBUG("");
 
     updateInOutMenu();
+    updateAspectMenu();
 
     emit mediaSettingsChanged(&player->mset);
 
@@ -1781,7 +1853,8 @@ void TMainWindow::setEnableActions() {
     // Save thumbnail action
     saveThumbnailAct->setEnabled(
                 player->mdat.selected_type == TMediaData::TYPE_FILE
-                && !player->mdat.filename.isEmpty());
+                && !player->mdat.filename.isEmpty()
+                && player->hasVideo());
 
     // Seek forward
     bool enable = player->statePOP();
@@ -1803,6 +1876,12 @@ void TMainWindow::setEnableActions() {
 
     // In-out menu
     inOutGroup->setEnabled(enable);
+
+    // Aspect menu
+    bool e = enable && player->hasVideo();
+    aspectGroup->setEnabled(e);
+    nextAspectAct->setEnabled(e);
+    updateAspectMenu();
 
     // Time slider
     timeslider_action->enable(enable);
@@ -2141,6 +2220,7 @@ void TMainWindow::setFullscreen(bool b) {
     }
 
     pref->fullscreen = b;
+    fullscreenAct->setChecked(b);
     emit fullscreenChanged();
 
     if (pref->fullscreen) {

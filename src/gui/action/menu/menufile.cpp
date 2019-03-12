@@ -27,16 +27,16 @@ public:
 TMenuDisc::TMenuDisc(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, mw, "opem_disc_menu", tr("Open disc"), "open_disc") {
 
-    addAction(mw->getAction("open_dvd_disc"));
-    addAction(mw->getAction("open_dvd_iso"));
-    addAction(mw->getAction("open_dvd_folder"));
+    addAction(mw->findAction("open_dvd_disc"));
+    addAction(mw->findAction("open_dvd_iso"));
+    addAction(mw->findAction("open_dvd_folder"));
     addSeparator();
-    addAction(mw->getAction("open_bluray_disc"));
-    addAction(mw->getAction("open_bluray_iso"));
-    addAction(mw->getAction("open_bluray_folder"));
+    addAction(mw->findAction("open_bluray_disc"));
+    addAction(mw->findAction("open_bluray_iso"));
+    addAction(mw->findAction("open_bluray_folder"));
     addSeparator();
-    addAction(mw->getAction("open_vcd"));
-    addAction(mw->getAction("open_audio_cd"));
+    addAction(mw->findAction("open_vcd"));
+    addAction(mw->findAction("open_audio_cd"));
 }
 
 
@@ -63,31 +63,31 @@ TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw) :
             this, &TMenuFile::onSettingsChanged);
 
     addSeparator();
-    addAction(mw->getAction("open_url"));
-    addAction(mw->getAction("open_file"));
-    addAction(mw->getAction("open_directory"));
+    addAction(mw->findAction("open_url"));
+    addAction(mw->findAction("open_file"));
+    addAction(mw->findAction("open_directory"));
 
     // Disc submenu
     addMenu(new TMenuDisc(this, mw));
 
     // Playlist
     addSeparator();
-    addAction(mw->getAction("pl_open"));
-    addAction(mw->getAction("pl_save"));
-    addAction(mw->getAction("pl_saveas"));
-    addAction(mw->getAction("pl_refresh"));
+    addAction(mw->findAction("pl_open"));
+    addAction(mw->findAction("pl_save"));
+    addAction(mw->findAction("pl_saveas"));
+    addAction(mw->findAction("pl_refresh"));
 
     addSeparator();
     // Browse dir
-    addAction(mw->getAction("pl_browse_dir"));
+    addAction(mw->findAction("pl_browse_dir"));
     // Save thumbnail
 #ifdef Q_OS_LINUX
-    addAction(mw->getAction("save_thumbnail"));
+    addAction(mw->findAction("save_thumbnail"));
 #endif
 
     // Close
     addSeparator();
-    addAction(mw->getAction("close"));
+    addAction(mw->findAction("close"));
     // Note: Quit added by TMainwindowTray
 }
 
@@ -125,7 +125,7 @@ void TMenuFile::updateRecents() {
     if (count > 0) {
         recentFilesMenu->addSeparator();
     }
-    recentFilesMenu->addAction(main_window->getAction("recents_clear"));
+    recentFilesMenu->addAction(main_window->findAction("recents_clear"));
 }
 
 void TMenuFile::onRecentsChanged() {

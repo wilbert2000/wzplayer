@@ -1,7 +1,6 @@
 #include "gui/action/menu/menuvideo.h"
 #include "player/player.h"
 #include "settings/mediasettings.h"
-#include "gui/action/menu/menuaspect.h"
 #include "gui/action/menu/menuvideofilter.h"
 #include "gui/action/menu/menuvideosize.h"
 #include "gui/action/menu/menuvideotracks.h"
@@ -19,6 +18,29 @@ using namespace Settings;
 namespace Gui {
 namespace Action {
 namespace Menu {
+
+
+TMenuAspect::TMenuAspect(QWidget* parent, TMainWindow* mw) :
+    TMenu(parent, mw, "aspect_menu", tr("Aspect ratio")) {
+
+    TActionGroup* group = mw->findChild<TActionGroup*>("aspectgroup");
+    addActions(group->actions());
+    insertSeparator(mw->findAction("aspect_1_1"));
+    insertSeparator(mw->findAction("aspect_none"));
+    addSeparator();
+    addAction(mw->findAction("aspect_next"));
+
+    connect(mw, &TMainWindow::setAspectMenuToolTip,
+            this, &TMenuAspect::setAspectMenuToolTip);
+}
+
+void TMenuAspect::onAboutToShow() {
+    main_window->updateAspectMenu();
+}
+
+void TMenuAspect::setAspectMenuToolTip(const QString &tip) {
+    menuAction()->setToolTip(tip);
+}
 
 
 class TMenuDeinterlace : public TMenu {
@@ -40,7 +62,7 @@ TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
     group = new TActionGroup(mw, "deinterlace");
     group->setEnabled(false);
     new TActionGroupItem(mw, group, "deinterlace_none", tr("None"),
-                         TMediaSettings::NoDeinterlace, "", "", Qt::Key_F1);
+                         TMediaSettings::NoDeinterlace);
     new TActionGroupItem(mw, group, "deinterlace_l5", tr("Lowpass5"),
                          TMediaSettings::L5);
     new TActionGroupItem(mw, group, "deinterlace_yadif0",
@@ -222,25 +244,11 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
                        TVideoEqualizer* videoEqualizer) :
         TMenu(mw, mw, "video_menu", tr("Video"), "noicon") {
 
-    fullscreenAct = new TAction(mw, "fullscreen", tr("Fullscreen"), "",
-                                Qt::Key_F);
-    //fullscreenAct->addShortcut(QKeySequence("Ctrl+T")); // MCE remote key
-    fullscreenAct->setCheckable(true);
-    addAction(fullscreenAct);
-    connect(fullscreenAct, &TAction::triggered,
-            mw, &TMainWindow::toggleFullscreen);
-    // Exit fullscreen (not in menu)
-    exitFullscreenAct = new TAction(mw, "exit_fullscreen",
-                                    tr("Exit fullscreen"), "", Qt::Key_Escape);
-    exitFullscreenAct->setEnabled(false);
-    connect(exitFullscreenAct, &TAction::triggered,
-            mw, &TMainWindow::exitFullscreen);
-    connect(mw, &TMainWindow::fullscreenChanged,
-            this, &TMenuVideo::onFullscreenChanged, Qt::QueuedConnection);
+    addAction(mw->findAction("fullscreen"));
 
     // Aspect submenu
     addSeparator();
-    addMenu(new TMenuAspect(mw));
+    addMenu(new TMenuAspect(this, mw));
     // Size submenu
     addMenu(new TMenuVideoSize(mw, playerwindow));
     // Zoom and pan submenu
@@ -414,12 +422,6 @@ void TMenuVideo::enableActions() {
     screenshotsAct->setEnabled(enableScreenShots);
 
     capturingAct->setEnabled(enable && !pref->screenshot_directory.isEmpty());
-}
-
-void TMenuVideo::onFullscreenChanged() {
-
-    fullscreenAct->setChecked(pref->fullscreen);
-    exitFullscreenAct->setEnabled(pref->fullscreen);
 }
 
 } // namespace Menu

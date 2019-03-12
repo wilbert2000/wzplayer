@@ -40,6 +40,7 @@ namespace Gui {
 namespace Action {
 
 class TAction;
+class TActionGroup;
 class TEditableToolbar;
 class TTimeSliderAction;
 class TVolumeSliderAction;
@@ -91,7 +92,7 @@ public:
 
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
     QList<QAction*> getNamedActions() const { return allActions; }
-    QAction* getAction(const QString& name);
+    QAction* findAction(const QString& name);
 
     Action::TAction* seekIntToAction(int i) const;
 
@@ -107,6 +108,8 @@ public slots:
     void exitFullscreen();
     void setFullscreen(bool);
     void toggleFullscreen();
+
+    void updateAspectMenu();
 
     void setSizeFactor(double factor);
     void setSizePercentage(int percentage);
@@ -153,6 +156,8 @@ signals:
     void aboutToEnterFullscreenSignal();
     void didEnterFullscreenSignal();
     void didExitFullscreenSignal();
+
+    void setAspectMenuToolTip(const QString& tip);
 
     void stayOnTopChanged(int);
 
@@ -252,6 +257,14 @@ private:
     // In-out menu
     QActionGroup* inOutGroup;
     Action::TAction* repeatInOutAct;
+
+    // Video menu
+    Action::TAction* fullscreenAct;
+    Action::TActionGroup* aspectGroup;
+    Action::TAction* aspectAutoAct;
+    Action::TAction* aspectDisabledAct;
+    Action::TAction* nextAspectAct;
+
 
     // Help menu
     QMenu* helpMenu;
