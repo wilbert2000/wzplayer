@@ -47,8 +47,8 @@ public slots:
 
 protected slots:
     virtual void quit();
-    virtual void setWindowCaption(const QString& title);
-    virtual void onMediaInfoChanged();
+    virtual void setWindowCaption(const QString& title) override;
+    virtual void onMediaInfoChanged() override;
 
 private:
     QSystemTrayIcon* tray;

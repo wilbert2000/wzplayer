@@ -100,50 +100,39 @@ public:
 
 public slots:
     void openRecent();
-    void openURL();
-    void openDVD();
-    void openDVDFromISO();
-    void openDVDFromFolder();
-    void openBluRay();
-    void openBluRayFromISO();
-    void openBluRayFromFolder();
-    void openVCD();
-    void openAudioCD();
-    void saveThumbnail();
-
     virtual void closeWindow();
-    virtual void showConfigFolder();
-
-    virtual void helpCLOptions();
-    virtual void helpCheckUpdates();
-    virtual void helpAbout();
-
-    virtual void loadSub();
-    virtual void loadAudioFile(); // Load external audio file
-
-    virtual void showSettingsDialog();
-    virtual void showFilePropertiesDialog(bool checked);
 
     void updateSeekDefaultAction(QAction* action);
 
-    virtual void showSeekToDialog();
-    virtual void showSubDelayDialog();
-    virtual void showAudioDelayDialog();
-    virtual void showStereo3dDialog();
-
-    virtual void exitFullscreen();
-    virtual void setFullscreen(bool);
-    virtual void toggleFullscreen();
-
-    void setStayOnTop(bool b);
-    virtual void changeStayOnTop(int);
-    virtual void checkStayOnTop(Player::TState);
-    void toggleStayOnTop();
+    void exitFullscreen();
+    void setFullscreen(bool);
+    void toggleFullscreen();
 
     void setSizeFactor(double factor);
     void setSizePercentage(int percentage);
     void toggleDoubleSize();
     void optimizeSizeFactor();
+
+    void showStereo3dDialog();
+
+    void showAudioDelayDialog();
+    void loadAudioFile(); // Load external audio file
+
+    void showSubDelayDialog();
+    void loadSub();
+
+    void setStayOnTop(bool b);
+    void changeStayOnTop(int);
+    void checkStayOnTop(Player::TState);
+    void toggleStayOnTop();
+
+    void showFilePropertiesDialog(bool checked);
+    void showConfigFolder();
+    void showSettingsDialog();
+
+    void helpCLOptions();
+    void helpCheckUpdates();
+    void helpAbout();
 
     void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
     int forceCloseOnFinish() { return arg_close_on_finish; }
@@ -155,9 +144,10 @@ public slots:
 
 signals:
     void enableActions();
-
     void settingsChanged();
     void mediaSettingsChanged(Settings::TMediaSettings* mset);
+    void gotMessageFromOtherInstance();
+    void requestRestart();
 
     void fullscreenChanged();
     void aboutToEnterFullscreenSignal();
@@ -165,8 +155,6 @@ signals:
     void didExitFullscreenSignal();
 
     void stayOnTopChanged(int);
-    void gotMessageFromOtherInstance();
-    void requestRestart();
 
     void seekForwardDefaultActionChanged(QAction* action);
     void seekRewindDefaultActionChanged(QAction* action);
@@ -180,25 +168,19 @@ protected:
     Action::Menu::TMenuSubtitle* subtitleMenu;
     Action::Menu::TMenuBrowse* browseMenu;
     QMenu* viewMenu;
+    Action::Menu::TMenuExec* createContextMenu();
 
-    virtual void closeEvent(QCloseEvent* e);
-    virtual void hideEvent(QHideEvent* event);
-    virtual void showEvent(QShowEvent* event);
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual void dropEvent(QDropEvent*);
+    virtual QMenu* createPopupMenu() override;
+    virtual void closeEvent(QCloseEvent* e) override;
+    virtual void hideEvent(QHideEvent* event) override;
+    virtual void showEvent(QShowEvent* event) override;
+    virtual void dragEnterEvent(QDragEnterEvent*) override;
+    virtual void dropEvent(QDropEvent*) override;
 
 #if defined(Q_OS_WIN)
     // Disable screensaver
     virtual bool winEvent(MSG* m, long* result);
 #endif
-
-    virtual QMenu* createPopupMenu();
-    virtual void aboutToEnterFullscreen();
-    virtual void didEnterFullscreen();
-    virtual void aboutToExitFullscreen();
-    virtual void didExitFullscreen();
-
-    Action::Menu::TMenuExec* createContextMenu();
 
 protected slots:
     // Replacement for setCaption (in Qt 4 it's not virtual)
@@ -206,13 +188,43 @@ protected slots:
     virtual void onMediaInfoChanged();
 
 private:
+    static QString settingsGroupName() { return "mainwindow"; }
+
     QWidget* panel;
     TPlayerWindow* playerwindow;
     TDockWidget* playlistDock;
     TDockWidget* logDock;
     TLogWindow* logWindow;
 
+    TAutoHideTimer* autoHideTimer;
+    TUpdateChecker* update_checker;
+
     QList<QAction*> allActions;
+    QString pending_actions_to_run;
+    // Pass settings from command line
+    int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
+
+    bool ignore_show_hide_events;
+    QString first_fullscreen_filename;
+
+    // Fiddel size and pos
+    bool save_size;
+    bool force_resize;
+    bool center_window;
+    QPoint center_window_pos;
+
+    // Windows
+    TFilePropertiesDialog* file_properties_dialog;
+    Pref::TDialog* prefDialog;
+    THelpWindow* help_window;
+
+    // Equalizers
+    TVideoEqualizer* video_equalizer;
+    TAudioEqualizer* audio_equalizer;
+
+    // Slider actions for toolbars
+    Action::TTimeSliderAction* timeslider_action;
+    Action::TVolumeSliderAction* volumeslider_action;
 
     // File menu
     Action::TAction* clearRecentsAct;
@@ -279,36 +291,6 @@ private:
     Action::TAction* editControlBarAct;
     Action::TAction* viewStatusBarAct;
 
-    // Slider actions for toolbars
-    Action::TTimeSliderAction* timeslider_action;
-    Action::TVolumeSliderAction* volumeslider_action;
-
-    // Equalizers
-    TVideoEqualizer* video_equalizer;
-    TAudioEqualizer* audio_equalizer;
-
-    // Windows
-    TFilePropertiesDialog* file_properties_dialog;
-    Pref::TDialog* prefDialog;
-    THelpWindow* help_window;
-
-    QString first_fullscreen_filename;
-    QString pending_actions_to_run;
-    // Pass settings from command line
-    int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
-
-    bool ignore_show_hide_events;
-
-    // Fiddel size and pos
-    bool save_size;
-    bool force_resize;
-    bool center_window;
-    QPoint center_window_pos;
-
-    TAutoHideTimer* autoHideTimer;
-    TUpdateChecker* update_checker;
-
-    static QString settingsGroupName() { return "mainwindow"; }
 
     void createLogDock();
     void createPanel();
@@ -325,26 +307,32 @@ private:
     void createSettingsDialog();
     void createFilePropertiesDialog();
     void setDataToFileProperties();
-    void configureDiscDevices();
     void setupNetworkProxy();
+    void configureDiscDevices();
     void setTimeLabel(double sec, bool changed);
-
-    QString timeForJumps(int secs, const QString& seekSign) const;
-    void setSeekTexts();
 
     QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
-    void setEnableActions();
     //! Execute all actions in \a actions. The actions should be
     //! separated by spaces. Checkable actions could have a parameter:
     //! true or false.
     void runActions(QString actions);
+    void setEnableActions();
 
-    void enterFullscreenOnPlay();
-    void updateAudioEqualizer();
-
-    void setFloatingToolbarsVisible(bool visible);
     void hidePanel();
+    void setFloatingToolbarsVisible(bool visible);
+
+    void removeThumbnail(QString fn);
+    void saveThumbnailToIni(const QString& fn, const QString& time);
+
+    QString timeForJumps(int secs, const QString& seekSign) const;
+    void setSeekTexts();
+
+    void aboutToEnterFullscreen();
+    void didEnterFullscreen();
+    void aboutToExitFullscreen();
+    void didExitFullscreen();
+    void enterFullscreenOnPlay();
 
     double optimizeSize(double size) const;
     double getDefaultSize() const;
@@ -352,16 +340,36 @@ private:
     void resizeMainWindow(int w, int h, double size_factor,
                           bool try_twice = true);
 
-    void removeThumbnail(QString fn);
-    void saveThumbnailToIni(const QString& fn, const QString& time);
+    void updateAudioEqualizer();
 
     void restartApplication();
-    QString getSectionName();
 
 private slots:
     void onPlayerError(int exit_code);
+    void checkPendingActionsToRun();
+    void showContextMenu();
 
     void clearRecentsListDialog();
+    void openURL();
+    void openDVD();
+    void openDVDFromISO();
+    void openDVDFromFolder();
+    void openBluRay();
+    void openBluRayFromISO();
+    void openBluRayFromFolder();
+    void openVCD();
+    void openAudioCD();
+    void saveThumbnail();
+
+    void showSeekToDialog();
+    void updateInOutMenu();
+
+    void setDefaultValuesFromVideoEqualizer();
+    void changeVideoEqualizerBySoftware(bool b);
+    void updateVideoEqualizer();
+
+    void applyFileProperties();
+    void applyNewSettings();
 
     // Mouse buttons
     void leftClickFunction();
@@ -371,22 +379,10 @@ private slots:
     void xbutton1ClickFunction();
     void xbutton2ClickFunction();
 
-    void showContextMenu();
-
+    // Status bar
     void displayVideoInfo();
     void displayInOutPoints();
     void displayFrames(bool);
-
-    void applyFileProperties();
-    void applyNewSettings();
-
-    void updateInOutMenu();
-
-    void setDefaultValuesFromVideoEqualizer();
-    void changeVideoEqualizerBySoftware(bool b);
-    void updateVideoEqualizer();
-
-    void checkPendingActionsToRun();
 
     void onStateChanged(Player::TState state);
     void onDurationChanged(double duration);

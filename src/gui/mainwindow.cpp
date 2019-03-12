@@ -19,7 +19,6 @@
 #include "gui/mainwindow.h"
 #include "gui/playerwindow.h"
 #include "gui/filedialog.h"
-#include "desktop.h"
 #include "gui/logwindow.h"
 #include "gui/helpwindow.h"
 #include "gui/autohidetimer.h"
@@ -66,6 +65,7 @@
 #include "wztime.h"
 #include "clhelp.h"
 #include "version.h"
+#include "desktop.h"
 
 #include <QMessageBox>
 #include <QDesktopWidget>
@@ -90,18 +90,18 @@ namespace Gui {
 TMainWindow::TMainWindow() :
     QMainWindow(),
     debug(logger()),
-    menubar_visible(true),
-    statusbar_visible(true),
-    fullscreen_menubar_visible(false),
-    fullscreen_statusbar_visible(true),
-    file_properties_dialog(0),
-    prefDialog(0),
-    help_window(0),
+    update_checker(0),
     arg_close_on_finish(-1),
     ignore_show_hide_events(false),
     save_size(true),
     center_window(false),
-    update_checker(0) {
+    file_properties_dialog(0),
+    prefDialog(0),
+    help_window(0),
+    menubar_visible(true),
+    statusbar_visible(true),
+    fullscreen_menubar_visible(false),
+    fullscreen_statusbar_visible(true) {
 
     setObjectName("mainwindow");
     setWindowTitle(TConfig::PROGRAM_NAME);
@@ -1577,46 +1577,6 @@ void TMainWindow::onStateChanged(Player::TState state) {
     }
 }
 
-void TMainWindow::setTimeLabel(double sec, bool changed) {
-
-    static int lastSec = -1111;
-
-    // TODO: <-1..0> looses sign
-    int s = sec;
-
-    if (s != lastSec) {
-        lastSec = s;
-        positionText = TWZTime::formatTime(s);
-        changed = true;
-    }
-
-    QString frames;
-    if (pref->show_frames) {
-        double fps = player->mdat.video_fps;
-        if (fps > 0) {
-            sec -= s;
-            if (sec < 0) {
-                sec = -sec;
-            }
-            sec *= fps;
-            // TODO: fix floats. Example 0.84 * 25 = 20 if floored instead of 21
-            sec += 0.0001;
-            s = sec;
-            if (s < 10) {
-                frames = ".0" + QString::number(s);
-            } else {
-                frames = "."  + QString::number(s);
-            }
-            frames += player->mdat.fuzzy_time;
-            changed = true;
-        }
-    }
-
-    if (changed) {
-        time_label->setText(positionText + frames + durationText);
-    }
-}
-
 // Return seek string to use in menu
 QString TMainWindow::timeForJumps(int secs, const QString& seekSign) const {
 
@@ -1681,6 +1641,46 @@ void TMainWindow::updateSeekDefaultAction(QAction* action) {
     }
 }
 
+void TMainWindow::setTimeLabel(double sec, bool changed) {
+
+    static int lastSec = -1111;
+
+    // TODO: <-1..0> looses sign
+    int s = sec;
+
+    if (s != lastSec) {
+        lastSec = s;
+        positionText = TWZTime::formatTime(s);
+        changed = true;
+    }
+
+    QString frames;
+    if (pref->show_frames) {
+        double fps = player->mdat.video_fps;
+        if (fps > 0) {
+            sec -= s;
+            if (sec < 0) {
+                sec = -sec;
+            }
+            sec *= fps;
+            // TODO: fix floats. Example 0.84 * 25 = 20 if floored instead of 21
+            sec += 0.0001;
+            s = sec;
+            if (s < 10) {
+                frames = ".0" + QString::number(s);
+            } else {
+                frames = "."  + QString::number(s);
+            }
+            frames += player->mdat.fuzzy_time;
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        time_label->setText(positionText + frames + durationText);
+    }
+}
+
 void TMainWindow::onPositionChanged(double sec) {
     setTimeLabel(sec, false);
 }
@@ -1719,7 +1719,6 @@ void TMainWindow::onPlaylistTitleChanged(QString title) {
 
     playlistDock->setWindowTitle(title);
 }
-
 
 void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
     WZDEBUG("msg + '" + message + "'");
@@ -1971,25 +1970,6 @@ void TMainWindow::openBluRayFromFolder() {
             player->openDisc(TDiscName("br", 0, dir));
         }
     }
-}
-
-QString TMainWindow::getSectionName() {
-
-    QString section;
-    QString fn = player->mdat.filename;
-    if (!fn.isEmpty()) {
-        QFileInfo fi(fn);
-        QString section(fi.canonicalFilePath());
-        if (section.isEmpty()) {
-            WZWARN("Canonical path for '" + fn + "' not found");
-        } if (section.startsWith('/')) {
-            section = "files" + section;
-        } else {
-            section = "files/" + section;
-        }
-    }
-
-    return section;
 }
 
 void TMainWindow::removeThumbnail(QString fn) {
