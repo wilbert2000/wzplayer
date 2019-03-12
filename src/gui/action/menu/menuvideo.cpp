@@ -258,7 +258,7 @@ TMenuVideo::TMenuVideo(TMainWindow* mw) :
     addAction(mw->findAction("video_equalizer"));
     addAction(mw->findAction("reset_video_equalizer"));
     // Color space
-    addMenu(new TMenuVideoColorSpace(mw));
+    addMenu(new TMenuVideoColorSpace(this, mw));
 
     // Deinterlace submenu
     addSeparator();

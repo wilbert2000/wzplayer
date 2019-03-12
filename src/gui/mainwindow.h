@@ -54,6 +54,7 @@ class TMenuFile;
 class TMenuPlay;
 class TWindowSizeGroup;
 class TZoomAndPanGroup;
+class TColorSpaceGroup;
 class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
@@ -294,6 +295,9 @@ private:
     Action::TAction* incSaturationAct;
     Action::TAction* decGammaAct;
     Action::TAction* incGammaAct;
+
+    // Color space
+    Action::Menu::TColorSpaceGroup* colorSpaceGroup;
 
 
     // Help menu

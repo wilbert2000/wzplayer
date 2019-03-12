@@ -47,6 +47,7 @@
 #include "gui/action/menu/menufile.h"
 #include "gui/action/menu/menuplay.h"
 #include "gui/action/menu/menuwindowsize.h"
+#include "gui/action/menu/menuvideocolorspace.h"
 #include "gui/action/menu/menuvideo.h"
 #include "gui/action/menu/menuaudio.h"
 #include "gui/action/menu/menusubtitle.h"
@@ -726,6 +727,12 @@ void TMainWindow::createActions() {
                               Qt::ALT | Qt::Key_0);
     connect(incGammaAct, &TAction::triggered,
             player, &Player::TPlayer::incGamma);
+
+    // Color space
+    colorSpaceGroup = new Menu::TColorSpaceGroup(this);
+    connect(colorSpaceGroup, &Menu::TColorSpaceGroup::activated,
+            player, &Player::TPlayer::setColorSpace);
+
 
 
     // View playlist
@@ -1678,6 +1685,8 @@ void TMainWindow::onMediaSettingsChanged() {
     emit mediaSettingsChanged(&player->mset);
 
     updateVideoEqualizer();
+    colorSpaceGroup->setChecked(player->mset.color_space);
+
     updateAudioEqualizer();
 
     displayInOutPoints();
@@ -2021,6 +2030,9 @@ void TMainWindow::setEnableActions() {
     decGammaAct->setEnabled(e);
     incGammaAct->setEnabled(e);
 
+    // Color space
+    colorSpaceGroup->setEnabled(e && Settings::pref->isMPV());
+    colorSpaceGroup->setChecked(player->mset.color_space);
 
     // Time slider
     timeslider_action->enable(enable);
