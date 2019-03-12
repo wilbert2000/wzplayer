@@ -30,15 +30,20 @@ TMenuAspect::TMenuAspect(QWidget* parent, TMainWindow* mw) :
     addSeparator();
     addAction(mw->findAction("aspect_next"));
 
-    connect(mw, &TMainWindow::setAspectMenuToolTip,
-            this, &TMenuAspect::setAspectMenuToolTip);
+    connect(mw, &TMainWindow::setAspectToolTip,
+            this, &TMenuAspect::setAspectToolTip);
 }
 
 void TMenuAspect::onAboutToShow() {
     main_window->updateAspectMenu();
 }
 
-void TMenuAspect::setAspectMenuToolTip(const QString &tip) {
+void TMenuAspect::setAspectToolTip(QString tip) {
+
+    QString s = menuAction()->shortcut().toString();
+    if (!s.isEmpty()) {
+        tip += " (" + s + ")";
+    }
     menuAction()->setToolTip(tip);
 }
 
@@ -239,9 +244,7 @@ void TMenuZoomAndPan::enableActions() {
 }
 
 
-TMenuVideo::TMenuVideo(TMainWindow* mw,
-                       TPlayerWindow* playerwindow,
-                       TVideoEqualizer* videoEqualizer) :
+TMenuVideo::TMenuVideo(TMainWindow* mw, TVideoEqualizer* videoEqualizer) :
         TMenu(mw, mw, "video_menu", tr("Video"), "noicon") {
 
     addAction(mw->findAction("fullscreen"));
@@ -250,7 +253,7 @@ TMenuVideo::TMenuVideo(TMainWindow* mw,
     addSeparator();
     addMenu(new TMenuAspect(this, mw));
     // Size submenu
-    addMenu(new TMenuVideoSize(mw, playerwindow));
+    addMenu(new TMenuVideoSize(this, mw));
     // Zoom and pan submenu
     addMenu(new TMenuZoomAndPan(mw));
 

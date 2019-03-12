@@ -26,16 +26,14 @@ protected:
     virtual void onAboutToShow() override;
 
 private slots:
-    void setAspectMenuToolTip(const QString& tip);
+    void setAspectToolTip(QString tip);
 };
 
 
 class TMenuVideo : public TMenu {
     Q_OBJECT
 public:
-    TMenuVideo(TMainWindow* mw,
-               TPlayerWindow* playerwindow,
-               TVideoEqualizer* videoEqualizer);
+    TMenuVideo(TMainWindow* mw, TVideoEqualizer* videoEqualizer);
 
 protected:
     virtual void enableActions();

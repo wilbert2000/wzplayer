@@ -13,8 +13,8 @@ namespace Action {
 namespace Menu {
 
 
-TVideoSizeGroup::TVideoSizeGroup(TMainWindow* mw, TPlayerWindow* pw)
-    : TActionGroup(mw, "sizegroup")
+TWindowSizeGroup::TWindowSizeGroup(TMainWindow* mw, TPlayerWindow* pw)
+    : TActionGroup(mw, "windowsizegroup")
     , size_percentage(qRound(pref->size_factor * 100))
     , playerWindow(pw) {
 
@@ -46,14 +46,15 @@ TVideoSizeGroup::TVideoSizeGroup(TMainWindow* mw, TPlayerWindow* pw)
     setChecked(size_percentage);
 }
 
-void TVideoSizeGroup::uncheck() {
+void TWindowSizeGroup::uncheck() {
 
     QAction* current = checkedAction();
-    if (current)
+    if (current) {
         current->setChecked(false);
+    }
 }
 
-void TVideoSizeGroup::updateVideoSizeGroup() {
+void TWindowSizeGroup::updateWindowSizeGroup() {
 
     uncheck();
     QSize s = playerWindow->resolution();
@@ -91,83 +92,35 @@ void TVideoSizeGroup::updateVideoSizeGroup() {
 }
 
 
-TMenuVideoSize::TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw) :
-    TMenu(mw, mw, "video_size_menu", tr("Window size")),
-    playerWindow(pw) {
+TMenuVideoSize::TMenuVideoSize(QWidget* parent, TMainWindow* mw) :
+    TMenu(parent, mw, "window_size_menu", tr("Window size")) {
 
-    group = new TVideoSizeGroup(mw, pw);
+    TWindowSizeGroup* group = mw->findChild<TWindowSizeGroup*>("windowsizegroup");
     addActions(group->actions());
-    connect(group, &TVideoSizeGroup::activated,
-            main_window, &TMainWindow::setSizePercentage);
 
     addSeparator();
-    doubleSizeAct = new TAction(mw, "size_toggle_double",
-                                tr("Toggle double size"), "", Qt::Key_D);
-    connect(doubleSizeAct, &TAction::triggered,
-            main_window, &TMainWindow::toggleDoubleSize);
-    addAction(doubleSizeAct);
+    addAction(mw->findAction("size_toggle_double"));
+    addAction(mw->findAction("size_optimize"));
+    addAction(mw->findAction("resize_on_load"));
 
-    optimizeSizeAct = new TAction(mw, "size_optimize", "", "",
-                                 QKeySequence("`"));
-    connect(optimizeSizeAct, &TAction::triggered,
-            main_window, &TMainWindow::optimizeSizeFactor);
-    //setDefaultAction(currentSizeAct);
-    connect(playerWindow, &TPlayerWindow::videoSizeFactorChanged,
-            this, &TMenuVideoSize::onVideoSizeFactorChanged,
-            Qt::QueuedConnection);
-    addAction(optimizeSizeAct);
-
-    resizeOnLoadAct = new TAction(mw, "resize_on_load", tr("Resize on load"),
-                                  "", Qt::ALT | Qt::Key_R);
-    resizeOnLoadAct->setCheckable(true);
-    connect(resizeOnLoadAct, &TAction::triggered,
-            this, &TMenuVideoSize::onResizeOnLoadTriggered);
-    addAction(resizeOnLoadAct);
-
-    upd();
-}
-
-void TMenuVideoSize::enableActions() {
-
-    bool enable = player->statePOP() && player->hasVideo();
-    group->setEnabled(enable);
-    doubleSizeAct->setEnabled(enable);
-    optimizeSizeAct->setEnabled(enable);
-    // Resize on load always enabled
-}
-
-void TMenuVideoSize::upd() {
-
-    group->updateVideoSizeGroup();
-    doubleSizeAct->setEnabled(group->isEnabled());
-    resizeOnLoadAct->setChecked(pref->resize_on_load);
-    optimizeSizeAct->setEnabled(group->isEnabled());
-
-    // Update text and tips
-    QString txt = tr("Optimize (current size %1%)").arg(group->size_percentage);
-    optimizeSizeAct->setTextAndTip(txt);
-
-    txt = tr("Size %1%").arg(group->size_percentage);
-    QString scut = menuAction()->shortcut().toString();
-    if (!scut.isEmpty()) {
-        txt += " (" + scut + ")";
-    }
-    menuAction()->setToolTip(txt);
+    connect(main_window, &TMainWindow::setWindowSizeToolTip,
+            this, &TMenuVideoSize::setWindowSizeToolTip);
+    main_window->updateWindowSizeMenu();
 }
 
 void TMenuVideoSize::onAboutToShow() {
-    upd();
+    main_window->updateWindowSizeMenu();
 }
 
-void TMenuVideoSize::onVideoSizeFactorChanged() {
-    upd();
+void TMenuVideoSize::setWindowSizeToolTip(QString tip) {
+
+    QString s = menuAction()->shortcut().toString();
+    if (!s.isEmpty()) {
+        tip += " (" + s + ")";
+    }
+    menuAction()->setToolTip(tip);
 }
 
-void TMenuVideoSize::onResizeOnLoadTriggered(bool b) {
-    WZINFO("setting resize on load to " + QString::number(b));
-
-    pref->resize_on_load = b;
-}
 
 } // namespace Menu
 } // namespace Action

@@ -14,15 +14,14 @@ class TPlayerWindow;
 namespace Action {
 namespace Menu {
 
-class TVideoSizeGroup : public TActionGroup {
+class TWindowSizeGroup : public TActionGroup {
     Q_OBJECT
-
 public:
-    explicit TVideoSizeGroup(TMainWindow* mw, TPlayerWindow* pw);
+    explicit TWindowSizeGroup(TMainWindow* mw, TPlayerWindow* pw);
     int size_percentage;
 
 public slots:
-    void updateVideoSizeGroup();
+    void updateWindowSizeGroup();
 
 private:
     TPlayerWindow* playerWindow;
@@ -33,27 +32,15 @@ private:
 
 class TMenuVideoSize : public TMenu {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
-    TMenuVideoSize(TMainWindow* mw, TPlayerWindow* pw);
+    TMenuVideoSize(QWidget* parent, TMainWindow* mw);
 
 protected:
-    virtual void enableActions();
-    virtual void onAboutToShow();
-
-private:
-    TPlayerWindow* playerWindow;
-    TVideoSizeGroup* group;
-    TAction* doubleSizeAct;
-    TAction* resizeOnLoadAct;
-    TAction* optimizeSizeAct;
-
-    void upd();
+    virtual void onAboutToShow() override;
 
 private slots:
-    void onVideoSizeFactorChanged();
-    void onResizeOnLoadTriggered(bool);
+    void setWindowSizeToolTip(QString tip);
+
 }; // class TMenuVideoSize
 
 } // namespace Menu

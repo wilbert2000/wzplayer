@@ -52,6 +52,7 @@ class TMenuExec;
 class TMenu;
 class TMenuFile;
 class TMenuPlay;
+class TWindowSizeGroup;
 class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
@@ -110,6 +111,7 @@ public slots:
     void toggleFullscreen();
 
     void updateAspectMenu();
+    void updateWindowSizeMenu();
 
     void setSizeFactor(double factor);
     void setSizePercentage(int percentage);
@@ -157,7 +159,8 @@ signals:
     void didEnterFullscreenSignal();
     void didExitFullscreenSignal();
 
-    void setAspectMenuToolTip(const QString& tip);
+    void setAspectToolTip(QString tip);
+    void setWindowSizeToolTip(QString tip);
 
     void stayOnTopChanged(int);
 
@@ -260,11 +263,16 @@ private:
 
     // Video menu
     Action::TAction* fullscreenAct;
+    // Aspect menu
     Action::TActionGroup* aspectGroup;
     Action::TAction* aspectAutoAct;
     Action::TAction* aspectDisabledAct;
     Action::TAction* nextAspectAct;
-
+    // Window size menu
+    Action::Menu::TWindowSizeGroup* windowSizeGroup;
+    Action::TAction* doubleSizeAct;
+    Action::TAction* optimizeSizeAct;
+    Action::TAction* resizeOnLoadAct;
 
     // Help menu
     QMenu* helpMenu;
@@ -352,6 +360,7 @@ private:
     void resizeStickyWindow(int w, int h);
     void resizeMainWindow(int w, int h, double size_factor,
                           bool try_twice = true);
+    void onResizeOnLoadTriggered(bool b);
 
     void updateAudioEqualizer();
 

@@ -46,6 +46,7 @@
 #include "gui/action/editabletoolbar.h"
 #include "gui/action/menu/menufile.h"
 #include "gui/action/menu/menuplay.h"
+#include "gui/action/menu/menuvideosize.h"
 #include "gui/action/menu/menuvideo.h"
 #include "gui/action/menu/menuaudio.h"
 #include "gui/action/menu/menusubtitle.h"
@@ -633,6 +634,32 @@ void TMainWindow::createActions() {
     connect(nextAspectAct, &TAction::triggered,
             player, &Player::TPlayer::nextAspectRatio);
 
+    // Menu window size
+    windowSizeGroup = new Menu::TWindowSizeGroup(this, playerWindow);
+    connect(windowSizeGroup, &Menu::TWindowSizeGroup::activated,
+            this, &TMainWindow::setSizePercentage);
+
+    doubleSizeAct = new TAction(this, "size_toggle_double",
+                                tr("Toggle double size"), "", Qt::Key_D);
+    connect(doubleSizeAct, &TAction::triggered,
+            this, &TMainWindow::toggleDoubleSize);
+
+    optimizeSizeAct = new TAction(this, "size_optimize", "", "",
+                                  QKeySequence("`"));
+    connect(optimizeSizeAct, &TAction::triggered,
+            this, &TMainWindow::optimizeSizeFactor);
+    connect(playerWindow, &TPlayerWindow::videoSizeFactorChanged,
+            this, &TMainWindow::updateWindowSizeMenu,
+            Qt::QueuedConnection);
+
+    resizeOnLoadAct = new TAction(this, "resize_on_load", tr("Resize on load"),
+                                  "", Qt::ALT | Qt::Key_R);
+    resizeOnLoadAct->setCheckable(true);
+    resizeOnLoadAct->setChecked(pref->resize_on_load);
+    connect(resizeOnLoadAct, &TAction::triggered,
+            this, &TMainWindow::onResizeOnLoadTriggered);
+
+
 
     // View playlist
     QAction* viewPlaylistAct = playlistDock->toggleViewAction();
@@ -752,7 +779,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(fileMenu);
     playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
-    videoMenu = new Menu::TMenuVideo(this, playerWindow, video_equalizer);
+    videoMenu = new Menu::TMenuVideo(this, video_equalizer);
     menuBar()->addMenu(videoMenu);
     audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
@@ -845,7 +872,7 @@ void TMainWindow::createToolbars() {
             << "separator|0|1"
             << "deinterlace_menu|0|1"
             << "aspect_menu|1|1"
-            << "video_size_menu|1|0"
+            << "window_size_menu|1|0"
             << "reset_zoom_pan|0|1"
             << "separator|0|1"
             << "volumeslider_action"
@@ -1542,7 +1569,7 @@ void TMainWindow::updateAspectMenu() {
 
     double aspect = player->mset.aspectToDouble();
     QString s = TAspectRatio::doubleToString(aspect);
-    emit setAspectMenuToolTip(tr("Aspect ratio %1").arg(s));
+    emit setAspectToolTip(tr("Aspect ratio %1").arg(s));
 
     s = tr("Auto") + "\t"
         + TAspectRatio::doubleToString(player->mdat.video_aspect_original);
@@ -1553,12 +1580,33 @@ void TMainWindow::updateAspectMenu() {
     aspectDisabledAct->setTextAndTip(s);
 }
 
+void TMainWindow::onResizeOnLoadTriggered(bool b) {
+    pref->resize_on_load = b;
+}
+
+void TMainWindow::updateWindowSizeMenu() {
+
+    windowSizeGroup->updateWindowSizeGroup();
+    doubleSizeAct->setEnabled(windowSizeGroup->isEnabled());
+    optimizeSizeAct->setEnabled(windowSizeGroup->isEnabled());
+    resizeOnLoadAct->setChecked(pref->resize_on_load);
+
+    // Update text and tips
+    QString txt = tr("Optimize (current size %1%)")
+            .arg(windowSizeGroup->size_percentage);
+    optimizeSizeAct->setTextAndTip(txt);
+
+    emit setWindowSizeToolTip(tr("Size %1%")
+                              .arg(windowSizeGroup->size_percentage));
+}
+
 // Slot called when media settings reset or loaded
 void TMainWindow::onMediaSettingsChanged() {
     WZDEBUG("");
 
     updateInOutMenu();
     updateAspectMenu();
+    // Window size menu not changed
 
     emit mediaSettingsChanged(&player->mset);
 
@@ -1882,6 +1930,12 @@ void TMainWindow::setEnableActions() {
     aspectGroup->setEnabled(e);
     nextAspectAct->setEnabled(e);
     updateAspectMenu();
+
+    // Window size menu
+    windowSizeGroup->setEnabled(enable);
+    doubleSizeAct->setEnabled(enable);
+    optimizeSizeAct->setEnabled(enable);
+    // Resize on load always enabled
 
     // Time slider
     timeslider_action->enable(enable);
