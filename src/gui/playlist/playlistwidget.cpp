@@ -1086,7 +1086,7 @@ TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* item) {
 
 TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
                                     TPlaylistItem* target) {
-    WZDEBUG(QString("Child count %1").arg(item->childCount()));
+    WZTRACE(QString("Child count %1").arg(item->childCount()));
 
     // Validate target is still valid
     target = validateItem(target);
@@ -1113,7 +1113,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
-            WZDEBUG("removing single folder in root");
+            WZTRACE("Removing single folder in root");
             TPlaylistItem* old = item;
             item = static_cast<TPlaylistItem*>(item->takeChild(0));
             delete old;

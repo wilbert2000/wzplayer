@@ -38,7 +38,7 @@ QString TWZFiles::findExecutable(const QString& name) {
 
     QFileInfo fi(name);
     if (fi.isFile() && fi.isExecutable()) {
-        WZDEBUG("Found '" + name + "'");
+        WZTRACE("Found '" + name + "'");
         return fi.absoluteFilePath();
     }
 
@@ -73,7 +73,7 @@ QString TWZFiles::findExecutable(const QString& name) {
         QString candidate = search_paths[n] + "/" + name;
         fi.setFile(candidate);
         if (fi.isFile() && fi.isExecutable()) {
-            WZINFO("Found '" + fi.absoluteFilePath() + "'");
+            WZTRACE("Found '" + fi.absoluteFilePath() + "'");
             return fi.absoluteFilePath();
         }
     }

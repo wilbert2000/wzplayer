@@ -236,7 +236,7 @@ void TPlayer::saveMediaSettings() {
         return;
     }
     if (!Settings::pref->remember_media_settings) {
-        WZDEBUG("Save settings per file is disabled");
+        WZTRACE("Save settings per file is disabled");
         return;
     }
     WZINFO("Saving settings for '" + mdat.filename + "'");

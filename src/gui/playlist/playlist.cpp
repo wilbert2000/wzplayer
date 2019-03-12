@@ -171,8 +171,8 @@ void TPlaylist::createActions() {
     connect(playOrPauseAct, &TAction::triggered, this, &TPlaylist::playOrPause);
 
     // Play in new window
-    openInNewWindowAct = new TAction(main_window, "open_in_new_window",
-                             tr("Open in new window"), "play",
+    openInNewWindowAct = new TAction(main_window, "play_in_new_window",
+                             tr("Play in new window"), "play",
                              Qt::CTRL | Qt::Key_Space);
     connect(openInNewWindowAct, &TAction::triggered,
             this, &TPlaylist::openInNewWindow);
@@ -399,10 +399,7 @@ void TPlaylist::getFilesToPlay(QStringList& files) const {
     QTreeWidgetItemIterator it(playlistWidget);
     while (*it) {
         TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
-        QString fn = i->filename();
-        if (!fn.isEmpty()) {
-            files.append(fn);
-        }
+        files.append(i->filename());
         it++;
     }
 }
@@ -680,7 +677,7 @@ TPlaylistItem* TPlaylist::getRandomItem() const {
 
                 if (!i->played() && i->state() != PSTATE_FAILED) {
                     if (foundSelected) {
-                        WZDEBUG("selecting '" + i->filename() + "'");
+                        WZTRACE("Selecting '" + i->filename() + "'");
                         return i;
                     } else {
                         foundFreeItem = true;
@@ -1710,7 +1707,7 @@ bool TPlaylist::saveAs() {
 bool TPlaylist::maybeSave() {
 
     if (!playlistWidget->modified()) {
-        WZDEBUG("Playlist not modified");
+        WZTRACE("Playlist not modified");
         return true;
     }
 

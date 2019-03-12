@@ -383,7 +383,7 @@ void TMainWindow::createActions() {
     a = new TAction(this, "open_dvd_iso", tr("Open DVD ISO file..."), "dvd_iso");
     connect(a, &TAction::triggered, this, &TMainWindow::openDVDFromISO);
 
-    a = new TAction(this, "open_dvd_disc_folder", tr("Open DVD folder..."), "dvd_hd");
+    a = new TAction(this, "open_dvd_folder", tr("Open DVD folder..."), "dvd_hd");
     connect(a, &TAction::triggered, this, &TMainWindow::openDVDFromFolder);
 
     // BluRay
@@ -1270,7 +1270,7 @@ void TMainWindow::loadSettings() {
 }
 
 void TMainWindow::saveSettings() {
-    WZDEBUG("");
+    WZTRACE("");
 
     pref->beginGroup(settingsGroupName());
 
@@ -1452,7 +1452,7 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
 }
 
 void TMainWindow::updateVideoEqualizer() {
-    WZDEBUG("");
+    WZTRACE("");
 
     video_equalizer->setContrast(player->mset.contrast);
     video_equalizer->setBrightness(player->mset.brightness);
@@ -1462,7 +1462,7 @@ void TMainWindow::updateVideoEqualizer() {
 }
 
 void TMainWindow::updateAudioEqualizer() {
-    WZDEBUG("");
+    WZTRACE("");
     audio_equalizer->setEqualizer(player->getAudioEqualizer());
 }
 
@@ -1703,7 +1703,7 @@ void TMainWindow::onDragPositionChanged(double t) {
 }
 
 void TMainWindow::onPlaylistTitleChanged(QString title) {
-    WZDEBUG(title);
+    WZTRACE(title);
 
     playlistDock->setWindowTitle(title);
 }

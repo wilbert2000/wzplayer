@@ -81,15 +81,19 @@ TMenuPlaySpeed::TMenuPlaySpeed(TMainWindow* mw)
     : TMenu(mw, mw, "play_speed_menu", tr("Play speed")) {
 
     addAction(main_window->findChild<TAction*>("speed_normal"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("spedd_half"));
     addAction(main_window->findChild<TAction*>("speed_double"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("speed_dec_10"));
     addAction(main_window->findChild<TAction*>("speed_inc_10"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("speed_dec_4"));
     addAction(main_window->findChild<TAction*>("speed_inc_4"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("speed_dec_1"));
     addAction(main_window->findChild<TAction*>("speed_inc_1"));
@@ -105,13 +109,16 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
 
     addAction(main_window->findChild<TAction*>("set_in"));
     addAction(main_window->findChild<TAction*>("set_out"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("clear_in"));
     addAction(main_window->findChild<TAction*>("clear_out"));
     addAction(main_window->findChild<TAction*>("clear_in_out"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("seek_in"));
     addAction(main_window->findChild<TAction*>("seek_out"));
+
     addSeparator();
     addAction(main_window->findChild<TAction*>("repeat_in_out"));
     addAction(main_window->findChild<TAction*>("pl_repeat"));
@@ -120,11 +127,11 @@ TMenuInOut::TMenuInOut(TMainWindow* mw)
 
 // Create main play menu
 TMenuPlay::TMenuPlay(TMainWindow* mw)
-    : TMenu(mw, mw, "play_menu", tr("Play"), "noicon") {
+    : TMenu(mw, mw, "play_menu", tr("Play")) {
 
     addAction(main_window->findChild<TAction*>("play_or_pause"));
     addAction(main_window->findChild<TAction*>("stop"));
-    addAction(main_window->findChild<TAction*>("play_new_window"));
+    addAction(main_window->findChild<TAction*>("play_in_new_window"));
 
     addSeparator();
     // Forward menu

@@ -62,7 +62,7 @@ void TVideoWindow::paintEvent(QPaintEvent* e) {
 }
 
 void TVideoWindow::setFastBackground() {
-    WZDEBUG("");
+    WZTRACE("");
 
     normal_background = false;
     // Disable restore background by system
@@ -78,7 +78,7 @@ void TVideoWindow::setFastBackground() {
 }
 
 void TVideoWindow::restoreNormalBackground() {
-    WZDEBUG("");
+    WZTRACE("");
 
     normal_background = true;
     // Enable restore background by system
@@ -481,12 +481,12 @@ void TPlayerWindow::setColorKey() {
 }
 
 void TPlayerWindow::setFastWindow() {
-    WZDEBUG("");
+    WZTRACE("");
     video_window->setFastBackground();
 }
 
 void TPlayerWindow::restoreNormalWindow(bool clrScreen) {
-    WZDEBUG("repaint " + QString::number(clrScreen));
+    WZTRACE("Repaint " + QString::number(clrScreen));
 
     video_window->restoreNormalBackground();
     if (clrScreen) {

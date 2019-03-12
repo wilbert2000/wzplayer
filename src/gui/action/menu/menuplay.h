@@ -30,7 +30,6 @@ signals:
 
 
 class TMenuPlay : public TMenu {
-    Q_OBJECT
 public:
     explicit TMenuPlay(TMainWindow* mw);
 }; // class TMenuPlay
