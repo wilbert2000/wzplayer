@@ -1,4 +1,4 @@
-#include "gui/action/menu/menuvideosize.h"
+#include "gui/action/menu/menuwindowsize.h"
 #include "desktop.h"
 #include "settings/preferences.h"
 #include "gui/playerwindow.h"
@@ -92,7 +92,7 @@ void TWindowSizeGroup::updateWindowSizeGroup() {
 }
 
 
-TMenuVideoSize::TMenuVideoSize(QWidget* parent, TMainWindow* mw) :
+TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
     TMenu(parent, mw, "window_size_menu", tr("Window size")) {
 
     TWindowSizeGroup* group = mw->findChild<TWindowSizeGroup*>("windowsizegroup");
@@ -104,15 +104,15 @@ TMenuVideoSize::TMenuVideoSize(QWidget* parent, TMainWindow* mw) :
     addAction(mw->findAction("resize_on_load"));
 
     connect(main_window, &TMainWindow::setWindowSizeToolTip,
-            this, &TMenuVideoSize::setWindowSizeToolTip);
+            this, &TMenuWindowSize::setWindowSizeToolTip);
     main_window->updateWindowSizeMenu();
 }
 
-void TMenuVideoSize::onAboutToShow() {
+void TMenuWindowSize::onAboutToShow() {
     main_window->updateWindowSizeMenu();
 }
 
-void TMenuVideoSize::setWindowSizeToolTip(QString tip) {
+void TMenuWindowSize::setWindowSizeToolTip(QString tip) {
 
     QString s = menuAction()->shortcut().toString();
     if (!s.isEmpty()) {

@@ -46,7 +46,7 @@
 #include "gui/action/editabletoolbar.h"
 #include "gui/action/menu/menufile.h"
 #include "gui/action/menu/menuplay.h"
-#include "gui/action/menu/menuvideosize.h"
+#include "gui/action/menu/menuwindowsize.h"
 #include "gui/action/menu/menuvideo.h"
 #include "gui/action/menu/menuaudio.h"
 #include "gui/action/menu/menusubtitle.h"

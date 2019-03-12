@@ -1,5 +1,5 @@
-#ifndef GUI_ACTION_MENU_MENUVIDEOSIZE_H
-#define GUI_ACTION_MENU_MENUVIDEOSIZE_H
+#ifndef GUI_ACTION_MENU_MENUWINDOWSIZE_H
+#define GUI_ACTION_MENU_MENUWINDOWSIZE_H
 
 #include "log4qt/logger.h"
 #include "gui/action/actiongroup.h"
@@ -30,10 +30,10 @@ private:
 };
 
 
-class TMenuVideoSize : public TMenu {
+class TMenuWindowSize : public TMenu {
     Q_OBJECT
 public:
-    TMenuVideoSize(QWidget* parent, TMainWindow* mw);
+    TMenuWindowSize(QWidget* parent, TMainWindow* mw);
 
 protected:
     virtual void onAboutToShow() override;
@@ -47,4 +47,4 @@ private slots:
 } // namespace Action
 } // namespace Gui
 
-#endif // GUI_ACTION_MENU_MENUVIDEOSIZE_H
+#endif // GUI_ACTION_MENU_MENUWINDOWSIZE_H

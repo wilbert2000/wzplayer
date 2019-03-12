@@ -2,7 +2,7 @@
 #include "player/player.h"
 #include "settings/mediasettings.h"
 #include "gui/action/menu/menuvideofilter.h"
-#include "gui/action/menu/menuvideosize.h"
+#include "gui/action/menu/menuwindowsize.h"
 #include "gui/action/menu/menuvideotracks.h"
 #include "gui/action/menu/menuvideocolorspace.h"
 #include "gui/videoequalizer.h"
@@ -253,7 +253,7 @@ TMenuVideo::TMenuVideo(TMainWindow* mw, TVideoEqualizer* videoEqualizer) :
     addSeparator();
     addMenu(new TMenuAspect(this, mw));
     // Size submenu
-    addMenu(new TMenuVideoSize(this, mw));
+    addMenu(new TMenuWindowSize(this, mw));
     // Zoom and pan submenu
     addMenu(new TMenuZoomAndPan(mw));
 
