@@ -924,7 +924,7 @@ void TPlayer::startPlayer(bool loopImage) {
                 file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
             }
             if (QFile::exists(file2)) {
-                WZDEBUG("using external audio file '" + file2 + "'"),
+                WZDEBUG("Using external audio file '" + file2 + "'"),
                 mset.external_audio = file2;
             }
         }
@@ -1635,9 +1635,11 @@ end_video_filters:
         else if (QFile::exists(basename + ".EDL"))
             edl_f = basename + ".EDL";
 
-        WZDEBUG("edl file: '" + edl_f + "'");
         if (!edl_f.isEmpty()) {
+            WZINFO("Using EDL file '" + edl_f + "'");
             proc->setOption("edl", edl_f);
+        } else {
+            WZDEBUG("No EDL file found");
         }
     }
 

@@ -1266,7 +1266,7 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    WZINFO(QString("Loaded config file version %1,"
+    WZINFO(QString("Loaded configuration file version %1,"
                    " executable CURRENT_CONFIG_VERSION is %2")
            .arg(config_version).arg(CURRENT_CONFIG_VERSION));
 

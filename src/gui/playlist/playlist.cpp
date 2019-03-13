@@ -1513,7 +1513,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistItem* folder,
                     result = false;
                 }
             } else {
-                WZINFO("Playlist '" + filename + "' not modified");
+                WZDEBUG("Playlist '" + filename + "' not modified");
             }
         } else if (i->isFolder()) {
             if (linkFolders) {
@@ -1524,7 +1524,7 @@ bool TPlaylist::saveM3uFolder(TPlaylistItem* folder,
                         result = false;
                     }
                 } else {
-                    WZINFO("Folder '" + filename + "' not modified");
+                    WZDEBUG("Folder '" + filename + "' not modified");
                 }
             } else {
                 // Note: savedMetaData destroyed as dummy here.
@@ -1599,32 +1599,33 @@ bool TPlaylist::saveM3u(TPlaylistItem* folder,
     if (wzplaylist && folder->getBlacklistCount() > 0) {
         savedMetaData = true;
         foreach(const QString& fn, folder->getBlacklist()) {
-            WZDEBUG("blacklisting '" + fn + "'");
+            WZDEBUG("Blacklisting '" + fn + "'");
             stream << "#WZP-blacklist:" << fn << "\n";
         }
     }
 
     bool result = saveM3uFolder(folder, path, stream, wzplaylist, savedMetaData);
 
+    // TODO: test result
     stream.flush();
     f.close();
 
     // Remove wzplaylist if nothing interesting to remember
     if (wzplaylist && !savedMetaData) {
         if (f.remove()) {
-            WZDEBUG("removed '" + filename + "'");
+            WZINFO("Removed '" + filename + "'");
         } else {
-            WZWARN("failed to remove '" + filename + "'");
+            WZWARN(QString("Failed to remove '%1'. %2")
+                    .arg(filename).arg(f.errorString()));
         }
     } else {
-        WZDEBUG("saved '" + filename + "'");
+        WZINFO("Saved '" + filename + "'");
     }
 
     return result;
 }
 
 bool TPlaylist::saveM3u(const QString& filename, bool linkFolders) {
-    WZDEBUG("");
 
     TPlaylistItem* root = playlistWidget->root();
     return saveM3u(root, filename, linkFolders);
@@ -1660,7 +1661,6 @@ bool TPlaylist::save() {
     bool result = saveM3u(playlistFilename, wzplaylist);
     if (result) {
         playlistWidget->clearModified();
-        WZINFO("succesfully saved '" + fi.absoluteFilePath() + "'");
         msgOSD(tr("Saved '%1'").arg(fi.fileName()));
     } else {
         // Error box and log already done, but need to remove 0 secs save msg
