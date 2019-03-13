@@ -21,11 +21,8 @@ class TMenuVideoTracks : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TMenuVideoTracks(TMainWindow* mw);
-protected:
-    virtual void enableActions();
+    explicit TMenuVideoTracks(QWidget* parent, TMainWindow* mw);
 private:
-    TAction* nextVideoTrackAct;
     TActionGroup* videoTrackGroup;
 private slots:
     void updateVideoTracks();

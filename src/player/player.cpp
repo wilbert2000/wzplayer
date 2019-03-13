@@ -2033,8 +2033,9 @@ void TPlayer::setStereoMode(int mode) {
 
 // Video filters
 
-void TPlayer::setVideoFilter(const QString& filter, bool enable,
-                       const QVariant& option) {
+void TPlayer::setVideoFilter(const QString& filter,
+                             bool enable,
+                             const QVariant& option) {
 
     if (Settings::pref->isMPV() && !mdat.video_hwdec) {
         proc->setVideoFilter(filter, enable, option);

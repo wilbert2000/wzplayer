@@ -10,15 +10,11 @@ namespace Action {
 namespace Menu {
 
 
-TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
-    : TMenu(mw, mw, "videotrack_menu", tr("Video track"), "video_track") {
+TMenuVideoTracks::TMenuVideoTracks(QWidget* parent, TMainWindow* mw)
+    : TMenu(parent, mw, "videotrack_menu", tr("Video track"), "video_track") {
 
     // Next video track
-    nextVideoTrackAct = new TAction(mw, "next_video_track",
-                                    tr("Next video track"));
-    connect(nextVideoTrackAct, &TAction::triggered,
-            player, &Player::TPlayer::nextVideoTrack);
-    addAction(nextVideoTrackAct);
+    addAction(mw->findAction("next_video_track"));
 
     addSeparator();
     videoTrackGroup = new TActionGroup(mw, "videotrackgroup");
@@ -28,12 +24,6 @@ TMenuVideoTracks::TMenuVideoTracks(TMainWindow* mw)
             this, &TMenuVideoTracks::updateVideoTracks);
     connect(player, &Player::TPlayer::videoTrackChanged,
             videoTrackGroup, &TActionGroup::setChecked);
-}
-
-void TMenuVideoTracks::enableActions() {
-
-    nextVideoTrackAct->setEnabled(player->statePOP()
-                                  && player->mdat.videos.count() > 1);
 }
 
 void TMenuVideoTracks::updateVideoTracks() {

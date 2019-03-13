@@ -48,6 +48,7 @@
 #include "gui/action/menu/menuplay.h"
 #include "gui/action/menu/menuwindowsize.h"
 #include "gui/action/menu/menuvideocolorspace.h"
+#include "gui/action/menu/menuvideofilter.h"
 #include "gui/action/menu/menuvideo.h"
 #include "gui/action/menu/menuaudio.h"
 #include "gui/action/menu/menusubtitle.h"
@@ -352,6 +353,7 @@ void TMainWindow::createActions() {
     autoHideTimer = new TAutoHideTimer(this, playerWindow);
 
 
+    // File menu
     // TODO: Favorites
 
     // Clear recents
@@ -580,7 +582,7 @@ void TMainWindow::createActions() {
             this, &TMainWindow::updateInOutMenu);
 
 
-    // Menu video
+    // Video Menu
     // Fullscreen
     fullscreenAct = new TAction(this, "fullscreen", tr("Fullscreen"), "",
                                 Qt::Key_F);
@@ -733,6 +735,95 @@ void TMainWindow::createActions() {
     connect(colorSpaceGroup, &Menu::TColorSpaceGroup::activated,
             player, &Player::TPlayer::setColorSpace);
 
+    deinterlaceGroup = new Menu::TDeinterlaceGroup(this);
+    deinterlaceGroup->setChecked(player->mset.current_deinterlacer);
+    connect(deinterlaceGroup, &Action::Menu::TDeinterlaceGroup::activated,
+            player, &Player::TPlayer::setDeinterlace);
+
+    toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing",
+                                       tr("Toggle deinterlacing"),
+                                       "deinterlace", Qt::Key_I);
+    toggleDeinterlaceAct->setCheckable(true);
+    connect(toggleDeinterlaceAct, &TAction::triggered,
+            player, &Player::TPlayer::toggleDeinterlace);
+
+    // Transform
+    flipAct = new TAction(this, "flip", tr("Flip image"));
+    flipAct->setCheckable(true);
+    connect(flipAct, &TAction::triggered, player, &Player::TPlayer::setFlip);
+
+    mirrorAct = new TAction(this, "mirror", tr("Mirror image"));
+    mirrorAct->setCheckable(true);
+    connect(mirrorAct, &TAction::triggered,
+            player, &Player::TPlayer::setMirror);
+
+    rotateGroup = new Menu::TRotateGroup(this);
+    rotateGroup->setChecked(player->mset.rotate);
+    connect(rotateGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setRotate);
+
+    // Video filters
+    filterGroup = new Menu::TFilterGroup(this);
+
+    // Denoise
+    denoiseGroup = new TActionGroup(this, "denoisegroup");
+    denoiseGroup->setEnabled(false);
+    new TActionGroupItem(this, denoiseGroup, "denoise_none", tr("Off"),
+                         TMediaSettings::NoDenoise);
+    new TActionGroupItem(this, denoiseGroup, "denoise_normal", tr("Normal"),
+                         TMediaSettings::DenoiseNormal);
+    new TActionGroupItem(this, denoiseGroup, "denoise_soft", tr("Soft"),
+                         TMediaSettings::DenoiseSoft);
+    connect(denoiseGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setDenoiser);
+
+    // Unsharp
+    sharpenGroup = new TActionGroup(this, "sharpengroup");
+    sharpenGroup->setEnabled(false);
+    new TActionGroupItem(this, sharpenGroup, "sharpen_off", tr("None"), 0);
+    new TActionGroupItem(this, sharpenGroup, "blur", tr("Blur"), 1);
+    new TActionGroupItem(this, sharpenGroup, "sharpen", tr("Sharpen"), 2);
+    connect(sharpenGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setSharpen);
+
+    // Stereo 3D
+    stereo3DAct = new TAction(this, "stereo_3d_filter",
+                              tr("Stereo 3D filter..."), "stereo3d");
+    connect(stereo3DAct, &TAction::triggered,
+            this, &TMainWindow::showStereo3dDialog);
+
+    // Video tracks
+    nextVideoTrackAct = new TAction(this, "next_video_track",
+                                    tr("Next video track"));
+    connect(nextVideoTrackAct, &TAction::triggered,
+            player, &Player::TPlayer::nextVideoTrack);
+
+    // Screenshots
+    screenshotAct = new TAction(this, "screenshot", tr("Screenshot"), "",
+                                Qt::Key_R);
+    connect(screenshotAct, &TAction::triggered,
+            player, &Player::TPlayer::screenshot);
+
+    // Multiple screenshots
+    screenshotsAct = new TAction(this, "screenshots", tr("Start screenshots"),
+                                 "", Qt::SHIFT | Qt::Key_R);
+    screenshotsAct->setCheckable(true);
+    screenshotsAct->setChecked(false);
+    connect(screenshotsAct, &TAction::triggered,
+            this, &TMainWindow::startStopScreenshots);
+
+    // Capture
+    capturingAct = new TAction(this, "capture_stream", tr("Start capture"),
+                               "record", Qt::CTRL | Qt::Key_R);
+    capturingAct->setCheckable(true);
+    capturingAct->setChecked(false);
+    connect(capturingAct, &TAction::triggered,
+            this, &TMainWindow::startStopCapture);
+
+
+    // Audio menu
+
+
 
 
     // View playlist
@@ -853,7 +944,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(fileMenu);
     playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
-    videoMenu = new Menu::TMenuVideo(this);
+    videoMenu = new Menu::TMenuVideo(this, this);
     menuBar()->addMenu(videoMenu);
     audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
     menuBar()->addMenu(audioMenu);
@@ -1620,6 +1711,26 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
     }
 }
 
+void TMainWindow::startStopScreenshots() {
+
+    if (screenshotAct->isChecked()) {
+        screenshotsAct->setText(tr("Start screenshots"));
+    } else {
+        screenshotsAct->setText(tr("Stop screenshots"));
+    }
+    player->screenshots();
+}
+
+void TMainWindow::startStopCapture() {
+
+    if (capturingAct->isChecked()) {
+        capturingAct->setText(tr("Start capture"));
+    } else {
+        capturingAct->setText(tr("Stop capture"));
+    }
+    player->switchCapturing();
+}
+
 void TMainWindow::updateVideoEqualizer() {
 
     video_equalizer->setContrast(player->mset.contrast);
@@ -1674,6 +1785,20 @@ void TMainWindow::updateWindowSizeMenu() {
                               .arg(windowSizeGroup->size_percentage));
 }
 
+void TMainWindow::updateTransformMenu() {
+
+    flipAct->setChecked(player->mset.flip);
+    mirrorAct->setChecked(player->mset.mirror);
+    rotateGroup->setChecked(player->mset.rotate);
+}
+
+void TMainWindow::updateFilters() {
+
+    filterGroup->updateFilters();
+    denoiseGroup->setChecked(player->mset.current_denoiser);
+    sharpenGroup->setChecked(player->mset.current_unsharp);
+}
+
 // Slot called when media settings reset or loaded
 void TMainWindow::onMediaSettingsChanged() {
     WZDEBUG("");
@@ -1686,6 +1811,9 @@ void TMainWindow::onMediaSettingsChanged() {
 
     updateVideoEqualizer();
     colorSpaceGroup->setChecked(player->mset.color_space);
+    deinterlaceGroup->setChecked(player->mset.current_deinterlacer);
+    updateTransformMenu();
+    updateFilters();
 
     updateAudioEqualizer();
 
@@ -2033,6 +2161,34 @@ void TMainWindow::setEnableActions() {
     // Color space
     colorSpaceGroup->setEnabled(e && Settings::pref->isMPV());
     colorSpaceGroup->setChecked(player->mset.color_space);
+
+    // Deinterlace
+    bool ef = e && player->videoFiltersEnabled();
+    deinterlaceGroup->setEnabled(ef);
+    toggleDeinterlaceAct->setEnabled(ef);
+
+    // Transform
+    flipAct->setEnabled(ef);
+    mirrorAct->setEnabled(ef);
+    rotateGroup->setEnabled(ef);
+
+    // Video filters
+    filterGroup->setEnabled(ef);
+    filterGroup->addLetterboxAct->setEnabled(ef && pref->isMPlayer());
+    denoiseGroup->setEnabled(ef);
+    sharpenGroup->setEnabled(ef);
+
+    // Stereo 3D
+    stereo3DAct->setEnabled(ef);
+
+    // Video tracks
+    nextVideoTrackAct->setEnabled(e && player->mdat.videos.count() > 1);
+
+    // ScreenShots
+    bool enableScreenShots = e && !pref->screenshot_directory.isEmpty();
+    screenshotAct->setEnabled(enableScreenShots && pref->use_screenshot);
+    screenshotsAct->setEnabled(enableScreenShots && pref->use_screenshot);
+    capturingAct->setEnabled(enableScreenShots);
 
     // Time slider
     timeslider_action->enable(enable);

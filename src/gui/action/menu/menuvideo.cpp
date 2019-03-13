@@ -32,10 +32,8 @@ TMenuAspect::TMenuAspect(QWidget* parent, TMainWindow* mw) :
 
     connect(mw, &TMainWindow::setAspectToolTip,
             this, &TMenuAspect::setAspectToolTip);
-}
-
-void TMenuAspect::onAboutToShow() {
-    main_window->updateAspectMenu();
+    connect(this, &TMenuAspect::aboutToShow,
+            mw, &TMainWindow::updateAspectMenu);
 }
 
 void TMenuAspect::setAspectToolTip(QString tip) {
@@ -48,139 +46,70 @@ void TMenuAspect::setAspectToolTip(QString tip) {
 }
 
 
+TDeinterlaceGroup::TDeinterlaceGroup(TMainWindow* mw)
+    : TActionGroup(mw, "deinterlacegroup") {
+
+    setEnabled(false);
+    new TActionGroupItem(mw, this, "deinterlace_none", tr("None"),
+                         TMediaSettings::NoDeinterlace);
+    new TActionGroupItem(mw, this, "deinterlace_l5", tr("Lowpass5"),
+                         TMediaSettings::L5);
+    new TActionGroupItem(mw, this, "deinterlace_yadif0",
+                         tr("Yadif (normal)"), TMediaSettings::Yadif);
+    new TActionGroupItem(mw, this, "deinterlace_yadif1",
+                         tr("Yadif (double framerate)"),
+                         TMediaSettings::Yadif_1);
+    new TActionGroupItem(mw, this, "deinterlace_lb", tr("Linear Blend"),
+                         TMediaSettings::LB);
+    new TActionGroupItem(mw, this, "deinterlace_kern", tr("Kerndeint"),
+                         TMediaSettings::Kerndeint);
+}
+
 class TMenuDeinterlace : public TMenu {
 public:
-    explicit TMenuDeinterlace(TMainWindow* mw);
-protected:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-    virtual void onAboutToShow();
-private:
-    TActionGroup* group;
-    TAction* toggleDeinterlaceAct;
+    explicit TMenuDeinterlace(QWidget* parent, TMainWindow* mw);
 };
 
 
-TMenuDeinterlace::TMenuDeinterlace(TMainWindow* mw)
-    : TMenu(mw, mw, "deinterlace_menu", tr("Deinterlace"), "deinterlace") {
+TMenuDeinterlace::TMenuDeinterlace(QWidget* parent, TMainWindow* mw)
+    : TMenu(parent, mw, "deinterlace_menu", tr("Deinterlace"), "deinterlace") {
 
-    group = new TActionGroup(mw, "deinterlace");
-    group->setEnabled(false);
-    new TActionGroupItem(mw, group, "deinterlace_none", tr("None"),
-                         TMediaSettings::NoDeinterlace);
-    new TActionGroupItem(mw, group, "deinterlace_l5", tr("Lowpass5"),
-                         TMediaSettings::L5);
-    new TActionGroupItem(mw, group, "deinterlace_yadif0",
-                         tr("Yadif (normal)"), TMediaSettings::Yadif);
-    new TActionGroupItem(mw, group, "deinterlace_yadif1",
-                         tr("Yadif (double framerate)"),
-                         TMediaSettings::Yadif_1);
-    new TActionGroupItem(mw, group, "deinterlace_lb", tr("Linear Blend"),
-                         TMediaSettings::LB);
-    new TActionGroupItem(mw, group, "deinterlace_kern", tr("Kerndeint"),
-                         TMediaSettings::Kerndeint);
-    group->setChecked(player->mset.current_deinterlacer);
+    TDeinterlaceGroup* group = mw->findChild<TDeinterlaceGroup*>(
+                "deinterlacegroup");
     addActions(group->actions());
-    connect(group, &TActionGroup::activated,
-            player, &Player::TPlayer::setDeinterlace);
-    // No one else sets it
-
     addSeparator();
-    toggleDeinterlaceAct = new TAction(mw, "toggle_deinterlacing",
-                                       tr("Toggle deinterlacing"),
-                                       "deinterlace", Qt::Key_I);
-    toggleDeinterlaceAct->setCheckable(true);
-    addAction(toggleDeinterlaceAct);
-    connect(toggleDeinterlaceAct, &TAction::triggered,
-            player, &Player::TPlayer::toggleDeinterlace);
+    addAction(mw->findAction("toggle_deinterlacing"));
 }
 
-void TMenuDeinterlace::enableActions() {
+TRotateGroup::TRotateGroup(TMainWindow* mw) :
+    TActionGroup(mw, "rotategroup") {
 
-    // Using mset, so useless to set if stopped or no video
-    bool enabled = player->statePOP() && player->hasVideo()
-                   && player->videoFiltersEnabled();
-    group->setEnabled(enabled);
-    toggleDeinterlaceAct->setEnabled(enabled);
+    setEnabled(false);
+    new TActionGroupItem(mw, this, "rotate_none", tr("No rotation"), 0);
+    new TActionGroupItem(mw, this, "rotate_90",
+                         trUtf8("Rotate 90° clockwise"), 90, true, true);
+    new TActionGroupItem(mw, this, "rotate_270",
+                         trUtf8("Rotate 90° counter-clockwise"), 270, true,
+                         true);
 }
-
-void TMenuDeinterlace::onMediaSettingsChanged(TMediaSettings* mset) {
-    group->setChecked(mset->current_deinterlacer);
-}
-
-void TMenuDeinterlace::onAboutToShow() {
-    group->setChecked(player->mset.current_deinterlacer);
-}
-
 
 class TMenuTransform : public TMenu {
 public:
-    explicit TMenuTransform(TMainWindow* mw);
-protected:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-    virtual void onAboutToShow();
-private:
-    TAction* flipAct;
-    TAction* mirrorAct;
-    TActionGroup* group;
+    explicit TMenuTransform(QWidget* parent, TMainWindow* mw);
 };
 
 
-TMenuTransform::TMenuTransform(TMainWindow* mw)
-    : TMenu(mw, mw, "transform_menu", tr("Transform"), "transform") {
+TMenuTransform::TMenuTransform(QWidget* parent, TMainWindow* mw)
+    : TMenu(parent, mw, "transform_menu", tr("Transform"), "transform") {
 
-    flipAct = new TAction(mw, "flip", tr("Flip image"));
-    flipAct->setCheckable(true);
-    connect(flipAct, &TAction::triggered,
-            player, &Player::TPlayer::setFlip);
-    addAction(flipAct);
-
-    mirrorAct = new TAction(mw, "mirror", tr("Mirror image"));
-    mirrorAct->setCheckable(true);
-    connect(mirrorAct, &TAction::triggered,
-            player, &Player::TPlayer::setMirror);
-    addAction(mirrorAct);
-
+    addAction(mw->findAction("flip"));
+    addAction(mw->findAction("mirror"));
     addSeparator();
-    group = new TActionGroup(mw, "rotate");
-    group->setEnabled(false);
-    new TActionGroupItem(mw, group, "rotate_none", tr("No rotation"), 0);
-    new TActionGroupItem(mw, group, "rotate_90",
-                         trUtf8("Rotate 90° clockwise"), 90, true, true);
-    new TActionGroupItem(mw, group, "rotate_270",
-                         trUtf8("Rotate 90° counter-clockwise"), 270, true,
-                         true);
-    group->setChecked(player->mset.rotate);
-    connect(group, &TActionGroup::activated,
-            player, &Player::TPlayer::setRotate);
+    TRotateGroup* group = mw->findChild<TRotateGroup*>("rotategroup");
     addActions(group->actions());
-    // No one changes it
-}
 
-void TMenuTransform::enableActions() {
-
-    // Using mset, so useless to set if stopped or no video
-    bool enable = player->statePOP() && player->hasVideo()
-                  && player->videoFiltersEnabled();
-    flipAct->setEnabled(enable);
-    mirrorAct->setEnabled(enable);
-    group->setEnabled(enable);
-}
-
-
-void TMenuTransform::onMediaSettingsChanged(Settings::TMediaSettings* mset) {
-
-    flipAct->setChecked(mset->flip);
-    mirrorAct->setChecked(mset->mirror);
-    group->setChecked(mset->rotate);
-}
-
-void TMenuTransform::onAboutToShow() {
-
-    flipAct->setChecked(player->mset.flip);
-    mirrorAct->setChecked(player->mset.mirror);
-    group->setChecked(player->mset.rotate);
+    connect(this, &TMenuTransform::aboutToShow,
+            mw, &TMainWindow::updateTransformMenu);
 }
 
 
@@ -240,8 +169,8 @@ TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TMainWindow* mw)
 }
 
 
-TMenuVideo::TMenuVideo(TMainWindow* mw) :
-        TMenu(mw, mw, "video_menu", tr("Video"), "noicon") {
+TMenuVideo::TMenuVideo(QWidget* parent, TMainWindow* mw) :
+        TMenu(parent, mw, "video_menu", tr("Video"), "noicon") {
 
     addAction(mw->findAction("fullscreen"));
 
@@ -260,89 +189,25 @@ TMenuVideo::TMenuVideo(TMainWindow* mw) :
     // Color space
     addMenu(new TMenuVideoColorSpace(this, mw));
 
+    addSeparator();
     // Deinterlace submenu
-    addSeparator();
-    addMenu(new TMenuDeinterlace(mw));
+    addMenu(new TMenuDeinterlace(this, mw));
     // Transform submenu
-    addMenu(new TMenuTransform(mw));
+    addMenu(new TMenuTransform(this, mw));
     // Video filter submenu
-    addMenu(new TMenuVideoFilter(mw));
-
+    addMenu(new TMenuVideoFilter(this, mw));
     // Stereo 3D
-    stereo3DAct = new TAction(mw, "stereo_3d_filter", tr("Stereo 3D filter..."),
-                              "stereo3d");
-    addAction(stereo3DAct);
-    connect(stereo3DAct, &TAction::triggered,
-            mw, &TMainWindow::showStereo3dDialog);
+    addAction(mw->findAction("stereo_3d_filter"));
 
+    addSeparator();
     // Video tracks
-    addSeparator();
-    addMenu(new TMenuVideoTracks(mw));
+    addMenu(new TMenuVideoTracks(this, mw));
 
+    addSeparator();
     // Screenshots
-    addSeparator();
-    // Single
-    screenshotAct = new TAction(mw, "screenshot", tr("Screenshot"), "",
-                                Qt::Key_R);
-    addAction(screenshotAct);
-    connect(screenshotAct, &TAction::triggered,
-            player, &Player::TPlayer::screenshot);
-
-    // Multiple
-    screenshotsAct = new TAction(mw, "multiple_screenshots",
-        tr("Start screenshots"), "screenshots", Qt::SHIFT | Qt::Key_R);
-    screenshotsAct->setCheckable(true);
-    screenshotsAct->setChecked(false);
-    addAction(screenshotsAct);
-    connect(screenshotsAct, &TAction::triggered,
-            this, &TMenuVideo::startStopScreenshots);
-
-    // Capture
-    capturingAct = new TAction(mw, "capture_stream",
-                               tr("Start capture"),
-                               "record", Qt::CTRL | Qt::Key_R);
-    capturingAct->setCheckable(true);
-    capturingAct->setChecked(false);
-    addAction(capturingAct);
-    connect(capturingAct, &TAction::triggered,
-            this, &TMenuVideo::startStopCapture);
-}
-
-void TMenuVideo::startStopScreenshots() {
-
-    if (screenshotAct->isChecked()) {
-        screenshotsAct->setText(tr("Start screenshots"));
-    } else {
-        screenshotsAct->setText(tr("Stop screenshots"));
-    }
-    player->screenshots();
-}
-
-void TMenuVideo::startStopCapture() {
-
-    if (capturingAct->isChecked()) {
-        capturingAct->setText(tr("Start capture"));
-    } else {
-        capturingAct->setText(tr("Stop capture"));
-    }
-    player->switchCapturing();
-}
-
-void TMenuVideo::enableActions() {
-
-    // Depending on mset, so useless to set if no video
-    bool enable = player->statePOP() && player->hasVideo();
-
-    bool enableFilters = enable && player->videoFiltersEnabled();
-    stereo3DAct->setEnabled(enableFilters);
-
-    bool enableScreenShots = enable
-                             && pref->use_screenshot
-                             && !pref->screenshot_directory.isEmpty();
-    screenshotAct->setEnabled(enableScreenShots);
-    screenshotsAct->setEnabled(enableScreenShots);
-
-    capturingAct->setEnabled(enable && !pref->screenshot_directory.isEmpty());
+    addAction(mw->findAction("screenshot"));
+    addAction(mw->findAction("screenshots"));
+    addAction(mw->findAction("capture_stream"));
 }
 
 } // namespace Menu

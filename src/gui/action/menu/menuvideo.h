@@ -2,6 +2,7 @@
 #define GUI_VIDEOMENU_H
 
 #include "gui/action/menu/menu.h"
+#include "gui/action/actiongroup.h"
 #include <QActionGroup>
 
 
@@ -22,10 +23,6 @@ class TMenuAspect : public TMenu {
     Q_OBJECT
 public:
     explicit TMenuAspect(QWidget* parent, TMainWindow* mw);
-
-protected:
-    virtual void onAboutToShow() override;
-
 private slots:
     void setAspectToolTip(QString tip);
 };
@@ -36,24 +33,23 @@ public:
     explicit TZoomAndPanGroup(TMainWindow* mw);
 };
 
+class TDeinterlaceGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TDeinterlaceGroup(TMainWindow* mw);
+};
+
+class TRotateGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TRotateGroup(TMainWindow* mw);
+};
+
+
 class TMenuVideo : public TMenu {
     Q_OBJECT
 public:
-    TMenuVideo(TMainWindow* mw);
-
-protected:
-    virtual void enableActions();
-
-private:
-    TAction* stereo3DAct;
-
-    TAction* screenshotAct;
-    TAction* screenshotsAct;
-    TAction* capturingAct;
-
-private slots:
-    void startStopScreenshots();
-    void startStopCapture();
+    TMenuVideo(QWidget* parent, TMainWindow* mw);
 }; // class TMenuVideo
 
 } // namespace Menu

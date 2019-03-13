@@ -55,6 +55,9 @@ class TMenuPlay;
 class TWindowSizeGroup;
 class TZoomAndPanGroup;
 class TColorSpaceGroup;
+class TDeinterlaceGroup;
+class TRotateGroup;
+class TFilterGroup;
 class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
@@ -114,6 +117,8 @@ public slots:
 
     void updateAspectMenu();
     void updateWindowSizeMenu();
+    void updateTransformMenu();
+    void updateFilters();
 
     void setSizeFactor(double factor);
     void setSizePercentage(int percentage);
@@ -299,6 +304,30 @@ private:
     // Color space
     Action::Menu::TColorSpaceGroup* colorSpaceGroup;
 
+    // Deinterlace
+    Action::Menu::TDeinterlaceGroup* deinterlaceGroup;
+    Action::TAction* toggleDeinterlaceAct;
+
+    // Transform
+    Action::TAction* flipAct;
+    Action::TAction* mirrorAct;
+    Action::Menu::TRotateGroup* rotateGroup;
+
+    // Video filters
+    Action::Menu::TFilterGroup* filterGroup;
+    Action::TActionGroup* denoiseGroup;
+    Action::TActionGroup* sharpenGroup;
+
+    // Stereo 3D
+    Action::TAction* stereo3DAct;
+
+    // Video tracks
+    Action::TAction* nextVideoTrackAct;
+
+    // Screen shots
+    Action::TAction* screenshotAct;
+    Action::TAction* screenshotsAct;
+    Action::TAction* capturingAct;
 
     // Help menu
     QMenu* helpMenu;
@@ -411,6 +440,9 @@ private slots:
 
     void showSeekToDialog();
     void updateInOutMenu();
+
+    void startStopScreenshots();
+    void startStopCapture();
 
     void setDefaultValuesFromVideoEqualizer();
     void changeVideoEqualizerBySoftware(bool b);
