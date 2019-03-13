@@ -204,6 +204,7 @@ TMenuSubtitle::TMenuSubtitle(TMainWindow* mw)
     addSeparator();
     loadSubsAct = new TAction(mw, "load_subs", tr("Load subtitles..."),"open");
     connect(loadSubsAct, &TAction::triggered, mw, &TMainWindow::loadSub);
+    addAction(loadSubsAct);
     unloadSubsAct = new TAction(mw, "unload_subs", tr("Unload subtitles"),
                                 "unload");
     connect(unloadSubsAct, &TAction::triggered,

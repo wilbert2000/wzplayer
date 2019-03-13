@@ -77,7 +77,8 @@ void TFilterGroup::updateFilters() {
 
 
 TMenuVideoFilter::TMenuVideoFilter(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "videofilter_menu", tr("Filters"), "video_filters") {
+    : TMenu(parent, mw, "videofilter_menu", tr("Video filters"),
+            "video_filters") {
 
     QActionGroup* group = mw->findChild<TFilterGroup*>("filtergroup");
     addActions(group->actions());

@@ -85,10 +85,8 @@ HEADERS += wzdebug.h \
     gui/action/menu/menuplay.h \
     gui/action/menu/menuvideofilter.h \
     gui/action/menu/menuwindowsize.h \
-    gui/action/menu/menuvideotracks.h \
     gui/action/menu/menuvideocolorspace.h \
     gui/action/menu/menuvideo.h \
-    gui/action/menu/menuaudiotracks.h \
     gui/action/menu/menuaudio.h \
     gui/action/menu/menusubtitle.h \
     gui/action/menu/menubrowse.h \
@@ -212,10 +210,8 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menuplay.cpp \
     gui/action/menu/menuvideofilter.cpp \
     gui/action/menu/menuwindowsize.cpp \
-    gui/action/menu/menuvideotracks.cpp \
     gui/action/menu/menuvideocolorspace.cpp \
     gui/action/menu/menuvideo.cpp \
-    gui/action/menu/menuaudiotracks.cpp \
     gui/action/menu/menuaudio.cpp \
     gui/action/menu/menusubtitle.cpp \
     gui/action/menu/menubrowse.cpp \

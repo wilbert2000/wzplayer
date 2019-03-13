@@ -45,6 +45,13 @@ public:
     explicit TRotateGroup(TMainWindow* mw);
 };
 
+class TMenuVideoTracks : public TMenu {
+    Q_OBJECT
+public:
+    explicit TMenuVideoTracks(QWidget* parent, TMainWindow* mw);
+private slots:
+    void updateVideoTracks(TAction* next, TActionGroup* group);
+};
 
 class TMenuVideo : public TMenu {
     Q_OBJECT

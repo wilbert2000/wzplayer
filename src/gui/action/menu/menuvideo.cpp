@@ -3,7 +3,6 @@
 #include "settings/mediasettings.h"
 #include "gui/action/menu/menuvideofilter.h"
 #include "gui/action/menu/menuwindowsize.h"
-#include "gui/action/menu/menuvideotracks.h"
 #include "gui/action/menu/menuvideocolorspace.h"
 #include "gui/videoequalizer.h"
 #include "gui/mainwindow.h"
@@ -166,6 +165,23 @@ TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TMainWindow* mw)
     addActions(group->actions());
     insertSeparator(mw->findAction("dec_zoom"));
     insertSeparator(mw->findAction("move_left"));
+}
+
+
+TMenuVideoTracks::TMenuVideoTracks(QWidget* parent, TMainWindow* mw)
+    : TMenu(parent, mw, "videotrack_menu", tr("Video track")) {
+
+    addAction(mw->findAction("next_video_track"));
+    connect(mw, &TMainWindow::videoTrackGroupChanged,
+            this, &TMenuVideoTracks::updateVideoTracks);
+}
+
+void TMenuVideoTracks::updateVideoTracks(TAction* next, TActionGroup* group) {
+
+    clear();
+    addAction(next);
+    addSeparator();
+    addActions(group->actions());
 }
 
 

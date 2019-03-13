@@ -666,8 +666,8 @@ void TMainWindow::createActions() {
     zoomAndPanGroup = new Menu::TZoomAndPanGroup(this);
 
     // Video equalizer
-    equalizerAct = new TAction(this, "video_equalizer", tr("Equalizer"), "",
-                               QKeySequence("E"));
+    equalizerAct = new TAction(this, "video_equalizer", tr("Video equalizer"),
+                               "", QKeySequence("E"));
     equalizerAct->setCheckable(true);
     equalizerAct->setChecked(video_equalizer->isVisible());
     connect(equalizerAct, &TAction::triggered,
@@ -798,6 +798,15 @@ void TMainWindow::createActions() {
     connect(nextVideoTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextVideoTrack);
 
+    videoTrackGroup = new TActionGroup(this, "videotrackgroup");
+    connect(videoTrackGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setVideoTrack);
+    connect(player, &Player::TPlayer::videoTrackChanged,
+            videoTrackGroup, &TActionGroup::setChecked);
+    connect(player, &Player::TPlayer::videoTracksChanged,
+            this, &TMainWindow::updateVideoTracks);
+
+
     // Screenshots
     screenshotAct = new TAction(this, "screenshot", tr("Screenshot"), "",
                                 Qt::Key_R);
@@ -822,8 +831,107 @@ void TMainWindow::createActions() {
 
 
     // Audio menu
+    // Volume
+    muteAct = new TAction(this, "mute", tr("Mute"), "noicon", Qt::Key_M);
+    muteAct->addShortcut(Qt::Key_VolumeMute); // MCE remote key
+    muteAct->setCheckable(true);
+    muteAct->setChecked(player->getMute());
+    QIcon icset(Images::icon("volume"));
+    icset.addPixmap(Images::icon("mute"), QIcon::Normal, QIcon::On);
+    muteAct->setIcon(icset);
+    connect(muteAct, &TAction::triggered, player, &Player::TPlayer::mute);
+    connect(player, &Player::TPlayer::muteChanged,
+            muteAct, &TAction::setChecked);
 
+    decVolumeAct = new TAction(this, "decrease_volume", tr("Volume -"),
+                               "audio_down", Qt::Key_Minus);
+    decVolumeAct->addShortcut(Qt::Key_VolumeDown); // MCE remote key
+    connect(decVolumeAct, &TAction::triggered,
+            player, &Player::TPlayer::decVolume);
 
+    incVolumeAct = new TAction(this, "increase_volume", tr("Volume +"),
+                               "audio_up", Qt::Key_Plus);
+    incVolumeAct->addShortcut(Qt::Key_VolumeUp); // MCE remote key
+    connect(incVolumeAct, &TAction::triggered,
+            player, &Player::TPlayer::incVolume);
+
+    // Delay
+    decAudioDelayAct = new TAction(this, "dec_audio_delay", tr("Audio delay -"),
+                                   "delay_down", Qt::CTRL | Qt::Key_Minus);
+    connect(decAudioDelayAct, &TAction::triggered,
+            player, &Player::TPlayer::decAudioDelay);
+
+    incAudioDelayAct = new TAction(this, "inc_audio_delay", tr("Audio delay +"),
+                                   "delay_up", Qt::CTRL | Qt::Key_Plus);
+    connect(incAudioDelayAct, &TAction::triggered,
+            player, &Player::TPlayer::incAudioDelay);
+
+    audioDelayAct = new TAction(this, "audio_delay", tr("Set audio delay..."),
+                                "", Qt::META | Qt::Key_Plus);
+    connect(audioDelayAct, &TAction::triggered,
+            this, &TMainWindow::showAudioDelayDialog);
+
+    // Audio equalizer
+    audioEqualizerAct = new TAction(this, "audio_equalizer",
+                                    tr("Audio equalizer"), "",
+                                    Qt::ALT | Qt::Key_Plus);
+    audioEqualizerAct->setCheckable(true);
+    audioEqualizerAct->setChecked(audio_equalizer->isVisible());
+    connect(audioEqualizerAct, &TAction::triggered,
+            audio_equalizer, &TAudioEqualizer::setVisible);
+    connect(audio_equalizer, &TAudioEqualizer::visibilityChanged,
+            audioEqualizerAct, &TAction::setChecked);
+
+    resetAudioEqualizerAct = new TAction(this, "reset_audio_equalizer",
+                                         tr("Reset audio equalizer"), "",
+                                         Qt::ALT | Qt::Key_Minus);
+    connect(resetAudioEqualizerAct, &TAction::triggered,
+            audio_equalizer, &TAudioEqualizer::reset);
+
+    // Stereo
+    stereoGroup = new Action::Menu::TStereoGroup(this);
+
+    // Channels
+    audioChannelGroup = new Action::Menu::TAudioChannelGroup(this);
+
+    // Audio filters
+    // Normalize
+    volnormAct = new TAction(this, "volnorm_filter", tr("Volume normalization"));
+    volnormAct->setCheckable(true);
+    connect(volnormAct, &TAction::triggered,
+            player, &Player::TPlayer::setVolnorm);
+    // Extra stereo
+    extrastereoAct = new TAction(this, "extrastereo_filter", tr("Extrastereo"));
+    extrastereoAct->setCheckable(true);
+    connect(extrastereoAct, &TAction::triggered,
+            player, &Player::TPlayer::setExtrastereo);
+    // Karaoke
+    karaokeAct = new TAction(this, "karaoke_filter", tr("Karaoke"));
+    karaokeAct->setCheckable(true);
+    connect(karaokeAct, &TAction::triggered,
+            player, &Player::TPlayer::toggleKaraoke);
+    // Audio tracks
+    nextAudioTrackAct = new TAction(this, "next_audio_track",
+                                    tr("Next audio track"), "",
+                                    QKeySequence("*"));
+    connect(nextAudioTrackAct, &TAction::triggered,
+            player, &Player::TPlayer::nextAudioTrack);
+    audioTrackGroup = new TActionGroup(this, "audiotrackgroup");
+    connect(audioTrackGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setAudioTrack);
+    connect(player, &Player::TPlayer::audioTrackChanged,
+            audioTrackGroup, &TActionGroup::setChecked);
+    connect(player, &Player::TPlayer::audioTracksChanged,
+            this, &TMainWindow::updateAudioTracks);
+    // Load/unload
+    loadAudioAct = new TAction(this, "load_audio_file",
+                               tr("Load external audio..."), "open");
+    connect(loadAudioAct, &TAction::triggered,
+            this, &TMainWindow::loadAudioFile);
+    unloadAudioAct = new TAction(this, "unload_audio_file",
+                                 tr("Unload external audio"), "unload");
+    connect(unloadAudioAct, &TAction::triggered,
+            player, &Player::TPlayer::unloadAudioFile);
 
 
     // View playlist
@@ -946,7 +1054,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(playMenu);
     videoMenu = new Menu::TMenuVideo(this, this);
     menuBar()->addMenu(videoMenu);
-    audioMenu = new Menu::TMenuAudio(this, audio_equalizer);
+    audioMenu = new Menu::TMenuAudio(this, this);
     menuBar()->addMenu(audioMenu);
     subtitleMenu = new Menu::TMenuSubtitle(this);
     menuBar()->addMenu(subtitleMenu);
@@ -1711,6 +1819,58 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
     }
 }
 
+void TMainWindow::updateVideoTracks() {
+    WZDEBUG("");
+
+    videoTrackGroup->clear();
+
+    Maps::TTracks* videos = &player->mdat.videos;
+    if (videos->count() == 0) {
+        QAction* a = videoTrackGroup->addAction(tr("<empty>"));
+        a->setEnabled(false);
+    } else {
+        Maps::TTracks::TTrackIterator i = videos->getIterator();
+        while (i.hasNext()) {
+            i.next();
+            const Maps::TTrackData& track = i.value();
+            QAction* action = new QAction(videoTrackGroup);
+            action->setCheckable(true);
+            action->setText(track.getDisplayName());
+            action->setData(track.getID());
+            if (track.getID() == videos->getSelectedID())
+                action->setChecked(true);
+        }
+    }
+
+    emit videoTrackGroupChanged(nextVideoTrackAct, videoTrackGroup);
+}
+
+void TMainWindow::updateAudioTracks() {
+    WZDEBUG("");
+
+    audioTrackGroup->clear();
+
+    Maps::TTracks* audios = &player->mdat.audios;
+    if (audios->count() == 0) {
+        QAction* a = audioTrackGroup->addAction(tr("<empty>"));
+        a->setEnabled(false);
+    } else {
+        Maps::TTracks::TTrackIterator i = audios->getIterator();
+        while (i.hasNext()) {
+            i.next();
+            const Maps::TTrackData& track = i.value();
+            QAction* action = new QAction(audioTrackGroup);
+            action->setCheckable(true);
+            action->setText(track.getDisplayName());
+            action->setData(track.getID());
+            if (track.getID() == audios->getSelectedID())
+                action->setChecked(true);
+        }
+    }
+
+    emit audioTrackGroupChanged(nextAudioTrackAct, audioTrackGroup);
+}
+
 void TMainWindow::startStopScreenshots() {
 
     if (screenshotAct->isChecked()) {
@@ -1816,6 +1976,11 @@ void TMainWindow::onMediaSettingsChanged() {
     updateFilters();
 
     updateAudioEqualizer();
+    stereoGroup->setChecked(player->mset.stereo_mode);
+    audioChannelGroup->setChecked(player->mset.audio_use_channels);
+    volnormAct->setChecked(player->mset.volnorm_filter);
+    extrastereoAct->setChecked(player->mset.extrastereo_filter);
+    karaokeAct->setChecked(player->mset.karaoke_filter);
 
     displayInOutPoints();
 }
@@ -2183,6 +2348,7 @@ void TMainWindow::setEnableActions() {
 
     // Video tracks
     nextVideoTrackAct->setEnabled(e && player->mdat.videos.count() > 1);
+    videoTrackGroup->setEnabled(e);
 
     // ScreenShots
     bool enableScreenShots = e && !pref->screenshot_directory.isEmpty();
@@ -2190,8 +2356,48 @@ void TMainWindow::setEnableActions() {
     screenshotsAct->setEnabled(enableScreenShots && pref->use_screenshot);
     capturingAct->setEnabled(enableScreenShots);
 
+
+    // Audio menu
+    // Maybe global settings
+    enable = pref->global_volume || (player->statePOP() && player->hasAudio());
+    muteAct->setEnabled(enable);
+    decVolumeAct->setEnabled(enable);
+    incVolumeAct->setEnabled(enable);
+
+    // Settings only stored in mset
+    enable = player->statePOP() && player->hasAudio();
+
+    decAudioDelayAct->setEnabled(enable);
+    incAudioDelayAct->setEnabled(enable);
+    audioDelayAct->setEnabled(enable);
+
+    // Equalizer can be global
+    bool enableEqualizer = pref->use_audio_equalizer
+                           && (pref->global_audio_equalizer || enable);
+    audioEqualizerAct->setEnabled(enableEqualizer);
+    resetAudioEqualizerAct->setEnabled(enableEqualizer);
+
+    // Stereo
+    stereoGroup->setEnabled(enable);
+
+    // Channels
+    audioChannelGroup->setEnabled(enable);
+
+    // Filters
+    volnormAct->setEnabled(enable);
+    extrastereoAct->setEnabled(enable);
+    karaokeAct->setEnabled(enable && pref->isMPlayer());
+
+    // Audio tracks
+    nextAudioTrackAct->setEnabled(enable && player->mdat.audios.count() > 1);
+    audioTrackGroup->setEnabled(enable);
+
+    // Load/unload
+    loadAudioAct->setEnabled(player->statePOP());
+    unloadAudioAct->setEnabled(enable && player->mset.external_audio.count());
+
     // Time slider
-    timeslider_action->enable(enable);
+    timeslider_action->enable(player->statePOP());
 
     emit enableActions();
 }

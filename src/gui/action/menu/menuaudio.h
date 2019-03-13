@@ -2,12 +2,12 @@
 #define GUI_ACTION_MENU_AUDIOMENU_H
 
 #include "gui/action/menu/menu.h"
+#include "gui/action/actiongroup.h"
 
 
 namespace Gui {
 
 class TMainWindow;
-class TAudioEqualizer;
 
 namespace Action {
 
@@ -15,33 +15,29 @@ class TAction;
 
 namespace Menu {
 
+class TAudioChannelGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TAudioChannelGroup(TMainWindow* mw);
+};
+
+class TStereoGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TStereoGroup(TMainWindow* mw);
+};
+
+class TMenuAudioTracks : public TMenu {
+    Q_OBJECT
+public:
+    explicit TMenuAudioTracks(QWidget* parent, TMainWindow* mw);
+private slots:
+    void updateAudioTracks(TAction* next, TActionGroup* group);
+};
+
 class TMenuAudio : public TMenu {
 public:
-    explicit TMenuAudio(TMainWindow* mw, TAudioEqualizer* audioEqualizer);
-
-protected:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
-
-private:
-    TAction* muteAct;
-    TAction* decVolumeAct;
-    TAction* incVolumeAct;
-
-    TAction* decAudioDelayAct;
-    TAction* incAudioDelayAct;
-    TAction* audioDelayAct;
-
-    TAction* audioEqualizerAct;
-    TAction* resetAudioEqualizerAct;
-
-    QMenu* audioFilterMenu;
-    TAction* volnormAct;
-    TAction* extrastereoAct;
-    TAction* karaokeAct;
-
-    TAction* loadAudioAct;
-    TAction* unloadAudioAct;
+    explicit TMenuAudio(QWidget* parent, TMainWindow* mw);
 }; // class TMenuAudio
 
 } // namespace Menu

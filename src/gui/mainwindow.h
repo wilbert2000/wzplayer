@@ -169,6 +169,11 @@ signals:
     void setAspectToolTip(QString tip);
     void setWindowSizeToolTip(QString tip);
 
+    void videoTrackGroupChanged(Action::TAction* next,
+                                Action::TActionGroup* group);
+    void audioTrackGroupChanged(Action::TAction* next,
+                                Action::TActionGroup* group);
+
     void stayOnTopChanged(int);
 
     void seekForwardDefaultActionChanged(QAction* action);
@@ -323,11 +328,40 @@ private:
 
     // Video tracks
     Action::TAction* nextVideoTrackAct;
+    Action::TActionGroup* videoTrackGroup;
 
     // Screen shots
     Action::TAction* screenshotAct;
     Action::TAction* screenshotsAct;
     Action::TAction* capturingAct;
+
+    // Audio menu
+    // Volume
+    Action::TAction* muteAct;
+    Action::TAction* decVolumeAct;
+    Action::TAction* incVolumeAct;
+    // Delay
+    Action::TAction* decAudioDelayAct;
+    Action::TAction* incAudioDelayAct;
+    Action::TAction* audioDelayAct;
+    // Equalizer
+    Action::TAction* audioEqualizerAct;
+    Action::TAction* resetAudioEqualizerAct;
+    // Stereo
+    Action::TActionGroup* stereoGroup;
+    // Channels
+    Action::TActionGroup* audioChannelGroup;
+    // Audio filters
+    Action::TAction* volnormAct;
+    Action::TAction* extrastereoAct;
+    Action::TAction* karaokeAct;
+    // Audio tracks
+    Action::TAction* nextAudioTrackAct;
+    Action::TActionGroup* audioTrackGroup;
+    // External audio
+    Action::TAction* loadAudioAct;
+    Action::TAction* unloadAudioAct;
+
 
     // Help menu
     QMenu* helpMenu;
@@ -440,6 +474,9 @@ private slots:
 
     void showSeekToDialog();
     void updateInOutMenu();
+
+    void updateVideoTracks();
+    void updateAudioTracks();
 
     void startStopScreenshots();
     void startStopCapture();
