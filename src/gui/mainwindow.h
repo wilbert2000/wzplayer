@@ -173,6 +173,9 @@ signals:
                                 Action::TActionGroup* group);
     void audioTrackGroupChanged(Action::TAction* next,
                                 Action::TActionGroup* group);
+    void subtitleTrackGroupsChanged(Action::TAction* next,
+                                    Action::TActionGroup* subGroup,
+                                    Action::TActionGroup* secSubGroup);
 
     void stayOnTopChanged(int);
 
@@ -363,6 +366,35 @@ private:
     Action::TAction* unloadAudioAct;
 
 
+    // Subtitles
+    Action::TAction* decSubPosAct;
+    Action::TAction* incSubPosAct;
+    Action::TAction* decSubScaleAct;
+    Action::TAction* incSubScaleAct;
+
+    Action::TAction* decSubDelayAct;
+    Action::TAction* incSubDelayAct;
+    Action::TAction* subDelayAct;
+
+    Action::TAction* incSubStepAct;
+    Action::TAction* decSubStepAct;
+
+    Action::TAction* seekNextSubAct;
+    Action::TAction* seekPrevSubAct;
+
+    Action::TAction* nextSubtitleAct;
+    Action::TActionGroup* subtitleTrackGroup;
+    Action::TActionGroup* secondarySubtitleTrackGroup;
+
+    Action::TActionGroup* closedCaptionsGroup;
+    Action::TAction* useForcedSubsOnlyAct;
+
+    Action::TAction* loadSubsAct;
+    Action::TAction* unloadSubsAct;
+    Action::TActionGroup* subFPSGroup;
+    Action::TAction* useCustomSubStyleAct;
+
+
     // Help menu
     QMenu* helpMenu;
     Action::Menu::TMenuExec* contextMenu;
@@ -427,6 +459,8 @@ private:
     //! separated by spaces. Checkable actions could have a parameter:
     //! true or false.
     void runActions(QString actions);
+
+    void enableSubtitleActions();
     void setEnableActions();
 
     void hidePanel();
@@ -477,6 +511,7 @@ private slots:
 
     void updateVideoTracks();
     void updateAudioTracks();
+    void updateSubtitleTracks();
 
     void startStopScreenshots();
     void startStopCapture();

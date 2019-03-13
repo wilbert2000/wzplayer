@@ -934,6 +934,108 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::unloadAudioFile);
 
 
+    // Subtitles menu
+    decSubPosAct = new TAction(this, "dec_sub_pos", tr("Up"), "", Qt::Key_Up);
+    connect(decSubPosAct, &TAction::triggered,
+            player, &Player::TPlayer::decSubPos);
+    incSubPosAct = new TAction(this, "inc_sub_pos", tr("Down"), "",Qt::Key_Down);
+    connect(incSubPosAct, &TAction::triggered,
+            player, &Player::TPlayer::incSubPos);
+
+    incSubScaleAct = new TAction(this, "inc_sub_scale", tr("Size +"), "",
+                                 Qt::Key_K);
+    connect(incSubScaleAct, &TAction::triggered,
+            player, &Player::TPlayer::incSubScale);
+    decSubScaleAct = new TAction(this, "dec_sub_scale", tr("Size -"), "",
+                                 Qt::SHIFT | Qt::Key_K);
+    connect(decSubScaleAct, &TAction::triggered,
+            player, &Player::TPlayer::decSubScale);
+
+    incSubDelayAct = new TAction(this, "inc_sub_delay", tr("Delay +"), "",
+                                 Qt::ALT | Qt::Key_D);
+    connect(incSubDelayAct, &TAction::triggered,
+            player, &Player::TPlayer::incSubDelay);
+    decSubDelayAct = new TAction(this, "dec_sub_delay", tr("Delay -"), "",
+                                 Qt::SHIFT | Qt::Key_D);
+    connect(decSubDelayAct, &TAction::triggered,
+            player, &Player::TPlayer::decSubDelay);
+    subDelayAct = new TAction(this, "sub_delay", tr("Set delay..."), "",
+                              Qt::META | Qt::Key_D);
+    connect(subDelayAct, &TAction::triggered,
+            this, &TMainWindow::showSubDelayDialog);
+
+    incSubStepAct = new TAction(this, "inc_sub_step",
+                                tr("Next line in subtitles"), "",
+                                Qt::SHIFT | Qt::Key_L);
+    connect(incSubStepAct, &TAction::triggered,
+            player, &Player::TPlayer::incSubStep);
+    decSubStepAct = new TAction(this, "dec_sub_step",
+        tr("Previous line in subtitles"), "", Qt::CTRL | Qt::Key_L);
+    connect(decSubStepAct, &TAction::triggered,
+            player, &Player::TPlayer::decSubStep);
+
+    seekNextSubAct = new TAction(this, "seek_next_sub",
+        tr("Seek to next subtitle"), "", Qt::Key_N, pref->isMPV());
+    connect(seekNextSubAct, &TAction::triggered,
+            player, &Player::TPlayer::seekToNextSub);
+    seekPrevSubAct = new TAction(this, "seek_prev_sub",
+                                 tr("Seek to previous subtitle"), "",
+                                 Qt::SHIFT | Qt::Key_N, pref->isMPV());
+    connect(seekPrevSubAct, &TAction::triggered,
+            player, &Player::TPlayer::seekToPrevSub);
+
+    nextSubtitleAct = new TAction(this, "next_subtitle",
+                                  tr("Next subtitle track"), "",
+                                  Qt::CTRL | Qt::Key_N);
+    connect(nextSubtitleAct, &TAction::triggered,
+            player, &Player::TPlayer::nextSubtitle);
+
+    subtitleTrackGroup = new TActionGroup(this, "subtitletrackgroup");
+    connect(subtitleTrackGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setSubtitle);
+    connect(player, &Player::TPlayer::subtitlesChanged,
+            this, &TMainWindow::updateSubtitleTracks);
+    // Need to update all, to disable sub in secondary track
+    connect(player, &Player::TPlayer::subtitleTrackChanged,
+            this, &TMainWindow::updateSubtitleTracks);
+
+    secondarySubtitleTrackGroup = new TActionGroup(this, "subtitletrack2group");
+    connect(secondarySubtitleTrackGroup, &TActionGroup::activated,
+            player, &Player::TPlayer::setSecondarySubtitle);
+    // Need to update all, to disable sub in primary track
+    connect(player, &Player::TPlayer::secondarySubtitleTrackChanged,
+            this, &TMainWindow::updateSubtitleTracks);
+
+    // Closed captions
+    closedCaptionsGroup = new Menu::TClosedCaptionsGroup(this);
+
+    // Forced subs
+    useForcedSubsOnlyAct = new TAction(this, "use_forced_subs_only",
+                                       tr("Forced subtitles only"));
+    useForcedSubsOnlyAct->setCheckable(true);
+    useForcedSubsOnlyAct->setChecked(pref->use_forced_subs_only);
+    connect(useForcedSubsOnlyAct, &TAction::triggered,
+            player, &Player::TPlayer::toggleForcedSubsOnly);
+
+    // Load/unload subs
+    loadSubsAct = new TAction(this, "load_subs", tr("Load subtitles..."),
+                              "open");
+    connect(loadSubsAct, &TAction::triggered, this, &TMainWindow::loadSub);
+    unloadSubsAct = new TAction(this, "unload_subs", tr("Unload subtitles"),
+                                "unload");
+    connect(unloadSubsAct, &TAction::triggered,
+            player, &Player::TPlayer::unloadSub);
+    subFPSGroup = new Menu::TSubFPSGroup(this);
+
+    // Use custom style
+    useCustomSubStyleAct = new TAction(this, "use_custom_sub_style",
+                                       tr("Use custom style"));
+    useCustomSubStyleAct->setCheckable(true);
+    useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
+    connect(useCustomSubStyleAct, &TAction::triggered,
+            player, &Player::TPlayer::setUseCustomSubStyle);
+
+
     // View playlist
     QAction* viewPlaylistAct = playlistDock->toggleViewAction();
     viewPlaylistAct->setObjectName("view_playlist");
@@ -1056,7 +1158,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(videoMenu);
     audioMenu = new Menu::TMenuAudio(this, this);
     menuBar()->addMenu(audioMenu);
-    subtitleMenu = new Menu::TMenuSubtitle(this);
+    subtitleMenu = new Menu::TMenuSubtitle(this, this);
     menuBar()->addMenu(subtitleMenu);
     browseMenu = new Menu::TMenuBrowse(this);
     menuBar()->addMenu(browseMenu);
@@ -1307,6 +1409,9 @@ void TMainWindow::applyNewSettings() {
 
     // Video equalizer
     video_equalizer->setBySoftware(pref->use_soft_video_eq);
+
+    // Use custom subtitle style
+    useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
     // Interface
     // Show panel
@@ -1871,6 +1976,64 @@ void TMainWindow::updateAudioTracks() {
     emit audioTrackGroupChanged(nextAudioTrackAct, audioTrackGroup);
 }
 
+void TMainWindow::updateSubtitleTracks() {
+    WZDEBUG("");
+
+    // Note: subtitles use idx not ID
+    subtitleTrackGroup->clear();
+    secondarySubtitleTrackGroup->clear();
+
+    // Add none to primary
+    QAction* subNoneAct = subtitleTrackGroup->addAction(tr("None"));
+    subNoneAct->setData(SubData::None);
+    subNoneAct->setCheckable(true);
+    if (player->mset.current_sub_idx < 0) {
+        subNoneAct->setChecked(true);
+    }
+    // Add none to secondary
+    subNoneAct = secondarySubtitleTrackGroup->addAction(tr("None"));
+    subNoneAct->setData(SubData::None);
+    subNoneAct->setCheckable(true);
+    if (player->mset.current_secondary_sub_idx < 0) {
+        subNoneAct->setChecked(true);
+    }
+
+    // Add subs from mdat
+    for (int idx = 0; idx < player->mdat.subs.count(); idx++) {
+        SubData sub = player->mdat.subs.itemAt(idx);
+        QAction *a = new QAction(subtitleTrackGroup);
+        a->setCheckable(true);
+        a->setText(sub.displayName());
+        a->setData(idx);
+        if (idx == player->mset.current_sub_idx) {
+            a->setChecked(true);
+        }
+
+        if (pref->isMPV()) {
+            if (idx == player->mset.current_secondary_sub_idx) {
+                a->setEnabled(false);
+            }
+
+            a = new QAction(secondarySubtitleTrackGroup);
+            a->setCheckable(true);
+            a->setText(sub.displayName());
+            a->setData(idx);
+            if (idx == player->mset.current_secondary_sub_idx) {
+                a->setChecked(true);
+            }
+            if (idx == player->mset.current_sub_idx) {
+                a->setEnabled(false);
+            }
+        }
+    }
+
+    enableSubtitleActions();
+
+    emit subtitleTrackGroupsChanged(nextSubtitleAct,
+                                    subtitleTrackGroup,
+                                    secondarySubtitleTrackGroup);
+}
+
 void TMainWindow::startStopScreenshots() {
 
     if (screenshotAct->isChecked()) {
@@ -1967,20 +2130,24 @@ void TMainWindow::onMediaSettingsChanged() {
     updateAspectMenu();
     // Window size menu not changed
 
-    emit mediaSettingsChanged(&player->mset);
+    Settings::TMediaSettings* mset = &player->mset;
+    emit mediaSettingsChanged(mset);
 
     updateVideoEqualizer();
-    colorSpaceGroup->setChecked(player->mset.color_space);
-    deinterlaceGroup->setChecked(player->mset.current_deinterlacer);
+    colorSpaceGroup->setChecked(mset->color_space);
+    deinterlaceGroup->setChecked(mset->current_deinterlacer);
     updateTransformMenu();
     updateFilters();
 
     updateAudioEqualizer();
-    stereoGroup->setChecked(player->mset.stereo_mode);
-    audioChannelGroup->setChecked(player->mset.audio_use_channels);
-    volnormAct->setChecked(player->mset.volnorm_filter);
-    extrastereoAct->setChecked(player->mset.extrastereo_filter);
-    karaokeAct->setChecked(player->mset.karaoke_filter);
+    stereoGroup->setChecked(mset->stereo_mode);
+    audioChannelGroup->setChecked(mset->audio_use_channels);
+    volnormAct->setChecked(mset->volnorm_filter);
+    extrastereoAct->setChecked(mset->extrastereo_filter);
+    karaokeAct->setChecked(mset->karaoke_filter);
+
+    closedCaptionsGroup->setChecked(mset->closed_caption_channel);
+    subFPSGroup->setChecked(mset->external_subtitles_fps);
 
     displayInOutPoints();
 }
@@ -2262,6 +2429,47 @@ void TMainWindow::closeWindow() {
     close();
 }
 
+void TMainWindow::enableSubtitleActions() {
+
+    bool e = player->statePOP()
+            && (player->mdat.subs.count() > 0
+                || player->mset.closed_caption_channel > 0);
+    decSubPosAct->setEnabled(e);
+    incSubPosAct->setEnabled(e);
+    incSubScaleAct->setEnabled(e);
+    decSubScaleAct->setEnabled(e);
+
+    decSubDelayAct->setEnabled(e);
+    incSubDelayAct->setEnabled(e);
+    subDelayAct->setEnabled(e);
+
+    incSubStepAct->setEnabled(e);
+    decSubStepAct->setEnabled(e);
+
+    seekNextSubAct->setEnabled(e && pref->isMPV());
+    seekPrevSubAct->setEnabled(e && pref->isMPV());
+
+    int count = player->mdat.subs.count();
+    e = player->statePOP() && count > 0;
+    nextSubtitleAct->setEnabled(e && count > 1);
+    // Individual subs in use by the other track already disabled by
+    // updateSubtitleTracks
+    subtitleTrackGroup->setEnabled(e);
+    secondarySubtitleTrackGroup->setEnabled(e);
+
+    closedCaptionsGroup->setEnabled(player->statePOP() && player->hasVideo());
+
+    // useForcedSubsOnlyAct always enabled
+
+    e = player->statePOP() && player->hasVideo();
+    loadSubsAct->setEnabled(e);
+    e = e && player->hasExternalSubs();
+    unloadSubsAct->setEnabled(e);
+    subFPSGroup->setEnabled(e);
+
+    // useCustomSubStyleAct always enabled
+}
+
 void TMainWindow::setEnableActions() {
     WZTRACE("State " + player->stateToString());
 
@@ -2395,6 +2603,9 @@ void TMainWindow::setEnableActions() {
     // Load/unload
     loadAudioAct->setEnabled(player->statePOP());
     unloadAudioAct->setEnabled(enable && player->mset.external_audio.count());
+
+    // Subtitles
+    enableSubtitleActions();
 
     // Time slider
     timeslider_action->enable(player->statePOP());

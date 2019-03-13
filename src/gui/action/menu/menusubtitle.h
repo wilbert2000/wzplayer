@@ -2,6 +2,7 @@
 #define GUI_ACTION_MENU_MENUSUBTITLE_H
 
 #include "gui/action/menu/menu.h"
+#include "gui/action/actiongroup.h"
 #include "log4qt/logger.h"
 
 
@@ -12,20 +13,19 @@ class TMainWindow;
 namespace Action {
 
 class TAction;
-class TActionGroup;
 
 namespace Menu {
 
-class TMenuSubFPS : public TMenu {
+class TClosedCaptionsGroup : public TActionGroup {
+    Q_OBJECT
 public:
-    explicit TMenuSubFPS(TMainWindow* mw);
-    TActionGroup* group;
-protected:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings* mset);
-    virtual void onAboutToShow();
-private:
-    friend class TMenuSubtitle;
+    explicit TClosedCaptionsGroup(TMainWindow* mw);
+};
+
+class TSubFPSGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TSubFPSGroup(TMainWindow* mw);
 };
 
 class TMenuSubtitle : public TMenu {
@@ -33,44 +33,16 @@ class TMenuSubtitle : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMenuSubtitle(TMainWindow* mw);
-
-protected:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
+    TMenuSubtitle(QWidget* parent, TMainWindow* mw);
 
 private:
-    TAction* decSubPosAct;
-    TAction* incSubPosAct;
-    TAction* decSubScaleAct;
-    TAction* incSubScaleAct;
-
-    TAction* decSubDelayAct;
-    TAction* incSubDelayAct;
-    TAction* subDelayAct;
-
-    TAction* incSubStepAct;
-    TAction* decSubStepAct;
-
-    TAction* seekNextSubAct;
-    TAction* seekPrevSubAct;
-
-    TAction* nextSubtitleAct;
     TMenu* subtitleTrackMenu;
-    TActionGroup* subtitleTrackGroup;
     TMenu* secondarySubtitleTrackMenu;
-    TActionGroup* secondarySubtitleTrackGroup;
-    TAction* useForcedSubsOnlyAct;
-
-    TAction* loadSubsAct;
-    TAction* unloadSubsAct;
-    TMenuSubFPS* subFPSMenu;
-
-    TAction* useCustomSubStyleAct;
 
 private slots:
-    void updateSubtitles();
-    void onSettingsChanged();
+    void subtitleTrackGroupsChanged(Action::TAction* next,
+                                    Action::TActionGroup* subGroup,
+                                    Action::TActionGroup* secSubGroup);
 };
 
 } // namespace Menu
