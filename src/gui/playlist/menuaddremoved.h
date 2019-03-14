@@ -22,19 +22,14 @@ class TMenuAddRemoved : public Gui::Action::Menu::TMenu {
 public:
     explicit TMenuAddRemoved(TPlaylist* playlist, TMainWindow* w,
                              TPlaylistWidget* plw);
-    virtual ~TMenuAddRemoved();
-
 signals:
     void addRemovedItem(QString s);
-
-protected:
-    virtual void onAboutToShow() override;
-
 private:
     TPlaylistWidget* playlistWidget;
     TPlaylistItem* item;
 
 private slots:
+    void onAboutToShow();
     void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*);
     void onTriggered(QAction* action);
 };

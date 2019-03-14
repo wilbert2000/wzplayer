@@ -50,9 +50,6 @@ public:
     TAction* getEditAct() const { return editAct; }
     TAction* getAddAct() const { return addAct; }
 
-protected:
-    virtual void enableActions() override;
-
 private:
     QString _filename;
     // Current or last file clicked

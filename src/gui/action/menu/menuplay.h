@@ -2,6 +2,8 @@
 #define GUI_ACTION_MENU_MENUPLAY_H
 
 #include "gui/action/menu/menu.h"
+#include "player/state.h"
+#include <QActionGroup>
 
 
 namespace Gui {
@@ -26,6 +28,27 @@ public slots:
     void updateDefaultAction(QAction* action);
 signals:
     void defaultActionChanged(QAction* action);
+};
+
+
+class TPlaySpeedGroup : public QActionGroup {
+    Q_OBJECT
+public:
+    explicit TPlaySpeedGroup(TMainWindow* mw);
+private slots:
+    void onPlayerStateChanged(Player::TState state);
+};
+
+
+class TInOutGroup : public QActionGroup {
+    Q_OBJECT
+public:
+    explicit TInOutGroup(TMainWindow* mw);
+private:
+    TAction* repeatInOutAct;
+private slots:
+    void onPlayerStateChanged(Player::TState state);
+    void onRepeatInOutChanged();
 };
 
 

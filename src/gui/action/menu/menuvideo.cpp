@@ -18,21 +18,98 @@ namespace Gui {
 namespace Action {
 namespace Menu {
 
+TAspectGroup::TAspectGroup(TMainWindow *mw) :
+    TActionGroup(mw, "aspectgroup") {
+
+    setEnabled(false);
+    aspectAutoAct = new TActionGroupItem(mw, this, "aspect_detect",
+                                         tr("Auto"), TAspectRatio::AspectAuto);
+
+    new TActionGroupItem(mw, this, "aspect_1_1",
+        TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
+    new TActionGroupItem(mw, this, "aspect_5_4",
+        TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54);
+    new TActionGroupItem(mw, this, "aspect_4_3",
+        TAspectRatio::aspectIDToString(2), TAspectRatio::Aspect43);
+    new TActionGroupItem(mw, this, "aspect_11_8",
+        TAspectRatio::aspectIDToString(3), TAspectRatio::Aspect118);
+    new TActionGroupItem(mw, this, "aspect_14_10",
+        TAspectRatio::aspectIDToString(4), TAspectRatio::Aspect1410);
+    new TActionGroupItem(mw, this, "aspect_3_2",
+        TAspectRatio::aspectIDToString(5), TAspectRatio::Aspect32);
+    new TActionGroupItem(mw, this, "aspect_14_9",
+        TAspectRatio::aspectIDToString(6), TAspectRatio::Aspect149);
+    new TActionGroupItem(mw, this, "aspect_16_10",
+        TAspectRatio::aspectIDToString(7), TAspectRatio::Aspect1610);
+    new TActionGroupItem(mw, this, "aspect_16_9",
+        TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
+    new TActionGroupItem(mw, this, "aspect_2_1",
+        TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect2);
+    new TActionGroupItem(mw, this, "aspect_2.35_1",
+        TAspectRatio::aspectIDToString(10), TAspectRatio::Aspect235);
+
+    aspectDisabledAct = new TActionGroupItem(mw, this, "aspect_none",
+        tr("Disabled"), TAspectRatio::AspectNone);
+
+    nextAspectAct = new TAction(mw, "aspect_next", tr("Next aspect ratio"), "",
+                                Qt::Key_A);
+    nextAspectAct->setEnabled(false);
+    connect(nextAspectAct, &TAction::triggered,
+            player, &Player::TPlayer::nextAspectRatio);
+
+    connect(this, &TActionGroup::activated,
+            player, &Player::TPlayer::setAspectRatio);
+    connect(player, &Player::TPlayer::aspectRatioChanged,
+            this, &TAspectGroup::update,
+            Qt::QueuedConnection);
+    connect(player, &Player::TPlayer::mediaSettingsChanged,
+            this, &TAspectGroup::update);
+    connect(player, &Player::TPlayer::stateChanged,
+            this, &TAspectGroup::onPlayerStateChanged);
+}
+
+void TAspectGroup::update() {
+
+    setChecked(player->mset.aspect_ratio.ID());
+
+    // Update menu action tip
+    double aspect = player->mset.aspectToDouble();
+    QString s = TAspectRatio::doubleToString(aspect);
+    emit setAspectToolTip(tr("Aspect ratio %1").arg(s));
+
+    // Set aspect auto text
+    s = tr("Auto") + "\t"
+        + TAspectRatio::doubleToString(player->mdat.video_aspect_original);
+    aspectAutoAct->setTextAndTip(s);
+
+    // Set aspect disabled text
+    s = tr("Disabled") + "\t" + TAspectRatio::doubleToString(
+            (double) player->mdat.video_width / player->mdat.video_height);
+    aspectDisabledAct->setTextAndTip(s);
+}
+
+void TAspectGroup::onPlayerStateChanged() {
+
+    bool enable = player->statePOP() && player->hasVideo();
+    setEnabled(enable);
+    nextAspectAct->setEnabled(enable);
+    update();
+}
 
 TMenuAspect::TMenuAspect(QWidget* parent, TMainWindow* mw) :
     TMenu(parent, mw, "aspect_menu", tr("Aspect ratio")) {
 
-    TActionGroup* group = mw->findChild<TActionGroup*>("aspectgroup");
+    TAspectGroup* group = mw->findChild<TAspectGroup*>();
     addActions(group->actions());
     insertSeparator(mw->findAction("aspect_1_1"));
     insertSeparator(mw->findAction("aspect_none"));
     addSeparator();
     addAction(mw->findAction("aspect_next"));
 
-    connect(mw, &TMainWindow::setAspectToolTip,
+    connect(group, &TAspectGroup::setAspectToolTip,
             this, &TMenuAspect::setAspectToolTip);
     connect(this, &TMenuAspect::aboutToShow,
-            mw, &TMainWindow::updateAspectMenu);
+            group, &TAspectGroup::update);
 }
 
 void TMenuAspect::setAspectToolTip(QString tip) {

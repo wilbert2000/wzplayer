@@ -19,6 +19,22 @@ class TActionGroup;
 
 namespace Menu {
 
+class TAspectGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TAspectGroup(TMainWindow* mw);
+public slots:
+    void update();
+signals:
+    void setAspectToolTip(QString tip);
+private:
+    TAction* aspectAutoAct;
+    TAction* aspectDisabledAct;
+    TAction* nextAspectAct;
+private slots:
+    void onPlayerStateChanged();
+};
+
 class TMenuAspect : public TMenu {
     Q_OBJECT
 public:

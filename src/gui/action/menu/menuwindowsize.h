@@ -21,7 +21,7 @@ public:
     int size_percentage;
 
 public slots:
-    void updateWindowSizeGroup();
+    void update();
 
 private:
     TPlayerWindow* playerWindow;
@@ -34,10 +34,6 @@ class TMenuWindowSize : public TMenu {
     Q_OBJECT
 public:
     TMenuWindowSize(QWidget* parent, TMainWindow* mw);
-
-protected:
-    virtual void onAboutToShow() override;
-
 private slots:
     void setWindowSizeToolTip(QString tip);
 

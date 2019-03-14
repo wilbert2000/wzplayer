@@ -135,6 +135,7 @@ TMainWindow::TMainWindow() :
     createVideoEqualizer();
     createAudioEqualizer();
 
+    autoHideTimer = new TAutoHideTimer(this, playerWindow);
     createActions();
     createToolbars();
     createMenus();
@@ -349,10 +350,6 @@ void TMainWindow::createActions() {
 
     using namespace Action;
 
-    // Create auto hide timer
-    autoHideTimer = new TAutoHideTimer(this, playerWindow);
-
-
     // File menu
     // TODO: Favorites
 
@@ -484,102 +481,10 @@ void TMainWindow::createActions() {
             this, &TMainWindow::showSeekToDialog);
 
     // Speed menu
-    playSpeedGroup = new QActionGroup(this);
-    playSpeedGroup->setExclusive(false);
-    playSpeedGroup->setEnabled(false);
-
-    a = new TAction(this, "speed_normal", tr("Normal speed"), "", Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::normalSpeed);
-
-    a = new TAction(this, "spedd_half", tr("Half speed"), "",
-                    Qt::META | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::halveSpeed);
-
-    a = new TAction(this, "speed_double", tr("Double speed"), "",
-                    Qt::ALT | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::doubleSpeed);
-
-    a = new TAction(this, "speed_dec_10", tr("Speed -10%"), "",
-                    Qt::SHIFT | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed10);
-
-    a = new TAction(this, "speed_inc_10", tr("Speed +10%"), "",
-                    Qt::CTRL | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed10);
-
-    a = new TAction(this, "speed_dec_4", tr("Speed -4%"), "",
-                    Qt::SHIFT | Qt::CTRL | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed4);
-
-    a = new TAction(this, "speed_inc_4", tr("Speed +4%"), "",
-                    Qt::ALT | Qt::CTRL | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed4);
-
-    a = new TAction(this, "speed_dec_1", tr("Speed -1%"), "",
-                    Qt::SHIFT | Qt::META | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decSpeed1);
-
-    a = new TAction(this, "speed_inc_1", tr("Speed +1%"), "",
-                    Qt::CTRL | Qt::META | Qt::Key_Z);
-    playSpeedGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incSpeed1);
+    new Menu::TPlaySpeedGroup(this);
 
     // Menu in-out
-    // Put in group to enable/disable together, if we disable the menu users
-    // cannot discover the menu because it won't open.
-    inOutGroup = new QActionGroup(this);
-    inOutGroup->setExclusive(false);
-    inOutGroup->setEnabled(false);
-
-    a  = new TAction(this, "set_in", tr("Set in"), "", QKeySequence("["));
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::setInPoint);
-
-    a = new TAction(this, "set_out", tr("Set out and repeat"), "",
-                    QKeySequence("]"));
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::setOutPoint);
-
-    a  = new TAction(this, "clear_in", tr("Clear in"), "",
-                     QKeySequence("Shift+["));
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::clearInPoint);
-
-    a = new TAction(this, "clear_out", tr("Clear out and repeat"), "",
-                    QKeySequence("Shift+]"));
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::clearOutPoint);
-
-    a = new TAction(this, "clear_in_out", tr("Clear in-out and repeat"), "",
-                    Qt::Key_Backspace);
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::clearInOutPoints);
-
-    a  = new TAction(this, "seek_in", tr("Seek to in"), "noicon", Qt::Key_Home);
-    a->setIcon(style()->standardIcon(QStyle::SP_DirHomeIcon));
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::seekInPoint);
-
-    a = new TAction(this, "seek_out", tr("Seek to out"), "", Qt::Key_End);
-    inOutGroup->addAction(a);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::seekOutPoint);
-
-    repeatInOutAct = new TAction(this, "repeat_in_out", tr("Repeat in-out"),
-                                 "repeat", Qt::Key_Backslash);
-    repeatInOutAct->setCheckable(true);
-    inOutGroup->addAction(repeatInOutAct);
-    connect(repeatInOutAct, &TAction::triggered,
-            player, &Player::TPlayer::setRepeat);
-    connect(player, &Player::TPlayer::InOutPointsChanged,
-            this, &TMainWindow::updateInOutMenu);
+    new Menu::TInOutGroup(this);
 
 
     // Video Menu
@@ -595,52 +500,10 @@ void TMainWindow::createActions() {
     connect(a, &TAction::triggered, this, &TMainWindow::exitFullscreen);
 
     // Aspect menu
-    aspectGroup = new TActionGroup(this, "aspectgroup");
-    aspectGroup->setEnabled(false);
-    aspectAutoAct = new TActionGroupItem(this, aspectGroup, "aspect_detect",
-                                         tr("Auto"), TAspectRatio::AspectAuto);
-
-    new TActionGroupItem(this, aspectGroup, "aspect_1_1",
-        TAspectRatio::aspectIDToString(0), TAspectRatio::Aspect11);
-    new TActionGroupItem(this, aspectGroup, "aspect_5_4",
-        TAspectRatio::aspectIDToString(1), TAspectRatio::Aspect54);
-    new TActionGroupItem(this, aspectGroup, "aspect_4_3",
-        TAspectRatio::aspectIDToString(2), TAspectRatio::Aspect43);
-    new TActionGroupItem(this, aspectGroup, "aspect_11_8",
-        TAspectRatio::aspectIDToString(3), TAspectRatio::Aspect118);
-    new TActionGroupItem(this, aspectGroup, "aspect_14_10",
-        TAspectRatio::aspectIDToString(4), TAspectRatio::Aspect1410);
-    new TActionGroupItem(this, aspectGroup, "aspect_3_2",
-        TAspectRatio::aspectIDToString(5), TAspectRatio::Aspect32);
-    new TActionGroupItem(this, aspectGroup, "aspect_14_9",
-        TAspectRatio::aspectIDToString(6), TAspectRatio::Aspect149);
-    new TActionGroupItem(this, aspectGroup, "aspect_16_10",
-        TAspectRatio::aspectIDToString(7), TAspectRatio::Aspect1610);
-    new TActionGroupItem(this, aspectGroup, "aspect_16_9",
-        TAspectRatio::aspectIDToString(8), TAspectRatio::Aspect169);
-    new TActionGroupItem(this, aspectGroup, "aspect_2_1",
-        TAspectRatio::aspectIDToString(9), TAspectRatio::Aspect2);
-    new TActionGroupItem(this, aspectGroup, "aspect_2.35_1",
-        TAspectRatio::aspectIDToString(10), TAspectRatio::Aspect235);
-
-    aspectDisabledAct = new TActionGroupItem(this, aspectGroup, "aspect_none",
-        tr("Disabled"), TAspectRatio::AspectNone);
-
-    connect(aspectGroup, &TActionGroup::activated,
-            player, &Player::TPlayer::setAspectRatio);
-    connect(player, &Player::TPlayer::aspectRatioChanged,
-            this, &TMainWindow::updateAspectMenu,
-            Qt::QueuedConnection);
-
-    nextAspectAct = new TAction(this, "aspect_next", tr("Next aspect ratio"),
-                                "", Qt::Key_A);
-    connect(nextAspectAct, &TAction::triggered,
-            player, &Player::TPlayer::nextAspectRatio);
+    new Menu::TAspectGroup(this);
 
     // Menu window size
     windowSizeGroup = new Menu::TWindowSizeGroup(this, playerWindow);
-    connect(windowSizeGroup, &Menu::TWindowSizeGroup::activated,
-            this, &TMainWindow::setSizePercentage);
 
     doubleSizeAct = new TAction(this, "size_toggle_double",
                                 tr("Toggle double size"), "", Qt::Key_D);
@@ -1564,7 +1427,7 @@ void TMainWindow::applyNewSettings() {
     emit settingsChanged();
 
     // Enable actions to reflect changes
-    setEnableActions();
+    enableActions();
 
     // Restart video if needed
     if (prefDialog->requiresRestartPlayer()) {
@@ -1789,7 +1652,7 @@ void TMainWindow::loadSettings() {
     WZDEBUG("");
 
     // Disable actions
-    setEnableActions();
+    enableActions();
 
     // Get all actions with a name
     allActions = findNamedActions();
@@ -2197,34 +2060,13 @@ void TMainWindow::updateAudioEqualizer() {
     audio_equalizer->setEqualizer(player->getAudioEqualizer());
 }
 
-void TMainWindow::updateInOutMenu() {
-    repeatInOutAct->setChecked(player->mset.loop);
-}
-
-void TMainWindow::updateAspectMenu() {
-
-    aspectGroup->setChecked(player->mset.aspect_ratio.ID());
-
-    double aspect = player->mset.aspectToDouble();
-    QString s = TAspectRatio::doubleToString(aspect);
-    emit setAspectToolTip(tr("Aspect ratio %1").arg(s));
-
-    s = tr("Auto") + "\t"
-        + TAspectRatio::doubleToString(player->mdat.video_aspect_original);
-    aspectAutoAct->setTextAndTip(s);
-
-    s = tr("Disabled") + "\t" + TAspectRatio::doubleToString(
-            (double) player->mdat.video_width / player->mdat.video_height);
-    aspectDisabledAct->setTextAndTip(s);
-}
-
 void TMainWindow::onResizeOnLoadTriggered(bool b) {
     pref->resize_on_load = b;
 }
 
 void TMainWindow::updateWindowSizeMenu() {
 
-    windowSizeGroup->updateWindowSizeGroup();
+    windowSizeGroup->update();
     doubleSizeAct->setEnabled(windowSizeGroup->isEnabled());
     optimizeSizeAct->setEnabled(windowSizeGroup->isEnabled());
     resizeOnLoadAct->setChecked(pref->resize_on_load);
@@ -2256,14 +2098,10 @@ void TMainWindow::updateFilters() {
 void TMainWindow::onMediaSettingsChanged() {
     WZDEBUG("");
 
-    updateInOutMenu();
-    updateAspectMenu();
-    // Window size menu not changed
+    displayInOutPoints();
+    updateVideoEqualizer();
 
     Settings::TMediaSettings* mset = &player->mset;
-    emit mediaSettingsChanged(mset);
-
-    updateVideoEqualizer();
     colorSpaceGroup->setChecked(mset->color_space);
     deinterlaceGroup->setChecked(mset->current_deinterlacer);
     updateTransformMenu();
@@ -2278,8 +2116,6 @@ void TMainWindow::onMediaSettingsChanged() {
 
     closedCaptionsGroup->setChecked(mset->closed_caption_channel);
     subFPSGroup->setChecked(mset->external_subtitles_fps);
-
-    displayInOutPoints();
 }
 
 void TMainWindow::onMediaInfoChanged() {
@@ -2338,7 +2174,7 @@ void TMainWindow::onPlayerError(int exit_code) {
 void TMainWindow::onStateChanged(Player::TState state) {
     WZTRACE("New state " + player->stateToString());
 
-    setEnableActions();
+    enableActions();
     autoHideTimer->setAutoHideMouse(state == Player::STATE_PLAYING);
     switch (state) {
         case Player::STATE_STOPPED:
@@ -2600,17 +2436,18 @@ void TMainWindow::enableSubtitleActions() {
     // useCustomSubStyleAct always enabled
 }
 
-void TMainWindow::setEnableActions() {
+void TMainWindow::enableActions() {
     WZTRACE("State " + player->stateToString());
 
-    // Clear recent action is always enabled
-
+    // File menu
     // Save thumbnail action
     saveThumbnailAct->setEnabled(
                 player->mdat.selected_type == TMediaData::TYPE_FILE
                 && !player->mdat.filename.isEmpty()
                 && player->hasVideo());
 
+
+    // Play menu
     // Seek forward
     bool enable = player->statePOP();
     seekFrameAct->setEnabled(enable);
@@ -2626,19 +2463,10 @@ void TMainWindow::setEnableActions() {
     // Seek to time
     seekToTimeAct->setEnabled(enable);
 
-    // Play speed
-    playSpeedGroup->setEnabled(enable);
 
-    // In-out menu
-    inOutGroup->setEnabled(enable);
-
-    // Aspect menu
-    bool enableVideo = enable && player->hasVideo();
-    aspectGroup->setEnabled(enableVideo);
-    nextAspectAct->setEnabled(enableVideo);
-    updateAspectMenu();
-
+    // Video menu
     // Window size menu
+    bool enableVideo = enable && player->hasVideo();
     windowSizeGroup->setEnabled(enableVideo);
     doubleSizeAct->setEnabled(enableVideo);
     optimizeSizeAct->setEnabled(enableVideo);
@@ -2736,10 +2564,12 @@ void TMainWindow::setEnableActions() {
     loadAudioAct->setEnabled(player->statePOP());
     unloadAudioAct->setEnabled(enable && player->mset.external_audio.count());
 
-    // Subtitles
+
+    // Subtitles menu
     enableSubtitleActions();
 
-    // Browse
+
+    // Browse menu
     enable = player->statePOP();
     bool enableChapters = enable && player->mdat.chapters.count() > 0;
     prevChapterAct->setEnabled(enableChapters);
@@ -2768,10 +2598,11 @@ void TMainWindow::setEnableActions() {
 
     viewPropertiesAct->setEnabled(!player->mdat.filename.isEmpty());
 
+
     // Time slider
     timeslider_action->enable(enable);
 
-    emit enableActions();
+    playlist->enableActions();
 }
 
 void TMainWindow::clearRecentsListDialog() {

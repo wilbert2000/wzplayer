@@ -19,11 +19,10 @@ TMenuAddRemoved::TMenuAddRemoved(TPlaylist* playlist, TMainWindow* w,
             playlist, &TPlaylist::addRemovedItem);
     connect(playlistWidget, &TPlaylistWidget::currentItemChanged,
             this, &TMenuAddRemoved::onCurrentItemChanged);
+    connect(this, &TMenuAddRemoved::aboutToShow,
+            this, &TMenuAddRemoved::onAboutToShow);
 
     setEnabled(false);
-}
-
-TMenuAddRemoved::~TMenuAddRemoved() {
 }
 
 void TMenuAddRemoved::onAboutToShow() {

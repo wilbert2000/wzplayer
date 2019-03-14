@@ -4,10 +4,6 @@
 #include "gui/action/menu/menuexec.h"
 
 
-namespace Settings {
-class TMediaSettings;
-}
-
 namespace Gui {
 
 class TMainWindow;
@@ -15,25 +11,17 @@ class TMainWindow;
 namespace Action {
 namespace Menu {
 
-
 class TMenu : public TMenuExec {
     Q_OBJECT
 public:
     explicit TMenu(QWidget* parent,
-                   TMainWindow* w,
+                   TMainWindow* mw,
                    const QString& name,
                    const QString& text,
                    const QString& icon = QString());
-    virtual ~TMenu();
 
 protected:
     TMainWindow* main_window;
-    virtual void onAboutToShow();
-    virtual void setVisible(bool visible);
-
-protected slots:
-    virtual void enableActions();
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings*);
 };
 
 } // namespace Menu

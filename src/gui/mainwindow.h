@@ -115,7 +115,6 @@ public slots:
     void setFullscreen(bool);
     void toggleFullscreen();
 
-    void updateAspectMenu();
     void updateWindowSizeMenu();
     void updateTransformMenu();
     void updateFilters();
@@ -155,9 +154,7 @@ public slots:
     void save();
 
 signals:
-    void enableActions();
     void settingsChanged();
-    void mediaSettingsChanged(Settings::TMediaSettings* mset);
     void gotMessageFromOtherInstance();
     void requestRestart();
 
@@ -166,7 +163,6 @@ signals:
     void didEnterFullscreenSignal();
     void didExitFullscreenSignal();
 
-    void setAspectToolTip(QString tip);
     void setWindowSizeToolTip(QString tip);
 
     void videoTrackGroupChanged(Action::TActionGroup* group);
@@ -267,20 +263,8 @@ private:
 
     Action::TAction* seekToTimeAct;
 
-    // Play speed menu
-    QActionGroup* playSpeedGroup;
-    // In-out menu
-    QActionGroup* inOutGroup;
-    Action::TAction* repeatInOutAct;
-
     // Video menu
     Action::TAction* fullscreenAct;
-
-    // Aspect menu
-    Action::TActionGroup* aspectGroup;
-    Action::TAction* aspectAutoAct;
-    Action::TAction* aspectDisabledAct;
-    Action::TAction* nextAspectAct;
 
     // Window size menu
     Action::Menu::TWindowSizeGroup* windowSizeGroup;
@@ -495,7 +479,7 @@ private:
     void runActions(QString actions);
 
     void enableSubtitleActions();
-    void setEnableActions();
+    void enableActions();
 
     void hidePanel();
     void setFloatingToolbarsVisible(bool visible);
@@ -541,7 +525,6 @@ private slots:
     void saveThumbnail();
 
     void showSeekToDialog();
-    void updateInOutMenu();
 
     void updateVideoTracks();
     void updateAudioTracks();

@@ -65,6 +65,8 @@ public:
     void getFilesToPlay(QStringList& files) const;
     void abortThread();
 
+    void enableActions();
+
     bool maybeSave();
     void loadSettings();
     void saveSettings();
@@ -201,7 +203,6 @@ private slots:
     void enablePaste();
     void enableRemoveFromDiskAction();
     void enableRemoveMenu();
-    void enableActions();
 
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);

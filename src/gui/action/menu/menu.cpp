@@ -9,12 +9,12 @@ namespace Action {
 namespace Menu {
 
 TMenu::TMenu(QWidget* parent,
-             TMainWindow* w,
+             TMainWindow* mw,
              const QString& name,
              const QString& text,
              const QString& icon) :
     TMenuExec(parent),
-    main_window(w) {
+    main_window(mw) {
 
     menuAction()->setObjectName(name);
     menuAction()->setText(text);
@@ -23,30 +23,6 @@ TMenu::TMenu(QWidget* parent,
     if (iconName != "noicon") {
         menuAction()->setIcon(Images::icon(iconName));
     }
-
-    connect(main_window, &TMainWindow::enableActions,
-            this, &TMenu::enableActions);
-    connect(main_window, &TMainWindow::mediaSettingsChanged,
-            this, &TMenu::onMediaSettingsChanged);
-}
-
-TMenu::~TMenu() {
-}
-
-void TMenu::enableActions() {
-}
-
-void TMenu::onMediaSettingsChanged(Settings::TMediaSettings*) {
-}
-
-void TMenu::onAboutToShow() {
-}
-
-void TMenu::setVisible(bool visible) {
-
-    if (visible)
-        onAboutToShow();
-    TMenuExec::setVisible(visible);
 }
 
 } // namespace Menu

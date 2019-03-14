@@ -114,12 +114,6 @@ void TPlaylist::createTree() {
 
 void TPlaylist::createActions() {
 
-    // Connect enableActions() before creation of actions, because
-    // enableActions() can set the currently playing item, which can be used
-    // by actions to decide whether to enable or not.
-    connect(main_window, &TMainWindow::enableActions,
-            this, &TPlaylist::enableActions);
-
     // Open playlist
     openPlaylistAct = new TAction(main_window, "pl_open", tr("Open playlist..."),
                           "noicon", QKeySequence("Ctrl+P"));

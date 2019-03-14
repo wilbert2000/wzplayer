@@ -44,6 +44,9 @@ TWindowSizeGroup::TWindowSizeGroup(TMainWindow* mw, TPlayerWindow* pw)
     a = new TActionGroupItem(mw, this, "size_400", tr("400%"), 400);
 
     setChecked(size_percentage);
+
+    connect(this, &TWindowSizeGroup::activated,
+            mw, &TMainWindow::setSizePercentage);
 }
 
 void TWindowSizeGroup::uncheck() {
@@ -54,7 +57,7 @@ void TWindowSizeGroup::uncheck() {
     }
 }
 
-void TWindowSizeGroup::updateWindowSizeGroup() {
+void TWindowSizeGroup::update() {
 
     uncheck();
     QSize s = playerWindow->resolution();
@@ -95,7 +98,7 @@ void TWindowSizeGroup::updateWindowSizeGroup() {
 TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
     TMenu(parent, mw, "window_size_menu", tr("Window size")) {
 
-    TWindowSizeGroup* group = mw->findChild<TWindowSizeGroup*>("windowsizegroup");
+    TWindowSizeGroup* group = mw->findChild<TWindowSizeGroup*>();
     addActions(group->actions());
 
     addSeparator();
@@ -105,10 +108,9 @@ TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
 
     connect(main_window, &TMainWindow::setWindowSizeToolTip,
             this, &TMenuWindowSize::setWindowSizeToolTip);
-    main_window->updateWindowSizeMenu();
-}
+    connect(this, &TMenuWindowSize::aboutToShow,
+            main_window, &TMainWindow::updateWindowSizeMenu);
 
-void TMenuWindowSize::onAboutToShow() {
     main_window->updateWindowSizeMenu();
 }
 

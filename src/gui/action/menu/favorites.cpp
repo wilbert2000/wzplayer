@@ -79,12 +79,6 @@ void TFavorites::deleteSubFavorites() {
     }
 }
 
-
-void TFavorites::enableActions() {
-
-    addAct->setEnabled(!player->mdat.filename.isEmpty());
-}
-
 void TFavorites::populateMenu() {
 
     deleteSubFavorites();
