@@ -40,8 +40,7 @@ private:
     TMenu* secondarySubtitleTrackMenu;
 
 private slots:
-    void subtitleTrackGroupsChanged(Action::TAction* next,
-                                    Action::TActionGroup* subGroup,
+    void subtitleTrackGroupsChanged(Action::TActionGroup* subGroup,
                                     Action::TActionGroup* secSubGroup);
 };
 

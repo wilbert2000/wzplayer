@@ -172,15 +172,12 @@ TMenuVideoTracks::TMenuVideoTracks(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, mw, "videotrack_menu", tr("Video track")) {
 
     addAction(mw->findAction("next_video_track"));
+    addSeparator();
     connect(mw, &TMainWindow::videoTrackGroupChanged,
             this, &TMenuVideoTracks::updateVideoTracks);
 }
 
-void TMenuVideoTracks::updateVideoTracks(TAction* next, TActionGroup* group) {
-
-    clear();
-    addAction(next);
-    addSeparator();
+void TMenuVideoTracks::updateVideoTracks(TActionGroup* group) {
     addActions(group->actions());
 }
 

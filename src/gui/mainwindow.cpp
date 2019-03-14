@@ -1947,7 +1947,7 @@ void TMainWindow::updateVideoTracks() {
         }
     }
 
-    emit videoTrackGroupChanged(nextVideoTrackAct, videoTrackGroup);
+    emit videoTrackGroupChanged(videoTrackGroup);
 }
 
 void TMainWindow::updateAudioTracks() {
@@ -1973,7 +1973,7 @@ void TMainWindow::updateAudioTracks() {
         }
     }
 
-    emit audioTrackGroupChanged(nextAudioTrackAct, audioTrackGroup);
+    emit audioTrackGroupChanged(audioTrackGroup);
 }
 
 void TMainWindow::updateSubtitleTracks() {
@@ -2029,8 +2029,7 @@ void TMainWindow::updateSubtitleTracks() {
 
     enableSubtitleActions();
 
-    emit subtitleTrackGroupsChanged(nextSubtitleAct,
-                                    subtitleTrackGroup,
+    emit subtitleTrackGroupsChanged(subtitleTrackGroup,
                                     secondarySubtitleTrackGroup);
 }
 

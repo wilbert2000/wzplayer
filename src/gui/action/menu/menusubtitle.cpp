@@ -96,6 +96,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
     subtitleTrackMenu = new TMenu(this, mw, "subtitle_track_menu",
                                   tr("Subtitle track"), "sub");
     subtitleTrackMenu->addAction(mw->findAction("next_subtitle"));
+    subtitleTrackMenu->addSeparator();
     addMenu(subtitleTrackMenu);
 
     // Secondary subtitle track
@@ -122,17 +123,11 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
 }
 
 void TMenuSubtitle::subtitleTrackGroupsChanged(
-        Action::TAction* next,
         Action::TActionGroup* subGroup,
         Action::TActionGroup* secSubGroup) {
     WZDEBUG("");
 
-    subtitleTrackMenu->clear();
-    subtitleTrackMenu->addAction(next);
-    subtitleTrackMenu->addSeparator();
     subtitleTrackMenu->addActions(subGroup->actions());
-
-    secondarySubtitleTrackMenu->clear();
     secondarySubtitleTrackMenu->addActions(secSubGroup->actions());
 }
 

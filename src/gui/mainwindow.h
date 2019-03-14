@@ -169,12 +169,9 @@ signals:
     void setAspectToolTip(QString tip);
     void setWindowSizeToolTip(QString tip);
 
-    void videoTrackGroupChanged(Action::TAction* next,
-                                Action::TActionGroup* group);
-    void audioTrackGroupChanged(Action::TAction* next,
-                                Action::TActionGroup* group);
-    void subtitleTrackGroupsChanged(Action::TAction* next,
-                                    Action::TActionGroup* subGroup,
+    void videoTrackGroupChanged(Action::TActionGroup* group);
+    void audioTrackGroupChanged(Action::TActionGroup* group);
+    void subtitleTrackGroupsChanged(Action::TActionGroup* subGroup,
                                     Action::TActionGroup* secSubGroup);
 
     void stayOnTopChanged(int);
@@ -343,24 +340,31 @@ private:
     Action::TAction* muteAct;
     Action::TAction* decVolumeAct;
     Action::TAction* incVolumeAct;
+
     // Delay
     Action::TAction* decAudioDelayAct;
     Action::TAction* incAudioDelayAct;
     Action::TAction* audioDelayAct;
+
     // Equalizer
     Action::TAction* audioEqualizerAct;
     Action::TAction* resetAudioEqualizerAct;
+
     // Stereo
     Action::TActionGroup* stereoGroup;
+
     // Channels
     Action::TActionGroup* audioChannelGroup;
+
     // Audio filters
     Action::TAction* volnormAct;
     Action::TAction* extrastereoAct;
     Action::TAction* karaokeAct;
+
     // Audio tracks
     Action::TAction* nextAudioTrackAct;
     Action::TActionGroup* audioTrackGroup;
+
     // External audio
     Action::TAction* loadAudioAct;
     Action::TAction* unloadAudioAct;

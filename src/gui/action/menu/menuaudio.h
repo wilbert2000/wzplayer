@@ -32,7 +32,7 @@ class TMenuAudioTracks : public TMenu {
 public:
     explicit TMenuAudioTracks(QWidget* parent, TMainWindow* mw);
 private slots:
-    void updateAudioTracks(TAction* next, TActionGroup* group);
+    void updateAudioTracks(TActionGroup* group);
 };
 
 class TMenuAudio : public TMenu {

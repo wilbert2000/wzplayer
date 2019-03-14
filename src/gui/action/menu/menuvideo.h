@@ -50,7 +50,7 @@ class TMenuVideoTracks : public TMenu {
 public:
     explicit TMenuVideoTracks(QWidget* parent, TMainWindow* mw);
 private slots:
-    void updateVideoTracks(TAction* next, TActionGroup* group);
+    void updateVideoTracks(TActionGroup* group);
 };
 
 class TMenuVideo : public TMenu {

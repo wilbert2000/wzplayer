@@ -83,15 +83,12 @@ TMenuAudioTracks::TMenuAudioTracks(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, mw, "audiotrack_menu", tr("Audio track")) {
 
     addAction(mw->findAction("next_audio_track"));
+    addSeparator();
     connect(mw, &TMainWindow::audioTrackGroupChanged,
             this, &TMenuAudioTracks::updateAudioTracks);
 }
 
-void TMenuAudioTracks::updateAudioTracks(TAction* next, TActionGroup* group) {
-
-    clear();
-    addAction(next);
-    addSeparator();
+void TMenuAudioTracks::updateAudioTracks(TActionGroup* group) {
     addActions(group->actions());
 }
 
