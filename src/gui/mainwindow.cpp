@@ -1036,6 +1036,67 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::setUseCustomSubStyle);
 
 
+    // Browse menu
+    // Titles
+    titleGroup = new Menu::TTitleGroup(this);
+
+    // Chapters
+    nextChapterAct = new TAction(this, "next_chapter", tr("Next chapter"), "",
+                                 Qt::Key_C);
+    connect(nextChapterAct, &TAction::triggered,
+            player, &Player::TPlayer::nextChapter);
+    prevChapterAct = new TAction(this, "prev_chapter", tr("Previous chapter"),
+                                 "", Qt::SHIFT | Qt::Key_C);
+    connect(prevChapterAct, &TAction::triggered,
+            player, &Player::TPlayer::prevChapter);
+    chapterGroup = new Menu::TChapterGroup(this, prevChapterAct, nextChapterAct);
+
+    // Angles
+    nextAngleAct = new TAction(this, "next_angle", tr("Next angle"), "",
+                               Qt::SHIFT | Qt::Key_A);
+    connect(nextAngleAct, &TAction::triggered,
+            player, &Player::TPlayer::nextAngle);
+    angleGroup = new Menu::TAngleGroup(this, nextAngleAct);
+
+    // DVDNAV
+    dvdnavUpAct = new TAction(this, "dvdnav_up", tr("DVD move up"), "",
+                              Qt::META | Qt::Key_Up);
+    connect(dvdnavUpAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavUp);
+    dvdnavDownAct = new TAction(this, "dvdnav_down", tr("DVD move down"), "",
+                                Qt::META | Qt::Key_Down);
+    connect(dvdnavDownAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavDown);
+    dvdnavLeftAct = new TAction(this, "dvdnav_left", tr("DVD move left"), "",
+                                Qt::META | Qt::Key_Left);
+    connect(dvdnavLeftAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavLeft);
+    dvdnavRightAct = new TAction(this, "dvdnav_right", tr("DVD move right"),
+                                 "", Qt::META | Qt::Key_Right);
+    connect(dvdnavRightAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavRight);
+
+    dvdnavSelectAct = new TAction(this, "dvdnav_select", tr("DVD select"), "",
+                                  Qt::META | Qt::Key_Return);
+    connect(dvdnavSelectAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavSelect);
+
+    // Not in menu
+    dvdnavMouseAct = new TAction(this, "dvdnav_mouse", tr("DVD mouse click"));
+    connect(dvdnavMouseAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavMouse);
+
+    dvdnavMenuAct = new TAction(this, "dvdnav_menu", tr("DVD menu"), "",
+                                Qt::CTRL | Qt::Key_Return);
+    connect(dvdnavMenuAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavMenu);
+
+    dvdnavPrevAct = new TAction(this, "dvdnav_prev", tr("DVD previous menu"),
+                                "", Qt::META | Qt::Key_Escape);
+    connect(dvdnavPrevAct, &TAction::triggered,
+            player, &Player::TPlayer::dvdnavPrev);
+
+
     // View playlist
     QAction* viewPlaylistAct = playlistDock->toggleViewAction();
     viewPlaylistAct->setObjectName("view_playlist");
@@ -1160,7 +1221,7 @@ void TMainWindow::createMenus() {
     menuBar()->addMenu(audioMenu);
     subtitleMenu = new Menu::TMenuSubtitle(this, this);
     menuBar()->addMenu(subtitleMenu);
-    browseMenu = new Menu::TMenuBrowse(this);
+    browseMenu = new Menu::TMenuBrowse(this, this);
     menuBar()->addMenu(browseMenu);
 
     // statusbar_menu added to toolbar_menu by createToolbarMenu()
@@ -2605,6 +2666,26 @@ void TMainWindow::setEnableActions() {
 
     // Subtitles
     enableSubtitleActions();
+
+    // Browse
+    bool pop = player->statePOP();
+    bool enableChapters = pop && player->mdat.chapters.count() > 0;
+    prevChapterAct->setEnabled(enableChapters);
+    nextChapterAct->setEnabled(enableChapters);
+    nextAngleAct->setEnabled(pop && player->mdat.angles > 1);
+
+    // DVDNAV
+    bool enableDVDNav = pop
+            && player->mdat.detected_type == TMediaData::TYPE_DVDNAV;
+    dvdnavUpAct->setEnabled(enableDVDNav);
+    dvdnavDownAct->setEnabled(enableDVDNav);
+    dvdnavLeftAct->setEnabled(enableDVDNav);
+    dvdnavRightAct->setEnabled(enableDVDNav);
+
+    dvdnavMenuAct->setEnabled(enableDVDNav);
+    dvdnavPrevAct->setEnabled(enableDVDNav);
+    dvdnavSelectAct->setEnabled(enableDVDNav);
+    dvdnavMouseAct->setEnabled(enableDVDNav);
 
     // Time slider
     timeslider_action->enable(player->statePOP());

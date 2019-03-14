@@ -399,6 +399,26 @@ private:
     Action::TAction* useCustomSubStyleAct;
 
 
+    // Browse menu
+    Action::TActionGroup* titleGroup;
+    Action::TAction* prevChapterAct;
+    Action::TAction* nextChapterAct;
+    Action::TActionGroup* chapterGroup;
+    Action::TAction* nextAngleAct;
+    Action::TActionGroup* angleGroup;
+
+    // DVDNAV
+    Action::TAction* dvdnavUpAct;
+    Action::TAction* dvdnavDownAct;
+    Action::TAction* dvdnavLeftAct;
+    Action::TAction* dvdnavRightAct;
+
+    Action::TAction* dvdnavMenuAct;
+    Action::TAction* dvdnavPrevAct;
+    Action::TAction* dvdnavSelectAct;
+    Action::TAction* dvdnavMouseAct;
+
+
     // Help menu
     QMenu* helpMenu;
     Action::Menu::TMenuExec* contextMenu;

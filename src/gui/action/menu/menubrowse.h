@@ -2,6 +2,7 @@
 #define GUI_ACTION_MENU_MENUBROWSE_H
 
 #include "gui/action/menu/menu.h"
+#include "gui/action/actiongroup.h"
 #include "log4qt/logger.h"
 
 
@@ -9,47 +10,68 @@ namespace Gui {
 namespace Action {
 
 class TAction;
-class TActionGroup;
 
 namespace Menu {
+
+class TTitleGroup : public TActionGroup {
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+public:
+    explicit TTitleGroup(TMainWindow* mw);
+    virtual ~TTitleGroup();
+signals:
+    void titleTracksChanged(TTitleGroup* titleGroup);
+private slots:
+    void updateTitles();
+};
+
+class TChapterGroup : public TActionGroup {
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+public:
+    explicit TChapterGroup(TMainWindow* mw,
+                           TAction* prvChapterAct,
+                           TAction* nxtChapterAct);
+    virtual ~TChapterGroup();
+signals:
+    void chaptersChanged(TChapterGroup* chapterGroup);
+private:
+    TAction* prevChapterAct;
+    TAction* nextChapterAct;
+private slots:
+    void updateChapters();
+};
+
+class TAngleGroup : public TActionGroup {
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+public:
+    explicit TAngleGroup(TMainWindow* mw, TAction* nxtAngleAct);
+    virtual ~TAngleGroup();
+signals:
+    void anglesChanged(TAngleGroup* angleGroup);
+private:
+    TAction* nextAngleAct;
+private slots:
+    void updateAngles();
+};
 
 class TMenuBrowse : public TMenu {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
-    TMenuBrowse(TMainWindow* mw);
-
-protected:
-    virtual void enableActions();
+    TMenuBrowse(QWidget* parent, TMainWindow* mw);
+    virtual ~TMenuBrowse();
 
 private:
     TMenu* titlesMenu;
-    TActionGroup* titleGroup;
-
-    TAction* prevChapterAct;
-    TAction* nextChapterAct;
     TMenu* chaptersMenu;
-    TActionGroup* chapterGroup;
-
-    TAction* nextAngleAct;
     TMenu* anglesMenu;
-    TActionGroup* angleGroup;
-
-    TAction* dvdnavUpAct;
-    TAction* dvdnavDownAct;
-    TAction* dvdnavLeftAct;
-    TAction* dvdnavRightAct;
-
-    TAction* dvdnavMenuAct;
-    TAction* dvdnavPrevAct;
-    TAction* dvdnavSelectAct;
-    TAction* dvdnavMouseAct;
 
 private slots:
-    void updateTitles();
-    void updateChapters();
-    void updateAngles();
+    void updateTitles(TTitleGroup* titleGroup);
+    void updateChapters(TChapterGroup* chapterGroup);
+    void updateAngles(TAngleGroup* angleGroup);
 }; // class TMenuBrowse
 
 } // namespace Menu
