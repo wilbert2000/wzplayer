@@ -18,7 +18,6 @@ class TMenuFile : public TMenu {
     Q_OBJECT
 public:
     explicit TMenuFile(QWidget* parent, TMainWindow* mw);
-    virtual ~TMenuFile();
 
 private:
     TMenu* recentFilesMenu;

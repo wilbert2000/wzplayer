@@ -31,14 +31,11 @@ public:
 class TMenuSubtitle : public TMenu {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     TMenuSubtitle(QWidget* parent, TMainWindow* mw);
-
 private:
     TMenu* subtitleTrackMenu;
     TMenu* secondarySubtitleTrackMenu;
-
 private slots:
     void subtitleTrackGroupsChanged(Action::TActionGroup* subGroup,
                                     Action::TActionGroup* secSubGroup);

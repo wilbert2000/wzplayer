@@ -18,7 +18,6 @@ class TTitleGroup : public TActionGroup {
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit TTitleGroup(TMainWindow* mw);
-    virtual ~TTitleGroup();
 signals:
     void titleTracksChanged(TTitleGroup* titleGroup);
 private slots:
@@ -32,7 +31,6 @@ public:
     explicit TChapterGroup(TMainWindow* mw,
                            TAction* prvChapterAct,
                            TAction* nxtChapterAct);
-    virtual ~TChapterGroup();
 signals:
     void chaptersChanged(TChapterGroup* chapterGroup);
 private:
@@ -47,7 +45,6 @@ class TAngleGroup : public TActionGroup {
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit TAngleGroup(TMainWindow* mw, TAction* nxtAngleAct);
-    virtual ~TAngleGroup();
 signals:
     void anglesChanged(TAngleGroup* angleGroup);
 private:
@@ -61,7 +58,6 @@ class TMenuBrowse : public TMenu {
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     TMenuBrowse(QWidget* parent, TMainWindow* mw);
-    virtual ~TMenuBrowse();
 
 private:
     TMenu* titlesMenu;

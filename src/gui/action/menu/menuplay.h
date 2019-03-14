@@ -22,7 +22,6 @@ public:
                        const QString& name,
                        const QString& text,
                        int seekIntOffset);
-
 public slots:
     void updateDefaultAction(QAction* action);
 signals:

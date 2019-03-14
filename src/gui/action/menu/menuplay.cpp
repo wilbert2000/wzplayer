@@ -100,6 +100,7 @@ TMenuPlaySpeed::TMenuPlaySpeed(QWidget* parent, TMainWindow* mw)
     addAction(main_window->findAction("speed_inc_1"));
 }
 
+
 class TMenuInOut : public TMenu {
 public:
     explicit TMenuInOut(QWidget* parent, TMainWindow* mw);

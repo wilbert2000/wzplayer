@@ -21,9 +21,6 @@ TTitleGroup::TTitleGroup(TMainWindow *mw) :
             this, &TTitleGroup::updateTitles);
 }
 
-TTitleGroup::~TTitleGroup() {
-}
-
 void TTitleGroup::updateTitles() {
     WZTRACE("");
 
@@ -67,9 +64,6 @@ TChapterGroup::TChapterGroup(TMainWindow *mw,
             this, &TChapterGroup::updateChapters);
 }
 
-TChapterGroup::~TChapterGroup() {
-}
-
 void TChapterGroup::updateChapters() {
     WZTRACE("");
 
@@ -109,9 +103,6 @@ TAngleGroup::TAngleGroup(TMainWindow *mw, TAction* nxtAngleAct) :
     // For DVDNAV only:
     connect(player, &Player::TPlayer::anglesChanged,
             this, &TAngleGroup::updateAngles);
-}
-
-TAngleGroup::~TAngleGroup() {
 }
 
 void TAngleGroup::updateAngles() {
@@ -191,9 +182,6 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
     // dvdnav_mouse Not in menu
     addAction(mw->findAction("dvdnav_menu"));
     addAction(mw->findAction("dvdnav_prev"));
-}
-
-TMenuBrowse::~TMenuBrowse() {
 }
 
 void TMenuBrowse::updateTitles(TTitleGroup* titleGroup) {

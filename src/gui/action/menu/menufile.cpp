@@ -91,9 +91,6 @@ TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw) :
     // Note: Quit added by TMainwindowTray
 }
 
-TMenuFile::~TMenuFile() {
-}
-
 void TMenuFile::updateRecents() {
 
     recentFilesMenu->clear();
