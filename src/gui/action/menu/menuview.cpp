@@ -1,13 +1,9 @@
 #include "gui/action/menu/menuview.h"
 #include "gui/mainwindow.h"
-#include "gui/dockwidget.h"
-#include "gui/autohidetimer.h"
-#include "gui/action/actiongroup.h"
-#include "gui/action/action.h"
 #include "player/player.h"
 #include "settings/preferences.h"
 #include "images.h"
-#include "images.h"
+
 
 using namespace Settings;
 
@@ -15,195 +11,125 @@ namespace Gui {
 namespace Action {
 namespace Menu {
 
-class TMenuOSD : public TMenu {
-public:
-    explicit TMenuOSD(TMainWindow* mw);
-protected:
-    virtual void enableActions();
-    virtual void onAboutToShow();
-private:
-    TActionGroup* group;
-    TAction* showFilenameAct;
-    TAction* showTimeAct;
-};
+TOSDGroup::TOSDGroup(TMainWindow *mw) :
+    TActionGroup(mw, "osdgroup") {
 
-TMenuOSD::TMenuOSD(TMainWindow* mw)
-    : TMenu(mw, mw, "osd_menu", tr("OSD"), "osd") {
-
-    TAction* a = new TAction(mw, "osd_next", tr("Next OSD level"), "",
-                             Qt::Key_O);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::nextOSDLevel);
-    addAction(a);
-
-    addSeparator();
-    group = new TActionGroup(mw, "osd");
     // Always enabled
-    new TActionGroupItem(mw, group, "osd_none", tr("Subtitles only"),
-        Settings::TPreferences::None, true, false, Qt::SHIFT | Qt::Key_O);
-    new TActionGroupItem(mw, group, "osd_seek", tr("Volume + seek"),
-        Settings::TPreferences::Seek, true, false, Qt::CTRL | Qt::Key_O);
-    new TActionGroupItem(mw, group, "osd_time", tr("Volume + seek + time"),
-        Settings::TPreferences::SeekTimer, true, false, Qt::ALT | Qt::Key_O);
-    new TActionGroupItem(mw, group, "osd_total",
+    new TActionGroupItem(mw, this, "osd_none", tr("Subtitles only"),
+        TPreferences::None, true, false, Qt::SHIFT | Qt::Key_O);
+    new TActionGroupItem(mw, this, "osd_seek", tr("Volume + seek"),
+        TPreferences::Seek, true, false, Qt::CTRL | Qt::Key_O);
+    new TActionGroupItem(mw, this, "osd_time", tr("Volume + seek + time"),
+        TPreferences::SeekTimer, true, false, Qt::ALT | Qt::Key_O);
+    new TActionGroupItem(mw, this, "osd_total",
                          tr("Volume + seek + time + length"),
-                         Settings::TPreferences::SeekTimerTotal, true, false,
+                         TPreferences::SeekTimerTotal, true, false,
                          Qt::META | Qt::Key_O);
-    group->setChecked(pref->osd_level);
-    connect(group, &TActionGroup::activated,
+    setChecked(pref->osd_level);
+    connect(this, &TOSDGroup::activated,
             player, &Player::TPlayer::setOSDLevel);
     connect(player, &Player::TPlayer::osdLevelChanged,
-            group, &TActionGroup::setChecked);
-    addActions(group->actions());
+            this, &TOSDGroup::setChecked);
+}
+
+class TMenuOSD : public TMenu {
+public:
+    explicit TMenuOSD(QWidget* parent, TMainWindow* mw);
+};
+
+TMenuOSD::TMenuOSD(QWidget* parent, TMainWindow* mw)
+    : TMenu(parent, mw, "osd_menu", tr("OSD"), "osd") {
+
+    addAction(mw->findAction("osd_next"));
 
     addSeparator();
-    a = new TAction(mw, "osd_inc_scale", tr("OSD size +"), "",
-                    QKeySequence(")"));
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incOSDScale);
-    addAction(a);
-    a = new TAction(mw, "osd_dec_scale", tr("OSD size -"), "",
-                    QKeySequence("("));
-    connect(a, &TAction::triggered, player, &Player::TPlayer::decOSDScale);
-    addAction(a);
+    addActions(mw->findChild<TOSDGroup*>()->actions());
 
     addSeparator();
-    showFilenameAct = new TAction(mw, "osd_show_filename",
-                                  tr("Show filename on OSD"));
-    connect(showFilenameAct, &TAction::triggered,
-            player, &Player::TPlayer::showFilenameOnOSD);
-    addAction(showFilenameAct);
+    addAction(mw->findAction("osd_inc_scale"));
+    addAction(mw->findAction("osd_dec_scale"));
 
-    showTimeAct = new TAction(mw, "osd_show_time",
-                              tr("Show playback time on OSD"));
-    connect(showTimeAct, &TAction::triggered,
-            player, &Player::TPlayer::showTimeOnOSD);
-    addAction(showTimeAct);
+    addSeparator();
+    addAction(mw->findAction("osd_show_filename"));
+    addAction(mw->findAction("osd_show_time"));
 }
 
-void TMenuOSD::enableActions() {
-
-    bool enabled = player->statePOP() && player->hasVideo();
-    showFilenameAct->setEnabled(enabled);
-    showTimeAct->setEnabled(enabled);
-}
-
-void TMenuOSD::onAboutToShow() {
-    group->setChecked((int) pref->osd_level);
-}
 
 static QString stayOnTopToIconString(int stay_on_top) {
 
     switch (stay_on_top) {
-    case TPreferences::NeverOnTop: return "stay_on_top_never";
-    case TPreferences::AlwaysOnTop:return "stay_on_top_always";
-    case TPreferences::WhilePlayingOnTop:return "stay_on_top_playing";
-    default: return "stay_on_top_toggle";
+        case TPreferences::NeverOnTop: return "stay_on_top_never";
+        case TPreferences::AlwaysOnTop:return "stay_on_top_always";
+        case TPreferences::WhilePlayingOnTop:return "stay_on_top_playing";
+        default: return "stay_on_top_toggle";
     }
 }
 
-TMenuStayOnTop::TMenuStayOnTop(TMainWindow* mw) :
-    TMenu(mw, mw, "stay_on_top_menu", tr("Stay on top")) {
+TToggleStayOnTopAction::TToggleStayOnTopAction(TMainWindow* mw) :
+    TAction(mw, "stay_on_top_toggle", tr("Toggle stay on top"),
+            stayOnTopToIconString(pref->stay_on_top), Qt::Key_T) {
 
-    toggleStayOnTopAct = new TAction(mw, "stay_on_top_toggle",
-                                     tr("Toggle stay on top"),
-                                     stayOnTopToIconString(pref->stay_on_top),
-                                     Qt::Key_T);
-    setDefaultAction(toggleStayOnTopAct);
-    connect(toggleStayOnTopAct, &TAction::triggered,
-            main_window, &TMainWindow::toggleStayOnTop);
-    connect(this, &TMenuStayOnTop::triggered,
-            this, &TMenuStayOnTop::onTriggered);
-    addAction(toggleStayOnTopAct);
+    connect(this, &TToggleStayOnTopAction::triggered,
+            mw, &TMainWindow::toggleStayOnTop);
+    connect(mw, &TMainWindow::stayOnTopChanged,
+            this, &TToggleStayOnTopAction::onStayOnTopChanged);
+}
 
-    addSeparator();
+void TToggleStayOnTopAction::onStayOnTopChanged(int stayOnTop) {
+    setIcon(Images::icon(stayOnTopToIconString(stayOnTop)));
+}
 
-    group = new TActionGroup(mw, "stay_on_top_group");
-    new TActionGroupItem(mw, group, "stay_on_top_never", tr("Never"),
-        Settings::TPreferences::NeverOnTop, true, true, Qt::SHIFT | Qt::Key_T);
-    new TActionGroupItem(mw, group, "stay_on_top_always", tr("Always"),
-        Settings::TPreferences::AlwaysOnTop, true, true, Qt::CTRL | Qt::Key_T);
-    new TActionGroupItem(mw, group, "stay_on_top_playing", tr("While playing"),
-                         Settings::TPreferences::WhilePlayingOnTop, true, true,
+TStayOnTopGroup::TStayOnTopGroup(TMainWindow *mw) :
+    TActionGroup(mw, "stay_on_top_group") {
+
+    new TToggleStayOnTopAction(mw);
+
+    new TActionGroupItem(mw, this, "stay_on_top_never", tr("Never"),
+        TPreferences::NeverOnTop, true, true, Qt::SHIFT | Qt::Key_T);
+    new TActionGroupItem(mw, this, "stay_on_top_always", tr("Always"),
+        TPreferences::AlwaysOnTop, true, true, Qt::CTRL | Qt::Key_T);
+    new TActionGroupItem(mw, this, "stay_on_top_playing", tr("While playing"),
+                         TPreferences::WhilePlayingOnTop, true, true,
                          Qt::ALT | Qt::Key_T);
-    group->setChecked((int) pref->stay_on_top);
-    connect(group , &TActionGroup::activated,
-            main_window, &TMainWindow::changeStayOnTop);
-    connect(main_window , &TMainWindow::stayOnTopChanged,
-            group, &TActionGroup::setChecked);
-    addActions(group->actions());
+    setChecked((int) pref->stay_on_top);
+
+    connect(this , &TActionGroup::activated,
+            mw, &TMainWindow::changeStayOnTop);
+    connect(mw, &TMainWindow::stayOnTopChanged,
+            this, &TActionGroup::setChecked);
 }
 
-void TMenuStayOnTop::onTriggered(QAction* action) {
+TMenuStayOnTop::TMenuStayOnTop(QWidget* parent, TMainWindow* mw) :
+    TMenu(parent, mw, "stay_on_top_menu", tr("Stay on top")) {
 
-    TPreferences::TOnTop stay_on_top;
-    if (action->objectName() == "stay_on_top_toggle") {
-        // pref->stay_on_top is not yet updated
-        if (pref->stay_on_top == TPreferences::NeverOnTop) {
-            stay_on_top = TPreferences::AlwaysOnTop;
-        } else {
-            stay_on_top = TPreferences::NeverOnTop;
-        }
-    } else {
-        stay_on_top = (TPreferences::TOnTop) action->data().toInt();
-    }
-
-    toggleStayOnTopAct->setIcon(Images::icon(stayOnTopToIconString(stay_on_top)));
+    TToggleStayOnTopAction* toggleStayOnTopAct =
+            mw->findChild<TToggleStayOnTopAction*>();
+    addAction(toggleStayOnTopAct);
+    setDefaultAction(toggleStayOnTopAct);
+    addSeparator();
+    addActions(mw->findChild<TStayOnTopGroup*>()->actions());
 }
 
-void TMenuStayOnTop::onAboutToShow() {
-    group->setChecked((int) pref->stay_on_top);
-}
 
-TMenuView::TMenuView(TMainWindow* mw,
-                     QMenu* toolBarMenu,
-                     TDockWidget* logDock,
-                     TAutoHideTimer* autoHideTimer)
-    : TMenu(mw, mw, "view_menu", tr("View"), "noicon") {
+TMenuView::TMenuView(QWidget* parent,
+                     TMainWindow* mw,
+                     QMenu* toolBarMenu)
+    : TMenu(parent, mw, "view_menu", tr("View"), "noicon") {
 
-    // OSD
-    addMenu(new TMenuOSD(mw));
-    // Toolbars
+    addMenu(new TMenuOSD(this, mw));
     addMenu(toolBarMenu);
-    // Ontop submenu
-    addMenu(new TMenuStayOnTop(mw));
+    addMenu(new TMenuStayOnTop(this, mw));
 
     addSeparator();
-    // Show properties
-    propertiesAct = new TAction(mw, "view_properties", tr("Properties..."), "",
-                                Qt::SHIFT | Qt::Key_P);
-    propertiesAct->setCheckable(true);
-    propertiesAct->setEnabled(false);
-    connect(propertiesAct, &TAction::triggered,
-            mw, &TMainWindow::showFilePropertiesDialog);
-    addAction(propertiesAct);
+    addAction(mw->findAction("view_properties"));
+    addAction(mw->findAction("view_playlist"));
+    addAction(mw->findAction("view_log"));
 
-    // View playlist
-    addAction(mw->findChild<QAction*>("view_playlist"));
-
-    // View log
-    QAction* a = logDock->toggleViewAction();
-    a->setObjectName("view_log");
-    a->setIcon(Images::icon("log"));
-    a->setShortcut(QKeySequence("L"));
-    updateToolTip(a);
-    addAction(a);
-    mw->addAction(a);
-    autoHideTimer->add(a, logDock);
-
-    // Settings
     addSeparator();
-    a = new TAction(mw, "open_config_dir", tr("Open configuration folder..."));
-    connect(a, &QAction::triggered, mw, &TMainWindow::showConfigFolder);
-    addAction(a);
+    addAction(mw->findAction("open_config_dir"));
+    addAction(mw->findAction("view_settings"));
 
-    a = new TAction(mw, "view_settings", tr("Settings..."), "",
-                    Qt::ALT | Qt::CTRL | Qt::Key_S);
-    connect(a, &QAction::triggered,
-            mw, &TMainWindow::showSettingsDialog);
-    addAction(a);
-}
-
-void TMenuView::onMediaSettingsChanged(Settings::TMediaSettings*) {
-    propertiesAct->setEnabled(true);
+    // Tray action added by TMainWindowTray
 }
 
 } // namespace Menu

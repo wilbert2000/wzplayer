@@ -2,51 +2,48 @@
 #define GUI_ACTION_MENU_MENUVIEW_H
 
 #include "gui/action/menu/menu.h"
+#include "gui/action/actiongroup.h"
 
 
 namespace Gui {
 
 class TMainWindow;
-class TDockWidget;
-class TAutoHideTimer;
 
 namespace Action {
-
-class TAction;
-class TActionGroup;
-
 namespace Menu {
+
+class TOSDGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TOSDGroup(TMainWindow* mw);
+};
+
+
+class TToggleStayOnTopAction : public TAction {
+    Q_OBJECT
+public:
+    explicit TToggleStayOnTopAction(TMainWindow* mw);
+private slots:
+    void onStayOnTopChanged(int stayOnTop);
+};
+
+class TStayOnTopGroup : public TActionGroup {
+    Q_OBJECT
+public:
+    explicit TStayOnTopGroup(TMainWindow* mw);
+};
 
 class TMenuStayOnTop : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuStayOnTop(TMainWindow* mw);
-    // Group to enable/disable together
-    TActionGroup* group;
-
-protected:
-    virtual void onAboutToShow();
-
-private:
-    TAction* toggleStayOnTopAct;
-
-private slots:
-    void onTriggered(QAction* action);
+    explicit TMenuStayOnTop(QWidget* parent, TMainWindow* mw);
 };
+
 
 class TMenuView : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuView(TMainWindow* mw,
-                       QMenu* toolBarMenu,
-                       TDockWidget* logDock,
-                       TAutoHideTimer* autoHideTimer);
-
-protected slots:
-    virtual void onMediaSettingsChanged(Settings::TMediaSettings*) override;
-
-private:
-    TAction* propertiesAct;
+    explicit TMenuView(QWidget* parent, TMainWindow* mw, QMenu* toolBarMenu);
 };
 
 } // namespace Menu

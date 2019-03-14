@@ -1097,14 +1097,69 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::dvdnavPrev);
 
 
+    // View menu
+    // OSD
+    a = new TAction(this, "osd_next", tr("Next OSD level"), "", Qt::Key_O);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::nextOSDLevel);
+
+    osdGroup = new Menu::TOSDGroup(this);
+
+    a = new TAction(this, "osd_inc_scale", tr("OSD size +"), "",
+                    QKeySequence(")"));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incOSDScale);
+
+    a = new TAction(this, "osd_dec_scale", tr("OSD size -"), "",
+                    QKeySequence("("));
+    connect(a, &TAction::triggered, player, &Player::TPlayer::decOSDScale);
+
+    osdShowFilenameAct = new TAction(this, "osd_show_filename",
+                                     tr("Show filename on OSD"));
+    connect(osdShowFilenameAct, &TAction::triggered,
+            player, &Player::TPlayer::showFilenameOnOSD);
+
+    osdShowTimeAct = new TAction(this, "osd_show_time",
+                                 tr("Show playback time on OSD"));
+    connect(osdShowTimeAct, &TAction::triggered,
+            player, &Player::TPlayer::showTimeOnOSD);
+
+    // Stay on top
+    new Menu::TStayOnTopGroup(this);
+
+    // View properties
+    viewPropertiesAct = new TAction(this, "view_properties",
+                                    tr("Properties..."), "",
+                                    Qt::SHIFT | Qt::Key_P);
+    viewPropertiesAct->setCheckable(true);
+    viewPropertiesAct->setEnabled(false);
+    connect(viewPropertiesAct, &TAction::triggered,
+            this, &TMainWindow::showFilePropertiesDialog);
+
     // View playlist
-    QAction* viewPlaylistAct = playlistDock->toggleViewAction();
-    viewPlaylistAct->setObjectName("view_playlist");
-    viewPlaylistAct->setIcon(Images::icon("playlist"));
-    viewPlaylistAct->setShortcut(Qt::Key_P);
-    updateToolTip(viewPlaylistAct);
-    addAction(viewPlaylistAct);
-    autoHideTimer->add(viewPlaylistAct, playlistDock);
+    QAction* action = playlistDock->toggleViewAction();
+    action->setObjectName("view_playlist");
+    action->setIcon(Images::icon("playlist"));
+    action->setShortcut(Qt::Key_P);
+    updateToolTip(action);
+    addAction(action);
+    autoHideTimer->add(action, playlistDock);
+
+    // View log
+    action = logDock->toggleViewAction();
+    action->setObjectName("view_log");
+    action->setIcon(Images::icon("log"));
+    action->setShortcut(QKeySequence("L"));
+    updateToolTip(action);
+    addAction(action);
+    autoHideTimer->add(action, logDock);
+
+    // Open config dir
+    a = new TAction(this, "open_config_dir", tr("Open configuration folder..."));
+    connect(a, &TAction::triggered, this, &TMainWindow::showConfigFolder);
+
+    // Settings
+    a = new TAction(this, "view_settings", tr("Settings..."), "",
+                    Qt::ALT | Qt::CTRL | Qt::Key_S);
+    connect(a, &QAction::triggered, this, &TMainWindow::showSettingsDialog);
 
 
     // Time slider
@@ -1188,9 +1243,9 @@ void TMainWindow::createActions() {
     connect(viewFramesAct, &TAction::toggled,
             this, &TMainWindow::displayFrames);
 
-    viewPlaylistAct = new Action::TAction(this, "next_wheel_function",
+    a = new Action::TAction(this, "next_wheel_function",
                             tr("Next wheel function"), 0, Qt::Key_W);
-    connect(viewPlaylistAct, &Action::TAction::triggered,
+    connect(a, &Action::TAction::triggered,
             player, &Player::TPlayer::nextWheelFunction);
 } // createActions
 
@@ -1240,7 +1295,7 @@ void TMainWindow::createMenus() {
     connect(statusBar(), &QStatusBar::customContextMenuRequested,
             toolbarMenu, &Menu::TMenu::execSlot);
 
-    viewMenu = new Menu::TMenuView(this, toolbarMenu, logDock, autoHideTimer);
+    viewMenu = new Menu::TMenuView(this, this, toolbarMenu);
     menuBar()->addMenu(viewMenu);
 
     helpMenu = new Menu::TMenuHelp(this);
@@ -1529,9 +1584,11 @@ void TMainWindow::createFilePropertiesDialog() {
 void TMainWindow::setDataToFileProperties() {
     WZDEBUG("");
 
+    // Get info from player
     Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
     i->getInfo();
-    file_properties_dialog->setCodecs(i->vcList(), i->acList(),
+    file_properties_dialog->setCodecs(i->vcList(),
+                                      i->acList(),
                                       i->demuxerList());
 
     // Save a copy of the demuxer, video and audio codec
@@ -2563,63 +2620,66 @@ void TMainWindow::setEnableActions() {
     inOutGroup->setEnabled(enable);
 
     // Aspect menu
-    bool e = enable && player->hasVideo();
-    aspectGroup->setEnabled(e);
-    nextAspectAct->setEnabled(e);
+    bool enableVideo = enable && player->hasVideo();
+    aspectGroup->setEnabled(enableVideo);
+    nextAspectAct->setEnabled(enableVideo);
     updateAspectMenu();
 
     // Window size menu
-    windowSizeGroup->setEnabled(enable);
-    doubleSizeAct->setEnabled(enable);
-    optimizeSizeAct->setEnabled(enable);
+    windowSizeGroup->setEnabled(enableVideo);
+    doubleSizeAct->setEnabled(enableVideo);
+    optimizeSizeAct->setEnabled(enableVideo);
     // Resize on load always enabled
 
     // Zoom and pan
-    zoomAndPanGroup->setEnabled(e);
+    zoomAndPanGroup->setEnabled(enableVideo);
 
     // Video equalizer
-    equalizerAct->setEnabled(e);
-    resetVideoEqualizerAct->setEnabled(e);
-    decContrastAct->setEnabled(e);
-    incContrastAct->setEnabled(e);
-    decBrightnessAct->setEnabled(e);
-    incBrightnessAct->setEnabled(e);
-    decHueAct->setEnabled(e);
-    incHueAct->setEnabled(e);
-    decSaturationAct->setEnabled(e);
-    incSaturationAct->setEnabled(e);
-    decGammaAct->setEnabled(e);
-    incGammaAct->setEnabled(e);
+    equalizerAct->setEnabled(enableVideo);
+    resetVideoEqualizerAct->setEnabled(enableVideo);
+    decContrastAct->setEnabled(enableVideo);
+    incContrastAct->setEnabled(enableVideo);
+    decBrightnessAct->setEnabled(enableVideo);
+    incBrightnessAct->setEnabled(enableVideo);
+    decHueAct->setEnabled(enableVideo);
+    incHueAct->setEnabled(enableVideo);
+    decSaturationAct->setEnabled(enableVideo);
+    incSaturationAct->setEnabled(enableVideo);
+    decGammaAct->setEnabled(enableVideo);
+    incGammaAct->setEnabled(enableVideo);
 
     // Color space
-    colorSpaceGroup->setEnabled(e && Settings::pref->isMPV());
+    colorSpaceGroup->setEnabled(enableVideo && Settings::pref->isMPV());
     colorSpaceGroup->setChecked(player->mset.color_space);
 
     // Deinterlace
-    bool ef = e && player->videoFiltersEnabled();
-    deinterlaceGroup->setEnabled(ef);
-    toggleDeinterlaceAct->setEnabled(ef);
+    bool enableVideoFilters = enableVideo && player->videoFiltersEnabled();
+    deinterlaceGroup->setEnabled(enableVideoFilters);
+    toggleDeinterlaceAct->setEnabled(enableVideoFilters);
 
     // Transform
-    flipAct->setEnabled(ef);
-    mirrorAct->setEnabled(ef);
-    rotateGroup->setEnabled(ef);
+    flipAct->setEnabled(enableVideoFilters);
+    mirrorAct->setEnabled(enableVideoFilters);
+    rotateGroup->setEnabled(enableVideoFilters);
 
     // Video filters
-    filterGroup->setEnabled(ef);
-    filterGroup->addLetterboxAct->setEnabled(ef && pref->isMPlayer());
-    denoiseGroup->setEnabled(ef);
-    sharpenGroup->setEnabled(ef);
+    filterGroup->setEnabled(enableVideoFilters);
+    filterGroup->addLetterboxAct->setEnabled(enableVideoFilters
+                                             && pref->isMPlayer());
+    denoiseGroup->setEnabled(enableVideoFilters);
+    sharpenGroup->setEnabled(enableVideoFilters);
 
     // Stereo 3D
-    stereo3DAct->setEnabled(ef);
+    stereo3DAct->setEnabled(enableVideoFilters);
 
     // Video tracks
-    nextVideoTrackAct->setEnabled(e && player->mdat.videos.count() > 1);
-    videoTrackGroup->setEnabled(e);
+    nextVideoTrackAct->setEnabled(enableVideo
+                                  && player->mdat.videos.count() > 1);
+    videoTrackGroup->setEnabled(enableVideo);
 
     // ScreenShots
-    bool enableScreenShots = e && !pref->screenshot_directory.isEmpty();
+    bool enableScreenShots = enableVideo
+            && !pref->screenshot_directory.isEmpty();
     screenshotAct->setEnabled(enableScreenShots && pref->use_screenshot);
     screenshotsAct->setEnabled(enableScreenShots && pref->use_screenshot);
     capturingAct->setEnabled(enableScreenShots);
@@ -2634,7 +2694,6 @@ void TMainWindow::setEnableActions() {
 
     // Settings only stored in mset
     enable = player->statePOP() && player->hasAudio();
-
     decAudioDelayAct->setEnabled(enable);
     incAudioDelayAct->setEnabled(enable);
     audioDelayAct->setEnabled(enable);
@@ -2668,14 +2727,14 @@ void TMainWindow::setEnableActions() {
     enableSubtitleActions();
 
     // Browse
-    bool pop = player->statePOP();
-    bool enableChapters = pop && player->mdat.chapters.count() > 0;
+    enable = player->statePOP();
+    bool enableChapters = enable && player->mdat.chapters.count() > 0;
     prevChapterAct->setEnabled(enableChapters);
     nextChapterAct->setEnabled(enableChapters);
-    nextAngleAct->setEnabled(pop && player->mdat.angles > 1);
+    nextAngleAct->setEnabled(enable && player->mdat.angles > 1);
 
     // DVDNAV
-    bool enableDVDNav = pop
+    bool enableDVDNav = enable
             && player->mdat.detected_type == TMediaData::TYPE_DVDNAV;
     dvdnavUpAct->setEnabled(enableDVDNav);
     dvdnavDownAct->setEnabled(enableDVDNav);
@@ -2687,8 +2746,17 @@ void TMainWindow::setEnableActions() {
     dvdnavSelectAct->setEnabled(enableDVDNav);
     dvdnavMouseAct->setEnabled(enableDVDNav);
 
+
+    // View menu
+    // OSD
+    osdShowFilenameAct->setEnabled(enableVideo);
+    osdShowTimeAct->setEnabled(enableVideo);
+    // Other OSD actions always enabled
+
+    viewPropertiesAct->setEnabled(!player->mdat.filename.isEmpty());
+
     // Time slider
-    timeslider_action->enable(player->statePOP());
+    timeslider_action->enable(enable);
 
     emit enableActions();
 }
@@ -3515,6 +3583,7 @@ void TMainWindow::setStayOnTop(bool b) {
     ignore_show_hide_events = false;
 }
 
+// Slot called by action group TStayOnTopGroup
 void TMainWindow::changeStayOnTop(int stay_on_top) {
 
     switch (stay_on_top) {
@@ -3529,10 +3598,20 @@ void TMainWindow::changeStayOnTop(int stay_on_top) {
     emit stayOnTopChanged(stay_on_top);
 }
 
+// Slot called by action toggle stay on top
+void TMainWindow::toggleStayOnTop() {
+
+    if (pref->stay_on_top == TPreferences::NeverOnTop)
+        changeStayOnTop(TPreferences::AlwaysOnTop);
+    else
+        changeStayOnTop(TPreferences::NeverOnTop);
+}
+
+// Check stay on top for TPreferences::WhilePlayingOnTop
 void TMainWindow::checkStayOnTop(Player::TState) {
 
-    if (pref->fullscreen
-        || pref->stay_on_top != TPreferences::WhilePlayingOnTop) {
+    if (pref->stay_on_top != TPreferences::WhilePlayingOnTop
+            || pref->fullscreen) {
         return;
     }
 
@@ -3548,14 +3627,6 @@ void TMainWindow::checkStayOnTop(Player::TState) {
         default:
             break;
     }
-}
-
-void TMainWindow::toggleStayOnTop() {
-
-    if (pref->stay_on_top == TPreferences::NeverOnTop)
-        changeStayOnTop(TPreferences::AlwaysOnTop);
-    else
-        changeStayOnTop(TPreferences::NeverOnTop);
 }
 
 #if defined(Q_OS_WIN)

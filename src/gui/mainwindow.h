@@ -419,6 +419,16 @@ private:
     Action::TAction* dvdnavMouseAct;
 
 
+    // View menu
+    // OSD
+    Action::TActionGroup* osdGroup;
+    Action::TAction* osdShowFilenameAct;
+    Action::TAction* osdShowTimeAct;
+
+    // View properties
+    Action::TAction* viewPropertiesAct;
+
+
     // Help menu
     QMenu* helpMenu;
     Action::Menu::TMenuExec* contextMenu;
