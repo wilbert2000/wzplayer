@@ -1162,6 +1162,19 @@ void TMainWindow::createActions() {
     connect(a, &QAction::triggered, this, &TMainWindow::showSettingsDialog);
 
 
+    // Help
+    a = new TAction(this, "help_cl_options", tr("Command line options"),
+                    "cl_help");
+    connect(a, &TAction::triggered, this, &TMainWindow::helpCLOptions);
+
+    a = new TAction(this, "help_check_updates", tr("Check for updates"),
+                    "pref_updates");
+    connect(a, &TAction::triggered, this, &TMainWindow::helpCheckUpdates);
+
+    a = new TAction(this, "help_about", tr("About WZPlayer"), "logo");
+    connect(a, &TAction::triggered, this, &TMainWindow::helpAbout);
+
+
     // Time slider
     timeslider_action = new TTimeSliderAction(this);
     timeslider_action->setObjectName("timeslider_action");
@@ -1298,7 +1311,7 @@ void TMainWindow::createMenus() {
     viewMenu = new Menu::TMenuView(this, this, toolbarMenu);
     menuBar()->addMenu(viewMenu);
 
-    helpMenu = new Menu::TMenuHelp(this);
+    helpMenu = new Menu::TMenuHelp(this, this);
     menuBar()->addMenu(helpMenu);
 
     // Context menu

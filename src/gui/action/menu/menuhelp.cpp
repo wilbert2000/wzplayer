@@ -1,28 +1,17 @@
 #include "gui/action/menu/menuhelp.h"
 #include "gui/mainwindow.h"
-#include "gui/action/action.h"
+
 
 namespace Gui {
 namespace Action {
 namespace Menu {
 
-TMenuHelp::TMenuHelp(TMainWindow* mw) :
-    TMenu(mw, mw, "help_menu", tr("Help"), "noicon") {
+TMenuHelp::TMenuHelp(QWidget* parent, TMainWindow* mw) :
+    TMenu(parent, mw, "help_menu", tr("Help"), "noicon") {
 
-    // Menu Help
-    TAction* a = new TAction(mw, "cl_options", tr("Command line options"),
-                             "cl_help");
-    connect(a, &TAction::triggered, mw, &TMainWindow::helpCLOptions);
-    addAction(a);
-
-    a = new TAction(mw, "check_updates", tr("Check for updates"),
-                    "pref_updates");
-    connect(a, &TAction::triggered, mw, &TMainWindow::helpCheckUpdates);
-    addAction(a);
-
-    a = new TAction(mw, "about", tr("About WZPlayer"), "logo");
-    connect(a, &TAction::triggered, mw, &TMainWindow::helpAbout);
-    addAction(a);
+    addAction(mw->findAction("help_cl_options"));
+    addAction(mw->findAction("help_check_updates"));
+    addAction(mw->findAction("help_about"));
 }
 
 } // namespace Menu

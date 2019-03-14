@@ -8,14 +8,11 @@ namespace Gui {
 class TMainWindow;
 
 namespace Action {
-
-class TAction;
-
 namespace Menu {
 
 class TMenuHelp : public TMenu {
 public:
-    explicit TMenuHelp(TMainWindow* mw);
+    explicit TMenuHelp(QWidget* parent, TMainWindow* mw);
 };
 
 } // namespace Menu
