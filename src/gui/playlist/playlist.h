@@ -90,7 +90,7 @@ protected:
     virtual void dropEvent(QDropEvent*) override;
 
 private:
-    TMainWindow* main_window;
+    TMainWindow* mainWindow;
     TPlaylistWidget* playlistWidget;
     QToolBar* toolbar;
     QToolButton* add_button;

@@ -60,7 +60,7 @@ namespace Playlist {
 TPlaylist::TPlaylist(QWidget* parent, TMainWindow* mw) :
     QWidget(parent),
     debug(logger()),
-    main_window(mw),
+    mainWindow(mw),
     thread(0),
     restartThread(false),
     disableEnableActions(0),
@@ -115,25 +115,27 @@ void TPlaylist::createTree() {
 void TPlaylist::createActions() {
 
     // Open playlist
-    openPlaylistAct = new TAction(main_window, "pl_open", tr("Open playlist..."),
-                          "noicon", QKeySequence("Ctrl+P"));
+    openPlaylistAct = new TAction(mainWindow, "pl_open",
+                                  tr("Open playlist..."), "noicon",
+                                  QKeySequence("Ctrl+P"));
     openPlaylistAct->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-    connect(openPlaylistAct, &TAction::triggered, this, &TPlaylist::openPlaylistDialog);
+    connect(openPlaylistAct, &TAction::triggered,
+            this, &TPlaylist::openPlaylistDialog);
 
     // Save playlist
-    saveAct = new TAction(main_window, "pl_save", tr("Save playlist"), "noicon",
+    saveAct = new TAction(mainWindow, "pl_save", tr("Save playlist"), "noicon",
                           QKeySequence("Ctrl+S"));
     saveAct->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     connect(saveAct, &TAction::triggered, this, &TPlaylist::save);
 
     // SaveAs
-    saveAsAct = new TAction(main_window, "pl_saveas",
+    saveAsAct = new TAction(mainWindow, "pl_saveas",
                             tr("Save playlist as..."), "noicon");
     saveAsAct->setIcon(style()->standardIcon(QStyle::SP_DriveHDIcon));
     connect(saveAsAct, &TAction::triggered, this, &TPlaylist::saveAs);
 
     // Refresh
-    refreshAct = new TAction(main_window, "pl_refresh", tr("Refresh playlist"),
+    refreshAct = new TAction(mainWindow, "pl_refresh", tr("Refresh playlist"),
                              "noicon", Qt::Key_F5);
     refreshAct->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
     connect(refreshAct, &TAction::triggered, this, &TPlaylist::refresh);
@@ -141,43 +143,43 @@ void TPlaylist::createActions() {
             this, &TPlaylist::refresh, Qt::QueuedConnection);
 
     // Browse directory
-    browseDirAct = new TAction(main_window, "pl_browse_dir",
+    browseDirAct = new TAction(mainWindow, "pl_browse_dir",
                                tr("Browse directory"), "noicon");
     browseDirAct->setIcon(QIcon(style()->standardIcon(QStyle::SP_DirOpenIcon)));
     connect(browseDirAct, &TAction::triggered, this, &TPlaylist::browseDir);
 
     // Stop
-    stopAct = new TAction(main_window, "stop", tr("Stop"), "",
+    stopAct = new TAction(mainWindow, "stop", tr("Stop"), "",
                           Qt::Key_MediaStop);
     connect(stopAct, &TAction::triggered, this, &TPlaylist::stop);
 
     // Play
-    playAct = new TAction(main_window, "play", tr("Play"), "play",
+    playAct = new TAction(mainWindow, "play", tr("Play"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
     connect(playAct, &TAction::triggered, this, &Playlist::TPlaylist::play);
 
     // Play/pause
-    playOrPauseAct = new TAction(main_window, "play_or_pause", tr("Play"),
+    playOrPauseAct = new TAction(mainWindow, "play_or_pause", tr("Play"),
                                  "play", Qt::Key_Space);
     // Add MCE remote key
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
     connect(playOrPauseAct, &TAction::triggered, this, &TPlaylist::playOrPause);
 
     // Play in new window
-    openInNewWindowAct = new TAction(main_window, "play_in_new_window",
+    openInNewWindowAct = new TAction(mainWindow, "play_in_new_window",
                              tr("Play in new window"), "play",
                              Qt::CTRL | Qt::Key_Space);
     connect(openInNewWindowAct, &TAction::triggered,
             this, &TPlaylist::openInNewWindow);
 
     // Pause
-    pauseAct = new TAction(main_window, "pause", tr("Pause"), "",
+    pauseAct = new TAction(mainWindow, "pause", tr("Pause"), "",
                            QKeySequence("Media Pause")); // MCE remote key
     connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
 
     // Play next
-    playNextAct = new TAction(main_window, "play_next", tr("Play next"), "next",
+    playNextAct = new TAction(mainWindow, "play_next", tr("Play next"), "next",
                               QKeySequence(">"));
     playNextAct->addShortcut(QKeySequence("."));
     playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
@@ -185,7 +187,7 @@ void TPlaylist::createActions() {
     connect(playNextAct, &TAction::triggered, this, &TPlaylist::playNext);
 
     // Play prev
-    playPrevAct = new TAction(main_window, "play_prev", tr("Play previous"),
+    playPrevAct = new TAction(mainWindow, "play_prev", tr("Play previous"),
                               "previous", QKeySequence("<"));
     playPrevAct->addShortcut(QKeySequence(","));
     playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
@@ -193,14 +195,14 @@ void TPlaylist::createActions() {
     connect(playPrevAct, &TAction::triggered, this, &TPlaylist::playPrev);
 
     // Repeat
-    repeatAct = new TAction(main_window, "pl_repeat", tr("Repeat playlist"),
+    repeatAct = new TAction(mainWindow, "pl_repeat", tr("Repeat playlist"),
                             "", Qt::CTRL | Qt::Key_Backslash);
     repeatAct->setCheckable(true);
     connect(repeatAct, &TAction::triggered,
             this, &TPlaylist::onRepeatToggled);
 
     // Shuffle
-    shuffleAct = new TAction(main_window, "pl_shuffle", tr("Shuffle playlist"),
+    shuffleAct = new TAction(mainWindow, "pl_shuffle", tr("Shuffle playlist"),
                              "shuffle", Qt::ALT | Qt::Key_Backslash);
     shuffleAct->setCheckable(true);
     connect(shuffleAct, &TAction::triggered,
@@ -209,7 +211,7 @@ void TPlaylist::createActions() {
 
     // Context menu
     Action::Menu::TMenu* contextMenu = new Action::Menu::TMenu(
-        this, main_window, "pl_context_menu", tr("Playlist context menu"));
+        this, mainWindow, "pl_context_menu", tr("Playlist context menu"));
     connect(contextMenu, &Action::Menu::TMenu::aboutToShow,
             this, &TPlaylist::enableActions);
 
@@ -239,7 +241,7 @@ void TPlaylist::createActions() {
     connect(findPlayingAct, &TAction::triggered,
             this, &TPlaylist::findPlayingItem);
     contextMenu->addAction(findPlayingAct);
-    main_window->addAction(findPlayingAct);
+    mainWindow->addAction(findPlayingAct);
 
 
     contextMenu->addSeparator();
@@ -255,7 +257,7 @@ void TPlaylist::createActions() {
                           QKeySequence("Ctrl+C"));
     connect(copyAct, &TAction::triggered, this, &TPlaylist::copySelected);
     contextMenu->addAction(copyAct);
-    main_window->addAction(copyAct);
+    mainWindow->addAction(copyAct);
 
     // Paste
     pasteAct = new TAction(this, "pl_paste", tr("Paste file name(s)"), "",
@@ -264,12 +266,12 @@ void TPlaylist::createActions() {
     connect(QApplication::clipboard(), &QClipboard::dataChanged,
             this, &TPlaylist::enablePaste);
     contextMenu->addAction(pasteAct);
-    main_window->addAction(pasteAct);
+    mainWindow->addAction(pasteAct);
 
     contextMenu->addSeparator();
 
     // Add menu
-    playlistAddMenu = new Menu::TMenu(this, main_window, "pl_add_menu",
+    playlistAddMenu = new Menu::TMenu(this, mainWindow, "pl_add_menu",
                                       tr("Add to playlist"), "noicon");
     playlistAddMenu->menuAction()->setIcon(style()->standardIcon(
                                                QStyle::SP_DialogOkButton));
@@ -300,13 +302,13 @@ void TPlaylist::createActions() {
     connect(a, &TAction::triggered, this, &TPlaylist::addUrls);
 
     // Add removed sub menu
-    playlistAddMenu->addMenu(new TMenuAddRemoved(this, main_window,
+    playlistAddMenu->addMenu(new TMenuAddRemoved(this, mainWindow,
                                                  playlistWidget));
 
     contextMenu->addMenu(playlistAddMenu);
 
     // Remove menu
-    playlistRemoveMenu = new Menu::TMenu(this, main_window, "pl_remove_menu",
+    playlistRemoveMenu = new Menu::TMenu(this, mainWindow, "pl_remove_menu",
                                          tr("Remove from playlist"), "noicon");
     playlistRemoveMenu->menuAction()->setIcon(style()->standardIcon(
                                                 QStyle::SP_DialogCancelButton));
@@ -893,7 +895,7 @@ void TPlaylist::openInNewWindow() {
     }
 
     // Save settings and modified playlist
-    main_window->save();
+    mainWindow->save();
 
     QProcess p;
     if (p.startDetached(qApp->applicationFilePath(), files)) {
@@ -1098,7 +1100,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
 
         // Pause a single image
         if (player->mdat.image && playlistWidget->hasSingleItem()) {
-            main_window->runActionsLater("pause", true);
+            mainWindow->runActionsLater("pause", true);
         }
 
         return;
