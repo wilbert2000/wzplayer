@@ -57,9 +57,9 @@ TMainWindowTray::TMainWindowTray() :
     showTrayAct = new Action::TAction(this, "show_tray_icon",
                                       tr("Show in system tray"));
     showTrayAct->setCheckable(true);
-    connect(showTrayAct, &Gui::Action::TAction::toggled,
+    connect(showTrayAct, &Action::TAction::toggled,
             tray, &QSystemTrayIcon::setVisible);
-    connect(showTrayAct, &Gui::Action::TAction::toggled,
+    connect(showTrayAct, &Action::TAction::toggled,
             quitAct, &Action::TAction::setVisible);
 
     viewMenu->addSeparator();
