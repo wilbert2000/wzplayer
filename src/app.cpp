@@ -101,31 +101,31 @@ QString TApp::loadStyleSheet(const QString& filename) {
 void TApp::changeStyleSheet(const QString& style) {
     WZDEBUG("'" + style + "'");
 
+    using namespace Settings;
+
     // Load default stylesheet
     QString stylesheet = loadStyleSheet(":/default-theme/style.qss");
 
     if (!style.isEmpty()) {
         // Check main.css
-        QString qss_file = Settings::TPaths::configPath() + "/themes/"
-                           + Settings::pref->iconset + "/main.css";
-        if (!QFile::exists(qss_file)) {
-            qss_file = Settings::TPaths::themesPath() + "/"
-                       + Settings::pref->iconset + "/main.css";
+        QString qss = TPaths::configPath() + "/themes/" + pref->iconset
+                + "/main.css";
+        if (!QFile::exists(qss)) {
+            qss = TPaths::themesPath() + "/" + pref->iconset + "/main.css";
         }
 
         // Check style.qss
-        if (!QFile::exists(qss_file)) {
-            qss_file = Settings::TPaths::configPath() + "/themes/"
-                       + Settings::pref->iconset + "/style.qss";
-            if (!QFile::exists(qss_file)) {
-                qss_file = Settings::TPaths::themesPath() +"/"
-                           + Settings::pref->iconset + "/style.qss";
+        if (!QFile::exists(qss)) {
+            qss = TPaths::configPath() + "/themes/" + pref->iconset
+                    + "/style.qss";
+            if (!QFile::exists(qss)) {
+                qss = TPaths::themesPath() +"/" + pref->iconset + "/style.qss";
             }
         }
 
         // Load style file
-        if (QFile::exists(qss_file)) {
-            stylesheet += loadStyleSheet(qss_file);
+        if (QFile::exists(qss)) {
+            stylesheet += loadStyleSheet(qss);
         }
     }
 
@@ -133,7 +133,7 @@ void TApp::changeStyleSheet(const QString& style) {
 }
 
 void TApp::setupStyle() {
-    WZDEBUG("");
+    WZTRACE("");
 
     // Set application style
     // From help: Warning: To ensure that the application's style is set
@@ -161,7 +161,7 @@ bool TApp::loadCatalog(QTranslator& translator,
     QString loc = name + "_" + locale;
     bool r = translator.load(loc, dir);
     if (r) {
-        WZINFO("loaded '" + loc + "' from '" + dir + "'");
+        WZINFO("Loaded '" + loc + "' from '" + dir + "'");
     } else {
         WZDEBUG("'" + loc + "' not found in '" + dir + "'");
     }
@@ -396,11 +396,11 @@ TApp::TExitCode TApp::processArgs() {
 }
 
 void TApp::createGUI() {
-    WZDEBUG("Creating main window");
+    WZTRACE("Creating main window");
 
     main_window = new Gui::TMainWindowTray();
 
-    WZDEBUG("Loading window config");
+    WZTRACE("Applying settings");
     main_window->loadSettings();
 
     main_window->setForceCloseOnFinish(close_at_end);
@@ -419,7 +419,7 @@ void TApp::createGUI() {
         main_window->resize(gui_size);
     }
 
-    WZDEBUG("Created main window");
+    WZTRACE("Created main window");
 } // createGUI()
 
 bool TApp::acceptClipboardAsURL() {
@@ -471,6 +471,14 @@ void TApp::start() {
         main_window->getPlaylist()->openFiles(files_to_play, current_file);
     }
 
+    // Add load of favorites to actions
+    if (actions.isEmpty()) {
+        actions = "fav_refresh";
+    } else {
+        // Prepend, it runs async after media started playing
+        actions = "fav_refresh " + actions;
+    }
+
     main_window->runActionsLater(actions, files_to_play.count() == 0);
 
     // Free files_to_play
@@ -496,30 +504,6 @@ void TApp::onRequestRestart() {
 
 void TApp::logInfo() {
 
-#ifdef Q_OS_WIN
-    QString win_ver;
-    switch (QSysInfo::WindowsVersion) {
-        case QSysInfo::WV_2000: win_ver = "Windows 2000"; break;
-        case QSysInfo::WV_XP: win_ver = "Windows XP"; break;
-        case QSysInfo::WV_2003:
-            win_ver = "Windows XP Professional x64/Server 2003";
-            break;
-        case QSysInfo::WV_VISTA: win_ver = "Windows Vista/Server 2008"; break;
-        case QSysInfo::WV_WINDOWS7: win_ver = "Windows 7/Server 2008 R2"; break;
-        case QSysInfo::WV_WINDOWS8: win_ver = "Windows 8/Server 2012"; break;
-#if (QT_VERSION >= 0x050200)
-        case QSysInfo::WV_WINDOWS8_1:
-            win_ver = "Windows 8.1/Server 2012 R2";
-            break;
-#endif
-#if (QT_VERSION >= 0x050500)
-        case QSysInfo::WV_WINDOWS10: win_ver = "Windows 10"; break;
-#endif
-        case QSysInfo::WV_NT_based: win_ver = "NT-based Windows"; break;
-        default: win_ver = QString("Unknown/Unsupported Windows OS"); break;
-    }
-#endif // ifdef Q_OS_WIN
-
     QString s = tr("WZPlayer %1 running on %2")
                 .arg(TVersion::version)
 
@@ -528,7 +512,7 @@ void TApp::logInfo() {
 #else
 
 #ifdef Q_OS_WIN
-                .arg("Windows (" + win_ver + ")");
+                .arg("Windows");
 #else
                 .arg("an undetermined OS");
 #endif
@@ -541,6 +525,8 @@ void TApp::logInfo() {
     WZINFO("Application dir '" + applicationDirPath() + "'");
     WZINFO("Configuration dir '" + Settings::TPaths::configPath() + "'");
     WZINFO("Data dir '" + Settings::TPaths::dataPath() + "'");
+    WZINFO("Favorites dir '" + Settings::TPaths::favoritesPath() + "'");
+    WZINFO("Screenshots dir '" + Settings::pref->screenshot_directory + "'");
     WZINFO("Translation dir '" + Settings::TPaths::translationPath() + "'");
     WZINFO("Themes dir '" + Settings::TPaths::themesPath() + "'");
     WZINFO("Shortcuts dir '" + Settings::TPaths::shortcutsPath() + "'");

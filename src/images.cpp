@@ -33,57 +33,47 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Images)
 
 QString Images::current_theme;
 QString Images::themes_path;
-
 QString Images::last_resource_loaded;
 bool Images::has_rcc = false;
 
-QString Images::resourceFilename() {
-
-    QString filename = QString::null;
-
-    if ((!themes_path.isEmpty()) && (!current_theme.isEmpty())) {
-        filename = themes_path +"/"+ current_theme +"/"+ current_theme +".rcc";
-    }
-
-    WZDEBUG("resource file name '" + filename + "'");
-    return filename;
-}
 
 void Images::setTheme(const QString& name) {
+
+    if (!last_resource_loaded.isEmpty()) {
+        WZDEBUG("Unloading '" + last_resource_loaded + "'");
+        QResource::unregisterResource(last_resource_loaded);
+        last_resource_loaded = "";
+        has_rcc = false;
+    }
 
     current_theme = name;
 
     QString dir = TPaths::configPath() + "/themes/" + name;
     if (QFile::exists(dir)) {
-        setThemesPath(TPaths::configPath() + "/themes/");
+        themes_path = TPaths::configPath() + "/themes/";
     } else {
-        setThemesPath(TPaths::themesPath());
+        themes_path = TPaths::themesPath();
     }
 
-    if (!last_resource_loaded.isEmpty()) {
-        logger()->debug("setTheme: unloading '" + last_resource_loaded + "'");
-        QResource::unregisterResource(last_resource_loaded);
-        last_resource_loaded = QString::null;
+    QString rs_file;
+    if (!themes_path.isEmpty() && !current_theme.isEmpty()) {
+        rs_file = themes_path + "/" + current_theme + "/"
+                + current_theme + ".rcc";
     }
 
-    QString rs_file = resourceFilename();
     if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
-        WZDEBUG("loading '" + rs_file + "'");
-        QResource::registerResource(rs_file);
-        last_resource_loaded = rs_file;
-        has_rcc = true;
+        WZDEBUG("Loading resource file '" + rs_file + "'");
+        if (QResource::registerResource(rs_file)) {
+            last_resource_loaded = rs_file;
+            has_rcc = true;
+        }
     } else {
         has_rcc = false;
     }
     WZDEBUG("has_rcc " + QString::number(has_rcc));
 }
 
-void Images::setThemesPath(const QString& folder) {
-    WZDEBUG("'" + folder + "'");
-    themes_path = folder;
-}
-
-QString Images::file(const QString& name) {
+QString Images::iconFilename(const QString& name) {
 
     if (name.isEmpty())
         return "";
@@ -92,51 +82,51 @@ QString Images::file(const QString& name) {
         setTheme(pref->iconset);
     }
 
-    QString icon_name;
+    QString filename;
     if (!current_theme.isEmpty()) {
-        if (has_rcc)
-            icon_name = ":/" + current_theme + "/"+ name + ".png";
-        else
-            icon_name = themes_path +"/"+ current_theme + "/"+ name + ".png";
+        if (has_rcc) {
+            filename = ":/" + current_theme + "/"+ name + ".png";
+        } else {
+            filename = themes_path +"/"+ current_theme + "/"+ name + ".png";
+        }
     }
 
-    if (icon_name.isEmpty() || !QFile::exists(icon_name)) {
-        icon_name = ":/default-theme/" + name + ".png";
+    if (filename.isEmpty() || !QFile::exists(filename)) {
+        filename = ":/default-theme/" + name + ".png";
     }
 
-    return icon_name;
+    return filename;
 }
 
 QPixmap Images::icon(const QString& name, int size) {
 
-    if (name.isEmpty())
+    if (name.isEmpty()) {
         return QPixmap();
-
-    QString icon_name = file(name);
-    QPixmap p(icon_name);
-    if (p.isNull()) {
-        WZTRACE("'" + name + "' not found");
-    } else if (size > 0) {
-        p = resize(&p, size);
     }
 
-    return p;
+    QPixmap pixmap(iconFilename(name));
+    if (pixmap.isNull()) {
+        WZTRACE("'" + name + "' not found");
+    } else if (size > 0) {
+        pixmap = resize(pixmap, size);
+    }
+
+    return pixmap;
 }
 
-QPixmap Images::resize(QPixmap* p, int size) {
-    return QPixmap::fromImage((*p).toImage()
-        .scaled(size,size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+QPixmap Images::resize(const QPixmap& pixmap, int size) {
+    return QPixmap::fromImage(
+                pixmap.toImage()
+                .scaled(size, size,
+                        Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
-QPixmap Images::flip(QPixmap* p) {
-    return QPixmap::fromImage((*p).toImage().mirrored(true, false));
+QPixmap Images::flip(const QPixmap& pixmap) {
+    return QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
 }
 
 QPixmap Images::flippedIcon(const QString& name, int size) {
-
-    QPixmap p = icon(name, size);
-    p = flip(&p);
-    return p;
+    return flip(icon(name, size));
 }
 
 QString Images::styleSheet() {

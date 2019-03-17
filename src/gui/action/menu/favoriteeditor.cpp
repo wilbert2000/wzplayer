@@ -269,7 +269,7 @@ void TFavoriteEditor::onAddSubmenuButtonClicked() {
     table->insertRow(row);
 
     QTableWidgetItem* icon_item = new QTableWidgetItem;
-    icon_item->setData(Qt::UserRole, Images::file("open_directory"));
+    icon_item->setData(Qt::UserRole, Images::iconFilename("open_directory"));
     icon_item->setIcon(Images::icon("open_directory"));
     icon_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 

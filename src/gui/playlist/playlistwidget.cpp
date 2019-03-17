@@ -27,7 +27,9 @@
 namespace Gui {
 namespace Playlist {
 
-TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
+TPlaylistWidget::TPlaylistWidget(QWidget* parent,
+                                 const QString& name,
+                                 const QString& shortName) :
     QTreeWidget(parent),
     debug(logger()),
     playingItem(0),
@@ -36,7 +38,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
     fileCopier(0),
     copyDialog(0) {
 
-    setObjectName("playlistwidget");
+    setObjectName(name);
+
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setIconSize(iconProvider.iconSize);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -90,13 +93,13 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent) :
 
     // Columns menu
     columnsMenu = new Gui::Action::Menu::TMenuExec(this);
-    columnsMenu->menuAction()->setObjectName("pl_columns_menu");
+    columnsMenu->menuAction()->setObjectName(shortName + "_columns_menu");
     columnsMenu->menuAction()->setText(tr("View columns"));
     QStringList colnames = QStringList() << "name" << "ext" << "length"
                         << "order";
     for(int i = 0; i < columnCount(); i++) {
         QAction* a = new QAction(headerItem()->text(i), columnsMenu);
-        a->setObjectName("pl_toggle_col_" + colnames.at(i));
+        a->setObjectName(shortName + "_toggle_col_" + colnames.at(i));
         a->setCheckable(true);
         a->setData(i);
         columnsMenu->addAction(a);
@@ -131,6 +134,7 @@ void TPlaylistWidget::clr() {
 
 // Called by root item to signal modified changed
 void TPlaylistWidget::emitModifiedChanged() {
+    WZDEBUG("");
     emit modifiedChanged();
 }
 
@@ -233,6 +237,7 @@ TPlaylistItem* TPlaylistWidget::findFilename(const QString &filename) {
     if (QFileInfo(filename).isDir()) {
         search2 = search1 + QDir::separator() + TConfig::WZPLAYLIST;
     }
+
     QTreeWidgetItemIterator it(this);
     while (*it) {
         TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
@@ -257,10 +262,11 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
             && playingItem->state() != PSTATE_FAILED) {
             playingItem->setState(PSTATE_STOPPED);
         }
-        // Only set current, when playing_item was current item
+        // Only set current item, when playingItem was current item
         setCurrent = playingItem == currentItem();
     }
 
+    bool changed = item != playingItem;
     playingItem = item;
 
     if (playingItem) {
@@ -271,8 +277,12 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
         setCurrentItem(playingItem);
     } else {
         // Hack to trigger playlist enableActions...
-        // TODO: remove hack
-        emit currentItemChanged(currentItem(), currentItem());
+        // TODO: better test removal
+        // emit currentItemChanged(currentItem(), currentItem());
+    }
+
+    if (changed) {
+        emit playingItemChanged(playingItem);
     }
 }
 
@@ -815,33 +825,35 @@ void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
         return;
     }
 
-    TPlaylistItem* p = static_cast<TPlaylistItem*>(parent.internalPointer());
+    TPlaylistItem* parentItem = static_cast<TPlaylistItem*>(
+                parent.internalPointer());
 
     if (sortSection == TPlaylistItem::COL_ORDER) {
         if (sortOrder == Qt::AscendingOrder) {
-            for (int i = p->childCount() - 1; i >= start; i--) {
-                p->plChild(i)->setOrder(i + 1);
+            for (int i = parentItem->childCount() - 1; i >= start; i--) {
+                parentItem->plChild(i)->setOrder(i + 1);
             }
         } else {
-            int order = p->childCount();
+            int order = parentItem->childCount();
             for (int i = 0; i <= end; i++) {
-                p->plChild(i)->setOrder(order--);
+                parentItem->plChild(i)->setOrder(order--);
             }
         }
     } else {
+        // Cols != COL_ORDER
         int d = end - start + 1;
-        for (int i = p->childCount() - 1; i > end; i--) {
-            TPlaylistItem* item = p->plChild(i);
+        for (int i = parentItem->childCount() - 1; i > end; i--) {
+            TPlaylistItem* item = parentItem->plChild(i);
             int o = item->order();
             if (o > start) {
                 item->setOrder(o + d);
             }
         }
         for (int i = end; i >= start; i--) {
-            p->plChild(i)->setOrder(i + 1);
+            parentItem->plChild(i)->setOrder(i + 1);
         }
         for (int i = start - 1; i >= 0; i--) {
-            TPlaylistItem* item = p->plChild(i);
+            TPlaylistItem* item = parentItem->plChild(i);
             int o = item->order();
             if (o > start) {
                 item->setOrder(o + d);
@@ -990,7 +1002,6 @@ void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
     }
 }
 
-
 void TPlaylistWidget::setSort(int section, Qt::SortOrder order) {
 
     sortSection = section;
@@ -1003,6 +1014,10 @@ void TPlaylistWidget::setSort(int section, Qt::SortOrder order) {
     } else if (isSortingEnabled()) {
         setSortingEnabled(false);
     }
+}
+
+void TPlaylistWidget::disableSort() {
+    setSort(-1, sortOrder);
 }
 
 void TPlaylistWidget::onColumnMenuTriggered(QAction* action) {
@@ -1120,7 +1135,10 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         }
 
         // Invalidate playing_item
-        playingItem = 0;
+        if (playingItem) {
+            playingItem = 0;
+            emit playingItemChanged(playingItem);
+        }
 
         // Delete old root
         setRootIndex(QModelIndex());
@@ -1128,7 +1146,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         clearSelection();
 
         // Disable sort
-        setSort(-1, sortOrder);
+        disableSort();
 
         // Set new item as root
         item->setFlags(ROOT_FLAGS);
@@ -1151,7 +1169,10 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         }
 
         if (item->modified()) {
+            WZTRACE("New root is modified");
             emit modifiedChanged();
+        } else {
+            WZTRACE("New root is not modified");
         }
     } else {
         // Collect and prepare children of item
@@ -1170,10 +1191,11 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         // Disable sort
         int savedSortSection = sortSection;
-        setSort(-1, sortOrder);
+        disableSort();
 
         // Insert children
         parent->insertChildren(idx, children);
+        // Restore sort
         setSort(savedSortSection, sortOrder);
 
         // Update size hint name column
@@ -1182,6 +1204,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
             static_cast<TPlaylistItem*>(children.at(i))->setSizeHintName(level);
         }
 
+        WZTRACE("Setting parent modified");
         parent->setModified();
     }
 
@@ -1199,7 +1222,7 @@ void TPlaylistWidget::loadSettings(QSettings* pref) {
 
     QList<QAction*> actions = columnsMenu->actions();
     for(int c = 0; c < columnCount(); c++) {
-        bool show = pref->value("COL_" + QString::number(c), true).toBool();
+        bool show = pref->value("COL_" + QString::number(c), c == 0).toBool();
         actions.at(c)->setChecked(show);
         setColumnHidden(c, !show);
     }

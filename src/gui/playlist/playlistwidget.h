@@ -25,7 +25,9 @@ class TPlaylistWidget : public QTreeWidget {
     DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TPlaylistWidget(QWidget* parent);
+    explicit TPlaylistWidget(QWidget* parent,
+                             const QString& name,
+                             const QString& shortName);
     virtual ~TPlaylistWidget();
 
     TPlaylistItem* playingItem;
@@ -61,7 +63,7 @@ public:
     void clearPlayed();
     void clr();
 
-    bool modified() const { return root()->modified(); }
+    bool isModified() const { return root()->modified(); }
     void clearModified() { root()->setModified(false, true); }
     void emitModifiedChanged();
 
@@ -71,6 +73,7 @@ public:
     void removeSelected(bool deleteFromDisk);
 
     void setSort(int section, Qt::SortOrder order);
+    void disableSort();
 
     void saveSettings(QSettings* pref);
     void loadSettings(QSettings* pref);
@@ -80,7 +83,7 @@ public slots:
 
 signals:
     void modifiedChanged();
-    void refresh();
+    void playingItemChanged(TPlaylistItem* item);
 
 protected:
     virtual void dropEvent(QDropEvent* event) override;

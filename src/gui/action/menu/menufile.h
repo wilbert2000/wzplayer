@@ -17,7 +17,7 @@ namespace Menu {
 class TMenuFile : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuFile(QWidget* parent, TMainWindow* mw);
+    explicit TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu);
 
 private:
     TMenu* recentFilesMenu;

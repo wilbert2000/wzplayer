@@ -28,7 +28,7 @@
 
 namespace Settings {
 
-QString TPaths::config_path;
+QString TPaths::configDir;
 bool TPaths::portable;
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Settings::TPaths)
@@ -46,22 +46,22 @@ void TPaths::setConfigPath(bool portable) {
 
     TPaths::portable = portable;
     if (portable) {
-        config_path = qApp->applicationDirPath();
+        configDir = qApp->applicationDirPath();
     } else {
-        config_path = QStandardPaths::writableLocation(
+        configDir = QStandardPaths::writableLocation(
                     QStandardPaths::AppConfigLocation);
         // Create config directory
-        QDir dir(config_path);
-        if (!dir.mkpath(config_path)) {
+        QDir dir(configDir);
+        if (!dir.mkpath(configDir)) {
             WZERROR(QString("Failed to create configuration directory '%1'. %2")
-                    .arg(config_path).arg(strerror(errno)));
+                    .arg(configDir).arg(strerror(errno)));
         }
     }
-    WZINFO(QString("Config path set to '%1'").arg(config_path));
+    WZTRACE(QString("Configuration directory set to '%1'").arg(configDir));
 }
 
 QString TPaths::iniFileName() {
-    return config_path + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
+    return configDir + QDir::separator() + TConfig::PROGRAM_ID + ".ini";
 }
 
 QString TPaths::dataPath() {
@@ -70,6 +70,14 @@ QString TPaths::dataPath() {
         return qApp->applicationDirPath();
     }
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+}
+
+QString TPaths::favoritesPath() {
+    return dataPath() + "/Favorites";
+}
+
+QString TPaths::favoritesFilename() {
+    return favoritesPath() + "/" + TConfig::WZPLAYLIST;
 }
 
 QString TPaths::genericCachePath() {
@@ -138,7 +146,7 @@ QString TPaths::qtTranslationPath() {
 }
 
 QString TPaths::subtitleStyleFileName() {
-    return config_path + QDir::separator() + "styles.ass";
+    return configDir + QDir::separator() + "styles.ass";
 }
 
 } // namespace Settings

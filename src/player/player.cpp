@@ -286,7 +286,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         && mdat.disc.valid
         && mdat.disc.device == disc.device) {
         // If setTitle fails, it will call again with fast_open set to false
-        WZDEBUG("trying setTitle(" + QString::number(disc.title) + ")");
+        WZDEBUG("Trying setTitle(" + QString::number(disc.title) + ")");
         setTitle(disc.title);
         return;
     }
@@ -306,10 +306,10 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
 
     // Test access, correct missing /
     if (!QFileInfo(disc.device).exists()) {
-        WZWARN("could not access '" + disc.device + "'");
+        WZWARN("Could not access '" + disc.device + "'");
         // Forgot a /?
         if (QFileInfo("/" + disc.device).exists()) {
-            WZWARN("adding missing /");
+            WZWARN("Adding missing /");
             disc.device = "/" + disc.device;
         } else {
             Gui::msg(tr("Device or file not found: '%1'").arg(disc.device), 0);
@@ -409,7 +409,7 @@ void TPlayer::open(QString filename, bool loopImage) {
 }
 
 void TPlayer::openFile(const QString& filename, bool loopImage) {
-    WZDEBUG("'" + filename + "'");
+    WZTRACE("'" + filename + "'");
 
     close(STATE_LOADING);
     mdat.filename = QDir::toNativeSeparators(filename);
@@ -433,7 +433,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
 
         if (!Settings::pref->remember_time_pos) {
             mset.current_sec = 0;
-            WZDEBUG("play position reset to 0");
+            WZDEBUG("Play position reset to 0");
         }
     }
 
@@ -613,7 +613,6 @@ void TPlayer::play() {
             }
             break;
         case QProcess::Starting:
-            break;
         default:
             break;
     }
@@ -676,23 +675,23 @@ void TPlayer::initVolume() {
     // restore_volume is set to true by mset.reset and set
     // to false by mset.load
     if (mset.restore_volume) {
-        WZDEBUG("keeping current volume");
+        WZTRACE("Keeping current volume");
         mset.volume = mset.old_volume;
         mset.mute = mset.old_mute;
     } else if (!Settings::pref->global_volume) {
         if (mset.old_volume != mset.volume) {
-            WZDEBUG("emit volumeChanged()");
+            WZTRACE("emit volumeChanged()");
             emit volumeChanged(mset.volume);
         }
         if (mset.old_mute != mset.mute) {
-            WZDEBUG("emit muteChanged()");
+            WZTRACE("emit muteChanged()");
             emit muteChanged(mset.mute);
         }
     }
 }
 
 void TPlayer::initMediaSettings() {
-    WZDEBUG("");
+    WZTRACE("");
 
     // Restore old volume or emit new volume
     initVolume();
@@ -705,7 +704,7 @@ void TPlayer::initMediaSettings() {
 }
 
 void TPlayer::onPlayingStartedNewMedia() {
-    WZDEBUG("");
+    WZTRACE("");
 
     mdat.list();
 
@@ -720,7 +719,7 @@ void TPlayer::onPlayingStartedNewMedia() {
 
 // Slot called when signal playerFullyLoaded arrives.
 void TPlayer::onPlayingStarted() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (forced_titles.contains(mdat.filename)) {
         mdat.title = forced_titles[mdat.filename];
@@ -732,10 +731,10 @@ void TPlayer::onPlayingStarted() {
 
     setState(STATE_PLAYING);
 
-    WZDEBUG("emit mediaInfoChanged()");
+    WZTRACE("emit mediaInfoChanged()");
     emit mediaInfoChanged();
 
-    WZDEBUG("done in " + QString::number(time.elapsed()) + " ms");
+    WZDEBUG("Loading done in " + QString::number(time.elapsed()) + " ms");
 }
 
 void TPlayer::clearOSD() {
@@ -745,8 +744,10 @@ void TPlayer::clearOSD() {
 
 void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
 
-    if (proc->isReady() && level <= Settings::pref->osd_level
-        && mdat.hasVideo()) {
+    if (proc->isReady()
+            && statePOP()
+            && mdat.hasVideo()
+            && level <= Settings::pref->osd_level) {
         proc->showOSDText(text, duration, level);
     }
 }

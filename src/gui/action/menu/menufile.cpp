@@ -2,7 +2,6 @@
 
 #include "gui/mainwindow.h"
 #include "gui/playlist/playlist.h"
-#include "gui/action/menu/favorites.h"
 #include "gui/action/action.h"
 #include "player/player.h"
 #include "settings/paths.h"
@@ -40,17 +39,11 @@ TMenuDisc::TMenuDisc(QWidget* parent, TMainWindow* mw)
 }
 
 
-TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw) :
+TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu) :
     TMenu(parent, mw, "file_menu", tr("File"), "noicon") {
 
     // Favorites
-    TFavorites* fav = new TFavorites(this, mw, "favorites_menu",
-        tr("Favorites"), "", TPaths::dataPath() + "/favorites.m3u8");
-    fav->getAddAct()->setObjectName("favorites_add");
-    mw->addAction(fav->getAddAct());
-    fav->getEditAct()->setObjectName("favorites_edit");
-    mw->addAction(fav->getEditAct());
-    addMenu(fav);
+    addMenu(favMenu);
 
     // Recents
     recentFilesMenu = new TMenu(this, mw, "recent_menu", tr("Recent files"));

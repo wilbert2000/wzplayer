@@ -38,9 +38,11 @@ const int TEXT_ALIGN_ORDER = Qt::AlignRight | Qt::AlignVCenter;
 
 static int timeStamper = 0;
 
+const int USER_TYPE = QTreeWidgetItem::UserType + 1;
+
 // Constructor used for root item
 TPlaylistItem::TPlaylistItem() :
-    QTreeWidgetItem(),
+    QTreeWidgetItem(USER_TYPE),
     mDuration(0),
     mOrder(1),
     mFolder(true),
@@ -85,6 +87,10 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     mBlacklist(item.getBlacklist()),
 
     itemIcon(item.itemIcon) {
+
+    // TODO: Copy constructor QTreeWidgetItem does not copy type()
+    // Post "upgrade" action?
+    WZWARN(QString("Copy constructor called on '%1'").arg(mFilename));
 }
 
 // Used for every item except the root
@@ -93,7 +99,7 @@ TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
                              const QString& name,
                              double duration,
                              bool protectName) :
-    QTreeWidgetItem(parent),
+    QTreeWidgetItem(parent, USER_TYPE),
     mFilename(QDir::toNativeSeparators(filename)),
     mBaseName(name),
     mDuration(duration),
@@ -152,6 +158,7 @@ TPlaylistItem *TPlaylistItem::clone() const {
         TPlaylistItem* parent = parentStack.pop();
 
         // Copy the item
+        // TODO: copy type
         TPlaylistItem* copy = new TPlaylistItem(*item);
 
         // Remember root
@@ -172,9 +179,6 @@ TPlaylistItem *TPlaylistItem::clone() const {
     }
 
     return root;
-}
-
-TPlaylistItem::~TPlaylistItem() {
 }
 
 // Update fields depending on file name
@@ -432,6 +436,7 @@ QVariant TPlaylistItem::data(int column, int role) const {
             return QVariant(mExt);
         }
     } else if (role == Qt::ToolTipRole) {
+        // StatusTipRole not working?
         if (column == COL_NAME) {
             if (mSymLink) {
                 return QVariant(qApp->translate("Gui::Playlist::TPlaylistItem",
@@ -451,7 +456,9 @@ QVariant TPlaylistItem::data(int column, int role) const {
 void TPlaylistItem::setFilename(const QString& fileName) {
 
     mFilename = QDir::toNativeSeparators(fileName);
-    mBaseName = QFileInfo(fileName).completeBaseName();
+    if (!mFilename.isEmpty()) {
+        mBaseName = QFileInfo(fileName).completeBaseName();
+    }
     setFileInfo();
 }
 
@@ -503,8 +510,8 @@ void TPlaylistItem::setState(TPlaylistItemState state) {
         mPlayed = true;
         mPlayedTime = timeStamper++;
     }
-    WZDEBUG(QString("Changing state from %1 to %2 for '%3'")
-            .arg(stateString(mState)).arg(stateString(state)).arg(mFilename));
+    WZTRACE(QString("Changing state from %1 to %2 for '%3'")
+            .arg(stateString(mState)).arg(stateString(state)).arg(mBaseName));
 
     mState = state;
     setStateIcon();

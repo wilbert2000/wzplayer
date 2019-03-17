@@ -19,13 +19,10 @@ namespace Playlist {
 class TFileLock {
 public:
     bool locked;
-
     TFileLock(const QFileInfo& fi, QStringList& lfiles);
     virtual ~TFileLock();
-
 private:
     QStringList& lockedFiles;
-
     bool acquire(QString filename);
 };
 
@@ -33,15 +30,16 @@ bool TFileLock::acquire(QString filename) {
 
     if (filename.isEmpty()) {
         Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->error(
-            "acquire ignoring empty filename");
+            "Acquire Ignoring empty filename");
         return false;
     }
 
     filename = QDir::toNativeSeparators(filename);
 
+    // TODO: case
     if (lockedFiles.contains(filename, caseSensitiveFileNames)) {
         Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->info(
-            "acquire skipping '%1', would create an infinite list", filename);
+            "Acquire Skipping circular reference '%1'", filename);
         return false;
     }
 
@@ -99,10 +97,10 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
         if (!name.isEmpty()) {
             rx.setPattern(name);
             if (rx.isValid()) {
-                WZINFO("compiled '" + rx.pattern() + "' for blacklist");
+                WZINFO("Compiled '" + rx.pattern() + "' for blacklist");
                 rxNameBlacklist.append(rx);
             } else {
-                WZERROR("failed to parse regular expression '" + name + "'");
+                WZERROR("Failed to parse regular expression '" + name + "'");
             }
         }
     }
@@ -127,7 +125,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
 #endif
 
     if (logger()->isDebugEnabled()) {
-        debug << "TAddFilesThread searching for:" << nameFilterList;
+        debug << "TAddFilesThread Searching for:" << nameFilterList;
         debug << debug;
     }
 }
@@ -163,7 +161,7 @@ bool TAddFilesThread::nameBlackListed(const QString& name) {
     for(int i = rxNameBlacklist.size() - 1; i >= 0; i--) {
         const QRegExp& rx = rxNameBlacklist.at(i);
         if (rx.indexIn(name) >= 0) {
-            WZINFO("skipping '" + name + "' on '" + rx.pattern() + "'");
+            WZINFO("Skipping '" + name + "' on '" + rx.pattern() + "'");
             return true;
         }
     }
@@ -200,7 +198,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
     // File residing outside parent directory from symbolic link or playlist
     if (!path.startsWith(parentPathPlusSep)) {
         QString filename = fi.absoluteFilePath();
-        WZTRACE("creating link '" + filename + "' in '" + parent->filename()
+        WZTRACE("Creating link '" + filename + "' in '" + parent->filename()
                 + "'");
         return new TPlaylistItem(parent,
                                  filename,
@@ -216,7 +214,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
         dir = dir.left(i);
     }
     if (dir.isEmpty()) {
-        WZERROR("invalid path");
+        WZERROR("Invalid path");
         return 0;
     }
     path = parentPathPlusSep + dir;
@@ -230,7 +228,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
         }
     }
 
-    WZDEBUG("creating folder '" + path + "'");
+    WZDEBUG("Creating folder '" + path + "'");
     emit displayMessage(path, 0);
     TPlaylistItem* folder = new TPlaylistItem(parent, path, dir, 0);
     createPath(folder, fi, name, duration, protectName);
@@ -303,11 +301,11 @@ void TAddFilesThread::addNewItems(TPlaylistItem* playlistItem) {
         TPlaylistItem* w = 0;
         if (fi.isDir()) {
             if (recurse) {
-                WZINFO("adding folder '" + filename + "'");
+                WZINFO("Adding folder '" + filename + "'");
                 w = addDirectory(playlistItem, fi, filename, false);
             }
         } else {
-            WZINFO("adding file '" + filename + "'");
+            WZINFO("Adding file '" + filename + "'");
             w = addFile(playlistItem, fi);
         }
         if (w) {
@@ -422,12 +420,12 @@ TPlaylistItem* TAddFilesThread::openPlaylist(TPlaylistItem *parent,
         if (playlistItem->childCount()) {
             latestDir = playlistPath;
         } else {
-            WZINFO("found no playable items in '" + sourceFileName + "'");
+            WZINFO("Found no playable items in '" + sourceFileName + "'");
             delete playlistItem;
             playlistItem = 0;
         }
     } else {
-        WZERROR("failed to open '" + sourceFileName + "'");
+        WZERROR("Failed to open '" + sourceFileName + "'");
         emit displayMessage(tr("Failed to open '%1'").arg(sourceFileName),
                             TConfig::ERROR_MESSAGE_DURATION);
         delete playlistItem;
@@ -529,7 +527,7 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
     if (dirItem->childCount()) {
         latestDir = directory.path();
     } else {
-        WZDEBUG("found no playable items in '" + dirItem->filename() + "'");
+        WZDEBUG("Found no playable items in '" + dirItem->filename() + "'");
         delete dirItem;
         dirItem = 0;
     }
@@ -568,7 +566,7 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                 fi.setFile(dir.absolutePath());
                 name = "";
                 protectName = false;
-                WZINFO(QString("'%1' no longer exists. Adding directory '%2'"
+                WZINFO(QString("'%1' does not exists. Adding directory '%2'"
                                " instead")
                        .arg(filename).arg(fi.absoluteFilePath()));
             } else {

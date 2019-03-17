@@ -123,6 +123,7 @@ TMenuView::TMenuView(QWidget* parent,
     addSeparator();
     addAction(mw->findAction("view_properties"));
     addAction(mw->findAction("view_playlist"));
+    addAction(mw->findAction("view_favorites"));
     addAction(mw->findAction("view_log"));
 
     addSeparator();

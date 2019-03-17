@@ -92,9 +92,6 @@ HEADERS += wzdebug.h \
     gui/action/menu/menubrowse.h \
     gui/action/menu/menuview.h \
     gui/action/menu/menuhelp.h \
-    gui/action/menu/favorite.h \
-    gui/action/menu/favorites.h \
-    gui/action/menu/favoriteeditor.h \
     gui/deviceinfo.h \
     gui/pref/languages.h \
     gui/pref/vdpauproperties.h \
@@ -134,8 +131,9 @@ HEADERS += wzdebug.h \
     gui/playlist/addfilesthread.h \
     gui/playlist/playlistitem.h \
     gui/playlist/playlistwidget.h \
-    gui/playlist/menuaddremoved.h \
+    gui/playlist/plist.h \
     gui/playlist/playlist.h \
+    gui/playlist/favlist.h \
     gui/autohidetimer.h \
     gui/playerwindow.h \
     gui/mainwindow.h \
@@ -217,9 +215,6 @@ SOURCES += wzdebug.cpp \
     gui/action/menu/menubrowse.cpp \
     gui/action/menu/menuview.cpp \
     gui/action/menu/menuhelp.cpp \
-    gui/action/menu/favorite.cpp \
-    gui/action/menu/favorites.cpp \
-    gui/action/menu/favoriteeditor.cpp \
     gui/deviceinfo.cpp \
     gui/pref/languages.cpp \
     gui/pref/vdpauproperties.cpp \
@@ -259,8 +254,9 @@ SOURCES += wzdebug.cpp \
     gui/playlist/addfilesthread.cpp \
     gui/playlist/playlistitem.cpp \
     gui/playlist/playlistwidget.cpp \
-    gui/playlist/menuaddremoved.cpp \
+    gui/playlist/plist.cpp \
     gui/playlist/playlist.cpp \
+    gui/playlist/favlist.cpp \
     gui/autohidetimer.cpp \
     gui/playerwindow.cpp \
     gui/mainwindow.cpp \
@@ -297,7 +293,6 @@ FORMS = gui/logwindow.ui \
     gui/stereo3ddialog.ui \
     gui/multilineinputdialog.ui \
     gui/action/toolbareditor.ui \
-    gui/action/menu/favoriteeditor.ui \
     gui/pref/vdpauproperties.ui \
     gui/pref/dialog.ui \
     gui/pref/playersection.ui \

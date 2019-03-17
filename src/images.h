@@ -24,16 +24,14 @@
 #include <QIcon>
 
 
+// TODO: rename to TImages
 class Images {
 public:
-    static void setThemesPath(const QString& folder);
     static void setTheme(const QString& name);
 
     static QPixmap icon(const QString& name, int size=-1);
     static QPixmap flippedIcon(const QString& name, int size=-1);
-
-    //! Returns the filename of the icon
-    static QString file(const QString& icon_name);
+    static QString iconFilename(const QString& icon_name);
 
     static QString styleSheet();
     static QString themesDirectory();
@@ -41,13 +39,11 @@ public:
     static bool has_rcc;
 
 private:
-    static QPixmap resize(QPixmap* p, int size = 20);
-    static QPixmap flip(QPixmap* p);
+    static QPixmap resize(const QPixmap& pixmap, int size = 20);
+    static QPixmap flip(const QPixmap& pixmap);
 
     static QString current_theme;
     static QString themes_path;
-
-    static QString resourceFilename();
     static QString last_resource_loaded;
 };
 

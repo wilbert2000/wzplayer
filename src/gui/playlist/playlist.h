@@ -18,56 +18,40 @@
 #ifndef GUI_PLAYLIST_PLAYLIST_H
 #define GUI_PLAYLIST_PLAYLIST_H
 
-#include <QWidget>
+#include "gui/playlist/plist.h"
 #include "wzdebug.h"
-
-
-class QToolBar;
-class QToolButton;
-class QTreeWidgetItem;
 
 
 namespace Gui {
 
 class TMainWindow;
+class TDockWidget;
 
 namespace Action {
 class TAction;
-namespace Menu {
-class TMenu;
-}
 }
 
 namespace Playlist {
 
-class TPlaylistWidget;
 class TPlaylistItem;
-class TAddFilesThread;
 
 
-class TPlaylist : public QWidget {
+class TPlaylist : public TPList {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TPlaylist(QWidget* parent, TMainWindow* mw);
-    virtual ~TPlaylist();
+    explicit TPlaylist(TDockWidget* parent, TMainWindow* mw);
 
     Action::TAction* playNextAct;
     Action::TAction* playPrevAct;
 
     QString playingFile() const;
-
-    void add(const QStringList& files,
-                  bool startPlay = false,
-                  TPlaylistItem* target = 0,
-                  const QString& fileToPlay = "");
     void getFilesToPlay(QStringList& files) const;
-    void abortThread();
+    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
 
-    void enableActions();
+    virtual void startPlay() override;
 
-    bool maybeSave();
     void loadSettings();
     void saveSettings();
 
@@ -79,141 +63,56 @@ public slots:
 
     void stop();
 
-    void addRemovedItem(const QString& s);
+    virtual void enableActions() override;
+    virtual void findPlayingItem() override;
 
 signals:
     void playlistFinished();
-    void playlistTitleChanged(QString title);
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent*) override;
     virtual void dropEvent(QDropEvent*) override;
 
-private:
-    TMainWindow* mainWindow;
-    TPlaylistWidget* playlistWidget;
-    QToolBar* toolbar;
-    QToolButton* add_button;
-    QToolButton* remove_button;
+    virtual void playItem(TPlaylistItem* item, bool keepPaused = false) override;
 
+protected slots:
+    virtual void refresh() override;
+
+private:
     Action::TAction* openPlaylistAct;
-    Action::TAction* saveAct;
-    Action::TAction* saveAsAct;
-    Action::TAction* refreshAct;
-    Action::TAction* browseDirAct;
 
     Action::TAction* stopAct;
-    Action::TAction* playAct;
     Action::TAction* playOrPauseAct;
-    Action::TAction* openInNewWindowAct;
     Action::TAction* pauseAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
 
-    Action::TAction* editNameAct;
-    Action::TAction* newFolderAct;
-    Action::TAction* findPlayingAct;
-
-    Action::TAction* cutAct;
-    Action::TAction* copyAct;
-    Action::TAction* pasteAct;
-
-    Action::Menu::TMenu* playlistAddMenu;
-    Action::TAction* addPlayingFileAct;
-
-    Action::Menu::TMenu* playlistRemoveMenu;
-    Action::TAction* removeSelectedAct;
-    Action::TAction* removeSelectedFromDiskAct;
-    Action::TAction* removeAllAct;
-
-
-    QString playlistFilename;
-
-    TAddFilesThread* thread;
-    QStringList addFiles;
-    TPlaylistItem* addTarget;
-    QString addFileToPlay;
-    bool addStartPlay;
-    bool restartThread;
-
-    int disableEnableActions;
     bool reachedEndOfPlaylist;
 
-    void createTree();
     void createActions();
+    bool updatePlayState();
 
     void openPlaylist(const QString& filename);
     void openDirectory(const QString& dir);
 
-    void clear();
-    void addStartThread();
-    void startPlay();
-    void playItem(TPlaylistItem* item, bool keepPaused = false);
-
-    void setPlaylistTitle();
-
     TPlaylistItem* getRandomItem() const;
     bool haveUnplayedItems() const;
-
-    void copySelection(const QString& actionName);
-
-    bool saveM3uFolder(TPlaylistItem* folder,
-                       const QString& path,
-                       QTextStream& stream,
-                       bool linkFolders,
-                       bool& savedMetaData);
-    bool saveM3u(TPlaylistItem* folder,
-                 const QString& filename,
-                 bool wzplaylist);
-    bool saveM3u(const QString& filename, bool linkFolders);
-
-    bool browseDirEnabled();
 
 private slots:
     void openPlaylistDialog();
 
-    bool save();
-    bool saveAs();
-    void refresh();
-    void browseDir();
-
-    void addPlayingFile();
-    void addFilesDialog();
-    void addDirectory();
-    void addUrls();
-
-    void removeSelected(bool deleteFromDisk = false);
-    void removeSelectedFromDisk();
-    void removeAll();
-
-    void play();
     void playOrPause();
     void playNext(bool loop_playlist = true);
     void playPrev();
-    void openInNewWindow();
     void resumePlay();
-
-    void findPlayingItem();
-    void newFolder();
-
-    void cut();
-    void copySelected();
-    void paste();
-
-    void enablePaste();
-    void enableRemoveFromDiskAction();
-    void enableRemoveMenu();
 
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
 
-    void onItemActivated(QTreeWidgetItem* i, int);
     void onPlayerError();
-    void onModifiedChanged();
     void onNewMediaStartedPlaying();
     void onTitleTrackChanged(int id);
     void onMediaEOF();
-    void onThreadFinished();
 };
 
 } // namespace Playlist

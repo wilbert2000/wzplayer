@@ -829,12 +829,12 @@ void TPreferences::setPlayerBin(QString bin,
     }
 
     WZINFO("Selected player '" + bin + "'");
-    WZDEBUG("mplayer vo '" + mplayer_vo
-            + "' ao '" + mplayer_ao
-            + "' options '" + mplayer_additional_options + "'");
-    WZDEBUG("mpv vo '" + mpv_vo
-            + "' ao '" + mpv_ao
-            + "' options '" + mpv_additional_options + "'");
+    WZTRACE("mplayer video driver vo '" + mplayer_vo
+            + "', audio driver ao '" + mplayer_ao
+            + "', additional options '" + mplayer_additional_options + "'");
+    WZTRACE("mpv video driver vo '" + mpv_vo
+            + "', audio driver ao '" + mpv_ao
+            + "', additional options '" + mpv_additional_options + "'");
 }
 
 
@@ -1332,15 +1332,15 @@ void TPreferences::setupScreenshotFolder() {
     if (screenshot_directory.isEmpty()) {
         QString pdir = TPaths::location(QStandardPaths::PicturesLocation);
         if (pdir.isEmpty()) {
-            WZDEBUG("No pictures location");
+            WZTRACE("No pictures location");
             pdir = TPaths::location(QStandardPaths::DocumentsLocation);
         }
         if (pdir.isEmpty()) {
-            WZDEBUG("No documents location");
+            WZTRACE("No documents location");
             pdir = TPaths::location(QStandardPaths::HomeLocation);
         }
         if (pdir.isEmpty()) {
-            WZDEBUG("No home location");
+            WZTRACE("No home location");
             pdir = "/tmp";
         }
         screenshot_directory = QDir::toNativeSeparators(pdir + "/screenshots");
@@ -1348,12 +1348,10 @@ void TPreferences::setupScreenshotFolder() {
         screenshot_directory = QDir::toNativeSeparators(screenshot_directory);
     }
 
-    if (screenshot_directory.isEmpty()) {
-        use_screenshot = false;
-    } else if (QDir(screenshot_directory).exists()) {
-        WZINFO("Using folder '" + screenshot_directory + "'");
+    if (QDir(screenshot_directory).exists()) {
+        WZTRACE("Using folder '" + screenshot_directory + "'");
     } else {
-        WZINFO(QString("Folder '%1' not found, disabling screenshots")
+        WZTRACE(QString("Folder '%1' not found, disabling screenshots")
                .arg(screenshot_directory));
         use_screenshot = false;
         screenshot_directory = "";

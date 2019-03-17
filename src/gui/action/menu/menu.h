@@ -21,6 +21,7 @@ public:
                    const QString& icon = QString());
 
 protected:
+    // TODO: no longer store main window
     TMainWindow* main_window;
 };
 

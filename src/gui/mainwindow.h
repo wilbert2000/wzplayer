@@ -21,10 +21,10 @@
 
 #include <QMainWindow>
 
-#include "wzdebug.h"
 #include "gui/action/actionlist.h"
-#include "config.h"
 #include "player/state.h"
+#include "config.h"
+#include "wzdebug.h"
 
 
 class QWidget;
@@ -62,6 +62,7 @@ class TMenuVideo;
 class TMenuAudio;
 class TMenuSubtitle;
 class TMenuBrowse;
+class TMenuView;
 
 }
 }
@@ -72,6 +73,7 @@ class TDialog;
 
 namespace Playlist {
 class TPlaylist;
+class TFavList;
 }
 
 class TPlayerWindow;
@@ -103,7 +105,9 @@ public:
     Action::TAction* seekIntToAction(int i) const;
 
     //! Execute all the actions after the video has started to play
-    void runActionsLater(const QString& actions, bool postCheck);
+    void runActionsLater(const QString& actions,
+                         bool postCheck,
+                         bool prepend = false);
 
 public slots:
     void openRecent();
@@ -177,13 +181,14 @@ signals:
 
 protected:
     Playlist::TPlaylist* playlist;
+
     Action::Menu::TMenuFile* fileMenu;
     Action::Menu::TMenuPlay* playMenu;
     Action::Menu::TMenuVideo* videoMenu;
     Action::Menu::TMenuAudio* audioMenu;
     Action::Menu::TMenuSubtitle* subtitleMenu;
     Action::Menu::TMenuBrowse* browseMenu;
-    QMenu* viewMenu;
+    Action::Menu::TMenuView* viewMenu;
     Action::Menu::TMenuExec* createContextMenu();
 
     virtual QMenu* createPopupMenu() override;
@@ -208,9 +213,13 @@ private:
 
     QWidget* panel;
     TPlayerWindow* playerWindow;
-    TDockWidget* playlistDock;
+
     TDockWidget* logDock;
     TLogWindow* logWindow;
+    TDockWidget* playlistDock;
+    // Playlist::TPlaylist* playlist is protected
+    TDockWidget* favListDock;
+    Playlist::TFavList* favList;
 
     TAutoHideTimer* autoHideTimer;
     TUpdateChecker* update_checker;
@@ -452,23 +461,26 @@ private:
     Action::TAction* viewStatusBarAct;
 
 
-    void createLogDock();
-    void createPanel();
-    void createPlayer();
-    void createPlayerWindow();
-    void createPlaylist();
     void createStatusBar();
-    void createToolbars();
-    Gui::Action::Menu::TMenu* createToolbarMenu(const QString& name);
-    void createActions();
-    void createMenus();
+    void createPanel();
+    void createLogDock();
+    void createPlayerWindow();
+    void createPlayer();
+    void createPlaylist();
+    void createFavList();
     void createVideoEqualizer();
     void createAudioEqualizer();
-    void createSettingsDialog();
-    void createFilePropertiesDialog();
-    void setDataToFileProperties();
+    void createActions();
+    void createToolbars();
+    Gui::Action::Menu::TMenu* createToolbarMenu(const QString& name);
+    void createMenus();
     void setupNetworkProxy();
+
+    void createSettingsDialog();
+    void setDataToFileProperties();
+    void createFilePropertiesDialog();
     void configureDiscDevices();
+
     void setTimeLabel(double sec, bool changed);
 
     QList<QAction*> findNamedActions() const;
@@ -477,7 +489,6 @@ private:
     //! separated by spaces. Checkable actions could have a parameter:
     //! true or false.
     void runActions(QString actions);
-
     void enableSubtitleActions();
     void enableActions();
 
@@ -496,6 +507,7 @@ private:
     void didExitFullscreen();
     void enterFullscreenOnPlay();
 
+    void subDockSize(TDockWidget* dock, QSize& availableSize) const;
     double optimizeSize(double size) const;
     double getDefaultSize() const;
     void resizeStickyWindow(int w, int h);
@@ -561,7 +573,6 @@ private slots:
     void onMediaSettingsChanged();
     void onPlaylistFinished();
     void onDragPositionChanged(double);
-    void onPlaylistTitleChanged(QString title);
 };
 
 } // namespace Gui

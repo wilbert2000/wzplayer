@@ -41,11 +41,10 @@ public:
     TPlaylistItem(const TPlaylistItem& item);
     // Create an item from arguments
     TPlaylistItem(QTreeWidgetItem* parent,
-                        const QString& filename,
-                        const QString& name,
-                        double duration,
-                        bool protectName = false);
-    virtual ~TPlaylistItem();
+                  const QString& filename,
+                  const QString& name,
+                  double duration,
+                  bool protectName = false);
 
     virtual QVariant data(int column, int role) const override;
     virtual void setData(int column, int role, const QVariant &value) override;
@@ -62,7 +61,9 @@ public:
     int compareFilename(const TPlaylistItem& item) const;
 
     QString baseName() const { return mBaseName; }
-    void setName(const QString& baseName, const QString& ext, bool protectName);
+    void setName(const QString& baseName,
+                 const QString& ext,
+                 bool protectName);
 
     QString extension() const { return mExt; }
 
@@ -174,5 +175,7 @@ private:
 
 } // namespace Playlist
 } // namespace Gui
+
+Q_DECLARE_METATYPE(Gui::Playlist::TPlaylistItem*)
 
 #endif // GUI_PLAYLIST_PLAYLISTWIDGETITEM_H

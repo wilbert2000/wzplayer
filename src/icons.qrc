@@ -160,6 +160,7 @@
         <file>default-theme/record.png</file>
         <file>default-theme/up.png</file>
         <file>default-theme/down.png</file>
+        <file>default-theme/add_url.png</file>
         <file>default-theme/style.qss</file>
     </qresource>
 </RCC>

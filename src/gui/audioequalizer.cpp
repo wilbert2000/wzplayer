@@ -269,18 +269,18 @@ void TAudioEqualizer::setEqualizer(const TAudioEqualizerList& l) {
     setValues(l, false);
 }
 
-void TAudioEqualizer::setValues(const TAudioEqualizerList& l,
+void TAudioEqualizer::setValues(const TAudioEqualizerList& eqList,
                                 bool emitValuesChanged) {
-    WZDEBUG("");
+    WZTRACE("");
 
     for (int n = 0; n < 10; n++) {
         eq[n]->blockSignals(true);
-        eq[n]->setValue(l[n].toInt());
+        eq[n]->setValue(eqList[n].toInt());
         eq[n]->blockSignals(false);
     }
 
     if (emitValuesChanged)
-        emit valuesChanged(l);
+        emit valuesChanged(eqList);
 }
 
 void TAudioEqualizer::presetChanged(int index) {

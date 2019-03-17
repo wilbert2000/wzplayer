@@ -30,9 +30,11 @@ public:
     static QString location(QStandardPaths::StandardLocation type);
 
     static void setConfigPath(bool portable);
-    static QString configPath() { return config_path; }
+    static QString configPath() { return configDir; }
     static QString iniFileName();
     static QString dataPath();
+    static QString favoritesPath();
+    static QString favoritesFilename();
     static QString themesPath();
     static QString shortcutsPath();
     static QString translationPath();
@@ -41,7 +43,7 @@ public:
     static QString genericCachePath();
 
 private:
-    static QString config_path;
+    static QString configDir;
     static bool portable;
 
     static QString getDataSubDir(const QString& subdir);

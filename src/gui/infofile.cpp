@@ -136,7 +136,7 @@ QString TInfoFile::getInfo(const TMediaData& md) {
     }
 
     QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
-    s += "<h1><img src=\"" + Images::file(icon) + "\">" + md.displayName()
+    s += "<h1><img src=\"" + Images::iconFilename(icon) + "\">" + md.displayName()
          + "</h1>\n";
 
     s += "<table width=\"100%\">";

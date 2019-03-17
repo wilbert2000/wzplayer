@@ -27,6 +27,7 @@
 #include "gui/msg.h"
 
 #include "gui/playlist/playlist.h"
+#include "gui/playlist/favlist.h"
 
 #include "gui/about.h"
 #include "gui/timedialog.h"
@@ -111,7 +112,10 @@ TMainWindow::TMainWindow() :
     setWindowIcon(Images::icon("logo", 64));
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
-    setAnimated(false); // Disable animation of docks
+
+    // Disable animation of docks.
+    // TODO: test enable, disabling seems buggy.
+    setAnimated(false);
 
     createStatusBar();
 
@@ -120,7 +124,7 @@ TMainWindow::TMainWindow() :
         force_resize = false;
     } else {
         force_resize = true;
-        pref->size_factor = 1.0;
+        pref->size_factor = 1;
     }
 
     // Resize window to default size
@@ -131,6 +135,7 @@ TMainWindow::TMainWindow() :
     createPlayerWindow();
     createPlayer();
     createPlaylist();
+    createFavList();
 
     createVideoEqualizer();
     createAudioEqualizer();
@@ -159,14 +164,6 @@ void TMainWindow::createPanel() {
     panel->setMinimumSize(QSize(1, 1));
     panel->setFocusPolicy(Qt::StrongFocus);
     setCentralWidget(panel);
-}
-
-void TMainWindow::createLogDock() {
-
-    logDock = new TDockWidget(tr("Log"), this, "logdock");
-    logWindow = new TLogWindow(logDock);
-    logDock->setWidget(logWindow);
-    addDockWidget(Qt::BottomDockWidgetArea, logDock);
 }
 
 void TMainWindow::createStatusBar() {
@@ -277,6 +274,14 @@ void TMainWindow::createPlayer() {
             this, &TMainWindow::displayInOutPoints);
 }
 
+void TMainWindow::createLogDock() {
+
+    logDock = new TDockWidget(tr("Log"), this, "logdock");
+    logWindow = new TLogWindow(logDock);
+    logDock->setWidget(logWindow);
+    addDockWidget(Qt::BottomDockWidgetArea, logDock);
+}
+
 void TMainWindow::createPlaylist() {
 
     playlistDock = new TDockWidget(tr("Playlist"), this, "playlistdock");
@@ -285,9 +290,16 @@ void TMainWindow::createPlaylist() {
     addDockWidget(Qt::LeftDockWidgetArea, playlistDock);
 
     connect(playlist, &Playlist::TPlaylist::playlistFinished,
-            this, &TMainWindow::onPlaylistFinished);
-    connect(playlist, &Playlist::TPlaylist::playlistTitleChanged,
-            this, &TMainWindow::onPlaylistTitleChanged);
+            this, &TMainWindow::onPlaylistFinished,
+            Qt::QueuedConnection);
+}
+
+void TMainWindow::createFavList() {
+
+    favListDock = new TDockWidget(tr("Favorites"), this, "favlistdock");
+    favList = new Playlist::TFavList(favListDock, this, playlist);
+    favListDock->setWidget(favList);
+    addDockWidget(Qt::RightDockWidgetArea, favListDock);
 }
 
 void TMainWindow::createVideoEqualizer() {
@@ -1006,6 +1018,15 @@ void TMainWindow::createActions() {
     addAction(action);
     autoHideTimer->add(action, playlistDock);
 
+    // View favorites
+    action = favListDock->toggleViewAction();
+    action->setObjectName("view_favorites");
+    action->setIcon(Images::icon("favorites_menu"));
+    action->setShortcut(Qt::SHIFT | Qt::Key_F);
+    updateToolTip(action);
+    addAction(action);
+    autoHideTimer->add(action, favListDock);
+
     // View log
     action = logDock->toggleViewAction();
     action->setObjectName("view_log");
@@ -1142,7 +1163,7 @@ void TMainWindow::createMenus() {
 
     using namespace Action;
 
-    fileMenu = new Menu::TMenuFile(this, this);
+    fileMenu = new Menu::TMenuFile(this, this, favList->getFavMenu());
     menuBar()->addMenu(fileMenu);
     playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
@@ -1721,6 +1742,7 @@ void TMainWindow::loadSettings() {
     if (!restoreState(pref->value("toolbars_state").toByteArray(),
                       TVersion::qtVersion())) {
         playlistDock->hide();
+        favListDock->hide();
         logDock->hide();
     }
 
@@ -1734,6 +1756,7 @@ void TMainWindow::loadSettings() {
     pref->endGroup();
 
     playlist->loadSettings();
+    favList->loadSettings();
 }
 
 void TMainWindow::saveSettings() {
@@ -1777,6 +1800,7 @@ void TMainWindow::saveSettings() {
     pref->endGroup();
 
     playlist->saveSettings();
+    favList->saveSettings();
     if (help_window) {
         help_window->saveSettings(pref);
     }
@@ -2096,7 +2120,7 @@ void TMainWindow::updateFilters() {
 
 // Slot called when media settings reset or loaded
 void TMainWindow::onMediaSettingsChanged() {
-    WZDEBUG("");
+    WZTRACE("");
 
     displayInOutPoints();
     updateVideoEqualizer();
@@ -2130,7 +2154,7 @@ void TMainWindow::onMediaInfoChanged() {
 }
 
 void TMainWindow::onNewMediaStartedPlaying() {
-    WZDEBUG("");
+    WZTRACE("");
 
     enterFullscreenOnPlay();
 
@@ -2336,12 +2360,6 @@ void TMainWindow::onDragPositionChanged(double t) {
     }
 }
 
-void TMainWindow::onPlaylistTitleChanged(QString title) {
-    WZTRACE(title);
-
-    playlistDock->setWindowTitle(title);
-}
-
 void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
     WZDEBUG("msg + '" + message + "'");
 
@@ -2379,8 +2397,9 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
 void TMainWindow::closeEvent(QCloseEvent* e)  {
     WZDEBUG("");
 
-    if (playlist->maybeSave()) {
+    if (playlist->maybeSave() && favList->maybeSave()) {
         playlist->abortThread();
+        favList->abortThread();
         player->close(Player::STATE_STOPPING);
         exitFullscreen();
         save();
@@ -2439,6 +2458,14 @@ void TMainWindow::enableSubtitleActions() {
 void TMainWindow::enableActions() {
     WZTRACE("State " + player->stateToString());
 
+    bool enable = player->statePOP();
+
+    // Time slider
+    timeslider_action->enable(enable);
+    // Play lists
+    playlist->enableActions();
+    favList->enableActions();
+
     // File menu
     // Save thumbnail action
     saveThumbnailAct->setEnabled(
@@ -2449,7 +2476,6 @@ void TMainWindow::enableActions() {
 
     // Play menu
     // Seek forward
-    bool enable = player->statePOP();
     seekFrameAct->setEnabled(enable);
     seek1Act->setEnabled(enable);
     seek2Act->setEnabled(enable);
@@ -2597,12 +2623,6 @@ void TMainWindow::enableActions() {
     // Other OSD actions always enabled
 
     viewPropertiesAct->setEnabled(!player->mdat.filename.isEmpty());
-
-
-    // Time slider
-    timeslider_action->enable(enable);
-
-    playlist->enableActions();
 }
 
 void TMainWindow::clearRecentsListDialog() {
@@ -3146,21 +3166,36 @@ void TMainWindow::hidePanel() {
     }
 }
 
+void TMainWindow::subDockSize(TDockWidget* dock, QSize& availableSize) const {
+
+    if (dock->isVisible() && !dock->isFloating()) {
+        QRect d = dock->frameGeometry();
+        QRect p = this->panel->frameGeometry();
+        if (d.x() < p.x() || d.x() > p.x() + p.width()) {
+            WZDEBUG("Left or right");
+            availableSize.rwidth() -= d.width();
+        } else {
+            WZDEBUG("Top or bottom");
+            availableSize.rheight() -= d.height();
+        }
+    }
+}
+
 double TMainWindow::optimizeSize(double size) const {
-    WZDEBUG("size in " + QString::number(size));
+    WZDEBUG("Size in " + QString::number(size));
 
     QSize res = playerWindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
         return size;
     }
-    QSize available_size = TDesktop::availableSize(this);
+    QSize availableSize = TDesktop::availableSize(this);
 
     // Handle fullscreen
     if (pref->fullscreen) {
-        size = (double) available_size.width() / res.width();
-        double size_y = (double) available_size.height() / res.height();
-        if (size_y < size) {
-            size = size_y;
+        size = (double) availableSize.width() / res.width();
+        double height = (double) availableSize.height() / res.height();
+        if (height < size) {
+            size = height;
         }
         return size;
     }
@@ -3171,48 +3206,57 @@ double TMainWindow::optimizeSize(double size) const {
         return pref->size_factor;
     }
 
+    subDockSize(playlistDock, availableSize);
+    subDockSize(favListDock, availableSize);
+    subDockSize(logDock, availableSize);
+
     QSize video_size = res * size;
 
-    // Limit size to 0.6 of available desktop
-    const double f = 0.6;
+    // Limit size to 0.66 of available space
+    const double f = 0.66;
+
     // Adjust width
-    double max = f * available_size.width();
+    double max = f * availableSize.width();
     if (video_size.width() > max) {
         size = max / res.width();
         video_size = res * size;
     }
     // Adjust height
-    max = f * available_size.height();
+    max = f * availableSize.height();
     if (video_size.height() > max) {
         size = max / res.height();
         video_size = res * size;
     }
 
-    // Get 1/4 of available desktop height
-    double min = available_size.height() / 4;
+    // Get 1/4 of available height
+    double min = availableSize.height() / 4;
     if (video_size.height() < min) {
         if (size == 1.0) {
             return 2.0;
         }
+        // Prefer min
         size = min / res.height();
     }
 
     // Round to predefined values
     int i = qRound(size * 100);
     if (i <= 0) {
-        WZWARN("optimizeSize: selecting size 1 for invalid size");
+        WZERROR("Selecting size 1 for invalid size");
         return 1;
     }
     if (i < 13) {
+        // High resolution stuff
         return size;
     }
     if (i < 25) {
         // Can we scale up to 25%?
         video_size = res * (double) 0.25;
-        if (video_size.width() > available_size.width()
-                || video_size.height() > available_size.height()) {
+        if (video_size.width() > availableSize.width()
+                || video_size.height() > availableSize.height()) {
+            // No, return size
             return size;
         }
+        // Scale up to 25%
         return 0.25;
     }
     if (i < 29) {
@@ -3254,6 +3298,7 @@ double TMainWindow::optimizeSize(double size) const {
     if (i < 450) {
         return 4;
     }
+    // Whatever
     return size;
 }
 
@@ -3527,45 +3572,56 @@ void TMainWindow::processAction(QString action_name) {
 }
 
 void TMainWindow::runActions(QString actions) {
-    WZDEBUG("actions '" + actions + "'");
+    WZTRACE("Posting actions '" + actions + "'");
 
     actions = actions.simplified(); // Remove white space
 
     QAction* action;
     QStringList actionsList = actions.split(" ");
-    int delay = 500; // in ms
 
     for (int n = 0; n < actionsList.count(); n++) {
         const QString& actionStr = actionsList.at(n);
-        QString par = ""; // Parameter for action
+        QString arg;
+        bool check;
 
-        // Set par if the next word is a boolean value
+        // Set arg if the next word is a boolean
         if (n + 1 < actionsList.count()) {
-            par = actionsList.at(n + 1).toLower();
-            if (par == "true" || par == "false") {
+            arg = actionsList.at(n + 1).toLower();
+            if (arg == "true" || arg == "1") {
+                check = true;
+                n++;
+            } else if (arg == "false" || arg == "0") {
+                check = false;
                 n++;
             } else {
-                par = "";
+                arg = "";
             }
         }
 
         action = findChild<QAction*>(actionStr);
         if (action) {
-            if (action->isCheckable() && !par.isEmpty()) {
-                // Set the checked state of action
-                WZDEBUG("set checked action '" + actionStr + "' to " + par);
-                action->setChecked(par == "true");
-            } else {
-                // Post to action slot trigger() with a delay of delay ms
-                WZDEBUG(QString("posting action '%1' with %2ms delay")
-                        .arg(actionStr).arg(delay));
-                QTimer::singleShot(delay, action, SLOT(trigger()));
-
-                // Add half a second to the delay for the next action
-                delay += 500;
+            if (!arg.isEmpty()) {
+                if (!action->isCheckable()) {
+                    QMessageBox::warning(this, tr("Unexpected argument"),
+                        tr("Got boolean argument %1 for action %2, which is not"
+                           " a checkable action. Ignoring the action.")
+                        .arg(arg).arg(actionStr));
+                    continue;
+                }
+                if (action->isChecked() == check) {
+                    WZINFO(QString("Checkable action %1 already set to %2")
+                           .arg(actionStr).arg(arg));
+                    continue;
+                }
             }
+
+            // Post to action slot trigger()
+            WZINFO(QString("Posting action '%1'").arg(actionStr));
+            QTimer::singleShot(0, action, SLOT(trigger()));
         } else {
-            WZWARN("action '" + actionStr + "' not found");
+            WZWARN("Action '" + actionStr + "' not found");
+            QMessageBox::warning(this, tr("Action not found"),
+                                 tr("Action '%1' not found.").arg(actionStr));
         }
     } //end for
 } // void TMainWindow::runActions(QString actions)
@@ -3578,27 +3634,34 @@ void TMainWindow::checkPendingActionsToRun() {
         actions = pref->actions_to_run;
     } else {
         actions = pending_actions_to_run;
-        pending_actions_to_run.clear();
+        pending_actions_to_run = "";
         if (!pref->actions_to_run.isEmpty()) {
             actions = pref->actions_to_run + " " + actions;
         }
     }
 
     if (!actions.isEmpty()) {
-        WZDEBUG("running pending actions '" + actions + "'");
+        WZINFO("Running pending actions '" + actions + "'");
         runActions(actions);
     }
 }
 
-void TMainWindow::runActionsLater(const QString& actions, bool postCheck) {
+void TMainWindow::runActionsLater(const QString& actions,
+                                  bool postCheck,
+                                  bool prepend) {
+    WZDEBUG("Scheduling actions '" + actions + "'");
 
+    if (actions.isEmpty()) {
+        return;
+    }
     if (pending_actions_to_run.isEmpty()) {
         pending_actions_to_run = actions;
+    } else if (prepend) {
+        pending_actions_to_run = actions + " " + pending_actions_to_run;
     } else {
         pending_actions_to_run += " " + actions;
     }
-    if (!pending_actions_to_run.isEmpty() && postCheck) {
-        WZDEBUG(QString("posting '%1'").arg(pending_actions_to_run));
+    if (postCheck) {
         QTimer::singleShot(0, this, SLOT(checkPendingActionsToRun()));
     }
 }
