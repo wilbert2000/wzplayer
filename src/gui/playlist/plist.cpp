@@ -453,7 +453,7 @@ void TPList::setPlaylistFilename(const QString& filename) {
 bool TPList::maybeSave() {
 
     if (!playlistWidget->isModified()) {
-        WZTRACE("Playlist not modified");
+        WZTRACE(tranName + " not modified");
         return true;
     }
 
@@ -478,9 +478,9 @@ bool TPList::maybeSave() {
 
     }
 
-    int res = QMessageBox::question(this, tr("Playlist modified"),
+    int res = QMessageBox::question(this, tr("%1 modified").arg(tranName),
         tr("The playlist has been modified, do you want to save the changes to"
-           " \"%1\"?").arg(playlistFilename),
+           " '%1'?").arg(playlistFilename),
         QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
 
     switch (res) {
@@ -666,7 +666,7 @@ bool TPList::saveM3u(const QString& filename, bool linkFolders) {
 }
 
 bool TPList::save() {
-    WZINFO("'" + playlistFilename + "'");
+    WZINFO(QString("Saving '%1'").arg(playlistFilename));
 
     if (playlistFilename.isEmpty()) {
         return saveAs();
@@ -680,7 +680,7 @@ bool TPList::save() {
     } else if (fi.fileName() == TConfig::WZPLAYLIST) {
         wzplaylist = true;
     } else if (player->mdat.disc.valid) {
-        // saveAs() force adds the playlist extension
+        // saveAs() force adds ".m3u8" playlist extension
         if (!extensions.isPlaylist(fi)) {
             return saveAs();
         }
@@ -726,20 +726,21 @@ bool TPList::saveAs() {
         return false;
     }
 
-    // If filename has no extension, force add it. save() depends om it
-    // when saving a playlist for discs.
+    // Force add ".m3u8", cause I hate anything not utf8.
+    // Save() depends on setting a playlist extension here,
+    // for its handling of playlists for discs.
     QFileInfo fi(s);
     if (fi.suffix().toLower() != "m3u8") {
         fi.setFile(s + ".m3u8");
     }
 
     if (fi.exists()) {
-        int res = QMessageBox::question(this, tr("Confirm overwrite?"),
-                                        tr("The file %1 already exists.\n"
-                                           "Do you want to overwrite it?")
-                                        .arg(fi.absoluteFilePath()),
-                                        QMessageBox::Yes, QMessageBox::No,
-                                        QMessageBox::NoButton);
+        int res = QMessageBox::question(this, tr("Confirm overwrite"),
+                tr("The file %1 already exists.\n"
+                   "Do you want to overwrite it?")
+                .arg(fi.absoluteFilePath()),
+                QMessageBox::Yes,
+                QMessageBox::No | QMessageBox::Default | QMessageBox::Escape);
         if (res == QMessageBox::No) {
             return false;
         }
@@ -1054,7 +1055,7 @@ void TPList::browseDir() {
 
 void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
                                   QTreeWidgetItem* previous) {
-    WZTRACE(QString("Changed from %1 to %2")
+    WZTRACE(QString("Changed from '%1' to '%2'")
             .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "null")
             .arg(current ? current->text(TPlaylistItem::COL_NAME) : "null"));
     enableActions();
