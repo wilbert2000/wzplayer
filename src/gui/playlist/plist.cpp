@@ -12,6 +12,7 @@
 #include "settings/preferences.h"
 #include "settings/paths.h"
 #include "extensions.h"
+#include "iconprovider.h"
 #include "version.h"
 
 #include <QVBoxLayout>
@@ -39,7 +40,7 @@ TMenuAddRemoved::TMenuAddRemoved(TPList* pl,
     TMenu(pl, mw, name, tr("Add removed item"), "noicon"),
     playlistWidget(plw) {
 
-    menuAction()->setIcon(style()->standardIcon(QStyle::SP_TrashIcon));
+    menuAction()->setIcon(iconProvider.trashIcon);
 
     connect(this, &TMenuAddRemoved::triggered,
             this, &TMenuAddRemoved::onTriggered);
@@ -168,20 +169,20 @@ void TPList::createActions() {
     saveAct = new TAction(this, shortName + "_save",
                           tr("Save %1").arg(tranNameLower),
                           "noicon", QKeySequence("Ctrl+S"));
-    saveAct->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+    saveAct->setIcon(iconProvider.saveIcon);
     connect(saveAct, &TAction::triggered, this, &TPList::save);
 
     // SaveAs
     saveAsAct = new TAction(this, shortName + "_saveas",
                             tr("Save %1 as...").arg(tranNameLower), "noicon");
-    saveAsAct->setIcon(style()->standardIcon(QStyle::SP_DriveHDIcon));
+    saveAsAct->setIcon(iconProvider.saveAsIcon);
     connect(saveAsAct, &TAction::triggered, this, &TPList::saveAs);
 
     // Refresh
     refreshAct = new TAction(this, shortName+ "_refresh",
                              tr("Refresh %1").arg(tranNameLower), "noicon",
                              Qt::Key_F5);
-    refreshAct->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+    refreshAct->setIcon(iconProvider.refreshIcon);
     connect(refreshAct, &TAction::triggered, this, &TPList::refresh);
 
     // Browse directory
@@ -224,13 +225,14 @@ void TPList::createActions() {
     // New folder
     newFolderAct = new TAction(this, shortName + "_new_folder",
                                tr("New folder"), "noicon", Qt::Key_F10);
-    newFolderAct->setIcon(style()->standardIcon(QStyle::SP_FileDialogNewFolder));
+    newFolderAct->setIcon(iconProvider.newFolderIcon);
     connect(newFolderAct, &TAction::triggered, this, &TPList::newFolder);
     contextMenu->addAction(newFolderAct);
 
     // Find playing
     findPlayingAct = new TAction(this, shortName + "_find_playing",
                                  tr("Find playing item"), "", Qt::Key_F3);
+    findPlayingAct->setIcon(iconProvider.findIcon);
     connect(findPlayingAct, &TAction::triggered,
             this, &TPList::findPlayingItem);
     contextMenu->addAction(findPlayingAct);
@@ -239,18 +241,21 @@ void TPList::createActions() {
     // Cut
     cutAct = new TAction(this, shortName + "_cut", tr("Cut file name(s)"), "",
                          QKeySequence("Ctrl+X"));
+    cutAct->setIcon(iconProvider.cutIcon);
     connect(cutAct, &TAction::triggered, this, &TPlaylist::cut);
     contextMenu->addAction(cutAct);
 
     // Copy
     copyAct = new TAction(this, shortName + "_copy", tr("Copy file name(s)"),
                           "", QKeySequence("Ctrl+C"));
+    copyAct->setIcon(iconProvider.copyIcon);
     connect(copyAct, &TAction::triggered, this, &TPList::copySelected);
     contextMenu->addAction(copyAct);
 
     // Paste
     pasteAct = new TAction(this, shortName + "_paste", tr("Paste file name(s)"),
                            "", QKeySequence("Ctrl+V"));
+    pasteAct->setIcon(iconProvider.pasteIcon);
     connect(pasteAct, &TAction::triggered, this, &TPList::paste);
     connect(QApplication::clipboard(), &QClipboard::dataChanged,
             this, &TPList::enablePaste);
@@ -261,8 +266,7 @@ void TPList::createActions() {
     playlistAddMenu = new Menu::TMenu(this, mainWindow, shortName + "_add_menu",
                                       tr("Add to %1").arg(tranName.toLower()),
                                       "noicon");
-    playlistAddMenu->menuAction()->setIcon(
-                style()->standardIcon(QStyle::SP_DialogOkButton));
+    playlistAddMenu->menuAction()->setIcon(iconProvider.okIcon);
 
     // Add playing
     addPlayingFileAct = new TAction(this, shortName + "_add_playing",
@@ -301,15 +305,14 @@ void TPList::createActions() {
     playlistRemoveMenu = new Menu::TMenu(this, mainWindow,
         shortName + "_remove_menu",
         tr("Remove from %1").arg(tranNameLower), "noicon");
-    playlistRemoveMenu->menuAction()->setIcon(style()->standardIcon(
-                                                QStyle::SP_DialogCancelButton));
+    playlistRemoveMenu->menuAction()->setIcon(iconProvider.cancelIcon);
     connect(playlistRemoveMenu, &Menu::TMenu::aboutToShow,
             this, &TPList::enableRemoveMenu);
 
     // Delete from playlist
     removeSelectedAct = new TAction(this, shortName + "_delete",
         tr("Delete from %1").arg(tranNameLower), "noicon", Qt::Key_Delete);
-    removeSelectedAct->setIcon(style()->standardIcon(QStyle::SP_TrashIcon));
+    removeSelectedAct->setIcon(iconProvider.trashIcon);
     playlistRemoveMenu->addAction(removeSelectedAct);
     connect(removeSelectedAct, &TAction::triggered,
             this, &TPlaylist::removeSelected);
@@ -322,8 +325,7 @@ void TPList::createActions() {
                                             shortName + "_delete_from_disk",
                                             txt, "noicon",
                                             Qt::SHIFT | Qt::Key_Delete);
-    removeSelectedFromDiskAct->setIcon(style()->standardIcon(
-                                           QStyle::SP_DialogDiscardButton));
+    removeSelectedFromDiskAct->setIcon(iconProvider.discardIcon);
     playlistRemoveMenu->addAction(removeSelectedFromDiskAct);
     connect(removeSelectedFromDiskAct, &TAction::triggered,
             this, &TPlaylist::removeSelectedFromDisk);
@@ -334,7 +336,7 @@ void TPList::createActions() {
     removeAllAct = new TAction(this, shortName + "_clear",
                                tr("Clear %1").arg(tranNameLower),
                                "noicon", Qt::CTRL | Qt::Key_Delete);
-    removeAllAct->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
+    removeAllAct->setIcon(iconProvider.clearIcon);
     playlistRemoveMenu->addAction(removeAllAct);
     connect(removeAllAct, &TAction::triggered, this, &TPlaylist::removeAll);
 
