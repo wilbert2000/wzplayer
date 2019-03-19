@@ -37,15 +37,15 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     sortOrder(Qt::AscendingOrder),
     sortSectionSaved(-1),
     sortOrderSaved(Qt::AscendingOrder),
+    scrollToPlayingFile(false),
     fileCopier(0),
     copyDialog(0) {
 
     setObjectName(name);
-
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setIconSize(iconProvider.iconSize);
-    setSelectionMode(QAbstractItemView::ExtendedSelection);
     setEditTriggers(QAbstractItemView::EditKeyPressed);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     setColumnCount(TPlaylistItem::COL_COUNT);
     setHeaderLabels(QStringList() << tr("Name") << tr("Ext") << tr("Length")
@@ -79,9 +79,17 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     // Wordwrap
     setWordWrap(true);
     setUniformRowHeights(false);
+
     wordWrapTimer.setSingleShot(true);
+    wordWrapTimer.setInterval(0);
     connect(&wordWrapTimer, &QTimer::timeout,
-            this, &TPlaylistWidget::resizeNameColumnAll);
+            this, &TPlaylistWidget::onWordWrapTimeout);
+
+    scrollTimer.setSingleShot(true);
+    scrollTimer.setInterval(0);
+    connect(&scrollTimer, &QTimer::timeout,
+            this, &TPlaylistWidget::scrollToPlaying);
+
     connect(header(), &QHeaderView::sectionResized,
             this, &TPlaylistWidget::onSectionResized);
 
@@ -136,7 +144,7 @@ void TPlaylistWidget::clr() {
 
 // Called by root item to signal modified changed
 void TPlaylistWidget::emitModifiedChanged() {
-    WZDEBUG("");
+    WZTRACE(objectName());
     emit modifiedChanged();
 }
 
@@ -273,14 +281,14 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
 
     if (playingItem) {
         playingItem->setState(state);
-    }
-
-    if (playingItem && setCurrent) {
-        setCurrentItem(playingItem);
-    } else {
-        // Hack to trigger playlist enableActions...
-        // TODO: better test removal
-        // emit currentItemChanged(currentItem(), currentItem());
+        if (setCurrent) {
+            setCurrentItem(playingItem);
+            if (wordWrapTimer.isActive()) {
+                scrollToPlayingFile = true;
+            } else {
+                scrollTimer.start();
+            }
+        }
     }
 
     if (changed) {
@@ -405,7 +413,7 @@ TPlaylistItem* TPlaylistWidget::findPreviousPlayedTime(
 }
 
 void TPlaylistWidget::editName() {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     TPlaylistItem* cur = plCurrentItem();
     if (cur) {
@@ -505,7 +513,7 @@ bool TPlaylistWidget::dropOn(QDropEvent *event, int *dropRow, int *dropCol,
 }
 
 void TPlaylistWidget::onDropDone(bool error) {
-    WZDEBUG(QString("Error %1").arg(error));
+    WZTRACE(QString("%1 error %2").arg(objectName()).arg(error));
 
     // The copy dialog should already be hidden by QtCopyDialogPrivate::done()
     delete copyDialog;
@@ -777,7 +785,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
                                            int start, int end) {
-    WZDEBUG(QString("'%1' %2 %3")
+    WZDEBUG(QString("%1 '%2' %3 %4").arg(objectName())
             .arg(parent.data().toString()).arg(start).arg(end));
 
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
@@ -819,7 +827,7 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
                                    int start, int end) {
-    WZDEBUG(QString("'%1' %2 %3")
+    WZDEBUG(QString("%1 '%2' %3 %4").arg(objectName())
             .arg(parent.data().toString()).arg(start).arg(end));
     QTreeWidget::rowsInserted(parent, start, end);
 
@@ -927,7 +935,7 @@ bool TPlaylistWidget::removeFromDisk(const QString& filename,
 }
 
 void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     // Save currently playing item, which might be deleted
     QString playing = playingFile();
@@ -946,7 +954,7 @@ void TPlaylistWidget::removeSelected(bool deleteFromDisk) {
         if (i != root
             && (!deleteFromDisk
                 || removeFromDisk(i->filename(), playing))) {
-            WZINFO("removing '" + i->filename() + "' from playlist");
+            WZINFO("Removing '" + i->filename() + "' from playlist");
 
             TPlaylistItem* parent = i->plParent();
 
@@ -1069,10 +1077,30 @@ void TPlaylistWidget::resizeNameColumn(TPlaylistItem* item, int level) {
 }
 
 void TPlaylistWidget::resizeNameColumnAll() {
+    WZTRACE(objectName());
     resizeNameColumn(root(), 0);
 }
 
+void TPlaylistWidget::scrollToPlaying() {
+    WZTRACE(objectName());
+
+    scrollToPlayingFile = false;
+    if (playingItem) {
+        scrollToItem(playingItem);
+    }
+}
+
+void TPlaylistWidget::onWordWrapTimeout() {
+    WZTRACE(objectName());
+
+    resizeNameColumnAll();
+    if (scrollToPlayingFile) {
+        scrollTimer.start();
+    }
+}
+
 void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* i) {
+    WZTRACE(objectName());
 
     TPlaylistItem* item = static_cast<TPlaylistItem*>(i);
     if (!wordWrapTimer.isActive()) {
@@ -1080,9 +1108,13 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* i) {
     }
 }
 
-void TPlaylistWidget::onSectionResized(int logicalIndex, int, int) {
+void TPlaylistWidget::onSectionResized(int logicalIndex,
+                                       int oldSize,
+                                       int newSize) {
+    WZTRACE(QString("%1 idx %2 old %3 new %4")
+            .arg(objectName()).arg(logicalIndex).arg(oldSize).arg(newSize));
 
-    if (logicalIndex == TPlaylistItem::COL_NAME) {
+    if (logicalIndex == TPlaylistItem::COL_NAME && root()->childCount()) {
         wordWrapTimer.start();
     }
 }
@@ -1134,13 +1166,15 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
-            WZTRACE("Removing single folder in root");
+            WZTRACE(QString("%1 Removing single folder in root")
+                    .arg(objectName()));
             TPlaylistItem* old = item;
             item = static_cast<TPlaylistItem*>(item->takeChild(0));
             delete old;
         }
 
-        WZTRACE(QString("New root '%1'").arg(item->filename()));
+        WZTRACE(QString("%1 New root '%2'")
+                .arg(objectName()).arg(item->filename()));
 
         // Invalidate playing_item
         if (playingItem) {
@@ -1199,13 +1233,13 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         }
 
         if (item->modified()) {
-            WZTRACE("New root is modified");
+            WZTRACE(QString("%1 New root is modified").arg(objectName()));
             emit modifiedChanged();
         } else {
-            WZTRACE("New root is not modified");
+            WZTRACE(QString("%1 New root is not modified").arg(objectName()));
         }
     } else {
-        WZTRACE(QString("Dropping %1 items into '%2'")
+        WZTRACE(QString("%1 Dropping %2 items into '%3'").arg(objectName())
                 .arg(item->childCount()).arg(parent->filename()));
 
         // Collect and prepare children of item
@@ -1238,7 +1272,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         // Restore sort
         setSort(currentSortSection, sortOrder);
 
-        WZTRACE("Setting parent modified");
+        WZTRACE(QString("%1 Setting parent modified").arg(objectName()));
         parent->setModified();
     }
 

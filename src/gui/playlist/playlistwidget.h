@@ -100,9 +100,12 @@ private:
     Qt::SortOrder sortOrder;
     int sortSectionSaved;
     Qt::SortOrder sortOrderSaved;
+
     Action::Menu::TMenuExec* columnsMenu;
 
     QTimer wordWrapTimer;
+    QTimer scrollTimer;
+    bool scrollToPlayingFile;
 
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;
@@ -127,15 +130,18 @@ private:
     bool removeFromDisk(const QString& filename, const QString& playingFile);
 
 private slots:
+    void scrollToPlaying();
+    void onWordWrapTimeout();
     void resizeNameColumnAll();
     void onItemExpanded(QTreeWidgetItem* i);
     void onSectionClicked(int section);
     void onSectionResized(int logicalIndex, int oldSize, int newSize);
     void onColumnMenuTriggered(QAction* action);
+
+    void onDropDone(bool error);
     void onCopyFinished(int id, bool error);
     void onMoveAboutToStart(int id);
     void onMoveFinished(int id, bool error);
-    void onDropDone(bool error);
 };
 
 } // namespace Playlist

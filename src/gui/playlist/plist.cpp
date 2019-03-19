@@ -405,7 +405,7 @@ void TPList::enableRemoveMenu() {
 }
 
 void TPList::enableActions() {
-    WZTRACE("");
+    WZTRACE(objectName());
 
     // saveAct->setEnabled(true);
     // saveAsAct->setEnabled(true);
@@ -502,7 +502,8 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                            QTextStream& stream,
                            bool linkFolders,
                            bool& savedMetaData) {
-    WZTRACE("Saving '" + folder->filename() + "'");
+    WZTRACE(QString("%1 Saving '%2'")
+            .arg(objectName()).arg(folder->filename()));
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
@@ -560,7 +561,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
 bool TPList::saveM3u(TPlaylistItem* folder,
                      const QString& filename,
                      bool wzplaylist) {
-    WZTRACE("Saving '" + filename + "'");
+    WZTRACE(QString("%1 Saving '%2'").arg(objectName()).arg(filename));
 
     QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
@@ -751,7 +752,7 @@ bool TPList::saveAs() {
 }
 
 void TPList::play() {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     TPlaylistItem* item = playlistWidget->plCurrentItem();
     if (item) {
@@ -762,7 +763,7 @@ void TPList::play() {
 }
 
 void TPList::playInNewWindow() {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     QStringList files;
     QTreeWidgetItemIterator it(playlistWidget,
@@ -788,7 +789,7 @@ void TPList::playInNewWindow() {
 
     QProcess p;
     if (p.startDetached(qApp->applicationFilePath(), files)) {
-        WZINFO("started new instance");
+        WZINFO("Started new instance");
     } else {
         QString msg = strerror(errno);
         WZERROR(QString("Failed to start '%1'. %2")
@@ -807,7 +808,7 @@ void TPList::editName() {
 }
 
 void TPList::newFolder() {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     TPlaylistItem* parent = playlistWidget->plCurrentItem();
     if (parent == 0) {
@@ -923,7 +924,7 @@ void TPList::cut() {
 }
 
 void TPList::addPlayingFile() {
-   WZDEBUG("");
+   WZTRACE(objectName());
 
    QString fn = player->mdat.filename;
    if (!fn.isEmpty()) {
@@ -961,7 +962,7 @@ void TPList::addUrlsDialog() {
 }
 
 void TPList::removeSelected(bool deleteFromDisk) {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     if (!isActiveWindow()) {
         WZWARN("Ignoring remove request while playlist not active window");
@@ -1055,14 +1056,15 @@ void TPList::browseDir() {
 
 void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
                                   QTreeWidgetItem* previous) {
-    WZTRACE(QString("Changed from '%1' to '%2'")
+    WZTRACE(QString("%1 Changed from '%2' to '%3'")
+            .arg(objectName())
             .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "null")
             .arg(current ? current->text(TPlaylistItem::COL_NAME) : "null"));
     enableActions();
 }
 
 void TPList::onItemActivated(QTreeWidgetItem* i, int) {
-    WZDEBUG("");
+    WZTRACE(objectName());
 
     TPlaylistItem* item = static_cast<TPlaylistItem*>(i);
     if (item && !item->isFolder()) {
@@ -1104,7 +1106,7 @@ void TPList::abortThread() {
 }
 
 void TPList::onThreadFinished() {
-    WZTRACE("");
+    WZTRACE(objectName());
 
     if (thread == 0) {
         // Only during destruction, so no need to enable actions
@@ -1190,11 +1192,12 @@ void TPList::addStartThread() {
 
     if (thread) {
         // Thread still running, abort it and restart it in onThreadFinished()
-        WZDEBUG("Add files thread still running. Aborting it...");
+        WZDEBUG(QString("%1 Add files thread still running. Aborting it...")
+                .arg(objectName()));
         restartThread = true;
         thread->abort();
     } else {
-        WZDEBUG("Starting add files thread");
+        WZDEBUG(QString("%1 Starting add files thread").arg(objectName()));
         restartThread = false;
 
         // Allow single image
@@ -1256,7 +1259,7 @@ void TPList::clear(bool clearFilename) {
 }
 
 void TPList::addRemovedItem(const QString& item) {
-    WZDEBUG("'" + item + "'");
+    WZTRACE(objectName() + " '" + item + "'");
 
     // TODO: just add the item instead of refresh
     refresh();
