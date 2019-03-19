@@ -437,9 +437,9 @@ void TActionsEditor::saveActionsTable() {
         }
         if (QFileInfo(s).exists()) {
             int res = QMessageBox::question(this,
-                    tr("Confirm overwrite?"),
+                    tr("Confirm overwrite"),
                     tr("The file %1 already exists.\n"
-                       "Do you want to overwrite?").arg(s),
+                       "Do you want to overwrite it?").arg(s),
                     QMessageBox::Yes,
                     QMessageBox::No,
                     Qt::NoButton);
