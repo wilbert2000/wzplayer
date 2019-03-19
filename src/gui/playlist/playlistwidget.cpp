@@ -787,25 +787,27 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
     if (!parent.isValid()) {
         return;
     }
-    TPlaylistItem* p = static_cast<TPlaylistItem*>(parent.internalPointer());
+
+    TPlaylistItem* parentItem = static_cast<TPlaylistItem*>(
+                parent.internalPointer());
 
     if (sortSection == TPlaylistItem::COL_ORDER) {
         int d = end - start + 1;
         if (sortOrder == Qt::AscendingOrder) {
-            for (int i = end + 1; i < p->childCount(); i++) {
-                p->plChild(i)->setOrder(i - d);
+            for (int i = end + 1; i < parentItem->childCount(); i++) {
+                parentItem->plChild(i)->setOrder(i - d);
             }
         } else {
-            d = p->childCount() - d;
+            d = parentItem->childCount() - d;
             for (int i = start - 1; i >= 0; i--) {
-                p->plChild(i)->setOrder(d - i);
+                parentItem->plChild(i)->setOrder(d - i);
             }
         }
     } else {
         for (int r = start; r <= end; r++) {
-            int order = p->plChild(r)->order();
-            for (int i = p->childCount() - 1; i >= 0; i--) {
-                TPlaylistItem* item = p->plChild(i);
+            int order = parentItem->plChild(r)->order();
+            for (int i = parentItem->childCount() - 1; i >= 0; i--) {
+                TPlaylistItem* item = parentItem->plChild(i);
                 int o = item->order();
                 if (o > order) {
                     item->setOrder(o - 1);
@@ -842,7 +844,6 @@ void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
             }
         }
     } else {
-        // Cols != COL_ORDER
         int d = end - start + 1;
         for (int i = parentItem->childCount() - 1; i > end; i--) {
             TPlaylistItem* item = parentItem->plChild(i);
