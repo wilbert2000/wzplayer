@@ -3212,8 +3212,8 @@ double TMainWindow::optimizeSize(double size) const {
 
     QSize video_size = res * size;
 
-    // Limit size to 0.66 of available space
-    const double f = 0.66;
+    // Limit size to perc of available space
+    const double f = 0.75;
 
     // Adjust width
     double max = f * availableSize.width();
