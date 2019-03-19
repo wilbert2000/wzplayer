@@ -21,6 +21,8 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
     playlist(playlst),
     currentFavAction(0) {
 
+    playlistWidget->setSort(TPlaylistItem::COL_ORDER, Qt::AscendingOrder);
+
     mainWindow->addAction(addPlayingFileAct);
 
     favMenu = new Action::Menu::TMenu(this, mw, "favorites_menu",

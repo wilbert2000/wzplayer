@@ -35,6 +35,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     playingItem(0),
     sortSection(-1),
     sortOrder(Qt::AscendingOrder),
+    sortSectionSaved(-1),
+    sortOrderSaved(Qt::AscendingOrder),
     fileCopier(0),
     copyDialog(0) {
 
@@ -1101,7 +1103,6 @@ TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* item) {
 
 TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
                                     TPlaylistItem* target) {
-    WZTRACE(QString("Child count %1").arg(item->childCount()));
 
     // Validate target is still valid
     target = validateItem(target);
@@ -1123,6 +1124,10 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         idx = parent->childCount();
     }
 
+    // Disable sort
+    int currentSortSection = sortSection;
+    disableSort();
+
     if (parent == 0 || (parent == root() && parent->childCount() == 0)) {
         // Drop into empty root
 
@@ -1133,6 +1138,8 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
             item = static_cast<TPlaylistItem*>(item->takeChild(0));
             delete old;
         }
+
+        WZTRACE(QString("New root '%1'").arg(item->filename()));
 
         // Invalidate playing_item
         if (playingItem) {
@@ -1145,9 +1152,6 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         delete takeTopLevelItem(0);
         clearSelection();
 
-        // Disable sort
-        disableSort();
-
         // Set new item as root
         item->setFlags(ROOT_FLAGS);
         addTopLevelItem(item);
@@ -1155,9 +1159,34 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         // Sort
         if (item->isWZPlaylist() || !item->isPlaylist()) {
-            sortSection = TPlaylistItem::COL_NAME;
-            sortOrder = Qt::AscendingOrder;
+            if (currentSortSection < 0) {
+                // Sort not set yet. Playlist only,
+                // favList has its sortOrder set in constructor
+                sortSection = TPlaylistItem::COL_NAME;
+                sortOrder = Qt::AscendingOrder;
+                sortSectionSaved = -1;
+            } else if (sortSectionSaved >= 0) {
+                // Current sort is from non-wzplaylist playlist,
+                // restore saved sort
+                sortSection = sortSectionSaved;
+                sortOrder = sortOrderSaved;
+                sortSectionSaved = -1;
+            } else {
+                // Keep current sort
+                sortSection = currentSortSection;
+            }
+        } else if (sortSectionSaved >= 0) {
+            // Keep current sort
+            sortSection = currentSortSection;
         } else {
+            // Save sort for when switching back to wzplaylist
+            if (currentSortSection >= 0) {
+                sortSectionSaved = currentSortSection;
+                sortOrderSaved = sortOrder;
+            } else {
+                sortSectionSaved = TPlaylistItem::COL_NAME;
+                sortOrderSaved = Qt::AscendingOrder;
+            }
             sortSection = TPlaylistItem::COL_ORDER;
             sortOrder = Qt::AscendingOrder;
         }
@@ -1175,13 +1204,15 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
             WZTRACE("New root is not modified");
         }
     } else {
+        WZTRACE(QString("Dropping %1 items into '%2'")
+                .arg(item->childCount()).arg(parent->filename()));
+
         // Collect and prepare children of item
         clearSelection();
         QList<QTreeWidgetItem*> children;
         while (item->childCount()) {
             TPlaylistItem* child = item->plTakeChild(0);
             child->setModified(true, true, false);
-            child->setSelected(true);
             children.append(child);
         }
 
@@ -1189,20 +1220,22 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         // Notify TPlaylist::onThreadFinished() root is still alive
         item = 0;
 
-        // Disable sort
-        int savedSortSection = sortSection;
-        disableSort();
-
         // Insert children
-        parent->insertChildren(idx, children);
-        // Restore sort
-        setSort(savedSortSection, sortOrder);
+        if (children.count()) {
+            parent->insertChildren(idx, children);
+            setCurrentItem(children.at(0));
+        }
 
-        // Update size hint name column
+        // Select drop and update size hint name column
         int level = parent->getLevel() + 1;
         for(int i = 0; i < children.count(); i++) {
-            static_cast<TPlaylistItem*>(children.at(i))->setSizeHintName(level);
+            TPlaylistItem* child = static_cast<TPlaylistItem*>(children.at(i));
+            child->setSelected(true);
+            child->setSizeHintName(level);
         }
+
+        // Restore sort
+        setSort(currentSortSection, sortOrder);
 
         WZTRACE("Setting parent modified");
         parent->setModified();

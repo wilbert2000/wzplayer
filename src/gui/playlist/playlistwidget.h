@@ -97,6 +97,8 @@ protected slots:
 private:
     int sortSection;
     Qt::SortOrder sortOrder;
+    int sortSectionSaved;
+    Qt::SortOrder sortOrderSaved;
     Action::Menu::TMenuExec* columnsMenu;
 
     QTimer wordWrapTimer;
