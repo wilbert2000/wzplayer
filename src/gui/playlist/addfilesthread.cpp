@@ -79,7 +79,8 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
                                  bool videoFiles,
                                  bool audioFiles,
                                  bool playlists,
-                                 bool images) :
+                                 bool images,
+                                 bool favList) :
     QThread(parent),
     debug(logger()),
     files(aFiles),
@@ -87,7 +88,8 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     abortRequested(false),
     stopRequested(false),
     recurse(recurseSubDirs),
-    addImages(images) {
+    addImages(images),
+    isFavList(favList) {
 
     rxNameBlacklist.reserve(nameBlacklist.count());
     QRegExp rx("", Qt::CaseInsensitive);
@@ -198,8 +200,8 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
     // File residing outside parent directory from symbolic link or playlist
     if (!path.startsWith(parentPathPlusSep)) {
         QString filename = fi.absoluteFilePath();
-        WZTRACE("Creating link '" + filename + "' in '" + parent->filename()
-                + "'");
+        WZTRACE(QString("Creating link in '%1' to '%2'")
+                .arg(parent->filename()).arg(filename));
         return new TPlaylistItem(parent,
                                  filename,
                                  name,
@@ -579,12 +581,21 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                 if (name.isEmpty()) {
                     name = disc.displayName();
                 }
-            } else if (QUrl(filename).scheme().isEmpty()
-                       && parent->isWZPlaylist()) {
-                WZINFO(QString("Ignoring no longer existing file '%1'")
-                       .arg(filename));
-                parent->setModified();
-                return 0;
+                WZTRACE(QString("Adding disc '%1'").arg(filename));
+            } else if (QUrl(filename).scheme().isEmpty()) {
+                // Non existing local file
+                if (!isFavList && parent->isWZPlaylist()) {
+                    WZINFO(QString("Ignoring no longer existing file '%1'")
+                           .arg(filename));
+                    parent->setModified();
+                    return 0;
+                }
+                WZINFO(QString("Adding non-existing file '%1'").arg(filename));
+                // Don't set item to failed yet, might be temporarely
+                // unaccesible or a syntax the player understands, but which
+                // is not a valid filename.
+            } else {
+                WZTRACE(QString("Adding URL '%1'").arg(filename));
             }
             return new TPlaylistItem(parent, filename, name, duration,
                                      protectName);

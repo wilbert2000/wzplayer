@@ -29,7 +29,8 @@ public:
                     bool videoFiles,
                     bool audioFiles,
                     bool playlists,
-                    bool images);
+                    bool images,
+                    bool favList);
     virtual ~TAddFilesThread();
 
     virtual void run();
@@ -51,6 +52,7 @@ private:
     bool stopRequested;
     bool recurse;
     bool addImages;
+    bool isFavList;
 
     QString playlistPath;
 

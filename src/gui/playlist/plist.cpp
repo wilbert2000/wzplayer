@@ -1209,7 +1209,8 @@ void TPList::addStartThread() {
                                      Settings::pref->addVideo,
                                      Settings::pref->addAudio,
                                      Settings::pref->addPlaylists,
-                                     addImages);
+                                     addImages,
+                                     isFavList);
 
         connect(thread, &TAddFilesThread::finished,
                 this, &TPList::onThreadFinished);
