@@ -132,8 +132,6 @@ QAction* TFavList::fAction(QMenu* menu, const QString& filename) const {
                 WZTRACE("Found '" + filename + "'");
                 return action;
             }
-        } else {
-            WZERROR("Action without item");
         }
     }
 
@@ -166,7 +164,7 @@ void TFavList::onPlaylistPlayingItemChanged(TPlaylistItem* item) {
 void TFavList::onRequestUpdateTimeout() {
     WZDEBUG("");
 
-    if (playlistWidget->isBusy() && requestAge.elapsed() < 1000) {
+    if (playlistWidget->isBusy()) {
         requestUpdateTimer->start();
     } else {
         updateFavMenu();
@@ -177,9 +175,6 @@ void TFavList::requestUpdate() {
     WZDEBUG("");
 
     currentFavAction = 0;
-    if (!requestUpdateTimer->isActive()) {
-        requestAge.start();
-    }
     requestUpdateTimer->start();
  }
 

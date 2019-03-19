@@ -3,7 +3,6 @@
 
 #include "gui/playlist/plist.h"
 #include "wzdebug.h"
-#include <QTime>
 
 
 class QTreeWidgetItem;
@@ -47,7 +46,6 @@ private:
     QAction* currentFavAction;
     QIcon currentFavIcon;
     QTimer* requestUpdateTimer;
-    QTime requestAge;
 
     QAction* fAction(QMenu* menu, const QString& filename) const;
     QAction* findAction(const QString& filename) const;
