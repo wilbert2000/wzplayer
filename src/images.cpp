@@ -43,8 +43,8 @@ void Images::setTheme(const QString& name) {
         WZDEBUG("Unloading '" + last_resource_loaded + "'");
         QResource::unregisterResource(last_resource_loaded);
         last_resource_loaded = "";
-        has_rcc = false;
     }
+    has_rcc = false;
 
     current_theme = name;
 
@@ -54,23 +54,24 @@ void Images::setTheme(const QString& name) {
     } else {
         themes_path = TPaths::themesPath();
     }
+    WZDEBUG("Themes path: '" + themes_path + "'");
 
     QString rs_file;
-    if (!themes_path.isEmpty() && !current_theme.isEmpty()) {
+    if (!current_theme.isEmpty()) {
         rs_file = themes_path + "/" + current_theme + "/"
                 + current_theme + ".rcc";
-    }
-
-    if (!rs_file.isEmpty() && QFile::exists(rs_file)) {
-        WZDEBUG("Loading resource file '" + rs_file + "'");
-        if (QResource::registerResource(rs_file)) {
-            last_resource_loaded = rs_file;
-            has_rcc = true;
+        if (QFile::exists(rs_file)) {
+            if (QResource::registerResource(rs_file)) {
+                last_resource_loaded = rs_file;
+                has_rcc = true;
+                WZDEBUG("Registered resource file '" + rs_file + "'");
+            } else {
+                WZWARN("Failded to register resource file '" + rs_file + "'");
+            }
+        } else {
+            WZDEBUG("No resource file found at '" + rs_file + "'");
         }
-    } else {
-        has_rcc = false;
     }
-    WZDEBUG("has_rcc " + QString::number(has_rcc));
 }
 
 QString Images::iconFilename(const QString& name) {
