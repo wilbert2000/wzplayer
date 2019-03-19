@@ -49,7 +49,6 @@ private:
 
 private slots:
     void onSaveButtonClicked();
-    void onCopyButtonClicked();
     void onFindPreviousButtonClicked();
     void onFindNextButtonClicked();
     void onFindTextChanged();

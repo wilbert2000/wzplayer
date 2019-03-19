@@ -11,12 +11,19 @@
     <height>541</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
    <string notr="true">Log Window</string>
   </property>
   <layout class="QVBoxLayout">
    <item>
-    <widget class="QPlainTextEdit" name="edit"/>
+    <widget class="QPlainTextEdit" name="edit">
+     <property name="tabChangesFocus">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout">
@@ -46,19 +53,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="copyButton">
-       <property name="toolTip">
-        <string>Copy log to clipboard</string>
-       </property>
-       <property name="text">
-        <string>Copy</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="findLabel">
        <property name="text">
-        <string>Fi&amp;nd:</string>
+        <string>Find:</string>
        </property>
        <property name="buddy">
         <cstring>findEdit</cstring>
@@ -107,12 +104,11 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>edit</tabstop>
-  <tabstop>saveButton</tabstop>
-  <tabstop>copyButton</tabstop>
   <tabstop>findEdit</tabstop>
   <tabstop>findNextButton</tabstop>
   <tabstop>findPreviousButton</tabstop>
+  <tabstop>edit</tabstop>
+  <tabstop>saveButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

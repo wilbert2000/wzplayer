@@ -19,19 +19,19 @@
 #include "gui/logwindow.h"
 #include "gui/logwindowappender.h"
 
+#include "gui/filedialog.h"
+#include "settings/preferences.h"
+#include "wzdebug.h"
+#include "config.h"
+#include "desktop.h"
+#include "images.h"
+#include "iconprovider.h"
+
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QFileInfo>
 #include <QFile>
 #include <QTextStream>
-
-#include "wzdebug.h"
-#include "config.h"
-#include "desktop.h"
-#include "images.h"
-#include "gui/filedialog.h"
-#include "settings/preferences.h"
-
 
 using namespace Settings;
 
@@ -46,29 +46,27 @@ TLogWindow::TLogWindow(QWidget* parent)
     retranslateUi(this);
     setObjectName("logwindow");
 
-    saveButton->setText("");
-    saveButton->setIcon(Images::icon("save"));
-    copyButton->setText("");
-    copyButton->setIcon(Images::icon("copy"));
+    edit->setMaximumBlockCount(pref->log_window_max_events);
+    edit->setFont(QFont("Monospace"));
+    saveButton->setIcon(iconProvider.saveIcon);
+    findEdit->setClearButtonEnabled(true);
+
+    QPalette pal = foundLabel->palette();
+    pal.setColor(QPalette::WindowText, QColor(Qt::red));
+    foundLabel->setPalette(pal);
 
     connect(saveButton, &QPushButton::clicked,
             this, &TLogWindow::onSaveButtonClicked);
-    connect(copyButton, &QPushButton::clicked,
-            this, &TLogWindow::onCopyButtonClicked);
+
     connect(findEdit, &QLineEdit::returnPressed,
             this, &TLogWindow::onFindNextButtonClicked);
     connect(findEdit, &QLineEdit::textChanged,
             this, &TLogWindow::onFindTextChanged);
 
-    connect(findPreviousButton, &QPushButton::clicked,
-            this, &TLogWindow::onFindPreviousButtonClicked);
     connect(findNextButton, &QPushButton::clicked,
             this, &TLogWindow::onFindNextButtonClicked);
-
-    edit->setMaximumBlockCount(pref->log_window_max_events);
-    edit->setFont(QFont("Monospace"));
-
-    findEdit->setClearButtonEnabled(true);
+    connect(findPreviousButton, &QPushButton::clicked,
+            this, &TLogWindow::onFindPreviousButtonClicked);
 }
 
 TLogWindow::~TLogWindow() {
@@ -76,65 +74,50 @@ TLogWindow::~TLogWindow() {
 }
 
 void TLogWindow::showEvent(QShowEvent*) {
-
     appender->setEdit(edit);
 }
 
 void TLogWindow::hideEvent(QShowEvent*) {
-
     appender->setEdit(0);
 }
 
-// Call hideEvent() and accept close
 void TLogWindow::closeEvent(QCloseEvent* event) {
     WZDEBUG("");
 
-    hideEvent(0);
+    appender->setEdit(0);
     event->accept();
 }
 
 void TLogWindow::onSaveButtonClicked() {
 
-    QString s = TFileDialog::getSaveFileName(
-                    this, tr("Choose a filename to save under"), 
-                    "", tr("Logs") +" (*.log *.txt)");
+    QString s = TFileDialog::getSaveFileName(this, tr("Choose a filename"), "",
+                                             tr("Logs") +" (*.log *.txt)");
+    if (s.isEmpty()) {
+        return;
+    }
 
-    if (!s.isEmpty()) {
-        if (QFileInfo(s).exists()) {
-            int res =QMessageBox::question(this,
-                tr("Confirm overwrite?"),
-                tr("The file already exists.\n"
-                   "Do you want to overwrite?"),
-                QMessageBox::Yes,
-                QMessageBox::No,
-                QMessageBox::NoButton);
-            if (res == QMessageBox::No) {
-                return;
-            }
-        }
-
-        QFile file(s);
-        if (file.open(QIODevice::WriteOnly)) {
-            QTextStream stream(&file);
-            stream << edit->toPlainText();
-            file.close();
-        } else {
-            WZERROR("failed to save file '" + s + "'");
-            QMessageBox::warning (this,
-                tr("Error saving file"),
-                tr("The log couldn't be saved"),
-                QMessageBox::Ok,
-                QMessageBox::NoButton,
-                QMessageBox::NoButton);
-
+    if (QFileInfo(s).exists()) {
+        int res =QMessageBox::question(this, tr("Confirm overwrite"),
+            tr("The file already exists.\n"
+               "Do you want to overwrite it?"),
+            QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
+        if (res != QMessageBox::Yes) {
+            return;
         }
     }
-}
 
-void TLogWindow::onCopyButtonClicked() {
-
-    edit->selectAll();
-    edit->copy();
+    QFile file(s);
+    if (file.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&file);
+        stream << edit->toPlainText();
+        file.close();
+    } else {
+        QString msg = file.errorString();
+        WZERROR("Failed to save log file '" + s + "'. " + msg);
+        QMessageBox::warning (this, tr("Error saving log file"),
+            tr("The log file couldn't be saved. %1").arg(msg),
+            QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
+    }
 }
 
 void TLogWindow::find(const QString& s, QTextDocument::FindFlags options) {
