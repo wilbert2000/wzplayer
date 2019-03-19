@@ -63,6 +63,7 @@ public:
     void clearPlayed();
     void clr();
 
+    bool isBusy() const { return fileCopier; }
     bool isModified() const { return root()->modified(); }
     void clearModified() { root()->setModified(false, true); }
     void emitModifiedChanged();

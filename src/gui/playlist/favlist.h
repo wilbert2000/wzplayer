@@ -3,9 +3,11 @@
 
 #include "gui/playlist/plist.h"
 #include "wzdebug.h"
+#include <QTime>
 
 
 class QTreeWidgetItem;
+class QTimer;
 
 namespace Gui {
 namespace Action {
@@ -43,15 +45,21 @@ private:
     TPlaylist* playlist;
     Action::Menu::TMenu* favMenu;
     QAction* currentFavAction;
+    QIcon currentFavIcon;
+    QTimer* requestUpdateTimer;
+    QTime requestAge;
 
     QAction* fAction(QMenu* menu, const QString& filename) const;
     QAction* findAction(const QString& filename) const;
     void markCurrentFavAction(QAction* action);
     void updFavMenu(QMenu* menu, TPlaylistItem* folder);
+    void requestUpdate();
 
 private slots:
-    void onPlaylistPlayingItemChanged(TPlaylistItem* item);
+    void onRequestUpdateTimeout();
+    void onAddedItems();
     void onModifiedChanged();
+    void onPlaylistPlayingItemChanged(TPlaylistItem* item);
     void onFavMenuTriggered(QAction* action);
     void updateFavMenu();
 };

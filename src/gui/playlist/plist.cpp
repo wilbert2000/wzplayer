@@ -1160,10 +1160,7 @@ void TPList::onThreadFinished() {
     root = playlistWidget->add(root, addTarget);
     if (root) {
         if (isFavList) {
-            // A new root for favorites only happens for its first ever item.
-            // Setting modified triggers a save in TFavList::onModifiedChanged.
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
-            root->setModified();
         } else {
             playlistFilename = root->filename();
             WZINFO("Playlist filename set to '" + playlistFilename + "'");
@@ -1171,6 +1168,8 @@ void TPList::onThreadFinished() {
             Settings::pref->addRecent(playlistFilename, root->fname());
         }
     }
+
+    emit addedItems();
 
     if (addStartPlay) {
         if (!addFileToPlay.isEmpty()) {

@@ -51,6 +51,9 @@ public slots:
     void addRemovedItem(const QString& s);
     virtual void findPlayingItem() = 0;
 
+signals:
+    void addedItems();
+
 protected:
     TMainWindow* mainWindow;
     TDockWidget* dock;

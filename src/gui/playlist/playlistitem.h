@@ -73,6 +73,8 @@ public:
     TPlaylistItemState state() const { return mState; }
     void setState(TPlaylistItemState state);
 
+    QIcon getItemIcon() const { return itemIcon; }
+
     bool played() const { return mPlayed; }
     void setPlayed(bool played);
 
