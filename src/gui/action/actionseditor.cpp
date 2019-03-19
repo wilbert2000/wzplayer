@@ -264,8 +264,9 @@ int TActionsEditor::findActionName(const QString& name) {
     return -1;
 }
 
-int TActionsEditor::findShortcuts(const QString& aShortCuts, int startRow,
-                                  int skipRow) {
+int TActionsEditor::findShortcutsInTable(const QString& aShortCuts,
+                                         int startRow,
+                                         int skipRow) {
 
     QStringList find = shortcutsToStringList(aShortCuts);
     if (find.count() > 0) {
@@ -303,7 +304,7 @@ void TActionsEditor::findShortcutLabelAndAction(const QString& shortcut,
         return;
     }
 
-    int row = findShortcuts(shortcut, 0, -1);
+    int row = findShortcutsInTable(shortcut, 0, -1);
     if (row >= 0) {
         action = actionsTable->item(row, COL_ACTION)->text();
         label = tr("Shortcut currently assigned to:\n%1 (%2)")
@@ -360,7 +361,7 @@ bool TActionsEditor::updateConflictCell(int row,
     if (!shortcuts.isEmpty()) {
         int startRow = 0;
         do {
-            int conflictRow = findShortcuts(shortcuts, startRow, row);
+            int conflictRow = findShortcutsInTable(shortcuts, startRow, row);
             if (conflictRow >= 0) {
                 if (takeShortcuts) {
                     if (conflictRow == rowToKeep) {

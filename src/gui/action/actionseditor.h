@@ -74,7 +74,7 @@ private:
     QPushButton* editButton;
     QString last_dir;
 
-    int findShortcuts(const QString& aShortCuts, int startRow, int skipRow);
+    int findShortcutsInTable(const QString& aShortCuts, int startRow, int skipRow);
     int findActionName(const QString& name);
 
     static QString keySequnceToString(QKeySequence key);

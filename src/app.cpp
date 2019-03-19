@@ -159,13 +159,13 @@ bool TApp::loadCatalog(QTranslator& translator,
                        const QString& dir) {
 
     QString loc = name + "_" + locale;
-    bool r = translator.load(loc, dir);
-    if (r) {
+    bool loaded = translator.load(loc, dir);
+    if (loaded) {
         WZINFO("Loaded '" + loc + "' from '" + dir + "'");
     } else {
         WZDEBUG("'" + loc + "' not found in '" + dir + "'");
     }
-    return r;
+    return loaded;
 }
 
 void TApp::loadTranslation() {
@@ -444,7 +444,7 @@ bool TApp::acceptClipboardAsURL() {
 }
 
 void TApp::start() {
-    WZDEBUG("");
+    WZTRACE("");
 
     // Create the main window. It will be destoyed when leaving exec().
     createGUI();
