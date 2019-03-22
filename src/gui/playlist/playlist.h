@@ -52,8 +52,8 @@ public:
 
     virtual void startPlay() override;
 
-    void loadSettings();
-    void saveSettings();
+    virtual void loadSettings() override;
+    virtual void saveSettings() override;
 
 public slots:
     void open(const QString &fileName, const QString& name = QString());
@@ -61,7 +61,7 @@ public slots:
     void openFileDialog();
     void openDirectoryDialog();
 
-    void stop();
+    virtual void stop() override;
 
     virtual void enableActions() override;
     virtual void findPlayingItem() override;
@@ -79,9 +79,6 @@ protected slots:
     virtual void refresh() override;
 
 private:
-    Action::TAction* openPlaylistAct;
-
-    Action::TAction* stopAct;
     Action::TAction* playOrPauseAct;
     Action::TAction* pauseAct;
     Action::TAction* repeatAct;
@@ -90,17 +87,15 @@ private:
     bool reachedEndOfPlaylist;
 
     void createActions();
+    void createToolbar();
     bool updatePlayState();
 
-    void openPlaylist(const QString& filename);
     void openDirectory(const QString& dir);
 
     TPlaylistItem* getRandomItem() const;
     bool haveUnplayedItems() const;
 
 private slots:
-    void openPlaylistDialog();
-
     void playOrPause();
     void playNext(bool loop_playlist = true);
     void playPrev();

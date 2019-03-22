@@ -66,9 +66,11 @@ namespace Action {
 
 
 TShortcutGetter::TShortcutGetter(TActionsEditor* parent,
-                                 const QString& actName) :
+                                 const QString& actName,
+                                 const QString& actOwner) :
     QDialog(parent, TConfig::DIALOG_FLAGS),
     actionName(actName),
+    actionOwner(actOwner),
     editor(parent) {
 
     setWindowTitle(tr("Modify shortcut for action %1").arg(actionName));
@@ -98,8 +100,9 @@ TShortcutGetter::TShortcutGetter(TActionsEditor* parent,
     vbox->addLayout(hbox);
 
     QLabel *l = new QLabel(this);
-    l->setText(tr("Press the key combination to assign to action %1:")
-               .arg(actionName));
+    l->setWordWrap(true);
+    l->setText(tr("Press the key combination to assign to action %1 for %2:")
+               .arg(actionName).arg(actionOwner));
     vbox->addWidget(l);
 
     leKey = new QLineEdit(this);
@@ -164,7 +167,7 @@ void TShortcutGetter::onKeyTextChanged(const QString& text) {
 
     list->item(list->currentRow())->setText(text);
     QString label, action;
-    editor->findShortcutLabelAndAction(text, label, action);
+    editor->findShortcutActionAndLabel(text, actionOwner, action, label);
     assignedToLabel->setText(label);
 
     QString buttonText;

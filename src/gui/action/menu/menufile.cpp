@@ -7,6 +7,7 @@
 #include "settings/paths.h"
 #include "settings/preferences.h"
 #include "name.h"
+#include "iconprovider.h"
 
 #include <QMessageBox>
 #include <QStyle>
@@ -46,7 +47,9 @@ TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu) :
     addMenu(favMenu);
 
     // Recents
-    recentFilesMenu = new TMenu(this, mw, "recent_menu", tr("Recent files"));
+    recentFilesMenu = new TMenu(this, mw, "recent_menu", tr("Recent files"),
+                                "noicon");
+    recentFilesMenu->menuAction()->setIcon(iconProvider.recentIcon);
     updateRecents();
     addMenu(recentFilesMenu);
     connect(pref, &TPreferences::recentsChanged,

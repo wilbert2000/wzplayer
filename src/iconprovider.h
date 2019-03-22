@@ -22,13 +22,20 @@ public:
 
     QIcon iconPlayed;
     QIcon iconLoading;
+    QIcon iconLoading2;
     QIcon iconPlaying;
+    QIcon iconStopping;
     QIcon iconFailed;
 
+    QIcon recentIcon;
+    QIcon openIcon;
     QIcon saveIcon;
     QIcon saveAsIcon;
     QIcon refreshIcon;
     QIcon newFolderIcon;
+
+    QIcon pauseIcon;
+    QIcon playIcon;
 
     QIcon cutIcon;
     QIcon copyIcon;
@@ -41,6 +48,8 @@ public:
     QIcon trashIcon;
     QIcon discardIcon;
     QIcon clearIcon;
+
+    QIcon conflictItem;
 
     //QIcon icon(const QFileInfo& info) const;
     //QIcon iconForFile(const QString& filename) const;

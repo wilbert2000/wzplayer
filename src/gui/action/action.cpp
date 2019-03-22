@@ -17,20 +17,27 @@
 */
 
 #include "gui/action/action.h"
+#include "images.h"
 #include <QEvent>
 #include <QWidget>
-#include "images.h"
 
 
 namespace Gui {
 namespace Action {
 
-QAction* findAction(const QString& name, const QList<QAction*>& actions) {
+// static set by TMainWindow::loadSettings()
+QList<QAction*> TAction::allActions;
 
-    for (int i = 0; i < actions.count(); i++) {
-        QAction* action = actions.at(i);
-        if (action->objectName() == name)
-            return action;
+
+QAction* findAction(const QString& name) {
+
+    for (int i = 0; i < TAction::allActions.count(); i++) {
+        QAction* action = TAction::allActions.at(i);
+        if (action) {
+            if (action->objectName() == name) {
+                return action;
+            }
+        }
     }
 
     return 0;
@@ -63,9 +70,6 @@ TAction::TAction (QObject* parent,
         setIcon(Images::icon(iconName));
     if (autoAdd)
         addActionToParent();
-}
-
-TAction::~TAction() {
 }
 
 void TAction::addShortcut(QKeySequence key) {

@@ -21,12 +21,14 @@
 #include "gui/playlist/playlistitem.h"
 #include "gui/mainwindow.h"
 #include "gui/action/action.h"
+#include "gui/action/editabletoolbar.h"
 #include "gui/msg.h"
 #include "gui/filedialog.h"
 #include "player/player.h"
 #include "wzfiles.h"
 #include "images.h"
 #include "extensions.h"
+#include "iconprovider.h"
 
 #include <QToolBar>
 #include <QMimeData>
@@ -46,6 +48,7 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
     setAcceptDrops(true);
 
     createActions();
+    createToolbar();
 
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TPlaylist::onNewMediaStartedPlaying);
@@ -65,34 +68,6 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
 }
 
 void TPlaylist::createActions() {
-
-    mainWindow->addAction(saveAct);
-    mainWindow->addAction(saveAsAct);
-    mainWindow->addAction(refreshAct);
-    mainWindow->addAction(browseDirAct);
-
-    mainWindow->addAction(playAct);
-    mainWindow->addAction(playInNewWindowAct);
-
-    mainWindow->addAction(editNameAct);
-    mainWindow->addAction(findPlayingAct);
-
-    mainWindow->addAction(copyAct);
-    mainWindow->addAction(pasteAct);
-
-
-    // Open playlist
-    openPlaylistAct = new TAction(mainWindow, "pl_open",
-                                  tr("Open playlist..."), "noicon",
-                                  QKeySequence("Ctrl+P"));
-    openPlaylistAct->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-    connect(openPlaylistAct, &TAction::triggered,
-            this, &TPlaylist::openPlaylistDialog);
-
-    // Stop
-    stopAct = new TAction(mainWindow, "stop", tr("Stop"), "",
-                          Qt::Key_MediaStop);
-    connect(stopAct, &TAction::triggered, this, &TPlaylist::stop);
 
     // Play/pause
     playOrPauseAct = new TAction(mainWindow, "play_or_pause", tr("Play"),
@@ -135,14 +110,26 @@ void TPlaylist::createActions() {
     shuffleAct->setCheckable(true);
     connect(shuffleAct, &TAction::triggered,
             this, &TPlaylist::onShuffleToggled);
-
-
-    // Toolbar
-    toolbar->insertAction(saveAct, openPlaylistAct);
-    toolbar->addSeparator();
-    toolbar->addAction(shuffleAct);
-    toolbar->addAction(repeatAct);
 }
+
+void TPlaylist::createToolbar() {
+
+    QStringList actions;
+    actions << "pl_open"
+            << "pl_save"
+            << "pl_saveas"
+            << "separator"
+            << "pl_add_menu"
+            << "pl_remove_menu"
+            << "separator"
+            << "pl_refresh"
+            << "pl_browse_dir"
+            << "separator"
+            << "pl_shuffle"
+            << "pl_repeat";
+    toolbar->setDefaultActions(actions);
+}
+
 
 void TPlaylist::getFilesToPlay(QStringList& files) const {
 
@@ -208,19 +195,10 @@ void TPlaylist::playOrPause() {
 }
 
 void TPlaylist::stop() {
-    WZDEBUG("State " + player->stateToString());
+    WZINFO("State " + player->stateToString());
 
-    abortThread();
+    TPList::stop();
     player->stop();
-    TPlaylistItem* item = playlistWidget->playingItem;
-    if (item) {
-        if (item->state() != PSTATE_STOPPED && item->state() != PSTATE_FAILED) {
-            item->setState(PSTATE_STOPPED);
-        }
-        playlistWidget->setCurrentItem(item);
-    }
-
-    // TODO: maybe add playlistWidget->stop() for copyThread?
 }
 
 TPlaylistItem* TPlaylist::getRandomItem() const {
@@ -365,23 +343,25 @@ bool TPlaylist::updatePlayState() {
     bool enable = thread == 0 && player->stateReady();
     if (enable) {
         WZTRACE("Enabled in state " + player->stateToString());
+        playOrPauseAct->setEnabled(true);
         if (s == Player::STATE_PLAYING) {
+            playOrPauseAct->setTextAndTip(tr("&Pause"));
+            playOrPauseAct->setIcon(iconProvider.pauseIcon);
+
+            // Update playingItem
             TPlaylistItem* playingItem = playlistWidget->playingItem;
             if (playingItem == 0) {
-                playingItem = playlistWidget
-                        ->findFilename(player->mdat.filename);
+                playingItem = playlistWidget->findFilename(
+                            player->mdat.filename);
             }
             if (playingItem && playingItem->state() != PSTATE_PLAYING) {
                 playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
             }
-            playOrPauseAct->setTextAndTip(tr("&Pause"));
-            playOrPauseAct->setIcon(Images::icon("pause"));
         } else {
             // STATE_PAUSED or STATE_STOPPED
             playOrPauseAct->setTextAndTip(tr("Play"));
-            playOrPauseAct->setIcon(Images::icon("play"));
+            playOrPauseAct->setIcon(iconProvider.playIcon);
         }
-        playOrPauseAct->setEnabled(true);
     } else {
         WZTRACE("Disabled in state " + player->stateToString());
         QString text;
@@ -392,10 +372,10 @@ bool TPlaylist::updatePlayState() {
         }
         playOrPauseAct->setTextAndTip(tr("%1...").arg(text));
         if (s == Player::STATE_STOPPING) {
-            playOrPauseAct->setIcon(Images::icon("stopping"));
+            playOrPauseAct->setIcon(iconProvider.iconStopping);
             playOrPauseAct->setEnabled(false);
         } else {
-            playOrPauseAct->setIcon(Images::icon("loading"));
+            playOrPauseAct->setIcon(iconProvider.iconLoading2);
             playOrPauseAct->setEnabled(s == Player::STATE_PLAYING);
         }
     }
@@ -414,14 +394,6 @@ void TPlaylist::enableActions() {
     WZTRACE("State " + player->stateToString());
     bool enable = updatePlayState();
     Player::TState s = player->state();
-
-    openPlaylistAct->setEnabled(s != Player::STATE_STOPPING);
-
-    stopAct->setEnabled(thread
-                        || s == Player::STATE_PLAYING
-                        || s == Player::STATE_PAUSED
-                        || s == Player::STATE_RESTARTING
-                        || s == Player::STATE_LOADING);
     pauseAct->setEnabled(s == Player::STATE_PLAYING);
 
     bool e = enable && playlistWidget->hasItems();
@@ -429,6 +401,7 @@ void TPlaylist::enableActions() {
     playPrevAct->setEnabled(e);
 
     findPlayingAct->setEnabled(playlistWidget->playingItem);
+
 
     // Repeat and shuffle are always enabled
 
@@ -743,47 +716,24 @@ void TPlaylist::openDirectoryDialog() {
     }
 }
 
-void TPlaylist::openPlaylist(const QString& filename) {
-
-    Settings::pref->last_dir = QFileInfo(filename).absolutePath();
-    clear();
-    add(QStringList() << filename, true);
-}
-
-void TPlaylist::openPlaylistDialog() {
-
-    if (maybeSave()) {
-        QString s = TFileDialog::getOpenFileName(this, tr("Choose a file"),
-            Settings::pref->last_dir,
-            tr("Playlists") + extensions.playlists().forFilter() + ";;"
-            + tr("All files") +" (*.*)");
-
-        if (!s.isEmpty()) {
-            openPlaylist(s);
-        }
-    }
-}
-
 void TPlaylist::saveSettings() {
 
+    TPList::saveSettings();
     Settings::pref->beginGroup(objectName());
     Settings::pref->setValue("repeat", repeatAct->isChecked());
     Settings::pref->setValue("shuffle", shuffleAct->isChecked());
-    playlistWidget->saveSettings(Settings::pref);
     Settings::pref->endGroup();
 }
 
 void TPlaylist::loadSettings() {
 
-    using namespace Settings;
-
-    pref->beginGroup(objectName());
-    repeatAct->setChecked(pref->value("repeat", repeatAct->isChecked())
-                          .toBool());
-    shuffleAct->setChecked(pref->value("shuffle", shuffleAct->isChecked())
-                           .toBool());
-    playlistWidget->loadSettings(pref);
-    pref->endGroup();
+    TPList::loadSettings();
+    Settings::pref->beginGroup(objectName());
+    repeatAct->setChecked(
+        Settings::pref->value("repeat", repeatAct->isChecked()).toBool());
+    shuffleAct->setChecked(
+        Settings::pref->value("shuffle", shuffleAct->isChecked()).toBool());
+    Settings::pref->endGroup();
 }
 
 } // namespace Playlist

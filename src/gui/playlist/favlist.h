@@ -26,8 +26,6 @@ public:
 
     virtual void startPlay() override;
     Action::Menu::TMenu* getFavMenu() const { return favMenu; }
-    void loadSettings();
-    void saveSettings();
 
 public slots:
     virtual void enableActions() override;
@@ -37,6 +35,7 @@ protected:
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) override;
 
 protected slots:
+    virtual void openPlaylistDialog() override;
     virtual bool saveAs() override;
     virtual void refresh() override;
 
@@ -47,6 +46,7 @@ private:
     QIcon currentFavIcon;
     QTimer* requestUpdateTimer;
 
+    void createToolbar();
     QAction* fAction(QMenu* menu, const QString& filename) const;
     QAction* findAction(const QString& filename) const;
     void markCurrentFavAction(QAction* action);

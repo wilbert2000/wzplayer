@@ -35,7 +35,7 @@ class TMainWindowTray : public TMainWindow {
 
 public:
     TMainWindowTray();
-    virtual ~TMainWindowTray();
+    virtual ~TMainWindowTray() override;
 
     virtual void loadSettings() override;
     virtual void saveSettings() override;

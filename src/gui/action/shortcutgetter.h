@@ -45,8 +45,9 @@ class TShortcutGetter : public QDialog {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TShortcutGetter(TActionsEditor* parent, const QString& actName);
-    virtual ~TShortcutGetter() {}
+    TShortcutGetter(TActionsEditor* parent,
+                    const QString& actName,
+                    const QString& actOwner);
 
     QString exec(const QString& s);
 
@@ -56,6 +57,7 @@ protected:
 
 private:
     QString actionName;
+    QString actionOwner;
     bool bStop;
     bool capture;
     Qt::KeyboardModifiers modifiers;

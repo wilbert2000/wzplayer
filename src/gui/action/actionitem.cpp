@@ -16,8 +16,6 @@ namespace Action {
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Action::TActionItem)
 
-// statics
-QList<QAction*> TActionItem::allActions;
 
 static QString SeparatorDescription() {
     return qApp->translate("Gui::Action::TToolbarEditor", "Separator");
@@ -82,7 +80,7 @@ TActionItem::TActionItem(QAction* act) :
 TActionItem::TActionItem(const QString& actionName) :
     QListWidgetItem(0, QListWidgetItem::UserType) {
 
-    action = findAction(actionName, allActions);
+    action = findAction(actionName);
     if (!action) {
         action = new QAction(SeparatorDescription());
         action->setObjectName("separator");
@@ -147,11 +145,11 @@ void TActionItem::read(QDataStream& in) {
     QString actionName;
     in >> actionName;
     WZDEBUG(actionName);
-    action = findAction(actionName, allActions);
+    action = findAction(actionName);
     if (!action) {
         WZERROR(QString("Action '%1' not found").arg(actionName));
         // Need an action to not crash on null
-        action = allActions[0];
+        action = TAction::allActions[0];
     }
 }
 

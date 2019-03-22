@@ -23,7 +23,6 @@
 
 #include <QWidget>
 #include <QStringList>
-#include <gui/action/actionlist.h>
 
 
 class QTableWidget;
@@ -35,8 +34,6 @@ namespace Gui {
 
 namespace Action {
 
-typedef QList<QKeySequence> TShortCutList;
-
 class TActionsEditor : public QWidget {
     Q_OBJECT
 public:
@@ -44,28 +41,28 @@ public:
     static QString cleanActionText(const QString& text,
                                    const QString& actionName);
 
-    static void saveSettings(QSettings* set,
-                             const QList<QAction*>& allActions);
-    static void loadSettings(QSettings* set,
-                               const QList<QAction*>& allActions);
+    static void saveSettings(QSettings* set);
+    static void loadSettings(QSettings* set);
     static QStringList shortcutsToStringList(const QString& s);
 
     TActionsEditor(QWidget* parent);
-    virtual ~TActionsEditor();
 
-    void setActionsTable(const QList<QAction*>& allActions);
-    void applyChanges(const QList<QAction*>& allActions);
+    void setActionsTable();
+    void applyChanges();
 
-    void findShortcutLabelAndAction(const QString& shortcut,
-                                    QString& label, QString& action);
+    void findShortcutActionAndLabel(const QString& shortcut,
+                                    const QString& actionOwner,
+                                    QString& actionName,
+                                    QString& label);
 
 private:
     enum TActionCols {
         COL_CONFLICTS = 0,
         COL_ACTION = 1,
         COL_DESC = 2,
-        COL_SHORTCUTS = 3,
-        COL_COUNT = 4
+        COL_FOR = 3,
+        COL_SHORTCUTS = 4,
+        COL_COUNT = 5
     };
 
     QTableWidget* actionsTable;
@@ -74,29 +71,31 @@ private:
     QPushButton* editButton;
     QString last_dir;
 
-    int findShortcutsInTable(const QString& aShortCuts, int startRow, int skipRow);
-    int findActionName(const QString& name);
+    QString getWindowForAction(QAction* action) const;
+    int findShortcutsInTable(const QString& aShortCuts,
+                             const QString& actionOwner,
+                             int startRow,
+                             int skipRow);
+    int findActionNameInTable(const QString& name);
 
     static QString keySequnceToString(QKeySequence key);
     static QKeySequence stringToKeySequence(QString s);
-    static QString shortcutsToString(const TShortCutList& shortcuts);
-    static TShortCutList stringToShortcutList(const QString& shortcuts);
+    static QString shortcutsToString(const QList<QKeySequence>& shortcuts);
+    static QList<QKeySequence> stringToShortcutList(const QString& shortcuts);
 
     static QString actionToString(QAction *action);
-    static void setActionFromString(QAction* action,
-                                    const QString& s,
-                                    const TActionList& actions);
-    static bool removeShortcutsFromList(const TShortCutList& remove,
-                                        TShortCutList& from,
+    static void setActionFromString(QAction* action, const QString& s);
+    static bool removeShortcutsFromList(const QList<QKeySequence>& remove,
+                                        QList<QKeySequence>& from,
                                         const QString& toName,
                                         const QString& fromName);
 
-    static void removeShortcutsFromActions(const TActionList& actions,
-                                const TShortCutList& shortcuts,
-                                QAction* skip_action);
+    static void removeShortcutsFromActions(const QList<QKeySequence>& shortcuts,
+                                           QAction* skip_action);
 
     bool loadActionsTableFromFile(const QString& filename);
     bool saveActionsTableAsFile(const QString& filename);
+
     void setConflictTextModified(int row);
     void removeConflictingShortcuts(int row, int conflictRow);
     bool updateConflictCell(int row, bool takeShortcuts, int rowToKeep);

@@ -6,9 +6,6 @@ TWZDebug::TWZDebug(Log4Qt::Logger* aLogger) :
     logger(aLogger) {
 }
 
-TWZDebug::~TWZDebug() {
-}
-
 TWZDebug& operator << (QDebug&, TWZDebug& d) {
 
     d.logger->log(d.level, d.msg);

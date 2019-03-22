@@ -30,13 +30,22 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     iconPlayed =  style->standardIcon(QStyle::SP_DialogOkButton);
     iconLoading =  style->standardIcon(QStyle::SP_MessageBoxQuestion);
+    iconLoading2 =  Images::icon("loading");
     iconPlaying =  style->standardIcon(QStyle::SP_MediaPlay);
+    iconStopping =  Images::icon("stopping");
     iconFailed =  style->standardIcon(QStyle::SP_MessageBoxWarning);
 
+    recentIcon = QIcon::fromTheme("document-open-recent",
+                                  Images::icon("recent_menu"));
+    openIcon = style->standardIcon(QStyle::SP_DialogOpenButton);
     saveIcon = style->standardIcon(QStyle::SP_DialogSaveButton);
-    saveAsIcon = style->standardIcon(QStyle::SP_DriveHDIcon);
+    saveAsIcon = QIcon::fromTheme("document-save-as",
+        style->standardIcon(QStyle::SP_DriveHDIcon));
     refreshIcon = style->standardIcon(QStyle::SP_BrowserReload);
     newFolderIcon = style->standardIcon(QStyle::SP_FileDialogNewFolder);
+
+    pauseIcon = Images::icon("pause");
+    playIcon = Images::icon("play");
 
     cutIcon = QIcon::fromTheme("edit-cut", Images::icon("cut"));
     copyIcon = QIcon::fromTheme("edit-copy", Images::icon("copy"));
@@ -50,6 +59,8 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     discardIcon = style->standardIcon(QStyle::SP_DialogDiscardButton);
     clearIcon = QIcon::fromTheme("edit-clear",
         style->standardIcon(QStyle::SP_DialogResetButton));
+
+    conflictItem = Images::icon("conflict");
 
     // TODO: fix "device independant pixels"?
     iconSize = folderIcon.actualSize(QSize(22, 22));

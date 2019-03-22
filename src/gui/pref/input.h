@@ -32,18 +32,15 @@ class TInput : public TSection, public Ui::TInput {
 
 public:
     TInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TInput();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();
 
     // Pass data to the dialog
-    void setData(Settings::TPreferences* pref,
-                 const QList<QAction*>& allActions);
+    void setData(Settings::TPreferences* pref);
 
     // Apply changes
-    virtual void getData(Settings::TPreferences* pref,
-                         const QList<QAction*>& allActions);
+    virtual void getData(Settings::TPreferences* pref);
 
 protected:
     void createMouseCombos();

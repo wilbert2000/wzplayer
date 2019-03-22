@@ -9,7 +9,6 @@ namespace Action {
 
 class TActionItem : public QListWidgetItem {
 public:
-    static QList<QAction*> allActions;
     static QString iconDisplayText(QAction* action);
     static QString actionNameFromListWidgetItem(QListWidgetItem* item);
 

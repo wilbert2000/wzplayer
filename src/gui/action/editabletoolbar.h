@@ -21,7 +21,6 @@
 
 #include <QToolBar>
 #include <QStringList>
-#include "gui/action/actionlist.h"
 #include "wzdebug.h"
 
 
@@ -33,27 +32,29 @@ namespace Action {
 
 class TEditableToolbar : public QToolBar {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TEditableToolbar(TMainWindow* mainwindow);
-    virtual ~TEditableToolbar();
+    TEditableToolbar(QWidget* parent,
+                     const QString& name,
+                     const QString& title);
 
     QStringList actionsToStringList() const;
-    void setActionsFromStringList(const QStringList& acts,
-                                  const TActionList& allActions);
+    void setActionsFromStringList(const QStringList& acts);
 
     QStringList getDefaultActions() const { return defaultActions; }
     void setDefaultActions(const QStringList& actions) {
         defaultActions = actions;
     }
 
+    void loadSettings();
+    void saveSettings();
+
 public slots:
     void edit();
 
 private:
-    TMainWindow* main_window;
-    QStringList actions;
+    QStringList currentActions;
     QStringList defaultActions;
 
     void addMenu(QAction* action);

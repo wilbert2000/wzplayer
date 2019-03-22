@@ -19,12 +19,11 @@
 #ifndef GUI_MAINWINDOW_H
 #define GUI_MAINWINDOW_H
 
-#include <QMainWindow>
-
-#include "gui/action/actionlist.h"
 #include "player/state.h"
 #include "config.h"
 #include "wzdebug.h"
+
+#include <QMainWindow>
 
 
 class QWidget;
@@ -93,13 +92,12 @@ class TMainWindow : public QMainWindow {
 
 public:
     TMainWindow();
-    virtual ~TMainWindow();
+    virtual ~TMainWindow() override;
 
     virtual void loadSettings();
     virtual void saveSettings();
 
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
-    QList<QAction*> getNamedActions() const { return allActions; }
     QAction* findAction(const QString& name);
 
     Action::TAction* seekIntToAction(int i) const;
@@ -224,7 +222,6 @@ private:
     TAutoHideTimer* autoHideTimer;
     TUpdateChecker* update_checker;
 
-    QList<QAction*> allActions;
     QString pending_actions_to_run;
     // Pass settings from command line
     int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
@@ -253,11 +250,14 @@ private:
 
     // File menu
     Action::TAction* clearRecentsAct;
+
 #ifdef Q_OS_LINUX
     Action::TAction* saveThumbnailAct;
 #endif
 
     // Play menu
+    Action::TAction* stopAct;
+
     // Seek forward menu
     Action::TAction* seekFrameAct;
     Action::TAction* seek1Act;
@@ -455,9 +455,6 @@ private:
 
     // Toolbar menu
     Action::TAction* viewMenuBarAct;
-    Action::TAction* editToolbarAct;
-    Action::TAction* editToolbar2Act;
-    Action::TAction* editControlBarAct;
     Action::TAction* viewStatusBarAct;
 
 
@@ -472,7 +469,7 @@ private:
     void createAudioEqualizer();
     void createActions();
     void createToolbars();
-    Gui::Action::Menu::TMenu* createToolbarMenu(const QString& name);
+    Action::Menu::TMenu* createToolbarMenu(const QString& name);
     void createMenus();
     void setupNetworkProxy();
 
@@ -536,6 +533,7 @@ private slots:
     void openAudioCD();
     void saveThumbnail();
 
+    void stop();
     void showSeekToDialog();
 
     void updateVideoTracks();

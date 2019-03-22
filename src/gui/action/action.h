@@ -26,18 +26,19 @@
 namespace Gui {
 namespace Action {
 
-extern QAction* findAction(const QString& name, const QList<QAction*>& actions);
+extern QAction* findAction(const QString& name);
 extern void updateToolTip(QAction* action);
 
 class TAction : public QAction {
 public:
+    static QList<QAction*> allActions;
+
     TAction(QObject* parent,
             const QString& name,
             const QString& text,
             const QString& icon = 0,
             const QKeySequence& shortCut = 0,
             bool autoAdd = true);
-    virtual ~TAction();
 
     void addShortcut(QKeySequence key);
     void setTextAndTip(const QString& text);

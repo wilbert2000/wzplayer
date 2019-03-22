@@ -3,6 +3,7 @@
 #include "gui/playlist/addfilesthread.h"
 #include "gui/action/menu/menu.h"
 #include "gui/action/action.h"
+#include "gui/action/editabletoolbar.h"
 #include "gui/mainwindow.h"
 #include "gui/dockwidget.h"
 #include "gui/filedialog.h"
@@ -130,13 +131,17 @@ TPList::TPList(TDockWidget* parent,
     skipRemainingMessages(false) {
 
     setObjectName(name);
+
     createTree();
     createActions();
+    createToolbar();
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(toolbar);
     layout->addWidget(playlistWidget);
     setLayout(layout);
+
+    dock->setFocusProxy(playlistWidget);
 }
 
 TPList::~TPList() {
@@ -148,7 +153,7 @@ TPList::~TPList() {
 void TPList::createTree() {
 
     playlistWidget = new TPlaylistWidget(this, objectName() + "widget",
-                                         shortName);
+                                         shortName, tranName);
 
     connect(playlistWidget, &TPlaylistWidget::itemActivated,
             this, &TPList::onItemActivated);
@@ -164,41 +169,57 @@ void TPList::createActions() {
     using namespace Action;
 
     QString tranNameLower = tranName.toLower();
+    QObject* owner;
+    if (isFavList) {
+        owner = this;
+    } else {
+        owner = mainWindow;
+    }
+
+    // Open playlist
+    openAct = new TAction(owner, shortName + "_open",
+                          isFavList
+                          ? tr("Import favorites")
+                          : tr("Open playlist"),
+                          "noicon", QKeySequence("Ctrl+P"));
+    openAct->setIcon(iconProvider.openIcon);
+    connect(openAct, &TAction::triggered,
+            this, &TPList::openPlaylistDialog);
 
     // Save playlist
-    saveAct = new TAction(this, shortName + "_save",
+    saveAct = new TAction(owner, shortName + "_save",
                           tr("Save %1").arg(tranNameLower),
                           "noicon", QKeySequence("Ctrl+S"));
     saveAct->setIcon(iconProvider.saveIcon);
     connect(saveAct, &TAction::triggered, this, &TPList::save);
 
     // SaveAs
-    saveAsAct = new TAction(this, shortName + "_saveas",
+    saveAsAct = new TAction(owner, shortName + "_saveas",
                             tr("Save %1 as...").arg(tranNameLower), "noicon");
     saveAsAct->setIcon(iconProvider.saveAsIcon);
     connect(saveAsAct, &TAction::triggered, this, &TPList::saveAs);
 
     // Refresh
-    refreshAct = new TAction(this, shortName+ "_refresh",
+    refreshAct = new TAction(owner, shortName+ "_refresh",
                              tr("Refresh %1").arg(tranNameLower), "noicon",
                              Qt::Key_F5);
     refreshAct->setIcon(iconProvider.refreshIcon);
     connect(refreshAct, &TAction::triggered, this, &TPList::refresh);
 
     // Browse directory
-    browseDirAct = new TAction(this, shortName + "_browse_dir",
+    browseDirAct = new TAction(owner, shortName + "_browse_dir",
                                tr("Browse directory or URL"), "noicon");
     browseDirAct->setIcon(QIcon(style()->standardIcon(QStyle::SP_DirOpenIcon)));
     connect(browseDirAct, &TAction::triggered, this, &TPList::browseDir);
 
     // Play
-    playAct = new TAction(this, shortName + "_play", tr("Play"), "play",
+    playAct = new TAction(owner, shortName + "_play", tr("Play"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
     connect(playAct, &Action::TAction::triggered, this, &TPList::play);
 
     // Play in new window
-    playInNewWindowAct = new TAction(this, shortName + "_play_in_new_window",
+    playInNewWindowAct = new TAction(owner, shortName + "_play_in_new_window",
                              tr("Play in new window"), "play",
                              Qt::CTRL | Qt::Key_Space);
     connect(playInNewWindowAct, &TAction::triggered,
@@ -216,7 +237,7 @@ void TPList::createActions() {
 
     contextMenu->addSeparator();
     // Edit name
-    editNameAct = new TAction(this, shortName + "_edit_name",
+    editNameAct = new TAction(owner, shortName + "_edit_name",
                               tr("Edit name..."), "", Qt::Key_F2);
     connect(editNameAct, &TAction::triggered,
             this, &TPList::editName);
@@ -230,8 +251,8 @@ void TPList::createActions() {
     contextMenu->addAction(newFolderAct);
 
     // Find playing
-    findPlayingAct = new TAction(this, shortName + "_find_playing",
-                                 tr("Find playing item"), "", Qt::Key_F3);
+    findPlayingAct = new TAction(owner, shortName + "_find_playing",
+                                 tr("Find playing item"), "noicon", Qt::Key_F3);
     findPlayingAct->setIcon(iconProvider.findIcon);
     connect(findPlayingAct, &TAction::triggered,
             this, &TPList::findPlayingItem);
@@ -239,22 +260,23 @@ void TPList::createActions() {
 
     contextMenu->addSeparator();
     // Cut
-    cutAct = new TAction(this, shortName + "_cut", tr("Cut file name(s)"), "",
-                         QKeySequence("Ctrl+X"));
+    cutAct = new TAction(this, shortName + "_cut", tr("Cut file name(s)"),
+                         "noicon", QKeySequence("Ctrl+X"));
     cutAct->setIcon(iconProvider.cutIcon);
     connect(cutAct, &TAction::triggered, this, &TPlaylist::cut);
     contextMenu->addAction(cutAct);
 
     // Copy
-    copyAct = new TAction(this, shortName + "_copy", tr("Copy file name(s)"),
-                          "", QKeySequence("Ctrl+C"));
+    copyAct = new TAction(owner, shortName + "_copy", tr("Copy file name(s)"),
+                          "noicon", QKeySequence("Ctrl+C"));
     copyAct->setIcon(iconProvider.copyIcon);
     connect(copyAct, &TAction::triggered, this, &TPList::copySelected);
     contextMenu->addAction(copyAct);
 
     // Paste
-    pasteAct = new TAction(this, shortName + "_paste", tr("Paste file name(s)"),
-                           "", QKeySequence("Ctrl+V"));
+    pasteAct = new TAction(owner, shortName + "_paste",
+                           tr("Paste file name(s)"), "noicon",
+                           QKeySequence("Ctrl+V"));
     pasteAct->setIcon(iconProvider.pasteIcon);
     connect(pasteAct, &TAction::triggered, this, &TPList::paste);
     connect(QApplication::clipboard(), &QClipboard::dataChanged,
@@ -269,28 +291,34 @@ void TPList::createActions() {
     playlistAddMenu->menuAction()->setIcon(iconProvider.okIcon);
 
     // Add playing
-    addPlayingFileAct = new TAction(this, shortName + "_add_playing",
+    QObject* altOwner;
+    if (isFavList) {
+        altOwner = mainWindow;
+    } else {
+        altOwner = this;
+    }
+    addPlayingFileAct = new TAction(altOwner, shortName + "_add_playing",
                                     tr("Add playing file"), "play");
     playlistAddMenu->addAction(addPlayingFileAct);
     connect(addPlayingFileAct, &TAction::triggered,
             this, &TPlaylist::addPlayingFile);
 
     // Add files
-    TAction* a = new TAction(this, shortName + "_add_files",
+    TAction* a = new TAction(owner, shortName + "_add_files",
                              tr("Add file(s)..."), "noicon");
     a->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
     playlistAddMenu->addAction(a);
     connect(a, &TAction::triggered, this, &TPList::addFilesDialog);
 
     // Add dir
-    a = new TAction(this, shortName + "_add_directory", tr("Add directory..."),
+    a = new TAction(owner, shortName + "_add_directory", tr("Add directory..."),
                     "noicon");
     a->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
     playlistAddMenu->addAction(a);
     connect(a, &TAction::triggered, this, &TPList::addDirectoryDialog);
 
     // Add URLs
-    a = new TAction(this, shortName + "_add_urls", tr("Add URL(s)..."),
+    a = new TAction(owner, shortName + "_add_urls", tr("Add URL(s)..."),
                     "add_url");
     playlistAddMenu->addAction(a);
     connect(a, &TAction::triggered, this, &TPList::addUrlsDialog);
@@ -319,7 +347,7 @@ void TPList::createActions() {
 
     // Delete from disk
     QString txt = isFavList ?
-                tr("Delete from favorites directory...")
+                tr("Delete from favorites folder...")
               : tr("Delete from disk...");
     removeSelectedFromDiskAct = new TAction(this,
                                             shortName + "_delete_from_disk",
@@ -329,8 +357,6 @@ void TPList::createActions() {
     playlistRemoveMenu->addAction(removeSelectedFromDiskAct);
     connect(removeSelectedFromDiskAct, &TAction::triggered,
             this, &TPlaylist::removeSelectedFromDisk);
-    connect(playlistWidget, &TPlaylistWidget::currentItemChanged,
-            this, &TPlaylist::enableRemoveFromDiskAction);
 
     // Clear playlist
     removeAllAct = new TAction(this, shortName + "_clear",
@@ -349,76 +375,62 @@ void TPList::createActions() {
     contextMenu->addSeparator();
     contextMenu->addAction(refreshAct);
     contextMenu->addAction(browseDirAct);
+}
 
+void TPList::createToolbar() {
 
-    // Toolbar
-    // TODO: Use TEditable toolbar
-    toolbar = new QToolBar(this);
-    toolbar->setObjectName(objectName() + "toolbar");
-    toolbar->addAction(saveAct);;
-    toolbar->addAction(saveAsAct);
-
-    toolbar->addSeparator();
-    add_button = new QToolButton(this);
-    add_button->setObjectName(shortName + "_add_toolbutton");
-    add_button->setMenu(playlistAddMenu);
-    add_button->setPopupMode(QToolButton::InstantPopup);
-    add_button->setDefaultAction(playlistAddMenu->menuAction());
-    toolbar->addWidget(add_button);
-
-    remove_button = new QToolButton(this);
-    add_button->setObjectName(shortName + "_remove_toolbutton");
-    remove_button->setMenu(playlistRemoveMenu);
-    remove_button->setPopupMode(QToolButton::InstantPopup);
-    remove_button->setDefaultAction(playlistRemoveMenu->menuAction());
-    toolbar->addWidget(remove_button);
-
-    toolbar->addSeparator();
-    toolbar->addAction(refreshAct);
-    toolbar->addAction(browseDirAct);
+    toolbar = new Action::TEditableToolbar(this, shortName + "_toolbar",
+                                           tr("%1 toolbar").arg(tranName));
+    QAction* action = toolbar->toggleViewAction();
+    action->setShortcut(isFavList
+                        ? Qt::SHIFT | Qt::Key_F9
+                        : Qt::SHIFT | Qt::Key_F8);
+    addAction(action);
 }
 
 void TPList::enablePaste() {
 
-    pasteAct->setEnabled(
-        thread == 0 && QApplication::clipboard()->mimeData()->hasText());
+    pasteAct->setEnabled(!isBusy()
+                         && QApplication::clipboard()->mimeData()->hasText());
 }
 
 void TPList::enableRemoveFromDiskAction() {
 
     TPlaylistItem* current = playlistWidget->plCurrentItem();
     removeSelectedFromDiskAct->setEnabled(
-                thread == 0
+                !isBusy()
                 && current
                 && (!current->isWZPlaylist()
                     || current->isSymLink()
                     || current->childCount() == 0));
-    // Leaving test for non media files in directory to deleteFileFromDisk()
+    // Leave test for non media files in directory to deleteFileFromDisk()
 }
 
 void TPList::enableRemoveMenu() {
 
-    bool enable = thread == 0 && playlistWidget->hasItems();
+    bool enable = !isBusy() && playlistWidget->hasItems();
     removeSelectedAct->setEnabled(enable);
     removeAllAct->setEnabled(enable);
     enableRemoveFromDiskAction();
 }
 
 void TPList::enableActions() {
-    WZTRACE(objectName());
+    WZTRACEOBJ("");
 
-    // saveAct->setEnabled(true);
-    // saveAsAct->setEnabled(true);
+    openAct->setEnabled(player->state() != Player::STATE_STOPPING);
+
+    //saveAct->setEnabled(true);
+    //saveAsAct->setEnabled(true);
     refreshAct->setEnabled(!playlistFilename.isEmpty());
 
     bool haveFile = !player->mdat.filename.isEmpty();
     bool cur = playlistWidget->plCurrentItem();
-    browseDirAct->setEnabled(haveFile || (cur && dock->isVisible()));
+    browseDirAct->setEnabled(haveFile || cur);
     browseDirAct->setToolTip(tr("Browse '%1'")
                              .arg(getBrowseURL().toDisplayString()));
     playInNewWindowAct->setEnabled(haveFile || playlistWidget->hasItems());
 
-    bool enable = thread == 0 && player->stateReady();
+    bool enable = !isBusy() && player->stateReady();
     editNameAct->setEnabled(enable && cur);
     newFolderAct->setEnabled(enable);
     // findPlayingAct by descendants
@@ -433,6 +445,10 @@ void TPList::enableActions() {
     enableRemoveMenu();
 }
 
+bool TPList::isBusy() const {
+    return thread || playlistWidget->isBusy();
+}
+
 void TPList::makeActive() {
 
     if (!dock->isVisible()) {
@@ -440,12 +456,13 @@ void TPList::makeActive() {
     }
     activateWindow();
     raise();
+    playlistWidget->setFocus(Qt::OtherFocusReason);
 }
 
 void TPList::setPlaylistFilename(const QString& filename) {
 
     playlistFilename = QDir::toNativeSeparators(filename);
-    WZINFO("Setting playlist filename to '" + playlistFilename + "'");
+    WZTRACE("Setting playlist filename to '" + playlistFilename + "'");
     playlistWidget->root()->setFilename(playlistFilename);
     setPLaylistTitle();
 }
@@ -453,7 +470,7 @@ void TPList::setPlaylistFilename(const QString& filename) {
 bool TPList::maybeSave() {
 
     if (!playlistWidget->isModified()) {
-        WZTRACE(tranName + " not modified");
+        WZTRACEOBJ(tranName + " not modified");
         return true;
     }
 
@@ -473,7 +490,7 @@ bool TPList::maybeSave() {
         if (Settings::pref->useDirectoriePlaylists) {
             return save();
         }
-        WZDEBUG("Discarding changes. Saving directorie playlists is disabled.");
+        WZDEBUGOBJ("Discarding changes. Saving directorie playlists is disabled.");
         return true;
 
     }
@@ -497,13 +514,33 @@ bool TPList::maybeSave() {
     }
 }
 
+void TPList::openPlaylist(const QString& filename) {
+
+    Settings::pref->last_dir = QFileInfo(filename).absolutePath();
+    clear();
+    add(QStringList() << filename, true);
+}
+
+void TPList::openPlaylistDialog() {
+
+    if (maybeSave()) {
+        QString fn = TFileDialog::getOpenFileName(this, tr("Choose a file"),
+            Settings::pref->last_dir,
+            tr("Playlists") + extensions.playlists().forFilter() + ";;"
+            + tr("All files") +" (*.*)");
+
+        if (!fn.isEmpty()) {
+            openPlaylist(fn);
+        }
+    }
+}
+
 bool TPList::saveM3uFolder(TPlaylistItem* folder,
                            const QString& path,
                            QTextStream& stream,
                            bool linkFolders,
                            bool& savedMetaData) {
-    WZTRACE(QString("%1 Saving '%2'")
-            .arg(objectName()).arg(folder->filename()));
+    WZTRACEOBJ(QString("Saving '%1'").arg(folder->filename()));
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
@@ -516,7 +553,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                     result = false;
                 }
             } else {
-                WZTRACE("Playlist '" + filename + "' not modified");
+                WZTRACEOBJ("Playlist '" + filename + "' not modified");
             }
         } else if (i->isFolder()) {
             if (linkFolders) {
@@ -527,7 +564,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                         result = false;
                     }
                 } else {
-                    WZTRACE("Folder '" + filename + "' not modified");
+                    WZTRACEOBJ("Folder '" + filename + "' not modified");
                 }
             } else {
                 // Note: savedMetaData destroyed as dummy here.
@@ -561,7 +598,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
 bool TPList::saveM3u(TPlaylistItem* folder,
                      const QString& filename,
                      bool wzplaylist) {
-    WZTRACE(QString("%1 Saving '%2'").arg(objectName()).arg(filename));
+    WZTRACEOBJ(QString("Saving '%1'").arg(filename));
 
     QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
     if (!path.endsWith(QDir::separator())) {
@@ -616,7 +653,7 @@ bool TPList::saveM3u(TPlaylistItem* folder,
     if (wzplaylist && folder->getBlacklistCount() > 0) {
         didSaveMeta = true;
         foreach(const QString& fn, folder->getBlacklist()) {
-            WZDEBUG("Blacklisting '" + fn + "'");
+            WZDEBUGOBJ("Blacklisting '" + fn + "'");
             stream << "#WZP-blacklist:" << fn << "\n";
         }
     }
@@ -751,8 +788,24 @@ bool TPList::saveAs() {
     return save();
 }
 
+void TPList::stop() {
+    WZINFOOBJ(QString("State %2").arg(player->stateToString()));
+
+    if (playlistWidget->playingItem) {
+        playlistWidget->setPlayingItem(0);
+    }
+    if (player->state() == Player::STATE_STOPPED) {
+        if (thread) {
+            abortThread();
+        } else {
+            playlistWidget->abortFileCopier();
+        }
+    }
+    // player->stop() done by TPlaylist::stop()
+}
+
 void TPList::play() {
-    WZTRACE(objectName());
+    WZTRACEOBJ("");
 
     TPlaylistItem* item = playlistWidget->plCurrentItem();
     if (item) {
@@ -763,7 +816,7 @@ void TPList::play() {
 }
 
 void TPList::playInNewWindow() {
-    WZTRACE(objectName());
+    WZTRACEOBJ("");
 
     QStringList files;
     QTreeWidgetItemIterator it(playlistWidget,
@@ -777,9 +830,7 @@ void TPList::playInNewWindow() {
     if (files.count() == 0) {
         if (playlistWidget->plCurrentItem()) {
             files << playlistWidget->plCurrentItem()->filename();
-        } else if (player->mdat.filename.isEmpty()) {
-            return;
-        } else {
+        } else if (!player->mdat.filename.isEmpty()) {
             files << player->mdat.filename;
         }
     }
@@ -808,7 +859,7 @@ void TPList::editName() {
 }
 
 void TPList::newFolder() {
-    WZTRACE(objectName());
+    WZTRACEOBJ("");
 
     TPlaylistItem* parent = playlistWidget->plCurrentItem();
     if (parent == 0) {
@@ -893,7 +944,7 @@ void TPList::copySelection(const QString& actionName) {
             msgOSD(actionName + " " + text);
         } else {
             msgOSD(tr("%1 %2 file names",
-                   "Action 'Copied'' or 'Cut'', number of file names")
+                   "Action 'Cut' or 'Copied', number of file names")
                 .arg(actionName).arg(copied));
         }
         QApplication::clipboard()->setText(text);
@@ -918,13 +969,14 @@ void TPList::paste() {
 }
 
 void TPList::cut() {
+    WZTRACEOBJ("");
 
     copySelection(tr("Cut"));
     removeSelected();
 }
 
 void TPList::addPlayingFile() {
-   WZTRACE(objectName());
+   WZTRACEOBJ("");
 
    QString fn = player->mdat.filename;
    if (!fn.isEmpty()) {
@@ -962,25 +1014,25 @@ void TPList::addUrlsDialog() {
 }
 
 void TPList::removeSelected(bool deleteFromDisk) {
-    WZTRACE(objectName());
 
-    if (!isActiveWindow()) {
-        WZWARN("Ignoring remove request while playlist not active window");
+    if (!playlistWidget->hasFocus() && !toolbar->hasFocus()) {
+        WZWARN("Ignoring remove action while playlist not focused");
         return;
     }
-    if (!dock->isVisible()) {
-        WZWARN("Ignoring remove request while playlist not visible");
+    if (isBusy()) {
+        WZWARN("Ignoring remove request while busy.");
         return;
     }
 
-    WZTRACE("Disabling enableActions");
+    WZTRACEOBJ("Disabling enableActions");
     disableEnableActions++;
     playlistWidget->removeSelected(deleteFromDisk);
+    // TODO: ...
     if (playlistFilename.isEmpty() && !playlistWidget->hasItems()) {
         // Start with a clean sheet
         playlistWidget->clearModified();
     }
-    WZTRACE("Enabling enableActions");
+    WZTRACEOBJ("Enabling enableActions");
     disableEnableActions--;
     enableActions();
 }
@@ -1056,15 +1108,14 @@ void TPList::browseDir() {
 
 void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
                                   QTreeWidgetItem* previous) {
-    WZTRACE(QString("%1 Changed from '%2' to '%3'")
-            .arg(objectName())
+    WZTRACEOBJ(QString("Changed from '%1' to '%2'")
             .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "null")
             .arg(current ? current->text(TPlaylistItem::COL_NAME) : "null"));
     enableActions();
 }
 
 void TPList::onItemActivated(QTreeWidgetItem* i, int) {
-    WZTRACE(objectName());
+    WZTRACEOBJ("");
 
     TPlaylistItem* item = static_cast<TPlaylistItem*>(i);
     if (item && !item->isFolder()) {
@@ -1098,19 +1149,21 @@ void TPList:: setPLaylistTitle() {
 void TPList::abortThread() {
 
     if (thread) {
-        WZDEBUG("Aborting add files thread");
+        WZINFO("Aborting add files thread");
         addStartPlay = false;
         restartThread = false;
         thread->abort();
+    } else {
+        WZTRACEOBJ("No add files thread running");
     }
 }
 
 void TPList::onThreadFinished() {
-    WZTRACE(objectName());
+    WZTRACEOBJ("");
 
     if (thread == 0) {
         // Only during destruction, so no need to enable actions
-        WZDEBUG("Thread is gone");
+        WZDEBUGOBJ("Thread is gone");
         return;
     }
 
@@ -1128,10 +1181,10 @@ void TPList::onThreadFinished() {
     if (root == 0) {
         // Thread aborted
         if (restartThread) {
-            WZDEBUG("Thread aborted, starting new request");
+            WZDEBUGOBJ("Thread aborted, starting new request");
             addStartThread();
         } else {
-            WZDEBUG("Thread aborted");
+            WZDEBUGOBJ("Thread aborted");
             addFiles.clear();
             enableActions();
         }
@@ -1192,12 +1245,11 @@ void TPList::addStartThread() {
 
     if (thread) {
         // Thread still running, abort it and restart it in onThreadFinished()
-        WZDEBUG(QString("%1 Add files thread still running. Aborting it...")
-                .arg(objectName()));
+        WZDEBUGOBJ("Add files thread still running. Aborting it...");
         restartThread = true;
         thread->abort();
     } else {
-        WZDEBUG(QString("%1 Starting add files thread").arg(objectName()));
+        WZDEBUGOBJ("Starting add files thread");
         restartThread = false;
 
         // Allow single image
@@ -1259,11 +1311,44 @@ void TPList::clear(bool clearFilename) {
 }
 
 void TPList::addRemovedItem(const QString& item) {
-    WZTRACE(objectName() + " '" + item + "'");
+    WZTRACEOBJ("'" + item + "'");
 
     // TODO: just add the item instead of refresh
     refresh();
 }
+
+void TPList::saveSettings() {
+
+    Settings::pref->beginGroup(objectName());
+    playlistWidget->saveSettings(Settings::pref);
+    toolbar->saveSettings();
+    Settings::pref->setValue("toolbar_visible",
+                             toolbar->toggleViewAction()->isChecked());
+    Settings::pref->endGroup();
+}
+
+void TPList::loadSettings() {
+
+    Settings::pref->beginGroup(objectName());
+    playlistWidget->loadSettings(Settings::pref);
+    toolbar->loadSettings();
+    toolbar->toggleViewAction()->setChecked(
+                Settings::pref->value("toolbar_visible", true).toBool());
+    Settings::pref->endGroup();
+
+    // Set shortcut context
+    Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
+    QList<QAction*> acts = actions();
+    for(int i = 0; i< acts.count(); i++) {
+        QAction* action = acts.at(i);
+        QString name =  action->objectName();
+        if (!name.isEmpty()) {
+            action->setShortcutContext(context);
+            WZTRACEOBJ(name);
+        }
+    }
+}
+
 
 } // namespace Playlist
 } // namespace Gui

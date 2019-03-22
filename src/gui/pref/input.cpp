@@ -32,9 +32,6 @@ TInput::TInput(QWidget* parent, Qt::WindowFlags f)
     retranslateStrings();
 }
 
-TInput::~TInput() {
-}
-
 QString TInput::sectionName() {
     return tr("Actions");
 }
@@ -166,10 +163,9 @@ void TInput::retranslateStrings() {
     createHelp();
 }
 
-void TInput::setData(Settings::TPreferences* pref,
-                     const QList<QAction*>& allActions) {
+void TInput::setData(Settings::TPreferences* pref) {
 
-    actions_editor->setActionsTable(allActions);
+    actions_editor->setActionsTable();
 
     setLeftClickFunction(pref->mouse_left_click_function);
     setRightClickFunction(pref->mouse_right_click_function);
@@ -192,15 +188,14 @@ void TInput::setData(Settings::TPreferences* pref,
     setPreciseSeeking(pref->precise_seeking);
 }
 
-void TInput::getData(Settings::TPreferences* pref,
-                     const QList<QAction*>& allActions) {
+void TInput::getData(Settings::TPreferences* pref) {
 
     TSection::getData(pref);
 
     // Save new action shortcuts to the currently active actions
-    actions_editor->applyChanges(allActions);
+    actions_editor->applyChanges();
     // Save actions to pref
-    Action::TActionsEditor::saveSettings(pref, allActions);
+    Action::TActionsEditor::saveSettings(pref);
 
     pref->mouse_left_click_function = leftClickFunction();
     pref->mouse_right_click_function = rightClickFunction();

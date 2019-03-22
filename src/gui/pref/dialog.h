@@ -75,16 +75,13 @@ public:
     };
 
     TDialog(QWidget* parent);
-    virtual ~TDialog();
 
     TInput* mod_input() const { return page_input; }
 
     // Pass data to the standard dialogs
-    void setData(Settings::TPreferences* pref,
-                 const QList<QAction*>& allActions);
+    void setData(Settings::TPreferences* pref);
     // Apply changes
-    void getData(Settings::TPreferences* pref,
-                 const QList<QAction*>& allActions);
+    void getData(Settings::TPreferences* pref);
 
     // Return true if the application should be restarted.
     bool requiresRestartApp();

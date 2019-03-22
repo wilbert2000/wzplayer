@@ -18,6 +18,7 @@ class TDockWidget;
 
 namespace Action {
 class TAction;
+class TEditableToolbar;
 }
 
 namespace Playlist {
@@ -25,10 +26,12 @@ namespace Playlist {
 class TAddFilesThread;
 class TPlaylistWidget;
 class TPlaylistItem;
+class TMenuAddRemoved;
 
 class TPList : public QWidget {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
+    friend class TMenuAddRemoved;
 public:
     explicit TPList(TDockWidget* parent,
                     TMainWindow* mw,
@@ -42,13 +45,19 @@ public:
              bool startPlay = false,
              TPlaylistItem* target = 0,
              const QString& fileToPlay = "");
-    virtual void startPlay() = 0;
+    bool isBusy() const;
 
+    virtual void startPlay() = 0;
     bool maybeSave();
+
+    virtual void loadSettings();
+    virtual void saveSettings();
+
 
 public slots:
     virtual void enableActions();
-    void addRemovedItem(const QString& s);
+
+    virtual void stop();
     virtual void findPlayingItem() = 0;
 
 signals:
@@ -58,11 +67,12 @@ protected:
     TMainWindow* mainWindow;
     TDockWidget* dock;
     TPlaylistWidget* playlistWidget;
-    QToolBar* toolbar;
+    Action::TEditableToolbar* toolbar;
     QString playlistFilename;
     TAddFilesThread* thread;
     int disableEnableActions;
 
+    QAction* openAct;
     Action::TAction* saveAct;
     Action::TAction* saveAsAct;
     Action::TAction* refreshAct;
@@ -88,12 +98,15 @@ protected:
     Action::TAction* removeAllAct;
 
     void makeActive();
+
     void clear(bool clearFilename = true);
     void setPlaylistFilename(const QString& filename);
 
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) = 0;
+    void openPlaylist(const QString& filename);
 
 protected slots:
+    virtual void openPlaylistDialog();
     bool save();
     virtual bool saveAs();
     void play();
@@ -119,6 +132,9 @@ private:
 
     void createTree();
     void createActions();
+    void createToolbar();
+
+    void enableRemoveFromDiskAction();
 
     QUrl getBrowseURL();
     void copySelection(const QString& actionName);
@@ -149,12 +165,12 @@ private slots:
     void addFilesDialog();
     void addDirectoryDialog();
     void addUrlsDialog();
+    void addRemovedItem(const QString& s);
 
     void removeSelected(bool deleteFromDisk = false);
     void removeSelectedFromDisk();
     void removeAll();
 
-    void enableRemoveFromDiskAction();
     void enableRemoveMenu();
 
     void browseDir();

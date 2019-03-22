@@ -7,10 +7,20 @@
 
 
 #define WZTRACE(s) logger()->trace(QString(__FUNCTION__) + " " + (s))
+#define WZTRACEOBJ(s) logger()->trace(QString(__FUNCTION__) \
+    + " (" + (objectName()) + ") " + (s))
 #define WZDEBUG(s) logger()->debug(QString(__FUNCTION__) + " " + (s))
+#define WZDEBUGOBJ(s) logger()->debug(QString(__FUNCTION__) \
+    + " (" + (objectName()) + ") " + (s))
 #define WZINFO(s) logger()->info(QString(__FUNCTION__) + " " + (s))
+#define WZINFOOBJ(s) logger()->info(QString(__FUNCTION__) \
+    + " (" + (objectName()) + ") " + (s))
 #define WZWARN(s) logger()->warn(QString(__FUNCTION__) + " " + (s))
+#define WZWARNOBJ(s) logger()->warn(QString(__FUNCTION__) \
+    + " (" + (objectName()) + ") " + (s))
 #define WZERROR(s) logger()->error(QString(__FUNCTION__) + " " + (s))
+#define WZERROROBJ(s) logger()->error(QString(__FUNCTION__) \
+    + " (" + (objectName()) + ") " + (s))
 
 /*
  * TODO: logger()->debug() << msg;
@@ -39,7 +49,6 @@ public:
     Log4Qt::Logger* logger;
 
     explicit TWZDebug(Log4Qt::Logger* aLogger);
-    virtual ~TWZDebug();
 };
 
 TWZDebug& operator << (QDebug&, TWZDebug&);

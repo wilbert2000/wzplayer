@@ -25,6 +25,7 @@
 #include "gui/filedialog.h"
 #include "settings/paths.h"
 #include "images.h"
+#include "iconprovider.h"
 #include "wzdebug.h"
 
 #include <QTableWidget>
@@ -103,32 +104,33 @@ TActionsEditor::TActionsEditor(QWidget* parent) :
     actionsTable = new QTableWidget(0, COL_COUNT, this);
     actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);
     actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    actionsTable->verticalHeader()->hide();
+    actionsTable->setIconSize(QSize(22, 22));
 
+    actionsTable->verticalHeader()->hide();
     QHeaderView* h = actionsTable->horizontalHeader();
     h->setHighlightSections(false);
     h->setMinimumSectionSize(0);
     actionsTable->setHorizontalHeaderLabels(QStringList()
-        << "" << tr("Action") << tr("Description") << tr("Shortcuts"));
+        << "" << tr("Action") << tr("Description") << tr("For")
+        << tr("Shortcuts"));
 
     h->setSectionResizeMode(COL_CONFLICTS, QHeaderView::ResizeToContents);
     h->setSectionResizeMode(COL_ACTION, QHeaderView::ResizeToContents);
     h->setSectionResizeMode(COL_DESC, QHeaderView::ResizeToContents);
+    h->setSectionResizeMode(COL_FOR, QHeaderView::ResizeToContents);
     h->setSectionResizeMode(COL_SHORTCUTS, QHeaderView::Stretch);
     h->setStretchLastSection(true);
-
-    actionsTable->setIconSize(QSize(22, 22));
 
     connect(actionsTable, &QTableWidget::itemActivated,
             this, &TActionsEditor::editShortcut);
 
     saveButton = new QPushButton(this);
-    saveButton->setText(tr("&Save"));
-    saveButton->setIcon(Images::icon("save"));
+    saveButton->setText(tr("Save"));
+    saveButton->setIcon(iconProvider.saveIcon);
 
     loadButton = new QPushButton(this);
-    loadButton->setText(tr("&Load"));
-    loadButton->setIcon(Images::icon("open"));
+    loadButton->setText(tr("Load"));
+    loadButton->setIcon(iconProvider.openIcon);
 
     connect(saveButton, &QPushButton::clicked,
             this, &TActionsEditor::saveActionsTable);
@@ -136,7 +138,7 @@ TActionsEditor::TActionsEditor(QWidget* parent) :
             this, &TActionsEditor::loadActionsTable);
 
     editButton = new QPushButton(this);
-    editButton->setText(tr("&Change shortcut..."));
+    editButton->setText(tr("Change shortcut..."));
     connect(editButton, &QPushButton::clicked,
             this, &TActionsEditor::editShortcut);
 
@@ -155,21 +157,42 @@ TActionsEditor::TActionsEditor(QWidget* parent) :
     mainLayout->addLayout(buttonLayout);
 }
 
-TActionsEditor::~TActionsEditor() {
+QString TActionsEditor::getWindowForAction(QAction* action) const {
+    //WZTRACE("Action " + action->objectName());
+
+    QString window;
+    QObject* parent = action->parent();
+    while (parent && window.isEmpty()) {
+        //WZTRACE("Parent " + parent->objectName());
+        window = parent->objectName();
+        parent = parent->parent();
+    }
+
+    if (window.endsWith("widget")) {
+        window = window.left(window.length() - 6);
+    } else if (window.endsWith("group")
+               || window.endsWith("dock")
+               || window.startsWith("toolbar")
+               || window == "controlbar") {
+        window = "mainwindow";
+    }
+
+    return window;
 }
 
-void TActionsEditor::setActionsTable(const QList<QAction*>& allActions) {
+void TActionsEditor::setActionsTable() {
 
     bool sortEnabled = actionsTable->isSortingEnabled();
     actionsTable->setSortingEnabled(false);
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    for (int i = 0; i < allActions.count(); i++) {
+    for (int i = 0; i < TAction::allActions.count(); i++) {
         // Add one row at the time to speed up the call to updateConflictCell(),
-        // which iterates over every row of the action table.
+        // which will iterates over every row of the action table to check
+        // for conflicts
         actionsTable->setRowCount(i + 1);
 
-        QAction* action = allActions.at(i);
+        QAction* action = TAction::allActions.at(i);
 
         // Conflict column
         QTableWidgetItem* conflictItem = new QTableWidgetItem();
@@ -198,6 +221,11 @@ void TActionsEditor::setActionsTable(const QList<QAction*>& allActions) {
         item->setIcon(icon);
         actionsTable->setItem(i, COL_DESC, item);
 
+        // For column
+        item = new QTableWidgetItem(getWindowForAction(action));
+        item->setFlags(flags);
+        actionsTable->setItem(i, COL_FOR, item);
+
         // Shortcut column
         item = new QTableWidgetItem(shortcutsToString(action->shortcuts()));
         item->setFlags(flags);
@@ -214,14 +242,14 @@ void TActionsEditor::setActionsTable(const QList<QAction*>& allActions) {
     actionsTable->selectRow(0);
 }
 
-void TActionsEditor::applyChanges(const QList<QAction*>& allActions) {
+void TActionsEditor::applyChanges() {
     WZDEBUG("");
 
     for (int row = 0; row < actionsTable->rowCount(); row++) {
         QTableWidgetItem* item = actionsTable->item(row, COL_SHORTCUTS);
         if (item) {
             QString actionName = actionsTable->item(row, COL_ACTION)->text();
-            QAction* action = findAction(actionName, allActions);
+            QAction* action = findAction(actionName);
             if (action) {
                 QString shortcuts = item->text();
                 QString oldShortcuts = shortcutsToString(action->shortcuts());
@@ -242,8 +270,9 @@ void TActionsEditor::editShortcut() {
     int row = actionsTable->currentRow();
     QTableWidgetItem* item = actionsTable->item(row, COL_SHORTCUTS);
     if (item) {
-        QString action = actionsTable->item(row, COL_ACTION)->text();
-        TShortcutGetter shortcutGetter(this, action);
+        QString actionName = actionsTable->item(row, COL_ACTION)->text();
+        QString actionOwner = actionsTable->item(row, COL_FOR)->text();
+        TShortcutGetter shortcutGetter(this, actionName, actionOwner);
         QString result = shortcutGetter.exec(item->text());
         if (shortcutGetter.result() == QDialog::Accepted) {
             // Make sure TShortcutGetter and TActionsEditor speak the
@@ -255,7 +284,7 @@ void TActionsEditor::editShortcut() {
     }
 }
 
-int TActionsEditor::findActionName(const QString& name) {
+int TActionsEditor::findActionNameInTable(const QString& name) {
 
     for (int row = 0; row < actionsTable->rowCount(); row++) {
         if (actionsTable->item(row, COL_ACTION)->text() == name)
@@ -265,6 +294,7 @@ int TActionsEditor::findActionName(const QString& name) {
 }
 
 int TActionsEditor::findShortcutsInTable(const QString& aShortCuts,
+                                         const QString& actionOwner,
                                          int startRow,
                                          int skipRow) {
 
@@ -276,12 +306,16 @@ int TActionsEditor::findShortcutsInTable(const QString& aShortCuts,
                 if (item) {
                     QString shortcuts = item->text();
                     if (!shortcuts.isEmpty()) {
-                        QStringList found = shortcutsToStringList(shortcuts);
-                        for(int i = find.count() - 1; i >= 0; i--) {
-                            const QString& findShortcut = find.at(i);
-                            for(int j = found.count() - 1; j >= 0; j--) {
-                                if (found.at(j) == findShortcut) {
-                                    return row;
+                        QString rowOwner = actionsTable->item(row, COL_FOR)->text();
+                        if (rowOwner == actionOwner) {
+                            QStringList found = shortcutsToStringList(shortcuts);
+                            for(int i = find.count() - 1; i >= 0; i--) {
+                                const QString& findShortcut = find.at(i);
+                                for(int j = found.count() - 1; j >= 0; j--) {
+                                    if (found.at(j) == findShortcut) {
+                                        WZTRACE(QString("Found row %1").arg(row));
+                                        return row;
+                                    }
                                 }
                             }
                         }
@@ -294,31 +328,36 @@ int TActionsEditor::findShortcutsInTable(const QString& aShortCuts,
     return -1;
 }
 
-void TActionsEditor::findShortcutLabelAndAction(const QString& shortcut,
-                                                QString& label,
-                                                QString& action) {
+void TActionsEditor::findShortcutActionAndLabel(const QString& shortcut,
+                                                const QString& actionOwner,
+                                                QString& actionName,
+                                                QString& label) {
+    WZDEBUG(QString("%1 %2").arg(shortcut).arg(actionOwner));
 
     if (shortcut.isEmpty()) {
         label = "\n";
-        action = "";
+        actionName = "";
         return;
     }
 
-    int row = findShortcutsInTable(shortcut, 0, -1);
+    int row = findShortcutsInTable(shortcut, actionOwner, 0, -1);
     if (row >= 0) {
-        action = actionsTable->item(row, COL_ACTION)->text();
-        label = tr("Shortcut currently assigned to:\n%1 (%2)")
+        actionName = actionsTable->item(row, COL_ACTION)->text();
+        label = tr("Shortcut currently assigned to:");
+        do {
+            label += QString("\n%1 (%2)")
                 .arg(actionsTable->item(row, COL_DESC)->text())
-                .arg(action);
+                .arg(actionsTable->item(row, COL_ACTION)->text());
+            row = findShortcutsInTable(shortcut, actionOwner, row + 1, -1);
+        } while (row >= 0);
     } else {
         label = tr("Shortcut not assigned\n");
-        action = "";
+        actionName = "";
     }
 }
 
 void TActionsEditor::setConflictTextModified(int row) {
 
-    // Add "m" to conflicts column item
     QString tran = tr("m");
     QTableWidgetItem* item = actionsTable->item(row, COL_CONFLICTS);
     QString txt = item->text();;
@@ -334,11 +373,11 @@ void TActionsEditor::setConflictTextModified(int row) {
 
 void TActionsEditor::removeConflictingShortcuts(int row, int conflictRow) {
 
-    TShortCutList remove = stringToShortcutList(
+    QList<QKeySequence> remove = stringToShortcutList(
                 actionsTable->item(row, COL_SHORTCUTS)->text());
     QTableWidgetItem* conflictItem = actionsTable->item(conflictRow,
                                                         COL_SHORTCUTS);
-    TShortCutList from = stringToShortcutList(conflictItem->text());
+    QList<QKeySequence> from = stringToShortcutList(conflictItem->text());
     if (removeShortcutsFromList(remove, from,
             actionsTable->item(row, COL_ACTION)->text(),
             actionsTable->item(conflictRow, COL_ACTION)->text())) {
@@ -357,11 +396,14 @@ bool TActionsEditor::updateConflictCell(int row,
                                         int rowToKeep) {
 
     bool conflict = false;
-    QString shortcuts = actionsTable->item(row, COL_SHORTCUTS)->text();
+    QTableWidgetItem* conflictItem = actionsTable->item(row, COL_SHORTCUTS);
+    QString shortcuts = conflictItem->text();
     if (!shortcuts.isEmpty()) {
+        QString actionOwner = actionsTable->item(row, COL_FOR)->text();
         int startRow = 0;
         do {
-            int conflictRow = findShortcutsInTable(shortcuts, startRow, row);
+            int conflictRow = findShortcutsInTable(shortcuts, actionOwner,
+                                                   startRow, row);
             if (conflictRow >= 0) {
                 if (takeShortcuts) {
                     if (conflictRow == rowToKeep) {
@@ -371,9 +413,9 @@ bool TActionsEditor::updateConflictCell(int row,
                     }
                 } else {
                     conflict = true;
-                    QTableWidgetItem* conflictItem = actionsTable->item(
+                    QTableWidgetItem* item = actionsTable->item(
                                 conflictRow, COL_CONFLICTS);
-                    conflictItem->setIcon(Images::icon("conflict"));
+                    item->setIcon(iconProvider.conflictItem);
                 }
                 // Find next conflict
                 startRow = conflictRow + 1;
@@ -382,9 +424,8 @@ bool TActionsEditor::updateConflictCell(int row,
         } while (false);
     }
 
-    QTableWidgetItem* conflictItem = actionsTable->item(row, COL_CONFLICTS);
     if (conflict) {
-        conflictItem->setIcon(Images::icon("conflict"));
+        conflictItem->setIcon(iconProvider.conflictItem);
     } else {
         conflictItem->setIcon(QPixmap());
     }
@@ -470,15 +511,16 @@ bool TActionsEditor::loadActionsTableFromFile(const QString& filename) {
             QString line = stream.readLine();
             if (rx.indexIn(line) >= 0) {
                 QString name = rx.cap(1).trimmed();
-                int row = findActionName(name);
+                int row = findActionNameInTable(name);
                 if (row >= 0) {
-                    QString shortcuts = shortcutsToString(stringToShortcutList(rx.cap(2)));
+                    QString shortcuts = shortcutsToString(
+                                stringToShortcutList(rx.cap(2)));
                     actionsTable->item(row, COL_SHORTCUTS)->setText(shortcuts);
                 } else {
-                    WZWARN("action '" + name + "' not found");
+                    WZWARN("Action '" + name + "' not found");
                 }
             } else {
-                WZDEBUG("skipped line '" + line + "'");
+                WZDEBUG("Skipped line '" + line + "'");
             }
         }
         f.close();
@@ -516,7 +558,7 @@ QKeySequence TActionsEditor::stringToKeySequence(QString s) {
     return QKeySequence(s, QKeySequence::PortableText);
 }
 
-QString TActionsEditor::shortcutsToString(const TShortCutList& shortcuts) {
+QString TActionsEditor::shortcutsToString(const QList<QKeySequence>& shortcuts) {
 
     QString s = "";
     for (int i = 0; i < shortcuts.count(); i++) {
@@ -532,9 +574,9 @@ QStringList TActionsEditor::shortcutsToStringList(const QString& s) {
     return s.split(", ", QString::SkipEmptyParts);
 }
 
-TShortCutList TActionsEditor::stringToShortcutList(const QString& shortcuts) {
+QList<QKeySequence> TActionsEditor::stringToShortcutList(const QString& shortcuts) {
 
-    TShortCutList shortcutList;
+    QList<QKeySequence> shortcutList;
     QStringList stringList = shortcutsToStringList(shortcuts);
     for (int i = 0; i < stringList.count(); i++) {
         shortcutList.append(stringToKeySequence(stringList.at(i)));
@@ -585,16 +627,15 @@ QString TActionsEditor::actionToString(QAction *action) {
     return s;
 }
 
-void TActionsEditor::saveSettings(QSettings* set,
-                                  const QList<QAction*>& allActions) {
+void TActionsEditor::saveSettings(QSettings* set) {
     WZTRACE("");
 
     set->beginGroup("actions");
     // Clear group to remove actions no longer modified
     set->remove("");
 
-    for (int i = 0; i < allActions.count(); i++) {
-        QAction* action = allActions.at(i);
+    for (int i = 0; i < TAction::allActions.count(); i++) {
+        QAction* action = TAction::allActions.at(i);
         if (action->property("modified").toBool()
                 || action->property("modifiedicontext").toBool()) {
             set->setValue(action->objectName(), actionToString(action));
@@ -605,8 +646,8 @@ void TActionsEditor::saveSettings(QSettings* set,
 }
 
 bool TActionsEditor::removeShortcutsFromList(
-        const TShortCutList& remove,
-        TShortCutList& from,
+        const QList<QKeySequence>& remove,
+        QList<QKeySequence>& from,
         const QString& toName,
         const QString& fromName) {
 
@@ -614,7 +655,7 @@ bool TActionsEditor::removeShortcutsFromList(
 
     for(int i = 0; i < remove.size(); i++) {
         const QKeySequence& key = remove.at(i);
-        if (from.removeOne(key)) {
+        if (from.removeAll(key)) {
             WZINFO(QString("Removed shortcut %1 from %2 to assign it to %3")
                    .arg(keySequnceToString(key))
                    .arg(fromName)
@@ -627,16 +668,17 @@ bool TActionsEditor::removeShortcutsFromList(
 }
 
 void TActionsEditor::removeShortcutsFromActions(
-        const TActionList& actions,
-        const TShortCutList& shortcuts,
+        const QList<QKeySequence>& shortcuts,
         QAction* skipAction) {
 
     if (!shortcuts.isEmpty()) {
-        for(int i = 0; i < actions.size(); i++) {
-            QAction* action = actions.at(i);
-            if (action != skipAction) {
-                TShortCutList shortcutsToClean = action->shortcuts();
-                if (removeShortcutsFromList(shortcuts, shortcutsToClean,
+        for(int i = 0; i < TAction::allActions.size(); i++) {
+            QAction* action = TAction::allActions.at(i);
+            if (action->parent() == skipAction->parent()
+                    && action != skipAction) {
+                QList<QKeySequence> shortcutsToClean = action->shortcuts();
+                if (removeShortcutsFromList(shortcuts,
+                                            shortcutsToClean,
                                             skipAction->objectName(),
                                             action->objectName())) {
                     action->setShortcuts(shortcutsToClean);
@@ -647,15 +689,13 @@ void TActionsEditor::removeShortcutsFromActions(
     }
 }
 
-void TActionsEditor::setActionFromString(QAction* action,
-                                         const QString& s,
-                                         const TActionList& actions) {
+void TActionsEditor::setActionFromString(QAction* action, const QString& s) {
 
     static QRegExp rx("^([^\\t]*)(\\t(.*))?");
 
     QString actionName = action->objectName();
     if (s.isEmpty()) {
-        TShortCutList shortcutList = action->shortcuts();
+        QList<QKeySequence> shortcutList = action->shortcuts();
         if (shortcutList.count() > 0) {
             WZINFO(QString("Removing shortcuts %1 from %2")
                    .arg(shortcutsToString(shortcutList)).arg(actionName));
@@ -667,8 +707,8 @@ void TActionsEditor::setActionFromString(QAction* action,
         QString shortcuts = rx.cap(1);
         QString oldShortcuts = shortcutsToString(action->shortcuts());
         if (shortcuts != oldShortcuts) {
-            TShortCutList shortcutList = stringToShortcutList(shortcuts);
-            removeShortcutsFromActions(actions, shortcutList, action);
+            QList<QKeySequence> shortcutList = stringToShortcutList(shortcuts);
+            removeShortcutsFromActions(shortcutList, action);
             action->setShortcuts(shortcutList);
             action->setProperty("modified", true);
             WZINFO(QString("Changed shortcuts %1 from '%2' to '%3'")
@@ -686,21 +726,19 @@ void TActionsEditor::setActionFromString(QAction* action,
     }
 }
 
-void TActionsEditor::loadSettings(QSettings* pref,
-                                  const QList<QAction*>& allActions) {
-    WZTRACE("");
+void TActionsEditor::loadSettings(QSettings* pref) {
 
     pref->beginGroup("actions");
     QStringList actions = pref->childKeys();
+    WZTRACE(QString("Loading %1 actions").arg(actions.count()));
 
     for (int i = 0; i < actions.count(); i++) {
         const QString& name = actions.at(i);
-        QAction* action = findAction(name, allActions);
+        QAction* action = findAction(name);
         if (action) {
-            setActionFromString(action, pref->value(name, "").toString(),
-                                allActions);
+            setActionFromString(action, pref->value(name, "").toString());
         } else {
-            WZERROR("Action '" + name + "' not found");
+            WZWARN("Action '" + name + "' not found");
         }
     }
 

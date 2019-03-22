@@ -3,6 +3,7 @@
 #include "gui/playlist/playlistwidget.h"
 #include "gui/action/menu/menu.h"
 #include "gui/action/action.h"
+#include "gui/action/editabletoolbar.h"
 #include "gui/mainwindow.h"
 #include "gui/dockwidget.h"
 #include "settings/preferences.h"
@@ -13,6 +14,7 @@
 
 #include <QDir>
 #include <QTimer>
+#include <QMessageBox>
 
 
 namespace Gui {
@@ -25,18 +27,18 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
 
     playlistWidget->setSort(TPlaylistItem::COL_ORDER, Qt::AscendingOrder);
 
-    mainWindow->addAction(addPlayingFileAct);
+    createToolbar();
 
     favMenu = new Action::Menu::TMenu(this, mw, "favorites_menu",
                                       tr("Favorites"));
     favMenu->addAction(addPlayingFileAct);
     favMenu->addAction(dock->toggleViewAction());
 
-    // Timer to merge the TPlist::addedItems and/or multiple
-    // TPlaylistWidget::modified signals into one call to updateFavMenu
+    // Timer to merge TPlist::addedItems and/or multiple
+    // TPlaylistWidget::modified signals into less calls to updateFavMenu
     requestUpdateTimer = new QTimer(this);
     requestUpdateTimer->setSingleShot(true);
-    requestUpdateTimer->setInterval(250);
+    requestUpdateTimer->setInterval(500);
     connect(requestUpdateTimer, &QTimer::timeout,
             this, &TFavList::onRequestUpdateTimeout);
 
@@ -55,6 +57,20 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
     setPlaylistFilename(Settings::TPaths::favoritesFilename());
 }
 
+void TFavList::createToolbar() {
+
+    QStringList actions;
+    actions << "fav_open"
+            << "fav_saveas"
+            << "separator"
+            << "fav_add_menu"
+            << "fav_remove_menu"
+            << "separator"
+            << "fav_refresh"
+            << "fav_browse_dir";
+    toolbar->setDefaultActions(actions);
+}
+
 void TFavList::enableActions() {
 
     if (disableEnableActions) {
@@ -64,6 +80,7 @@ void TFavList::enableActions() {
 
     WZTRACE("State " + player->stateToString());
     TPList::enableActions();
+
     findPlayingAct->setEnabled(!player->mdat.filename.isEmpty());
 
     disableEnableActions--;
@@ -71,7 +88,7 @@ void TFavList::enableActions() {
 
 // Currently not used
 void TFavList::startPlay() {
-    WZDEBUG("");
+    WZTRACE("");
     playlist->startPlay();
 }
 
@@ -86,6 +103,22 @@ void TFavList::playItem(TPlaylistItem* item, bool keepPaused) {
     }
 }
 
+void TFavList::openPlaylistDialog() {
+
+    if (playlistWidget->hasItems()) {
+        int res = QMessageBox::information(this, tr("Import favorites"),
+            tr("This will import a new favorites playlist, overwriting"
+               " your current favorites.\n"
+               "Are you sure you want to proceed?"),
+            QMessageBox::Yes,
+            QMessageBox::No | QMessageBox::Default | QMessageBox::Escape);
+        if (res != QMessageBox::Yes) {
+            return;
+        }
+    }
+    TPList::openPlaylistDialog();
+}
+
 bool TFavList::saveAs() {
 
     bool result = TPList::saveAs();
@@ -95,7 +128,7 @@ bool TFavList::saveAs() {
 }
 
 void TFavList::refresh() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (maybeSave()) {
         clear(false);
@@ -143,6 +176,7 @@ QAction* TFavList::findAction(const QString& filename) const {
 }
 
 void TFavList::onPlaylistPlayingItemChanged(TPlaylistItem* item) {
+
     WZTRACE(item ? item->text(TPlaylistItem::COL_NAME) : "null");
 
     if (currentFavAction) {
@@ -157,14 +191,16 @@ void TFavList::onPlaylistPlayingItemChanged(TPlaylistItem* item) {
             playingItem = action->data().value<TPlaylistItem*>();
         }
     }
-
     playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
+
+    WZTRACE(QString("Playing item %1")
+            .arg(playingItem ? "found" : "not found"));
 }
 
 void TFavList::onRequestUpdateTimeout() {
-    WZDEBUG("");
+    WZTRACE("");
 
-    if (playlistWidget->isBusy()) {
+    if (isBusy()) {
         requestUpdateTimer->start();
     } else {
         updateFavMenu();
@@ -172,24 +208,24 @@ void TFavList::onRequestUpdateTimeout() {
 }
 
 void TFavList::requestUpdate() {
-    WZDEBUG("");
+    WZTRACE("");
 
     currentFavAction = 0;
     requestUpdateTimer->start();
  }
 
 void TFavList::onAddedItems() {
-    WZDEBUG("");
+    WZTRACE("");
     requestUpdate();
 }
 
 void TFavList::onModifiedChanged() {
 
     if (playlistWidget->isModified()) {
-        WZDEBUG("Modified set");
+        WZTRACE("Modified set");
         requestUpdate();
     } else {
-        WZDEBUG("Modified cleared");
+        WZTRACE("Modified cleared");
     }
 }
 
@@ -208,7 +244,7 @@ void TFavList::markCurrentFavAction(QAction* action) {
 }
 
 void TFavList::onFavMenuTriggered(QAction* action) {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (action->data().isValid()) {
         TPlaylistItem* item = action->data().value<TPlaylistItem*>();
@@ -244,7 +280,7 @@ void TFavList::updFavMenu(QMenu* menu, TPlaylistItem* folder) {
 }
 
 void TFavList::updateFavMenu() {
-    WZDEBUG("");
+    WZTRACE("");
 
     currentFavAction = 0;
     playlistWidget->setPlayingItem(0);
@@ -259,22 +295,9 @@ void TFavList::updateFavMenu() {
     }
 
     if (playlistWidget->isModified()) {
+        setPlaylistFilename(Settings::TPaths::favoritesFilename());
         save();
     }
-}
-
-void TFavList::saveSettings() {
-
-    Settings::pref->beginGroup(objectName());
-    playlistWidget->saveSettings(Settings::pref);
-    Settings::pref->endGroup();
-}
-
-void TFavList::loadSettings() {
-
-    Settings::pref->beginGroup(objectName());
-    playlistWidget->loadSettings(Settings::pref);
-    Settings::pref->endGroup();
 }
 
 } // namespace Playlist

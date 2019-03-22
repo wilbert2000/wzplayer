@@ -17,7 +17,6 @@
 */
 
 #include "gui/action/toolbareditor.h"
-#include "gui/action/actionlist.h"
 #include "gui/action/actionseditor.h"
 #include "gui/action/actionitem.h"
 #include "gui/action/action.h"
@@ -92,9 +91,6 @@ TToolbarEditor::TToolbarEditor(QWidget* parent, const QString& tbarName) :
     checkBoxWidth = r.width() + 12; // TODO: get 12 from style
 }
 
-TToolbarEditor::~TToolbarEditor() {
-}
-
 void TToolbarEditor::setIconSize(int size) {
     iconsize_spin->setValue(size);
 }
@@ -104,9 +100,6 @@ int TToolbarEditor::iconSize() const {
 }
 
 void TToolbarEditor::setAllActions(const QList<QAction*>& actions) {
-
-    // Make implicitly shared copy
-    TActionItem::allActions = actions;
 
     // Add actions to QListWidget all_actions_list
     for (int i = 0; i < actions.count(); i++) {
@@ -305,7 +298,7 @@ void TToolbarEditor::setActiveActions(const QStringList& actions) {
             if (actionName == "separator") {
                 action = separatorAction;
             } else {
-                action = findAction(actionName, TActionItem::allActions);
+                action = findAction(actionName);
             }
             if (action) {
                 active_actions_list->addItem(

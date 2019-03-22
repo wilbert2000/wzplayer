@@ -27,8 +27,9 @@ class TPlaylistWidget : public QTreeWidget {
 public:
     explicit TPlaylistWidget(QWidget* parent,
                              const QString& name,
-                             const QString& shortName);
-    virtual ~TPlaylistWidget();
+                             const QString& shortName,
+                             const QString& tranName);
+    virtual ~TPlaylistWidget() override;
 
     TPlaylistItem* playingItem;
     void setPlayingItem(TPlaylistItem* item,
@@ -60,6 +61,7 @@ public:
 
     TPlaylistItem* findPreviousPlayedTime(TPlaylistItem* w);
 
+    void abortFileCopier();
     void clearPlayed();
     void clr();
 
@@ -127,7 +129,12 @@ private:
     void dropSelection(TPlaylistItem* target, Qt::DropAction action);
 
     void resizeNameColumn(TPlaylistItem* item, int level);
-    bool removeFromDisk(const QString& filename, const QString& playingFile);
+    void startWordWrap();
+
+    bool removeItemFromDisk(TPlaylistItem* item);
+    void removeItem(TPlaylistItem* item,
+                    TPlaylistItem*& newCurrent,
+                    bool deleteFromDisk);
 
 private slots:
     void scrollToPlaying();

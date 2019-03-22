@@ -127,9 +127,6 @@ TDialog::TDialog(QWidget* parent)
     retranslateStrings();
 }
 
-TDialog::~TDialog() {
-}
-
 void TDialog::showSection(TSectionNumber section) {
     sections->setCurrentRow(section);
 }
@@ -195,8 +192,7 @@ void TDialog::addSection(TSection* s) {
     pages->addWidget(s);
 }
 
-void TDialog::setData(Settings::TPreferences* pref,
-                      const QList<QAction*>& allActions) {
+void TDialog::setData(Settings::TPreferences* pref) {
 
     page_player->setData(pref);
     page_demuxer->setData(pref);
@@ -205,7 +201,7 @@ void TDialog::setData(Settings::TPreferences* pref,
     page_subtitles->setData(pref);
     page_interface->setData(pref);
     page_playlist->setData(pref);
-    page_input->setData(pref, allActions);
+    page_input->setData(pref);
     page_drives->setData(pref);
     page_capture->setData(pref);
     page_performance->setData(pref);
@@ -217,8 +213,7 @@ void TDialog::setData(Settings::TPreferences* pref,
 
 }
 
-void TDialog::getData(Settings::TPreferences* pref,
-                      const QList<QAction*>& allActions) {
+void TDialog::getData(Settings::TPreferences* pref) {
 
     page_player->getData(pref);
     page_demuxer->getData(pref);
@@ -227,7 +222,7 @@ void TDialog::getData(Settings::TPreferences* pref,
     page_subtitles->getData(pref);
     page_interface->getData(pref);
     page_playlist->getData(pref);
-    page_input->getData(pref, allActions);
+    page_input->getData(pref);
     page_drives->getData(pref);
     page_capture->getData(pref);
     page_performance->getData(pref);

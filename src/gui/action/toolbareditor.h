@@ -40,7 +40,6 @@ public:
                                bool& ns, bool&fs);
 
     TToolbarEditor(QWidget* parent, const QString& tbarName);
-    virtual ~TToolbarEditor();
 
     void setAllActions(const QList<QAction*>& actions);
     void setActiveActions(const QStringList& actions);

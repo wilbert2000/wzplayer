@@ -111,9 +111,9 @@ void TMainWindowTray::updateShowMainWindowAct() {
 void TMainWindowTray::switchToTray() {
     WZTRACE("");
 
+    player->pause();
     exitFullscreen();
     showMainWindow(false);
-    playlist->stop();
 
     if (pref->balloon_count > 0) {
         tray->showMessage(TConfig::PROGRAM_NAME,

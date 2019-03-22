@@ -56,12 +56,9 @@
 #include "gui/action/menu/menubrowse.h"
 #include "gui/action/menu/menuview.h"
 #include "gui/action/menu/menuhelp.h"
-
 #include "player/player.h"
 #include "player/process/exitmsg.h"
-
 #include "settings/paths.h"
-
 #include "app.h"
 #include "images.h"
 #include "extensions.h"
@@ -70,6 +67,7 @@
 #include "clhelp.h"
 #include "version.h"
 #include "desktop.h"
+#include "iconprovider.h"
 
 #include <QMessageBox>
 #include <QDesktopWidget>
@@ -160,14 +158,15 @@ TMainWindow::~TMainWindow() {
 void TMainWindow::createPanel() {
 
     panel = new QWidget(this);
+    panel->setObjectName("panel");
     panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     panel->setMinimumSize(QSize(1, 1));
-    panel->setFocusPolicy(Qt::StrongFocus);
     setCentralWidget(panel);
 }
 
 void TMainWindow::createStatusBar() {
 
+    statusBar()->setObjectName("statusbar");
     setMessageHandler(statusBar());
     msgSlot = new TMsgSlot(this);
 
@@ -363,11 +362,8 @@ void TMainWindow::createActions() {
     using namespace Action;
 
     // File menu
-    // TODO: Favorites
-
     // Clear recents
-    clearRecentsAct = new TAction(this, "recents_clear", tr("Clear recents"),
-                                  "delete");
+    clearRecentsAct = new TAction(this, "recents_clear", tr("Clear recents"));
     connect(clearRecentsAct, &TAction::triggered,
             this, &TMainWindow::clearRecentsListDialog);
 
@@ -435,6 +431,10 @@ void TMainWindow::createActions() {
     connect(a, &TAction::triggered, this, &TMainWindow::closeWindow);
 
     // Play menu
+    // Stop
+    stopAct = new TAction(this, "stop", tr("Stop"), "", Qt::Key_MediaStop);
+    connect(stopAct, &TAction::triggered, this, &TMainWindow::stop);
+
     // Seek forward
     seekFrameAct = new TAction(this, "seek_forward_frame", tr("Frame step"), "",
                                Qt::ALT | Qt::Key_Right);
@@ -1099,14 +1099,6 @@ void TMainWindow::createActions() {
     connect(viewMenuBarAct, &TAction::toggled,
             menuBar(), &QMenuBar::setVisible);
 
-    // Toolbars
-    editToolbarAct = new TAction(this, "edit_toolbar1",
-                                 tr("Edit main toolbar..."));
-    editToolbar2Act = new TAction(this, "edit_toolbar2",
-                                  tr("Edit extra toolbar..."));
-    // Control bar
-    editControlBarAct = new TAction(this, "edit_controlbar",
-                                    tr("Edit control bar..."));
     // Status bar
     viewStatusBarAct = new TAction(this, "toggle_statusbar", tr("Status bar"),
                                    "", Qt::SHIFT | Qt::Key_F7);
@@ -1210,7 +1202,7 @@ void TMainWindow::createMenus() {
 Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
 
     Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, this, name,
-        tr("Toolbars menu"), "toolbars");
+        tr("Toolbars"), "toolbars");
 
     menu->addAction(viewMenuBarAct);
     menu->addAction(toolbar->toggleViewAction());
@@ -1219,9 +1211,9 @@ Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
     menu->addAction(viewStatusBarAct);
 
     menu->addSeparator();
-    menu->addAction(editToolbarAct);
-    menu->addAction(editToolbar2Act);
-    menu->addAction(editControlBarAct);
+    menu->addAction(findAction("edit_toolbar1"));
+    menu->addAction(findAction("edit_toolbar2"));
+    menu->addAction(findAction("edit_controlbar"));
 
     menu->addSeparator();
     menu->addMenu(statusbar_menu);
@@ -1246,10 +1238,8 @@ void TMainWindow::createToolbars() {
     menuBar()->setObjectName("menubar");
 
     // Control bar
-    controlbar = new Action::TEditableToolbar(this);
-    controlbar->setObjectName("controlbar");
-    controlbar->setWindowTitle("Control bar");
-    controlbar->toggleViewAction()->setIcon(Images::icon("controlbar"));
+    controlbar = new Action::TEditableToolbar(this, "controlbar",
+                                              tr("Control bar"));
     QStringList actions;
     actions << "play_or_pause"
             << "stop"
@@ -1268,25 +1258,19 @@ void TMainWindow::createToolbars() {
             << "osd_menu|0|1"
             << "view_properties|0|1"
             << "view_playlist|0|1"
+            << "view_favorites|0|1"
             << "separator|0|1"
             << "fullscreen";
     controlbar->setDefaultActions(actions);
     addToolBar(Qt::BottomToolBarArea, controlbar);
-    connect(editControlBarAct, &Action::TAction::triggered,
-            controlbar, &Action::TEditableToolbar::edit);
 
     QAction* action = controlbar->toggleViewAction();
-    action->setObjectName("toggle_controlbar");
     action->setShortcut(Qt::SHIFT | Qt::Key_F6);
     addAction(action);
 
     // Main toolbar
-    toolbar = new Action::TEditableToolbar(this);
-    toolbar->setObjectName("toolbar1");
-    toolbar->setWindowTitle(tr("Main toolbar"));
+    toolbar = new Action::TEditableToolbar(this, "toolbar1", tr("Main toolbar"));
     action = toolbar->toggleViewAction();
-    action->setObjectName("toggle_toolbar1");
-    action->setIcon(Images::icon("main_toolbar"));
     action->setShortcut(Qt::SHIFT | Qt::Key_F3);
     addAction(action);
 
@@ -1294,16 +1278,11 @@ void TMainWindow::createToolbars() {
     actions << "open_url" << "favorites_menu";
     toolbar->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar);
-    connect(editToolbarAct, &Action::TAction::triggered,
-            toolbar, &Action::TEditableToolbar::edit);
 
     // Extra toolbar
-    toolbar2 = new Action::TEditableToolbar(this);
-    toolbar2->setObjectName("toolbar2");
-    toolbar2->setWindowTitle(tr("Extra toolbar"));
+    toolbar2 = new Action::TEditableToolbar(this, "toolbar2",
+                                            tr("Extra toolbar"));
     action = toolbar2->toggleViewAction();
-    action->setObjectName("toggle_toolbar2");
-    action->setIcon(Images::icon("extra_toolbar"));
     action->setShortcut(Qt::SHIFT | Qt::Key_F4);
     addAction(action);
 
@@ -1313,14 +1292,11 @@ void TMainWindow::createToolbars() {
             << "view_log" << "separator" << "view_settings";
     toolbar2->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar2);
-    connect(editToolbar2Act, &Action::TAction::triggered,
-            toolbar2, &Action::TEditableToolbar::edit);
 
     // Statusbar
     statusBar()->setObjectName("statusbar");
 
-    // Add toolbars to auto_hide_timer
-    // Docks already added by createActions()
+    // Add toolbars to auto_hide_timer. Docks already added by createActions().
     autoHideTimer->add(controlbar->toggleViewAction(), controlbar);
     autoHideTimer->add(toolbar->toggleViewAction(), toolbar);
     autoHideTimer->add(toolbar2->toggleViewAction(), toolbar2);
@@ -1372,7 +1348,7 @@ void TMainWindow::showSettingsDialog() {
         createSettingsDialog();
     }
 
-    prefDialog->setData(pref, allActions);
+    prefDialog->setData(pref);
     prefDialog->show();
 }
 
@@ -1400,7 +1376,7 @@ void TMainWindow::applyNewSettings() {
     WZTRACE("");
 
     // Get pref from dialog
-    prefDialog->getData(pref, allActions);
+    prefDialog->getData(pref);
 
     // Save playlist settings
     playlist->saveSettings();
@@ -1670,15 +1646,15 @@ QAction* TMainWindow::findAction(const QString &name) {
 }
 
 void TMainWindow::loadSettings() {
-    WZDEBUG("");
+    WZTRACE("");
 
     // Disable actions
     enableActions();
 
     // Get all actions with a name
-    allActions = findNamedActions();
+    Action::TAction::allActions = findNamedActions();
     // Load modified actions from settings
-    Action::TActionsEditor::loadSettings(pref, allActions);
+    Action::TActionsEditor::loadSettings(pref);
 
     pref->beginGroup(settingsGroupName());
 
@@ -1709,23 +1685,9 @@ void TMainWindow::loadSettings() {
         center_window_pos = pos();
     }
 
-    pref->beginGroup("actions");
-    toolbar->setActionsFromStringList(pref->value("toolbar1",
-        toolbar->getDefaultActions()).toStringList(), allActions);
-    toolbar2->setActionsFromStringList(pref->value("toolbar2",
-        toolbar2->getDefaultActions()).toStringList(), allActions);
-    controlbar->setActionsFromStringList(pref->value("controlbar",
-        controlbar->getDefaultActions()).toStringList(), allActions);
-    pref->endGroup();
-
-    pref->beginGroup("toolbars_icon_size");
-    toolbar->setIconSize(pref->value("toolbar1",
-        toolbar->iconSize()).toSize());
-    toolbar2->setIconSize(pref->value("toolbar2",
-        toolbar2->iconSize()).toSize());
-    controlbar->setIconSize(pref->value("controlbar",
-        controlbar->iconSize()).toSize());
-    pref->endGroup();
+    toolbar->loadSettings();
+    toolbar2->loadSettings();
+    controlbar->loadSettings();
 
     menubar_visible = pref->value("menubar_visible", menubar_visible).toBool();
     viewMenuBarAct->setChecked(menubar_visible);
@@ -1771,17 +1733,9 @@ void TMainWindow::saveSettings() {
     }
 
     // Toolbars
-    pref->beginGroup("actions");
-    pref->setValue("toolbar1", toolbar->actionsToStringList());
-    pref->setValue("toolbar2", toolbar2->actionsToStringList());
-    pref->setValue("controlbar", controlbar->actionsToStringList());
-    pref->endGroup();
-
-    pref->beginGroup("toolbars_icon_size");
-    pref->setValue("toolbar1", toolbar->iconSize());
-    pref->setValue("toolbar2", toolbar2->iconSize());
-    pref->setValue("controlbar", controlbar->iconSize());
-    pref->endGroup();
+    toolbar->saveSettings();
+    toolbar2->saveSettings();
+    controlbar->saveSettings();
 
     pref->setValue("menubar_visible", !menuBar()->isHidden());
     pref->setValue("fullscreen_menubar_visible", fullscreen_menubar_visible);
@@ -1818,7 +1772,7 @@ void TMainWindow::save() {
     if (pref->clean_config) {
         pref->clean_config = false;
         pref->remove("");
-        Action::TActionsEditor::saveSettings(pref, allActions);
+        Action::TActionsEditor::saveSettings(pref);
     }
     saveSettings();
     pref->save();
@@ -1867,7 +1821,6 @@ void TMainWindow::displayFrames(bool b) {
     pref->show_frames = b;
     onDurationChanged(player->mdat.duration);
 }
-
 
 void TMainWindow::setFloatingToolbarsVisible(bool visible) {
 
@@ -2475,6 +2428,13 @@ void TMainWindow::enableActions() {
 
 
     // Play menu
+    stopAct->setEnabled(player->state() == Player::STATE_PLAYING
+                        || player->state() == Player::STATE_PAUSED
+                        || player->state() == Player::STATE_RESTARTING
+                        || player->state() == Player::STATE_LOADING
+                        || playlist->isBusy()
+                        || favList->isBusy());
+
     // Seek forward
     seekFrameAct->setEnabled(enable);
     seek1Act->setEnabled(enable);
@@ -3093,6 +3053,14 @@ void TMainWindow::dropEvent(QDropEvent *e) {
         return;
     }
     QMainWindow::dropEvent(e);
+}
+
+void TMainWindow::stop() {
+    WZTRACE("");
+
+    // Playlist stops player
+    playlist->stop();
+    favList->stop();
 }
 
 void TMainWindow::setSizeFactor(double factor) {
