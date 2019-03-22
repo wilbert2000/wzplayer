@@ -139,7 +139,7 @@ TAddFilesThread::~TAddFilesThread() {
 void TAddFilesThread::run() {
 
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
-    WZDEBUG("Running in '" + playlistPath + "'");
+    WZDEBUG(QString("Running in directory '%1'").arg(playlistPath));
 
     root = new TPlaylistItem(0, playlistPath, "", 0);
     root->setFlags(ROOT_FLAGS);
@@ -154,8 +154,15 @@ void TAddFilesThread::run() {
         root->setFilename("");
     }
 
-    WZDEBUG(QString("Exiting. Stopped %1, aborted %2")
-            .arg(stopRequested).arg(abortRequested));
+    WZINFO(QString("Run done. Stopped %1, aborted %2")
+           .arg(stopRequested).arg(abortRequested));
+    if (abortRequested) {
+        emit displayMessage(tr("Scan aborted"), TConfig::MESSAGE_DURATION);
+    } else if (stopRequested) {
+        emit displayMessage(tr("Scan stopped"), TConfig::MESSAGE_DURATION);
+    } else {
+        emit displayMessage(tr("Scan done"), TConfig::MESSAGE_DURATION);
+    }
 }
 
 bool TAddFilesThread::nameBlackListed(const QString& name) {
