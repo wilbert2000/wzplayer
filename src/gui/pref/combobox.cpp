@@ -23,12 +23,7 @@
 
 namespace Gui { namespace Pref {
 
-TComboBox::TComboBox(QWidget* parent) : QComboBox(parent)
-{
-}
-
-TComboBox::~TComboBox() 
-{
+TComboBox::TComboBox(QWidget* parent) : QComboBox(parent) {
 }
 
 void TComboBox::setCurrentText(const QString & text) {
@@ -48,10 +43,6 @@ void TComboBox::insertStringList(const QStringList & list, int index) {
 
 
 TFontComboBox::TFontComboBox(QWidget* parent) : QFontComboBox(parent)
-{
-}
-
-TFontComboBox::~TFontComboBox()
 {
 }
 

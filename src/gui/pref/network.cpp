@@ -35,9 +35,6 @@ TNetwork::TNetwork(QWidget* parent, Qt::WindowFlags f)
     retranslateStrings();
 }
 
-TNetwork::~TNetwork() {
-}
-
 QString TNetwork::sectionName() {
     return tr("Network");
 }

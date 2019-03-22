@@ -42,7 +42,6 @@ class TVideoWindow : public QWidget {
 
 public:
     explicit TVideoWindow(QWidget* parent);
-    virtual ~TVideoWindow();
 
     bool normal_background;
 
@@ -61,7 +60,6 @@ class TPlayerWindow : public QWidget {
 
 public:
     explicit TPlayerWindow(QWidget* parent);
-    virtual ~TPlayerWindow();
 
     TVideoWindow* videoWindow() const { return video_window; }
 

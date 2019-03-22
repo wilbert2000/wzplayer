@@ -57,9 +57,6 @@ QString TTitleData::getDisplayName(bool add_duration) const {
 TTitleTracks::TTitleTracks() : selectedVTS(-1), vtsCount(0) {
 }
 
-TTitleTracks::~TTitleTracks() {
-}
-
 void TTitleTracks::addName(int ID, const QString &name) {
     TTitleData& title = (*this)[ID];
     title.setID(ID);

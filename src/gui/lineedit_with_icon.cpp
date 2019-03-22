@@ -33,9 +33,6 @@ TLineEditWithIcon::TLineEditWithIcon(QWidget* parent) : QLineEdit(parent) {
     setupButton();
 }
 
-TLineEditWithIcon::~TLineEditWithIcon() {
-}
-
 void TLineEditWithIcon::setupButton() {
 }
 

@@ -28,7 +28,6 @@ class TTVSettings : public TFileSettingsBase {
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     TTVSettings();
-    virtual ~TTVSettings();
 
     virtual bool existSettingsFor(const QString& filename);
     virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset);

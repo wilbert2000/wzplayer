@@ -9,7 +9,6 @@ namespace Settings {
 class TLRUList : public QStringList {
 public:
     TLRUList();
-    virtual ~TLRUList();
 
     int getMaxItems() const { return maxItems; }
     void setMaxItems(int aMaxItems);

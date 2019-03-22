@@ -80,9 +80,6 @@ TVideo::TVideo(QWidget* parent, const Player::Info::InfoList& vol) :
     retranslateStrings();
 }
 
-TVideo::~TVideo() {
-}
-
 QString TVideo::sectionName() {
     return tr("Video");
 }

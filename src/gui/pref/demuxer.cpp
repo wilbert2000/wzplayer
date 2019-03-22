@@ -14,9 +14,6 @@ TDemuxer::TDemuxer(QWidget* parent) :
     retranslateStrings();
 }
 
-TDemuxer::~TDemuxer() {
-}
-
 void TDemuxer::retranslateStrings() {
 
     retranslateUi(this);

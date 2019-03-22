@@ -16,7 +16,6 @@ class TDemuxer : public TSection, public Ui::TDemuxer {
 
 public:
     TDemuxer(QWidget* parent);
-    virtual ~TDemuxer();
 
     // Return the name of the section
     virtual QString sectionName();

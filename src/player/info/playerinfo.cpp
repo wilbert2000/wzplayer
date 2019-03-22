@@ -57,9 +57,6 @@ TPlayerInfo::TPlayerInfo()
     , bin_size(0) {
 }
 
-TPlayerInfo::~TPlayerInfo() {
-}
-
 void TPlayerInfo::getInfo() {
     getInfo(Settings::pref->player_bin);
 }

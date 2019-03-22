@@ -38,9 +38,6 @@ TProcess::TProcess(QObject* parent) :
     line_time.start();
 }
 
-TProcess::~TProcess() {
-}
-
 void TProcess::clearArguments() {
 
     program = "";

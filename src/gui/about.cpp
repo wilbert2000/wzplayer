@@ -111,9 +111,6 @@ TAbout::TAbout(QWidget* parent)
     adjustSize();
 }
 
-TAbout::~TAbout() {
-}
-
 QString TAbout::getTranslators() const {
     return QString(
          tr("Many people contributed with translations.") +" "+

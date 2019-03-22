@@ -51,10 +51,6 @@ TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
     retranslateStrings();
 }
 
-TDrives::~TDrives()
-{
-}
-
 QString TDrives::sectionName() {
     return tr("Drives");
 }

@@ -36,7 +36,6 @@ class TCapture : public TSection, public Ui::TCapture {
 
 public:
     TCapture(QWidget* parent);
-    virtual ~TCapture();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

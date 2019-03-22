@@ -23,17 +23,11 @@
 namespace Gui {
 
 TMultilineInputDialog::TMultilineInputDialog(QWidget* parent) :
-    QDialog(parent,TConfig::DIALOG_FLAGS) {
+    QDialog(parent, TConfig::DIALOG_FLAGS) {
     setupUi(this);
 }
 
-TMultilineInputDialog::~TMultilineInputDialog() {
-}
-
-void TMultilineInputDialog::setLines(const QStringList&) {
-}
-
-QStringList TMultilineInputDialog::lines() {
+QStringList TMultilineInputDialog::lines() const {
     return editor->toPlainText().split("\n");
 }
 

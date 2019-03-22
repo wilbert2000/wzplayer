@@ -37,9 +37,6 @@ TCapture::TCapture(QWidget* parent)
     retranslateStrings();
 }
 
-TCapture::~TCapture() {
-}
-
 QString TCapture::sectionName() {
     return tr("Capture");
 }

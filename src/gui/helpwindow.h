@@ -32,7 +32,6 @@ class THelpWindow : public QWidget, public Ui::THelpWindow {
 
 public:
     THelpWindow(QWidget* parent, const QString& name);
-    virtual ~THelpWindow();
 
     void loadSettings(QSettings* pref);
     void saveSettings(QSettings* pref);

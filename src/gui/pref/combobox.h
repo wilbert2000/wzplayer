@@ -31,7 +31,6 @@ namespace Pref {
 class TComboBox : public QComboBox {
 public:
     TComboBox(QWidget* parent = 0);
-    virtual ~TComboBox();
 
     void setCurrentText (const QString& text);
     void insertStringList (const QStringList& list, int index = -1);
@@ -40,7 +39,6 @@ public:
 class TFontComboBox : public QFontComboBox {
 public:
     TFontComboBox(QWidget* parent = 0);
-    ~TFontComboBox();
 
     void setCurrentText (const QString& text);
     void setFontsFromDir(const QString& fontdir);

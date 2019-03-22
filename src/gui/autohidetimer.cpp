@@ -12,9 +12,6 @@ using namespace Settings;
 
 namespace Gui {
 
-TAutoHideItem::~TAutoHideItem() {
-}
-
 
 TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
     : QTimer(parent),
@@ -32,9 +29,6 @@ TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
     connect(this, &TAutoHideTimer::timeout, this, &TAutoHideTimer::onTimeOut);
 
     playerWindow->installEventFilter(this);
-}
-
-TAutoHideTimer::~TAutoHideTimer() {
 }
 
 void TAutoHideTimer::start() {

@@ -11,9 +11,6 @@ TLogWindowAppender::TLogWindowAppender(Log4Qt::Layout* aLayout) :
     layout(aLayout) {
 }
 
-TLogWindowAppender::~TLogWindowAppender() {
-}
-
 void TLogWindowAppender::removeNewLine(QString& s) {
     s.chop(1);
 }

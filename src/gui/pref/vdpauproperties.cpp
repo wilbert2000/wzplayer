@@ -30,9 +30,6 @@ TVDPAUProperties::TVDPAUProperties(QWidget* parent)
     layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-TVDPAUProperties::~TVDPAUProperties() {
-}
-
 void TVDPAUProperties::setffh264vdpau(bool b) {
     ffh264vdpau_check->setChecked(b);
 }

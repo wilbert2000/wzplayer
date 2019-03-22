@@ -46,7 +46,6 @@ public:
     Player::Info::InfoList vo_list;
 
     TVideo(QWidget* parent, const Player::Info::InfoList& vol);
-    virtual ~TVideo();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

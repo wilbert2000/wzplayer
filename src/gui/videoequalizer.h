@@ -32,7 +32,6 @@ class TVideoEqualizer : public QWidget, public Ui::TVideoEqualizer {
 
 public:
     TVideoEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
-    virtual ~TVideoEqualizer();
 
 public slots:
     void setContrast(int v) { contrast_slider->setValue(v); }

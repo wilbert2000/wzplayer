@@ -30,9 +30,6 @@ TPlayerInfoMPV::TPlayerInfoMPV(const QString& path)
     bin(path) {
 }
 
-TPlayerInfoMPV::~TPlayerInfoMPV() {
-}
-
 void TPlayerInfoMPV::getInfo() {
 
     vo_list.clear();

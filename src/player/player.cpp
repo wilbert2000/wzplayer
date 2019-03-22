@@ -150,7 +150,6 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
 }
 
 TPlayer::~TPlayer() {
-
     player = 0;
 }
 

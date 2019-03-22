@@ -10,9 +10,6 @@ TLRUList::TLRUList() :
     maxItems(10) {
 }
 
-TLRUList::~TLRUList() {
-}
-
 void TLRUList::setMaxItems(int aMaxItems) {
 
     maxItems = aMaxItems;

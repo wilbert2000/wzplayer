@@ -31,7 +31,6 @@ public:
     TDiscName(const QString& aprotocol, int atitle, const QString& adevice);
     TDiscName(const QString& adevice, bool use_dvd_nav);
     TDiscName(const QString& url);
-    virtual ~TDiscName();
 
     static TDisc protocolToTDisc(QString protocol);
 

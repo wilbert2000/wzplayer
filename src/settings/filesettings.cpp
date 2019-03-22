@@ -33,9 +33,6 @@ TFileSettings::TFileSettings() :
                       + "_files.ini") {
 }
 
-TFileSettings::~TFileSettings() {
-}
-
 QString TFileSettings::filenameToGroupname(const QString& filename) {
 
     QString s = filename;

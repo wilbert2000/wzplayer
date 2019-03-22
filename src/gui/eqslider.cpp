@@ -40,9 +40,6 @@ TEqSlider::TEqSlider(QWidget* parent, Qt::WindowFlags f)
             this, &TEqSlider::valueChanged);
 }
 
-TEqSlider::~TEqSlider() {
-}
-
 void TEqSlider::setIcon(QPixmap i) {
     _icon->setPixmap(i);
 }

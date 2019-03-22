@@ -58,9 +58,6 @@ TAudio::TAudio(QWidget* parent, const Player::Info::InfoList& aol)
     retranslateStrings();
 }
 
-TAudio::~TAudio() {
-}
-
 QString TAudio::sectionName() {
     return tr("Audio");
 }

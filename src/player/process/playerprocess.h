@@ -45,7 +45,6 @@ public:
     static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
 
     explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
-    virtual ~TPlayerProcess() {}
 
     bool isRunning() const { return state() == QProcess::Running; }
     bool isReady() const {

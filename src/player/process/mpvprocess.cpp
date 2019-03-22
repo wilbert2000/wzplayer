@@ -40,9 +40,6 @@ TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
     TPlayerProcess(parent, mdata) {
 }
 
-TMPVProcess::~TMPVProcess() {
-}
-
 bool TMPVProcess::startPlayer() {
 
     received_buffering = false;

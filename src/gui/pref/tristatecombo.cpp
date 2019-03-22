@@ -26,9 +26,6 @@ TTristateCombo::TTristateCombo(QWidget* parent) : QComboBox(parent)
     retranslateStrings();
 }
 
-TTristateCombo::~TTristateCombo() {
-}
-
 void TTristateCombo::retranslateStrings() {
     int i = currentIndex();
 

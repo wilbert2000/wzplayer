@@ -46,9 +46,6 @@ THelpWindow::THelpWindow(QWidget* parent, const QString& name)
     setWindowIcon(Images::icon("logo"));
 }
 
-THelpWindow::~THelpWindow() {
-}
-
 void THelpWindow::loadSettings(QSettings* pref) {
 
     pref->beginGroup(objectName());

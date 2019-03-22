@@ -52,9 +52,6 @@ TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata) :
     mute_option_set(false) {
 }
 
-TMPlayerProcess::~TMPlayerProcess() {
-}
-
 void TMPlayerProcess::clearSubSources() {
 
     sub_source = -1;

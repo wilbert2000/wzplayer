@@ -45,7 +45,6 @@ public:
                   Party = 13, Reggae = 14, Ska = 15, Soft = 16, SoftRock = 17, Techno = 18 };
 
     TAudioEqualizer(QWidget* parent = 0, Qt::WindowFlags f = Qt::Dialog);
-    virtual ~TAudioEqualizer();
 
     TEqSlider* eq[10];
 

@@ -31,9 +31,6 @@ TVerticalText::TVerticalText(QWidget* parent,  Qt::WindowFlags f) :
     setMinimumSize(20,10); // neccesary for smooth integration into layouts (we only care for the widths).
 }
 
-TVerticalText::~TVerticalText() {
-}
-
 void TVerticalText::paintEvent (QPaintEvent* /*event*/) {
 
     QPainter paint(this);

@@ -47,9 +47,6 @@ TSubtitles::TSubtitles(QWidget* parent, Qt::WindowFlags f) :
     retranslateStrings();
 }
 
-TSubtitles::~TSubtitles() {
-}
-
 QString TSubtitles::sectionName() {
     return tr("Subtitles");
 }

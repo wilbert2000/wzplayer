@@ -17,7 +17,6 @@ public:
 
     TAutoHideItem() : action(0), widget(0) {}
     TAutoHideItem(QAction* a, QWidget* w) : action(a), widget(w) {}
-    virtual ~TAutoHideItem();
 };
 
 class TAutoHideTimer : public QTimer {
@@ -26,7 +25,6 @@ class TAutoHideTimer : public QTimer {
 
 public:
     explicit TAutoHideTimer(QObject *parent, QWidget* playerwin);
-    virtual ~TAutoHideTimer();
 
     void add(QAction* action, QWidget* w);
 

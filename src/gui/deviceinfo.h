@@ -30,7 +30,6 @@ class TDeviceData {
 public:
     TDeviceData() {}
     TDeviceData(QVariant ID, QString desc) { _id = ID; _desc = desc; }
-    virtual ~TDeviceData() {}
 
     void setID(QVariant ID) { _id = ID; }
     void setDesc(QString desc) { _desc = desc; }

@@ -67,9 +67,6 @@ TStereo3dDialog::TStereo3dDialog(QWidget* parent)
     adjustSize();
 }
 
-TStereo3dDialog::~TStereo3dDialog() {
-}
-
 void TStereo3dDialog::setInputFormat(const QString & in) {
     int i = in_combo->findData(in);
     if (i == -1) i = 0;

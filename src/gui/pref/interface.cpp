@@ -65,9 +65,6 @@ TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
     retranslateStrings();
 }
 
-TInterface::~TInterface() {
-}
-
 QString TInterface::sectionName() {
     return tr("Interface");
 }

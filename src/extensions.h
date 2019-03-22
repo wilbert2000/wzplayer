@@ -37,7 +37,6 @@ public:
 class TExtensions {
 public:
     TExtensions();
-    virtual ~TExtensions();
 
     TExtensionList video() const { return _video; }
     TExtensionList audio() const { return _audio; }

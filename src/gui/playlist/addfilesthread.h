@@ -31,7 +31,7 @@ public:
                     bool playlists,
                     bool images,
                     bool favList);
-    virtual ~TAddFilesThread();
+    virtual ~TAddFilesThread() override;
 
     virtual void run();
     void abort() { abortRequested = true; stopRequested = true; }

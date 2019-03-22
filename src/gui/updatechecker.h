@@ -36,7 +36,6 @@ class TUpdateChecker : public QObject {
 
 public:
     TUpdateChecker(QWidget* parent, Settings::TUpdateCheckerData* data);
-    virtual ~TUpdateChecker();
 
     void check();
 

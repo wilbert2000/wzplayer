@@ -18,10 +18,8 @@ extern void msgClear();
 
 class TMsgSlot : public QObject {
     Q_OBJECT
-
 public:
     explicit TMsgSlot(QObject* parent);
-    virtual ~TMsgSlot();
 
 public slots:
     void msg(const QString& msg, int timeout = TConfig::MESSAGE_DURATION);

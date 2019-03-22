@@ -56,9 +56,6 @@ TPreferences::TPreferences() :
     reset();
 }
 
-TPreferences::~TPreferences() {
-}
-
 
 // Default names player executables
 #if defined(Q_OS_WIN)

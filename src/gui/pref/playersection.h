@@ -32,7 +32,6 @@ class TPlayerSection : public TSection, public Ui::TPlayerSection {
 
 public:
     TPlayerSection(QWidget* parent);
-    virtual ~TPlayerSection();
 
     // Return the name of the section
     virtual QString sectionName();

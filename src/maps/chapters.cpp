@@ -48,9 +48,6 @@ QString TChapterData::getDisplayName() const {
 TChapters::TChapters() {
 }
 
-TChapters::~TChapters() {
-}
-
 void TChapters::addName(int id, const QString &name) {
     TChapterData& chapter = (*this)[id];
     chapter.setID(id);

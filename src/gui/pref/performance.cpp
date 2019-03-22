@@ -33,9 +33,6 @@ TPerformance::TPerformance(QWidget* parent, Qt::WindowFlags f)
     retranslateStrings();
 }
 
-TPerformance::~TPerformance() {
-}
-
 QString TPerformance::sectionName() {
     return tr("Performance");
 }

@@ -89,9 +89,6 @@ TAudioEqualizer::TAudioEqualizer(QWidget* parent, Qt::WindowFlags f)
     //setFixedSize(sizeHint());
 }
 
-TAudioEqualizer::~TAudioEqualizer() {
-}
-
 void TAudioEqualizer::createPresets() {
     preset_list.clear();
     TAudioEqualizerList preset;

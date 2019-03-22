@@ -29,7 +29,6 @@ class TTimeDialog : public QDialog, public Ui::TTimeDialog
 
 public:
     TTimeDialog(QWidget* parent);
-    virtual ~TTimeDialog();
 
     int time();
     int maximumTime();

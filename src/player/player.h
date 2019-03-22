@@ -48,7 +48,7 @@ class TPlayer : public QObject {
 
 public:
     TPlayer(QWidget* parent, Gui::TPlayerWindow *pw);
-    virtual ~TPlayer();
+    virtual ~TPlayer() override;
 
     TMediaData mdat;
     Settings::TMediaSettings mset;

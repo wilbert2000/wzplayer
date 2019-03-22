@@ -83,9 +83,6 @@ TFileSettingsHash::TFileSettingsHash(const QString& filename) :
     TFileSettingsBase(TFileSettingsHash::iniFilenameFor(filename)) {
 }
 
-TFileSettingsHash::~TFileSettingsHash() {
-}
-
 bool TFileSettingsHash::existSettingsFor(const QString& filename) {
     WZDEBUG("'" + filename + "'");
 

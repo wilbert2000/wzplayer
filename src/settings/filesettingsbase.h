@@ -28,7 +28,6 @@ namespace Settings {
 class TFileSettingsBase : public QSettings {
 public:
     TFileSettingsBase(const QString& filename);
-    virtual ~TFileSettingsBase();
 
     virtual bool existSettingsFor(const QString& filename) = 0;
     virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset) = 0;

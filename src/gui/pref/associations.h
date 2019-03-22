@@ -45,7 +45,6 @@ class TAssociations : public TSection, public Ui::TAssociations {
 
 public:
     TAssociations(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TAssociations();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

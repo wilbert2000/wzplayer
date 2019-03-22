@@ -28,11 +28,7 @@ namespace Gui {
 namespace Action {
 
 TWidgetAction::TWidgetAction(QWidget* parent)
-    : QWidgetAction(parent)
-    , custom_style(0) {
-}
-
-TWidgetAction::~TWidgetAction() {
+    : QWidgetAction(parent) {
 }
 
 void TWidgetAction::enable(bool e) {
@@ -46,8 +42,8 @@ void TWidgetAction::disable() {
 void TWidgetAction::propagate_enabled(bool b) {
 
     QList<QWidget*> l = createdWidgets();
-    for (int n = 0; n < l.count(); n++) {
-        l[n]->setEnabled(b);;
+    for (int i = 0; i < l.count(); i++) {
+        l.at(i)->setEnabled(b);;
     }
     setEnabled(b);
 }
@@ -58,9 +54,6 @@ TTimeSliderAction::TTimeSliderAction(QWidget* parent) :
     pos(0),
     max_pos(1000),
     duration(0) {
-}
-
-TTimeSliderAction::~TTimeSliderAction() {
 }
 
 void TTimeSliderAction::setPos() {
@@ -133,11 +126,6 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
         Settings::pref->time_slider_drag_delay);
     slider->setEnabled(isEnabled());
 
-    if (custom_style)
-        slider->setStyle(custom_style);
-    if (!custom_stylesheet.isEmpty())
-        slider->setStyleSheet(custom_stylesheet);
-
     connect(slider, &TTimeSlider::posChanged,
             this, &TTimeSliderAction::onPosChanged);
     connect(slider, &TTimeSlider::draggingPosChanged,
@@ -158,9 +146,6 @@ TVolumeSliderAction::TVolumeSliderAction(QWidget* parent, int vol)
     : TWidgetAction(parent)
     , volume(vol)
     , tick_position(QSlider::TicksBelow) {
-}
-
-TVolumeSliderAction::~TVolumeSliderAction() {
 }
 
 void TVolumeSliderAction::setValue(int v) {
@@ -202,15 +187,10 @@ QWidget* TVolumeSliderAction::createWidget(QWidget* parent) {
 
     TSlider* slider = new TSlider(parent);
 
-    if (custom_style) slider->setStyle(custom_style);
-    if (!custom_stylesheet.isEmpty()) slider->setStyleSheet(custom_stylesheet);
-    if (fixed_size.isValid()) slider->setFixedSize(fixed_size);
-
     slider->setMinimum(0);
     slider->setMaximum(100);
     slider->setValue(volume);
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    slider->setFocusPolicy(Qt::NoFocus);
     slider->setTickPosition(tick_position);
     slider->setTickInterval(10);
     slider->setSingleStep(1);

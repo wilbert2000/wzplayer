@@ -56,9 +56,6 @@ TPlayerSection::TPlayerSection(QWidget* parent)
     retranslateStrings();
 }
 
-TPlayerSection::~TPlayerSection() {
-}
-
 QString TPlayerSection::sectionName() {
     return tr("Player");
 }

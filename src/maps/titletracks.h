@@ -31,7 +31,6 @@ class TTitleData : public TData {
 
 public:
     TTitleData();
-    virtual ~TTitleData() {}
 
     TChapters chapters;
 
@@ -64,7 +63,6 @@ class TTitleTracks : public TMap<TTitleData> {
 
 public:
     TTitleTracks();
-    virtual ~TTitleTracks();
 
     typedef QMapIterator<int, TTitleData> TTitleTrackIterator;
 

@@ -24,16 +24,12 @@
 
 namespace Gui {
 
-class TMultilineInputDialog : public QDialog, public Ui::TMultilineInputDialog
-{
+class TMultilineInputDialog : public QDialog, public Ui::TMultilineInputDialog {
     Q_OBJECT
-
 public:
     TMultilineInputDialog(QWidget* parent);
-    virtual ~TMultilineInputDialog();
 
-    void setLines(const QStringList&);
-    QStringList lines();
+    QStringList lines() const;
 };
 
 } // namespace Gui

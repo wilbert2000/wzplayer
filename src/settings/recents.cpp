@@ -26,9 +26,6 @@ const QString TITLE_SEP = "|title]=";
 TRecents::TRecents() {
 }
 
-TRecents::~TRecents() {
-}
-
 void TRecents::addRecent(QString url, const QString& title) {
 
     url += TITLE_SEP;

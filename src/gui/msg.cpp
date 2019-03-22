@@ -48,9 +48,6 @@ TMsgSlot::TMsgSlot(QObject *parent) :
     QObject(parent) {
 }
 
-TMsgSlot::~TMsgSlot() {
-}
-
 void TMsgSlot::msg(const QString& msg, int timeout) {
     Gui::msg(msg, timeout);
 }

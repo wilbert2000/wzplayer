@@ -36,7 +36,6 @@ class TPlaylistSection : public TSection, public Ui::TPlaylistSection {
 
 public:
     TPlaylistSection(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TPlaylistSection();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

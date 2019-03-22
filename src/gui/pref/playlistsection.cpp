@@ -33,9 +33,6 @@ TPlaylistSection::TPlaylistSection(QWidget* parent, Qt::WindowFlags f)
     retranslateStrings();
 }
 
-TPlaylistSection::~TPlaylistSection() {
-}
-
 QString TPlaylistSection::sectionName() {
     return tr("Playlist");
 }

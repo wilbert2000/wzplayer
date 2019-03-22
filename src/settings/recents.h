@@ -27,7 +27,6 @@ namespace Settings {
 class TRecents : public TLRUList {
 public:
     TRecents();
-    virtual ~TRecents();
 
     void addRecent(QString url, const QString& title);
 

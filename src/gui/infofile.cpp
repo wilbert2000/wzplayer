@@ -35,9 +35,6 @@ TInfoFile::TInfoFile() :
     debug(logger()) {
 }
 
-TInfoFile::~TInfoFile() {
-}
-
 void TInfoFile::setMetaData(const QString& filename) {
 
     QString cmd = "ffmpeg";

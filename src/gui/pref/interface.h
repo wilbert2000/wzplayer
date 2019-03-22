@@ -35,7 +35,6 @@ class TInterface : public TSection, public Ui::TInterface {
 
 public:
     TInterface(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TInterface();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

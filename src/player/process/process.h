@@ -39,7 +39,6 @@ class TProcess : public QProcess {
 
 public:
     TProcess(QObject* parent);
-    virtual ~TProcess();
 
     virtual void setExecutable(const QString& p) { program = p; }
     QString executable() { return program; }

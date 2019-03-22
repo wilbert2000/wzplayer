@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
         if (exitCode == TApp::START_APP) {
             WZTRACE("Starting application");
             app.start();
-            WZINFO("Executing application");
+            WZINFO(QString("Executing %1").arg(app.applicationName()));
             exitCode = app.exec();
         }
     } while (exitCode == TApp::START_APP);

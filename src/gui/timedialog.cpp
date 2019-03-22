@@ -29,9 +29,6 @@ TTimeDialog::TTimeDialog(QWidget* parent)
     time_edit->setDisplayFormat("H:mm:ss");
 }
 
-TTimeDialog::~TTimeDialog() {
-}
-
 void TTimeDialog::setTime(int seconds) {
     QTime t(0,0);
     time_edit->setTime(t.addSecs(seconds));

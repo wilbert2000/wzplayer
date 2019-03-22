@@ -30,7 +30,6 @@ class TLineEditWithIcon : public QLineEdit {
 
 public:
     TLineEditWithIcon(QWidget* parent = 0);
-    virtual ~TLineEditWithIcon();
 
     void setIcon(const QPixmap& pixmap);
 

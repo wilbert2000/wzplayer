@@ -57,9 +57,6 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent,
     retranslateStrings();
 }
 
-TFilePropertiesDialog::~TFilePropertiesDialog() {
-}
-
 void TFilePropertiesDialog::saveSettings() {
 
     Settings::pref->beginGroup("propertiesdialog");

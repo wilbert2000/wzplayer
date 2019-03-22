@@ -34,7 +34,6 @@ class TEqSlider : public QWidget, public Ui::TEqSlider
 
 public:
     TEqSlider(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TEqSlider();
 
     int value() const;
     const QPixmap* icon() const;

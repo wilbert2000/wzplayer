@@ -66,9 +66,6 @@ TVideoEqualizer::TVideoEqualizer(QWidget* parent, Qt::WindowFlags f)
     adjustSize();
 }
 
-TVideoEqualizer::~TVideoEqualizer() {
-}
-
 void TVideoEqualizer::reset() {
     setContrast(0);
     setBrightness(0);

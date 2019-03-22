@@ -42,7 +42,6 @@ public:
     Player::Info::InfoList ao_list;
 
     TAudio(QWidget* parent, const Player::Info::InfoList& aol);
-    virtual ~TAudio();
 
     // Return the name of the section
     virtual QString sectionName();

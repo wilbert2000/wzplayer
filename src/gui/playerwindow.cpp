@@ -50,9 +50,6 @@ TVideoWindow::TVideoWindow(QWidget* parent) :
     // setAttribute(Qt::WA_NativeWindow);
 }
 
-TVideoWindow::~TVideoWindow() {
-}
-
 void TVideoWindow::paintEvent(QPaintEvent* e) {
 
     if (normal_background || pref->isMPV()) {
@@ -108,15 +105,14 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
     TColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
     setAutoFillBackground(true);
-    setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
+    setFocusPolicy(Qt::StrongFocus);
 
     video_window = new TVideoWindow(this);
     video_window->setObjectName("video_window");
-    setColorKey();
     video_window->setMinimumSize(QSize(0, 0));
-    video_window->setFocusPolicy(Qt::NoFocus);
     video_window->setMouseTracking(true);
+    setColorKey();
 
     left_click_timer = new QTimer(this);
     left_click_timer->setSingleShot(true);
@@ -124,9 +120,6 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     connect(left_click_timer, &QTimer::timeout,
             this, &TPlayerWindow::onLeftClicked);
     setDelayLeftClick(pref->delay_left_click);
-}
-
-TPlayerWindow::~TPlayerWindow() {
 }
 
 void TPlayerWindow::setResolution(int width, int height) {

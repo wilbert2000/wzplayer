@@ -30,7 +30,6 @@ class TInputURL : public QDialog, public Ui::TInputURL {
 
 public:
     TInputURL(QWidget* parent);
-    virtual ~TInputURL();
 
     void setURL(QString url);
     QString url();

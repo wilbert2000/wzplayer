@@ -24,8 +24,5 @@ TFileSettingsBase::TFileSettingsBase(const QString& filename) :
     QSettings(filename, QSettings::IniFormat) {
 }
 
-TFileSettingsBase::~TFileSettingsBase() {
-}
-
 } // namespace Settings
 

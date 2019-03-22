@@ -38,7 +38,6 @@ class TPlayerInfoMplayer : QObject {
 
 public:
     TPlayerInfoMplayer(const QString& path);
-    virtual ~TPlayerInfoMplayer();
 
     void getInfo();
 

@@ -37,7 +37,6 @@ class TDrives : public TSection, public Ui::TDrives {
 
 public:
     TDrives(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TDrives();
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

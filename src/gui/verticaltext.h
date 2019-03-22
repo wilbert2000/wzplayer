@@ -14,7 +14,6 @@ class TVerticalText : public QWidget
 {
 public:
     TVerticalText(QWidget* parent, Qt::WindowFlags f = 0);
-    virtual ~TVerticalText();
 
     void setText(QString s) { _label = s; }
     QString text() { return _label; }

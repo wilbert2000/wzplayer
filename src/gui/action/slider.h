@@ -31,10 +31,8 @@ namespace Action {
 
 class TSlider : public QSlider {
     Q_OBJECT
-
 public:
     TSlider(QWidget* parent);
-    virtual ~TSlider();
 
 protected:
     void mousePressEvent(QMouseEvent* event);

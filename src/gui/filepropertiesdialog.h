@@ -35,7 +35,6 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
 
 public:
     TFilePropertiesDialog(QWidget* parent, TMediaData* md);
-    virtual ~TFilePropertiesDialog();
 
     // Call it as soon as possible
     void setCodecs(const Player::Info::InfoList& vc,

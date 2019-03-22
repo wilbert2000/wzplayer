@@ -43,7 +43,6 @@ TTimeSlider::TTimeSlider(QWidget* parent,
     setMinimum(0);
     setMaximum(max_pos);
     setValue(position);
-    setFocusPolicy(Qt::NoFocus);
 
     connect(this, &TTimeSlider::sliderPressed,
             this, &TTimeSlider::stopUpdate);
@@ -59,9 +58,6 @@ TTimeSlider::TTimeSlider(QWidget* parent,
     timer = new QTimer(this);
     timer->setInterval(drag_delay);
     connect(timer, &QTimer::timeout, this, &TTimeSlider::sendDelayedPos);
-}
-
-TTimeSlider::~TTimeSlider() {
 }
 
 void TTimeSlider::setPos(int v) {

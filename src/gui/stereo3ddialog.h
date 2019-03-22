@@ -30,7 +30,6 @@ class TStereo3dDialog : public QDialog, public Ui::TStereo3dDialog
 
 public:
     TStereo3dDialog(QWidget* parent);
-    virtual ~TStereo3dDialog();
 
     void setInputFormat(const QString & in);
     void setOutputFormat(const QString & out);

@@ -61,7 +61,6 @@ public:
     };
 
     TPreferences();
-    virtual ~TPreferences();
 
     void load();
     void save();
@@ -94,7 +93,9 @@ public:
     static TPlayerID getPlayerID(const QString& player);
     static QString playerIDToString(TPlayerID pid);
 
-    void setPlayerBin(QString bin, bool allow_other_player, TPlayerID wanted_player);
+    void setPlayerBin(QString bin,
+                      bool allow_other_player,
+                      TPlayerID wanted_player);
 
     // Media settings per file
     bool remember_media_settings;

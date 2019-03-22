@@ -67,11 +67,6 @@ TAssociations::TAssociations(QWidget* parent, Qt::WindowFlags f)
     something_changed = false;
 }
 
-TAssociations::~TAssociations()
-{
-
-}
-
 void TAssociations::selectAllClicked(bool)
 {
     for (int k = 0; k < listWidget->count(); k++)

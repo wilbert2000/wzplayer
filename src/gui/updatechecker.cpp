@@ -75,9 +75,6 @@ TUpdateChecker::TUpdateChecker(QWidget* parent,
             Qt::QueuedConnection);
 }
 
-TUpdateChecker::~TUpdateChecker() {
-}
-
 // Force a check, requested by the user
 void TUpdateChecker::check() {
     WZDEBUG("");

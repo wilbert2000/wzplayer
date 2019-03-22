@@ -91,9 +91,6 @@ TDiscName::TDiscName(const QString& url) {
     removeTrailingSlashFromDevice();
 }
 
-TDiscName::~TDiscName() {
-}
-
 QString TDiscName::displayName(bool addDevice) const {
 
     QString name;

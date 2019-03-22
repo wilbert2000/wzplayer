@@ -40,7 +40,6 @@ public:
                 int max_pos,
                 double duration,
                 int drag_delay);
-    virtual ~TTimeSlider();
 
     virtual int pos();
     virtual double duration();

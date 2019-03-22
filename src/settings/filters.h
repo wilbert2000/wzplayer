@@ -59,10 +59,8 @@ typedef QMap<QString,TFilter> TFilterMap;
 
 class TFilters : public QObject {
     Q_OBJECT
-
 public:
     TFilters();
-    virtual ~TFilters();
 
     void init();
 

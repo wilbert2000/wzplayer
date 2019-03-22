@@ -41,9 +41,6 @@ TFileChooser::TFileChooser(QWidget* parent) : Gui::TLineEditWithIcon(parent) {
             this, &TFileChooser::onEditingFinished);
 }
 
-TFileChooser::~TFileChooser() {
-}
-
 void TFileChooser::setupButton() {
 
     setIcon(Images::icon("folder_open"));

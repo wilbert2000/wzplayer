@@ -40,9 +40,6 @@ TInputURL::TInputURL(QWidget* parent)
     url_edit->setLineEdit(edit);
 }
 
-TInputURL::~TInputURL() {
-}
-
 void TInputURL::setURL(QString url) {
     url_edit->addItem(url);
 }

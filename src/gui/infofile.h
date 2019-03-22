@@ -34,7 +34,6 @@ class TInfoFile : public QObject {
 
 public:
     TInfoFile();
-    virtual ~TInfoFile();
 
     QString getInfo(const TMediaData& md);
 

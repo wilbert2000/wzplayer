@@ -32,9 +32,6 @@ TTVSettings::TTVSettings() :
     TFileSettingsBase(TPaths::configPath() + "/tv.ini") {
 }
 
-TTVSettings::~TTVSettings() {
-}
-
 QString TTVSettings::filenameToGroupname(const QString & filename) {
     QString s = filename;
     s = s.replace('/', '_');

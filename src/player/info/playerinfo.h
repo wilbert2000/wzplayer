@@ -36,7 +36,7 @@ public:
     InfoData(const QString& name, const QString& desc) {
         _name = name;
         _desc = desc;
-    };
+    }
     virtual ~InfoData();
 
     void setName(const QString& name) { _name = name; }
@@ -67,7 +67,6 @@ class TPlayerInfo : QObject {
 
 public:
     TPlayerInfo();
-    virtual ~TPlayerInfo();
 
     void getInfo();
     void getInfo(const QString& path);

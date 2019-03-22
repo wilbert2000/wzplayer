@@ -17,7 +17,6 @@ class TLogWindowAppender : public Log4Qt::ListAppender {
 
 public:
     TLogWindowAppender(Log4Qt::Layout* aLayout);
-    virtual ~TLogWindowAppender();
 
     void setEdit(QPlainTextEdit* edit);
 

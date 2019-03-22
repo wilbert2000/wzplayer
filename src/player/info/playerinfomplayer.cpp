@@ -45,9 +45,6 @@ TPlayerInfoMplayer::TPlayerInfoMplayer(const QString& path)
     proc->setProcessChannelMode(QProcess::MergedChannels);
 }
 
-TPlayerInfoMplayer::~TPlayerInfoMplayer() {
-}
-
 void TPlayerInfoMplayer::getInfo() {
     waiting_for_key = true;
     vo_list.clear();

@@ -39,7 +39,6 @@ class TSection : public QWidget {
 
 public:
     TSection(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    virtual ~TSection();
 
     virtual void getData(Settings::TPreferences* pref);
 

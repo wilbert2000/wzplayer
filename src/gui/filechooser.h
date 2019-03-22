@@ -38,7 +38,6 @@ public:
     enum DialogType { GetFileName = 0, GetDirectory = 1 };
 
     TFileChooser(QWidget* parent = 0);
-    virtual ~TFileChooser();
 
     QString caption() const { return _caption; }
     QString filter() const { return _filter; }

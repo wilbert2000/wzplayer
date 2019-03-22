@@ -32,6 +32,8 @@ namespace Action {
 
 TSlider::TSlider(QWidget* parent) : QSlider(parent) {
 
+    setFocusPolicy(Qt::TabFocus);
+    // Copy orientation toolbar
     QToolBar* toolbar = qobject_cast<QToolBar*>(parent);
     if (toolbar) {
         setOrientation(toolbar->orientation());
@@ -40,9 +42,6 @@ TSlider::TSlider(QWidget* parent) : QSlider(parent) {
     } else {
         setOrientation(Qt::Horizontal);
     }
-}
-
-TSlider::~TSlider() {
 }
 
 // Copied from qslider.cpp and modified to make it compile

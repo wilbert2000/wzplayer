@@ -30,7 +30,6 @@ class TChapterData : public TData {
 
 public:
     TChapterData();
-    virtual ~TChapterData() {}
 
     void setName(const QString & n) { name = n; }
     void setStart(double aStart) { start = aStart; }
@@ -51,7 +50,6 @@ class TChapters : public TMap<TChapterData> {
 
 public:
     TChapters();
-    virtual ~TChapters();
 
     typedef QMap <int, TChapterData> TChapterMap;
     typedef QMapIterator<int, TChapterData> TChapterIterator;

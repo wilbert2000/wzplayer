@@ -44,10 +44,6 @@ TTracks::TTracks() :
     logger(Log4Qt::Logger::logger("Maps::TTracks")) {
 }
 
-TTracks::~TTracks() {
-}
-
-
 void TTracks::addLang(int id, const QString &lang) {
 
     TTrackData& track = (*this)[id];

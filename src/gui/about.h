@@ -35,10 +35,8 @@ namespace Gui {
 
 class TAbout : public QDialog, public Ui::TAbout {
     Q_OBJECT
-
 public:
     TAbout(QWidget* parent);
-    virtual ~TAbout();
 
     virtual QSize sizeHint () const;
 

@@ -105,9 +105,6 @@ TExtensions::TExtensions() {
     _all_playable.addList(_images);
 }
 
-TExtensions::~TExtensions() {
-}
-
 bool TExtensions::isMultiMedia(const QFileInfo &fi) const {
     return _videoAndAudio.contains(fi.suffix().toLower());
 }

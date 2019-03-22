@@ -28,7 +28,6 @@ class TSelectColorButton : public QPushButton {
 
 public:
     TSelectColorButton(QWidget* parent = 0);
-    virtual ~TSelectColorButton();
 
     QColor color() const { return _color;}
 

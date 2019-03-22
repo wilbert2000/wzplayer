@@ -9,9 +9,6 @@ TMenuExec::TMenuExec(QWidget* parent) :
     QMenu(parent) {
 }
 
-TMenuExec::~TMenuExec() {
-}
-
 void TMenuExec::execSlot() {
 
     // If visible hide, so exec will show the menu again at the new cursor pos

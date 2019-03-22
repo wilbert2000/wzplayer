@@ -32,9 +32,6 @@ TSection::TSection(QWidget* parent, Qt::WindowFlags f) :
     iconSize(32) {
 }
 
-TSection::~TSection() {
-}
-
 void TSection::getData(Settings::TPreferences* pref) {
     Q_UNUSED(pref)
 

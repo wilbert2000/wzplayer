@@ -38,7 +38,6 @@ class TMPlayerProcess : public TPlayerProcess {
 
 public:
     TMPlayerProcess(QObject* parent, TMediaData* mdata);
-    virtual ~TMPlayerProcess();
 
     virtual bool startPlayer();
 

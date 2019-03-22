@@ -29,7 +29,6 @@ class TFileSettingsHash : public TFileSettingsBase {
 
 public:
     TFileSettingsHash(const QString& filename);
-    virtual ~TFileSettingsHash();
 
     virtual bool existSettingsFor(const QString& filename);
     virtual void loadSettingsFor(const QString& filename, TMediaSettings& mset);

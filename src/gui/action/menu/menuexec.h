@@ -13,7 +13,6 @@ class TMenuExec : public QMenu {
     Q_OBJECT
 public:
     explicit TMenuExec(QWidget* parent);
-    virtual ~TMenuExec();
 
 public slots:
     void execSlot();

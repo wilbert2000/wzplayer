@@ -25,9 +25,6 @@ TFilters::TFilters() : QObject() {
     init();
 }
 
-TFilters::~TFilters() {
-}
-
 void TFilters::init() {
     list.clear();
 

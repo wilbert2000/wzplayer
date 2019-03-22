@@ -19,10 +19,10 @@
 #ifndef GUI_ACTION_WIDGETACTIONS_H
 #define GUI_ACTION_WIDGETACTIONS_H
 
+#include "settings/preferences.h"
+
 #include <QWidgetAction>
 #include <QSlider>
-#include "settings/preferences.h"
-#include "gui/action/actionlist.h"
 
 
 class QStyle;
@@ -30,19 +30,10 @@ class QStyle;
 namespace Gui {
 namespace Action {
 
-
 class TWidgetAction : public QWidgetAction {
     Q_OBJECT
-
 public:
     TWidgetAction(QWidget* parent);
-    virtual ~TWidgetAction();
-
-    void setCustomStyle(QStyle* style) { custom_style = style; }
-    QStyle* customStyle() const { return custom_style; }
-
-    void setStyleSheet(const QString& style) { custom_stylesheet = style; }
-    QString styleSheet() const { return custom_stylesheet; }
 
 public slots:
     virtual void enable(bool e = true); // setEnabled in QAction is not virtual :(
@@ -50,19 +41,13 @@ public slots:
 
 protected:
     virtual void propagate_enabled(bool);
-
-protected:
-    QStyle* custom_style;
-    QString custom_stylesheet;
 };
 
 
 class TTimeSliderAction : public TWidgetAction {
     Q_OBJECT
-
 public:
     TTimeSliderAction(QWidget* parent);
-    virtual ~TTimeSliderAction();
 
 public slots:
     virtual void setPosition(double sec);
@@ -95,17 +80,11 @@ private slots:
 
 class TVolumeSliderAction : public TWidgetAction {
     Q_OBJECT
-
 public:
     TVolumeSliderAction(QWidget* parent, int vol);
-    virtual ~TVolumeSliderAction();
-
-    void setFixedSize(QSize size) { fixed_size = size; }
-    QSize fixedSize() const { return fixed_size; }
 
     void setTickPosition(QSlider::TickPosition position);
     QSlider::TickPosition tickPosition() const { return tick_position; }
-
     virtual int value();
 
 public slots:
@@ -119,7 +98,6 @@ protected:
 
 private:
     int volume;
-    QSize fixed_size;
     QSlider::TickPosition tick_position;
 
 private slots:
@@ -130,4 +108,3 @@ private slots:
 } // namespace Gui
 
 #endif // GUI_ACTION_WIDGETACTIONS_H
-

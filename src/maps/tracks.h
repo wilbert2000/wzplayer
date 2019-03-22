@@ -59,7 +59,6 @@ protected:
 class TTracks : public TMap<TTrackData> {
 public:
     TTracks();
-    virtual ~TTracks();
 
     typedef QMapIterator<int, TTrackData> TTrackIterator;
 

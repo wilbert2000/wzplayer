@@ -32,9 +32,6 @@ TSelectColorButton::TSelectColorButton(QWidget* parent)
     ignore_change_event = false;
 }
 
-TSelectColorButton::~TSelectColorButton() {
-}
-
 void TSelectColorButton::setColor(QColor c) {
 
     _color = c;
