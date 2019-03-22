@@ -10,12 +10,14 @@ namespace Gui {
 class TDockWidget : public QDockWidget {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
-    TDockWidget(const QString& title,
-                QWidget* parent,
-                const QString& objectName);
-    virtual ~TDockWidget();
+    TDockWidget(QWidget* parent,
+                const QString& objectName,
+                const QString& title);
+
+private slots:
+    void onFocusChanged(QWidget *old, QWidget *now);
+    void onDockVisibilityChanged(bool visible);
 };
 
 } // namespace Gui

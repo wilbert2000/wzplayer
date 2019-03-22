@@ -18,13 +18,10 @@
 
 #include "gui/logwindow.h"
 #include "gui/logwindowappender.h"
-
+#include "gui/dockwidget.h"
 #include "gui/filedialog.h"
 #include "settings/preferences.h"
 #include "wzdebug.h"
-#include "config.h"
-#include "desktop.h"
-#include "images.h"
 #include "iconprovider.h"
 
 #include <QCloseEvent>
@@ -32,6 +29,8 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QTextStream>
+#include <QLineEdit>
+
 
 using namespace Settings;
 
@@ -48,20 +47,22 @@ TLogWindow::TLogWindow(QWidget* parent)
 
     edit->setMaximumBlockCount(pref->log_window_max_events);
     edit->setFont(QFont("Monospace"));
-    saveButton->setIcon(iconProvider.saveIcon);
+
+    findEdit->setFocus();
+    parent->setFocusProxy(findEdit);
     findEdit->setClearButtonEnabled(true);
+    connect(findEdit, &QLineEdit::returnPressed,
+            this, &TLogWindow::onFindNextButtonClicked);
+    connect(findEdit, &QLineEdit::textChanged,
+            this, &TLogWindow::onFindTextChanged);
 
     QPalette pal = foundLabel->palette();
     pal.setColor(QPalette::WindowText, QColor(Qt::red));
     foundLabel->setPalette(pal);
 
+    saveButton->setIcon(iconProvider.saveIcon);
     connect(saveButton, &QPushButton::clicked,
             this, &TLogWindow::onSaveButtonClicked);
-
-    connect(findEdit, &QLineEdit::returnPressed,
-            this, &TLogWindow::onFindNextButtonClicked);
-    connect(findEdit, &QLineEdit::textChanged,
-            this, &TLogWindow::onFindTextChanged);
 
     connect(findNextButton, &QPushButton::clicked,
             this, &TLogWindow::onFindNextButtonClicked);
@@ -82,7 +83,6 @@ void TLogWindow::hideEvent(QShowEvent*) {
 }
 
 void TLogWindow::closeEvent(QCloseEvent* event) {
-    WZDEBUG("");
 
     appender->setEdit(0);
     event->accept();

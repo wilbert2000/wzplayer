@@ -275,7 +275,7 @@ void TMainWindow::createPlayer() {
 
 void TMainWindow::createLogDock() {
 
-    logDock = new TDockWidget(tr("Log"), this, "logdock");
+    logDock = new TDockWidget(this, "logdock", tr("Log"));
     logWindow = new TLogWindow(logDock);
     logDock->setWidget(logWindow);
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
@@ -283,7 +283,7 @@ void TMainWindow::createLogDock() {
 
 void TMainWindow::createPlaylist() {
 
-    playlistDock = new TDockWidget(tr("Playlist"), this, "playlistdock");
+    playlistDock = new TDockWidget(this, "playlistdock", tr("Playlist"));
     playlist = new Playlist::TPlaylist(playlistDock, this);
     playlistDock->setWidget(playlist);
     addDockWidget(Qt::LeftDockWidgetArea, playlistDock);
@@ -295,7 +295,7 @@ void TMainWindow::createPlaylist() {
 
 void TMainWindow::createFavList() {
 
-    favListDock = new TDockWidget(tr("Favorites"), this, "favlistdock");
+    favListDock = new TDockWidget(this, "favlistdock", tr("Favorites"));
     favList = new Playlist::TFavList(favListDock, this, playlist);
     favListDock->setWidget(favList);
     addDockWidget(Qt::RightDockWidgetArea, favListDock);

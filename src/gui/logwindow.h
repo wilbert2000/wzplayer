@@ -34,7 +34,7 @@ public:
     static TLogWindowAppender* appender;
 
     TLogWindow(QWidget* parent);
-    virtual ~TLogWindow();
+    virtual ~TLogWindow() override;
 
 signals:
     void visibilityChanged(bool visible);
