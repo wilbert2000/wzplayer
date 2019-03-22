@@ -113,18 +113,22 @@ TMenuStayOnTop::TMenuStayOnTop(QWidget* parent, TMainWindow* mw) :
 
 TMenuView::TMenuView(QWidget* parent,
                      TMainWindow* mw,
-                     QMenu* toolBarMenu)
+                     QMenu* toolBarMenu,
+                     QMenu* editToolBarMenu)
     : TMenu(parent, mw, "view_menu", tr("View"), "noicon") {
 
     addMenu(new TMenuOSD(this, mw));
-    addMenu(toolBarMenu);
     addMenu(new TMenuStayOnTop(this, mw));
 
     addSeparator();
-    addAction(mw->findAction("view_properties"));
     addAction(mw->findAction("view_playlist"));
     addAction(mw->findAction("view_favorites"));
     addAction(mw->findAction("view_log"));
+    addAction(mw->findAction("view_properties"));
+
+    addSeparator();
+    addMenu(toolBarMenu);
+    addMenu(editToolBarMenu);
 
     addSeparator();
     addAction(mw->findAction("open_config_dir"));

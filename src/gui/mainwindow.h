@@ -47,7 +47,6 @@ class TTimeLabelAction;
 
 namespace Menu {
 
-class TMenuExec;
 class TMenu;
 class TMenuFile;
 class TMenuPlay;
@@ -187,7 +186,8 @@ protected:
     Action::Menu::TMenuSubtitle* subtitleMenu;
     Action::Menu::TMenuBrowse* browseMenu;
     Action::Menu::TMenuView* viewMenu;
-    Action::Menu::TMenuExec* createContextMenu();
+    Action::Menu::TMenu* createContextMenu(const QString& name,
+                                           const QString& text);
 
     virtual QMenu* createPopupMenu() override;
     virtual void closeEvent(QCloseEvent* e) override;
@@ -420,11 +420,13 @@ private:
 
     // View properties
     Action::TAction* viewPropertiesAct;
+    Action::Menu::TMenu* toolbarMenu;
+    Action::Menu::TMenu* editToolbarMenu;
 
 
     // Help menu
     QMenu* helpMenu;
-    Action::Menu::TMenuExec* contextMenu;
+    Action::Menu::TMenu* contextMenu;
 
     // Statusbar labels
     QLabel* video_info_label;
@@ -446,7 +448,7 @@ private:
     Action::TAction* viewInOutPointsAct;
     Action::TAction* viewVideoTimeAct;
     Action::TAction* viewFramesAct;
-    QMenu* statusbar_menu;
+    QMenu* statusbarMenu;
 
     // Toolbars
     Action::TEditableToolbar* toolbar;
@@ -469,7 +471,6 @@ private:
     void createAudioEqualizer();
     void createActions();
     void createToolbars();
-    Action::Menu::TMenu* createToolbarMenu(const QString& name);
     void createMenus();
     void setupNetworkProxy();
 

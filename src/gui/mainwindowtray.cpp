@@ -70,7 +70,7 @@ TMainWindowTray::TMainWindowTray() :
     connect(showMainWindowAct, &Action::TAction::triggered,
             this, &TMainWindowTray::toggleShowMainWindow);
 
-    QMenu* menu = createContextMenu();
+    QMenu* menu = createContextMenu("", "");
     menu->addSeparator();
     menu->addAction(showMainWindowAct);
     menu->addAction(quitAct);

@@ -44,8 +44,8 @@ protected:
     bool eventFilter(QObject* obj, QEvent* event);
 
 private:
+    int disabled;
     bool autoHide;
-    bool enabled;
     bool settingVisible;
 
     bool autoHideMouse;

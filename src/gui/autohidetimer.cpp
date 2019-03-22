@@ -16,8 +16,8 @@ namespace Gui {
 TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
     : QTimer(parent),
     debug(logger()),
+    disabled(0),
     autoHide(false),
-    enabled(true),
     settingVisible(false),
     autoHideMouse(false),
     mouseHidden(false),
@@ -48,16 +48,16 @@ void TAutoHideTimer::stop() {
 
 void TAutoHideTimer::enable() {
 
-    enabled = true;
+    disabled--;
     autoHideMouseLastPosition = QCursor::pos();
-    if (autoHide || autoHideMouse)
+    if (disabled == 0 && (autoHide || autoHideMouse))
         QTimer::start();
 }
 
 void TAutoHideTimer::disable() {
 
-    enabled = false;
-    if (autoHide)
+    disabled++;
+    if (disabled == 1 && autoHide)
         setVisible(true);
     showHiddenMouse();
     QTimer::stop();
@@ -158,7 +158,7 @@ void TAutoHideTimer::onActionToggled(bool visible) {
     if (visible) {
         actions.append(item.action);
         widgets.append(item.widget);
-        if (autoHide && enabled) {
+        if (autoHide && disabled == 0) {
             QTimer::start();
         }
     } else {
@@ -186,7 +186,7 @@ void TAutoHideTimer::hideMouse() {
 void TAutoHideTimer::setDraggingPlayerWindow(bool dragging) {
 
     draggingPlayerWindow = dragging;
-    if (autoHide && enabled && draggingPlayerWindow) {
+    if (autoHide && disabled == 0 && draggingPlayerWindow) {
         setVisible(false);
     }
 }
@@ -210,7 +210,7 @@ void TAutoHideTimer::onTimeOut() {
             > MOUSE_MOVED_TRESHOLD) {
             showHiddenMouse();
             QTimer::start();
-        } else if (enabled) {
+        } else if (disabled == 0) {
             hideMouse();
         }
     } else {
@@ -219,7 +219,7 @@ void TAutoHideTimer::onTimeOut() {
     autoHideMouseLastPosition = QCursor::pos();
 
     // Hide widgets when no mouse buttons down and mouse outside show area
-    if (autoHide && enabled && haveWidgetToHide()) {
+    if (autoHide && disabled == 0 && haveWidgetToHide()) {
         if (QApplication::mouseButtons() || mouseInsideShowArea()) {
             QTimer::start();
         } else {
@@ -243,14 +243,14 @@ bool TAutoHideTimer::eventFilter(QObject* obj, QEvent* event) {
     // Handle mouse
     if (mouse) {
         showHiddenMouse();
-        if (autoHideMouse && enabled) {
+        if (autoHideMouse && disabled == 0) {
             QTimer::start();
         }
         autoHideMouseLastPosition = QCursor::pos();
     }
 
     // Handle widgets
-    if (autoHide && enabled && mouse) {
+    if (autoHide && disabled == 0 && mouse) {
         // Don't show when left button still down, like when dragging
         if ((QApplication::mouseButtons() & Qt::LeftButton) == 0
             && hiddenWidget()) {

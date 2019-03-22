@@ -415,6 +415,7 @@ void TMainWindow::createActions() {
     a = new TAction(this, "open_audio_cd", tr("Open audio CD"), "cdda");
     connect(a, &TAction::triggered, this, &TMainWindow::openAudioCD);
 
+
     // Save thumbnail
 #ifdef Q_OS_LINUX
     saveThumbnailAct  = new TAction(this, "save_thumbnail",
@@ -1138,19 +1139,6 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::nextWheelFunction);
 } // createActions
 
-Action::Menu::TMenuExec* TMainWindow::createContextMenu() {
-
-    Action::Menu::TMenuExec* menu = new Action::Menu::TMenuExec(this);
-    menu->addMenu(fileMenu);
-    menu->addMenu(playMenu);
-    menu->addMenu(videoMenu);
-    menu->addMenu(audioMenu);
-    menu->addMenu(subtitleMenu);
-    menu->addMenu(browseMenu);
-    menu->addMenu(viewMenu);
-    return menu;
-}
-
 void TMainWindow::createMenus() {
 
     using namespace Action;
@@ -1168,55 +1156,89 @@ void TMainWindow::createMenus() {
     browseMenu = new Menu::TMenuBrowse(this, this);
     menuBar()->addMenu(browseMenu);
 
-    // statusbar_menu added to toolbar_menu by createToolbarMenu()
-    statusbar_menu = new QMenu(this);
-    statusbar_menu->menuAction()->setObjectName("statusbar_menu");
-    statusbar_menu->menuAction()->setText(tr("Statusbar"));
-    statusbar_menu->menuAction()->setIcon(Images::icon("statusbar"));
-    statusbar_menu->addAction(viewVideoInfoAct);
-    statusbar_menu->addAction(viewInOutPointsAct);
-    statusbar_menu->addAction(viewVideoTimeAct);
-    statusbar_menu->addAction(viewFramesAct);
+    // Statusbar menu
+    statusbarMenu = new QMenu(this);
+    statusbarMenu->menuAction()->setObjectName("statusbar_menu");
+    statusbarMenu->menuAction()->setText(tr("Statusbar display"));
+    statusbarMenu->menuAction()->setIcon(Images::icon("statusbar"));
+    statusbarMenu->addAction(viewVideoInfoAct);
+    statusbarMenu->addAction(viewInOutPointsAct);
+    statusbarMenu->addAction(viewVideoTimeAct);
+    statusbarMenu->addAction(viewFramesAct);
 
-    // Create the only toolbar menu with a name
-    Menu::TMenu* toolbarMenu = createToolbarMenu("toolbar_menu");
+    // Toolbar menu
+    toolbarMenu = new Menu::TMenu(this, this, "toolbar_menu", tr("Toolbars"),
+                                  "toolbars");
+    toolbarMenu->addAction(viewMenuBarAct);
+    toolbarMenu->addSeparator();
+    toolbarMenu->addAction(toolbar->toggleViewAction());
+    toolbarMenu->addAction(toolbar2->toggleViewAction());
+    toolbarMenu->addAction(controlbar->toggleViewAction());
+
+    toolbarMenu->addSeparator();
+    toolbarMenu->addAction(findAction("toggle_pl_toolbar"));
+    toolbarMenu->addAction(findAction("toggle_fav_toolbar"));
+
+    toolbarMenu->addSeparator();
+    toolbarMenu->addAction(viewStatusBarAct);
+    toolbarMenu->addMenu(statusbarMenu);
+
+    // Needed for full screen statusbar
+    connect(toolbarMenu, &QMenu::aboutToShow,
+            autoHideTimer, &TAutoHideTimer::disable);
+    connect(toolbarMenu, &QMenu::aboutToHide,
+            autoHideTimer, &TAutoHideTimer::enable);
+
     statusBar()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(statusBar(), &QStatusBar::customContextMenuRequested,
             toolbarMenu, &Menu::TMenu::execSlot);
 
-    viewMenu = new Menu::TMenuView(this, this, toolbarMenu);
+
+    editToolbarMenu = new Menu::TMenu(this, this, "toolbar_edit_menu",
+                                      tr("Edit toolbars"));
+
+    editToolbarMenu->addAction(findAction("edit_toolbar1"));
+    editToolbarMenu->addAction(findAction("edit_toolbar2"));
+    editToolbarMenu->addAction(findAction("edit_controlbar"));
+
+    editToolbarMenu->addSeparator();
+    editToolbarMenu->addAction(findAction("edit_pl_toolbar"));
+    editToolbarMenu->addAction(findAction("edit_fav_toolbar"));
+
+    viewMenu = new Menu::TMenuView(this, this, toolbarMenu, editToolbarMenu);
     menuBar()->addMenu(viewMenu);
 
     helpMenu = new Menu::TMenuHelp(this, this);
     menuBar()->addMenu(helpMenu);
 
     // Context menu
-    contextMenu = createContextMenu();
+    contextMenu = createContextMenu("context_menu", tr("Context menu"));
     TAction* a = new TAction(this, "show_context_menu", tr("Show context menu"));
     connect(a, &TAction::triggered, contextMenu, &Menu::TMenuExec::execSlot);
+
+    connect(contextMenu, &QMenu::aboutToShow,
+            autoHideTimer, &TAutoHideTimer::disable);
+    connect(contextMenu, &QMenu::aboutToHide,
+            autoHideTimer, &TAutoHideTimer::enable);
+
     playerWindow->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playerWindow, &TPlayerWindow::customContextMenuRequested,
             this, &TMainWindow::showContextMenu);
 } // createMenus()
 
-Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
+// Called by main window to show context popup on toolbars and dock widgets.
+// The main window takes ownership of the returned menu and will delete it
+// after use, hence the need to create a new menu every time.
+QMenu* TMainWindow::createPopupMenu() {
 
-    Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, this, name,
-        tr("Toolbars"), "toolbars");
-
-    menu->addAction(viewMenuBarAct);
-    menu->addAction(toolbar->toggleViewAction());
-    menu->addAction(toolbar2->toggleViewAction());
-    menu->addAction(controlbar->toggleViewAction());
-    menu->addAction(viewStatusBarAct);
-
+    QMenu* menu = new QMenu(this);
+    menu->addAction(playlistDock->toggleViewAction());
+    menu->addAction(favListDock->toggleViewAction());
+    menu->addAction(logDock->toggleViewAction());
+    menu->addAction(viewPropertiesAct);
     menu->addSeparator();
-    menu->addAction(findAction("edit_toolbar1"));
-    menu->addAction(findAction("edit_toolbar2"));
-    menu->addAction(findAction("edit_controlbar"));
-
-    menu->addSeparator();
-    menu->addMenu(statusbar_menu);
+    menu->addMenu(toolbarMenu);
+    menu->addMenu(editToolbarMenu);
 
     connect(menu, &QMenu::aboutToShow,
             autoHideTimer, &TAutoHideTimer::disable);
@@ -1224,13 +1246,21 @@ Action::Menu::TMenu* TMainWindow::createToolbarMenu(const QString& name) {
             autoHideTimer, &TAutoHideTimer::enable);
 
     return menu;
-} // createToolbarMenu
+}
 
-// Called by main window to show context popup on toolbars and dock widgets.
-// The main window takes ownership of the returned menu and will delete it
-// after use, hence the need to create a new menu every time.
-QMenu* TMainWindow::createPopupMenu() {
-    return createToolbarMenu("");
+Action::Menu::TMenu* TMainWindow::createContextMenu(const QString& name,
+                                                    const QString& text) {
+
+    Action::Menu::TMenu* menu = new Action::Menu::TMenu(
+                this, this, name, text);
+    menu->addMenu(fileMenu);
+    menu->addMenu(playMenu);
+    menu->addMenu(videoMenu);
+    menu->addMenu(audioMenu);
+    menu->addMenu(subtitleMenu);
+    menu->addMenu(browseMenu);
+    menu->addMenu(viewMenu);
+    return menu;
 }
 
 void TMainWindow::createToolbars() {

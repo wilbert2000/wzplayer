@@ -43,7 +43,8 @@ public:
 class TMenuView : public TMenu {
     Q_OBJECT
 public:
-    explicit TMenuView(QWidget* parent, TMainWindow* mw, QMenu* toolBarMenu);
+    explicit TMenuView(QWidget* parent, TMainWindow* mw,
+                       QMenu* toolBarMenu, QMenu* editToolBarMenu);
 };
 
 } // namespace Menu
