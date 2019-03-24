@@ -150,7 +150,6 @@ public:
     static Type stringToType(QString type);
 
     QString name() const;
-    QString displayName() const;
     void list() const;
 
 private:

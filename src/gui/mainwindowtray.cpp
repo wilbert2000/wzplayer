@@ -176,12 +176,6 @@ void TMainWindowTray::showMainWin() {
     }
 }
 
-void TMainWindowTray::onMediaInfoChanged() {
-
-    TMainWindow::onMediaInfoChanged();
-    tray->setToolTip(windowTitle());
-}
-
 void TMainWindowTray::saveSettings() {
     WZTRACE("");
 

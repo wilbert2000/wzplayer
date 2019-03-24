@@ -147,24 +147,6 @@ QString TMediaData::name() const {
     return TName::baseNameForURL(filename);
 }
 
-QString TMediaData::displayName() const {
-
-    if (filename.isEmpty()) {
-        return "";
-    }
-
-    QString title = getTitle();
-    if (!title.isEmpty()) {
-        return title;
-    }
-
-    if (disc.valid) {
-        return disc.displayName();
-    }
-
-    return TName::nameForURL(filename);
-}
-
 QString TMediaData::typeToString(Type type) {
 
     QString s;

@@ -204,7 +204,6 @@ protected:
 protected slots:
     // Replacement for setCaption (in Qt 4 it's not virtual)
     virtual void setWindowCaption(const QString& title);
-    virtual void onMediaInfoChanged();
 
 private:
     static QString settingsGroupName() { return "mainwindow"; }
@@ -514,6 +513,7 @@ private:
     void onResizeOnLoadTriggered(bool b);
 
     void updateAudioEqualizer();
+    void updateWindowTitle();
 
     void restartApplication();
 
@@ -569,6 +569,7 @@ private slots:
     void onPositionChanged(double);
     void onVideoOutResolutionChanged(int w, int h);
     void onNewMediaStartedPlaying();
+    void onMediaInfoChanged();
     void onMediaSettingsChanged();
     void onPlaylistFinished();
     void onDragPositionChanged(double);

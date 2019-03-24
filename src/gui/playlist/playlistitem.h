@@ -61,6 +61,7 @@ public:
     int compareFilename(const TPlaylistItem& item) const;
 
     QString baseName() const { return mBaseName; }
+    QString editName() const;
     void setName(const QString& baseName,
                  const QString& ext,
                  bool protectName);
@@ -166,7 +167,6 @@ private:
     QIcon itemIcon;
     void setStateIcon();
 
-    QString editName() const;
     QSize getSizeHintName(int level) const;
 
     void renameDir(const QString& dir, const QString& newDir);

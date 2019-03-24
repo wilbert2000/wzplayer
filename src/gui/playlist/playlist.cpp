@@ -332,13 +332,17 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
-QString TPlaylist::getPlayingTitle() const {
+QString TPlaylist::getPlayingTitle(bool addModified) const {
 
     TPlaylistItem* item = playlistWidget->playingItem;
-    if (item) {
-        return item->baseName();
+    if (!item) {
+        item = playlistWidget->root();
     }
-    return "";
+    QString title = item->editName();
+    if (addModified && item->modified()) {
+        title += "*";
+    }
+    return title;
 }
 
 void TPlaylist::enablePlayOrPause() {

@@ -1502,8 +1502,10 @@ void TMainWindow::createFilePropertiesDialog() {
 void TMainWindow::setDataToFileProperties() {
     WZDEBUG("");
 
+    file_properties_dialog->setPlayingTitle(playlist->getPlayingTitle(false));
+
     // Get info from player
-    Player::Info::TPlayerInfo *i = Player::Info::TPlayerInfo::obj();
+    Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
     i->getInfo();
     file_properties_dialog->setCodecs(i->vcList(),
                                       i->acList(),
@@ -2141,12 +2143,18 @@ void TMainWindow::onMediaSettingsChanged() {
     subFPSGroup->setChecked(mset->external_subtitles_fps);
 }
 
+void TMainWindow::updateWindowTitle() {
+
+    QString title = playlist->getPlayingTitle(true);
+    // setWindowCaption = setWindowTitle + let TMainWindowTray have a look at it
+    setWindowCaption(title + (title.isEmpty() ? "" : " - ")
+                     + TConfig::PROGRAM_NAME);
+}
+
 void TMainWindow::onMediaInfoChanged() {
     WZDEBUG("");
 
-    QString title = playlist->getPlayingTitle();
-    setWindowCaption(title + (title.isEmpty() ? "" : " - ")
-                     + TConfig::PROGRAM_NAME);
+    updateWindowTitle();
     displayVideoInfo();
     if (file_properties_dialog && file_properties_dialog->isVisible()) {
         setDataToFileProperties();
@@ -2159,7 +2167,7 @@ void TMainWindow::onNewMediaStartedPlaying() {
     enterFullscreenOnPlay();
 
     // Recents
-    pref->addRecent(player->mdat.filename, player->mdat.displayName());
+    pref->addRecent(player->mdat.filename, playlist->getPlayingTitle(false));
     checkPendingActionsToRun();
 }
 
@@ -2202,11 +2210,11 @@ void TMainWindow::onStateChanged(Player::TState state) {
     autoHideTimer->setAutoHideMouse(state == Player::STATE_PLAYING);
     switch (state) {
         case Player::STATE_STOPPED:
-            setWindowCaption(TConfig::PROGRAM_NAME);
+            updateWindowTitle();
             msg(tr("Ready"));
             break;
         case Player::STATE_PLAYING:
-            msg(tr("Playing %1").arg(player->mdat.displayName()));
+            msg(tr("Playing %1").arg(playlist->getPlayingTitle(false)));
             break;
         case Player::STATE_PAUSED:
             msg(tr("Paused"));
@@ -2218,7 +2226,7 @@ void TMainWindow::onStateChanged(Player::TState state) {
             msg(tr("Restarting..."));
             break;
         case Player::STATE_LOADING:
-            msg(tr("Loading..."));
+            msg(tr("Loading %1").arg(playlist->getPlayingTitle(false)));
             break;
     }
 }

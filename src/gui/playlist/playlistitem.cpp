@@ -555,6 +555,8 @@ void TPlaylistItem::setModified(bool modified,
     }
 
     if (modifiedChanged) {
+        WZINFO(QString("Modified %1 for '%2'")
+               .arg(modified ? "set" : "cleared").arg(mFilename));
         TPlaylistWidget* tree = plTreeWidget();
         if (tree) {
             setSizeHintName();
@@ -563,8 +565,6 @@ void TPlaylistItem::setModified(bool modified,
                 tree->emitModifiedChanged();
             }
         }
-        WZINFO(QString("Modified %1 for '%2'")
-               .arg(modified ? "set" : "cleared").arg(mFilename));
     }
 }
 
@@ -673,12 +673,6 @@ void TPlaylistItem::setSpacing() {
     bounding = br.height() - opt.fontMetrics.lineSpacing();
 
     setText(COL_NAME, "");
-
-    WZTRACE(QString("w %1 h %2 -> w %3 h %4 -> hSpacing %5, vSpacing %6,"
-                    " bounding %7, focus margin %8")
-            .arg(br.width()).arg(br.height())
-            .arg(size.width()).arg(size.height())
-            .arg(hSpacing).arg(vSpacing).arg(bounding).arg(ffm));
 }
 
 // Return the size of the name column given the available width

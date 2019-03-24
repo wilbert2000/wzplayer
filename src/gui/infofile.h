@@ -35,7 +35,7 @@ class TInfoFile : public QObject {
 public:
     TInfoFile();
 
-    QString getInfo(const TMediaData& md);
+    QString getInfo(const TMediaData& md, const QString playingTitle);
 
 private:
     QString openPar(QString text);

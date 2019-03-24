@@ -104,7 +104,7 @@ void TInfoFile::addTracks(QString& s,
     }
 }
 
-QString TInfoFile::getInfo(const TMediaData& md) {
+QString TInfoFile::getInfo(const TMediaData& md, const QString playingTitle) {
 
     // General
     QFileInfo fi(md.filename);
@@ -133,8 +133,8 @@ QString TInfoFile::getInfo(const TMediaData& md) {
     }
 
     QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
-    s += "<h1><img src=\"" + Images::iconFilename(icon) + "\">" + md.displayName()
-         + "</h1>\n";
+    s += "<h1><img src=\"" + Images::iconFilename(icon) + "\">"
+            + playingTitle + "</h1>\n";
 
     s += "<table width=\"100%\">";
 

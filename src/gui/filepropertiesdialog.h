@@ -36,6 +36,8 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
 public:
     TFilePropertiesDialog(QWidget* parent, TMediaData* md);
 
+    void setPlayingTitle(const QString& title) { playingTitle = title; }
+
     // Call it as soon as possible
     void setCodecs(const Player::Info::InfoList& vc,
                    const Player::Info::InfoList& ac,
@@ -88,6 +90,7 @@ protected:
     virtual void changeEvent(QEvent* event);
 
 private:
+    QString playingTitle;
     bool codecs_set;
     Player::Info::InfoList vclist, aclist, demuxerlist;
     QString orig_demuxer, orig_ac, orig_vc;

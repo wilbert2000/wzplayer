@@ -47,7 +47,7 @@ public:
     Action::TAction* playPrevAct;
 
     QString playingFile() const;
-    QString getPlayingTitle() const;
+    QString getPlayingTitle(bool addModified) const;
     void getFilesToPlay(QStringList& files) const;
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
 

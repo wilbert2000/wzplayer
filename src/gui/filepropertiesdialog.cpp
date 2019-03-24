@@ -74,7 +74,7 @@ void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {
 void TFilePropertiesDialog::showInfo() {
 
     TInfoFile info;
-    info_edit->setText(info.getInfo(*media_data));
+    info_edit->setText(info.getInfo(*media_data, playingTitle));
 }
 
 void TFilePropertiesDialog::retranslateStrings() {
