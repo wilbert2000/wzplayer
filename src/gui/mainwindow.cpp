@@ -2971,8 +2971,6 @@ void TMainWindow::setFullscreen(bool b) {
         showNormal();
         didExitFullscreen();
     }
-
-    setFocus(); // Fixes bug #2493415
 }
 
 void TMainWindow::toggleFullscreen() {
