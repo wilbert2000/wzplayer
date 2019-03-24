@@ -161,7 +161,7 @@ void TAddFilesThread::run() {
     } else if (stopRequested) {
         emit displayMessage(tr("Scan stopped"), TConfig::MESSAGE_DURATION);
     } else {
-        emit displayMessage(tr("Scan done"), TConfig::MESSAGE_DURATION);
+        emit displayMessage("", 1); // Clear last msg
     }
 }
 
@@ -307,18 +307,18 @@ void TAddFilesThread::addNewItems(TPlaylistItem* playlistItem) {
             continue;
         }
 
-        TPlaylistItem* w = 0;
+        TPlaylistItem* newItem = 0;
         if (fi.isDir()) {
             if (recurse) {
-                WZINFO("Adding folder '" + filename + "'");
-                w = addDirectory(playlistItem, fi, filename, false);
+                WZINFO("Adding new folder '" + filename + "'");
+                newItem = addDirectory(playlistItem, fi, filename, false);
             }
         } else {
-            WZINFO("Adding file '" + filename + "'");
-            w = addFile(playlistItem, fi);
+            WZINFO("Adding new file '" + filename + "'");
+            newItem = addFile(playlistItem, fi);
         }
-        if (w) {
-            w->setModified();
+        if (newItem) {
+            newItem->setModified();
         }
     }
 
@@ -535,6 +535,9 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
 
     if (dirItem->childCount()) {
         latestDir = directory.path();
+    } else if (isFavList && parent->baseName() == "Favorites") {
+        // Keep empty folders inside favorites directory
+        WZINFO("Found no playable items in '" + dirItem->filename() + "'");
     } else {
         WZDEBUG("Found no playable items in '" + dirItem->filename() + "'");
         delete dirItem;
