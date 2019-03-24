@@ -89,12 +89,14 @@ private:
 
     void createActions();
     void createToolbar();
-    bool updatePlayState();
-
-    void openDirectory(const QString& dir);
 
     TPlaylistItem* getRandomItem() const;
     bool haveUnplayedItems() const;
+
+    void openDirectory(const QString& dir);
+
+    void updatePlayingItem();
+    void enablePlayOrPause();
 
 private slots:
     void playOrPause();

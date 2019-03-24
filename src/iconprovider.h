@@ -22,7 +22,6 @@ public:
 
     QIcon iconPlayed;
     QIcon iconLoading;
-    QIcon iconLoading2;
     QIcon iconPlaying;
     QIcon iconStopping;
     QIcon iconFailed;

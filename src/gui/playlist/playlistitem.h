@@ -71,6 +71,7 @@ public:
     void setDuration(double d) { mDuration = d; }
 
     TPlaylistItemState state() const { return mState; }
+    QString stateString() const;
     void setState(TPlaylistItemState state);
 
     QIcon getItemIcon() const { return itemIcon; }

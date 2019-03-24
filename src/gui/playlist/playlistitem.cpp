@@ -256,6 +256,10 @@ QString TPlaylistItem::stateString(TPlaylistItemState state) {
     return "failed";
 }
 
+QString TPlaylistItem::stateString() const {
+    return stateString(mState);
+}
+
 void TPlaylistItem::renameDir(const QString& dir, const QString& newDir) {
 
     if (mFilename.startsWith(dir)) {

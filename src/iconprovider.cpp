@@ -29,11 +29,10 @@ void TIconProvider::setStyle(QStyle* aStyle) {
                              QIcon::Normal, QIcon::On);
 
     iconPlayed =  style->standardIcon(QStyle::SP_DialogOkButton);
-    iconLoading =  style->standardIcon(QStyle::SP_MessageBoxQuestion);
-    iconLoading2 =  Images::icon("loading");
+    iconLoading =  Images::icon("loading");
     iconPlaying =  style->standardIcon(QStyle::SP_MediaPlay);
     iconStopping =  Images::icon("stopping");
-    iconFailed =  style->standardIcon(QStyle::SP_MessageBoxWarning);
+    iconFailed =  Images::icon("failed");
 
     recentIcon = QIcon::fromTheme("document-open-recent",
                                   Images::icon("recent_menu"));

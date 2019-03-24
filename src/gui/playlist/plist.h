@@ -1,9 +1,10 @@
 #ifndef GUI_PLAYLIST_PLIST_H
 #define GUI_PLAYLIST_PLIST_H
 
-#include <QWidget>
 #include "gui/action/menu/menu.h"
+#include "gui/playlist/playlistitem.h"
 #include "wzdebug.h"
+#include <QWidget>
 
 
 class QToolBar;
@@ -25,7 +26,6 @@ namespace Playlist {
 
 class TAddFilesThread;
 class TPlaylistWidget;
-class TPlaylistItem;
 class TMenuAddRemoved;
 
 class TPList : public QWidget {
@@ -97,13 +97,11 @@ protected:
     Action::TAction* removeSelectedFromDiskAct;
     Action::TAction* removeAllAct;
 
-    void makeActive();
-
     void clear(bool clearFilename = true);
-    void setPlaylistFilename(const QString& filename);
-
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) = 0;
     void openPlaylist(const QString& filename);
+    void makeActive();
+    void setPlaylistFilename(const QString& filename);
 
 protected slots:
     virtual void openPlaylistDialog();

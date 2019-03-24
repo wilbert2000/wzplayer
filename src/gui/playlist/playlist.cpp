@@ -50,10 +50,10 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
     createActions();
     createToolbar();
 
-    connect(player, &Player::TPlayer::newMediaStartedPlaying,
-            this, &TPlaylist::onNewMediaStartedPlaying);
     connect(player, &Player::TPlayer::playerError,
             this, &TPlaylist::onPlayerError);
+    connect(player, &Player::TPlayer::newMediaStartedPlaying,
+            this, &TPlaylist::onNewMediaStartedPlaying);
     connect(player, &Player::TPlayer::titleTrackChanged,
             this, &TPlaylist::onTitleTrackChanged);
     connect(player, &Player::TPlayer::mediaEOF,
@@ -346,7 +346,7 @@ QString TPlaylist::getPlayingTitle() const {
     return "";
 }
 
-bool TPlaylist::updatePlayState() {
+void TPlaylist::enablePlayOrPause() {
 
     Player::TState s = player->state();
     bool enable = thread == 0 && player->stateReady();
@@ -356,16 +356,6 @@ bool TPlaylist::updatePlayState() {
         if (s == Player::STATE_PLAYING) {
             playOrPauseAct->setTextAndTip(tr("&Pause"));
             playOrPauseAct->setIcon(iconProvider.pauseIcon);
-
-            // Update playingItem
-            TPlaylistItem* playingItem = playlistWidget->playingItem;
-            if (playingItem == 0) {
-                playingItem = playlistWidget->findFilename(
-                            player->mdat.filename);
-            }
-            if (playingItem && playingItem->state() != PSTATE_PLAYING) {
-                playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
-            }
         } else {
             // STATE_PAUSED or STATE_STOPPED
             playOrPauseAct->setTextAndTip(tr("Play"));
@@ -384,12 +374,40 @@ bool TPlaylist::updatePlayState() {
             playOrPauseAct->setIcon(iconProvider.iconStopping);
             playOrPauseAct->setEnabled(false);
         } else {
-            playOrPauseAct->setIcon(iconProvider.iconLoading2);
+            playOrPauseAct->setIcon(iconProvider.iconLoading);
             playOrPauseAct->setEnabled(s == Player::STATE_PLAYING);
         }
     }
+}
 
-    return enable;
+void TPlaylist::updatePlayingItem() {
+
+    if (player->state() == Player::STATE_PLAYING) {
+        TPlaylistItem* item = playlistWidget->playingItem;
+        if (item && item->state() != PSTATE_PLAYING) {
+            if (item->filename() == player->mdat.filename) {
+                playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+            } else {
+                QString fn = player->mdat.filename;
+                QFileInfo fi(fn);
+                if (fi.exists()) {
+                    if (fi == QFileInfo(item->filename())) {
+                        WZWARN(QString("Filename mismatch, updating item"
+                            " filename '%1' with player filename '%2'")
+                               .arg(item->filename()).arg(fn));
+                        item->setFilename(fn, item->baseName());
+                        item->setModified();
+                        playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+                        return;
+                    }
+                }
+                // Player did not yet start loading a new playing item
+                // or it modified the URL...
+                WZDEBUG(QString("Playing item '%1' does not match player '%2'")
+                        .arg(item->filename()).arg(fn));
+            }
+        }
+    }
 }
 
 void TPlaylist::enableActions() {
@@ -401,21 +419,17 @@ void TPlaylist::enableActions() {
     disableEnableActions++;
 
     WZTRACE("State " + player->stateToString());
-    bool enable = updatePlayState();
-    Player::TState s = player->state();
-    pauseAct->setEnabled(s == Player::STATE_PLAYING);
+    updatePlayingItem();
+    enablePlayOrPause();
+    pauseAct->setEnabled(player->state() == Player::STATE_PLAYING);
 
-    bool e = enable && playlistWidget->hasItems();
+    bool e = thread == 0 && player->stateReady() && playlistWidget->hasItems();
     playNextAct->setEnabled(e);
     playPrevAct->setEnabled(e);
-
     findPlayingAct->setEnabled(playlistWidget->playingItem);
-
-
     // Repeat and shuffle are always enabled
 
     TPList::enableActions();
-
     disableEnableActions--;
 }
 
@@ -483,6 +497,10 @@ void TPlaylist::onNewMediaStartedPlaying() {
         } else {
             WZDEBUG("Item considered uptodate");
         }
+
+        // Could set state now, but wait for player to change state to playing,
+        // so we will not trigger additional calls to enableActions()
+        // playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
 
         // Pause a single image
         if (player->mdat.image && playlistWidget->hasSingleItem()) {

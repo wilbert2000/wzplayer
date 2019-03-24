@@ -454,9 +454,9 @@ void TPList::makeActive() {
     if (!dock->isVisible()) {
         dock->setVisible(true);
     }
+    dock->raise();
     activateWindow();
-    raise();
-    playlistWidget->setFocus(Qt::OtherFocusReason);
+    playlistWidget->setFocus();
 }
 
 void TPList::setPlaylistFilename(const QString& filename) {
@@ -1109,9 +1109,12 @@ void TPList::browseDir() {
 void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
                                   QTreeWidgetItem* previous) {
     WZTRACEOBJ(QString("Changed from '%1' to '%2'")
-            .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "null")
-            .arg(current ? current->text(TPlaylistItem::COL_NAME) : "null"));
-    enableActions();
+            .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "0")
+            .arg(current ? current->text(TPlaylistItem::COL_NAME) : "0"));
+
+    if ((current && !previous) || (!current && previous)) {
+        enableActions();
+    }
 }
 
 void TPList::onItemActivated(QTreeWidgetItem* i, int) {

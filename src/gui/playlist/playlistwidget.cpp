@@ -1,4 +1,4 @@
-#include "gui/playlist/playlistwidget.h"
+﻿#include "gui/playlist/playlistwidget.h"
 
 #include "gui/playlist/playlistitem.h"
 #include "gui/action/menu/menuexec.h"
@@ -279,17 +279,24 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
 
     bool setCurrent = true;
     if (playingItem) {
-        // Set state previous playing item
-        if (playingItem != item
-            && playingItem->state() != PSTATE_STOPPED
-            && playingItem->state() != PSTATE_FAILED) {
-            playingItem->setState(PSTATE_STOPPED);
+        if (playingItem == item) {
+            setCurrent = false;
+        } else {
+            // Only set current item, when playingItem was current item
+            // or when current = 0
+            setCurrent = playingItem == currentItem()
+                    || currentItem() == 0;
+            // Set state previous playing item
+            if (playingItem->state() != PSTATE_STOPPED
+                    && playingItem->state() != PSTATE_FAILED) {
+                playingItem->setState(PSTATE_STOPPED);
+            }
         }
-        // Only set current item, when playingItem was current item
-        setCurrent = playingItem == currentItem();
     }
 
-    bool changed = item != playingItem;
+    bool changed = item != playingItem
+            || (playingItem && playingItem->state() != state);
+
     playingItem = item;
 
     if (playingItem) {
@@ -798,7 +805,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
                                            int start, int end) {
-    WZDEBUG(QString("%1 '%2' %3 %4").arg(objectName())
+    WZDEBUGOBJ(QString("'%1' %2 %3")
             .arg(parent.data().toString()).arg(start).arg(end));
 
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
