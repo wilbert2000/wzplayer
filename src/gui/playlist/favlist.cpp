@@ -276,6 +276,7 @@ void TFavList::onFavMenuTriggered(QAction* action) {
 
 void TFavList::updFavMenu(QMenu* menu, TPlaylistItem* folder) {
 
+    TPlaylistItem* playingItem = playlist->getPlaylistWidget()->playingItem;
     for(int i = 0; i < folder->childCount(); i++) {
         TPlaylistItem* item = folder->plChild(i);
         if (item->isFolder()) {
@@ -288,10 +289,9 @@ void TFavList::updFavMenu(QMenu* menu, TPlaylistItem* folder) {
             a->setData(QVariant::fromValue(item));
             a->setIcon(item->getItemIcon());
             a->setStatusTip(item->filename());
-            if (item->filename() == player->mdat.filename) {
+            if (playingItem && item->filename() == playingItem->filename()) {
                 markCurrentFavAction(a);
-                // TODO: copy state from playlist?
-                playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+                playlistWidget->setPlayingItem(item, playingItem->state());
             }
             menu->addAction(a);
         }
