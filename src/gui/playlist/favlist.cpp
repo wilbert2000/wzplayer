@@ -74,13 +74,13 @@ void TFavList::createToolbar() {
 void TFavList::enableActions() {
 
     if (disableEnableActions) {
+        WZTRACE("Disabled");
         return;
     }
     disableEnableActions++;
 
     WZTRACE("State " + player->stateToString());
     TPList::enableActions();
-
     findPlayingAct->setEnabled(!player->mdat.filename.isEmpty());
 
     disableEnableActions--;
@@ -252,6 +252,8 @@ void TFavList::onFavMenuTriggered(QAction* action) {
         if (!filename.isEmpty()) {
             markCurrentFavAction(action);
             playlist->open(filename, item->baseName());
+        } else {
+            WZERROR("No filename retrieved from action");
         }
     }
 }

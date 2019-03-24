@@ -419,8 +419,8 @@ void TPList::enableActions() {
 
     openAct->setEnabled(player->state() != Player::STATE_STOPPING);
 
-    //saveAct->setEnabled(true);
-    //saveAsAct->setEnabled(true);
+    // saveAct->setEnabled(true);
+    // saveAsAct->setEnabled(true);
     refreshAct->setEnabled(!playlistFilename.isEmpty());
 
     bool haveFile = !player->mdat.filename.isEmpty();
@@ -567,8 +567,8 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                     WZTRACEOBJ("Folder '" + filename + "' not modified");
                 }
             } else {
-                // Note: savedMetaData destroyed as dummy here.
-                // It is only used for WZPlaylists.
+                // Note: savedMetaData destroyed as dummy here. It is only used
+                // for WZPlaylists which have linkFolders set to true.
                 if (saveM3uFolder(i, path, stream, linkFolders, savedMetaData)) {
                     WZINFO("Succesfully saved '" + filename + "'");
                 } else {
@@ -1149,12 +1149,10 @@ void TPList:: setPLaylistTitle() {
 void TPList::abortThread() {
 
     if (thread) {
-        WZINFO("Aborting add files thread");
+        WZINFOOBJ("Aborting add files thread");
         addStartPlay = false;
         restartThread = false;
         thread->abort();
-    } else {
-        WZTRACEOBJ("No add files thread running");
     }
 }
 
@@ -1218,7 +1216,7 @@ void TPList::onThreadFinished() {
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
         } else {
             playlistFilename = root->filename();
-            WZINFO("Playlist filename set to '" + playlistFilename + "'");
+            WZINFOOBJ("Filename set to '" + playlistFilename + "'");
             setPLaylistTitle();
             Settings::pref->addRecent(playlistFilename, root->fname());
         }

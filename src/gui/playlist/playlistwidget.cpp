@@ -45,6 +45,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     setObjectName(name);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setIconSize(iconProvider.iconSize);
+
     setFocusPolicy(Qt::StrongFocus);
     setEditTriggers(QAbstractItemView::EditKeyPressed);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -143,6 +144,7 @@ void TPlaylistWidget::abortFileCopier() {
 }
 
 void TPlaylistWidget::clr() {
+    WZTRACEOBJ("");
 
     playingItem = 0;
     abortFileCopier();
@@ -838,7 +840,7 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
                                    int start, int end) {
-    WZDEBUG(QString("%1 '%2' %3 %4").arg(objectName())
+    WZDEBUGOBJ(QString("'%1' %2 %3")
             .arg(parent.data().toString()).arg(start).arg(end));
     QTreeWidget::rowsInserted(parent, start, end);
 
@@ -1112,11 +1114,13 @@ void TPlaylistWidget::resizeNameColumnAll() {
 }
 
 void TPlaylistWidget::scrollToPlaying() {
-    WZTRACEOBJ("");
 
     scrollToPlayingFile = false;
     if (playingItem) {
+        WZTRACEOBJ("Scrolling to playing item");
         scrollToItem(playingItem);
+    } else {
+        WZTRACEOBJ("No playing item");
     }
 }
 
@@ -1130,12 +1134,13 @@ void TPlaylistWidget::onWordWrapTimeout() {
 }
 
 void TPlaylistWidget::startWordWrap() {
-    WZTRACEOBJ("");
 
     if (root()->childCount()) {
+        WZTRACEOBJ("Starting timer");
         wordWrapTimer.start();
     } else {
         wordWrapTimer.stop();
+        WZTRACEOBJ("Stopped timer");
     }
 }
 
@@ -1151,7 +1156,7 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* i) {
 void TPlaylistWidget::onSectionResized(int logicalIndex,
                                        int oldSize,
                                        int newSize) {
-    WZTRACEOBJ(QString("Logical index %1, old size %2, new size %3")
+    WZTRACEOBJ(QString("Index %1, old size %2, new size %3")
                .arg(logicalIndex).arg(oldSize).arg(newSize));
 
     if (logicalIndex == TPlaylistItem::COL_NAME) {
@@ -1206,15 +1211,13 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
 
         // Remove single folder in root
         if (item->childCount() == 1 && item->child(0)->childCount()) {
-            WZTRACE(QString("%1 Removing single folder in root")
-                    .arg(objectName()));
+            WZTRACEOBJ("Removing single folder in root");
             TPlaylistItem* old = item;
             item = static_cast<TPlaylistItem*>(item->takeChild(0));
             delete old;
         }
 
-        WZTRACE(QString("%1 New root '%2'")
-                .arg(objectName()).arg(item->filename()));
+        WZTRACEOBJ(QString("New root '%1'").arg(item->filename()));
 
         // Invalidate playing_item
         if (playingItem) {

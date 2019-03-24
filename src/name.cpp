@@ -28,7 +28,7 @@
 
 using namespace Settings;
 
-LOG4QT_DECLARE_STATIC_LOGGER(logger, Helper)
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TName)
 
 
 QString removeTrailingSlash(const QString& url) {

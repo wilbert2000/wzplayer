@@ -674,7 +674,6 @@ void TPlayer::initVolume() {
     // restore_volume is set to true by mset.reset and set
     // to false by mset.load
     if (mset.restore_volume) {
-        WZTRACE("Keeping current volume");
         mset.volume = mset.old_volume;
         mset.mute = mset.old_mute;
     } else if (!Settings::pref->global_volume) {

@@ -125,7 +125,7 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
 void TMenuSubtitle::subtitleTrackGroupsChanged(
         Action::TActionGroup* subGroup,
         Action::TActionGroup* secSubGroup) {
-    WZDEBUG("");
+    WZTRACE("");
 
     subtitleTrackMenu->addActions(subGroup->actions());
     secondarySubtitleTrackMenu->addActions(secSubGroup->actions());

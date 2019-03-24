@@ -59,7 +59,6 @@ void TVideoWindow::paintEvent(QPaintEvent* e) {
 }
 
 void TVideoWindow::setFastBackground() {
-    WZTRACE("");
 
     normal_background = false;
     // Disable restore background by system
@@ -75,7 +74,6 @@ void TVideoWindow::setFastBackground() {
 }
 
 void TVideoWindow::restoreNormalBackground() {
-    WZTRACE("");
 
     normal_background = true;
     // Enable restore background by system
