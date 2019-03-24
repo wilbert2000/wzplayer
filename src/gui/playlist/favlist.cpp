@@ -316,8 +316,13 @@ void TFavList::updateFavMenu() {
     if (playlistWidget->isModified()) {
         setPlaylistFilename(Settings::TPaths::favoritesFilename());
         save();
+
         // TODO: when removeSelected can remove trees use it to clean
-        // sub dirs from favorites dir when no favs left
+        // sub dirs from favorites dir when no favs left. For now make
+        // sub dirs visible through a refresh.
+        if (playlistWidget->root()->childCount() == 0) {
+            refresh();
+        }
     }
 }
 
