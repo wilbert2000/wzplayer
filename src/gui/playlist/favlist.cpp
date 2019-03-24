@@ -33,6 +33,8 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
                                       tr("Favorites"));
     favMenu->addAction(addPlayingFileAct);
     favMenu->addAction(dock->toggleViewAction());
+    connect(favMenu, &Action::Menu::TMenu::triggered,
+            this, &TFavList::onFavMenuTriggered);
 
     // Timer to merge TPlist::addedItems and/or multiple
     // TPlaylistWidget::modified signals into less calls to updateFavMenu
@@ -74,13 +76,13 @@ void TFavList::createToolbar() {
 void TFavList::enableActions() {
 
     if (disableEnableActions) {
+        WZTRACE("Disabled");
         return;
     }
     disableEnableActions++;
 
     WZTRACE("State " + player->stateToString());
     TPList::enableActions();
-
     findPlayingAct->setEnabled(!player->mdat.filename.isEmpty());
 
     disableEnableActions--;
@@ -177,24 +179,23 @@ QAction* TFavList::findAction(const QString& filename) const {
 
 void TFavList::onPlaylistPlayingItemChanged(TPlaylistItem* item) {
 
-    WZTRACE(item ? item->text(TPlaylistItem::COL_NAME) : "null");
+    WZTRACE(item ? item->baseName() : "0");
 
     if (currentFavAction) {
         markCurrentFavAction(0);
     }
 
     TPlaylistItem* playingItem = 0;
+    TPlaylistItemState state = PSTATE_STOPPED;
     if (item) {
         QAction* action = findAction(item->filename());
         if (action) {
             markCurrentFavAction(action);
             playingItem = action->data().value<TPlaylistItem*>();
+            state = item->state();
         }
     }
-    playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
-
-    WZTRACE(QString("Playing item %1")
-            .arg(playingItem ? "found" : "not found"));
+    playlistWidget->setPlayingItem(playingItem, state);
 }
 
 void TFavList::onRequestUpdateTimeout() {
