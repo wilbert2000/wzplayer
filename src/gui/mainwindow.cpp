@@ -389,17 +389,14 @@ void TMainWindow::createActions() {
     a = new TAction(this, "open_dvd_disc", tr("Open DVD disc"), "dvd");
     connect(a, &TAction::triggered, this, &TMainWindow::openDVD);
 
-    a = new TAction(this, "open_dvd_iso", tr("Open DVD ISO file..."),
-                    "dvd_iso");
+    a = new TAction(this, "open_dvd_iso", tr("Open DVD ISO file..."), "dvd_iso");
     connect(a, &TAction::triggered, this, &TMainWindow::openDVDFromISO);
 
-    a = new TAction(this, "open_dvd_folder", tr("Open DVD folder..."),
-                    "dvd_hd");
+    a = new TAction(this, "open_dvd_folder", tr("Open DVD folder..."), "dvd_hd");
     connect(a, &TAction::triggered, this, &TMainWindow::openDVDFromFolder);
 
     // BluRay
-    a = new TAction(this, "open_bluray_disc", tr("Open Blu-ray disc"),
-                    "bluray");
+    a = new TAction(this, "open_bluray_disc", tr("Open Blu-ray disc"), "bluray");
     connect(a, &TAction::triggered, this, &TMainWindow::openBluRay);
 
     a = new TAction(this, "open_bluray_iso", tr("Open Blu-ray ISO file..."),
@@ -775,8 +772,7 @@ void TMainWindow::createActions() {
 
     // Audio filters
     // Normalize
-    volnormAct = new TAction(this, "volnorm_filter",
-                             tr("Volume normalization"));
+    volnormAct = new TAction(this, "volnorm_filter", tr("Volume normalization"));
     volnormAct->setCheckable(true);
     connect(volnormAct, &TAction::triggered,
             player, &Player::TPlayer::setVolnorm);
@@ -818,8 +814,7 @@ void TMainWindow::createActions() {
     decSubPosAct = new TAction(this, "dec_sub_pos", tr("Up"), "", Qt::Key_Up);
     connect(decSubPosAct, &TAction::triggered,
             player, &Player::TPlayer::decSubPos);
-    incSubPosAct = new TAction(this, "inc_sub_pos", tr("Down"), "",
-                               Qt::Key_Down);
+    incSubPosAct = new TAction(this, "inc_sub_pos", tr("Down"), "",Qt::Key_Down);
     connect(incSubPosAct, &TAction::triggered,
             player, &Player::TPlayer::incSubPos);
 
@@ -930,8 +925,7 @@ void TMainWindow::createActions() {
                                  "", Qt::SHIFT | Qt::Key_C);
     connect(prevChapterAct, &TAction::triggered,
             player, &Player::TPlayer::prevChapter);
-    chapterGroup = new Menu::TChapterGroup(this, prevChapterAct,
-                                           nextChapterAct);
+    chapterGroup = new Menu::TChapterGroup(this, prevChapterAct, nextChapterAct);
 
     // Angles
     nextAngleAct = new TAction(this, "next_angle", tr("Next angle"), "",
@@ -1044,8 +1038,7 @@ void TMainWindow::createActions() {
     autoHideTimer->add(action, logDock);
 
     // Open config dir
-    a = new TAction(this, "open_config_dir",
-                    tr("Open configuration folder..."));
+    a = new TAction(this, "open_config_dir", tr("Open configuration folder..."));
     connect(a, &TAction::triggered, this, &TMainWindow::showConfigFolder);
 
     // Settings
@@ -1220,8 +1213,7 @@ void TMainWindow::createMenus() {
 
     // Context menu
     contextMenu = createContextMenu("context_menu", tr("Context menu"));
-    TAction* a = new TAction(this, "show_context_menu",
-                             tr("Show context menu"));
+    TAction* a = new TAction(this, "show_context_menu", tr("Show context menu"));
     connect(a, &TAction::triggered, contextMenu, &Menu::TMenuExec::execSlot);
 
     connect(contextMenu, &QMenu::aboutToShow,
@@ -1307,8 +1299,7 @@ void TMainWindow::createToolbars() {
     addAction(action);
 
     // Main toolbar
-    toolbar = new Action::TEditableToolbar(this, "toolbar1",
-                                           tr("Main toolbar"));
+    toolbar = new Action::TEditableToolbar(this, "toolbar1", tr("Main toolbar"));
     action = toolbar->toggleViewAction();
     action->setShortcut(Qt::SHIFT | Qt::Key_F3);
     addAction(action);
@@ -1396,8 +1387,8 @@ void TMainWindow::restartApplication() {
 
     emit requestRestart();
 
-    // When fullscreen the window size will not yet be updated by the time
-    // it is saved by saveSettings, so block saving it.
+    // When fullscreen the window size will not yet be updated by the time it is
+    // saved by saveSettings, so block saving it.
     save_size = !pref->fullscreen;
 
     // Close and restart with the new settings
@@ -1486,8 +1477,7 @@ void TMainWindow::createFilePropertiesDialog() {
             file_properties_dialog, &TFilePropertiesDialog::showInfo);
     Action::TAction* action = findChild<Action::TAction*>("view_properties");
     if (action) {
-        connect(file_properties_dialog,
-                &TFilePropertiesDialog::visibilityChanged,
+        connect(file_properties_dialog, &TFilePropertiesDialog::visibilityChanged,
                 action, &Action::TAction::setChecked);
     }
 
@@ -1845,8 +1835,7 @@ void TMainWindow::displayInOutPoints() {
     secs = qRound(player->mset.out_point);
     if (secs > 0) {
         if (!s.isEmpty()) s += " ";
-        s += tr("O: %1", "Out point in statusbar")
-                .arg(TWZTime::formatTime(secs));
+        s += tr("O: %1", "Out point in statusbar").arg(TWZTime::formatTime(secs));
     }
 
     if (player->mset.loop) {
@@ -1906,8 +1895,8 @@ void TMainWindow::showContextMenu() {
 
     // Using this event to make the context menu popup on right mouse button
     // down event, instead of waiting for the mouse button release event,
-    // which would trigger the show_context_menu action if it is assigned to
-    // the mouse_right_click_function.
+    // which would trigger the show_context_menu action if it is assigned to the
+    // mouse_right_click_function.
     if (pref->mouse_right_click_function == "show_context_menu") {
         contextMenu->execSlot();
     }
@@ -1937,7 +1926,7 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
 }
 
 void TMainWindow::updateVideoTracks() {
-    WZTRACE("");
+    WZDEBUG("");
 
     videoTrackGroup->clear();
 
@@ -1963,7 +1952,7 @@ void TMainWindow::updateVideoTracks() {
 }
 
 void TMainWindow::updateAudioTracks() {
-    WZTRACE("");
+    WZDEBUG("");
 
     audioTrackGroup->clear();
 
@@ -1989,7 +1978,7 @@ void TMainWindow::updateAudioTracks() {
 }
 
 void TMainWindow::updateSubtitleTracks() {
-    WZTRACE("");
+    WZDEBUG("");
 
     // Note: subtitles use idx not ID
     subtitleTrackGroup->clear();
@@ -3021,8 +3010,7 @@ void TMainWindow::aboutToExitFullscreen() {
     fullscreen_statusbar_visible = !statusBar()->isHidden();
 
     pref->beginGroup(settingsGroupName());
-    pref->setValue("toolbars_state_fullscreen",
-                   saveState(TVersion::qtVersion()));
+    pref->setValue("toolbars_state_fullscreen", saveState(TVersion::qtVersion()));
     pref->endGroup();
 }
 
@@ -3308,6 +3296,7 @@ double TMainWindow::optimizeSize(double size) const {
     if (i < 450) {
         return 4;
     }
+    // Whatever
     return size;
 }
 
@@ -3565,22 +3554,23 @@ void TMainWindow::processAction(QString action_name) {
     if (action) {
         if (action->isEnabled()) {
             if (action->isCheckable() && booleanFunction) {
-                WZDEBUG("Setting action '" + action_name + " to "
+                WZDEBUG("setting action '" + action_name + " to "
                         + QString::number(value));
                 action->setChecked(value);
             } else {
-                WZDEBUG("Triggering action '" + action_name + "'");
+                WZDEBUG("triggering action '" + action_name + "'");
                 action->trigger();
             }
         } else {
-            WZWARN("Canceling disabled action '" + action_name + "'");
+            WZWARN("canceling disabled action '" + action_name + "'");
         }
     } else {
-        WZWARN("Action '" + action_name + "' not found");
+        WZWARN("action '" + action_name + "' not found");
     }
 }
 
 void TMainWindow::runActions(QString actions) {
+    WZTRACE("Posting actions '" + actions + "'");
 
     actions = actions.simplified(); // Remove white space
 

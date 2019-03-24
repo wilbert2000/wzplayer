@@ -142,8 +142,8 @@ QString TName::clean(const QString& name) {
     static QRegExp rx1("([^\\s])\\.([^\\s])");
     s.replace(rx1, "\\1 \\2");
 
-    // Surround hyphen with spaces
-    static QRegExp rx2("([^\\s])-([^\\s])");
+    // Surround hyphen with spaces, unless it might be a date: [^0-9]
+    static QRegExp rx2("([^0-9][^\\s])-([^\\s])");
     s.replace(rx2, "\\1 - \\2");
 
     // Surround x with spaces
