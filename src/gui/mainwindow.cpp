@@ -261,7 +261,8 @@ void TMainWindow::createPlayer() {
             Qt::QueuedConnection);
 
     connect(player, &Player::TPlayer::mediaInfoChanged,
-            this, &TMainWindow::onMediaInfoChanged);
+            this, &TMainWindow::onMediaInfoChanged,
+            Qt::QueuedConnection);
 
     connect(player, &Player::TPlayer::playerError,
             this, &TMainWindow::onPlayerError,
@@ -2139,7 +2140,8 @@ void TMainWindow::onMediaSettingsChanged() {
 void TMainWindow::onMediaInfoChanged() {
     WZDEBUG("");
 
-    setWindowCaption(player->mdat.displayName() + " - "
+    QString title = playlist->getPlayingTitle();
+    setWindowCaption(title + (title.isEmpty() ? "" : " - ")
                      + TConfig::PROGRAM_NAME);
     displayVideoInfo();
     if (file_properties_dialog && file_properties_dialog->isVisible()) {

@@ -337,6 +337,15 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
+QString TPlaylist::getPlayingTitle() const {
+
+    TPlaylistItem* item = playlistWidget->playingItem;
+    if (item) {
+        return item->baseName();
+    }
+    return "";
+}
+
 bool TPlaylist::updatePlayState() {
 
     Player::TState s = player->state();
