@@ -343,11 +343,13 @@ void TPlayer::open(QString filename, bool loopImage) {
     if (filename.isEmpty()) {
         filename = mdat.filename;
         if (filename.isEmpty()) {
+            WZDEBUG("No file to play");
             Gui::msg(tr("No file to play"));
             return;
         }
     }
 
+    // TODO: Check modifying the passed in filename...
     QUrl url(filename);
     QString scheme = url.scheme();
     if (scheme == "file") {
