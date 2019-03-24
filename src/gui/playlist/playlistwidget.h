@@ -42,6 +42,7 @@ public:
     int countItems() const;
     int countChildren() const;
     bool hasItems() const;
+    bool hasPlayableItems() const;
     bool hasSingleItem() const;
 
     TPlaylistItem* plCurrentItem() const;
@@ -49,7 +50,6 @@ public:
     TPlaylistItem* lastPlaylistItem() const;
 
     QString playingFile() const;
-    QString currentFile() const;
     TPlaylistItem* findFilename(const QString& filename);
 
     TPlaylistItem* getNextItem(TPlaylistItem* w, bool allowChild = true) const;
@@ -107,7 +107,7 @@ private:
 
     QTimer wordWrapTimer;
     QTimer scrollTimer;
-    bool scrollToPlayingFile;
+    bool scrollToPlaying;
 
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;
@@ -115,7 +115,8 @@ private:
     TPlaylistItem* stoppedItem;
 
     int countItems(QTreeWidgetItem* w) const;
-    int countChildren(QTreeWidgetItem* w) const;
+    int countChildren(TPlaylistItem* w) const;
+    bool hasPlayableItems(TPlaylistItem* item) const;
 
     TPlaylistItem* getPreviousItem(TPlaylistItem* w,
                                    bool allowChild = true) const;
@@ -137,7 +138,7 @@ private:
                     bool deleteFromDisk);
 
 private slots:
-    void scrollToPlaying();
+    void scrollToPlayingFile();
     void onWordWrapTimeout();
     void resizeNameColumnAll();
     void onItemExpanded(QTreeWidgetItem* i);

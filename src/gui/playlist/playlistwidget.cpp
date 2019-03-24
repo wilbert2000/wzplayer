@@ -38,7 +38,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     sortOrder(Qt::AscendingOrder),
     sortSectionSaved(-1),
     sortOrderSaved(Qt::AscendingOrder),
-    scrollToPlayingFile(false),
+    scrollToPlaying(false),
     fileCopier(0),
     copyDialog(0) {
 
@@ -91,7 +91,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     scrollTimer.setSingleShot(true);
     scrollTimer.setInterval(0);
     connect(&scrollTimer, &QTimer::timeout,
-            this, &TPlaylistWidget::scrollToPlaying);
+            this, &TPlaylistWidget::scrollToPlayingFile);
 
     connect(header(), &QHeaderView::sectionResized,
             this, &TPlaylistWidget::onSectionResized);
@@ -177,17 +177,17 @@ int TPlaylistWidget::countItems() const {
     return countItems(root());
 }
 
-int TPlaylistWidget::countChildren(QTreeWidgetItem* w) const {
+int TPlaylistWidget::countChildren(TPlaylistItem* w) const {
 
     if (w) {
         if (w->childCount()) {
             int count = 0;
             for(int c = 0; c < w->childCount(); c++) {
-                count += countChildren(w->child(c));
+                count += countChildren(w->plChild(c));
             }
             return count;
         }
-        if (w != root()) {
+        if (!w->isFolder()) {
             return 1;
         }
     }
@@ -199,9 +199,22 @@ int TPlaylistWidget::countChildren() const {
 }
 
 bool TPlaylistWidget::hasItems() const {
+    return root()->childCount();
+}
 
-    TPlaylistItem* r = root();
-    return r && r->childCount();
+bool TPlaylistWidget::hasPlayableItems(TPlaylistItem* item) const {
+
+    for(int i = 0; i < item->childCount(); i++) {
+        TPlaylistItem* child = item->plChild(i);
+        if (!child->isFolder() || hasPlayableItems(child)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TPlaylistWidget::hasPlayableItems() const {
+    return hasPlayableItems(root());
 }
 
 bool TPlaylistWidget::hasSingleItem() const {
@@ -237,16 +250,10 @@ TPlaylistItem* TPlaylistWidget::lastPlaylistItem() const {
 
 QString TPlaylistWidget::playingFile() const {
 
-    if (hasItems() && playingItem) {
+    if (playingItem) {
         return playingItem->filename();
     }
-    return QString();
-}
-
-QString TPlaylistWidget::currentFile() const {
-
-    TPlaylistItem* w = plCurrentItem();
-    return w ? w->filename() : "";
+    return "";
 }
 
 TPlaylistItem* TPlaylistWidget::findFilename(const QString &filename) {
@@ -304,7 +311,7 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
         if (setCurrent) {
             setCurrentItem(playingItem);
             if (wordWrapTimer.isActive()) {
-                scrollToPlayingFile = true;
+                scrollToPlaying = true;
             } else {
                 scrollTimer.start();
             }
@@ -1120,9 +1127,9 @@ void TPlaylistWidget::resizeNameColumnAll() {
     resizeNameColumn(root(), 0);
 }
 
-void TPlaylistWidget::scrollToPlaying() {
+void TPlaylistWidget::scrollToPlayingFile() {
 
-    scrollToPlayingFile = false;
+    scrollToPlaying = false;
     if (playingItem) {
         WZTRACEOBJ("Scrolling to playing item");
         scrollToItem(playingItem);
@@ -1135,7 +1142,7 @@ void TPlaylistWidget::onWordWrapTimeout() {
     WZTRACEOBJ("");
 
     resizeNameColumnAll();
-    if (scrollToPlayingFile) {
+    if (scrollToPlaying) {
         scrollTimer.start();
     }
 }

@@ -360,8 +360,8 @@ void TPList::createActions() {
 
     // Clear playlist
     removeAllAct = new TAction(this, shortName + "_clear",
-                               tr("Clear %1").arg(tranNameLower),
-                               "noicon", Qt::CTRL | Qt::Key_Delete);
+        tr("Clear %1").arg(tranNameLower) + (isFavList ? "..." : ""),
+        "noicon", Qt::CTRL | Qt::Key_Delete);
     removeAllAct->setIcon(iconProvider.clearIcon);
     playlistRemoveMenu->addAction(removeAllAct);
     connect(removeAllAct, &TAction::triggered, this, &TPlaylist::removeAll);
@@ -474,10 +474,15 @@ bool TPList::maybeSave() {
         return true;
     }
 
-    // TODO: be more precise
     if (playlistFilename.isEmpty()) {
-        WZINFO("Discarding unnamed playlist");
-        return true;
+        int count = playlistWidget->root()->childCount();
+        if (count == 0) {
+            return true;
+        }
+        if (count == 1 && playlistWidget->root()->child(0)->childCount() == 0) {
+            return true;
+        }
+        return saveAs();
     }
 
     QFileInfo fi(playlistFilename);
@@ -1020,14 +1025,13 @@ void TPList::removeSelected(bool deleteFromDisk) {
         return;
     }
     if (isBusy()) {
-        WZWARN("Ignoring remove request while busy.");
+        WZWARN("Ignoring remove action while busy.");
         return;
     }
 
-    WZTRACEOBJ("Disabling enableActions");
+    WZTRACEOBJ("");
     disableEnableActions++;
     playlistWidget->removeSelected(deleteFromDisk);
-    // TODO: ...
     if (playlistFilename.isEmpty() && !playlistWidget->hasItems()) {
         // Start with a clean sheet
         playlistWidget->clearModified();
@@ -1042,7 +1046,11 @@ void TPList::removeSelectedFromDisk() {
 }
 
 void TPList::removeAll() {
+
     clear(false);
+    if (!playlistFilename.isEmpty()) {
+        playlistWidget->root()->setModified();
+    }
 }
 
 QUrl TPList::getBrowseURL() {
@@ -1295,17 +1303,12 @@ void TPList::add(const QStringList& files,
 void TPList::clear(bool clearFilename) {
 
     abortThread();
-    bool hadItems = playlistWidget->hasItems();
     playlistWidget->clr();
 
     if (clearFilename) {
         playlistFilename = "";
     } else {
-        TPlaylistItem* root = playlistWidget->root();
-        root->setFilename(playlistFilename);
-        if (hadItems) {
-            root->setModified();
-        }
+        playlistWidget->root()->setFilename(playlistFilename);
     }
 
     setPLaylistTitle();
@@ -1340,13 +1343,8 @@ void TPList::loadSettings() {
     // Set shortcut context
     Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
     QList<QAction*> acts = actions();
-    for(int i = 0; i< acts.count(); i++) {
-        QAction* action = acts.at(i);
-        QString name =  action->objectName();
-        if (!name.isEmpty()) {
-            action->setShortcutContext(context);
-            WZTRACEOBJ(name);
-        }
+    for(int i = 0; i < acts.count(); i++) {
+        acts.at(i)->setShortcutContext(context);
     }
 }
 

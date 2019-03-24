@@ -109,6 +109,7 @@ protected slots:
     virtual bool saveAs();
     void play();
     virtual void refresh() = 0;
+    virtual void removeAll();
 
     void setPLaylistTitle();
 
@@ -167,7 +168,6 @@ private slots:
 
     void removeSelected(bool deleteFromDisk = false);
     void removeSelectedFromDisk();
-    void removeAll();
 
     void enableRemoveMenu();
 

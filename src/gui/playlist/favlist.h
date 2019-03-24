@@ -38,6 +38,7 @@ protected slots:
     virtual void openPlaylistDialog() override;
     virtual bool saveAs() override;
     virtual void refresh() override;
+    virtual void removeAll() override;
 
 private:
     TPlaylist* playlist;

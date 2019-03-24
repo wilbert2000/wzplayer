@@ -421,11 +421,13 @@ void TPlaylist::enableActions() {
     updatePlayingItem();
     enablePlayOrPause();
 
-    bool e = thread == 0 && player->stateReady() && playlistWidget->hasItems();
+    bool e = thread == 0
+            && player->stateReady()
+            && playlistWidget->hasPlayableItems();
     playNextAct->setEnabled(e);
     playPrevAct->setEnabled(e);
     findPlayingAct->setEnabled(playlistWidget->playingItem);
-    // Repeat and shuffle are always enabled
+    // Repeat and shuffle always enabled
 
     TPList::enableActions();
     disableEnableActions--;
@@ -450,15 +452,17 @@ void TPlaylist::onNewMediaStartedPlaying() {
     QString curFilename = playlistWidget->playingFile();
 
     if (md->disc.valid) {
-        // Handle disk
-        if (md->titles.count() == playlistWidget->countItems()) {
-            TDiscName curDisc(curFilename);
-            if (curDisc.valid
+        // Handle disk, count items to check for changed disk
+        TDiscName curDisc(curFilename);
+        if (curDisc.valid
                 && curDisc.protocol == md->disc.protocol
-                && curDisc.device == md->disc.device) {
-                WZDEBUG("Item is from current disc");
-                return;
-            }
+                && curDisc.device == md->disc.device
+                // Title may have been edited, so can't compare
+                // && md->titles[curDisc.title].getDisplayName(false)
+                // == playlistWidget->playingItem->baseName()
+                && md->titles.count() == playlistWidget->countItems()) {
+            WZDEBUG("Item is from current disc");
+            return;
         }
     } else if (filename == curFilename) {
         // Handle current item started playing

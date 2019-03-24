@@ -107,8 +107,8 @@ void TFavList::playItem(TPlaylistItem* item, bool keepPaused) {
 
 void TFavList::openPlaylistDialog() {
 
-    if (playlistWidget->hasItems()) {
-        int res = QMessageBox::information(this, tr("Import favorites"),
+    if (playlistWidget->hasPlayableItems()) {
+        int res = QMessageBox::question(this, tr("Import favorites"),
             tr("This will import a new favorites playlist, overwriting"
                " your current favorites.\n"
                "Are you sure you want to proceed?"),
@@ -152,6 +152,21 @@ void TFavList::findPlayingItem() {
         }
     } else {
         playlist->findPlayingItem();
+    }
+}
+
+void TFavList::removeAll() {
+
+    if (QMessageBox::question(
+                this, tr("Confirm clear favorites"),
+                tr("Favorites are automatically saved to disk. Clearing them"
+                   " will remove your favorites from '%1'.\n"
+                   "Are you sure you want to proceed?")
+                .arg(playlistFilename),
+                QMessageBox::Yes,
+                QMessageBox::No | QMessageBox::Default | QMessageBox::Escape)
+            == QMessageBox::Yes) {
+        TPList::removeAll();
     }
 }
 
@@ -253,6 +268,8 @@ void TFavList::onFavMenuTriggered(QAction* action) {
         if (!filename.isEmpty()) {
             markCurrentFavAction(action);
             playlist->open(filename, item->baseName());
+        } else {
+            WZERROR("No filename retrieved from action");
         }
     }
 }
@@ -273,6 +290,7 @@ void TFavList::updFavMenu(QMenu* menu, TPlaylistItem* folder) {
             a->setStatusTip(item->filename());
             if (item->filename() == player->mdat.filename) {
                 markCurrentFavAction(a);
+                // TODO: copy state from playlist?
                 playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
             }
             menu->addAction(a);
@@ -298,6 +316,8 @@ void TFavList::updateFavMenu() {
     if (playlistWidget->isModified()) {
         setPlaylistFilename(Settings::TPaths::favoritesFilename());
         save();
+        // TODO: when removeSelected can remove trees use it to clean
+        // sub dirs from favorites dir when no favs left
     }
 }
 
