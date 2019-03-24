@@ -1,16 +1,9 @@
 #include "gui/action/menu/menufile.h"
 
 #include "gui/mainwindow.h"
-#include "gui/playlist/playlist.h"
-#include "gui/action/action.h"
-#include "player/player.h"
-#include "settings/paths.h"
 #include "settings/preferences.h"
 #include "name.h"
 #include "iconprovider.h"
-
-#include <QMessageBox>
-#include <QStyle>
 
 
 using namespace Settings;
