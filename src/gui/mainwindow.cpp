@@ -3176,21 +3176,6 @@ void TMainWindow::hidePanel() {
     }
 }
 
-void TMainWindow::subDockSize(TDockWidget* dock, QSize& availableSize) const {
-
-    if (dock->isVisible() && !dock->isFloating()) {
-        QRect d = dock->frameGeometry();
-        QRect p = this->panel->frameGeometry();
-        if (d.x() < p.x() || d.x() > p.x() + p.width()) {
-            WZDEBUG("Left or right");
-            availableSize.rwidth() -= d.width();
-        } else {
-            WZDEBUG("Top or bottom");
-            availableSize.rheight() -= d.height();
-        }
-    }
-}
-
 double TMainWindow::optimizeSize(double size) const {
     WZDEBUG("Size in " + QString::number(size));
 
@@ -3216,14 +3201,12 @@ double TMainWindow::optimizeSize(double size) const {
         return pref->size_factor;
     }
 
-    subDockSize(playlistDock, availableSize);
-    subDockSize(favListDock, availableSize);
-    subDockSize(logDock, availableSize);
+    availableSize = availableSize - frameSize() + panel->frameSize();
 
     QSize video_size = res * size;
 
     // Limit size to perc of available space
-    const double f = 0.75;
+    const double f = 0.8;
 
     // Adjust width
     double max = f * availableSize.width();

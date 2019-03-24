@@ -505,7 +505,6 @@ private:
     void didExitFullscreen();
     void enterFullscreenOnPlay();
 
-    void subDockSize(TDockWidget* dock, QSize& availableSize) const;
     double optimizeSize(double size) const;
     double getDefaultSize() const;
     void resizeStickyWindow(int w, int h);
