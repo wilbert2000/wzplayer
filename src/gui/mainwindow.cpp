@@ -1327,9 +1327,9 @@ void TMainWindow::createToolbars() {
     addAction(action);
 
     actions.clear();
-    actions << "osd_menu" << "toolbar_menu" << "stay_on_top_menu"
-            << "separator" << "view_properties" << "view_playlist"
-            << "view_log" << "separator" << "view_settings";
+    actions << "osd_menu" << "stay_on_top_menu" << "separator"
+            << "view_playlist" << "view_log" << "view_properties"
+            << "separator" << "view_settings";
     toolbar2->setDefaultActions(actions);
     addToolBar(Qt::TopToolBarArea, toolbar2);
 
