@@ -257,6 +257,7 @@ private:
 
     // Play menu
     Action::TAction* stopAct;
+    Action::TAction* pauseAct;
 
     // Seek forward menu
     Action::TAction* seekFrameAct;

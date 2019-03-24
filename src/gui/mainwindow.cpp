@@ -419,7 +419,6 @@ void TMainWindow::createActions() {
     a = new TAction(this, "open_audio_cd", tr("Open audio CD"), "cdda");
     connect(a, &TAction::triggered, this, &TMainWindow::openAudioCD);
 
-
     // Save thumbnail
 #ifdef Q_OS_LINUX
     saveThumbnailAct  = new TAction(this, "save_thumbnail",
@@ -439,6 +438,11 @@ void TMainWindow::createActions() {
     // Stop
     stopAct = new TAction(this, "stop", tr("Stop"), "", Qt::Key_MediaStop);
     connect(stopAct, &TAction::triggered, this, &TMainWindow::stop);
+
+    // Pause
+    pauseAct = new TAction(this, "pause", tr("Pause"), "",
+                           QKeySequence("Media Pause")); // MCE remote key
+    connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
 
     // Seek forward
     seekFrameAct = new TAction(this, "seek_forward_frame", tr("Frame step"), "",
@@ -1280,8 +1284,8 @@ void TMainWindow::createToolbars() {
     controlbar = new Action::TEditableToolbar(this, "controlbar",
                                               tr("Control bar"));
     QStringList actions;
-    actions << "play_or_pause"
-            << "stop"
+    actions << "stop"
+            << "play_or_pause"
             << "seek_rewind_menu"
             << "seek_forward_menu"
             << "in_out_menu|0|1"
@@ -1295,9 +1299,9 @@ void TMainWindow::createToolbars() {
             << "volumeslider_action"
             << "separator|0|1"
             << "osd_menu|0|1"
-            << "view_properties|0|1"
             << "view_playlist|0|1"
             << "view_favorites|0|1"
+            << "view_properties|0|1"
             << "separator|0|1"
             << "fullscreen";
     controlbar->setDefaultActions(actions);
@@ -2471,12 +2475,15 @@ void TMainWindow::enableActions() {
 
 
     // Play menu
+    // Stop
     stopAct->setEnabled(player->state() == Player::STATE_PLAYING
                         || player->state() == Player::STATE_PAUSED
                         || player->state() == Player::STATE_RESTARTING
                         || player->state() == Player::STATE_LOADING
                         || playlist->isBusy()
                         || favList->isBusy());
+    // Pause
+    pauseAct->setEnabled(player->state() == Player::STATE_PLAYING);
 
     // Seek forward
     seekFrameAct->setEnabled(enable);

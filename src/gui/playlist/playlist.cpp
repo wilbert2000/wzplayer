@@ -76,11 +76,6 @@ void TPlaylist::createActions() {
     playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
     connect(playOrPauseAct, &TAction::triggered, this, &TPlaylist::playOrPause);
 
-    // Pause
-    pauseAct = new TAction(mainWindow, "pause", tr("Pause"), "",
-                           QKeySequence("Media Pause")); // MCE remote key
-    connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
-
     // Play next
     playNextAct = new TAction(mainWindow, "play_next", tr("Play next"), "next",
                               QKeySequence(">"));
@@ -421,7 +416,6 @@ void TPlaylist::enableActions() {
     WZTRACE("State " + player->stateToString());
     updatePlayingItem();
     enablePlayOrPause();
-    pauseAct->setEnabled(player->state() == Player::STATE_PLAYING);
 
     bool e = thread == 0 && player->stateReady() && playlistWidget->hasItems();
     playNextAct->setEnabled(e);

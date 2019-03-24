@@ -243,8 +243,8 @@ TMenuInOut::TMenuInOut(QWidget* parent, TMainWindow* mw)
 TMenuPlay::TMenuPlay(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, mw, "play_menu", tr("Play")) {
 
-    addAction(main_window->findAction("play_or_pause"));
     addAction(main_window->findAction("stop"));
+    addAction(main_window->findAction("play_or_pause"));
     addAction(main_window->findAction("pl_play_in_new_window"));
 
     addSeparator();

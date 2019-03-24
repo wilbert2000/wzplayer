@@ -81,7 +81,6 @@ protected slots:
 
 private:
     Action::TAction* playOrPauseAct;
-    Action::TAction* pauseAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
 
