@@ -293,10 +293,19 @@ void TPlaylistItem::renameDir(const QString& dir, const QString& newDir) {
 void TPlaylistItem::updateFilename(const QString& source, const QString& dest) {
 
     if (mWZPlaylist) {
-        setFilename(dest + QDir::separator() + TConfig::WZPLAYLIST);
+        QString d = dest + QDir::separator() + TConfig::WZPLAYLIST;
+        WZTRACE(QString("Setting '%1' to '%2'").arg(source).arg(d));
+        setFilename(d);
     } else {
-        setFilename(dest, mBaseName);
+        WZTRACE(QString("Setting '%1' to '%2'").arg(source).arg(dest));
+        if (mEdited) {
+            setFilename(dest, mBaseName);
+        } else {
+            setFilename(dest);
+        }
+
     }
+
     if (childCount()) {
         renameDir(source + QDir::separator(), dest + QDir::separator());
     }
