@@ -272,6 +272,7 @@ void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
            player->setStartPausedOnce();
         }
         playlistWidget->setPlayingItem(item, PSTATE_LOADING);
+        enablePlayOrPause();
         player->open(item->filename(), playlistWidget->hasSingleItem());
     } else {
         WZDEBUG("End of playlist");
@@ -348,12 +349,14 @@ QString TPlaylist::getPlayingTitle(bool addModified) const {
 void TPlaylist::enablePlayOrPause() {
 
     Player::TState s = player->state();
-    bool enable = thread == 0 && player->stateReady();
+    TPlaylistItem* playingItem = playlistWidget->playingItem;
+    bool loading = playingItem && playingItem->state() == PSTATE_LOADING;
+    bool enable = !loading && thread == 0 && player->stateReady();
     if (enable) {
         WZTRACE("Enabled in state " + player->stateToString());
         playOrPauseAct->setEnabled(true);
         if (s == Player::STATE_PLAYING) {
-            playOrPauseAct->setTextAndTip(tr("&Pause"));
+            playOrPauseAct->setTextAndTip(tr("Pause"));
             playOrPauseAct->setIcon(iconProvider.pauseIcon);
         } else {
             // STATE_PAUSED or STATE_STOPPED
@@ -362,19 +365,20 @@ void TPlaylist::enablePlayOrPause() {
         }
     } else {
         WZTRACE("Disabled in state " + player->stateToString());
-        QString text;
-        if (thread) {
-            text = tr("Loading");
-        } else {
-            text = player->stateToString();
-        }
-        playOrPauseAct->setTextAndTip(tr("%1...").arg(text));
         if (s == Player::STATE_STOPPING) {
+            playOrPauseAct->setTextAndTip(tr("Stopping..."));
             playOrPauseAct->setIcon(iconProvider.iconStopping);
             playOrPauseAct->setEnabled(false);
         } else {
+            QString text;
+            if (thread || loading) {
+                text = tr("Loading");
+            } else {
+                text = player->stateToString();
+            }
+            playOrPauseAct->setTextAndTip(tr("%1...").arg(text));
             playOrPauseAct->setIcon(iconProvider.iconLoading);
-            playOrPauseAct->setEnabled(s == Player::STATE_PLAYING);
+            playOrPauseAct->setEnabled(!loading && s == Player::STATE_PLAYING);
         }
     }
 }
