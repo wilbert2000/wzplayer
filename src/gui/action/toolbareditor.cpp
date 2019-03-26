@@ -33,9 +33,12 @@
 namespace Gui {
 namespace Action {
 
-TToolbarEditor::TToolbarEditor(QWidget* parent, const QString& tbarName) :
+TToolbarEditor::TToolbarEditor(QWidget* parent,
+                               const QString& tbarName,
+                               bool mainToolbar) :
     QDialog(parent, TConfig::DIALOG_FLAGS),
-    toolbarName(tbarName.toLower()) {
+    toolbarName(tbarName.toLower()),
+    isMainToolbar(mainToolbar) {
 
     setupUi(this);
     retranslateUi(this);
@@ -132,23 +135,28 @@ TActionItem* TToolbarEditor::createActiveActionItem(QAction* action,
                                                     bool ns, bool fs) {
 
     TActionItem* i = new TActionItem(action);
-    Qt::ItemFlags flags = i->flags() | Qt::ItemIsUserTristate;
+    Qt::ItemFlags flags = i->flags();
+    if (isMainToolbar) {
+        flags = flags | Qt::ItemIsUserTristate;
+    }
     if (isActionEditable(action)) {
         flags = flags | Qt::ItemIsEditable;
     }
     i->setFlags(flags);
 
-    Qt::CheckState state;
-    if (ns) {
-        if (fs) {
-            state = Qt::Checked;
+    if (isMainToolbar) {
+        Qt::CheckState state;
+        if (ns) {
+            if (fs) {
+                state = Qt::Checked;
+            } else {
+                state = Qt::Unchecked;
+            }
         } else {
-            state = Qt::Unchecked;
+            state = Qt::PartiallyChecked;
         }
-    } else {
-        state = Qt::PartiallyChecked;
+        i->setCheckState(state);
     }
-    i->setCheckState(state);
 
     i->setToolTip(getToolTipForItem(i));
     return i;
@@ -157,62 +165,68 @@ TActionItem* TToolbarEditor::createActiveActionItem(QAction* action,
 QString TToolbarEditor::getToolTipForItem(QListWidgetItem* item) {
 
     QString tip;
-    switch (item->checkState()) {
-        case Qt::Unchecked:
-            tip = tr("Display on normal screen and not on full screen");
-            break;
-        case Qt::PartiallyChecked:
-            tip = tr("Display on full screen and not on normal screen");
-            break;
-        case Qt::Checked:
-            tip = tr("Display on normal and full screen");
+    if (isMainToolbar) {
+        switch (item->checkState()) {
+            case Qt::Unchecked:
+                tip = tr("Display on normal screen and not on full screen. ");
+                break;
+            case Qt::PartiallyChecked:
+                tip = tr("Display on full screen and not on normal screen. ");
+                break;
+            case Qt::Checked:
+                tip = tr("Display on normal and full screen. ");
+        }
     }
 
     if (item->flags() & Qt::ItemIsEditable) {
-        tip += tr(". Double click to edit text.");
+        tip += tr("Double click to edit text.");
     } else {
-        tip += tr(". Text is not editable.");
+        tip += tr("Text is not editable.");
     }
     return tip;
 }
 
 void TToolbarEditor::onItemClicked(QListWidgetItem* item) {
 
-    // Convert cursor to viewport coords
-    QPoint cursorPos = active_actions_list->viewport()->mapFromGlobal(
-                QCursor::pos());
+    if (isMainToolbar) {
+        // Convert cursor to viewport coords
+        QPoint cursorPos = active_actions_list->viewport()->mapFromGlobal(
+                    QCursor::pos());
 
-    if (cursorPos.x() < checkBoxWidth) {
-        Qt::CheckState state = item->checkState();
-        if (state == Qt::Unchecked) {
-            state = Qt::Checked;
-        } else if (state == Qt::Checked) {
-            state = Qt::PartiallyChecked;
-        } else {
-            state = Qt::Unchecked;
+        if (cursorPos.x() < checkBoxWidth) {
+            Qt::CheckState state = item->checkState();
+            if (state == Qt::Unchecked) {
+                state = Qt::Checked;
+            } else if (state == Qt::Checked) {
+                state = Qt::PartiallyChecked;
+            } else {
+                state = Qt::Unchecked;
+            }
+            item->setCheckState(state);
+            item->setToolTip(getToolTipForItem(item));
         }
-        item->setCheckState(state);
-        item->setToolTip(getToolTipForItem(item));
     }
 }
 
 void TToolbarEditor::onItemDoubleClicked(QListWidgetItem *item) {
 
-    // Convert cursor to viewport coords
-    QPoint cursorPos = active_actions_list->viewport()->mapFromGlobal(
-                QCursor::pos());
+    if (isMainToolbar) {
+        // Convert cursor to viewport coords
+        QPoint cursorPos = active_actions_list->viewport()->mapFromGlobal(
+                    QCursor::pos());
 
-    if (cursorPos.x() < checkBoxWidth) {
-        // Undo the first click
-        Qt::CheckState state = item->checkState();
-        if (state == Qt::Unchecked) {
-            state = Qt::PartiallyChecked;
-        } else if (state == Qt::PartiallyChecked) {
-            state = Qt::Checked;
-        } else {
-            state = Qt::Unchecked;
+        if (cursorPos.x() < checkBoxWidth) {
+            // Undo the first click
+            Qt::CheckState state = item->checkState();
+            if (state == Qt::Unchecked) {
+                state = Qt::PartiallyChecked;
+            } else if (state == Qt::PartiallyChecked) {
+                state = Qt::Checked;
+            } else {
+                state = Qt::Unchecked;
+            }
+            item->setCheckState(state);
         }
-        item->setCheckState(state);
     }
 }
 
@@ -247,16 +261,21 @@ void TToolbarEditor::onRowsInsertedActiveList() {
         if (item) {
             WZDEBUG(QString("Updating '%1'").arg(item->text()));
             QAction* action = item->getAction();
-            Qt::ItemFlags flags = item->flags() | Qt::ItemIsUserTristate;
+            Qt::ItemFlags flags = item->flags();
+            if (isMainToolbar) {
+                flags = flags | Qt::ItemIsUserTristate;
+            }
             if (isActionEditable(action)) {
                 flags = flags | Qt::ItemIsEditable;
             }
             item->setFlags(flags);
-            item->setCheckState(Qt::Checked);
+            if (isMainToolbar) {
+                item->setCheckState(Qt::Checked);
+            }
             item->setToolTip(getToolTipForItem(item));
             item->setSelected(true);
         } else {
-            // TODO: fix drop and remove this?
+            // TODO: Fix drop and remove this
             // Replace QListWidgetItem with a TActionItem
             QListWidgetItem* item = dynamic_cast<QListWidgetItem*>(
                         active_actions_list->item(i));

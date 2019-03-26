@@ -54,6 +54,7 @@ public slots:
     void edit();
 
 private:
+    bool isMainToolbar;
     QStringList currentActions;
     QStringList defaultActions;
 

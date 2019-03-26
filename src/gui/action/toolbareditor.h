@@ -39,7 +39,7 @@ public:
     static void stringToAction(const QString& s, QString& actionName,
                                bool& ns, bool&fs);
 
-    TToolbarEditor(QWidget* parent, const QString& tbarName);
+    TToolbarEditor(QWidget* parent, const QString& tbarName, bool mainToolbar);
 
     void setAllActions(const QList<QAction*>& actions);
     void setActiveActions(const QStringList& actions);
@@ -53,6 +53,7 @@ public:
 
 private:
     QString toolbarName;
+    bool isMainToolbar;
     QStringList defaultActions;
     QAction* separatorAction;
     int savedFirst, savedLast;

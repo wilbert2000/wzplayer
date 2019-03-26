@@ -54,6 +54,7 @@ TEditableToolbar::TEditableToolbar(QWidget* parent,
 
     // Reload the main toolbars when entering and exiting fullscreen
     TMainWindow* mw = qobject_cast<TMainWindow*>(parent);
+    isMainToolbar = mw;
     if (mw) {
         connect(mw, &TMainWindow::didEnterFullscreenSignal,
                 this, &TEditableToolbar::reload);
@@ -143,7 +144,7 @@ void TEditableToolbar::edit() {
     WZTRACEOBJ("");
 
     // Create toolbar editor dialog
-    TToolbarEditor editor(parentWidget(), windowTitle());
+    TToolbarEditor editor(parentWidget(), windowTitle(), isMainToolbar);
     editor.setAllActions(TAction::allActions);
     editor.setActiveActions(currentActions);
     editor.setDefaultActions(defaultActions);
