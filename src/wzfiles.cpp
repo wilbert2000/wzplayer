@@ -82,3 +82,15 @@ QString TWZFiles::findExecutable(const QString& name) {
     WZINFO("Executable '" + name + "' not found");
     return QString();
 }
+
+QString TWZFiles::getNewFilename(const QString& dir, const QString& baseName) {
+
+    QDir directory(dir);
+    int i = 2;
+    QString name = baseName;
+    while (directory.exists(name)) {
+        name = baseName + " " + QString::number(i++);
+    }
+
+    return name;
+}

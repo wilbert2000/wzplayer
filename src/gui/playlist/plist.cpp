@@ -14,6 +14,7 @@
 #include "settings/paths.h"
 #include "extensions.h"
 #include "iconprovider.h"
+#include "wzfiles.h"
 #include "version.h"
 
 #include <QVBoxLayout>
@@ -414,6 +415,7 @@ void TPList::enableRemoveFromDiskAction() {
     removeSelectedFromDiskAct->setEnabled(
                 !isBusy()
                 && current
+                && !current->isLink()
                 && (!current->isWZPlaylist()
                     || current->isSymLink()
                     || current->childCount() == 0));
@@ -438,10 +440,17 @@ void TPList::enableActions() {
     refreshAct->setEnabled(!playlistFilename.isEmpty());
 
     bool haveFile = !player->mdat.filename.isEmpty();
-    bool cur = playlistWidget->plCurrentItem();
+    TPlaylistItem* cur = playlistWidget->plCurrentItem();
     browseDirAct->setEnabled(haveFile || cur);
+    browseDirAct->setText(tr("Browse %1")
+                          .arg(cur
+                               ? (cur->isUrl()
+                                  ? tr("URL")
+                                  : tr("folder"))
+                               : tr("the void")));
     browseDirAct->setToolTip(tr("Browse '%1'")
                              .arg(getBrowseURL().toDisplayString()));
+
     playInNewWindowAct->setEnabled(haveFile || playlistWidget->hasItems());
 
     bool enable = !isBusy() && player->stateReady();
@@ -677,6 +686,7 @@ bool TPList::saveM3u(TPlaylistItem* folder,
         }
     }
 
+    // Save folder
     bool result = saveM3uFolder(folder, path, stream, wzplaylist, didSaveMeta);
 
     result = result && stream.status() == QTextStream::Ok;
@@ -699,7 +709,7 @@ bool TPList::saveM3u(TPlaylistItem* folder,
 
     if (result) {
         WZINFO("Saved '" + filename + "'");
-        msgOSD(tr("Saved %1").arg(QFileInfo(filename).fileName()));
+        msg(tr("Saved %1").arg(QFileInfo(filename).fileName()));
         return true;
     }
 
@@ -718,8 +728,24 @@ bool TPList::saveM3u(TPlaylistItem* folder,
 
 bool TPList::saveM3u(const QString& filename, bool linkFolders) {
 
-    TPlaylistItem* root = playlistWidget->root();
-    return saveM3u(root, filename, linkFolders);
+    // Save sort
+    int savedSortSection = playlistWidget->sortSection;
+    Qt::SortOrder savedSortOrder = playlistWidget->sortOrder;
+
+    // Set sort to COL_ORDER
+    if (isFavList) {
+        playlistWidget->setSort(TPlaylistItem::COL_ORDER, Qt::AscendingOrder);
+    }
+
+    // Save tree
+    bool result = saveM3u(playlistWidget->root(), filename, linkFolders);
+
+    // Restore sort
+    if (isFavList) {
+        playlistWidget->setSort(savedSortSection, savedSortOrder);
+    }
+
+    return result;
 }
 
 bool TPList::save() {
@@ -743,7 +769,10 @@ bool TPList::save() {
         }
     }
 
-    msgOSD(tr("Saving %1").arg(fi.fileName()), 0);
+    QString displayName = wzplaylist
+            ? QFileInfo(fi.absolutePath()).fileName()
+            : fi.fileName();
+    msg(tr("Saving %1").arg(displayName), 0);
     setPlaylistFilename(fi.absoluteFilePath());
     Settings::pref->last_dir = fi.absolutePath();
 
@@ -764,10 +793,10 @@ bool TPList::save() {
     bool result = saveM3u(playlistFilename, wzplaylist);
     if (result) {
         playlistWidget->clearModified();
-        msgOSD(tr("Saved '%1'").arg(fi.fileName()));
+        msg(tr("Saved '%1'").arg(displayName));
     } else {
         // Error box and log already done, but need to remove 0 secs save msg
-        msgOSD(tr("Failed to save '%1'").arg(fi.fileName()));
+        msg(tr("Failed to save '%1'").arg(displayName));
     }
 
     return result;
@@ -918,15 +947,9 @@ void TPList::newFolder() {
         path = fi.absolutePath();
     }
 
-    QString baseName = tr("New folder");
-    QDir dir(path);
-    int i = 2;
-    QString name = baseName;
-    while (dir.exists(name)) {
-        name = baseName + " " + QString::number(i++);
-    }
-
-    if (!dir.mkdir(name)) {
+    // TODO: ask filename
+    QString name = TWZFiles::getNewFilename(path, tr("New folder"));
+    if (!QDir(path).mkdir(name)) {
         QString error = strerror(errno);
         WZERROR(QString("Failed to create directory '%1' in '%2'. %3")
                 .arg(name).arg(path).arg(error));
@@ -936,8 +959,8 @@ void TPList::newFolder() {
         return;
     }
 
-    TPlaylistItem* item = new TPlaylistItem(parent, path + "/" + baseName,
-                                            baseName, 0, false);
+    TPlaylistItem* item = new TPlaylistItem(parent, path + "/" + name,
+                                            name, 0, false);
     item->setModified();
     playlistWidget->setCurrentItem(item);
     playlistWidget->editName();
@@ -1076,7 +1099,7 @@ void TPList::removeAll() {
 QUrl TPList::getBrowseURL() {
 
     QString fn = player->mdat.filename;
-    if (dock->isVisible()) {
+    if (!dock->visibleRegion().isEmpty()) {
         TPlaylistItem* item = playlistWidget->plCurrentItem();
         if (item) {
             fn = item->filename();
@@ -1104,32 +1127,16 @@ QUrl TPList::getBrowseURL() {
 
 void TPList::browseDir() {
 
-    QString fn = player->mdat.filename;
-    if (dock->isVisible()) {
-        TPlaylistItem* item = playlistWidget->plCurrentItem();
-        if (item) {
-            fn = item->filename();
-        }
-    }
-    if (fn.isEmpty()) {
-        return;
-    }
-
-    QUrl url;
-    QFileInfo fi(fn);
-    if (fi.exists()) {
-        if (fi.isDir()) {
-            url = QUrl::fromLocalFile(fi.absoluteFilePath());
-        } else {
-            url = QUrl::fromLocalFile(fi.absolutePath());
+    QUrl url = getBrowseURL();
+    if (url.isValid()) {
+        if (!QDesktopServices::openUrl(url)) {
+            QMessageBox::warning(this, tr("Open URL failed"),
+                                 tr("Failed to open URL '%1'")
+                                 .arg(url.toString(QUrl::None)));
         }
     } else {
-        url.setUrl(fn);
-    }
-
-    if (!QDesktopServices::openUrl(url)) {
-        QMessageBox::warning(this, tr("Open URL failed"),
-                             tr("Failed to open URL '%1'")
+        QMessageBox::warning(this, tr("URL vaildation failed"),
+                             tr("Failed to validate URL '%1'")
                              .arg(url.toString(QUrl::None)));
     }
 }

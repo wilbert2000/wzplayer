@@ -35,6 +35,9 @@ public:
     void setPlayingItem(TPlaylistItem* item,
                         TPlaylistItemState state = PSTATE_STOPPED);
 
+    int sortSection;
+    Qt::SortOrder sortOrder;
+
     TPlaylistItem* root() const {
         return static_cast<TPlaylistItem*>(topLevelItem(0));
     }
@@ -70,6 +73,12 @@ public:
     void clearModified() { root()->setModified(false, true); }
     void emitModifiedChanged();
 
+    bool isEditing() const {
+        return state() == QAbstractItemView::EditingState;
+    }
+    void editName();
+    void editURL();
+
     TPlaylistItem* validateItem(TPlaylistItem* item);
 
     TPlaylistItem* add(TPlaylistItem* item, TPlaylistItem* target);
@@ -80,9 +89,6 @@ public:
 
     void saveSettings(QSettings* pref);
     void loadSettings(QSettings* pref);
-
-public slots:
-    void editName();
 
 signals:
     void modifiedChanged();
@@ -98,8 +104,6 @@ protected slots:
                               int start, int end) override;
 
 private:
-    int sortSection;
-    Qt::SortOrder sortOrder;
     int sortSectionSaved;
     Qt::SortOrder sortOrderSaved;
 
@@ -114,6 +118,8 @@ private:
     QString stoppedFilename;
     TPlaylistItem* stoppedItem;
 
+    bool yesToAll;
+
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(TPlaylistItem* w) const;
     bool hasPlayableItems(TPlaylistItem* item) const;
@@ -121,13 +127,21 @@ private:
     TPlaylistItem* getPreviousItem(TPlaylistItem* w,
                                    bool allowChild = true) const;
 
+    void editStart(TPlaylistItem* current);
+
     bool droppingOnItself(QDropEvent *event, const QModelIndex &index);
     bool dropOn(QDropEvent *event, int *dropRow, int *dropCol,
                 QModelIndex *dropIndex);
     bool addDroppedItem(const QString& source,
                         const QString& dest,
                         TPlaylistItem* item);
-    void dropSelection(TPlaylistItem* target, Qt::DropAction action);
+    void moveItem(TPlaylistItem* item,
+                  TPlaylistItem* target,
+                  int& targetIndex);
+    void copyItem(TPlaylistItem* item,
+                  TPlaylistItem* target,
+                  int& targetIndex);
+    bool dropSelection(TPlaylistItem* target, int targetIndex, Qt::DropAction action);
 
     void resizeNameColumn(TPlaylistItem* item, int level);
     void startWordWrap();
