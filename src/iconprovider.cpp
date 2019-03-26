@@ -29,9 +29,13 @@ void TIconProvider::setStyle(QStyle* aStyle) {
                              QIcon::Normal, QIcon::On);
 
     iconPlayed =  style->standardIcon(QStyle::SP_DialogOkButton);
-    iconLoading =  Images::icon("loading");
+    iconLoading = QIcon();
+    iconLoading.addPixmap(Images::icon("loading"), QIcon::Normal, QIcon::Off);
+    iconLoading.addPixmap(Images::icon("loading"), QIcon::Disabled, QIcon::Off);
     iconPlaying =  style->standardIcon(QStyle::SP_MediaPlay);
-    iconStopping =  Images::icon("stopping");
+    iconStopping = QIcon();
+    iconStopping.addPixmap(Images::icon("stopping"), QIcon::Normal, QIcon::Off);
+    iconStopping.addPixmap(Images::icon("stopping"), QIcon::Disabled, QIcon::Off);
     iconFailed =  Images::icon("failed");
 
     recentIcon = QIcon::fromTheme("document-open-recent",
