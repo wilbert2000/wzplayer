@@ -16,6 +16,7 @@ public:
                 const QString& title);
 
 private slots:
+    void onToggleViewTriggered(bool visible);
     void onFocusChanged(QWidget *old, QWidget *now);
     void onDockVisibilityChanged(bool visible);
 };

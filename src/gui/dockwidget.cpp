@@ -4,6 +4,7 @@
 #include "wzdebug.h"
 
 #include <QApplication>
+#include <QAction>
 
 
 using namespace Settings;
@@ -19,13 +20,26 @@ TDockWidget::TDockWidget(QWidget* parent,
     setAcceptDrops(true);
     setFocusPolicy(Qt::StrongFocus);
 
+    // Fix focus and invisible docks
     connect(qApp, &QApplication::focusChanged,
             this, &TDockWidget::onFocusChanged);
     connect(this, &TDockWidget::visibilityChanged,
             this, &TDockWidget::onDockVisibilityChanged);
+    connect(toggleViewAction(), &QAction::triggered,
+            this, &TDockWidget::onToggleViewTriggered,
+            Qt::QueuedConnection);
 
     // QTBUG-48296 keeps panels inside desktop
     // Use alt+left mouse button to override
+}
+
+// The toggleViewAction won't raise the dock when making it visible, do it here
+void TDockWidget::onToggleViewTriggered(bool visible) {
+
+    if (visible && visibleRegion().isEmpty()) {
+        WZTRACEOBJ("Raising");
+        raise();
+    }
 }
 
 // When tabbing around, Qt tabs into non visible docks.
@@ -36,20 +50,18 @@ void TDockWidget::onFocusChanged(QWidget*, QWidget *now) {
     //           .arg(old ? old->objectName() : "none")
     //           .arg(now ? now->objectName() : "none"));
 
-    if (now && now == focusWidget()) {
-        if (visibleRegion().isEmpty()) {
-            WZTRACEOBJ(QString("Got focus while not visible, raising %1")
-                       .arg(objectName()));
-            raise();
-        }
+    if (now && now == focusWidget() && visibleRegion().isEmpty()) {
+        WZTRACEOBJ("Got focus while not visible, raising");
+        raise();
     }
 }
 
 // When a tabbed dock has focus and we switch to another dock, switch focus
 // with it, to prevent the focus staying behind on a no longer visible dock.
 void TDockWidget::onDockVisibilityChanged(bool visible) {
-    //WZTRACEOBJ(QString("Visible %1 Focus widget %2")
+    //WZTRACEOBJ(QString("Visible arg %1 visible %2 Focus widget %3")
     //           .arg(visible)
+    //           .arg(isVisible())
     //           .arg(qApp->focusWidget()
     //                ? qApp->focusWidget()->objectName()
     //                : "none"));
