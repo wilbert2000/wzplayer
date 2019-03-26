@@ -19,6 +19,7 @@
 #ifndef GUI_MAINWINDOW_H
 #define GUI_MAINWINDOW_H
 
+#include "gui/action/menu/menuexec.h"
 #include "player/state.h"
 #include "config.h"
 #include "wzdebug.h"
@@ -189,7 +190,7 @@ protected:
     Action::Menu::TMenu* createContextMenu(const QString& name,
                                            const QString& text);
 
-    virtual QMenu* createPopupMenu() override;
+    virtual Action::Menu::TMenuExec* createPopupMenu() override;
     virtual void closeEvent(QCloseEvent* e) override;
     virtual void hideEvent(QHideEvent* event) override;
     virtual void showEvent(QShowEvent* event) override;
@@ -216,7 +217,7 @@ private:
     TDockWidget* playlistDock;
     // Playlist::TPlaylist* playlist is protected
     TDockWidget* favListDock;
-    Playlist::TFavList* favList;
+    Playlist::TFavList* favlist;
 
     TAutoHideTimer* autoHideTimer;
     TUpdateChecker* update_checker;

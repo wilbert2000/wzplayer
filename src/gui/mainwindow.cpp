@@ -297,8 +297,8 @@ void TMainWindow::createPlaylist() {
 void TMainWindow::createFavList() {
 
     favListDock = new TDockWidget(this, "favlistdock", tr("Favorites"));
-    favList = new Playlist::TFavList(favListDock, this, playlist);
-    favListDock->setWidget(favList);
+    favlist = new Playlist::TFavList(favListDock, this, playlist);
+    favListDock->setWidget(favlist);
     addDockWidget(Qt::RightDockWidgetArea, favListDock);
 }
 
@@ -369,8 +369,9 @@ void TMainWindow::createActions() {
             this, &TMainWindow::clearRecentsListDialog);
 
     // Open URL
-    TAction* a = new TAction(this, "open_url", tr("Open URL..."), "",
+    TAction* a = new TAction(this, "open_url", tr("Open URL..."), "noicon",
                              QKeySequence("Ctrl+U"));
+    a->setIcon(iconProvider.urlIcon);
     connect(a, &TAction::triggered, this, &TMainWindow::openURL);
 
     // Open file
@@ -1155,7 +1156,7 @@ void TMainWindow::createMenus() {
 
     using namespace Action;
 
-    fileMenu = new Menu::TMenuFile(this, this, favList->getFavMenu());
+    fileMenu = new Menu::TMenuFile(this, this, favlist->getFavMenu());
     menuBar()->addMenu(fileMenu);
     playMenu = new Menu::TMenuPlay(this, this);
     menuBar()->addMenu(playMenu);
@@ -1178,7 +1179,7 @@ void TMainWindow::createMenus() {
     statusbarMenu->addAction(viewVideoTimeAct);
     statusbarMenu->addAction(viewFramesAct);
 
-    // Toolbar menu
+    // Toolbar context menu
     toolbarMenu = new Menu::TMenu(this, this, "toolbar_menu", tr("Toolbars"),
                                   "toolbars");
     toolbarMenu->addAction(viewMenuBarAct);
@@ -1237,14 +1238,22 @@ void TMainWindow::createMenus() {
     playerWindow->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(playerWindow, &TPlayerWindow::customContextMenuRequested,
             this, &TMainWindow::showContextMenu);
+
+    // Set context menu toolbar playlists
+    Action::Menu::TMenuExec* menu = createPopupMenu();
+    menu->menuAction()->setObjectName("dock_menu");
+    menu->menuAction()->setText(tr("Dock menu"));
+    menu->menuAction()->setIcon(Images::icon("dock_menu"));
+    playlist->setContextMenuToolbar(menu);
+    favlist->setContextMenuToolbar(menu);
 } // createMenus()
 
 // Called by main window to show context popup on toolbars and dock widgets.
 // The main window takes ownership of the returned menu and will delete it
 // after use, hence the need to create a new menu every time.
-QMenu* TMainWindow::createPopupMenu() {
+Action::Menu::TMenuExec* TMainWindow::createPopupMenu() {
 
-    QMenu* menu = new QMenu(this);
+    Action::Menu::TMenuExec* menu = new Action::Menu::TMenuExec(this);
     menu->addAction(playlistDock->toggleViewAction());
     menu->addAction(favListDock->toggleViewAction());
     menu->addAction(logDock->toggleViewAction());
@@ -1765,7 +1774,7 @@ void TMainWindow::loadSettings() {
     pref->endGroup();
 
     playlist->loadSettings();
-    favList->loadSettings();
+    favlist->loadSettings();
 }
 
 void TMainWindow::saveSettings() {
@@ -1801,7 +1810,7 @@ void TMainWindow::saveSettings() {
     pref->endGroup();
 
     playlist->saveSettings();
-    favList->saveSettings();
+    favlist->saveSettings();
     if (help_window) {
         help_window->saveSettings(pref);
     }
@@ -2405,9 +2414,9 @@ void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
 void TMainWindow::closeEvent(QCloseEvent* e)  {
     WZDEBUG("");
 
-    if (playlist->maybeSave() && favList->maybeSave()) {
+    if (playlist->maybeSave() && favlist->maybeSave()) {
         playlist->abortThread();
-        favList->abortThread();
+        favlist->abortThread();
         player->close(Player::STATE_STOPPING);
         exitFullscreen();
         save();
@@ -2472,7 +2481,7 @@ void TMainWindow::enableActions() {
     timeslider_action->enable(enable);
     // Play lists
     playlist->enableActions();
-    favList->enableActions();
+    favlist->enableActions();
 
     // File menu
     // Save thumbnail action
@@ -2489,7 +2498,7 @@ void TMainWindow::enableActions() {
                         || player->state() == Player::STATE_RESTARTING
                         || player->state() == Player::STATE_LOADING
                         || playlist->isBusy()
-                        || favList->isBusy());
+                        || favlist->isBusy());
     // Pause
     pauseAct->setEnabled(player->state() == Player::STATE_PLAYING);
 
@@ -3117,7 +3126,7 @@ void TMainWindow::stop() {
 
     // Playlist stops player
     playlist->stop();
-    favList->stop();
+    favlist->stop();
 }
 
 void TMainWindow::setSizeFactor(double factor) {

@@ -15,6 +15,7 @@ public:
 
     QSize iconSize;
 
+    QIcon urlIcon;
     QIcon fileIcon;
     QIcon fileLinkIcon;
     QIcon folderIcon;

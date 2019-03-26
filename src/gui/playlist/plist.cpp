@@ -388,6 +388,13 @@ void TPList::createToolbar() {
     addAction(action);
 }
 
+void TPList::setContextMenuToolbar(Action::Menu::TMenuExec* menu) {
+
+    toolbar->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(toolbar, &QToolBar::customContextMenuRequested,
+            menu, &Action::Menu::TMenuExec::execSlot);
+}
+
 void TPList::enablePaste() {
 
     pasteAct->setEnabled(!isBusy()

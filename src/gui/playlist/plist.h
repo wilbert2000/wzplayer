@@ -40,6 +40,8 @@ public:
                     const QString& aTransName);
     virtual ~TPList() override;
 
+    void setContextMenuToolbar(Action::Menu::TMenuExec* menu);
+
     void abortThread();
     void add(const QStringList& files,
              bool startPlay = false,

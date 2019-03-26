@@ -13,6 +13,7 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     style = aStyle;
 
+    urlIcon =  Images::icon("open_url");
     fileIcon = style->standardIcon(QStyle::SP_FileIcon);
     fileLinkIcon = style->standardIcon(QStyle::SP_FileLinkIcon);
 
