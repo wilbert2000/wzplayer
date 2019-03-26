@@ -36,13 +36,19 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
     connect(favMenu, &Action::Menu::TMenu::triggered,
             this, &TFavList::onFavMenuTriggered);
 
-    // Timer to merge TPlist::addedItems and/or multiple
+    // Timers to merge TPlist::addedItems and/or multiple
     // TPlaylistWidget::modified signals into less calls to updateFavMenu
     requestUpdateTimer = new QTimer(this);
     requestUpdateTimer->setSingleShot(true);
     requestUpdateTimer->setInterval(500);
     connect(requestUpdateTimer, &QTimer::timeout,
             this, &TFavList::onRequestUpdateTimeout);
+
+    requestSaveTimer = new QTimer(this);
+    requestSaveTimer->setSingleShot(true);
+    requestSaveTimer->setInterval(10000);
+    connect(requestSaveTimer, &QTimer::timeout,
+            this, &TFavList::onRequestSaveTimeout);
 
     connect(this, &TFavList::addedItems,
             this, &TFavList::onAddedItems);
@@ -213,6 +219,25 @@ void TFavList::onPlaylistPlayingItemChanged(TPlaylistItem* item) {
     playlistWidget->setPlayingItem(playingItem, state);
 }
 
+void TFavList::onRequestSaveTimeout() {
+    WZTRACE("");
+
+    if (playlistWidget->isModified()) {
+        if (isBusy() || playlistWidget->isEditing()) {
+            requestSaveTimer->start();
+        } else {
+            setPlaylistFilename(Settings::TPaths::favoritesFilename());
+            save();
+
+            // TODO: Fix clear favorites, for now make sub dirs left behind
+            // after a clear favorites action visible through a refresh.
+            if (playlistWidget->root()->childCount() == 0) {
+                refresh();
+            }
+        }
+    }
+}
+
 void TFavList::onRequestUpdateTimeout() {
     WZTRACE("");
 
@@ -268,8 +293,6 @@ void TFavList::onFavMenuTriggered(QAction* action) {
         if (!filename.isEmpty()) {
             markCurrentFavAction(action);
             playlist->open(filename, item->baseName());
-        } else {
-            WZERROR("No filename retrieved from action");
         }
     }
 }
@@ -314,15 +337,7 @@ void TFavList::updateFavMenu() {
     }
 
     if (playlistWidget->isModified()) {
-        setPlaylistFilename(Settings::TPaths::favoritesFilename());
-        save();
-
-        // TODO: when removeSelected can remove trees use it to clean
-        // sub dirs from favorites dir when no favs left. For now make
-        // sub dirs visible through a refresh.
-        if (playlistWidget->root()->childCount() == 0) {
-            refresh();
-        }
+        requestSaveTimer->start();
     }
 }
 

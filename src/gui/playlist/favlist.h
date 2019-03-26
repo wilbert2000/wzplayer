@@ -46,6 +46,7 @@ private:
     QAction* currentFavAction;
     QIcon currentFavIcon;
     QTimer* requestUpdateTimer;
+    QTimer* requestSaveTimer;
 
     void createToolbar();
     QAction* fAction(QMenu* menu, const QString& filename) const;
@@ -55,6 +56,7 @@ private:
     void requestUpdate();
 
 private slots:
+    void onRequestSaveTimeout();
     void onRequestUpdateTimeout();
     void onAddedItems();
     void onModifiedChanged();
