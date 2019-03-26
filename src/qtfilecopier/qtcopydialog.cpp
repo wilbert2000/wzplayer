@@ -89,6 +89,7 @@ public:
     QtOverwriteDialog(QWidget *parent = 0);
 
     enum ResultButton {
+        Retry,
         Cancel,
         Skip,
         SkipAll,
@@ -96,8 +97,12 @@ public:
         OverwriteAll
     };
 
+    QString getDestinationName() const;
+
     ResultButton execute(const QString &sourceFile, const QString &destinationFile);
+
 private slots:
+    void retry()        { done(Retry); }
     void cancel()       { done(Cancel); }
     void skip()         { done(Skip); }
     void skipAll()      { done(SkipAll); }
@@ -110,12 +115,17 @@ private:
 QtOverwriteDialog::QtOverwriteDialog(QWidget *parent) : QDialog(parent)
 {
     ui.setupUi(this);
+    connect(ui.retryButton, SIGNAL(clicked()), this, SLOT(retry()));
     connect(ui.skipButton, SIGNAL(clicked()), this, SLOT(skip()));
     connect(ui.skipAllButton, SIGNAL(clicked()), this, SLOT(skipAll()));
     connect(ui.overwriteButton, SIGNAL(clicked()), this, SLOT(overwrite()));
     connect(ui.overwriteAllButton, SIGNAL(clicked()), this, SLOT(overwriteAll()));
     connect(ui.cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
     ui.iconLabel->setPixmap(QApplication::style()->standardPixmap(QStyle::SP_MessageBoxWarning));
+}
+
+QString QtOverwriteDialog::getDestinationName() const {
+    return ui.destLineEdit->text();
 }
 
 QtOverwriteDialog::ResultButton QtOverwriteDialog::execute(const QString &sourceFile,
@@ -194,6 +204,7 @@ public:
     void finished(int id, bool error);
     void canceled();
     void childrenCanceled(int id);
+    void childrenRenamed(int id, const QString& newPath, int remove);
 
     void showProgress();
     void showDialog();
@@ -266,7 +277,7 @@ void QtCopyDialogPrivate::error(int id, QtFileCopier::Error error, bool stopped)
     showProgress();
     showDialog();
 
-    Request r = requests[id];
+    Request& r = requests[id];
 
     QString title;
     QString text;
@@ -280,13 +291,28 @@ void QtCopyDialogPrivate::error(int id, QtFileCopier::Error error, bool stopped)
         case QtFileCopier::DestinationExists: {
             QtOverwriteDialog mb(q_ptr);
             switch (mb.execute(r.source, r.dest)) {
-                case QtOverwriteDialog::Cancel       : fileCopier->cancelAll();
-                                                       fileCopier->retry();        break;
-                case QtOverwriteDialog::Skip         : fileCopier->skip();         break;
-                case QtOverwriteDialog::SkipAll      : fileCopier->skipAll();      break;
-                case QtOverwriteDialog::Overwrite    : fileCopier->overwrite();    break;
-                case QtOverwriteDialog::OverwriteAll : fileCopier->overwriteAll(); break;
-                default                              : fileCopier->retry();        break;
+                case QtOverwriteDialog::Cancel:
+                    fileCopier->cancelAll();
+                    fileCopier->retry();
+                    break;
+                case QtOverwriteDialog::Skip:
+                    fileCopier->skip();
+                    break;
+                case QtOverwriteDialog::SkipAll:
+                    fileCopier->skipAll();
+                    break;
+                case QtOverwriteDialog::Overwrite:
+                    fileCopier->overwrite();
+                    break;
+                case QtOverwriteDialog::OverwriteAll:
+                    fileCopier->overwriteAll();
+                    break;
+                default:
+                    int remove = r.dest.length();
+                    r.dest = mb.getDestinationName();
+                    childrenRenamed(id, r.dest, remove);
+                    fileCopier->retryNewName(r.dest);
+                    break;
             }
             handled = true;
             break;
@@ -465,6 +491,23 @@ void QtCopyDialogPrivate::childrenCanceled(int id)
         if (fileCopier->isDir(childId)) {
             currentDir++;
             childrenCanceled(childId);
+        }
+    }
+}
+
+void QtCopyDialogPrivate::childrenRenamed(int id,
+                                          const QString& newPath,
+                                          int remove)
+{
+    if (!fileCopier->isDir(id))
+        return;
+    QList<int> children = fileCopier->entryList(id);
+    QListIterator<int> itChild(children);
+    while (itChild.hasNext()) {
+        int childId = itChild.next();
+        requests[childId].dest = newPath + requests[childId].dest.mid(remove);
+        if (fileCopier->isDir(childId)) {
+            childrenRenamed(childId, newPath, remove);
         }
     }
 }

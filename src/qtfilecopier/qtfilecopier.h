@@ -137,6 +137,7 @@ public Q_SLOTS:
     void skip();
     void skipAll();
     void retry();
+    void retryNewName(const QString& newName);
 
     void overwrite();
     void overwriteAll();

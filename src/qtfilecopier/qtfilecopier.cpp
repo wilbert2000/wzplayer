@@ -59,6 +59,7 @@
 #include <QtCore/QMetaType>
 #include <QtCore/QStorageInfo>
 
+
 struct CopyRequest {
     CopyRequest() {
         move = false;
@@ -130,8 +131,15 @@ public:
     void renameChildren(int id);
     void cancelChildRequests(int id);
     void overwriteChildRequests(int id);
+    void overwriteRequestsPath(int id,
+                               const QString& newPath,
+                               bool setDestinationName,
+                               int remove);
 
     void setAutoReset(bool on);
+
+    int getCurrentId() { return currentId; }
+
 public slots:
     void restart();
 
@@ -144,6 +152,7 @@ public slots:
     void skip();
     void skipAll();
     void retry();
+    void retryNewName(const QString& newPath);
 
     void overwrite();
     void overwriteAll();
@@ -344,6 +353,36 @@ void QtCopyThread::retry()
     QMutexLocker l(&mutex);
     if (!waitingForInteraction)
         return;
+    interactionCondition.wakeOne();
+    waitingForInteraction = false;
+}
+
+void QtCopyThread::overwriteRequestsPath(int id,
+                                         const QString& newPath,
+                                         bool setDestinationName,
+                                         int remove)
+{
+    QMap<int, Request>::Iterator it = requestQueue.find(id);
+    if (it != requestQueue.end()) {
+        Request &r = it.value();
+        if (setDestinationName) {
+            remove = r.request.dest.length();
+            r.request.dest = newPath;
+        } else {
+            r.request.dest = newPath + r.request.dest.mid(remove);
+        }
+        QListIterator<int> itChild(r.request.childrenQueue);
+        while (itChild.hasNext())
+            overwriteRequestsPath(itChild.next(), newPath, false, remove);
+    }
+}
+
+void QtCopyThread::retryNewName(const QString& newPath)
+{
+    QMutexLocker l(&mutex);
+    if (!waitingForInteraction)
+        return;
+    overwriteRequestsPath(currentId, newPath, true, 0);
     interactionCondition.wakeOne();
     waitingForInteraction = false;
 }
@@ -907,6 +946,11 @@ public:
 
     void progressRequest();
 
+    void renameChildren(int id,
+                        const QString& newName,
+                        bool setName,
+                        int remove);
+
     void removeChildren(int id);
     CopyRequest prepareRequest(bool checkPath,
                                const QString &sourceFile,
@@ -997,6 +1041,27 @@ void QtFileCopierPrivate::removeChildren(int id)
             int childId = it.next();
             removeChildren(childId);
             requests.remove(childId);
+        }
+    }
+}
+
+void QtFileCopierPrivate::renameChildren(int id,
+                                         const QString& newName,
+                                         bool setName,
+                                         int remove)
+{
+    if (requests.contains(id)) {
+        CopyRequest& r = requests[id];
+        if (setName) {
+            remove = r.dest.length();
+            r.dest = newName;
+        } else {
+            r.dest = newName + r.dest.mid(remove);
+        }
+        QList<int> children = r.childrenQueue;
+        QListIterator<int> it(children);
+        while (it.hasNext()) {
+            renameChildren(it.next(), newName, false, remove);
         }
     }
 }
@@ -2005,6 +2070,26 @@ void QtFileCopier::retry()
         return;
     Q_D(QtFileCopier);
     d->copyThread->retry();
+    d->setState(QtFileCopier::Busy);
+}
+
+/*!
+    Tries to perform the current (failing) operation once more.
+
+    The slot only applies while waiting for interaction (i.e the file
+    copier is in the QtFileCopier::WaitingForInteraction state). In
+    that case the file copier changes the state to QtFileCopier::Busy.
+
+    \sa skip(), overwrite()
+*/
+
+void QtFileCopier::retryNewName(const QString& newName)
+{
+    if (state() != QtFileCopier::WaitingForInteraction)
+        return;
+    Q_D(QtFileCopier);
+    d->renameChildren(d->copyThread->getCurrentId(), newName, true, 0);
+    d->copyThread->retryNewName(newName);
     d->setState(QtFileCopier::Busy);
 }
 
