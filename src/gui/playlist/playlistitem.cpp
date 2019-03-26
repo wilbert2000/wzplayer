@@ -186,6 +186,41 @@ TPlaylistItem *TPlaylistItem::clone() const {
     return root;
 }
 
+void TPlaylistItem::setItemIcon() {
+
+    if (mFolder) {
+        if (mSymLink) {
+            if (mEdited) {
+                itemIcon = iconProvider.folderLinkEditedIcon;
+            } else {
+                itemIcon = iconProvider.folderLinkIcon;
+            }
+        } else {
+            if (mEdited) {
+                itemIcon = iconProvider.folderEditedIcon;
+            } else {
+                itemIcon = iconProvider.folderIcon;
+            }
+        }
+    } else if (mSymLink) {
+        if (mEdited) {
+            itemIcon = iconProvider.fileLinkEditedIcon;
+        } else {
+            itemIcon = iconProvider.fileLinkIcon;
+        }
+    } else if (mURL) {
+        if (mEdited) {
+            itemIcon = iconProvider.urlEditedIcon;
+        } else {
+            itemIcon = iconProvider.urlIcon;
+        }
+    } else if (mEdited) {
+        itemIcon = iconProvider.fileEditedIcon;
+    } else {
+        itemIcon = iconProvider.fileIcon;
+    }
+}
+
 // Update fields depending on file name
 void TPlaylistItem::setFileInfo() {
 
@@ -244,20 +279,7 @@ void TPlaylistItem::setFileInfo() {
         }
     }
 
-    // Icon
-    if (mFolder) {
-        if (mSymLink) {
-            itemIcon = iconProvider.folderLinkIcon;
-        } else {
-            itemIcon = iconProvider.folderIcon;
-        }
-    } else if (mSymLink) {
-        itemIcon = iconProvider.fileLinkIcon;
-    } else if (mURL) {
-        itemIcon = iconProvider.urlIcon;
-    } else {
-        itemIcon = iconProvider.fileIcon;
-    }
+    setItemIcon();
 }
 
 QString TPlaylistItem::stateString(TPlaylistItemState state) {
@@ -298,12 +320,7 @@ void TPlaylistItem::updateFilename(const QString& source, const QString& dest) {
         setFilename(d);
     } else {
         WZTRACE(QString("Setting '%1' to '%2'").arg(source).arg(dest));
-        if (mEdited) {
-            setFilename(dest, mBaseName);
-        } else {
-            setFilename(dest);
-        }
-
+        setFilename(dest);
     }
 
     if (childCount()) {
@@ -411,15 +428,28 @@ QString TPlaylistItem::editName() const {
     return name;
 }
 
-bool TPlaylistItem::rename(const QString& newName) {
+bool TPlaylistItem::rename(QString newName) {
     WZDEBUG(newName);
 
     if (newName.isEmpty()) {
-        return false;
+        if (mEditURL || !mEdited) {
+            WZDEBUG("Canceling empty filename");
+            return false;
+        }
+
+        // Reset name to original name
+        QFileInfo fi(mFilename);
+        if (mWZPlaylist) {
+            fi.setFile(fi.absolutePath());
+        }
+        newName = fi.fileName();
+        mEdited = false;
+        WZDEBUG(QString("Name reset to '%1'").arg(newName));
     }
 
     QString name = mEditURL ? mFilename : editName();
     if (name == newName) {
+        WZTRACE("New name equals old name");
         return true;
     }
 
@@ -429,7 +459,7 @@ bool TPlaylistItem::rename(const QString& newName) {
 
     if (mEditURL) {
         WZINFO(QString("Setting URL link to '%1'").arg(newName));
-        setFilename(newName, mBaseName);
+        setFilename(newName);
         setModified();
         if (!mURL && !QFileInfo(newName).exists()) {
             QMessageBox::warning(treeWidget(), tr("File not found"),
@@ -442,7 +472,8 @@ bool TPlaylistItem::rename(const QString& newName) {
     // Set name and extension of this playlist item and protect name
     WZDEBUG(QString("Setting name link to '%1'").arg(newName));
     QFileInfo fi(newName);
-    setName(fi.completeBaseName(), fi.suffix(), true);
+    newName = fi.completeBaseName();
+    setName(newName, fi.suffix(), newName != TName::baseNameForURL(mFilename));
     setModified();
     return true;
 }
@@ -512,13 +543,7 @@ QVariant TPlaylistItem::data(int column, int role) const {
     return QTreeWidgetItem::data(column, role);
 }
 
-void TPlaylistItem::setFilename(const QString& fileName) {
 
-    mFilename = QDir::toNativeSeparators(fileName);
-    if (!mFilename.isEmpty()) {
-        mBaseName = QFileInfo(fileName).completeBaseName();
-    }
-    setFileInfo();
 }
 
 void TPlaylistItem::setFilename(const QString& fileName,
@@ -529,16 +554,28 @@ void TPlaylistItem::setFilename(const QString& fileName,
     setFileInfo();
 }
 
+void TPlaylistItem::setFilename(const QString& fileName) {
+
+    mFilename = QDir::toNativeSeparators(fileName);
+    if (mFilename.isEmpty()) {
+        mBaseName = "";
+    } else if (!mEdited) {
+        mBaseName = TName::nameForURL(mFilename);
+    }
+    setFileInfo();
+}
+
 void TPlaylistItem::setName(const QString& baseName,
                             const QString& ext,
                             bool protectName) {
 
     mBaseName = baseName;
-    mExt = ext;
-    if (protectName) {
-        mEdited = true;
-    }
+    mExt = ext.toLower();
+    mEdited = protectName;
+    setItemIcon();
+    setStateIcon();
     setSizeHintName();
+
 }
 
 void TPlaylistItem::setStateIcon() {

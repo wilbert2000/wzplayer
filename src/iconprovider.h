@@ -16,10 +16,15 @@ public:
     QSize iconSize;
 
     QIcon urlIcon;
+    QIcon urlEditedIcon;
     QIcon fileIcon;
+    QIcon fileEditedIcon;
     QIcon fileLinkIcon;
+    QIcon fileLinkEditedIcon;
     QIcon folderIcon;
+    QIcon folderEditedIcon;
     QIcon folderLinkIcon;
+    QIcon folderLinkEditedIcon;
 
     QIcon iconPlayed;
     QIcon iconLoading;
@@ -58,6 +63,10 @@ public:
 
 private:
     QStyle* style;
+
+    QPixmap getPixMapEdited(QIcon icon, QIcon::Mode mode, QIcon::State state);
+    QIcon getIconEdited(const QIcon& icon, bool addOnIcon = false);
+
 };
 
 extern TIconProvider iconProvider;

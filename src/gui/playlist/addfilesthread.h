@@ -89,6 +89,7 @@ private:
                            QString filename,
                            QString name,
                            double duration,
+                           bool protectName,
                            bool useBlackList);
 
     void addFiles();

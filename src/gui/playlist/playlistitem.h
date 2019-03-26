@@ -182,8 +182,9 @@ private:
 
     void renameDir(const QString& dir, const QString& newDir);
     bool renameFile(const QString& newName);
-    bool rename(const QString& newName);
+    bool rename(QString newName);
 
+    void setItemIcon();
     void setFileInfo();
 };
 

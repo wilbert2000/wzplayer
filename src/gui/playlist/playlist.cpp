@@ -398,7 +398,7 @@ void TPlaylist::updatePlayingItem() {
                         WZWARN(QString("Filename mismatch, updating item"
                             " filename '%1' with player filename '%2'")
                                .arg(item->filename()).arg(fn));
-                        item->setFilename(fn, item->baseName());
+                        item->setFilename(fn);
                         item->setModified();
                         playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
                         return;

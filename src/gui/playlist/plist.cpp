@@ -15,6 +15,7 @@
 #include "extensions.h"
 #include "iconprovider.h"
 #include "wzfiles.h"
+#include "name.h"
 #include "version.h"
 
 #include <QVBoxLayout>
@@ -244,7 +245,14 @@ void TPList::createActions() {
             this, &TPList::editName);
     contextMenu->addAction(editNameAct);
 
-    // Edit name
+    // Clear name
+    clearNameAct = new TAction(this, shortName + "_clear_name",
+                               tr("Clear name"));
+    connect(clearNameAct, &TAction::triggered,
+            this, &TPList::clearName);
+    contextMenu->addAction(clearNameAct);
+
+    // Edit URL
     editURLAct = new TAction(owner, shortName + "_edit_url",
                              tr("Edit url..."), "", Qt::CTRL | Qt::Key_F2);
     connect(editURLAct, &TAction::triggered,
@@ -455,6 +463,7 @@ void TPList::enableActions() {
 
     bool enable = !isBusy() && player->stateReady();
     editNameAct->setEnabled(enable && cur);
+    clearNameAct->setEnabled(enable && cur && cur->edited());
     newFolderAct->setEnabled(enable);
     // findPlayingAct by descendants
 
@@ -904,6 +913,16 @@ void TPList::editName() {
 
     makeActive();
     playlistWidget->editName();
+}
+
+void TPList::clearName() {
+
+    TPlaylistItem* cur = playlistWidget->plCurrentItem();
+    if (cur) {
+        cur->setName(TName::baseNameForURL(cur->filename()), cur->extension(),
+                                           false);
+        cur->setModified();
+    }
 }
 
 void TPList::editURL() {

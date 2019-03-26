@@ -487,11 +487,13 @@ void TPlaylistWidget::updateItemPath() {
     TPlaylistItem* parent = itemToUpdatePath->plParent();
     int idx = parent->indexOfChild(itemToUpdatePath);
     parent->takeChild(idx);
+    // Modified already set
 
     QString path = QFileInfo(itemToUpdatePath->path()).absolutePath();
     parent = findFilename(path);
     if (parent) {
         parent->addChild(itemToUpdatePath);
+        parent->setModified();
         setCurrentItem(itemToUpdatePath);
         scrollToItem(itemToUpdatePath);
         WZINFO(QString("Item moved to '%1'").arg(path));

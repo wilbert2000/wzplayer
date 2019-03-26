@@ -9,6 +9,7 @@
 
 #include "gui/playlist/playlistitem.h"
 #include "discname.h"
+#include "name.h"
 #include "extensions.h"
 #include "config.h"
 
@@ -348,6 +349,7 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
 
     QString name;
     double duration = 0;
+    bool edited;
     static QRegExp rx("^#EXTINF:\\s*(\\d+)\\s*,\\s*(.*)");
 
     QString path = playlistPath;
@@ -368,7 +370,8 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
             duration = rx.cap(1).toDouble();
             name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            addItem(playlistItem, line, name, duration, true);
+            edited = name != TName::baseNameForURL(line);
+            addItem(playlistItem, line, name, duration, edited, true);
             name = "";
             duration = 0;
         } else if (line.startsWith("#WZP-blacklist:")) {
@@ -551,9 +554,8 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                                         QString filename,
                                         QString name,
                                         double duration,
+                                        bool protectName,
                                         bool useBlackList) {
-
-    bool protectName = !name.isEmpty();
 
     if (filename.startsWith("file:")) {
         filename = QUrl(filename).toLocalFile();
@@ -669,6 +671,7 @@ void TAddFilesThread::addFiles() {
                 filename,
                 "" /* name */,
                 0 /* duartion */,
+                false, /* protect name */
                 false /* use blacklist */);
     }
 }
