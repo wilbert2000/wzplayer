@@ -58,7 +58,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
                                    QHeaderView::Stretch);
     header()->setSectionResizeMode(TPlaylistItem::COL_EXT,
                                    QHeaderView::ResizeToContents);
-    header()->setSectionResizeMode(TPlaylistItem::COL_TIME,
+    header()->setSectionResizeMode(TPlaylistItem::COL_LENGTH,
                                    QHeaderView::ResizeToContents);
     header()->setSectionResizeMode(TPlaylistItem::COL_ORDER,
                                    QHeaderView::ResizeToContents);
@@ -115,6 +115,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
         QAction* a = new QAction(headerItem()->text(i), columnsMenu);
         a->setObjectName(shortName + "_toggle_col_" + colnames.at(i));
         a->setCheckable(true);
+        a->setChecked(i == 0);
         a->setData(i);
         columnsMenu->addAction(a);
     }
@@ -439,27 +440,44 @@ TPlaylistItem* TPlaylistWidget::findPreviousPlayedTime(
     return result;
 }
 
+void TPlaylistWidget::editStart(TPlaylistItem* current) {
+    WZTRACEOBJ("");
+
+    // Select COL_NAME
+    setCurrentItem(current, TPlaylistItem::COL_NAME);
+    // Start editor
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_F2, Qt::NoModifier);
+    keyPressEvent(&event);
+    // Unselect the extension
+    if (!current->isWZPlaylist()) {
+        QString ext = current->extension();
+        if (!ext.isEmpty()) {
+            QKeyEvent e(QEvent::KeyPress, Qt::Key_Left, Qt::ShiftModifier);
+            QWidget* editor = qApp->focusWidget();
+            for(int i = ext.length(); i >= 0; i--) {
+                qApp->sendEvent(editor, &e);
+            }
+        }
+    }
+}
+
 void TPlaylistWidget::editName() {
     WZTRACEOBJ("");
 
-    TPlaylistItem* cur = plCurrentItem();
-    if (cur) {
-        // Select COL_NAME
-        setCurrentItem(cur, TPlaylistItem::COL_NAME);
-        // Start editor
-        QKeyEvent event(QEvent::KeyPress, Qt::Key_F2, Qt::NoModifier);
-        keyPressEvent(&event);
-        // Unselect extension
-        if (!cur->isWZPlaylist()) {
-            QString ext = cur->extension();
-            if (!ext.isEmpty()) {
-                QKeyEvent e(QEvent::KeyPress, Qt::Key_Left, Qt::ShiftModifier);
-                QWidget* editor = qApp->focusWidget();
-                for(int i = ext.length(); i >= 0; i--) {
-                    qApp->sendEvent(editor, &e);
-                }
-            }
-        }
+    TPlaylistItem* current = plCurrentItem();
+    if (current) {
+        current->setEditName();
+        editStart(current);
+    }
+}
+
+void TPlaylistWidget::editURL() {
+    WZTRACEOBJ("");
+
+    TPlaylistItem* current = plCurrentItem();
+    if (current) {
+        current->setEditURL();
+        editStart(current);
     }
 }
 
@@ -476,8 +494,10 @@ bool TPlaylistWidget::droppingOnItself(QDropEvent *event,
         QModelIndex root = rootIndex();
         QModelIndex child = index;
         while (child.isValid() && child != root) {
-            if (selected.contains(child))
+            if (selected.contains(child)) {
+                WZDEBUG("Dropping on itself");
                 return true;
+            }
             child = child.parent();
         }
     }
@@ -575,7 +595,7 @@ bool TPlaylistWidget::addDroppedItem(const QString& source,
             return true;
         }
         WZERROR(QString("Destination '%1' not found in playlist.")
-                .arg(fid.absoluteFilePath()));
+                .arg(fid.absolutePath()));
     } else {
         WZERROR(QString("Destination '%1' not found on disk.").arg(dest));
     }

@@ -30,7 +30,7 @@ public:
     enum TColID {
         COL_NAME = 0,
         COL_EXT = 1,
-        COL_TIME = 2,
+        COL_LENGTH = 2,
         COL_ORDER = 3,
         COL_COUNT = 4
     };
@@ -97,6 +97,13 @@ public:
     bool isWZPlaylist() const { return mWZPlaylist; }
     bool isSymLink() const { return mSymLink; }
     QString target() const { return mTarget; }
+    bool isUrl() const { return mURL; }
+
+    bool editURL() const { return mEditURL; }
+    void setEditName() { mEditURL = false; }
+    void setEditURL() { mEditURL = true; }
+
+    bool isLink() const;
 
     int playedTime() const { return mPlayedTime; }
 
@@ -137,6 +144,7 @@ private:
                                    const QString& text,
                                    const QFontMetrics& fm);
     static QString stateString(TPlaylistItemState state);
+    static QString tr(const char* s);
 
     QString mFilename;
     QString mBaseName;
@@ -156,6 +164,9 @@ private:
 
     bool mSymLink;
     QString mTarget;
+
+    bool mURL;
+    bool mEditURL;
 
     TPlaylistItemState mState;
     bool mPlayed;

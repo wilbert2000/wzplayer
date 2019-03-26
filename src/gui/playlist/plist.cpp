@@ -243,6 +243,13 @@ void TPList::createActions() {
             this, &TPList::editName);
     contextMenu->addAction(editNameAct);
 
+    // Edit name
+    editURLAct = new TAction(owner, shortName + "_edit_url",
+                             tr("Edit url..."), "", Qt::CTRL | Qt::Key_F2);
+    connect(editURLAct, &TAction::triggered,
+            this, &TPList::editURL);
+    contextMenu->addAction(editURLAct);
+
     // New folder
     newFolderAct = new TAction(this, shortName + "_new_folder",
                                tr("New folder"), "noicon", Qt::Key_F10);
@@ -868,6 +875,12 @@ void TPList::editName() {
 
     makeActive();
     playlistWidget->editName();
+}
+
+void TPList::editURL() {
+
+    makeActive();
+    playlistWidget->editURL();
 }
 
 void TPList::newFolder() {

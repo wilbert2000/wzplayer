@@ -84,6 +84,7 @@ protected:
     Action::TAction* playInNewWindowAct;
 
     Action::TAction* editNameAct;
+    Action::TAction* editURLAct;
     Action::TAction* newFolderAct;
     Action::TAction* findPlayingAct;
 
@@ -155,6 +156,7 @@ private:
 private slots:
     void playInNewWindow();
     void editName();
+    void editURL();
     void newFolder();
 
     void cut();
