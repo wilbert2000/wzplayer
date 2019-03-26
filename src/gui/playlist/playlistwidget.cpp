@@ -481,6 +481,31 @@ void TPlaylistWidget::editURL() {
     }
 }
 
+void TPlaylistWidget::updateItemPath() {
+    WZTRACEOBJ("");
+
+    TPlaylistItem* parent = itemToUpdatePath->plParent();
+    int idx = parent->indexOfChild(itemToUpdatePath);
+    parent->takeChild(idx);
+
+    QString path = QFileInfo(itemToUpdatePath->path()).absolutePath();
+    parent = findFilename(path);
+    if (parent) {
+        parent->addChild(itemToUpdatePath);
+        setCurrentItem(itemToUpdatePath);
+        scrollToItem(itemToUpdatePath);
+        WZINFO(QString("Item moved to '%1'").arg(path));
+    } else {
+        WZINFO(QString("Item no longer in playlist"));
+        QMessageBox::information(this, tr("Item moved"),
+            tr("Item moved to folder '%2' and is no longer part of this"
+               " playlist.")
+            .arg(path));
+        delete itemToUpdatePath;
+    }
+    itemToUpdatePath = 0;
+}
+
 bool TPlaylistWidget::droppingOnItself(QDropEvent *event,
                                        const QModelIndex &index) {
 

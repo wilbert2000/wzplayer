@@ -37,6 +37,7 @@ public:
 
     int sortSection;
     Qt::SortOrder sortOrder;
+    TPlaylistItem* itemToUpdatePath;
 
     TPlaylistItem* root() const {
         return static_cast<TPlaylistItem*>(topLevelItem(0));
@@ -89,6 +90,9 @@ public:
 
     void saveSettings(QSettings* pref);
     void loadSettings(QSettings* pref);
+
+public slots:
+    void updateItemPath();
 
 signals:
     void modifiedChanged();

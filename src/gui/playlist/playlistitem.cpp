@@ -319,8 +319,29 @@ bool TPlaylistItem::renameFile(const QString& newName) {
     }
     QString displaySource = fi.fileName();
 
-    QString dest = mEditURL ? newName : dir + newName;
-    QString displayDest = newName;
+    bool pathChanged = false;
+    QString dest;
+    QString displayDest;
+    if (mEditURL) {
+        QFileInfo fid(newName);
+        dest = QDir::toNativeSeparators(fid.absoluteFilePath());
+        displayDest = fid.fileName();
+        pathChanged = fid.dir() != fi.dir();
+        if (pathChanged) {
+            if (QMessageBox::question(treeWidget(), tr("Confirm move"),
+                    tr("Are you sure you want to move '%1' to '%2'?")
+                    .arg(source).arg(dest),
+                    QMessageBox::Yes,
+                    QMessageBox::No | QMessageBox::Default
+                    | QMessageBox::Escape)
+                    != QMessageBox::Yes) {
+                return false;
+            }
+        }
+    } else {
+        dest = dir + newName;
+        displayDest = newName;
+    }
 
     // Use compare instead of localized compare and case sensitive to allow
     // changing case.
@@ -349,6 +370,11 @@ bool TPlaylistItem::renameFile(const QString& newName) {
         updateFilename(source, dest);
         setModified();
         WZINFO("Renamed '" + source + "' to '" + dest + "'");
+        if (pathChanged) {
+            plTreeWidget()->itemToUpdatePath = this;
+            QTimer::singleShot(0, plTreeWidget(),
+                               &TPlaylistWidget::updateItemPath);
+        }
     } else {
         QString emsg = file.errorString();
         WZERROR("Failed to rename '" + source + "' to '" + dest + "'. " + emsg);
@@ -393,12 +419,19 @@ bool TPlaylistItem::rename(const QString& newName) {
     }
 
     if (mEditURL) {
+        WZINFO(QString("Setting URL link to '%1'").arg(newName));
         setFilename(newName, mBaseName);
         setModified();
+        if (!mURL && !QFileInfo(newName).exists()) {
+            QMessageBox::warning(treeWidget(), tr("File not found"),
+                tr("Filename set to '%1', but it does not seem to exist.")
+                .arg(newName));
+        }
         return true;
     }
 
     // Set name and extension of this playlist item and protect name
+    WZDEBUG(QString("Setting name link to '%1'").arg(newName));
     QFileInfo fi(newName);
     setName(fi.completeBaseName(), fi.suffix(), true);
     setModified();
@@ -643,7 +676,10 @@ bool TPlaylistItem::isLink() const {
     TPlaylistItem* parent = plParent();
     QFileInfo fip(parent->filename());
     if (parent->isPlaylist()) {
-        return fip.dir() != fi.dir();
+        if (parent->isWZPlaylist()) {
+            return fip.dir() != fi.dir();
+        }
+        return true;
     }
     if (fip.isDir()) {
         return QDir(fip.absoluteFilePath()) != fi.dir();
