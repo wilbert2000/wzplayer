@@ -159,6 +159,7 @@ signals:
     void settingsChanged();
     void gotMessageFromOtherInstance();
     void requestRestart();
+    void resizedMainWindow();
 
     void fullscreenChanged();
     void aboutToEnterFullscreenSignal();

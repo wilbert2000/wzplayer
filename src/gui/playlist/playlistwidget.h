@@ -26,6 +26,7 @@ class TPlaylistWidget : public QTreeWidget {
 
 public:
     explicit TPlaylistWidget(QWidget* parent,
+                             TMainWindow* mainWindow,
                              const QString& name,
                              const QString& shortName,
                              const QString& tranName);
@@ -156,7 +157,8 @@ private:
                     bool deleteFromDisk);
 
 private slots:
-    void scrollToPlayingFile();
+    void scrollToCurrentItem();
+    void scrollToPlayingItem();
     void onWordWrapTimeout();
     void resizeNameColumnAll();
     void onItemExpanded(QTreeWidgetItem* i);

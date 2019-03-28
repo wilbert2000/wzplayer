@@ -104,7 +104,7 @@ TActionsEditor::TActionsEditor(QWidget* parent) :
     actionsTable = new QTableWidget(0, COL_COUNT, this);
     actionsTable->setSelectionMode(QAbstractItemView::SingleSelection);
     actionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    actionsTable->setIconSize(QSize(22, 22));
+    actionsTable->setIconSize(iconProvider.iconSize);
 
     actionsTable->verticalHeader()->hide();
     QHeaderView* h = actionsTable->horizontalHeader();

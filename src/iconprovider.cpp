@@ -1,38 +1,90 @@
 #include "iconprovider.h"
 #include "extensions.h"
 #include "images.h"
+#include "wzdebug.h"
+#include <QApplication>
 #include <QStyle>
 #include <QPainter>
 
 
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TIconProvider)
+
+
 TIconProvider iconProvider;
 
-TIconProvider::TIconProvider() {
+TIconProvider::TIconProvider() : iconSize(QSize(22, 22)) {
+}
+
+static QPen getPen() {
+    return QPen(qApp->palette("TPlaylistWidget").color(QPalette::Text));
+}
+
+QPixmap TIconProvider::getPixMapBlacklist(QIcon icon,
+                                       QIcon::Mode mode,
+                                       QIcon::State state) {
+
+    QSize size = icon.actualSize(iconSize);
+    QPixmap pixmap = icon.pixmap(size, mode, state);
+    QPainter painter(&pixmap);
+    painter.setPen(getPen());
+    painter.setBrush(QBrush(QColor(255, 0, 0)));
+    QSize s = QSize(6, 6);
+    QSize o = size - s - QSize(1, 1);
+    painter.drawRect(QRect(QPoint(o.width(), o.height()), s));
+    return pixmap;
+}
+
+QIcon TIconProvider::getIconBlacklist(const QIcon& icon) {
+
+    QIcon newIcon = iconCache[icon.cacheKey()];
+    if (newIcon.isNull()) {
+        newIcon.addPixmap(getPixMapBlacklist(icon, QIcon::Normal, QIcon::Off),
+                          QIcon::Normal, QIcon::Off);
+        newIcon.addPixmap(getPixMapBlacklist(icon, QIcon::Normal, QIcon::On),
+                          QIcon::Normal, QIcon::On);
+        iconCache[newIcon.cacheKey()] = newIcon;
+        WZTRACE(QString("Created blacklist icon with key %1")
+                .arg(newIcon.cacheKey()));
+
+    } else {
+        WZTRACE(QString("Returning icon from cache for key %1")
+                .arg(icon.cacheKey()));
+
+    }
+    return newIcon;
 }
 
 QPixmap TIconProvider::getPixMapEdited(QIcon icon,
                                        QIcon::Mode mode,
                                        QIcon::State state) {
 
-    QSize size(22, 22);
+    QSize size = icon.actualSize(iconSize);
     QPixmap pixmap = icon.pixmap(size, mode, state);
     QPainter painter(&pixmap);
-    painter.setPen(QPen(QColor(0, 0, 0)));
+    painter.setPen(getPen());
     painter.setBrush(QBrush(QColor(0, 0, 255)));
-    QSize s = QSize(7, 7);
-    painter.drawRect(QRect(QPoint(14, 0), s));
+    QSize s = QSize(6, 6);
+    painter.drawRect(QRect(QPoint(size.width() - s.width() - 1, 0), s));
     return pixmap;
 }
 
 QIcon TIconProvider::getIconEdited(const QIcon& icon, bool addOnIcon) {
 
-    QIcon newIcon;
-    newIcon.addPixmap(getPixMapEdited(icon, QIcon::Normal, QIcon::Off),
-                      QIcon::Normal, QIcon::Off);
+    QIcon& newIcon = iconCache[icon.cacheKey()];
+    if (newIcon.isNull()) {
+        newIcon.addPixmap(getPixMapEdited(icon, QIcon::Normal, QIcon::Off),
+                          QIcon::Normal, QIcon::Off);
+        if (addOnIcon) {
+            newIcon.addPixmap(getPixMapEdited(icon, QIcon::Normal, QIcon::On),
+                              QIcon::Normal, QIcon::On);
 
-    if (addOnIcon) {
-        newIcon.addPixmap(getPixMapEdited(icon, QIcon::Normal, QIcon::On),
-                          QIcon::Normal, QIcon::On);
+        }
+        iconCache[newIcon.cacheKey()] = newIcon;
+        WZTRACE(QString("Created edited icon with key %1")
+                .arg(newIcon.cacheKey()));
+    } else {
+        WZTRACE(QString("Returning icon from cache for key '%1'")
+                .arg(icon.cacheKey()));
 
     }
     return newIcon;
@@ -43,27 +95,24 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     style = aStyle;
 
     urlIcon =  Images::icon("open_url");
-    urlEditedIcon = getIconEdited(urlIcon);
     fileIcon = style->standardIcon(QStyle::SP_FileIcon);
+
     // TODO: fix "device independant pixels"?
-    iconSize = folderIcon.actualSize(QSize(22, 22));
-    fileEditedIcon = getIconEdited(fileIcon);
+    actualIconSize = folderIcon.actualSize(iconSize);
+
     fileLinkIcon = style->standardIcon(QStyle::SP_FileLinkIcon);
-    fileLinkEditedIcon = getIconEdited(fileLinkIcon);
 
     folderIcon = QIcon();
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirClosedIcon),
                          QIcon::Normal, QIcon::Off);
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
-    folderEditedIcon = getIconEdited(folderIcon, true);
 
     folderLinkIcon = QIcon();
     folderLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkIcon),
                              QIcon::Normal, QIcon::Off);
     folderLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkOpenIcon),
                              QIcon::Normal, QIcon::On);
-    folderLinkEditedIcon = getIconEdited(folderLinkIcon, true);
 
     iconPlayed =  style->standardIcon(QStyle::SP_DialogOkButton);
     iconLoading = QIcon();

@@ -25,7 +25,7 @@ class TEditableToolbar;
 namespace Playlist {
 
 class TAddFilesThread;
-class TPlaylistWidget;
+class TPList;
 class TMenuAddRemoved;
 
 class TPList : public QWidget {
@@ -40,6 +40,7 @@ public:
                     const QString& aTransName);
     virtual ~TPList() override;
 
+    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
     void setContextMenuToolbar(Action::Menu::TMenuExec* menu);
 
     void abortThread();
@@ -170,7 +171,6 @@ private slots:
     void addFilesDialog();
     void addDirectoryDialog();
     void addUrlsDialog();
-    void addRemovedItem(const QString& s);
 
     void removeSelected(bool deleteFromDisk = false);
     void removeSelectedFromDisk();
@@ -190,13 +190,10 @@ class TMenuAddRemoved : public Action::Menu::TMenu {
 public:
     explicit TMenuAddRemoved(TPList* pl,
                              TMainWindow* mw,
-                             TPlaylistWidget* plw,
                              const QString& name);
-signals:
-    void addRemovedItem(QString s);
 private:
-    TPlaylistWidget* playlistWidget;
-    TPlaylistItem* item;
+    TPList* plist;
+    TPlaylistItem* parentItem;
 
 private slots:
     void onAboutToShow();

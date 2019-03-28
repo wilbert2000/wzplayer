@@ -2204,8 +2204,8 @@ void TMainWindow::onPlayerError(int exit_code) {
         && !busy) {
         busy = true;
         QMessageBox::warning(this,
-            tr("%1 process error").arg(pref->playerName()),
-            s + " \n"
+            tr("%1 error").arg(pref->playerName()),
+            s + "\n"
             + tr("See log for details."),
             QMessageBox::Ok);
         busy = false;
@@ -2229,13 +2229,10 @@ void TMainWindow::onStateChanged(Player::TState state) {
             msg(tr("Paused"));
             break;
         case Player::STATE_STOPPING:
-            msg(tr("Stopping..."));
-            break;
+             break;
         case Player::STATE_RESTARTING:
-            msg(tr("Restarting..."));
-            break;
+             break;
         case Player::STATE_LOADING:
-            msg(tr("Loading %1").arg(playlist->getPlayingTitle(false)));
             break;
     }
 }
@@ -2417,7 +2414,8 @@ void TMainWindow::closeEvent(QCloseEvent* e)  {
     if (playlist->maybeSave() && favlist->maybeSave()) {
         playlist->abortThread();
         favlist->abortThread();
-        player->close(Player::STATE_STOPPING);
+        player->close();
+        player->setState(Player::STATE_STOPPING);
         exitFullscreen();
         save();
         e->accept();
@@ -2712,9 +2710,9 @@ void TMainWindow::openVCD() {
 
     if (pref->cdrom_device.isEmpty()) {
         configureDiscDevices();
-    } else if (playlist->maybeSave()) {
-        player->openDisc(TDiscName("vcd", pref->vcd_initial_title,
-                                   pref->cdrom_device));
+    } else {
+        playlist->openDisc(TDiscName("vcd", pref->vcd_initial_title,
+                                     pref->cdrom_device));
     }
 }
 
@@ -2723,8 +2721,8 @@ void TMainWindow::openAudioCD() {
 
     if (pref->cdrom_device.isEmpty()) {
         configureDiscDevices();
-    } else if (playlist->maybeSave()) {
-        player->open("cdda://");
+    } else {
+        playlist->openDisc(TDiscName("cdda://"));
     }
 }
 
@@ -2733,8 +2731,8 @@ void TMainWindow::openDVD() {
 
     if (pref->dvd_device.isEmpty()) {
         configureDiscDevices();
-    } else if (playlist->maybeSave()) {
-        player->openDisc(TDiscName(pref->dvd_device, pref->useDVDNAV()));
+    } else {
+        playlist->openDisc(TDiscName(pref->dvd_device, pref->useDVDNAV()));
     }
 }
 
@@ -2750,7 +2748,7 @@ void TMainWindow::openDVDFromISO() {
 
         if (!iso.isEmpty()) {
             pref->last_iso = iso;
-            player->openDisc(TDiscName(iso, pref->useDVDNAV()));
+            playlist->openDisc(TDiscName(iso, pref->useDVDNAV()));
         }
     }
 }
@@ -2766,7 +2764,7 @@ void TMainWindow::openDVDFromFolder() {
             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (!dir.isEmpty()) {
             pref->last_dvd_directory = dir;
-            player->openDisc(TDiscName(dir, pref->useDVDNAV()));
+            playlist->openDisc(TDiscName(dir, pref->useDVDNAV()));
         }
     }
 }
@@ -2776,8 +2774,8 @@ void TMainWindow::openBluRay() {
 
     if (pref->bluray_device.isEmpty()) {
         configureDiscDevices();
-    } else if (playlist->maybeSave()) {
-        player->openDisc(TDiscName("br", 0, pref->bluray_device));
+    } else {
+        playlist->openDisc(TDiscName("br", 0, pref->bluray_device));
     }
 }
 
@@ -2793,7 +2791,7 @@ void TMainWindow::openBluRayFromISO() {
 
         if (!iso.isEmpty()) {
             pref->last_iso = iso;
-            player->openDisc(TDiscName("br", 0, iso));
+            playlist->openDisc(TDiscName("br", 0, iso));
         }
     }
 }
@@ -2809,7 +2807,7 @@ void TMainWindow::openBluRayFromFolder() {
             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (!dir.isEmpty()) {
             pref->last_dvd_directory = dir;
-            player->openDisc(TDiscName("br", 0, dir));
+            playlist->openDisc(TDiscName("br", 0, dir));
         }
     }
 }
@@ -3445,6 +3443,7 @@ void TMainWindow::resizeMainWindow(int w,
 
     QSize new_size = size() + panel_size - panel->size();
     resize(new_size);
+    emit resizedMainWindow();
 
     if (panel->size() != panel_size) {
         // Resizing the main window can change the height of the toolbars,

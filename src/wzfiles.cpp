@@ -10,15 +10,7 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, TWZFiles)
 
 bool TWZFiles::directoryContainsDVD(const QString& directory) {
 
-    QDir dir(directory);
-    QStringList entries = dir.entryList();
-    for (int i = 0; i < entries.count(); i++) {
-        if (entries[i].toLower() == "video_ts") {
-            return true;
-        }
-    }
-
-    return false;
+    return QDir(directory).exists("VIDEO_TS");
 }
 
 bool TWZFiles::directoryIsEmpty(const QString& directory) {
@@ -29,7 +21,7 @@ bool TWZFiles::directoryIsEmpty(const QString& directory) {
                                      | QDir::NoDotAndDotDot
                                      | QDir::Hidden
                                      | QDir::System).count();
-    WZDEBUG(QString("Found %1 files in '%2'").arg(c).arg(directory));
+    WZTRACE(QString("Found %1 files in '%2'").arg(c).arg(directory));
     return c == 0;
 }
 

@@ -4,6 +4,7 @@
 #include <QIcon>
 #include <QFileInfo>
 #include <QSize>
+#include <QMap>
 
 
 class QStyle;
@@ -14,17 +15,13 @@ public:
     TIconProvider();
 
     QSize iconSize;
+    QSize actualIconSize;
 
     QIcon urlIcon;
-    QIcon urlEditedIcon;
     QIcon fileIcon;
-    QIcon fileEditedIcon;
     QIcon fileLinkIcon;
-    QIcon fileLinkEditedIcon;
     QIcon folderIcon;
-    QIcon folderEditedIcon;
     QIcon folderLinkIcon;
-    QIcon folderLinkEditedIcon;
 
     QIcon iconPlayed;
     QIcon iconLoading;
@@ -60,13 +57,16 @@ public:
     //QIcon iconForFile(const QString& filename) const;
 
     void setStyle(QStyle* aStyle);
+    QIcon getCachedIcon(const QIcon& icon, bool addOnIcon = false);
+    QIcon getIconBlacklist(const QIcon& icon);
+    QIcon getIconEdited(const QIcon& icon, bool addOnIcon = false);
 
 private:
     QStyle* style;
+    QMap<qint64, QIcon> iconCache;
 
     QPixmap getPixMapEdited(QIcon icon, QIcon::Mode mode, QIcon::State state);
-    QIcon getIconEdited(const QIcon& icon, bool addOnIcon = false);
-
+    QPixmap getPixMapBlacklist(QIcon icon, QIcon::Mode mode, QIcon::State state);
 };
 
 extern TIconProvider iconProvider;

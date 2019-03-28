@@ -22,6 +22,8 @@
 #include "wzdebug.h"
 
 
+class TDiscName;
+
 namespace Gui {
 
 class TMainWindow;
@@ -46,10 +48,11 @@ public:
     Action::TAction* playNextAct;
     Action::TAction* playPrevAct;
 
+    void openDisc(const TDiscName& disc);
+
     QString playingFile() const;
     QString getPlayingTitle(bool addModified) const;
     void getFilesToPlay(QStringList& files) const;
-    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
 
     virtual void startPlay() override;
 
@@ -101,7 +104,6 @@ private slots:
     void playOrPause();
     void playNext(bool loop_playlist = true);
     void playPrev();
-    void resumePlay();
 
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);

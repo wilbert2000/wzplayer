@@ -5,6 +5,7 @@
 #include "qtfilecopier/qtfilecopier.h"
 #include "qtfilecopier/qtcopydialog.h"
 #include "player/player.h"
+#include "gui/mainwindow.h"
 #include "gui/msg.h"
 #include "wzfiles.h"
 #include "images.h"
@@ -28,6 +29,7 @@ namespace Gui {
 namespace Playlist {
 
 TPlaylistWidget::TPlaylistWidget(QWidget* parent,
+                                 TMainWindow* mainWindow,
                                  const QString& name,
                                  const QString& shortName,
                                  const QString& tranName) :
@@ -44,7 +46,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
 
     setObjectName(name);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setIconSize(iconProvider.iconSize);
+    setIconSize(iconProvider.actualIconSize);
 
     setFocusPolicy(Qt::StrongFocus);
     setEditTriggers(QAbstractItemView::EditKeyPressed);
@@ -91,7 +93,10 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
     scrollTimer.setSingleShot(true);
     scrollTimer.setInterval(0);
     connect(&scrollTimer, &QTimer::timeout,
-            this, &TPlaylistWidget::scrollToPlayingFile);
+            this, &TPlaylistWidget::scrollToPlayingItem);
+    connect(mainWindow, &TMainWindow::resizedMainWindow,
+            this, &TPlaylistWidget::scrollToCurrentItem,
+            Qt::QueuedConnection);
 
     connect(header(), &QHeaderView::sectionResized,
             this, &TPlaylistWidget::onSectionResized);
@@ -308,7 +313,9 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
     playingItem = item;
 
     if (playingItem) {
-        playingItem->setState(state);
+        if (state != playingItem->state()) {
+            playingItem->setState(state);
+        }
         if (setCurrent) {
             setCurrentItem(playingItem);
             if (wordWrapTimer.isActive()) {
@@ -899,10 +906,8 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
                 QMessageBox::information(copyDialog, tr("Information"),
                     tr("A copy or move action is still in progress. You can"
                        " retry after it has finished."));
-                return;
-            }
-
-            if (dropSelection(target, row, event->dropAction())) {
+                event->accept();
+            } else if (dropSelection(target, row, event->dropAction())) {
                 // Don't want QAbstractItemView to delete src
                 // because it was "moved"
                 event->setDropAction(Qt::CopyAction);
@@ -976,7 +981,7 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
                                            int start, int end) {
-    WZDEBUGOBJ(QString("'%1' %2 %3")
+    WZTRACE(QString("'%1' %2 %3")
             .arg(parent.data().toString()).arg(start).arg(end));
 
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
@@ -1017,7 +1022,7 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
                                    int start, int end) {
-    WZDEBUGOBJ(QString("'%1' %2 %3")
+    WZTRACEOBJ(QString("'%1' %2 %3")
             .arg(parent.data().toString()).arg(start).arg(end));
     QTreeWidget::rowsInserted(parent, start, end);
 
@@ -1281,7 +1286,17 @@ void TPlaylistWidget::resizeNameColumnAll() {
     resizeNameColumn(root(), 0);
 }
 
-void TPlaylistWidget::scrollToPlayingFile() {
+void TPlaylistWidget::scrollToCurrentItem() {
+
+    if (currentItem()) {
+        WZTRACEOBJ("Scrolling to current item");
+        scrollToItem(currentItem());
+    } else {
+        WZTRACEOBJ("No current item");
+    }
+}
+
+void TPlaylistWidget::scrollToPlayingItem() {
 
     scrollToPlaying = false;
     if (playingItem) {

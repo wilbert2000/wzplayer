@@ -76,6 +76,7 @@ public:
     void setState(TPlaylistItemState state);
 
     QIcon getItemIcon() const { return itemIcon; }
+    void updateIcon();
 
     bool played() const { return mPlayed; }
     void setPlayed(bool played);
@@ -107,9 +108,7 @@ public:
 
     int playedTime() const { return mPlayedTime; }
 
-    void blacklist(const QString& filename) {
-        mBlacklist.append(filename);
-    }
+    void blacklist(const QString& filename);
     bool blacklisted(const QString& filename) const;
     QStringList getBlacklist() const { return mBlacklist; }
     int getBlacklistCount() const { return mBlacklist.count(); }

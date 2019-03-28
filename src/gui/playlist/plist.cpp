@@ -1,4 +1,5 @@
 #include "gui/playlist/plist.h"
+#include "gui/playlist/playlist.h"
 #include "gui/playlist/playlistwidget.h"
 #include "gui/playlist/addfilesthread.h"
 #include "gui/action/menu/menu.h"
@@ -38,21 +39,18 @@ namespace Playlist {
 
 TMenuAddRemoved::TMenuAddRemoved(TPList* pl,
                                  TMainWindow* mw,
-                                 TPlaylistWidget* plw,
                                  const QString& name) :
     TMenu(pl, mw, name, tr("Add removed item"), "noicon"),
-    playlistWidget(plw) {
+    plist(pl) {
 
     menuAction()->setIcon(iconProvider.trashIcon);
 
     connect(this, &TMenuAddRemoved::triggered,
             this, &TMenuAddRemoved::onTriggered);
-    connect(this, &TMenuAddRemoved::addRemovedItem,
-            pl, &TPList::addRemovedItem);
-    connect(playlistWidget, &TPlaylistWidget::currentItemChanged,
-            this, &TMenuAddRemoved::onCurrentItemChanged);
     connect(this, &TMenuAddRemoved::aboutToShow,
             this, &TMenuAddRemoved::onAboutToShow);
+    connect(plist->getPlaylistWidget(), &TPlaylistWidget::currentItemChanged,
+            this, &TMenuAddRemoved::onCurrentItemChanged);
 
     setEnabled(false);
 }
@@ -61,13 +59,13 @@ void TMenuAddRemoved::onAboutToShow() {
 
     clear();
     int c = 0;
-    item = playlistWidget->plCurrentItem();
-    if (item) {
-        if (!item->isFolder()) {
-            item = item->plParent();
+    parentItem = plist->getPlaylistWidget()->plCurrentItem();
+    if (parentItem) {
+        if (!parentItem->isFolder()) {
+            parentItem = parentItem->plParent();
         }
-        if (item) {
-            foreach(const QString& s, item->getBlacklist()) {
+        if (parentItem) {
+            foreach(const QString& s, parentItem->getBlacklist()) {
                 QAction* action = new QAction(s, this);
                 action->setData(s);
                 addAction(action);
@@ -88,11 +86,10 @@ void TMenuAddRemoved::onTriggered(QAction* action) {
     QString s = action->data().toString();
     if (!s.isEmpty()) {
         // Check item still valid
-        item = playlistWidget->validateItem(item);
-        if (item && item->whitelist(s)) {
-            item->setModified();
-            // TODO:
-            emit addRemovedItem(s);
+        parentItem = plist->getPlaylistWidget()->validateItem(parentItem);
+        if (parentItem && parentItem->whitelist(s)) {
+            QString fn = parentItem->path() + "/" + s;
+            plist->add(QStringList() << fn, false, parentItem);
         }
     }
 }
@@ -154,7 +151,8 @@ TPList::~TPList() {
 
 void TPList::createTree() {
 
-    playlistWidget = new TPlaylistWidget(this, objectName() + "widget",
+    playlistWidget = new TPlaylistWidget(this, mainWindow,
+                                         objectName() + "widget",
                                          shortName, tranName);
 
     connect(playlistWidget, &TPlaylistWidget::itemActivated,
@@ -341,7 +339,7 @@ void TPList::createActions() {
 
     // Add removed sub menu
     playlistAddMenu->addMenu(new TMenuAddRemoved(this, mainWindow,
-         playlistWidget, shortName + "_add_removed_menu"));
+         shortName + "_add_removed_menu"));
 
     contextMenu->addMenu(playlistAddMenu);
 
@@ -514,7 +512,23 @@ bool TPList::maybeSave() {
         if (count == 1 && playlistWidget->root()->child(0)->childCount() == 0) {
             return true;
         }
-        return saveAs();
+
+        int res = QMessageBox::question(this, tr("%1 modified").arg(tranName),
+            tr("The playlist has been modified, do you want to save it?"),
+            QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+
+        switch (res) {
+            case QMessageBox::No:
+                playlistWidget->clearModified();
+                WZINFO("Selected no save");
+                return true;
+            case QMessageBox::Cancel:
+                WZINFO("Selected cancel save");
+                return false;
+            default:
+                WZINFO("Selected save");
+                return saveAs();
+        }
     }
 
     QFileInfo fi(playlistFilename);
@@ -581,23 +595,23 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
 
     bool result = true;
     for(int idx = 0; idx < folder->childCount(); idx++) {
-        TPlaylistItem* i = folder->plChild(idx);
-        QString filename = i->filename();
+        TPlaylistItem* item = folder->plChild(idx);
+        QString filename = item->filename();
 
-        if (i->isPlaylist()) {
-            if (i->modified()) {
-                if (!saveM3u(i, filename, i->isWZPlaylist())) {
+        if (item->isPlaylist()) {
+            if (item->modified()) {
+                if (!saveM3u(item, filename, item->isWZPlaylist())) {
                     result = false;
                 }
             } else {
                 WZTRACEOBJ("Playlist '" + filename + "' not modified");
             }
-        } else if (i->isFolder()) {
+        } else if (item->isFolder()) {
             if (linkFolders) {
-                if (i->modified()) {
+                if (item->modified()) {
                     QFileInfo fi(filename, TConfig::WZPLAYLIST);
                     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
-                    if (!saveM3u(i, filename, linkFolders)) {
+                    if (!saveM3u(item, filename, linkFolders)) {
                         result = false;
                     }
                 } else {
@@ -606,7 +620,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
             } else {
                 // Note: savedMetaData destroyed as dummy here. It is only used
                 // for WZPlaylists which have linkFolders set to true.
-                if (saveM3uFolder(i, path, stream, linkFolders, savedMetaData)) {
+                if (saveM3uFolder(item, path, stream, linkFolders, savedMetaData)) {
                     WZINFO("Succesfully saved '" + filename + "'");
                 } else {
                     result = false;
@@ -614,10 +628,10 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                 continue;
             }
         } else {
-            int d = (int) i->duration();
-            stream << "#EXTINF:" << d << "," << i->baseName() << "\n";
+            int d = (int) item->duration();
+            stream << "#EXTINF:" << d << "," << item->baseName() << "\n";
             if (!savedMetaData) {
-                if (isFavList || d || i->edited()) {
+                if (isFavList || d || item->edited()) {
                     savedMetaData = true;
                 }
             }
@@ -1358,13 +1372,6 @@ void TPList::clear(bool clearFilename) {
     }
 
     setPLaylistTitle();
-}
-
-void TPList::addRemovedItem(const QString& item) {
-    WZTRACEOBJ("'" + item + "'");
-
-    // TODO: just add the item instead of refresh
-    refresh();
 }
 
 void TPList::saveSettings() {

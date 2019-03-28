@@ -29,6 +29,7 @@
 #include "images.h"
 #include "extensions.h"
 #include "iconprovider.h"
+#include "name.h"
 
 #include <QToolBar>
 #include <QMimeData>
@@ -59,7 +60,7 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
     connect(player, &Player::TPlayer::mediaEOF,
             this, &TPlaylist::onMediaEOF, Qt::QueuedConnection);
     connect(player, &Player::TPlayer::noFileToPlay,
-            this, &TPlaylist::resumePlay, Qt::QueuedConnection);
+            this, &TPlaylist::startPlay, Qt::QueuedConnection);
 
     // Random seed
     QTime t;
@@ -180,10 +181,16 @@ void TPlaylist::playOrPause() {
                 playNext(true);
             } else if (playlistWidget->playingItem) {
                 playItem(playlistWidget->playingItem);
-            } else if (playlistWidget->plCurrentItem()) {
-                playItem(playlistWidget->plCurrentItem());
+            } else if (player->mdat.filename.isEmpty()) {
+                startPlay();
             } else {
-                player->play();
+                TPlaylistItem* item = playlistWidget->findFilename(
+                            player->mdat.filename);
+                if (item) {
+                    playItem(item);
+                } else {
+                    player->play();
+                }
             }
             break;
     }
@@ -257,6 +264,7 @@ void TPlaylist::startPlay() {
         }
     } else {
         WZINFO("Nothing to play");
+        msg(tr("Nothing to play"));
     }
 }
 
@@ -271,8 +279,7 @@ void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
         if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
            player->setStartPausedOnce();
         }
-        playlistWidget->setPlayingItem(item, PSTATE_LOADING);
-        enablePlayOrPause();
+        playlistWidget->setPlayingItem(item, item->state());
         player->open(item->filename(), playlistWidget->hasSingleItem());
     } else {
         WZDEBUG("End of playlist");
@@ -321,14 +328,6 @@ void TPlaylist::playPrev() {
     }
 }
 
-void TPlaylist::resumePlay() {
-
-    TPlaylistItem* item = playlistWidget->firstPlaylistItem();
-    if (item) {
-        playItem(item);
-    }
-}
-
 QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
@@ -348,14 +347,10 @@ QString TPlaylist::getPlayingTitle(bool addModified) const {
 
 void TPlaylist::enablePlayOrPause() {
 
-    Player::TState s = player->state();
-    TPlaylistItem* playingItem = playlistWidget->playingItem;
-    bool loading = playingItem && playingItem->state() == PSTATE_LOADING;
-    bool enable = !loading && thread == 0 && player->stateReady();
-    if (enable) {
+    if (thread == 0 && player->stateReady()) {
         WZTRACE("Enabled in state " + player->stateToString());
         playOrPauseAct->setEnabled(true);
-        if (s == Player::STATE_PLAYING) {
+        if (player->state() == Player::STATE_PLAYING) {
             playOrPauseAct->setTextAndTip(tr("Pause"));
             playOrPauseAct->setIcon(iconProvider.pauseIcon);
         } else {
@@ -364,50 +359,47 @@ void TPlaylist::enablePlayOrPause() {
             playOrPauseAct->setIcon(iconProvider.playIcon);
         }
     } else {
-        WZTRACE("Disabled in state " + player->stateToString());
-        if (s == Player::STATE_STOPPING) {
+        if (player->state() == Player::STATE_STOPPING) {
             playOrPauseAct->setTextAndTip(tr("Stopping..."));
             playOrPauseAct->setIcon(iconProvider.iconStopping);
             playOrPauseAct->setEnabled(false);
+            WZTRACE("Disabled in state stopping");
         } else {
-            QString text;
-            if (thread || loading) {
-                text = tr("Loading");
+            if (thread) {
+                playOrPauseAct->setTextAndTip(tr("Loading..."));
             } else {
-                text = player->stateToString();
+                playOrPauseAct->setTextAndTip(tr("%1...")
+                                              .arg(player->stateToString()));
             }
-            playOrPauseAct->setTextAndTip(tr("%1...").arg(text));
             playOrPauseAct->setIcon(iconProvider.iconLoading);
-            playOrPauseAct->setEnabled(!loading && s == Player::STATE_PLAYING);
+            if (player->state() == Player::STATE_PLAYING) {
+                playOrPauseAct->setEnabled(true);
+                WZTRACE("Enabled in state playing 2");
+            } else {
+                playOrPauseAct->setEnabled(false);
+                WZTRACE("Disabled in state not playing 2");
+            }
         }
     }
 }
 
 void TPlaylist::updatePlayingItem() {
 
-    if (player->state() == Player::STATE_PLAYING) {
-        TPlaylistItem* item = playlistWidget->playingItem;
-        if (item && item->state() != PSTATE_PLAYING) {
-            if (item->filename() == player->mdat.filename) {
+    TPlaylistItem* item = playlistWidget->playingItem;
+    if (item) {
+        bool nameMismatch = item->filename() != player->mdat.filename;
+        if (nameMismatch) {
+            WZWARN(QString("File name playing item '%1' does not match"
+                            " player filename '%2'")
+                   .arg(item->filename()).arg(player->mdat.filename));
+        }
+        if (player->state() == Player::STATE_PLAYING) {
+            if (item->state() != PSTATE_PLAYING) {
                 playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
-            } else {
-                QString fn = player->mdat.filename;
-                QFileInfo fi(fn);
-                if (fi.exists()) {
-                    if (fi == QFileInfo(item->filename())) {
-                        WZWARN(QString("Filename mismatch, updating item"
-                            " filename '%1' with player filename '%2'")
-                               .arg(item->filename()).arg(fn));
-                        item->setFilename(fn);
-                        item->setModified();
-                        playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
-                        return;
-                    }
-                }
-                // Player did not yet start loading a new playing item
-                // or it modified the URL...
-                WZDEBUG(QString("Playing item '%1' does not match player '%2'")
-                        .arg(item->filename()).arg(fn));
+            }
+        } else if (player->state() == Player::STATE_LOADING) {
+            if (item->state() != PSTATE_LOADING) {
+                playlistWidget->setPlayingItem(item, PSTATE_LOADING);
             }
         }
     }
@@ -504,8 +496,8 @@ void TPlaylist::onNewMediaStartedPlaying() {
             WZDEBUG("Item considered uptodate");
         }
 
-        // Could set state now, but wait for player to change state to playing,
-        // so we will not trigger additional calls to enableActions()
+        // Could set playingItem now, but wait for player to change state to
+        // playing, so we will not trigger additional calls to enableActions()
         // playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
 
         // Pause a single image
@@ -517,7 +509,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
     }
 
     // Create new playlist
-    WZDEBUG("Creating new playlist for '" + filename + "'");
+    WZTRACE("Creating new playlist for '" + filename + "'");
     clear();
 
     if (md->disc.valid) {
@@ -554,16 +546,16 @@ void TPlaylist::onNewMediaStartedPlaying() {
     }
 
     setPLaylistTitle();
-    WZDEBUG("Created new playlist for '" + filename + "'");
+    WZTRACE("Created new playlist for '" + filename + "'");
 }
 
 void TPlaylist::onMediaEOF() {
-    WZDEBUG("");
+    WZTRACE("");
     playNext(false);
 }
 
 void TPlaylist::onTitleTrackChanged(int id) {
-    WZDEBUG(QString::number(id));
+    WZTRACE(QString::number(id));
 
     if (id < 0) {
         playlistWidget->setPlayingItem(0);
@@ -680,13 +672,22 @@ void TPlaylist::open(const QString &fileName, const QString& name) {
         Settings::pref->last_dir = fi.absolutePath();
     }
 
+    // Find in playlist
+    TPlaylistItem* item = playlistWidget->findFilename(fileName);
+    if (item) {
+        WZDEBUG("Found item in playlist");
+        playItem(item);
+        return;
+    }
+
     WZDEBUG("Starting new playlist");
     clear();
+    bool edited = !name.isEmpty() && name != TName::baseNameForURL(fileName);
     playItem(new TPlaylistItem(playlistWidget->root(),
                                fileName,
                                name,
                                0,
-                               !name.isEmpty()));
+                               edited));
     WZDEBUG("done");
 }
 
@@ -728,9 +729,10 @@ void TPlaylist::openDirectory(const QString& dir) {
     WZDEBUG("'" + dir + "'");
 
     Settings::pref->last_dir = dir;
+
     if (TWZFiles::directoryContainsDVD(dir)) {
-        // onNewMediaStartedPlaying() will clear and pickup the playlist
-        player->open(dir);
+        // Calls clear()
+        openDisc(TDiscName(dir, Settings::pref->useDVDNAV()));
     } else {
         clear();
         add(QStringList() << dir, true);
@@ -746,6 +748,15 @@ void TPlaylist::openDirectoryDialog() {
         if (!s.isEmpty()) {
             openDirectory(s);
         }
+    }
+}
+
+void TPlaylist::openDisc(const TDiscName& disc) {
+
+    if (maybeSave()) {
+        // onNewMediaStartedPlaying() will pick up the playlist
+        clear();
+        player->openDisc(disc);
     }
 }
 

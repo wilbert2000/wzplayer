@@ -257,21 +257,15 @@ void TPlayer::saveMediaSettings() {
     Gui::msg(tr("Saved settings for %1").arg(mdat.filename));
 } // saveMediaSettings
 
-void TPlayer::close(TState nextState) {
-    WZDEBUG("");
+void TPlayer::close() {
+    WZDEBUG("Closing");
 
     stopPlayer();
     // Save data previous file:
     saveMediaSettings();
-    // Set state
-    if (_state == nextState) {
-        WZDEBUG("Closed");
-    } else {
-        WZDEBUG("Closed. Entering state " + stateToString(nextState));
-        setState(nextState);
-    }
     // Clear media data
     mdat = TMediaData();
+    WZDEBUG("Closed");
 }
 
 void TPlayer::openDisc(TDiscName disc, bool fast_open) {
@@ -317,13 +311,12 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
     }
 
     // Finish current
-    close(STATE_LOADING);
+    close();
 
     // Set filename, selected type and disc
     mdat.filename = disc.toString();
     mdat.selected_type = (TMediaData::Type) disc.disc();
     mdat.disc = disc;
-
     // Clear settings
     mset.reset();
 
@@ -332,6 +325,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         mset.playing_single_track = true;
     }
 
+    setState(STATE_LOADING);
     startPlayer();
     return;
 } // openDisc
@@ -343,7 +337,7 @@ void TPlayer::open(QString filename, bool loopImage) {
     if (filename.isEmpty()) {
         filename = mdat.filename;
         if (filename.isEmpty()) {
-            WZDEBUG("No file to play");
+            WZINFO("No file to play");
             Gui::msg(tr("No file to play"));
             return;
         }
@@ -353,14 +347,17 @@ void TPlayer::open(QString filename, bool loopImage) {
     QUrl url(filename);
     QString scheme = url.scheme();
     if (scheme == "file") {
-        filename = url.toLocalFile();
         scheme = "";
+        filename = url.toLocalFile();
+        WZWARN("Adjusted file URL to local file");
     }
 
     QFileInfo fi(filename);
 
     // Check for Windows .lnk shortcuts
     if (fi.isSymLink() && fi.suffix().toLower() == ".lnk") {
+        WZWARN(QString("Adjusting filename from '%1' to '%2'")
+                .arg(filename).arg(fi.symLinkTarget()));
         filename = fi.symLinkTarget();
     }
 
@@ -375,6 +372,10 @@ void TPlayer::open(QString filename, bool loopImage) {
     Gui::msg(tr("Opening %1").arg(filename), 0);
 
     if (fi.exists()) {
+        if (fi.isRelative()) {
+            WZWARN(QString("Adjusting filename from '%1' to '%2'")
+                   .arg(filename).arg(fi.absoluteFilePath()));
+        }
         filename = fi.absoluteFilePath();
 
         // Subtitle file?
@@ -412,11 +413,13 @@ void TPlayer::open(QString filename, bool loopImage) {
 void TPlayer::openFile(const QString& filename, bool loopImage) {
     WZTRACE("'" + filename + "'");
 
-    close(STATE_LOADING);
+    close();
     mdat.filename = QDir::toNativeSeparators(filename);
     mdat.selected_type = TMediaData::TYPE_FILE;
     mdat.image = extensions.isImage(mdat.filename);
     mset.reset();
+
+    setState(STATE_LOADING);
 
     // Check if we have info about this file
     if (Settings::pref->remember_media_settings) {
@@ -434,7 +437,6 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
 
         if (!Settings::pref->remember_time_pos) {
             mset.current_sec = 0;
-            WZDEBUG("Play position reset to 0");
         }
     }
 
@@ -444,7 +446,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
 void TPlayer::openTV(QString channel_id) {
     WZDEBUG(channel_id);
 
-    close(STATE_LOADING);
+    close();
 
     // Use last channel if the name is just "dvb://" or "tv://"
     if (channel_id == "dvb://" && !Settings::pref->last_dvb_channel.isEmpty()) {
@@ -463,8 +465,9 @@ void TPlayer::openTV(QString channel_id) {
 
     mdat.filename = channel_id;
     mdat.selected_type = TMediaData::TYPE_TV;
-
     mset.reset();
+    setState(STATE_LOADING);
+
     // Set the default deinterlacer for TV
     mset.current_deinterlacer = Settings::pref->initial_tv_deinterlace;
     // Load settings
@@ -481,11 +484,12 @@ void TPlayer::openTV(QString channel_id) {
 void TPlayer::openStream(const QString& name) {
     WZDEBUG("'" + name + "'");
 
-    close(STATE_LOADING);
+    close();
     mdat.filename = name;
     mdat.selected_type = TMediaData::TYPE_STREAM;
     mset.reset();
 
+    setState(STATE_LOADING);
     startPlayer();
 }
 
@@ -561,6 +565,7 @@ void TPlayer::stopPlayer() {
     WZDEBUG(QString("Entering the stopping state with timeout of %1 ms")
             .arg(timeout));
     setState(STATE_STOPPING);
+    Gui::msg(tr("Stopping player..."), 0);
     QTime time;
     time.start();
     proc->quit(0);
@@ -580,9 +585,13 @@ void TPlayer::stopPlayer() {
     };
 
     if (proc->state() == QProcess::Running) {
-        WZWARN(QString("Player did not quit in %1 ms, killing it...")
-               .arg(timeout));
+        QString s = tr("Player did not quit in %1 ms, killing it...")
+                .arg(timeout);
+        WZWARN(s);
+        Gui::msg(s);
         proc->kill();
+    } else {
+        Gui::msg(tr("Player stopped"));
     }
 
     WZDEBUG(QString("Player stopped in %1 ms").arg(time.elapsed()));
@@ -639,35 +648,34 @@ void TPlayer::playOrPause() {
 }
 
 // Save current state and restart player
-void TPlayer::restartPlayer() {
+void TPlayer::restartPlayer(TState state) {
     WZDEBUG("");
 
     saveRestartState();
     stopPlayer();
 
-    WZDEBUG("Entering the restarting state");
-    setState(STATE_RESTARTING);
-    startPlayer();
+    if (mdat.filename.isEmpty()) {
+        WZINFO("Restart request without filename. Entering the stopped state");
+        setState(STATE_STOPPED);
+    } else {
+        WZDEBUG(QString("Entering the %1 state").arg(stateToString(state)));
+        setState(state);
+        startPlayer();
+    }
 }
 
 // Public restart
 void TPlayer::restart() {
     WZDEBUG("");
 
-    if (proc->isReady()) {
-        restartPlayer();
-    } else {
-        WZWARN("Player not ready");
-    }
+    restartPlayer();
 }
 
+// Public restart in state loading to trigger onPlayingStartedNewMedia()
 void TPlayer::reload() {
     WZDEBUG("");
 
-    stopPlayer();
-    WZDEBUG("Entering the loading state");
-    setState(STATE_LOADING);
-    startPlayer();
+    restartPlayer(STATE_LOADING);
 }
 
 void TPlayer::initVolume() {
@@ -877,16 +885,18 @@ void TPlayer::saveRestartState() {
 
     // Save state proc, currently only used by TMPlayerProcess for DVDNAV.
     // DVDNAV restores its own start time and paused state
-    proc->save();
-    if (mdat.detected_type != TMediaData::TYPE_DVDNAV) {
-        restartTime = mset.current_sec;
-        startPausedOnce = _state == STATE_PAUSED;
+    if (!mdat.filename.isEmpty()) {
+        proc->save();
+        if (mdat.detected_type != TMediaData::TYPE_DVDNAV) {
+            restartTime = mset.current_sec;
+            startPausedOnce = _state == STATE_PAUSED;
+        }
     }
 }
 
 void TPlayer::startPlayer(bool loopImage) {
 
-    WZDEBUG("starting time");
+    WZDEBUG("Starting time");
     time.start();
 
     if (_state != STATE_RESTARTING) {
@@ -897,16 +907,6 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     QString fileName = mdat.filename;
-    if (fileName.isEmpty()) {
-        WZWARN("file name is empty");
-        return;
-    }
-
-    if (proc->isRunning()) {
-        WZWARN("player still running");
-        return;
-    }
-
     WZDEBUG("'" + fileName + "'");
     Gui::msg(tr("Starting %1...").arg(fileName), 0);
 
@@ -925,7 +925,7 @@ void TPlayer::startPlayer(bool loopImage) {
                 file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
             }
             if (QFile::exists(file2)) {
-                WZDEBUG("Using external audio file '" + file2 + "'"),
+                WZDEBUG("Using external audio file '" + file2 + "'");
                 mset.external_audio = file2;
             }
         }
@@ -1688,9 +1688,12 @@ end_video_filters:
 
     proc->setProcessEnvironment(env);
 
-    if (!proc->startPlayer()) {
+    if (proc->startPlayer()) {
+        Gui::msg(tr("Loading %1...").arg(fileName));
+    } else {
         // Error reported by onProcessError()
-        WZERROR("player process didn't start");
+        WZERROR("Player process didn't start, entering the stopped state");
+        setState(STATE_STOPPED);
     }
 } //startPlayer()
 

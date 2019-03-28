@@ -188,36 +188,30 @@ TPlaylistItem *TPlaylistItem::clone() const {
 
 void TPlaylistItem::setItemIcon() {
 
+    bool addOnIcon;
     if (mFolder) {
+        addOnIcon = true;
         if (mSymLink) {
-            if (mEdited) {
-                itemIcon = iconProvider.folderLinkEditedIcon;
-            } else {
-                itemIcon = iconProvider.folderLinkIcon;
-            }
+            itemIcon = iconProvider.folderLinkIcon;
         } else {
-            if (mEdited) {
-                itemIcon = iconProvider.folderEditedIcon;
-            } else {
-                itemIcon = iconProvider.folderIcon;
-            }
+            itemIcon = iconProvider.folderIcon;
         }
-    } else if (mSymLink) {
-        if (mEdited) {
-            itemIcon = iconProvider.fileLinkEditedIcon;
-        } else {
-            itemIcon = iconProvider.fileLinkIcon;
-        }
-    } else if (mURL) {
-        if (mEdited) {
-            itemIcon = iconProvider.urlEditedIcon;
-        } else {
-            itemIcon = iconProvider.urlIcon;
-        }
-    } else if (mEdited) {
-        itemIcon = iconProvider.fileEditedIcon;
     } else {
-        itemIcon = iconProvider.fileIcon;
+        addOnIcon = false;
+        if (mSymLink) {
+            itemIcon = iconProvider.fileLinkIcon;
+        } else if (mURL) {
+            itemIcon = iconProvider.urlIcon;
+        } else {
+            itemIcon = iconProvider.fileIcon;
+        }
+    }
+
+    if (mEdited) {
+        itemIcon = iconProvider.getIconEdited(itemIcon, addOnIcon);
+    }
+    if (mBlacklist.count()) {
+        itemIcon = iconProvider.getIconBlacklist(itemIcon);
     }
 }
 
@@ -526,13 +520,23 @@ QVariant TPlaylistItem::data(int column, int role) const {
             return QVariant(mExt);
         }
     } else if (role == Qt::ToolTipRole) {
-        // StatusTipRole not working?
         if (column == COL_NAME) {
+            QString tip;
             if (mSymLink) {
-                return QVariant(qApp->translate("Gui::Playlist::TPlaylistItem",
-                                                "Links to %1").arg(mTarget));
+                tip = tr("Links to %1").arg(mTarget);
+            } else {
+                tip = mFilename;
             }
-            return QVariant(mFilename);
+            for(int i = 0; i < mBlacklist.count(); i++) {
+                if (i == 0) {
+                    tip += "\n" + tr("Blacklisted: ");
+                }
+                tip += "\n" + mBlacklist.at(i);
+            }
+            if (mEdited) {
+                tip += "\n" + tr("Name has been edited");
+            }
+            return QVariant(tip);
         }
         if (column == COL_EXT) {
             if (mExt.length() > 8) {
@@ -739,6 +743,22 @@ TPlaylistWidget* TPlaylistItem::plTreeWidget() const {
     return static_cast<TPlaylistWidget*>(treeWidget());
 }
 
+void TPlaylistItem::updateIcon() {
+
+    setItemIcon();
+    setStateIcon();
+}
+
+void TPlaylistItem::blacklist(const QString& filename) {
+    WZINFO(QString("Blacklisting '%1' in '%2'")
+           .arg(filename).arg(mFilename));
+
+    mBlacklist.append(filename);
+    if (mBlacklist.count() == 1) {
+        updateIcon();
+    }
+}
+
 bool TPlaylistItem::blacklisted(const QString& filename) const {
     return mBlacklist.contains(filename, caseSensitiveFileNames);
 }
@@ -750,6 +770,9 @@ bool TPlaylistItem::whitelist(const QString& filename) {
                                        QRegExp::FixedString));
     if (i >= 0) {
         mBlacklist.removeAt(i);
+        if (mBlacklist.count() == 0) {
+            updateIcon();
+        }
         WZINFO("Removed '" + filename + "' from blacklist");
         return true;
     }
@@ -808,7 +831,7 @@ QSize TPlaylistItem::getSizeColumnName(int width,
 
     // Return minimal size if no space available
     if (width <= hSpacing) {
-        return QSize(hSpacing, iconProvider.iconSize.height() + vSpacing);
+        return QSize(hSpacing, iconProvider.actualIconSize.height() + vSpacing);
     }
 
     // Substract spacing from availlable width for text

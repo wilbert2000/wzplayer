@@ -31,6 +31,7 @@
 #include "gui/action/menu/menubrowse.h"
 #include "gui/action/menu/menuview.h"
 #include "gui/playlist/playlist.h"
+#include "iconprovider.h"
 
 
 using namespace Settings;
@@ -43,7 +44,7 @@ TMainWindowTray::TMainWindowTray() :
     hideMainWindowOnStartup(false) {
 
     tray = new QSystemTrayIcon(this);
-    tray->setIcon(Images::icon("logo", 22));
+    tray->setIcon(Images::icon("logo", iconProvider.iconSize.width()));
     tray->setToolTip(TConfig::PROGRAM_NAME);
     connect(tray, &QSystemTrayIcon::activated,
             this, &TMainWindowTray::onSystemTrayActivated);

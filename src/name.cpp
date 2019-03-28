@@ -37,7 +37,7 @@ QString removeTrailingSlash(const QString& url) {
     do {
         QChar last = s.at(s.length() - 1);
         if (last == '/') {
-            s = s.left(s.length() - 1);
+            s.chop(1);
             if (!s.isEmpty()) {
                 continue;
             }
@@ -45,7 +45,7 @@ QString removeTrailingSlash(const QString& url) {
 
 #ifdef Q_OS_WIN
         else if (last == '\\') {
-            s = s.left(s.length() - 1);
+            s.chop(1);
             if (!s.isEmpty()) {
                 continue;
             }
@@ -59,6 +59,7 @@ QString removeTrailingSlash(const QString& url) {
 
 QString TName::nameForURL(const QString& url) {
 
+    // Use this over QUrl because of encoding done by QURL
     if (url.isEmpty()) {
         return url;
     }
@@ -69,21 +70,26 @@ QString TName::nameForURL(const QString& url) {
     }
 
     int i = name.lastIndexOf('/');
-
-#ifdef Q_OS_WIN
     if (i < 0) {
-        i = name.lastIndexOf('\\');
+        i = name.lastIndexOf(QDir::separator());
     }
-#endif
-
     if (i < 0) {
-        // Remove scheme
+        // No path, if base not empty remove scheme
         QUrl u(url);
         QString s = u.scheme();
         if (s.isEmpty()) {
             return name;
         }
-        return name.mid(s.length() + 1);
+        // Remove scheme
+        QString base = name.mid(s.length());
+        // Remove :, / does not get here
+        if (base.startsWith(':')) {
+            base = base.mid(1);
+        }
+        if (base.isEmpty()) {
+            return name;
+        }
+        return base;
     }
 
     // Remove path
@@ -119,7 +125,7 @@ QString TName::baseNameForURL(const QString& url) {
         return name;
     }
 
-    // Assume file. Not necessarily true...
+    // Return completeBaseName
     fi.setFile(name);
     return fi.completeBaseName();
 }

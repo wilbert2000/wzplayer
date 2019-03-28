@@ -56,7 +56,7 @@ public:
 
     //! Return the current state
     TState state() const { return _state; }
-    //! Change the current state and sends the stateChanged() signal.
+    //! Set the current state and send the stateChanged() signal if it changed
     void setState(TState s);
     //! Return a string with the name of the current state.
     static QString stateToString(TState state);
@@ -91,9 +91,10 @@ public:
     void openDisc(TDiscName disc, bool fast_open = false);
 
     // Stop player if running and save MediaInfo
-    void close(TState nextState);
+    void close();
 
-    void restart();
+    void restart(); // Restart current file
+    void reload(); // Reopen current file
 
     void addForcedTitle(const QString& file, const QString& title) {
         forced_titles[file] = title;
@@ -112,9 +113,6 @@ public:
 
 
 public slots:
-    //! Reopens the file (no restart)
-    void reload();
-
     // Play
     void play();
     void playOrPause();
@@ -398,7 +396,7 @@ private:
 
     void startPlayer(bool loopImage = false);
     void stopPlayer();
-    void restartPlayer();
+    void restartPlayer(TState state = STATE_RESTARTING);
     void setInPointSec(double sec);
     void setOutPointSec(double sec);
 

@@ -298,11 +298,9 @@ void TAddFilesThread::addNewItems(TPlaylistItem* playlistItem) {
         if (filename == TConfig::WZPLAYLIST) {
             continue;
         }
-
         if (nameBlackListed(path + filename)) {
             continue;
         }
-
         if (fi.isSymLink()
             && files.contains(fi.symLinkTarget(), caseSensitiveFileNames)) {
             continue;
@@ -370,7 +368,7 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
             duration = rx.cap(1).toDouble();
             name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            edited = name != TName::baseNameForURL(line);
+            edited = !name.isEmpty() && name != TName::baseNameForURL(line);
             addItem(playlistItem, line, name, duration, edited, true);
             name = "";
             duration = 0;
@@ -396,7 +394,7 @@ TPlaylistItem* TAddFilesThread::openPlaylist(TPlaylistItem *parent,
                                              const QFileInfo& fi,
                                              const QString& name,
                                              bool protectName) {
-    WZINFO("'" + fi.filePath() + "'");
+    WZDEBUG("'" + fi.filePath() + "'");
 
     TFileLock lock(fi, lockedFiles);
     if (!lock.locked) {
@@ -488,6 +486,11 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
         return 0;
     }
 
+    if (protectName) {
+        WZINFO(QString("Protecting name '%1' for '%2'")
+               .arg(name).arg(fi.absoluteFilePath()));
+    }
+
     emit displayMessage(fi.absoluteFilePath(), 0);
 
     QDir directory(fi.absoluteFilePath());
@@ -561,6 +564,11 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
         filename = QUrl(filename).toLocalFile();
     }
 
+    if (protectName) {
+        WZINFO(QString("Protecting name '%1' for '%2'")
+               .arg(name).arg(filename));
+    }
+
     QFileInfo fi(playlistPath, filename);
     if (!fi.exists()) {
         if (fi.fileName().compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
@@ -627,27 +635,20 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
     TPlaylistItem* item;
     if (fi.isDir()) {
         item = addDirectory(parent, fi, name, protectName);
+    } else if (extensions.isPlaylist(fi)) {
+        item = openPlaylist(parent, fi, name, protectName);
     } else {
-        if (name.isEmpty()) {
-            // Prefer using the real base name over TPlaylistItem's use of
-            // TName::nameForURL(filename) for an empty base name.
-            name = fi.completeBaseName();
+        // For Windows shortcuts, follow the link
+        if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
+            fi.setFile(fi.symLinkTarget());
         }
-        if (extensions.isPlaylist(fi)) {
-            item = openPlaylist(parent, fi, name, protectName);
-        } else {
-            // For Windows shortcuts, follow the link
-            if (fi.isSymLink() && fi.suffix().toLower() == "lnk") {
-                fi.setFile(fi.symLinkTarget());
-            }
 
-            // Skip images
-            if (!addImages && extensions.isImage(fi)) {
-                return 0;
-            }
-
-            item = createPath(parent, fi, name, duration, protectName);
+        // Skip images
+        if (!addImages && extensions.isImage(fi)) {
+            return 0;
         }
+
+        item = createPath(parent, fi, name, duration, protectName);
     }
 
     playlistPath = savedPlaylistPath;
