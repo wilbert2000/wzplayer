@@ -115,7 +115,7 @@ bool TAutoHideTimer::hiddenWidget() const {
 
 bool TAutoHideTimer::mouseInsideShowArea() const {
 
-    const int margin = 100;
+    const int margin = 32;
 
     // Check bottom of screen
     if (pref->fullscreen) {
