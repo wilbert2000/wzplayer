@@ -139,9 +139,6 @@ private:
     static int vSpacing;
     static int bounding;
 
-    static QSize getSizeColumnName(int width,
-                                   const QString& text,
-                                   const QFontMetrics& fm);
     static QString stateString(TPlaylistItemState state);
     static QString tr(const char* s);
 

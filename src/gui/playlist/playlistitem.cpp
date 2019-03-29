@@ -63,7 +63,8 @@ TPlaylistItem::TPlaylistItem() :
     setTextAlignment(COL_LENGTH, TEXT_ALIGN_TIME);
     setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
 
-    setIcon(COL_NAME, iconProvider.folderIcon);
+    itemIcon = iconProvider.folderIcon;
+    setIcon(COL_NAME, itemIcon);
 }
 
 // Copy constructor
@@ -97,7 +98,6 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     WZWARN(QString("Copy constructor called on '%1'").arg(mFilename));
 }
 
-// Used for every item except the root
 TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
                              const QString& filename,
                              const QString& name,
@@ -786,8 +786,9 @@ int TPlaylistItem::getLevel() const {
     return plParent()->getLevel() + 1;
 }
 
-// Initialised in constructor TPlaylistWidget by calling setSpacing() on root
-int TPlaylistItem::hSpacing = 28;
+// Initialised in constructor TPlaylistWidget by calling setSpacing() on root.
+// As far as I know these numbers are always the same...
+int TPlaylistItem::hSpacing = 12;
 int TPlaylistItem::vSpacing = 6;
 int TPlaylistItem::bounding = 2;
 
@@ -797,7 +798,7 @@ void TPlaylistItem::setSpacing() {
     setText(COL_NAME, txt);
     QStyleOptionViewItem opt;
     opt.features = QStyleOptionViewItem::HasDisplay
-            | QStyleOptionViewItem::HasDecoration;
+                 | QStyleOptionViewItem::HasDecoration;
     opt.text = txt;
     opt.font = font(COL_NAME);
     opt.fontMetrics = QFontMetrics(opt.font);
@@ -814,50 +815,47 @@ void TPlaylistItem::setSpacing() {
                 QStyle::PM_FocusFrameHMargin, 0, treeWidget());
     // Note: QItemDelegate adds 2 * (QStyle::PM_FocusFrameHMargin + 1) to
     // the width of the text
-    hSpacing = size.width() - br.width() - 2 * (ffm + 1);
+    hSpacing = size.width() - opt.icon.actualSize(opt.decorationSize).width()
+             - br.width() - 2 * (ffm + 1);
     vSpacing = size.height() - br.height() - ffm;
     bounding = br.height() - opt.fontMetrics.lineSpacing();
 
     setText(COL_NAME, "");
+    WZTRACE(QString("hSpacing %1 vspacing %2 bounding %3")
+            .arg(hSpacing).arg(vSpacing).arg(bounding));
 }
 
-// Return the size of the name column given the available width
-QSize TPlaylistItem::getSizeColumnName(int width,
-                                       const QString& text,
-                                       const QFontMetrics& fm) {
+QSize TPlaylistItem::getSizeHintName(int level) const {
 
-    // Return minimal size if no space available
-    if (width <= hSpacing) {
-        return QSize(hSpacing, iconProvider.actualIconSize.height() + vSpacing);
+    if (!treeWidget()) {
+        return QSize(-1, -1);
     }
 
-    // Substract spacing from availlable width for text
-    int maxWidth = width - hSpacing;
+    int width = treeWidget()->header()->sectionSize(COL_NAME)
+              - level * treeWidget()->indentation();
+
+    // Substract icon and spacing from availlable width for text
+    int maxWidth = width
+                 - icon(COL_NAME).actualSize(treeWidget()->iconSize()).width()
+                 - hSpacing;
+    if (maxWidth <= 0) {
+        return QSize(iconProvider.iconSize.width() + hSpacing,
+                     iconProvider.iconSize.height() + vSpacing);
+    }
+
     // Allow 4 lines of text
+    QFontMetrics fm(font(COL_NAME));
     int maxHeight = 4 * fm.lineSpacing() + bounding;
 
     // Get bounding rect of text
     QRect r = QRect(QPoint(), QSize(maxWidth, maxHeight));
-    QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text);
+    QRect br = fm.boundingRect(r, TEXT_ALIGN_NAME, text(COL_NAME));
 
     if (br.height() > maxHeight) {
        br.setHeight(maxHeight);
     }
 
     return QSize(width, br.height() + vSpacing);
-}
-
-QSize TPlaylistItem::getSizeHintName(int level) const {
-
-    QTreeWidget* tree = treeWidget();
-    if (!tree) {
-        return QSize(-1, -1);
-    }
-
-    return getSizeColumnName(tree->header()->sectionSize(COL_NAME)
-                             - level * tree->indentation(),
-                             text(COL_NAME),
-                             QFontMetrics(font(COL_NAME)));
 }
 
 void TPlaylistItem::setSizeHintName(int level) {

@@ -104,6 +104,19 @@ QIcon TIconProvider::getIconEdited(const QIcon& icon) {
     return newIcon;
 }
 
+QIcon TIconProvider::getFileSymLinkedIcon() {
+
+    QIcon linkIcon = QIcon::fromTheme("emblem-symbolic-link");
+    if (linkIcon.isNull()) {
+        return style->standardIcon(QStyle::SP_FileLinkIcon);
+    }
+    QSize size = fileIcon.actualSize(iconSize);
+    QPixmap pixmap = fileIcon.pixmap(size);
+    QPainter painter(&pixmap);
+    linkIcon.paint(&painter, QRect(QPoint(), size));
+    return pixmap;
+}
+
 QIcon TIconProvider::getIconImage(const QString& name, const QString& name2) {
 
     QIcon icon = QIcon::fromTheme(name);
@@ -131,11 +144,8 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     urlIcon =  Images::icon("open_url");
     fileIcon = style->standardIcon(QStyle::SP_FileIcon);
 
-    // TODO: fix "device independant pixels"?
-    actualIconSize = folderIcon.actualSize(iconSize);
-
-    fileSymLinkIcon = getIconStd("emblem-symbolic-link", QStyle::SP_FileLinkIcon);
-    fileLinkIcon = fileSymLinkIcon;
+    fileSymLinkIcon = getFileSymLinkedIcon();
+    fileLinkIcon = getIconStd("emblem-symbolic-link", QStyle::SP_FileLinkIcon);
 
     folderIcon = QIcon();
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirClosedIcon),
@@ -192,44 +202,3 @@ void TIconProvider::setStyle(QStyle* aStyle) {
 
     conflictItem = Images::icon("conflict");
 }
-
-/* No longer used
-QIcon TIconProvider::icon(const QFileInfo& fi) const {
-
-    if (fi.isSymLink()) {
-        if (fi.isDir() || extensions.isPlaylist(fi)) {
-            return folderLinkIcon;
-        }
-        return fileLinkIcon;
-    }
-
-    if (fi.isDir() || extensions.isPlaylist(fi)) {
-        return folderIcon;
-    }
-
-    if (fi.filePath().startsWith("dvd://")
-        || fi.filePath().startsWith("dvdnav://")
-        || fi.filePath().startsWith("br://")) {
-        return driveDVDIcon;
-    }
-
-    if (fi.filePath().startsWith("vcd://")
-        || fi.filePath().startsWith("cdda://")) {
-        return driveCDIcon;
-    }
-
-    if (fi.filePath().indexOf("://") > 0) {
-        return urlIcon;
-    }
-
-    return fileIcon;
-}
-
-QIcon TIconProvider::iconForFile(const QString& filename) const {
-
-    if (filename.isEmpty()) {
-        return fileIcon;
-    }
-    return icon(QFileInfo(filename));
-}
-*/

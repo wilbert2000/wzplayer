@@ -14,7 +14,6 @@ public:
     TIconProvider();
 
     QSize iconSize;
-    QSize actualIconSize;
 
     QIcon urlIcon;
     QIcon fileIcon;
@@ -64,9 +63,6 @@ public:
 
     QIcon conflictItem;
 
-    //QIcon icon(const QFileInfo& info) const;
-    //QIcon iconForFile(const QString& filename) const;
-
     void setStyle(QStyle* aStyle);
     QIcon getIconSymLinked(const QIcon& icon);
     QIcon getIconLinked(const QIcon& icon);
@@ -81,6 +77,7 @@ private:
     QIcon getIconImage(const QString& name, const QString& name2);
     QIcon getIconStd(const QString& name, QStyle::StandardPixmap stdIcon);
 
+    QIcon getFileSymLinkedIcon();
     QPixmap getPixMapEdited(QIcon icon, QIcon::Mode mode, QIcon::State state);
     QPixmap getPixMapBlacklist(QIcon icon, QIcon::Mode mode, QIcon::State state);
 };

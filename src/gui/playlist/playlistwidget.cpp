@@ -46,7 +46,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
 
     setObjectName(name);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setIconSize(iconProvider.actualIconSize);
+    setIconSize(iconProvider.iconSize);
 
     setFocusPolicy(Qt::StrongFocus);
     setEditTriggers(QAbstractItemView::EditKeyPressed);
