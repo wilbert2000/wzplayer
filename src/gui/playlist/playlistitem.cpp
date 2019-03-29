@@ -188,30 +188,24 @@ TPlaylistItem *TPlaylistItem::clone() const {
 
 void TPlaylistItem::setItemIcon() {
 
-    bool addOnIcon;
     if (mFolder) {
-        addOnIcon = true;
-        if (mSymLink) {
-            itemIcon = iconProvider.folderLinkIcon;
-        } else {
-            itemIcon = iconProvider.folderIcon;
-        }
+        itemIcon = iconProvider.folderIcon;
+    } else if (mURL) {
+        itemIcon = iconProvider.urlIcon;
     } else {
-        addOnIcon = false;
-        if (mSymLink) {
-            itemIcon = iconProvider.fileLinkIcon;
-        } else if (mURL) {
-            itemIcon = iconProvider.urlIcon;
-        } else {
-            itemIcon = iconProvider.fileIcon;
-        }
+        itemIcon = iconProvider.fileIcon;
     }
 
+    if (mSymLink) {
+        itemIcon = iconProvider.getIconSymLinked(itemIcon);
+    } else if (!mURL && isLink()) {
+        itemIcon = iconProvider.getIconLinked(itemIcon);
+    }
     if (mEdited) {
-        itemIcon = iconProvider.getIconEdited(itemIcon, addOnIcon);
+        itemIcon = iconProvider.getIconEdited(itemIcon);
     }
     if (mBlacklist.count()) {
-        itemIcon = iconProvider.getIconBlacklist(itemIcon);
+        itemIcon = iconProvider.getIconBlacklisted(itemIcon);
     }
 }
 
@@ -711,10 +705,8 @@ bool TPlaylistItem::isLink() const {
         return true;
     }
     if (mFilename.isEmpty()) {
-        WZWARN("isLink() called on empty filename");
         return true;
     }
-
     QFileInfo fi(mFilename);
     if (mWZPlaylist) {
         fi.setFile(fi.absolutePath());
@@ -724,18 +716,23 @@ bool TPlaylistItem::isLink() const {
     }
 
     TPlaylistItem* parent = plParent();
+    if (!parent) {
+        return true;
+    }
+    if (parent->filename().isEmpty()) {
+        return true;
+    }
     QFileInfo fip(parent->filename());
+    if (parent->isWZPlaylist()) {
+        return fip.dir() != fi.dir();
+    }
     if (parent->isPlaylist()) {
-        if (parent->isWZPlaylist()) {
-            return fip.dir() != fi.dir();
-        }
         return true;
     }
     if (fip.isDir()) {
         return QDir(fip.absoluteFilePath()) != fi.dir();
     }
 
-    WZINFO(QString("Marking '%1' as link").arg(mFilename));
     return true;
 }
 

@@ -487,8 +487,8 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
     }
 
     if (protectName) {
-        WZINFO(QString("Protecting name '%1' for '%2'")
-               .arg(name).arg(fi.absoluteFilePath()));
+        WZINFO(QString("Setting edited for '%1' in folder '%2'")
+               .arg(name).arg(parent->filename()));
     }
 
     emit displayMessage(fi.absoluteFilePath(), 0);
@@ -565,8 +565,8 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
     }
 
     if (protectName) {
-        WZINFO(QString("Protecting name '%1' for '%2'")
-               .arg(name).arg(filename));
+        WZINFO(QString("Setting edited for '%1' in folder '%2'")
+               .arg(name).arg(parent->filename()));
     }
 
     QFileInfo fi(playlistPath, filename);

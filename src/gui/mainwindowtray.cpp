@@ -49,19 +49,15 @@ TMainWindowTray::TMainWindowTray() :
     connect(tray, &QSystemTrayIcon::activated,
             this, &TMainWindowTray::onSystemTrayActivated);
 
-    quitAct = new Action::TAction(this, "quit", tr("Quit"), "exit",
-                                  QKeySequence("Ctrl+Q"));
-    quitAct->setVisible(false);
+    closeAct->setVisible(false);
     connect(quitAct, &Action::TAction::triggered, this, &TMainWindowTray::quit);
-    fileMenu->addAction(quitAct);
 
     showTrayAct = new Action::TAction(this, "show_tray_icon",
                                       tr("Show in system tray"));
     showTrayAct->setCheckable(true);
+    showTrayAct->setChecked(false);
     connect(showTrayAct, &Action::TAction::toggled,
-            tray, &QSystemTrayIcon::setVisible);
-    connect(showTrayAct, &Action::TAction::toggled,
-            quitAct, &Action::TAction::setVisible);
+            this, &TMainWindowTray::onShowTrayActToggled);
 
     viewMenu->addSeparator();
     viewMenu->addAction(showTrayAct);
@@ -139,6 +135,13 @@ void TMainWindowTray::quit() {
 
     // Bypass switchToTray() in TMainWindowTray::closeWindow
     TMainWindow::closeWindow();
+}
+
+void TMainWindowTray::onShowTrayActToggled(bool show) {
+    WZTRACE("");
+
+    tray->setVisible(show);
+    closeAct->setVisible(show);
 }
 
 void TMainWindowTray::onSystemTrayActivated(

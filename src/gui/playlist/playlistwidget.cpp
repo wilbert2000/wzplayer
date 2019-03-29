@@ -899,7 +899,6 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
                     index.internalPointer());
         QString fn = target->path();
         if (!fn.isEmpty() && QFileInfo(fn).isDir()) {
-
             if (copyDialog) {
                 copyDialog->show();
                 copyDialog->raise();
@@ -916,11 +915,12 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
         }
     }
 
+    /*
     QTreeWidgetItem* current = currentItem();
     QList<QTreeWidgetItem*> sel;
     QList<QTreeWidgetItem*> modified;
 
-    // Handle non filesystem stuff that is gona move
+    // Handle stuff that is gona move
     bool moved = !event->isAccepted()
             && event->source() == this
             && event->dropAction() == Qt::MoveAction;
@@ -935,10 +935,12 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
             }
         }
     }
+    */
 
     // Handle the drop
     QTreeWidget::dropEvent(event);
 
+    /*
     if (event->isAccepted()) {
         if (moved) {
             WZDEBUG("Selection moved");
@@ -1071,7 +1073,7 @@ void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
 bool TPlaylistWidget::removeItemFromDisk(TPlaylistItem* item) {
     WZTRACEOBJ("");
 
-    QFileInfo fi(item->filename());
+    QFileInfo fi(item->path());
 
     // Test dir empty
     QString filename = QDir::toNativeSeparators(fi.absoluteFilePath());
@@ -1087,7 +1089,8 @@ bool TPlaylistWidget::removeItemFromDisk(TPlaylistItem* item) {
     if (!yesToAll) {
         // Ask for confirmation
         int res = QMessageBox::question(this, tr("Confirm delete from disk"),
-            tr("You're about to delete '%1' from disk.").arg(filename)
+            tr("You're about to delete %1'%2' from disk.")
+            .arg(fi.isSymLink() ? tr("symbolic link ") : "").arg(filename)
             + "<br>"
             + tr("This action cannot be undone.")
             + "<br>"

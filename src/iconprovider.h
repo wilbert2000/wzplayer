@@ -5,9 +5,8 @@
 #include <QFileInfo>
 #include <QSize>
 #include <QMap>
+#include <QStyle>
 
-
-class QStyle;
 
 // No longer use QFileIconProvider. It fails in mysterious ways...
 class TIconProvider {
@@ -19,9 +18,10 @@ public:
 
     QIcon urlIcon;
     QIcon fileIcon;
+    QIcon fileSymLinkIcon;
     QIcon fileLinkIcon;
     QIcon folderIcon;
-    QIcon folderLinkIcon;
+    QIcon folderSymLinkIcon;
 
     QIcon iconPlayed;
     QIcon iconLoading;
@@ -34,10 +34,21 @@ public:
     QIcon saveIcon;
     QIcon saveAsIcon;
     QIcon refreshIcon;
+    QIcon browseURLIcon;
     QIcon newFolderIcon;
+    QIcon closeIcon;
+    QIcon quitIcon;
 
     QIcon pauseIcon;
     QIcon playIcon;
+
+    QIcon fullscreenIcon;
+    QIcon fullscreenExitIcon;
+    QIcon windowSizeIcon;
+    QIcon optimizeSizeIcon;
+    QIcon zoomResetIcon;
+    QIcon zoomInIcon;
+    QIcon zoomOutIcon;
 
     QIcon cutIcon;
     QIcon copyIcon;
@@ -57,13 +68,18 @@ public:
     //QIcon iconForFile(const QString& filename) const;
 
     void setStyle(QStyle* aStyle);
-    QIcon getCachedIcon(const QIcon& icon, bool addOnIcon = false);
-    QIcon getIconBlacklist(const QIcon& icon);
-    QIcon getIconEdited(const QIcon& icon, bool addOnIcon = false);
+    QIcon getIconSymLinked(const QIcon& icon);
+    QIcon getIconLinked(const QIcon& icon);
+    QIcon getIconBlacklisted(const QIcon& icon);
+    QIcon getIconEdited(const QIcon& icon);
 
 private:
     QStyle* style;
-    QMap<qint64, QIcon> iconCache;
+    QMap<qint64, QIcon> iconBlacklistedCache;
+    QMap<qint64, QIcon> iconEditedCache;
+
+    QIcon getIconImage(const QString& name, const QString& name2);
+    QIcon getIconStd(const QString& name, QStyle::StandardPixmap stdIcon);
 
     QPixmap getPixMapEdited(QIcon icon, QIcon::Mode mode, QIcon::State state);
     QPixmap getPixMapBlacklist(QIcon icon, QIcon::Mode mode, QIcon::State state);

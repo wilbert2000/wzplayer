@@ -170,10 +170,12 @@ void TPlaylist::playOrPause() {
     switch (player->state()) {
         case Player::STATE_PLAYING: player->pause(); break;
         case Player::STATE_PAUSED: player->play(); break;
+        case Player::STATE_STOPPING: break;
 
-        case Player::STATE_STOPPING:
         case Player::STATE_RESTARTING:
-        case Player::STATE_LOADING: break;
+        case Player::STATE_LOADING:
+            stop();
+            break;
 
         case Player::STATE_STOPPED:
         default:
@@ -347,60 +349,95 @@ QString TPlaylist::getPlayingTitle(bool addModified) const {
 
 void TPlaylist::enablePlayOrPause() {
 
-    if (thread == 0 && player->stateReady()) {
-        WZTRACE("Enabled in state " + player->stateToString());
+    Player::TState ps = player->state();
+    if (ps == Player::STATE_STOPPING) {
+        playOrPauseAct->setTextAndTip(tr("Stopping player..."));
+        playOrPauseAct->setIcon(iconProvider.iconStopping);
+        playOrPauseAct->setEnabled(false);
+        WZTRACE("Disabled in state stopping");
+    } else if (ps == Player::STATE_PLAYING) {
+        playOrPauseAct->setTextAndTip(tr("Pause"));
         playOrPauseAct->setEnabled(true);
-        if (player->state() == Player::STATE_PLAYING) {
-            playOrPauseAct->setTextAndTip(tr("Pause"));
-            playOrPauseAct->setIcon(iconProvider.pauseIcon);
-        } else {
-            // STATE_PAUSED or STATE_STOPPED
-            playOrPauseAct->setTextAndTip(tr("Play"));
-            playOrPauseAct->setIcon(iconProvider.playIcon);
-        }
-    } else {
-        if (player->state() == Player::STATE_STOPPING) {
-            playOrPauseAct->setTextAndTip(tr("Stopping..."));
-            playOrPauseAct->setIcon(iconProvider.iconStopping);
-            playOrPauseAct->setEnabled(false);
-            WZTRACE("Disabled in state stopping");
-        } else {
-            if (thread) {
-                playOrPauseAct->setTextAndTip(tr("Loading..."));
-            } else {
-                playOrPauseAct->setTextAndTip(tr("%1...")
-                                              .arg(player->stateToString()));
-            }
+        if (thread) {
             playOrPauseAct->setIcon(iconProvider.iconLoading);
-            if (player->state() == Player::STATE_PLAYING) {
-                playOrPauseAct->setEnabled(true);
-                WZTRACE("Enabled in state playing 2");
-            } else {
-                playOrPauseAct->setEnabled(false);
-                WZTRACE("Disabled in state not playing 2");
-            }
+            WZTRACE("Enabled in state playing while loading");
+        } else {
+            playOrPauseAct->setIcon(iconProvider.pauseIcon);
+            WZTRACE("Enabled in state playing");
         }
+    } else if (ps == Player::STATE_PAUSED) {
+        playOrPauseAct->setTextAndTip(tr("Play"));
+        playOrPauseAct->setEnabled(true);
+        if (thread) {
+            playOrPauseAct->setIcon(iconProvider.iconLoading);
+            WZTRACE("Enabled in state paused while loading");
+        } else {
+            playOrPauseAct->setIcon(iconProvider.playIcon);
+            WZTRACE("Enabled in state paused");
+        }
+    } else if (ps == Player::STATE_RESTARTING || ps == Player::STATE_LOADING) {
+        QString s = player->stateToString().toLower();
+        playOrPauseAct->setTextAndTip(tr("Stop %1").arg(s));
+        playOrPauseAct->setIcon(iconProvider.iconStopping);
+        playOrPauseAct->setEnabled(true);
+        WZTRACE("Enabled in state " + s);
+    } else if (ps == Player::STATE_STOPPED) {
+        playOrPauseAct->setTextAndTip(tr("Play"));
+        playOrPauseAct->setIcon(iconProvider.playIcon);
+        playOrPauseAct->setEnabled(!player->mdat.filename.isEmpty()
+                                   || playlistWidget->hasPlayableItems());
     }
-}
+} // enablePlayOrPause()
 
 void TPlaylist::updatePlayingItem() {
 
+    Player::TState ps = player->state();
+    if (ps == Player::STATE_STOPPING) {
+        WZTRACE("No updates in state stopping");
+        return;
+    }
+
     TPlaylistItem* item = playlistWidget->playingItem;
-    if (item) {
-        bool nameMismatch = item->filename() != player->mdat.filename;
-        if (nameMismatch) {
-            WZWARN(QString("File name playing item '%1' does not match"
-                            " player filename '%2'")
-                   .arg(item->filename()).arg(player->mdat.filename));
+    if (!item) {
+        WZTRACE("No playing item");
+        return;
+    }
+
+    bool filenameMismatch = item->filename() != player->mdat.filename;
+    if (filenameMismatch) {
+        WZWARN(QString("File name playing item '%1' does not match"
+                       " player filename '%2' in state %3")
+               .arg(item->filename())
+               .arg(player->mdat.filename)
+               .arg(player->stateToString()));
+    }
+
+    if (ps == Player::STATE_STOPPED) {
+        if (item->state() != PSTATE_STOPPED && item->state() != PSTATE_FAILED) {
+            playlistWidget->setPlayingItem(item, PSTATE_STOPPED);
         }
-        if (player->state() == Player::STATE_PLAYING) {
-            if (item->state() != PSTATE_PLAYING) {
-                playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
-            }
-        } else if (player->state() == Player::STATE_LOADING) {
-            if (item->state() != PSTATE_LOADING) {
-                playlistWidget->setPlayingItem(item, PSTATE_LOADING);
-            }
+    } else if (ps == Player::STATE_PLAYING || ps == Player::STATE_PAUSED) {
+        if (item->state() != PSTATE_PLAYING) {
+            playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+        }
+    } else  if (ps == Player::STATE_RESTARTING) {
+        if (item->state() != PSTATE_LOADING) {
+            playlistWidget->setPlayingItem(item, PSTATE_LOADING);
+        }
+    } else if (ps == Player::STATE_LOADING) {
+
+        // The player->open(url) call can change the URL. It sets
+        // player->mdat.filename just before switching state to loading.
+        // If we do not copy the url here, onNewMediaStartedPlaying() will
+        // start a new playlist, clearing the current playlist.
+        if (filenameMismatch && !player->mdat.filename.isEmpty()) {
+            WZWARN("Updating item file name");
+            item->setFilename(player->mdat.filename);
+            item->setModified();
+        }
+
+        if (item->state() != PSTATE_LOADING) {
+            playlistWidget->setPlayingItem(item, PSTATE_LOADING);
         }
     }
 }
@@ -434,7 +471,7 @@ void TPlaylist::onPlayerError() {
     if (player->state() != Player::STATE_STOPPING) {
         TPlaylistItem* item = playlistWidget->playingItem;
         if (item && item->filename() == player->mdat.filename) {
-            item->setState(PSTATE_FAILED);
+            playlistWidget->setPlayingItem(item, PSTATE_FAILED);
             playlistWidget->setCurrentItem(item);
             playlistWidget->scrollToItem(item);
         }
@@ -448,12 +485,12 @@ void TPlaylist::onNewMediaStartedPlaying() {
     QString curFilename = playlistWidget->playingFile();
 
     if (md->disc.valid) {
-        // Handle disk, count items to check for changed disk
+        // Handle disk, count items to check for changed disk :(
         TDiscName curDisc(curFilename);
         if (curDisc.valid
                 && curDisc.protocol == md->disc.protocol
                 && curDisc.device == md->disc.device
-                // Title may have been edited, so can't compare
+                // TODO: compare title?
                 // && md->titles[curDisc.title].getDisplayName(false)
                 // == playlistWidget->playingItem->baseName()
                 && md->titles.count() == playlistWidget->countItems()) {
@@ -497,7 +534,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         }
 
         // Could set playingItem now, but wait for player to change state to
-        // playing, so we will not trigger additional calls to enableActions()
+        // playing to not trigger additional calls to enableActions().
         // playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
 
         // Pause a single image
@@ -518,7 +555,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         TPlaylistItem* root = playlistWidget->root();
         root->setFilename(filename, md->name());
         // setFilename() won't recognize iso's as folder.
-        // No need to set icon as it is not visible
+        // No need to update icon as it is not visible
         root->setFolder(true);
 
         TDiscName disc = md->disc;

@@ -430,10 +430,15 @@ void TMainWindow::createActions() {
 #endif
 
     // Close
-    // Memo: Quit added by TMainwindowTray
-    a = new TAction(this, "close", tr("Close"), "noicon");
-    a->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
-    connect(a, &TAction::triggered, this, &TMainWindow::closeWindow);
+    // TMainWindowTray shows/hides close act
+    closeAct = new TAction(this, "close", tr("Close"), "noicon");
+    closeAct->setIcon(iconProvider.closeIcon);
+    connect(closeAct, &TAction::triggered, this, &TMainWindow::closeWindow);
+
+    quitAct = new Action::TAction(this, "quit", tr("Quit"), "noicon",
+                                  QKeySequence("Ctrl+Q"));
+    quitAct->setIcon(iconProvider.quitIcon);
+    // TMainWindowTray connects quitAct
 
     // Play menu
     // Stop
@@ -497,7 +502,7 @@ void TMainWindow::createActions() {
     setSeekTexts();
 
     // Seek to time
-    seekToTimeAct = new TAction(this, "seek_to_time", tr("Seek to time..."), "",
+    seekToTimeAct = new TAction(this, "seek_to", tr("Seek to..."), "",
                                 QKeySequence("Ctrl+G"));
     connect(seekToTimeAct, &TAction::triggered,
             this, &TMainWindow::showSeekToDialog);
@@ -511,14 +516,16 @@ void TMainWindow::createActions() {
 
     // Video Menu
     // Fullscreen
-    fullscreenAct = new TAction(this, "fullscreen", tr("Fullscreen"), "",
+    fullscreenAct = new TAction(this, "fullscreen", tr("Fullscreen"), "noicon",
                                 Qt::Key_F);
+    fullscreenAct->setIcon(iconProvider.fullscreenIcon);
     fullscreenAct->setCheckable(true);
     connect(fullscreenAct, &TAction::triggered,
             this, &TMainWindow::toggleFullscreen);
     // Exit fullscreen (not in menu)
-    a = new TAction(this, "exit_fullscreen", tr("Exit fullscreen"), "",
+    a = new TAction(this, "exit_fullscreen", tr("Exit fullscreen"), "noicon",
                     Qt::Key_Escape);
+    a->setIcon(iconProvider.fullscreenExitIcon);
     connect(a, &TAction::triggered, this, &TMainWindow::exitFullscreen);
 
     // Aspect menu
@@ -532,8 +539,9 @@ void TMainWindow::createActions() {
     connect(doubleSizeAct, &TAction::triggered,
             this, &TMainWindow::toggleDoubleSize);
 
-    optimizeSizeAct = new TAction(this, "size_optimize", "", "",
+    optimizeSizeAct = new TAction(this, "size_optimize", "", "noicon",
                                   QKeySequence("`"));
+    optimizeSizeAct->setIcon(iconProvider.optimizeSizeIcon);
     connect(optimizeSizeAct, &TAction::triggered,
             this, &TMainWindow::optimizeSizeFactor);
     connect(playerWindow, &TPlayerWindow::videoSizeFactorChanged,
@@ -2228,6 +2236,8 @@ void TMainWindow::onStateChanged(Player::TState state) {
         case Player::STATE_PAUSED:
             msg(tr("Paused"));
             break;
+
+        // Messages done by player:
         case Player::STATE_STOPPING:
              break;
         case Player::STATE_RESTARTING:
@@ -2982,6 +2992,8 @@ void TMainWindow::setFullscreen(bool b) {
 
     pref->fullscreen = b;
     fullscreenAct->setChecked(b);
+    fullscreenAct->setIcon(b ? iconProvider.fullscreenExitIcon
+                             : iconProvider.fullscreenIcon);
     emit fullscreenChanged();
 
     if (pref->fullscreen) {

@@ -45,6 +45,7 @@
 ****************************************************************************/
 
 #include "qtfilecopier/qtcopydialog.h"
+#include "gui/msg.h"
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -57,6 +58,9 @@
 #include "ui_qtcopydialog.h"
 #include "ui_qtoverwritedialog.h"
 #include "ui_qtotherdialog.h"
+#include <QDebug>
+#include <QDialogButtonBox>
+
 
 static QString formatSize(qint64 size)
 {
@@ -89,8 +93,8 @@ public:
     QtOverwriteDialog(QWidget *parent = 0);
 
     enum ResultButton {
-        Retry,
         Cancel,
+        Retry,
         Skip,
         SkipAll,
         Overwrite,
@@ -102,8 +106,8 @@ public:
     ResultButton execute(const QString &sourceFile, const QString &destinationFile);
 
 private slots:
-    void retry()        { done(Retry); }
     void cancel()       { done(Cancel); }
+    void retry()        { done(Retry); }
     void skip()         { done(Skip); }
     void skipAll()      { done(SkipAll); }
     void overwrite()    { done(Overwrite); }
@@ -115,24 +119,30 @@ private:
 QtOverwriteDialog::QtOverwriteDialog(QWidget *parent) : QDialog(parent)
 {
     ui.setupUi(this);
-    connect(ui.retryButton, SIGNAL(clicked()), this, SLOT(retry()));
-    connect(ui.skipButton, SIGNAL(clicked()), this, SLOT(skip()));
-    connect(ui.skipAllButton, SIGNAL(clicked()), this, SLOT(skipAll()));
-    connect(ui.overwriteButton, SIGNAL(clicked()), this, SLOT(overwrite()));
-    connect(ui.overwriteAllButton, SIGNAL(clicked()), this, SLOT(overwriteAll()));
-    connect(ui.cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
-    ui.iconLabel->setPixmap(QApplication::style()->standardPixmap(QStyle::SP_MessageBoxWarning));
+
+    connect(ui.buttonBox->button(QDialogButtonBox::YesToAll), &QPushButton::clicked,
+            this, &QtOverwriteDialog::overwriteAll);
+    connect(ui.buttonBox->button(QDialogButtonBox::Yes), &QPushButton::clicked,
+            this, &QtOverwriteDialog::overwrite);
+    connect(ui.buttonBox->button(QDialogButtonBox::NoToAll), &QPushButton::clicked,
+            this, &QtOverwriteDialog::skipAll);
+    connect(ui.buttonBox->button(QDialogButtonBox::No), &QPushButton::clicked,
+            this, &QtOverwriteDialog::skip);
+    connect(ui.buttonBox->button(QDialogButtonBox::Retry), &QPushButton::clicked,
+            this, &QtOverwriteDialog::retry);
+    connect(ui.buttonBox->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
+            this, &QtOverwriteDialog::cancel);
 }
 
 QString QtOverwriteDialog::getDestinationName() const {
-    return ui.destLineEdit->text();
+    return ui.destinationLineEdit->text();
 }
 
 QtOverwriteDialog::ResultButton QtOverwriteDialog::execute(const QString &sourceFile,
         const QString &destinationFile)
 {
     ui.sourceLineEdit->setText(sourceFile);
-    ui.destLineEdit->setText(destinationFile);
+    ui.destinationLineEdit->setText(destinationFile);
     QFileInfo fis(sourceFile);
     QFileInfo fid(destinationFile);
     ui.sourceFileLabel->setText(formatSize(fis.size()));
@@ -593,14 +603,17 @@ void QtCopyDialogPrivate::setCompleted(qint64 completed, qint64 totalSize, int m
     ui.completedLabel->setText(str);
     int percent = totalSize > 0 ? (int)((double)completed * 100 / totalSize + 0.5) : 100;
     ui.totalProgressBar->setValue(percent);
+
+    bool done = !fileCopier || fileCopier->state() == QtFileCopier::Idle;
     QString state;
-    if (fileCopier && fileCopier->state() != QtFileCopier::Idle)
-        state = QtCopyDialog::tr("Copying...");
-    else
+    if (done)
         state = QtCopyDialog::tr("Done");
+    else
+        state = QtCopyDialog::tr("Copying...");
     str = QtCopyDialog::tr("%1% of %2 (%3)").arg(percent)
                 .arg(formatSize(totalSize)).arg(state);
     q_ptr->setWindowTitle(str);
+    Gui::msg(str, done ? TConfig::MESSAGE_DURATION : 0);
 
     QString transferStr = QtCopyDialog::tr("0 B");
     if (msecs > 0) {

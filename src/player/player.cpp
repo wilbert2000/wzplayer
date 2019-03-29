@@ -305,6 +305,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
             WZWARN("Adding missing /");
             disc.device = "/" + disc.device;
         } else {
+            WZERROR(QString("Device or file not found '%1'").arg(disc.device));
             Gui::msg(tr("Device or file not found: '%1'").arg(disc.device), 0);
             return;
         }

@@ -91,7 +91,6 @@ private:
     Q_PRIVATE_SLOT(d_func(), void canceled())
     Q_PRIVATE_SLOT(d_func(), void showProgress())
     Q_PRIVATE_SLOT(d_func(), void showDialog())
-
 };
 
 #endif

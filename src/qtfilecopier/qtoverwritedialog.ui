@@ -7,28 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>153</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Copy Warning</string>
   </property>
-  <layout class="QVBoxLayout">
-   <property name="spacing">
-    <number>6</number>
-   </property>
-   <property name="leftMargin">
-    <number>8</number>
-   </property>
-   <property name="topMargin">
-    <number>8</number>
-   </property>
-   <property name="rightMargin">
-    <number>8</number>
-   </property>
-   <property name="bottomMargin">
-    <number>8</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout">
      <property name="spacing">
@@ -47,13 +32,6 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLabel" name="iconLabel">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
       <layout class="QGridLayout">
        <property name="leftMargin">
         <number>0</number>
@@ -71,14 +49,17 @@
         <number>6</number>
        </property>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="destinationLabel">
          <property name="text">
           <string>Destination</string>
+         </property>
+         <property name="buddy">
+          <cstring>destinationLineEdit</cstring>
          </property>
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="sourceLabel">
          <property name="text">
           <string>Source</string>
          </property>
@@ -99,7 +80,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="destLineEdit">
+        <widget class="QLineEdit" name="destinationLineEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -128,6 +109,9 @@
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
          </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -138,9 +122,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="messageLabel">
      <property name="text">
-      <string>Destination already exists.</string>
+      <string>The destination already exists. Do you want to overwrite it?</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -148,112 +132,16 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout">
-     <property name="spacing">
-      <number>6</number>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::No|QDialogButtonBox::NoToAll|QDialogButtonBox::Retry|QDialogButtonBox::Yes|QDialogButtonBox::YesToAll</set>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>48</width>
-         <height>31</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="retryButton">
-       <property name="text">
-        <string>Retry</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="skipButton">
-       <property name="text">
-        <string>Skip</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="skipAllButton">
-       <property name="text">
-        <string>Skip All</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="overwriteButton">
-       <property name="text">
-        <string>Overwrite</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="overwriteAllButton">
-       <property name="text">
-        <string>Overwrite All</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="cancelButton">
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+    </widget>
    </item>
   </layout>
-  <widget class="QWidget" name="widget" native="true">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>83</y>
-     <width>519</width>
-     <height>33</height>
-    </rect>
-   </property>
-  </widget>
  </widget>
  <tabstops>
-  <tabstop>destLineEdit</tabstop>
-  <tabstop>retryButton</tabstop>
-  <tabstop>skipButton</tabstop>
-  <tabstop>skipAllButton</tabstop>
-  <tabstop>overwriteButton</tabstop>
-  <tabstop>overwriteAllButton</tabstop>
-  <tabstop>cancelButton</tabstop>
+  <tabstop>destinationLineEdit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

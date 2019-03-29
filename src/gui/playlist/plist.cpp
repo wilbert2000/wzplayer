@@ -209,7 +209,7 @@ void TPList::createActions() {
     // Browse directory
     browseDirAct = new TAction(owner, shortName + "_browse_dir",
                                tr("Browse directory or URL"), "noicon");
-    browseDirAct->setIcon(QIcon(style()->standardIcon(QStyle::SP_DirOpenIcon)));
+    browseDirAct->setIcon(iconProvider.browseURLIcon);
     connect(browseDirAct, &TAction::triggered, this, &TPList::browseDir);
 
     // Play

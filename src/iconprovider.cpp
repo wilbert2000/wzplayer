@@ -15,6 +15,22 @@ TIconProvider iconProvider;
 TIconProvider::TIconProvider() : iconSize(QSize(22, 22)) {
 }
 
+QIcon TIconProvider::getIconSymLinked(const QIcon& icon) {
+
+    if (icon.cacheKey() == folderIcon.cacheKey()) {
+        return folderSymLinkIcon;
+    }
+    return fileSymLinkIcon;
+}
+
+QIcon TIconProvider::getIconLinked(const QIcon& icon) {
+
+    if (icon.cacheKey() == folderIcon.cacheKey()) {
+        return folderSymLinkIcon;
+    }
+    return fileLinkIcon;
+}
+
 static QPen getPen() {
     return QPen(qApp->palette("TPlaylistWidget").color(QPalette::Text));
 }
@@ -34,18 +50,17 @@ QPixmap TIconProvider::getPixMapBlacklist(QIcon icon,
     return pixmap;
 }
 
-QIcon TIconProvider::getIconBlacklist(const QIcon& icon) {
+QIcon TIconProvider::getIconBlacklisted(const QIcon& icon) {
 
-    QIcon newIcon = iconCache[icon.cacheKey()];
+    QIcon newIcon = iconBlacklistedCache[icon.cacheKey()];
     if (newIcon.isNull()) {
         newIcon.addPixmap(getPixMapBlacklist(icon, QIcon::Normal, QIcon::Off),
                           QIcon::Normal, QIcon::Off);
         newIcon.addPixmap(getPixMapBlacklist(icon, QIcon::Normal, QIcon::On),
                           QIcon::Normal, QIcon::On);
-        iconCache[newIcon.cacheKey()] = newIcon;
-        WZTRACE(QString("Created blacklist icon with key %1")
-                .arg(newIcon.cacheKey()));
-
+        iconBlacklistedCache[icon.cacheKey()] = newIcon;
+        WZTRACE(QString("Created blacklist icon for key %1")
+                .arg(icon.cacheKey()));
     } else {
         WZTRACE(QString("Returning icon from cache for key %1")
                 .arg(icon.cacheKey()));
@@ -68,20 +83,19 @@ QPixmap TIconProvider::getPixMapEdited(QIcon icon,
     return pixmap;
 }
 
-QIcon TIconProvider::getIconEdited(const QIcon& icon, bool addOnIcon) {
+QIcon TIconProvider::getIconEdited(const QIcon& icon) {
 
-    QIcon& newIcon = iconCache[icon.cacheKey()];
+    QIcon& newIcon = iconEditedCache[icon.cacheKey()];
     if (newIcon.isNull()) {
         newIcon.addPixmap(getPixMapEdited(icon, QIcon::Normal, QIcon::Off),
                           QIcon::Normal, QIcon::Off);
-        if (addOnIcon) {
+        if (icon.availableSizes(QIcon::Normal, QIcon::On).count()) {
             newIcon.addPixmap(getPixMapEdited(icon, QIcon::Normal, QIcon::On),
                               QIcon::Normal, QIcon::On);
-
         }
-        iconCache[newIcon.cacheKey()] = newIcon;
-        WZTRACE(QString("Created edited icon with key %1")
-                .arg(newIcon.cacheKey()));
+        iconEditedCache[icon.cacheKey()] = newIcon;
+        WZTRACE(QString("Created edited icon for key %1")
+                .arg(icon.cacheKey()));
     } else {
         WZTRACE(QString("Returning icon from cache for key '%1'")
                 .arg(icon.cacheKey()));
@@ -89,6 +103,26 @@ QIcon TIconProvider::getIconEdited(const QIcon& icon, bool addOnIcon) {
     }
     return newIcon;
 }
+
+QIcon TIconProvider::getIconImage(const QString& name, const QString& name2) {
+
+    QIcon icon = QIcon::fromTheme(name);
+    if (icon.isNull()) {
+        return Images::icon(name2);
+    }
+    return icon;
+}
+
+QIcon TIconProvider::getIconStd(const QString& name,
+                               QStyle::StandardPixmap stdIcon) {
+
+    QIcon icon = QIcon::fromTheme(name);
+    if (icon.isNull()) {
+        return style->standardIcon(stdIcon);
+    }
+    return icon;
+}
+
 
 void TIconProvider::setStyle(QStyle* aStyle) {
 
@@ -100,7 +134,8 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     // TODO: fix "device independant pixels"?
     actualIconSize = folderIcon.actualSize(iconSize);
 
-    fileLinkIcon = style->standardIcon(QStyle::SP_FileLinkIcon);
+    fileSymLinkIcon = getIconStd("emblem-symbolic-link", QStyle::SP_FileLinkIcon);
+    fileLinkIcon = fileSymLinkIcon;
 
     folderIcon = QIcon();
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirClosedIcon),
@@ -108,46 +143,52 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     folderIcon.addPixmap(style->standardPixmap(QStyle::SP_DirOpenIcon),
                          QIcon::Normal, QIcon::On);
 
-    folderLinkIcon = QIcon();
-    folderLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkIcon),
+    folderSymLinkIcon = QIcon();
+    folderSymLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkIcon),
                              QIcon::Normal, QIcon::Off);
-    folderLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkOpenIcon),
+    folderSymLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkOpenIcon),
                              QIcon::Normal, QIcon::On);
 
     iconPlayed =  style->standardIcon(QStyle::SP_DialogOkButton);
-    iconLoading = QIcon();
-    iconLoading.addPixmap(Images::icon("loading"), QIcon::Normal, QIcon::Off);
-    iconLoading.addPixmap(Images::icon("loading"), QIcon::Disabled, QIcon::Off);
+    iconLoading = Images::icon("loading");
     iconPlaying =  style->standardIcon(QStyle::SP_MediaPlay);
-    iconStopping = QIcon();
-    iconStopping.addPixmap(Images::icon("stopping"), QIcon::Normal, QIcon::Off);
-    iconStopping.addPixmap(Images::icon("stopping"), QIcon::Disabled, QIcon::Off);
+    iconStopping = Images::icon("stopping");
     iconFailed =  Images::icon("failed");
 
-    recentIcon = QIcon::fromTheme("document-open-recent",
-                                  Images::icon("recent_menu"));
+    recentIcon = getIconImage("document-open-recent", "recent_menu");
     openIcon = style->standardIcon(QStyle::SP_DialogOpenButton);
     saveIcon = style->standardIcon(QStyle::SP_DialogSaveButton);
-    saveAsIcon = QIcon::fromTheme("document-save-as",
-        style->standardIcon(QStyle::SP_DriveHDIcon));
+    saveAsIcon = getIconStd("document-save-as", QStyle::SP_DriveHDIcon);
     refreshIcon = style->standardIcon(QStyle::SP_BrowserReload);
+    browseURLIcon = getIconStd("system-file-manager", QStyle::SP_DirOpenIcon);
+
     newFolderIcon = style->standardIcon(QStyle::SP_FileDialogNewFolder);
+
+    closeIcon = getIconStd("window-close", QStyle::SP_DialogCloseButton);
+    quitIcon = getIconImage("application-exit", "exit");
 
     pauseIcon = Images::icon("pause");
     playIcon = Images::icon("play");
 
-    cutIcon = QIcon::fromTheme("edit-cut", Images::icon("cut"));
-    copyIcon = QIcon::fromTheme("edit-copy", Images::icon("copy"));
-    pasteIcon = QIcon::fromTheme("edit-paste", Images::icon("paste"));
-    findIcon = QIcon::fromTheme("edit-find", Images::icon("find"));
+    fullscreenIcon = getIconImage("view-fullscreen", "fullscreen");
+    fullscreenExitIcon = getIconImage("view-restore", "fullscreen");
+    windowSizeIcon = getIconImage("zoom-in", "window_size_menu");
+    optimizeSizeIcon = getIconImage("zoom-fit-best", "size_optimize");
+    zoomResetIcon = getIconImage("zoom-original", "reset_zoom_pan");
+    zoomInIcon = getIconImage("zoom-in", "inc_zoom");
+    zoomOutIcon = getIconImage("zoom-out", "dec_zoom");
+
+    cutIcon = getIconImage("edit-cut", "cut");
+    copyIcon = getIconImage("edit-copy", "copy");
+    pasteIcon = getIconImage("edit-paste", "paste");
+    findIcon = getIconImage("edit-find", "find");
 
     okIcon = style->standardIcon(QStyle::SP_DialogOkButton);
     cancelIcon = style->standardIcon(QStyle::SP_DialogCancelButton);
 
     trashIcon = style->standardIcon(QStyle::SP_TrashIcon);
     discardIcon = style->standardIcon(QStyle::SP_DialogDiscardButton);
-    clearIcon = QIcon::fromTheme("edit-clear",
-        style->standardIcon(QStyle::SP_DialogResetButton));
+    clearIcon = getIconStd("edit-clear", QStyle::SP_DialogResetButton);
 
     conflictItem = Images::icon("conflict");
 }

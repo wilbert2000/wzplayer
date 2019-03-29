@@ -51,7 +51,6 @@ protected slots:
 
 private:
     QSystemTrayIcon* tray;
-    Action::TAction* quitAct;
     Action::TAction* showTrayAct;
     Action::TAction* showMainWindowAct;
     bool hideMainWindowOnStartup;
@@ -61,6 +60,7 @@ private:
     void showMainWindow(bool b);
 
 private slots:
+    void onShowTrayActToggled(bool show);
     void onSystemTrayActivated(QSystemTrayIcon::ActivationReason);
     void showMainWin();
     void toggleShowMainWindow();

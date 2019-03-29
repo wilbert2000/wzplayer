@@ -181,6 +181,9 @@ signals:
 protected:
     Playlist::TPlaylist* playlist;
 
+    Action::TAction* closeAct;
+    Action::TAction* quitAct;
+
     Action::Menu::TMenuFile* fileMenu;
     Action::Menu::TMenuPlay* playMenu;
     Action::Menu::TMenuVideo* videoMenu;
@@ -255,6 +258,9 @@ private:
 #ifdef Q_OS_LINUX
     Action::TAction* saveThumbnailAct;
 #endif
+
+    // closeAct is protected
+    // quitAct is protected
 
     // Play menu
     Action::TAction* stopAct;

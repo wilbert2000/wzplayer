@@ -74,10 +74,10 @@ TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu) :
     addAction(mw->findAction("save_thumbnail"));
 #endif
 
-    // Close
+    // Close & quit
     addSeparator();
     addAction(mw->findAction("close"));
-    // Note: Quit added by TMainwindowTray
+    addAction(mw->findAction("quit"));
 }
 
 void TMenuFile::updateRecents() {

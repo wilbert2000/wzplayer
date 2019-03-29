@@ -6,6 +6,7 @@
 #include "gui/action/menu/menuvideocolorspace.h"
 #include "gui/videoequalizer.h"
 #include "gui/mainwindow.h"
+#include "iconprovider.h"
 
 #ifdef Q_OS_WIN
 #include "gui/deviceinfo.h"
@@ -196,20 +197,25 @@ TZoomAndPanGroup::TZoomAndPanGroup(TMainWindow* mw)
     setExclusive(false);
     setEnabled(false);
 
-    // Zoom
+    // Reset zoom
     TAction* a = new TAction(mw, "reset_zoom_pan", tr("Reset zoom and pan"),
-                             "", Qt::Key_5);
+                             "noicon", Qt::Key_5);
+    a->setIcon(iconProvider.zoomResetIcon);
     connect(a, &TAction::triggered, player, &Player::TPlayer::resetZoomAndPan);
     addAction(a);
 
-    // Zoom
-    a = new TAction(mw, "dec_zoom", tr("Zoom -"), "", Qt::Key_1);
+    // Zoom in
+    a = new TAction(mw, "inc_zoom", tr("Zoom in"), "noicon", Qt::Key_9);
+    a->setIcon(iconProvider.zoomInIcon);
+    connect(a, &TAction::triggered, player, &Player::TPlayer::incZoom);
+    addAction(a);
+
+    // Zoom out
+    a = new TAction(mw, "dec_zoom", tr("Zoom out"), "noicon", Qt::Key_1);
+    a->setIcon(iconProvider.zoomOutIcon);
     connect(a, &TAction::triggered, player, &Player::TPlayer::decZoom);
     addAction(a);
 
-    a = new TAction(mw, "inc_zoom", tr("Zoom +"), "", Qt::Key_9);
-    connect(a, &TAction::triggered, player, &Player::TPlayer::incZoom);
-    addAction(a);
 
     // Pan
     a = new TAction(mw, "move_left", tr("Move left"), "", Qt::Key_4);
@@ -240,7 +246,7 @@ TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TMainWindow* mw)
 
     TZoomAndPanGroup* group = mw->findChild<TZoomAndPanGroup*>("zoomandpangroup");
     addActions(group->actions());
-    insertSeparator(mw->findAction("dec_zoom"));
+    insertSeparator(mw->findAction("inc_zoom"));
     insertSeparator(mw->findAction("move_left"));
 }
 

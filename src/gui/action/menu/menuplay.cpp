@@ -253,7 +253,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TMainWindow* mw)
     // Rewind menu
     addMenu(new TMenuSeekRewind(this, main_window));
     // Seek to time
-    addAction(main_window->findAction("seek_to_time"));
+    addAction(main_window->findAction("seek_to"));
 
     addSeparator();
     // Speed submenu

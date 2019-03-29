@@ -4,6 +4,7 @@
 #include "gui/playerwindow.h"
 #include "gui/mainwindow.h"
 #include "player/player.h"
+#include "iconprovider.h"
 
 
 using namespace Settings;
@@ -96,7 +97,9 @@ void TWindowSizeGroup::update() {
 
 
 TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
-    TMenu(parent, mw, "window_size_menu", tr("Window size")) {
+    TMenu(parent, mw, "window_size_menu", tr("Window size"), "noicon") {
+
+    menuAction()->setIcon(iconProvider.windowSizeIcon);
 
     TWindowSizeGroup* group = mw->findChild<TWindowSizeGroup*>();
     addActions(group->actions());
