@@ -83,12 +83,12 @@ protected:
 
     Action::TAction* playAct;
     Action::TAction* playInNewWindowAct;
+    Action::TAction* findPlayingAct;
 
     Action::TAction* editNameAct;
     Action::TAction* clearNameAct;
     Action::TAction* editURLAct;
     Action::TAction* newFolderAct;
-    Action::TAction* findPlayingAct;
 
     Action::TAction* cutAct;
     Action::TAction* copyAct;

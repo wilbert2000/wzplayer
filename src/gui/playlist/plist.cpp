@@ -235,6 +235,14 @@ void TPList::createActions() {
     contextMenu->addAction(playAct);
     contextMenu->addAction(playInNewWindowAct);
 
+    // Find playing
+    findPlayingAct = new TAction(owner, shortName + "_find_playing",
+                                 tr("Find playing item"), "noicon", Qt::Key_F3);
+    findPlayingAct->setIcon(iconProvider.findIcon);
+    connect(findPlayingAct, &TAction::triggered,
+            this, &TPList::findPlayingItem);
+    contextMenu->addAction(findPlayingAct);
+
     contextMenu->addSeparator();
     // Edit name
     editNameAct = new TAction(owner, shortName + "_edit_name",
@@ -263,14 +271,6 @@ void TPList::createActions() {
     newFolderAct->setIcon(iconProvider.newFolderIcon);
     connect(newFolderAct, &TAction::triggered, this, &TPList::newFolder);
     contextMenu->addAction(newFolderAct);
-
-    // Find playing
-    findPlayingAct = new TAction(owner, shortName + "_find_playing",
-                                 tr("Find playing item"), "noicon", Qt::Key_F3);
-    findPlayingAct->setIcon(iconProvider.findIcon);
-    connect(findPlayingAct, &TAction::triggered,
-            this, &TPList::findPlayingItem);
-    contextMenu->addAction(findPlayingAct);
 
     contextMenu->addSeparator();
     // Cut
