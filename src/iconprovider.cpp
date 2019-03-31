@@ -61,10 +61,6 @@ QIcon TIconProvider::getIconBlacklisted(const QIcon& icon) {
         iconBlacklistedCache[icon.cacheKey()] = newIcon;
         WZTRACE(QString("Created blacklist icon for key %1")
                 .arg(icon.cacheKey()));
-    } else {
-        WZTRACE(QString("Returning icon from cache for key %1")
-                .arg(icon.cacheKey()));
-
     }
     return newIcon;
 }
@@ -96,10 +92,6 @@ QIcon TIconProvider::getIconEdited(const QIcon& icon) {
         iconEditedCache[icon.cacheKey()] = newIcon;
         WZTRACE(QString("Created edited icon for key %1")
                 .arg(icon.cacheKey()));
-    } else {
-        WZTRACE(QString("Returning icon from cache for key '%1'")
-                .arg(icon.cacheKey()));
-
     }
     return newIcon;
 }
