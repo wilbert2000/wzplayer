@@ -107,7 +107,7 @@ QPixmap Images::icon(const QString& name, int size) {
 
     QPixmap pixmap(iconFilename(name));
     if (pixmap.isNull()) {
-        WZTRACE("'" + name + "' not found");
+        // WZTRACE("'" + name + "' not found");
     } else if (size > 0) {
         pixmap = resize(pixmap, size);
     }

@@ -143,7 +143,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "TITLES") {
         int n_titles = value.toInt();
-        WZDEBUG("creating " + QString::number(n_titles) + " titles");
+        WZDEBUG("Creating " + QString::number(n_titles) + " titles");
         for (int idx = 0; idx < n_titles; idx++) {
             md->titles.addID(idx + 1);
             writeToPlayer(QString("print_text \"INFO_TITLE_LENGTH=%1"
@@ -220,7 +220,7 @@ bool TMPVProcess::parseChapter(int id, double start, QString title) {
 
     waiting_for_answers--;
     md->chapters.addChapter(id, title, start);
-    WZDEBUG("added chapter id " + QString::number(id)
+    WZDEBUG("Added chapter id " + QString::number(id)
             + " starting at " + QString::number(start)
             + " with title '" + title + "'");
     return true;
@@ -359,7 +359,7 @@ void TMPVProcess::convertChaptersToTitles() {
 
     // Just for safety...
     if (md->titles.count() > 0) {
-        WZWARN("found unexpected titles");
+        WZWARN("Found unexpected titles");
         return;
     }
     if (md->chapters.count() == 1) {
@@ -384,13 +384,14 @@ void TMPVProcess::convertChaptersToTitles() {
                                     duration);
                 prev_chapter = chapter;
             }
+            // TODO: md->duration no longer provided...
             md->titles.addTrack(prev_chapter.getID() + 1,
                                 prev_chapter.getName(),
                                 md->duration - prev_chapter.getStart());
         }
     }
 
-    WZDEBUG("created " + QString::number(md->titles.count()) + " titles");
+    WZDEBUG("Created " + QString::number(md->titles.count()) + " titles");
 }
 
 void TMPVProcess::playingStarted() {
@@ -399,7 +400,7 @@ void TMPVProcess::playingStarted() {
     // MPV can give negative times for TS without giving a start time.
     // Correct them by setting the start time.
     if (!md->start_sec_set && md->time_sec < 0) {
-        WZDEBUG("setting negative start time " + QString::number(md->time_sec));
+        WZDEBUG("Setting negative start time " + QString::number(md->time_sec));
         md->start_sec = md->time_sec;
         // No longer need rollover protection (though not set for MPV anyway).
         md->mpegts = false;

@@ -90,14 +90,14 @@ void TPlayerInfo::getInfo(const QString& path) {
         bin = path;
         bin_size = 0;
         clearInfo();
-        WZWARN("player '" + path + "' not found");
+        WZWARN("Player '" + path + "' not found");
         return;
     }
 
     // Already loaded info
     qint64 size = fi.size();
     if (path == bin && size == bin_size) {
-        WZDEBUG("reusing player info from memory");
+        WZDEBUG("Reusing player info from memory");
         return;
     }
 

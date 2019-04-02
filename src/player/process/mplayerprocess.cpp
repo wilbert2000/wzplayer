@@ -350,7 +350,7 @@ bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
 }
 
 bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
-    WZDEBUG("selecting VTS " + QString::number(vts));
+    WZDEBUG("Selecting VTS " + QString::number(vts));
 
     md->detected_type = TMediaData::TYPE_DVDNAV;
     md->titles.setSelectedVTS(vts);
@@ -361,7 +361,7 @@ bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
         // Videos don't get reannounced
 
         // Audios
-        WZDEBUG("clearing audio tracks");
+        WZDEBUG("Clearing audio tracks");
         md->audios = Maps::TTracks();
         audio_tracks_changed = true;
 
@@ -376,7 +376,7 @@ bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
 }
 
 bool TMPlayerProcess::dvdnavTitleChanged(int title) {
-    WZDEBUG("title changed from " + QString::number(md->titles.getSelectedID())
+    WZDEBUG("Title changed from " + QString::number(md->titles.getSelectedID())
             + " to " + QString::number(title));
 
     // Reset start time and time
@@ -525,7 +525,7 @@ void TMPlayerProcess::dvdnavRestore() {
 
 // Title changed for non DVDNAV disc
 bool TMPlayerProcess::titleChanged(TMediaData::Type type, int title) {
-    WZDEBUG("title " + QString::number(title));
+    WZDEBUG("Title " + QString::number(title));
 
     md->detected_type = type;
     notifyTitleTrackChanged(title);
@@ -573,8 +573,8 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
     // DVD disc ID
     if (name == "DVD_DISC_ID") {
-        md->dvd_id = value;
-        WZDEBUG("DVD ID set to '" + md->dvd_id + "'");
+        md->dvd_disc_id = value;
+        WZDEBUG("DVD DISC ID set to '" + md->dvd_disc_id + "'");
         return true;
     }
 
@@ -1110,7 +1110,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     if (rx_stream_title_and_url.indexIn(line) >= 0) {
         QString s = rx_stream_title_and_url.cap(1);
         QString url = rx_stream_title_and_url.cap(2);
-        WZDEBUG("stream title: '" + s + "', stream_url '" + url + "'");
+        WZDEBUG("stream title '" + s + "', stream_url '" + url + "'");
         md->detected_type = TMediaData::TYPE_STREAM;
         md->title = s;
         md->stream_url = url;

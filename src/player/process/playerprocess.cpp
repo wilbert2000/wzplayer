@@ -59,7 +59,9 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
         WZDEBUG(text);
     }
 
-    if (isRunning() && !received_end_of_file) {
+    if (received_end_of_file) {
+        WZWARN("Skipping write of '" + text + "' after eof received");
+    } else if (isRunning()) {
 
 #ifdef Q_OS_WIN
         write(text.toUtf8() + "\n");
@@ -68,7 +70,7 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
 #endif
 
     } else {
-        WZWARN("process not running");
+        WZWARN("Process not running while trying to write '" + text + "'");
     }
 }
 
@@ -112,7 +114,7 @@ bool TPlayerProcess::startPlayer() {
 
 // Slot called when the process is finished
 void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    WZDEBUG("exitCode " + QString::number(exitCode)
+    WZDEBUG("Exit code " + QString::number(exitCode)
             + ", override " + QString::number(exit_code_override)
             + ", status " + QString::number(exitStatus));
 
@@ -146,15 +148,13 @@ void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
 
     int selected = md->titles.getSelectedID();
     if (new_title != selected) {
-        WZDEBUG("title changed from " + QString::number(selected)
+        WZDEBUG("Title changed from " + QString::number(selected)
                 + " to " + QString::number(new_title));
         md->titles.setSelectedID(new_title);
         if (notified_player_is_running) {
             WZDEBUG("emit receivedTitleTrackChanged()");
             emit receivedTitleTrackChanged(new_title);
         }
-    } else {
-        WZDEBUG("current title already set to " + QString::number(new_title));
     }
 }
 
@@ -162,7 +162,7 @@ void TPlayerProcess::notifyDuration(double duration) {
 
     // Duration changed?
     if (qAbs(duration - md->duration) > 0.001) {
-        WZDEBUG("duration changed from " + QString::number(md->duration)
+        WZDEBUG("Duration changed from " + QString::number(md->duration)
                 + " to " + QString::number(duration));
         md->duration = duration;
         emit durationChanged(md->duration);
@@ -223,7 +223,7 @@ bool TPlayerProcess::waitForAnswers() {
         if (waiting_for_answers_safe_guard > 0)
             return true;
 
-        WZWARN("did not receive answers in time, stopped waitng");
+        WZWARN("Did not receive answers in time, stopped waitng");
         waiting_for_answers = 0;
         waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
     }
