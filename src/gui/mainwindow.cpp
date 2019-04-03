@@ -3217,7 +3217,11 @@ void TMainWindow::hidePanel() {
             update();
         }
 
-        resize(width(), height() - panel->height());
+        if (!logDock->isVisible() && !playlistDock->isVisible()
+                && !favListDock->isVisible()) {
+            resize(width(), height() - panel->height());
+        }
+
         panel->hide();
     }
 }
