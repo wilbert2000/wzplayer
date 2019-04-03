@@ -189,9 +189,7 @@ private slots:
 class TMenuAddRemoved : public Action::Menu::TMenu {
     Q_OBJECT
 public:
-    explicit TMenuAddRemoved(TPList* pl,
-                             TMainWindow* mw,
-                             const QString& name);
+    explicit TMenuAddRemoved(TPList* pl, const QString& name);
 private:
     TPList* plist;
     TPlaylistItem* parentItem;

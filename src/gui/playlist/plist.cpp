@@ -37,10 +37,8 @@
 namespace Gui {
 namespace Playlist {
 
-TMenuAddRemoved::TMenuAddRemoved(TPList* pl,
-                                 TMainWindow* mw,
-                                 const QString& name) :
-    TMenu(pl, mw, name, tr("Add removed item"), "noicon"),
+TMenuAddRemoved::TMenuAddRemoved(TPList* pl, const QString& name) :
+    TMenu(pl, name, tr("Add removed item"), "noicon"),
     plist(pl) {
 
     menuAction()->setIcon(iconProvider.trashIcon);
@@ -226,9 +224,8 @@ void TPList::createActions() {
             this, &TPList::playInNewWindow);
 
     // Context menu
-    Action::Menu::TMenu* contextMenu = new Action::Menu::TMenu(
-                this, mainWindow, shortName + "_context_menu",
-                tr("%1 context menu").arg(tranName));
+    Action::Menu::TMenu* contextMenu = new Action::Menu::TMenu(this,
+        shortName + "_context_menu", tr("%1 context menu").arg(tranName));
     connect(contextMenu, &Action::Menu::TMenu::aboutToShow,
             this, &TPList::enableActions);
 
@@ -299,7 +296,7 @@ void TPList::createActions() {
 
     contextMenu->addSeparator();
     // Add menu
-    playlistAddMenu = new Menu::TMenu(this, mainWindow, shortName + "_add_menu",
+    playlistAddMenu = new Menu::TMenu(this, shortName + "_add_menu",
                                       tr("Add to %1").arg(tranName.toLower()),
                                       "noicon");
     playlistAddMenu->menuAction()->setIcon(iconProvider.okIcon);
@@ -338,14 +335,13 @@ void TPList::createActions() {
     connect(a, &TAction::triggered, this, &TPList::addUrlsDialog);
 
     // Add removed sub menu
-    playlistAddMenu->addMenu(new TMenuAddRemoved(this, mainWindow,
-         shortName + "_add_removed_menu"));
+    playlistAddMenu->addMenu(new TMenuAddRemoved(
+                                 this, shortName + "_add_removed_menu"));
 
     contextMenu->addMenu(playlistAddMenu);
 
     // Remove menu
-    playlistRemoveMenu = new Menu::TMenu(this, mainWindow,
-        shortName + "_remove_menu",
+    playlistRemoveMenu = new Menu::TMenu(this, shortName + "_remove_menu",
         tr("Remove from %1").arg(tranNameLower), "noicon");
     playlistRemoveMenu->menuAction()->setIcon(iconProvider.cancelIcon);
     connect(playlistRemoveMenu, &Menu::TMenu::aboutToShow,

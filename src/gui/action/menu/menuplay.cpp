@@ -18,12 +18,12 @@ TMenuSeek::TMenuSeek(QWidget* parent,
                      const QString& name,
                      const QString& text,
                      int seekIntOffset) :
-    TMenu(parent, mw, name, text) {
+    TMenu(parent, name, text) {
 
-    setDefaultAction(main_window->seekIntToAction(
-                         pref->seeking_current_action + seekIntOffset));
+    setDefaultAction(mw->seekIntToAction(pref->seeking_current_action
+                                         + seekIntOffset));
     connect(this, &TMenuSeek::triggered,
-            main_window, &TMainWindow::updateSeekDefaultAction);
+            mw, &TMainWindow::updateSeekDefaultAction);
 }
 
 void TMenuSeek::updateDefaultAction(QAction* action) {
@@ -42,15 +42,15 @@ public:
 TMenuSeekForward::TMenuSeekForward(QWidget* parent, TMainWindow* mw) :
     TMenuSeek(parent, mw, "seek_forward_menu", tr("Seek forward"), 0) {
 
-    addAction(main_window->findAction("seek_forward_frame"));
+    addAction(mw->findAction("seek_forward_frame"));
     addSeparator();
-    addAction(main_window->findAction("seek_forward1"));
-    addAction(main_window->findAction("seek_forward2"));
-    addAction(main_window->findAction("seek_forward3"));
+    addAction(mw->findAction("seek_forward1"));
+    addAction(mw->findAction("seek_forward2"));
+    addAction(mw->findAction("seek_forward3"));
     addSeparator();
-    addAction(main_window->findAction("play_next"));
+    addAction(mw->findAction("play_next"));
 
-    connect(main_window, &TMainWindow::seekForwardDefaultActionChanged,
+    connect(mw, &TMainWindow::seekForwardDefaultActionChanged,
             this, &TMenuSeekForward::updateDefaultAction);
 }
 
@@ -63,15 +63,15 @@ public:
 TMenuSeekRewind::TMenuSeekRewind(QWidget* parent, TMainWindow* mw) :
     TMenuSeek(parent, mw, "seek_rewind_menu", tr("Seek backwards"), 5) {
 
-    addAction(main_window->findAction("seek_rewind_frame"));
+    addAction(mw->findAction("seek_rewind_frame"));
     addSeparator();
-    addAction(main_window->findAction("seek_rewind1"));
-    addAction(main_window->findAction("seek_rewind2"));
-    addAction(main_window->findAction("seek_rewind3"));
+    addAction(mw->findAction("seek_rewind1"));
+    addAction(mw->findAction("seek_rewind2"));
+    addAction(mw->findAction("seek_rewind3"));
     addSeparator();
-    addAction(main_window->findAction("play_prev"));
+    addAction(mw->findAction("play_prev"));
 
-    connect(main_window, &TMainWindow::seekRewindDefaultActionChanged,
+    connect(mw, &TMainWindow::seekRewindDefaultActionChanged,
             this, &TMenuSeekRewind::updateDefaultAction);
 }
 
@@ -133,25 +133,25 @@ public:
 };
 
 TMenuPlaySpeed::TMenuPlaySpeed(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "play_speed_menu", tr("Play speed")) {
+    : TMenu(parent, "play_speed_menu", tr("Play speed")) {
 
-    addAction(main_window->findAction("speed_normal"));
-
-    addSeparator();
-    addAction(main_window->findAction("spedd_half"));
-    addAction(main_window->findAction("speed_double"));
+    addAction(mw->findAction("speed_normal"));
 
     addSeparator();
-    addAction(main_window->findAction("speed_dec_10"));
-    addAction(main_window->findAction("speed_inc_10"));
+    addAction(mw->findAction("spedd_half"));
+    addAction(mw->findAction("speed_double"));
 
     addSeparator();
-    addAction(main_window->findAction("speed_dec_4"));
-    addAction(main_window->findAction("speed_inc_4"));
+    addAction(mw->findAction("speed_dec_10"));
+    addAction(mw->findAction("speed_inc_10"));
 
     addSeparator();
-    addAction(main_window->findAction("speed_dec_1"));
-    addAction(main_window->findAction("speed_inc_1"));
+    addAction(mw->findAction("speed_dec_4"));
+    addAction(mw->findAction("speed_inc_4"));
+
+    addSeparator();
+    addAction(mw->findAction("speed_dec_1"));
+    addAction(mw->findAction("speed_inc_1"));
 }
 
 
@@ -219,47 +219,47 @@ public:
 };
 
 TMenuInOut::TMenuInOut(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "in_out_menu", tr("In-out points")) {
+    : TMenu(parent, "in_out_menu", tr("In-out points")) {
 
-    addAction(main_window->findAction("set_in"));
-    addAction(main_window->findAction("set_out"));
-
-    addSeparator();
-    addAction(main_window->findAction("clear_in"));
-    addAction(main_window->findAction("clear_out"));
-    addAction(main_window->findAction("clear_in_out"));
+    addAction(mw->findAction("set_in"));
+    addAction(mw->findAction("set_out"));
 
     addSeparator();
-    addAction(main_window->findAction("seek_in"));
-    addAction(main_window->findAction("seek_out"));
+    addAction(mw->findAction("clear_in"));
+    addAction(mw->findAction("clear_out"));
+    addAction(mw->findAction("clear_in_out"));
 
     addSeparator();
-    addAction(main_window->findAction("repeat_in_out"));
-    addAction(main_window->findAction("pl_repeat"));
-    addAction(main_window->findAction("pl_shuffle"));
+    addAction(mw->findAction("seek_in"));
+    addAction(mw->findAction("seek_out"));
+
+    addSeparator();
+    addAction(mw->findAction("repeat_in_out"));
+    addAction(mw->findAction("pl_repeat"));
+    addAction(mw->findAction("pl_shuffle"));
 }
 
 // Create main play menu
 TMenuPlay::TMenuPlay(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "play_menu", tr("Play")) {
+    : TMenu(parent, "play_menu", tr("Play")) {
 
-    addAction(main_window->findAction("stop"));
-    addAction(main_window->findAction("play_or_pause"));
-    addAction(main_window->findAction("pl_play_in_new_window"));
+    addAction(mw->findAction("stop"));
+    addAction(mw->findAction("play_or_pause"));
+    addAction(mw->findAction("pl_play_in_new_window"));
 
     addSeparator();
     // Forward menu
-    addMenu(new TMenuSeekForward(this, main_window));
+    addMenu(new TMenuSeekForward(this, mw));
     // Rewind menu
-    addMenu(new TMenuSeekRewind(this, main_window));
+    addMenu(new TMenuSeekRewind(this, mw));
     // Seek to time
-    addAction(main_window->findAction("seek_to"));
+    addAction(mw->findAction("seek_to"));
 
     addSeparator();
     // Speed submenu
-    addMenu(new TMenuPlaySpeed(this, main_window));
+    addMenu(new TMenuPlaySpeed(this, mw));
     // In-out point submenu
-    addMenu(new TMenuInOut(this, main_window));
+    addMenu(new TMenuInOut(this, mw));
 }
 
 } // namespace Menu

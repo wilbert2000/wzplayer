@@ -7,7 +7,7 @@ namespace Action {
 namespace Menu {
 
 TMenuHelp::TMenuHelp(QWidget* parent, TMainWindow* mw) :
-    TMenu(parent, mw, "help_menu", tr("Help"), "noicon") {
+    TMenu(parent, "help_menu", tr("Help"), "noicon") {
 
     addAction(mw->findAction("help_cl_options"));
     addAction(mw->findAction("help_check_updates"));

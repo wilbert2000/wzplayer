@@ -38,7 +38,7 @@ public:
 };
 
 TMenuOSD::TMenuOSD(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "osd_menu", tr("OSD"), "osd") {
+    : TMenu(parent, "osd_menu", tr("OSD"), "osd") {
 
     addAction(mw->findAction("osd_next"));
 
@@ -100,7 +100,7 @@ TStayOnTopGroup::TStayOnTopGroup(TMainWindow *mw) :
 }
 
 TMenuStayOnTop::TMenuStayOnTop(QWidget* parent, TMainWindow* mw) :
-    TMenu(parent, mw, "stay_on_top_menu", tr("Stay on top")) {
+    TMenu(parent, "stay_on_top_menu", tr("Stay on top")) {
 
     TToggleStayOnTopAction* toggleStayOnTopAct =
             mw->findChild<TToggleStayOnTopAction*>();
@@ -115,7 +115,7 @@ TMenuView::TMenuView(QWidget* parent,
                      TMainWindow* mw,
                      QMenu* toolBarMenu,
                      QMenu* editToolBarMenu)
-    : TMenu(parent, mw, "view_menu", tr("View"), "noicon") {
+    : TMenu(parent, "view_menu", tr("View"), "noicon") {
 
     addMenu(new TMenuOSD(this, mw));
     addMenu(new TMenuStayOnTop(this, mw));

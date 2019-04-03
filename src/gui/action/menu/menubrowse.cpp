@@ -138,10 +138,10 @@ void TAngleGroup::updateAngles() {
 }
 
 TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "browse_menu", tr("Browse"), "noicon") {
+    : TMenu(parent, "browse_menu", tr("Browse"), "noicon") {
 
     // Titles
-    titlesMenu = new TMenu(this, mw, "titles_menu", tr("Title"), "title");
+    titlesMenu = new TMenu(this, "titles_menu", tr("Title"), "title");
     addMenu(titlesMenu);
 
     TTitleGroup* titleGroup = mw->findChild<TTitleGroup*>();
@@ -149,8 +149,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
             this, &TMenuBrowse::updateTitles);
 
     // Chapters
-    chaptersMenu = new TMenu(this, mw, "chapters_menu", tr("Chapter"),
-                             "chapter");
+    chaptersMenu = new TMenu(this, "chapters_menu", tr("Chapter"), "chapter");
     chaptersMenu->addAction(mw->findAction("next_chapter"));
     chaptersMenu->addAction(mw->findAction("prev_chapter"));
     chaptersMenu->addSeparator();
@@ -161,7 +160,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
             this, &TMenuBrowse::updateChapters);
 
     // Angles submenu
-    anglesMenu = new TMenu(this, mw, "angles_menu", tr("Angle"), "angle");
+    anglesMenu = new TMenu(this, "angles_menu", tr("Angle"), "angle");
     anglesMenu->addAction(mw->findAction("next_angle"));
     anglesMenu->addSeparator();
     addMenu(anglesMenu);

@@ -77,21 +77,20 @@ void TFilterGroup::updateFilters() {
 
 
 TMenuVideoFilter::TMenuVideoFilter(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "videofilter_menu", tr("Video filters"),
-            "video_filters") {
+    : TMenu(parent, "videofilter_menu", tr("Video filters"), "video_filters") {
 
     QActionGroup* group = mw->findChild<TFilterGroup*>("filtergroup");
     addActions(group->actions());
 
     // Denoise
-    TMenu* menu = new TMenu(this, mw, "denoise_menu", tr("Denoise"), "denoise");
+    TMenu* menu = new TMenu(this, "denoise_menu", tr("Denoise"), "denoise");
     group = mw->findChild<TActionGroup*>("denoisegroup");
     menu->addActions(group->actions());
     addMenu(menu);
     connect(menu, &TMenu::aboutToShow, mw, &TMainWindow::updateFilters);
 
     // Unsharp
-    menu = new TMenu(this, mw, "sharpen_menu", tr("Sharpen"), "sharpen");
+    menu = new TMenu(this, "sharpen_menu", tr("Sharpen"), "sharpen");
     group = mw->findChild<TActionGroup*>("sharpengroup");
     menu->addActions(group->actions());
     addMenu(menu);

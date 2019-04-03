@@ -29,8 +29,7 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
 
     createToolbar();
 
-    favMenu = new Action::Menu::TMenu(this, mw, "favorites_menu",
-                                      tr("Favorites"));
+    favMenu = new Action::Menu::TMenu(this, "favorites_menu", tr("Favorites"));
     favMenu->addAction(addPlayingFileAct);
     favMenu->addAction(dock->toggleViewAction());
     connect(favMenu, &Action::Menu::TMenu::triggered,

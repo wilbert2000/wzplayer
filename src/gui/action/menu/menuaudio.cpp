@@ -40,7 +40,7 @@ public:
 };
 
 TMenuAudioChannel::TMenuAudioChannel(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "audiochannels_menu", tr("Audio channels"),
+    : TMenu(parent, "audiochannels_menu", tr("Audio channels"),
             "audio_channels") {
 
     addActions(mw->findChild<TAudioChannelGroup*>("audiochannelgroup")
@@ -74,13 +74,13 @@ public:
 };
 
 TMenuStereo::TMenuStereo(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "stereomode_menu", tr("Stereo mode")) {
+    : TMenu(parent, "stereomode_menu", tr("Stereo mode")) {
 
     addActions(mw->findChild<TStereoGroup*>("stereogroup")->actions());
 }
 
 TMenuAudioTracks::TMenuAudioTracks(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "audiotrack_menu", tr("Audio track")) {
+    : TMenu(parent, "audiotrack_menu", tr("Audio track")) {
 
     addAction(mw->findAction("next_audio_track"));
     addSeparator();
@@ -94,7 +94,7 @@ void TMenuAudioTracks::updateAudioTracks(TActionGroup* group) {
 
 
 TMenuAudio::TMenuAudio(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "audio_menu", tr("Audio"), "noicon") {
+    : TMenu(parent, "audio_menu", tr("Audio"), "noicon") {
 
     // Mute
     addAction(mw->findAction("mute"));
@@ -118,8 +118,8 @@ TMenuAudio::TMenuAudio(QWidget* parent, TMainWindow* mw)
     addMenu(new TMenuAudioChannel(this, mw));
 
     // Filter sub
-    TMenu* menu = new TMenu(this, mw, "audiofilter_menu",
-                            tr("Audio filters"), "audio_filters");
+    TMenu* menu = new TMenu(this, "audiofilter_menu", tr("Audio filters"),
+                            "audio_filters");
     menu->addAction(mw->findAction("volnorm_filter"));
     menu->addAction(mw->findAction("extrastereo_filter"));
     menu->addAction(mw->findAction("karaoke_filter"));

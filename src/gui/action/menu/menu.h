@@ -12,17 +12,11 @@ namespace Action {
 namespace Menu {
 
 class TMenu : public TMenuExec {
-    Q_OBJECT
 public:
     explicit TMenu(QWidget* parent,
-                   TMainWindow* mw,
                    const QString& name,
                    const QString& text,
                    const QString& icon = QString());
-
-protected:
-    // TODO: no longer store main window
-    TMainWindow* main_window;
 };
 
 } // namespace Menu

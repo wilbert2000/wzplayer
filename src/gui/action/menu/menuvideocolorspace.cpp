@@ -55,7 +55,7 @@ TColorSpaceGroup::TColorSpaceGroup(TMainWindow* mw) :
 }
 
 TMenuVideoColorSpace::TMenuVideoColorSpace(QWidget* parent, TMainWindow* mw) :
-    TMenu(parent, mw, "colorspace_menu", tr("Color space")) {
+    TMenu(parent, "colorspace_menu", tr("Color space")) {
 
     TColorSpaceGroup* group = mw->findChild<TColorSpaceGroup*>("colorspace");
     addActions(group->actions());

@@ -31,7 +31,7 @@ public:
 };
 
 TMenuCC::TMenuCC(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "closed_captions_menu", tr("Closed captions")) {
+    : TMenu(parent, "closed_captions_menu", tr("Closed captions")) {
 
     addActions(mw->findChild<TClosedCaptionsGroup*>()->actions());
 }
@@ -64,14 +64,14 @@ public:
 };
 
 TMenuSubFPS::TMenuSubFPS(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "subfps_menu", tr("FPS external subs")) {
+    : TMenu(parent, "subfps_menu", tr("FPS external subs")) {
 
     addActions(mw->findChild<TSubFPSGroup*>()->actions());
 }
 
 
 TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "subtitle_menu", tr("Subtitles"), "noicon") {
+    : TMenu(parent, "subtitle_menu", tr("Subtitles"), "noicon") {
 
     addAction(mw->findAction("dec_sub_pos"));
     addAction(mw->findAction("inc_sub_pos"));
@@ -93,14 +93,14 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
 
     // Subtitle tracks
     addSeparator();
-    subtitleTrackMenu = new TMenu(this, mw, "subtitle_track_menu",
+    subtitleTrackMenu = new TMenu(this, "subtitle_track_menu",
                                   tr("Subtitle track"), "sub");
     subtitleTrackMenu->addAction(mw->findAction("next_subtitle"));
     subtitleTrackMenu->addSeparator();
     addMenu(subtitleTrackMenu);
 
     // Secondary subtitle track
-    secondarySubtitleTrackMenu = new TMenu(this, mw, "subtitle_track2_menu",
+    secondarySubtitleTrackMenu = new TMenu(this, "subtitle_track2_menu",
         tr("Secondary track"), "secondary_sub");
     if (pref->isMPV()) {
         addMenu(secondarySubtitleTrackMenu);

@@ -18,7 +18,7 @@ public:
 };
 
 TMenuDisc::TMenuDisc(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "opem_disc_menu", tr("Open disc"), "open_disc") {
+    : TMenu(parent, "opem_disc_menu", tr("Open disc"), "open_disc") {
 
     addAction(mw->findAction("open_dvd_disc"));
     addAction(mw->findAction("open_dvd_iso"));
@@ -34,13 +34,14 @@ TMenuDisc::TMenuDisc(QWidget* parent, TMainWindow* mw)
 
 
 TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu) :
-    TMenu(parent, mw, "file_menu", tr("File"), "noicon") {
+    TMenu(parent, "file_menu", tr("File"), "noicon"),
+    mainWindow(mw) {
 
     // Favorites
     addMenu(favMenu);
 
     // Recents
-    recentFilesMenu = new TMenu(this, mw, "recent_menu", tr("Recent files"),
+    recentFilesMenu = new TMenu(this, "recent_menu", tr("Recent files"),
                                 "noicon");
     recentFilesMenu->menuAction()->setIcon(iconProvider.recentIcon);
     updateRecents();
@@ -103,7 +104,7 @@ void TMenuFile::updateRecents() {
         QAction* a = new QAction(name, recentFilesMenu);
         a->setStatusTip(url);
         a->setData(i);
-        connect(a, &QAction::triggered, main_window, &TMainWindow::openRecent);
+        connect(a, &QAction::triggered, mainWindow, &TMainWindow::openRecent);
         recentFilesMenu->addAction(a);
     }
 
@@ -111,7 +112,7 @@ void TMenuFile::updateRecents() {
     if (count > 0) {
         recentFilesMenu->addSeparator();
     }
-    recentFilesMenu->addAction(main_window->findAction("recents_clear"));
+    recentFilesMenu->addAction(mainWindow->findAction("recents_clear"));
 }
 
 void TMenuFile::onRecentsChanged() {

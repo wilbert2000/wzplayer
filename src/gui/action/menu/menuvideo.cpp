@@ -98,7 +98,7 @@ void TAspectGroup::onPlayerStateChanged() {
 }
 
 TMenuAspect::TMenuAspect(QWidget* parent, TMainWindow* mw) :
-    TMenu(parent, mw, "aspect_menu", tr("Aspect ratio")) {
+    TMenu(parent, "aspect_menu", tr("Aspect ratio")) {
 
     TAspectGroup* group = mw->findChild<TAspectGroup*>();
     addActions(group->actions());
@@ -149,7 +149,7 @@ public:
 
 
 TMenuDeinterlace::TMenuDeinterlace(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "deinterlace_menu", tr("Deinterlace"), "deinterlace") {
+    : TMenu(parent, "deinterlace_menu", tr("Deinterlace"), "deinterlace") {
 
     TDeinterlaceGroup* group = mw->findChild<TDeinterlaceGroup*>(
                 "deinterlacegroup");
@@ -177,7 +177,7 @@ public:
 
 
 TMenuTransform::TMenuTransform(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "transform_menu", tr("Transform"), "transform") {
+    : TMenu(parent, "transform_menu", tr("Transform"), "transform") {
 
     addAction(mw->findAction("flip"));
     addAction(mw->findAction("mirror"));
@@ -242,7 +242,7 @@ public:
 };
 
 TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "zoom_and_pan_menu", tr("Zoom and pan")) {
+    : TMenu(parent, "zoom_and_pan_menu", tr("Zoom and pan")) {
 
     TZoomAndPanGroup* group = mw->findChild<TZoomAndPanGroup*>("zoomandpangroup");
     addActions(group->actions());
@@ -252,7 +252,7 @@ TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TMainWindow* mw)
 
 
 TMenuVideoTracks::TMenuVideoTracks(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, mw, "videotrack_menu", tr("Video track")) {
+    : TMenu(parent, "videotrack_menu", tr("Video track")) {
 
     addAction(mw->findAction("next_video_track"));
     addSeparator();
@@ -266,7 +266,7 @@ void TMenuVideoTracks::updateVideoTracks(TActionGroup* group) {
 
 
 TMenuVideo::TMenuVideo(QWidget* parent, TMainWindow* mw) :
-        TMenu(parent, mw, "video_menu", tr("Video"), "noicon") {
+        TMenu(parent, "video_menu", tr("Video"), "noicon") {
 
     addAction(mw->findAction("fullscreen"));
 

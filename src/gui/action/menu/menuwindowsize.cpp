@@ -97,7 +97,7 @@ void TWindowSizeGroup::update() {
 
 
 TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
-    TMenu(parent, mw, "window_size_menu", tr("Window size"), "noicon") {
+    TMenu(parent, "window_size_menu", tr("Window size"), "noicon") {
 
     menuAction()->setIcon(iconProvider.windowSizeIcon);
 
@@ -109,12 +109,12 @@ TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
     addAction(mw->findAction("size_optimize"));
     addAction(mw->findAction("resize_on_load"));
 
-    connect(main_window, &TMainWindow::setWindowSizeToolTip,
+    connect(mw, &TMainWindow::setWindowSizeToolTip,
             this, &TMenuWindowSize::setWindowSizeToolTip);
     connect(this, &TMenuWindowSize::aboutToShow,
-            main_window, &TMainWindow::updateWindowSizeMenu);
+            mw, &TMainWindow::updateWindowSizeMenu);
 
-    main_window->updateWindowSizeMenu();
+    mw->updateWindowSizeMenu();
 }
 
 void TMenuWindowSize::setWindowSizeToolTip(QString tip) {

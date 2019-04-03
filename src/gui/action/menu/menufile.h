@@ -20,6 +20,7 @@ public:
     explicit TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu);
 
 private:
+    TMainWindow* mainWindow;
     TMenu* recentFilesMenu;
     void updateRecents();
 

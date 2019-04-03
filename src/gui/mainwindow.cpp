@@ -1197,7 +1197,7 @@ void TMainWindow::createMenus() {
     statusbarMenu->addAction(viewFramesAct);
 
     // Toolbar context menu
-    toolbarMenu = new Menu::TMenu(this, this, "toolbar_menu", tr("Toolbars"),
+    toolbarMenu = new Menu::TMenu(this, "toolbar_menu", tr("Toolbars"),
                                   "toolbars");
     toolbarMenu->addAction(viewMenuBarAct);
     toolbarMenu->addSeparator();
@@ -1224,7 +1224,7 @@ void TMainWindow::createMenus() {
             toolbarMenu, &Menu::TMenu::execSlot);
 
 
-    editToolbarMenu = new Menu::TMenu(this, this, "toolbar_edit_menu",
+    editToolbarMenu = new Menu::TMenu(this, "toolbar_edit_menu",
                                       tr("Edit toolbars"));
 
     editToolbarMenu->addAction(findAction("edit_toolbar1"));
@@ -1290,8 +1290,7 @@ Action::Menu::TMenuExec* TMainWindow::createPopupMenu() {
 Action::Menu::TMenu* TMainWindow::createContextMenu(const QString& name,
                                                     const QString& text) {
 
-    Action::Menu::TMenu* menu = new Action::Menu::TMenu(
-                this, this, name, text);
+    Action::Menu::TMenu* menu = new Action::Menu::TMenu(this, name, text);
     menu->addMenu(fileMenu);
     menu->addMenu(playMenu);
     menu->addMenu(videoMenu);

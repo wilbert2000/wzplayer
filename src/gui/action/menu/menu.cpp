@@ -9,12 +9,10 @@ namespace Action {
 namespace Menu {
 
 TMenu::TMenu(QWidget* parent,
-             TMainWindow* mw,
              const QString& name,
              const QString& text,
              const QString& icon) :
-    TMenuExec(parent),
-    main_window(mw) {
+    TMenuExec(parent) {
 
     menuAction()->setObjectName(name);
     menuAction()->setText(text);
