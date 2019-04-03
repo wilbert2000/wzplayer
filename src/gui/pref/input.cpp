@@ -521,15 +521,15 @@ void TInput::createHelp() {
            "move the mouse wheel."));
 
     setWhatsThis(seeking_method_group, tr("Seeking method"),
-        tr("Sets the method to be used when seeking with the time slider."
+        tr("Sets the method to be used when seeking."
            " Absolute seeking seeks with the requested timestamp. It may be"
-           " a little bit more accurate, while relative seeking, seeks with"
+           " a bit more accurate, while relative seeking, seeks with"
            " a time offset, 5 seconds forward from here, and may work better"
            " with files having a wrong duration."));
 
     setWhatsThis(precise_seeking_check, tr("Precise seeking"),
         tr("If checked, seeks are more accurate but slower."
-           " If not checked seeks are done to keyframes, faster,"
+           " If not checked seeks are done to keyframes and faster,"
            " but can be off by quite a few seconds for heavily"
            " compressed videos with only a few keyframes."));
 
