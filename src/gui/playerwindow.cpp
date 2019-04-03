@@ -64,9 +64,16 @@ void TVideoWindow::setFastBackground() {
     // Disable restore background by system
     setAttribute(Qt::WA_NoSystemBackground);
 
+    // For mplayer disable composition and double buffering on X11.
+    // Fills up the log since Qt 5.x. with:
+    // WARN Qt.QWidget::paintEngine: Should no longer be called
+    // If Qt::WA_PaintOnScreen is not set the window will have a bad flicker
+    // during resizes due to the background clearing.
+    // TODO: Hence, for now, fixed by supressing the warning in
+    // LogManager::qtMessageHandler()...
+    // Makes the dock flash on screen if enabled with MPV, but MPV does not
+    // need it since its video lives in a child of the player window.
 #ifndef Q_OS_WIN
-    // Disable composition and double buffering on X11
-    // Only needed for MPlayer. Makes the dock flash on screen with MPV.
     if (pref->isMPlayer()) {
         setAttribute(Qt::WA_PaintOnScreen);
     }
@@ -79,6 +86,7 @@ void TVideoWindow::restoreNormalBackground() {
     // Enable restore background by system
     setAttribute(Qt::WA_NoSystemBackground, false);
 
+    // For mplayer restore ccomposition and double buffering on X11
 #ifndef Q_OS_WIN
     if (pref->isMPlayer()) {
         setAttribute(Qt::WA_PaintOnScreen, false);
@@ -476,13 +484,10 @@ void TPlayerWindow::setFastWindow() {
     video_window->setFastBackground();
 }
 
-void TPlayerWindow::restoreNormalWindow(bool clrScreen) {
-    WZTRACE("Repaint " + QString::number(clrScreen));
+void TPlayerWindow::restoreNormalWindow() {
+    WZTRACE("");
 
     video_window->restoreNormalBackground();
-    if (clrScreen) {
-        repaint();
-    }
     // Clear video size
     video_size = QSize(0, 0);
 }

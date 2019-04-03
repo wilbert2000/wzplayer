@@ -54,8 +54,9 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
             this, &TFavList::onAddedItems);
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
             this, &TFavList::onModifiedChanged);
-    connect(playlist->getPlaylistWidget(), &TPlaylistWidget::playingItemChanged,
-            this, &TFavList::onPlaylistPlayingItemChanged);
+    connect(playlist->getPlaylistWidget(), &TPlaylistWidget::playingItemUpdated,
+            this, &TFavList::onPlaylistPlayingItemUpdated,
+            Qt::QueuedConnection);
 
     if (!QDir().mkpath(Settings::TPaths::favoritesPath())) {
         WZERROR(QString("Failed to create favorites directory '%1'. %2")
@@ -198,7 +199,7 @@ QAction* TFavList::findAction(const QString& filename) const {
     return fAction(favMenu, filename);
 }
 
-void TFavList::onPlaylistPlayingItemChanged(TPlaylistItem* item) {
+void TFavList::onPlaylistPlayingItemUpdated(TPlaylistItem* item) {
 
     WZTRACE(item ? item->baseName() : "0");
 
@@ -227,7 +228,7 @@ void TFavList::onRequestSaveTimeout() {
             requestSaveTimer->start();
         } else {
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
-            save();
+            save(false);
 
             // TODO: Fix clear favorites, for now make sub dirs left behind
             // after a clear favorites action visible through a refresh.

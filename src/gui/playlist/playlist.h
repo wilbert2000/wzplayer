@@ -51,7 +51,8 @@ public:
     void openDisc(const TDiscName& disc);
 
     QString playingFile() const;
-    QString getPlayingTitle(bool addModified) const;
+    QString getPlayingTitle(bool addModified = false,
+                            bool useStreamingTitle = true) const;
     void getFilesToPlay(QStringList& files) const;
 
     virtual void startPlay() override;
@@ -77,6 +78,7 @@ protected:
     virtual void dragEnterEvent(QDragEnterEvent*) override;
     virtual void dropEvent(QDropEvent*) override;
 
+    virtual void clear(bool clearFilename = true) override;
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) override;
 
 protected slots:
@@ -88,6 +90,8 @@ private:
     Action::TAction* shuffleAct;
 
     bool reachedEndOfPlaylist;
+    QString dvdTitle;
+    QString dvdSerial;
 
     void createActions();
     void createToolbar();
@@ -97,6 +101,7 @@ private:
 
     void openDirectory(const QString& dir);
 
+    void onNewMediaStartedPlayingUpdatePlayingItem();
     void updatePlayingItem();
     void enablePlayOrPause();
 
@@ -111,6 +116,7 @@ private slots:
     void onPlayerError();
     void onNewMediaStartedPlaying();
     void onTitleTrackChanged(int id);
+    void onDurationChanged(double duration);
     void onMediaEOF();
 };
 

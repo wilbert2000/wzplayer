@@ -40,7 +40,7 @@ public:
                     const QString& aTransName);
     virtual ~TPList() override;
 
-    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
+    const TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
     void setContextMenuToolbar(Action::Menu::TMenuExec* menu);
 
     void abortThread();
@@ -86,7 +86,7 @@ protected:
     Action::TAction* findPlayingAct;
 
     Action::TAction* editNameAct;
-    Action::TAction* clearNameAct;
+    Action::TAction* resetNameAct;
     Action::TAction* editURLAct;
     Action::TAction* newFolderAct;
 
@@ -102,7 +102,7 @@ protected:
     Action::TAction* removeSelectedFromDiskAct;
     Action::TAction* removeAllAct;
 
-    void clear(bool clearFilename = true);
+    virtual void clear(bool clearFilename = true);
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) = 0;
     void openPlaylist(const QString& filename);
     void makeActive();
@@ -110,7 +110,7 @@ protected:
 
 protected slots:
     virtual void openPlaylistDialog();
-    bool save();
+    bool save(bool allowFail);
     virtual bool saveAs();
     void play();
     virtual void refresh() = 0;
@@ -149,16 +149,17 @@ private:
                        const QString& path,
                        QTextStream& stream,
                        bool linkFolders,
+                       bool allowFail,
                        bool& savedMetaData);
-    bool saveM3u(TPlaylistItem* folder,
-                 const QString& filename,
-                 bool wzplaylist);
-    bool saveM3u(const QString& filename, bool linkFolders);
+    bool saveM3uFile(TPlaylistItem* folder,
+                     bool linkFolders,
+                     bool allowFail);
+    bool saveM3u(bool allowFail);
 
 private slots:
     void playInNewWindow();
     void editName();
-    void clearName();
+    void resetName();
     void editURL();
     void newFolder();
 

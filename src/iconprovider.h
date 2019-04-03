@@ -22,6 +22,11 @@ public:
     QIcon folderIcon;
     QIcon folderSymLinkIcon;
 
+    QIcon audioCDIcon;
+    QIcon videoCDIcon;
+    QIcon dvdIcon;
+    QIcon brIcon;
+
     QIcon iconPlayed;
     QIcon iconLoading;
     QIcon iconPlaying;

@@ -205,14 +205,13 @@ void TPlayerProcess::notifyTime(double time_sec) {
 
     // Store video timestamp
     md->time_sec = time_sec;
-
-    time_sec = playerTimeToGuiTime(time_sec);
+    md->time_sec_gui = playerTimeToGuiTime(time_sec);
 
     // Give descendants a look at the time
-    checkTime(time_sec);
+    checkTime(md->time_sec_gui);
 
     // Pass timestamp to GUI
-    emit receivedPosition(time_sec);
+    emit receivedPosition(md->time_sec_gui);
 }
 
 // TODO: move to TMPVProcess
@@ -245,29 +244,38 @@ bool TPlayerProcess::parseLine(QString& line) {
     static QRegExp rx_vo("^VO: \\[([^\\]]*)\\] (\\d+)x(\\d+)( => (\\d+)x(\\d+))?");
     static QRegExp rx_eof("^Exiting... \\(End of file\\)|^ID_EXIT=EOF");
     static QRegExp rx_no_disk(".*WARN.*No medium found.*", Qt::CaseInsensitive);
+    static QRegExp rx_dvd_serial("Serial Number: (.*)$");
 
     if (quit_send) {
         return true;
     }
     WZDEBUG("'" + line + "'");
 
-    // VO
+    // Video out driver
     if (rx_vo.indexIn(line) >= 0) {
         return parseVO(rx_vo.cap(1),
                        rx_vo.cap(2).toInt(), rx_vo.cap(3).toInt(),
                        rx_vo.cap(5).toInt(), rx_vo.cap(6).toInt());
     }
 
+    // No disc
     if (rx_no_disk.indexIn(line) >= 0) {
-        WZWARN("no disc in device");
+        WZWARN("No disc in device");
         quit(TExitMsg::ERR_NO_DISC);
         return true;
     }
 
     // End of file
     if (rx_eof.indexIn(line) >= 0)  {
-        WZDEBUG("detected end of file");
+        WZDEBUG("Received end of file");
         received_end_of_file = true;
+        return true;
+    }
+
+    // DVD serial number
+    if (rx_dvd_serial.indexIn(line) >= 0)  {
+        md->dvd_disc_serial = rx_dvd_serial.cap(1);
+        WZDEBUG("Serial set to " + md->dvd_disc_serial);
         return true;
     }
 

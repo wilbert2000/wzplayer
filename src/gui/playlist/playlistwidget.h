@@ -81,7 +81,8 @@ public:
     void editName();
     void editURL();
 
-    TPlaylistItem* validateItem(TPlaylistItem* item);
+    TPlaylistItem* validateItem(TPlaylistItem* folder, TPlaylistItem* item) const;
+    TPlaylistItem* validateItem(TPlaylistItem* item) const;
 
     TPlaylistItem* add(TPlaylistItem* item, TPlaylistItem* target);
     void removeSelected(bool deleteFromDisk);
@@ -98,6 +99,7 @@ public slots:
 signals:
     void modifiedChanged();
     void playingItemChanged(TPlaylistItem* item);
+    void playingItemUpdated(TPlaylistItem* item);
 
 protected:
     virtual void dropEvent(QDropEvent* event) override;

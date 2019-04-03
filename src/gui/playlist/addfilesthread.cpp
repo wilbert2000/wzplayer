@@ -368,7 +368,7 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
             duration = rx.cap(1).toDouble();
             name = rx.cap(2).simplified();
         } else if (!line.startsWith("#")) {
-            edited = !name.isEmpty() && name != TName::baseNameForURL(line);
+            edited = !name.isEmpty() && name != TName::nameForURL(line);
             addItem(playlistItem, line, name, duration, edited, true);
             name = "";
             duration = 0;

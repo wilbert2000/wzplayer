@@ -69,8 +69,10 @@ public:
     bool start_sec_set;
     QString fuzzy_time;
     // Current time video, without start time substracted
-    // See TMediaSettings for time with start time substracted
     double time_sec;
+    // Current time video, with start time substracted and MPEG-TS PTS
+    // timestamp rollover corrected. Also in TMediaSettings.
+    double time_sec_gui;
     double duration;
 
     // Demuxer
@@ -129,13 +131,15 @@ public:
     Maps::TChapters chapters;
 
     // Clip info
+    // Beware, title used by TPlaylist::onNewMediaStartedPlaying() to ID discs
     QString title;
     // Meta data names and values
     typedef QMap<QString, QString> TMetaData;
     TMetaData meta_data;
 
     // DVD ID
-    QString dvd_id;
+    QString dvd_disc_id;
+    QString dvd_disc_serial;
     // DVD angles
     int angle;
     int angles;
@@ -154,7 +158,6 @@ public:
 
 private:
     void init();
-    QString addTitleOrTrack(const QString& title) const;
     QString getTitle() const;
 };
 

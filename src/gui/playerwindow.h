@@ -104,7 +104,7 @@ public:
     void moveVideo(int dx, int dy);
 
     void setColorKey();
-    void restoreNormalWindow(bool clrScreen = true);
+    void restoreNormalWindow();
 
 signals:
     void leftClicked();

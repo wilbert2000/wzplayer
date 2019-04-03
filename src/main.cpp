@@ -69,9 +69,8 @@ void initLog4Qt(Log4Qt::Level level) {
     }
 
     // Let Log4Qt handle qDebug(), qWarning(), qCritical() and qFatal()
-    // No longer works
-    //LogManager::setHandleQtMessages(true);
-    //LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
+    LogManager::setHandleQtMessages(true);
+    LogManager::qtLogger()->setLevel(Logger::rootLogger()->level());
 
     // Create appender A2 for log window
     Gui::TLogWindow::appender = new Gui::TLogWindowAppender(layout);

@@ -22,7 +22,7 @@ TTitleGroup::TTitleGroup(TMainWindow *mw) :
 }
 
 void TTitleGroup::updateTitles() {
-    WZTRACE("");
+    WZTRACE(QString("Have %1 titles").arg(player->mdat.titles.count()));
 
     clear();
     if (player->mdat.titles.count() == 0) {
@@ -65,7 +65,7 @@ TChapterGroup::TChapterGroup(TMainWindow *mw,
 }
 
 void TChapterGroup::updateChapters() {
-    WZTRACE("");
+    WZTRACE(QString("Have %1 chapters").arg(player->mdat.chapters.count()));
 
     clear();
     if (player->mdat.chapters.count() > 0) {
@@ -106,7 +106,7 @@ TAngleGroup::TAngleGroup(TMainWindow *mw, TAction* nxtAngleAct) :
 }
 
 void TAngleGroup::updateAngles() {
-    WZTRACE("");
+    WZTRACE(QString("Have %1 angles").arg(player->mdat.angles));
 
     clear();
 

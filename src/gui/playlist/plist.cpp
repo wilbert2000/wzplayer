@@ -251,12 +251,12 @@ void TPList::createActions() {
             this, &TPList::editName);
     contextMenu->addAction(editNameAct);
 
-    // Clear name
-    clearNameAct = new TAction(this, shortName + "_clear_name",
-                               tr("Clear name"));
-    connect(clearNameAct, &TAction::triggered,
-            this, &TPList::clearName);
-    contextMenu->addAction(clearNameAct);
+    // Reset name
+    resetNameAct = new TAction(this, shortName + "_clear_name",
+                               tr("Reset name to filename"));
+    connect(resetNameAct, &TAction::triggered,
+            this, &TPList::resetName);
+    contextMenu->addAction(resetNameAct);
 
     // Edit URL
     editURLAct = new TAction(owner, shortName + "_edit_url",
@@ -461,7 +461,7 @@ void TPList::enableActions() {
 
     bool enable = !isBusy() && player->stateReady();
     editNameAct->setEnabled(enable && cur);
-    clearNameAct->setEnabled(enable && cur && cur->edited());
+    resetNameAct->setEnabled(enable && cur && cur->edited());
     newFolderAct->setEnabled(enable);
     // findPlayingAct by descendants
 
@@ -534,16 +534,16 @@ bool TPList::maybeSave() {
     QFileInfo fi(playlistFilename);
     if (fi.fileName().compare(TConfig::WZPLAYLIST, caseSensitiveFileNames)
             == 0) {
-        return save();
+        return save(!isFavList);
     }
 
     if (fi.isDir()) {
-        if (Settings::pref->useDirectoriePlaylists) {
-            return save();
+        if (isFavList || Settings::pref->useDirectoriePlaylists) {
+            return save(!isFavList);
         }
-        WZDEBUGOBJ("Discarding changes. Saving directorie playlists is disabled.");
+        WZDEBUGOBJ("Discarding changes. Saving directorie playlists is"
+                   " disabled.");
         return true;
-
     }
 
     int res = QMessageBox::question(this, tr("%1 modified").arg(tranName),
@@ -561,7 +561,7 @@ bool TPList::maybeSave() {
             return false;
         default:
             WZINFO("Selected save");
-            return save();
+            return save(false);
     }
 }
 
@@ -590,6 +590,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                            const QString& path,
                            QTextStream& stream,
                            bool linkFolders,
+                           bool allowFail,
                            bool& savedMetaData) {
     WZTRACEOBJ(QString("Saving '%1'").arg(folder->filename()));
 
@@ -600,31 +601,29 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
 
         if (item->isPlaylist()) {
             if (item->modified()) {
-                if (!saveM3u(item, filename, item->isWZPlaylist())) {
+                if (!saveM3uFile(item, item->isWZPlaylist(), allowFail)) {
                     result = false;
                 }
-            } else {
-                WZTRACEOBJ("Playlist '" + filename + "' not modified");
             }
         } else if (item->isFolder()) {
             if (linkFolders) {
                 if (item->modified()) {
                     QFileInfo fi(filename, TConfig::WZPLAYLIST);
                     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
-                    if (!saveM3u(item, filename, linkFolders)) {
+                    if (!saveM3uFile(item, linkFolders, allowFail)) {
                         result = false;
                     }
-                } else {
-                    WZTRACEOBJ("Folder '" + filename + "' not modified");
                 }
             } else {
                 // Note: savedMetaData destroyed as dummy here. It is only used
                 // for WZPlaylists which have linkFolders set to true.
-                if (saveM3uFolder(item, path, stream, linkFolders, savedMetaData)) {
+                if (saveM3uFolder(item, path, stream, linkFolders, allowFail,
+                                  savedMetaData)) {
                     WZINFO("Succesfully saved '" + filename + "'");
                 } else {
                     result = false;
                 }
+                // Files saved inside this playlist, so continue at top
                 continue;
             }
         } else {
@@ -646,9 +645,11 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
     return result;
 }
 
-bool TPList::saveM3u(TPlaylistItem* folder,
-                     const QString& filename,
-                     bool wzplaylist) {
+bool TPList::saveM3uFile(TPlaylistItem* folder,
+                         bool linkFolders,
+                         bool allowFail) {
+
+    QString filename = folder->filename();
     WZTRACEOBJ(QString("Saving '%1'").arg(filename));
 
     QString path = QDir::toNativeSeparators(QFileInfo(filename).dir().path());
@@ -657,33 +658,32 @@ bool TPList::saveM3u(TPlaylistItem* folder,
     }
 
     QFile file(filename);
-
     do {
         if (file.open(QIODevice::WriteOnly)) {
             break;
         }
 
-        // Ok to ignore failed wzplaylist
         QString msg = file.errorString();
-        if (wzplaylist && !isFavList) {
-            WZINFO(QString("Ignoring failed save of '%1'. %2")
-                   .arg(filename).arg(msg));
-            return true;
+        WZWARN("Failed to open '" + filename + "' for writing. " + msg);
+
+        if (allowFail) {
+            return false;
         }
 
-        WZERROR("Failed to save '" + filename + "'. " + msg);
         int res = QMessageBox::warning(this, tr("Save failed"),
-                                       tr("Failed to open '%1' for writing. %2")
-                                       .arg(filename).arg(msg),
-                                       QMessageBox::Retry | QMessageBox::Default,
-                                       QMessageBox::Cancel | QMessageBox::Escape,
-                                       QMessageBox::Ignore);
+            tr("Failed to open '%1' for writing. %2").arg(filename).arg(msg),
+            QMessageBox::Retry | QMessageBox::Default,
+            QMessageBox::Cancel | QMessageBox::Escape,
+            QMessageBox::Ignore);
         switch (res) {
             case QMessageBox::Retry:
                 file.unsetError();
                 continue;
-            case QMessageBox::Cancel: return false;
-            default: return true;
+            case QMessageBox::Ignore:
+                folder->setModified(false, true, false);
+                return true;
+            default:
+                return false;
         }
     } while (true);
 
@@ -701,7 +701,7 @@ bool TPList::saveM3u(TPlaylistItem* folder,
     // Keep track of whether we saved anything usefull
     bool didSaveMeta = false;
 
-    if (wzplaylist && folder->getBlacklistCount() > 0) {
+    if (linkFolders && folder->getBlacklistCount() > 0) {
         didSaveMeta = true;
         foreach(const QString& fn, folder->getBlacklist()) {
             WZDEBUGOBJ("Blacklisting '" + fn + "'");
@@ -710,7 +710,8 @@ bool TPList::saveM3u(TPlaylistItem* folder,
     }
 
     // Save folder
-    bool result = saveM3uFolder(folder, path, stream, wzplaylist, didSaveMeta);
+    bool result = saveM3uFolder(folder, path, stream, linkFolders, allowFail,
+                                didSaveMeta);
 
     result = result && stream.status() == QTextStream::Ok;
     stream.flush();
@@ -718,20 +719,19 @@ bool TPList::saveM3u(TPlaylistItem* folder,
     file.close();
     result = result && file.error() == QFileDevice::NoError;
 
-    // Remove wzplaylist.m3u8 from disk if nothing interesting to remember
-    if (!didSaveMeta && wzplaylist) {
-        if (file.remove()) {
-            WZINFO(QString("Removed '%1' from disk").arg(filename));
-        } else {
-            WZWARN(QString("Failed to remove '%1' from disk. %2")
-                    .arg(filename).arg(file.errorString()));
-        }
-        // Ignore result for wzplaylist
-        return true;
-    }
-
     if (result) {
-        WZINFO("Saved '" + filename + "'");
+        // Remove wzplaylist.m3u8 from disk if nothing interesting to remember
+        if (!didSaveMeta && linkFolders) {
+            if (file.remove()) {
+                WZINFO(QString("Removed '%1' from disk").arg(filename));
+            } else {
+                WZWARN(QString("Failed to remove '%1' from disk. %2")
+                       .arg(filename).arg(file.errorString()));
+            }
+        } else {
+            WZINFO("Saved '" + filename + "'");
+        }
+
         msg(tr("Saved %1").arg(QFileInfo(filename).fileName()));
         return true;
     }
@@ -740,16 +740,22 @@ bool TPList::saveM3u(TPlaylistItem* folder,
     QString msg = QString("Failed to save '%1'. %2").arg(filename).arg(emsg);
     WZERROR(msg);
     msg = tr("Failed to save '%1'. %2").arg(filename).arg(emsg);
+    if (allowFail) {
+       Gui::msg(msg);
+       return false;
+    }
     int res = QMessageBox::warning(this, tr("Save failed"), msg,
             QMessageBox::Cancel | QMessageBox::Escape | QMessageBox::Default,
             QMessageBox::Ignore);
     if (res == QMessageBox::Cancel) {
         return false;
     }
+
+    folder->setModified(false, true, false);
     return true;
 }
 
-bool TPList::saveM3u(const QString& filename, bool linkFolders) {
+bool TPList::saveM3u(bool allowFail) {
 
     // Save sort
     int savedSortSection = playlistWidget->sortSection;
@@ -761,7 +767,8 @@ bool TPList::saveM3u(const QString& filename, bool linkFolders) {
     }
 
     // Save tree
-    bool result = saveM3u(playlistWidget->root(), filename, linkFolders);
+    TPlaylistItem* root = playlistWidget->root();
+    bool result = saveM3uFile(root, root->isWZPlaylist(), allowFail);
 
     // Restore sort
     if (isFavList) {
@@ -771,56 +778,62 @@ bool TPList::saveM3u(const QString& filename, bool linkFolders) {
     return result;
 }
 
-bool TPList::save() {
+bool TPList::save(bool allowFail) {
     WZINFO(QString("Saving '%1'").arg(playlistFilename));
 
     if (playlistFilename.isEmpty()) {
         return saveAs();
     }
 
-    bool wzplaylist = false;
     QFileInfo fi(playlistFilename);
     if (fi.isDir()) {
         fi.setFile(fi.absoluteFilePath(), TConfig::WZPLAYLIST);
-        wzplaylist = true;
-    } else if (fi.fileName() == TConfig::WZPLAYLIST) {
-        wzplaylist = true;
-    } else if (player->mdat.disc.valid) {
-        // saveAs() force adds ".m3u8" playlist extension
-        if (!extensions.isPlaylist(fi)) {
-            return saveAs();
-        }
     }
+    // TODO:
+    //else if (player->mdat.disc.valid) {
+    //    // saveAs() force adds ".m3u8" playlist extension
+    //    if (!extensions.isPlaylist(fi)) {
+    //        return saveAs();
+    //    }
+    //}
 
-    QString displayName = wzplaylist
-            ? QFileInfo(fi.absolutePath()).fileName()
-            : fi.fileName();
-    msg(tr("Saving %1").arg(displayName), 0);
     setPlaylistFilename(fi.absoluteFilePath());
+    TPlaylistItem* root = playlistWidget->root();
+    msg(tr("Saving %1").arg(root->baseName()), 0);
     Settings::pref->last_dir = fi.absolutePath();
 
-    if (wzplaylist) {
+    if (root->isWZPlaylist()) {
         QString path = fi.absolutePath();
         if (!fi.dir().mkpath(path)) {
             QString msg = strerror(errno);
             WZERROR(QString("Failed to create directory '%1'. %2")
                     .arg(path).arg(msg));
+            if (allowFail) {
+                return true;
+            }
             QMessageBox::warning(this, tr("Error while saving"),
                                  tr("Error while saving. Failed to create"
-                                    " directory '%1'. %2")
-                                 .arg(path).arg(msg));
-            return false;
+                                    " directory '%1'. %2").arg(path).arg(msg));
+            return false;;
         }
     }
 
-    bool result = saveM3u(playlistFilename, wzplaylist);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    bool result = saveM3u(allowFail);
     if (result) {
         playlistWidget->clearModified();
-        msg(tr("Saved '%1'").arg(displayName));
+        msg(tr("Saved '%1'").arg(root->baseName()));
+    } else if (allowFail) {
+        playlistWidget->clearModified();
+        WZINFO(QString("Ignoring failed save of '%1'").arg(root->filename()));
+        msg(tr("Ignoring failed save of '%1'").arg(root->baseName()));
+        result = true;
     } else {
-        // Error box and log already done, but need to remove 0 secs save msg
-        msg(tr("Failed to save '%1'").arg(displayName));
+        msg(tr("Failed to save '%1'").arg(root->baseName()));
     }
+
+    QApplication::restoreOverrideCursor();
 
     return result;
 }
@@ -856,7 +869,7 @@ bool TPList::saveAs() {
     }
 
     setPlaylistFilename(fi.absoluteFilePath());
-    return save();
+    return save(false);
 }
 
 void TPList::stop() {
@@ -929,13 +942,11 @@ void TPList::editName() {
     playlistWidget->editName();
 }
 
-void TPList::clearName() {
+void TPList::resetName() {
 
-    TPlaylistItem* cur = playlistWidget->plCurrentItem();
-    if (cur) {
-        cur->setName(TName::baseNameForURL(cur->filename()), cur->extension(),
-                                           false);
-        cur->setModified();
+    TPlaylistItem* current = playlistWidget->plCurrentItem();
+    if (current) {
+        current->resetName();
     }
 }
 
@@ -1180,9 +1191,7 @@ void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
             .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "0")
             .arg(current ? current->text(TPlaylistItem::COL_NAME) : "0"));
 
-    if ((current && !previous) || (!current && previous)) {
-        enableActions();
-    }
+    enableActions();
 }
 
 void TPList::onItemActivated(QTreeWidgetItem* i, int) {

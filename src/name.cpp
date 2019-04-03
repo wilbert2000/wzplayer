@@ -23,7 +23,9 @@
 #include <QUrl>
 
 #include "settings/preferences.h"
+#include "discname.h"
 #include "wzdebug.h"
+#include "config.h"
 
 
 using namespace Settings;
@@ -57,70 +59,70 @@ QString removeTrailingSlash(const QString& url) {
     return s;
 }
 
-QString TName::nameForURL(const QString& url) {
+QString TName::nameForURL(QString url) {
 
-    // Use this over QUrl because of encoding done by QURL
     if (url.isEmpty()) {
         return url;
     }
 
-    QString name = removeTrailingSlash(url);
+    bool isWZPlaylist = false;
+    QString name = url;
+    if (name.endsWith(TConfig::WZPLAYLIST)) {
+        name = name.left(name.length() - TConfig::WZPLAYLIST.length());
+        if (name.isEmpty()) {
+            // Current dir
+            return ".";
+        }
+        isWZPlaylist = true;
+        url = name;
+    }
+
+    name = removeTrailingSlash(name);
     if (name.isEmpty()) {
+        // Root
         return url.right(1);
     }
 
+    // Remove path
     int i = name.lastIndexOf('/');
-    if (i < 0) {
+    if (i < 0 && QDir::separator() != '/') {
         i = name.lastIndexOf(QDir::separator());
     }
-    if (i < 0) {
-        // No path, if base not empty remove scheme
+    if (i >= 0) {
+        name = name.mid(i + 1);
+    } else {
+        // No path, remove scheme
         QUrl u(url);
         QString s = u.scheme();
-        if (s.isEmpty()) {
-            return name;
+        if (!s.isEmpty()) {
+            s = name.mid(s.length());
+            // Remove : after scheme. / does not get here.
+            if (s.startsWith(':')) {
+                s = s.mid(1);
+            }
+            if (!s.isEmpty()) {
+                name = s;
+            }
         }
-        // Remove scheme
-        QString base = name.mid(s.length());
-        // Remove :, / does not get here
-        if (base.startsWith(':')) {
-            base = base.mid(1);
-        }
-        if (base.isEmpty()) {
-            return name;
-        }
-        return base;
     }
 
-    // Remove path
-    return name.mid(i + 1);
-}
-
-QString TName::baseNameForURL(const QString& url) {
-
-    QString name = nameForURL(url);
-    if (name.isEmpty()) {
+    if (isWZPlaylist) {
         return name;
     }
 
-    // Check url is dir.
-    QChar last = url.at(url.length() - 1);
-    if (last == '/') {
-        return name;
+    QUrl qUrl(url);
+    if (!qUrl.scheme().isEmpty()) {
+        if (qUrl.scheme() == "file") {
+            url = qUrl.toLocalFile();
+        } else {
+            TDiscName disc(url);
+            if (disc.valid) {
+                return disc.displayName();
+            }
+        }
     }
 
-#ifdef Q_OS_WIN
-    if (last == '\\') {
-        return name;
-    }
-#endif
-
-    QString dir = url;
-    QUrl qUrl(dir);
-    if (qUrl.scheme() == "file") {
-        dir = qUrl.toLocalFile();
-    }
-    QFileInfo fi(dir);
+    QFileInfo fi(url);
     if (fi.isDir()) {
         return name;
     }

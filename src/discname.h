@@ -34,7 +34,7 @@ public:
 
     static TDisc protocolToTDisc(QString protocol);
 
-    QString toString(bool add_zero_title = false) const;
+    QString toString(bool addMenuTitle, bool add_zero_title = false) const;
     TDisc disc() const;
 
     QString displayName(bool addDevice = true) const;
@@ -45,6 +45,7 @@ public:
     bool valid;
 
 private:
+    static QString tr(const char* s);
     void removeTrailingSlashFromDevice();
 };
 

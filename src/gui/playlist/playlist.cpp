@@ -57,10 +57,13 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
             this, &TPlaylist::onNewMediaStartedPlaying);
     connect(player, &Player::TPlayer::titleTrackChanged,
             this, &TPlaylist::onTitleTrackChanged);
+    connect(player, &Player::TPlayer::durationChanged,
+            this, &TPlaylist::onDurationChanged);
     connect(player, &Player::TPlayer::mediaEOF,
             this, &TPlaylist::onMediaEOF, Qt::QueuedConnection);
     connect(player, &Player::TPlayer::noFileToPlay,
             this, &TPlaylist::startPlay, Qt::QueuedConnection);
+
 
     // Random seed
     QTime t;
@@ -179,7 +182,7 @@ void TPlaylist::playOrPause() {
 
         case Player::STATE_STOPPED:
         default:
-            if (reachedEndOfPlaylist) {
+            if (reachedEndOfPlaylist && playlistWidget->hasPlayableItems()) {
                 playNext(true);
             } else if (playlistWidget->playingItem) {
                 playItem(playlistWidget->playingItem);
@@ -334,13 +337,33 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
-QString TPlaylist::getPlayingTitle(bool addModified) const {
+QString TPlaylist::getPlayingTitle(bool addModified,
+                                   bool useStreamingTitle) const {
 
+    bool isRoot = false;
     TPlaylistItem* item = playlistWidget->playingItem;
     if (!item) {
         item = playlistWidget->root();
+        isRoot = true;
     }
-    QString title = item->editName();
+
+    QString title;
+    if (useStreamingTitle
+            && player->mdat.detected_type == TMediaData::TYPE_STREAM
+            && !player->mdat.title.isEmpty()) {
+        title = player->mdat.name();
+    } else {
+        title = item->editName();
+
+        // Add disc title, root already has it added
+        if (item->isDisc() && !isRoot) {
+            QString s = TName::cleanTitle(dvdTitle);
+            if (!s.isEmpty()) {
+                title = QString("%1 - %2").arg(s).arg(title);
+            }
+        }
+    }
+
     if (addModified && item->modified()) {
         title += "*";
     }
@@ -403,7 +426,10 @@ void TPlaylist::updatePlayingItem() {
         return;
     }
 
-    bool filenameMismatch = item->filename() != player->mdat.filename;
+    bool filenameMismatch =
+            !player->mdat.filename.isEmpty()
+            && !item->isDisc()
+            && player->mdat.filename != item->filename();
     if (filenameMismatch) {
         WZWARN(QString("File name playing item '%1' does not match"
                        " player filename '%2' in state %3")
@@ -430,10 +456,11 @@ void TPlaylist::updatePlayingItem() {
         // player->mdat.filename just before switching state to loading.
         // If we do not copy the url here, onNewMediaStartedPlaying() will
         // start a new playlist, clearing the current playlist.
-        if (filenameMismatch && !player->mdat.filename.isEmpty()) {
-            WZWARN("Updating item file name");
-            item->setFilename(player->mdat.filename);
-            item->setModified();
+        if (filenameMismatch) {
+            // TODO:
+            // WZWARN("Updating item file name");
+            // item->setFilename(player->mdat.filename);
+            // item->setModified();
         }
 
         if (item->state() != PSTATE_LOADING) {
@@ -478,64 +505,118 @@ void TPlaylist::onPlayerError() {
     }
 }
 
+void TPlaylist::clear(bool clearFilename) {
+
+    dvdTitle = "";
+    dvdSerial = "";
+    TPList::clear(clearFilename);
+}
+
+void TPlaylist::onNewMediaStartedPlayingUpdatePlayingItem() {
+
+    TPlaylistItem* playingItem = playlistWidget->playingItem;
+    if (!playingItem) {
+        return;
+    }
+    const TMediaData* md = &player->mdat;
+    bool modified = false;
+
+    // Update item name
+    if (!playingItem->edited()) {
+        QString name = md->name();
+        if (name != playingItem->baseName()) {
+            WZDEBUG(QString("Updating name from '%1' to '%2'")
+                    .arg(playingItem->baseName()).arg(name));
+            playingItem->setName(name, playingItem->extension(), false);
+            modified = true;
+        }
+    }
+
+    // Update item duration
+    if (md->duration > 0 && !md->image) {
+        if (!playlistFilename.isEmpty()
+            && qAbs(md->duration - playingItem->duration()) > 1) {
+            modified = true;
+        }
+        WZDEBUG(QString("Updating duration from %1 to %2")
+                .arg(playingItem->duration()).arg(md->duration));
+        playingItem->setDuration(md->duration);
+    }
+
+    if (modified) {
+        playingItem->setModified();
+    } else {
+        WZDEBUG("Item considered uptodate");
+    }
+
+    // Could set state playingItem to PSTATE_PLAYING now, but wait for player
+    // to change state to playing to not trigger additional calls to
+    // enableActions(). updatePlayingItem() will set state to PSTATE_PLAYING
+    // when player state STATE_PLAYING arrives.
+    // playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
+
+    return;
+}
+
 void TPlaylist::onNewMediaStartedPlaying() {
 
     const TMediaData* md = &player->mdat;
     QString filename = md->filename;
-    QString curFilename = playlistWidget->playingFile();
+    TPlaylistItem* playingItem = playlistWidget->playingItem;
+    QString curFilename;
+    if (playingItem) {
+        curFilename = playingItem->filename();
+    }
 
     if (md->disc.valid) {
-        // Handle disk, count items to check for changed disk :(
         TDiscName curDisc(curFilename);
-        if (curDisc.valid
-                && curDisc.protocol == md->disc.protocol
-                && curDisc.device == md->disc.device
-                // TODO: compare title?
-                // && md->titles[curDisc.title].getDisplayName(false)
-                // == playlistWidget->playingItem->baseName()
-                && md->titles.count() == playlistWidget->countItems()) {
-            WZDEBUG("Item is from current disc");
-            return;
+        if (curDisc.protocol == "dvdnav" && Settings::pref->isMPV()) {
+            curDisc.protocol = "dvd";
         }
+        if (curDisc.valid
+                && curDisc.title != 0
+                && curDisc.protocol == md->disc.protocol
+                && curDisc.device == md->disc.device) {
+
+            if (!dvdSerial.isEmpty()) {
+                if (dvdSerial == md->dvd_disc_serial) {
+                    WZDEBUG("Item is from current disc with serial "
+                            + dvdSerial);
+                    return;
+                }
+                WZDEBUG(QString("Serial player '%1' mismatches serial playlist"
+                                " '%2'. Reloading disc playlist")
+                        .arg(md->dvd_disc_serial).arg(dvdSerial));
+                // Fall through to reload disc playlist
+            } else {
+                // No serial
+                if (!dvdTitle.isEmpty()) {
+                    if (dvdTitle == md->title) {
+                        WZDEBUG("Item is from current disc with no serial"
+                                " and title '" + dvdTitle + "'");
+                        return;
+                    }
+                    WZDEBUG(QString("Title player '%1' mismatches title"
+                                    " playlist '%2'. Reloading disc playlist")
+                            .arg(md->title).arg(dvdTitle));
+                    // Fall through to reload disc playlist
+                } else {
+                    // No serial, no title
+                    if (md->titles.count() == playlistWidget->countItems()) {
+                        WZDEBUG("Assuming item is from current disc without"
+                                " serial and without title");
+                        return;
+                    } else {
+                        WZDEBUG("Title counts mismatch."
+                                " Reloading disc playlist");
+                        // Fall through to reload disc playlist
+                    }
+                }
+            }
+        } // if (curDisc.valid ...)
     } else if (filename == curFilename) {
         // Handle current item started playing
-        TPlaylistItem* item = playlistWidget->playingItem;
-        if (item == 0) {
-            return;
-        }
-        bool modified = false;
-
-        // Update item name
-        if (!item->edited()) {
-            QString name = md->name();
-            if (name != item->baseName()) {
-                WZDEBUG(QString("Updating name from '%1' to '%2'")
-                        .arg(item->baseName()).arg(name));
-                item->setName(name, item->extension(), false);
-                modified = true;
-            }
-        }
-
-        // Update item duration
-        if (!md->image && md->duration > 0) {
-            if (!this->playlistFilename.isEmpty()
-                && qAbs(md->duration - item->duration()) > 1) {
-                modified = true;
-            }
-            WZDEBUG(QString("Updating duration from %1 to %2")
-                    .arg(item->duration()).arg(md->duration));
-            item->setDuration(md->duration);
-        }
-
-        if (modified) {
-            item->setModified();
-        } else {
-            WZDEBUG("Item considered uptodate");
-        }
-
-        // Could set playingItem now, but wait for player to change state to
-        // playing to not trigger additional calls to enableActions().
-        // playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+        onNewMediaStartedPlayingUpdatePlayingItem();
 
         // Pause a single image
         if (player->mdat.image && playlistWidget->hasSingleItem()) {
@@ -550,35 +631,52 @@ void TPlaylist::onNewMediaStartedPlaying() {
     clear();
 
     if (md->disc.valid) {
+        // Save title and serial to catch changed disc. Cleared by clear().
+        dvdTitle = md->title;
+        dvdSerial = md->dvd_disc_serial;
+
         // Add disc titles without sorting
         playlistWidget->disableSort();
         TPlaylistItem* root = playlistWidget->root();
         root->setFilename(filename, md->name());
-        // setFilename() won't recognize iso's as folder.
-        // No need to update icon as it is not visible
+        // setFilename() won't mark discs and isos as folder (they will not
+        // play if marked as folder). Mark them as folder here.
+        // No need to update icon as it is not visible.
         root->setFolder(true);
 
         TDiscName disc = md->disc;
+        // Add menu for DVDNAV
+        if (disc.disc() == TDiscName::DVDNAV) {
+            disc.title = -1;
+            TPlaylistItem* item = new TPlaylistItem(root,
+                                                    disc.toString(true),
+                                                    disc.displayName(),
+                                                    0, // duration
+                                                    false /* protext name */);
+            if (md->titles.getSelectedID() < 0) {
+                item->setDuration(md->duration);
+                playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+            }
+        }
+
         foreach(const Maps::TTitleData& title, md->titles) {
             disc.title = title.getID();
-            TPlaylistItem* i = new TPlaylistItem(
-                        root,
-                        disc.toString(),
-                        title.getDisplayName(false),
-                        title.getDuration(),
-                        false /* protext name */);
+            TPlaylistItem* i = new TPlaylistItem(root,
+                                                 disc.toString(false),
+                                                 title.getDisplayName(false),
+                                                 title.getDuration(),
+                                                 false /* protext name */);
             if (title.getID() == md->titles.getSelectedID()) {
                 playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
             }
-        }
+        } // if (md->disc.valid)
     } else {
         // Add current file
-        TPlaylistItem* current = new TPlaylistItem(
-                    playlistWidget->root(),
-                    filename,
-                    md->name(),
-                    md->duration,
-                    false);
+        TPlaylistItem* current = new TPlaylistItem(playlistWidget->root(),
+                                                   filename,
+                                                   md->name(),
+                                                   md->duration,
+                                                   false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
     }
 
@@ -594,22 +692,70 @@ void TPlaylist::onMediaEOF() {
 void TPlaylist::onTitleTrackChanged(int id) {
     WZTRACE(QString::number(id));
 
-    if (id < 0) {
-        playlistWidget->setPlayingItem(0);
-        return;
-    }
-
     // Search for id
     TDiscName disc = player->mdat.disc;
     disc.title = id;
-    QString filename = disc.toString();
+    QString filename = disc.toString(true);
 
-    TPlaylistItem* i = playlistWidget->findFilename(filename);
-    if (i) {
-        playlistWidget->setPlayingItem(i, PSTATE_PLAYING);
+    TPlaylistItem* item = playlistWidget->findFilename(filename);
+    if (item) {
+        if (player->mdat.duration > 0 || id == -1) {
+            item->setDuration(player->mdat.duration);
+        }
+        playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
     } else {
-        WZWARN("title id " + QString::number(id) + " filename '" + filename
-               + "' not found in playlist");
+        WZWARN("Title id " + QString::number(id) + " with filename '"
+               + filename + "' not found in playlist");
+    }
+}
+
+void TPlaylist::onDurationChanged(double duration) {
+
+    TPlaylistItem* item = playlistWidget->playingItem;
+    if (item) {
+        if (item->isDisc()) {
+            int selectedTitle = player->mdat.titles.getSelectedID();
+            int itemTitle = TDiscName(item->filename()).title;
+            if (selectedTitle == itemTitle) {
+                if (duration > 0 || itemTitle == -1) {
+                    WZTRACE(QString("Updating duration title %1 with name %2"
+                                    " from %3 to %4")
+                            .arg(itemTitle)
+                            .arg(item->baseName())
+                            .arg(item->duration())
+                            .arg(duration));
+                    item->setDurationEmit(duration);
+                } else {
+                    WZTRACE(QString("Keeping duration item title %1 with"
+                                    " name %2 and duration %3 instead of %4")
+                            .arg(itemTitle)
+                            .arg(item->baseName())
+                            .arg(item->duration())
+                            .arg(duration));
+                }
+            } else {
+                WZTRACE(QString("Selected title %1 does not match item title %2"
+                                " with name '%3'")
+                        .arg(selectedTitle)
+                        .arg(itemTitle)
+                        .arg(item->baseName()));
+            }
+        } else if (duration > 0 && !player->mdat.image) {
+            WZTRACE(QString("Updating duration %1 from %2 to %3")
+                    .arg(item->baseName()).arg(item->duration()).arg(duration));
+            if (!playlistFilename.isEmpty()
+                    && qAbs(duration - item->duration()) > 1) {
+                item->setModified();
+            }
+            item->setDurationEmit(duration);
+        } else {
+            WZTRACE(QString("Keeping duration %1 instead of %2 for '%3'")
+                    .arg(item->duration())
+                    .arg(duration)
+                    .arg(item->baseName()));
+        }
+    } else {
+        WZTRACE("No playing item");
     }
 }
 
@@ -719,13 +865,13 @@ void TPlaylist::open(const QString &fileName, const QString& name) {
 
     WZDEBUG("Starting new playlist");
     clear();
-    bool edited = !name.isEmpty() && name != TName::baseNameForURL(fileName);
+    bool edited = !name.isEmpty() && name != TName::nameForURL(fileName);
     playItem(new TPlaylistItem(playlistWidget->root(),
                                fileName,
                                name,
                                0,
                                edited));
-    WZDEBUG("done");
+    WZDEBUG("Done");
 }
 
 void TPlaylist::openFileDialog() {

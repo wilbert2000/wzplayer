@@ -307,8 +307,8 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
         }
     }
 
-    bool changed = item != playingItem
-            || (playingItem && playingItem->state() != state);
+    bool changed = item != playingItem;
+    bool updated = changed || (playingItem && playingItem->state() != state);
 
     playingItem = item;
 
@@ -326,8 +326,11 @@ void TPlaylistWidget::setPlayingItem(TPlaylistItem* item,
         }
     }
 
-    if (changed) {
-        emit playingItemChanged(playingItem);
+    if (updated) {
+        if (changed) {
+            emit playingItemChanged(playingItem);
+        }
+        emit playingItemUpdated(playingItem);
     }
 }
 
@@ -979,11 +982,12 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
     } else {
         WZDEBUG("Drop not accepted");
     }
+    */
 }
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
                                            int start, int end) {
-    WZTRACE(QString("'%1' %2 %3")
+    WZTRACE(QString("Parent '%1' %2 %3")
             .arg(parent.data().toString()).arg(start).arg(end));
 
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
@@ -1024,7 +1028,7 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
                                    int start, int end) {
-    WZTRACEOBJ(QString("'%1' %2 %3")
+    WZTRACEOBJ(QString("Parent '%1' %2 %3")
             .arg(parent.data().toString()).arg(start).arg(end));
     QTreeWidget::rowsInserted(parent, start, end);
 
@@ -1285,7 +1289,6 @@ void TPlaylistWidget::resizeNameColumn(TPlaylistItem* item, int level) {
 }
 
 void TPlaylistWidget::resizeNameColumnAll() {
-    WZTRACEOBJ("");
     resizeNameColumn(root(), 0);
 }
 
@@ -1311,7 +1314,6 @@ void TPlaylistWidget::scrollToPlayingItem() {
 }
 
 void TPlaylistWidget::onWordWrapTimeout() {
-    WZTRACEOBJ("");
 
     resizeNameColumnAll();
     if (scrollToPlaying) {
@@ -1322,11 +1324,9 @@ void TPlaylistWidget::onWordWrapTimeout() {
 void TPlaylistWidget::startWordWrap() {
 
     if (root()->childCount()) {
-        WZTRACEOBJ("Starting timer");
         wordWrapTimer.start();
     } else {
         wordWrapTimer.stop();
-        WZTRACEOBJ("Stopped timer");
     }
 }
 
@@ -1339,30 +1339,34 @@ void TPlaylistWidget::onItemExpanded(QTreeWidgetItem* i) {
     }
 }
 
-void TPlaylistWidget::onSectionResized(int logicalIndex,
-                                       int oldSize,
-                                       int newSize) {
-    WZTRACEOBJ(QString("Index %1, old size %2, new size %3")
-               .arg(logicalIndex).arg(oldSize).arg(newSize));
+void TPlaylistWidget::onSectionResized(int logicalIndex, int, int) {
 
     if (logicalIndex == TPlaylistItem::COL_NAME) {
         startWordWrap();
     }
 }
 
-TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* item) {
+TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* folder,
+                                             TPlaylistItem* item) const {
 
-    if (item) {
-        QTreeWidgetItemIterator it(this);
-        while (*it) {
-            if (*it == item) {
-                return item;
+    for(int i = 0; i < folder->childCount(); i++) {
+        TPlaylistItem* child = item->plChild(i);
+        if (child == item) {
+            return child;
+        }
+        if (child->childCount()) {
+            child = validateItem(child, item);
+            if (child) {
+                return child;
             }
-            ++it;
         }
     }
 
     return 0;
+}
+
+TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* item) const {
+    return validateItem(root(), item);
 }
 
 TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
@@ -1409,6 +1413,7 @@ TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,
         if (playingItem) {
             playingItem = 0;
             emit playingItemChanged(playingItem);
+            emit playingItemUpdated(playingItem);
         }
 
         // Delete old root

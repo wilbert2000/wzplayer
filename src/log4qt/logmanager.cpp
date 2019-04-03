@@ -364,9 +364,9 @@ namespace Log4Qt
     }
     
 
-    void LogManager::qtMessageHandler(QtMsgType type, const QMessageLogContext&,
+    void LogManager::qtMessageHandler(QtMsgType type,
+                                      const QMessageLogContext&,
                                       const QString& rMessage) {
-        const char* pMessage = rMessage.toUtf8().constData();
 
 	    Level level;
 	    switch (type)
@@ -375,6 +375,10 @@ namespace Log4Qt
 	            level = Level::DEBUG_INT;
 	            break;
 	        case QtWarningMsg:
+                // See TVideoWindow::setFastBackground() for why this hack...
+                if (rMessage == "QWidget::paintEngine: Should no longer be called") {
+                    return;
+                }
 	            level = Level::WARN_INT;
 	            break;
 	        case QtCriticalMsg:
@@ -386,7 +390,7 @@ namespace Log4Qt
 	        default:
 	            level = Level::TRACE_INT;
 	    }
-	    instance()->qtLogger()->log(level, pMessage);
+        instance()->qtLogger()->log(level, rMessage);
 	    
 	    // Qt fatal behaviour copied from global.cpp qt_message_output()
 	    // begin {

@@ -49,7 +49,8 @@ bool TMPlayerProcess::dvdnav_pause_to_restore;
 
 TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata) :
     TPlayerProcess(parent, mdata),
-    mute_option_set(false) {
+    mute_option_set(false),
+    pause_option_set(false) {
 }
 
 void TMPlayerProcess::clearSubSources() {
@@ -453,7 +454,7 @@ void TMPlayerProcess::dvdnavSave() {
 
         // Open the disc, not just the current title
         md->disc.title = 0;
-        md->filename = md->disc.toString();
+        md->filename = md->disc.toString(false);
         md->selected_type = TMediaData::TYPE_DVDNAV;
         WZDEBUG("saved state '" + md->filename + "'");
     } else {
@@ -743,6 +744,12 @@ void TMPlayerProcess::playingStarted() {
         mute_option_set = false;
         mute(true);
     }
+    // Set pause here because mplayer no longer has an option to set pause
+    // from the command line
+    if (pause_option_set) {
+        pause_option_set = false;
+        setPause(true);
+    }
 
     // Clear notifications
     video_tracks_changed = false;
@@ -755,7 +762,7 @@ void TMPlayerProcess::playingStarted() {
     // Reset the check duration timer
     check_duration_time = md->time_sec;
     if (md->detectedDisc()) {
-        // Don't check disc
+        // Don't check disc, it does its own duration managment
         check_duration_time_diff = 360000;
     } else {
         check_duration_time_diff = 1;
@@ -783,7 +790,7 @@ void TMPlayerProcess::playingStarted() {
     TPlayerProcess::playingStarted();
 }
 
-void TMPlayerProcess::parseFrame(double& s, const QString& line) {
+void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
 
     static QRegExp rx_frame("(\\d+)\\/");
 
@@ -794,26 +801,32 @@ void TMPlayerProcess::parseFrame(double& s, const QString& line) {
 
     md->fuzzy_time = QString::fromUtf8("\u00B1"); // +/- char;
     if (md->video_fps > 0 && rx_frame.indexIn(line) >= 0) {
-        int f = rx_frame.cap(1).toInt();
-        if (f > 0) {
-            if (!start_frame_set) {
-                start_frame_set = true;
-                start_frame = f;
-                WZDEBUG("start frame set to " + QString::number(start_frame));
-                frame_off_by_one = 0.05 + 1 / md->video_fps;
-            }
+        int frame = rx_frame.cap(1).toInt();
 
-            double sf = (f - start_frame) / md->video_fps;
-            double d = sf - s;
+        if (!start_frame_set) {
+            start_frame_set = true;
+            start_frame = frame;
+            WZDEBUG(QString("Start frame set to %1. Line '%2'")
+                    .arg(start_frame).arg(line));
+            // Timestamp has resolution of 0.1, hence 0.05
+            frame_off_by_one = 0.05 + 1 / md->video_fps;
+        }
+
+        // Evade no frames with frame always set to 0
+        if (frame > 0) {
+            double secsc = double(frame - start_frame) / md->video_fps;
+            double d = secsc - secs;
             double da = qAbs(d);
 
+            // Timestamp has resolution of 0.1, hence 0.05
             if (da <= 0.05) {
-                s = sf;
+                secs = secsc;
                 md->fuzzy_time = "=";
             } else if (da <= frame_off_by_one) {
-                WZTRACE(QString("frame %1, start frame %2, off by one d %3"
-                                ", line '%4'")
-                        .arg(f).arg(start_frame).arg(d).arg(line));
+                WZTRACE(QString("Frame %1 off by one d %2. Start frame %3,"
+                                " secs %4, secsc %5, line '%6'")
+                        .arg(frame).arg(d).arg(start_frame).arg(secs).arg(secsc)
+                        .arg(line));
                 if (d < 0) {
                     start_frame--;
                     md->fuzzy_time = "<";
@@ -823,13 +836,14 @@ void TMPlayerProcess::parseFrame(double& s, const QString& line) {
                 }
             } else {
                 // Resync start frame
-                int nsf = f - qRound(s * md->video_fps) + 1;
-                WZTRACE(QString("frame %1 is out of sync, updating start frame"
-                                " from %2 to %3. s frame: %4, s: %5, d: %6"
-                                ", l: '%7'")
-                            .arg(f).arg(start_frame).arg(nsf)
-                            .arg(sf).arg(s).arg(d).arg(line));
-                start_frame = nsf;
+                int newStartFrame = qRound(secs * md->video_fps) - frame;
+                //WZTRACE(QString("Frame %1 is out of sync by %2. Secs %3,"
+                //                " secsc %4, 1/fps %5. Updating start frame"
+                //                " from %6 to %7.\nLine '%8'")
+                //        .arg(frame).arg(d).arg(secs).arg(secsc)
+                //        .arg(1/md->video_fps).arg(start_frame)
+                //        .arg(newStartFrame).arg(line));
+                start_frame = newStartFrame;
             }
         }
     }
@@ -1255,6 +1269,9 @@ void TMPlayerProcess::setOption(const QString& name, const QVariant& value) {
     } else if (name == "mute") {
         // Emulate mute, executed by playingStarted()
         mute_option_set = true;
+    } else if (name == "pause") {
+        // Emulate pause, executed by playingStarted()
+        pause_option_set = true;
     } else if (name == "keepaspect"
                || name == "fs"
                || name == "flip-hebrew"

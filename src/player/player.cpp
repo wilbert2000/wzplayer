@@ -186,7 +186,7 @@ void TPlayer::onProcessError(QProcess::ProcessError error) {
     WZERROR(QString::number(error));
 
     // Restore normal window background
-    playerwindow->restoreNormalWindow(false);
+    playerwindow->restoreNormalWindow();
     emit playerError(Player::Process::TExitMsg::processErrorToErrorID(error));
 }
 
@@ -195,7 +195,7 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
             .arg(normal_exit).arg(exit_code).arg(eof).arg(stateToString()));
 
     // Restore normal window background
-    playerwindow->restoreNormalWindow(false);
+    playerwindow->restoreNormalWindow();
 
     if (_state == STATE_STOPPING || _state == STATE_STOPPED) {
         return;
@@ -269,13 +269,13 @@ void TPlayer::close() {
 }
 
 void TPlayer::openDisc(TDiscName disc, bool fast_open) {
-    WZDEBUG(disc.toString() + " fast open " + QString::number(fast_open));
+    WZDEBUG(disc.toString(true) + " fast open " + QString::number(fast_open));
 
     // Change title if already playing
     if (fast_open
         && !mset.playing_single_track
         && statePOP()
-        && disc.title > 0
+        && disc.title != 0
         && mdat.disc.valid
         && mdat.disc.device == disc.device) {
         // If setTitle fails, it will call again with fast_open set to false
@@ -284,7 +284,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         return;
     }
 
-    Gui::msg(tr("Opening %1").arg(disc.toString()), 0);
+    Gui::msg(tr("Opening %1").arg(disc.toString(false)), 0);
 
     // Add device from pref if none specified
     if (disc.device.isEmpty()) {
@@ -314,8 +314,17 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
     // Finish current
     close();
 
-    // Set filename, selected type and disc
-    mdat.filename = disc.toString();
+    // Set title, filename, selected type and disc
+    // "Menu" URL
+    if (disc.title < 0) {
+        disc.title = 0;
+    }
+    // MPV does not support DVDNAV
+    if (disc.disc() == TDiscName::DVDNAV && Settings::pref->isMPV()) {
+        WZWARN("MPV does not support DVDNAV, falling back to DVD");
+        disc.protocol = "dvd";
+    }
+    mdat.filename = disc.toString(false);
     mdat.selected_type = (TMediaData::Type) disc.disc();
     mdat.disc = disc;
     // Clear settings
@@ -2994,14 +3003,20 @@ void TPlayer::setTitle(int title) {
                           + mdat.chapters.firstID());
             return;
         }
-        // Handle DVDNAV with title command
+        // Handle DVDNAV with title command or menu button
         if (mdat.detected_type == TMediaData::TYPE_DVDNAV) {
-            proc->setTitle(title);
-            return;
+            if (title > 0) {
+                proc->setTitle(title);
+                return;
+            }
+            if (title < 0) {
+                proc->discButtonPressed("menu");
+                return;
+            }
         }
     }
 
-    // Start/restart
+    // Start/restart disc
     mdat.disc.title = title;
     openDisc(mdat.disc, false);
 }

@@ -36,7 +36,7 @@ class TMPVProcess : public TPlayerProcess {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMPVProcess(QObject* parent, TMediaData* mdata);
+    explicit TMPVProcess(QObject* parent, TMediaData* mdata);
 
     virtual bool startPlayer();
 
@@ -127,10 +127,8 @@ protected slots:
 private:
     bool received_buffering;
 
-    int selected_title;
     bool received_title_not_found;
-    bool title_swictched;
-    double title_switch_time;
+
     bool quit_at_end_of_title;
     int quit_at_end_of_title_ms;
     QTime quit_at_end_of_title_time;

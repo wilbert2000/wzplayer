@@ -43,12 +43,8 @@ TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
 bool TMPVProcess::startPlayer() {
 
     received_buffering = false;
-
-    selected_title = -1;
     received_title_not_found = false;
-    title_swictched = false;
     quit_at_end_of_title = false;
-
     request_bit_rate_info = !md->image;
 
     return TPlayerProcess::startPlayer();
@@ -170,7 +166,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "CHAPTERS") {
         int n_chapters = value.toInt();
-        WZDEBUG("requesting start and titel of " + QString::number(n_chapters)
+        WZDEBUG("Requesting start and titel of " + QString::number(n_chapters)
                 + " chapter(s)");
         for (int n = 0; n < n_chapters; n++) {
             writeToPlayer(QString("print_text \"CHAPTER_%1="
@@ -183,15 +179,21 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "MEDIA_TITLE") {
         if (md->image) {
-            WZDEBUG("ignoring image title");
+            WZDEBUG("Ignoring image title");
+        } else if (md->disc.valid) {
+            // For a disc, always set the title, unless it is "cdrom"
+            if (value != "cdrom") {
+                md->title = value;
+                WZDEBUG("Title set to '" + md->title + "'");
+            }
         } else {
-            QString name = TName::nameForURL(md->filename).simplified();
-            QString title = value.simplified();
-            if (name == title) {
-                WZDEBUG("ignoring title matching file name");
+            QString name = TName::nameForURL(md->filename);
+            QString ext = QFileInfo(md->filename).suffix();
+            if (value == name || value == name + "." + ext) {
+                WZDEBUG("Ignoring title matching file name");
             } else {
-                md->title = title;
-                WZDEBUG("title set to '" + md->title + "'");
+                md->title = value;
+                WZDEBUG("Title set to '" + md->title + "'");
             }
         }
         return true;
@@ -232,37 +234,44 @@ void TMPVProcess::requestChapterInfo() {
 
 void TMPVProcess::fixTitle() {
 
-    // Note: getting prop with writeToPlayer("print_text XXX=${=disc-title:}");
-    // valid by now.
+    // The problem with MPV is title switching. It only prints the VTS that
+    // is selected, but not the title.
+    // To work around it let the playlist handle title switching and kill the
+    // player in parseLine() or checkTime() when it reaches the end of a title.
+
+    // Note: see also setFixedOptions() for msg-level command line option.
+    // Note: by now get title ID property with
+    // writeToPlayer("print_text INFO_DISC_TITLE=${=disc-title:}");
+    // is valid.
 
     int title = md->disc.title;
-    if (title == 0)
+    if (title == 0) {
+        // See setMedia() for reason why 0 is 1
         title = 1;
+    }
 
-    // Accept the requested title as the selected title, if we did not receive
-    // a title not found. First and upmost this handles titles being reported
+    // If we did not receive a title not found, accept the requested title as
+    // the selected title. First and upmost this handles titles being reported
     // as VTS by DVDNAV, but it also makes it possible to sequentially play all
     // titles, needed because MPV does not support menus.
     if (!received_title_not_found) {
-        WZDEBUG("requested title " + QString::number(title)
-                + ", player reports it is playing VTS "
-                + QString::number(selected_title));
+        WZDEBUG(QString("Notify requested title %1").arg(title));
         notifyTitleTrackChanged(title);
         return;
     }
 
-    WZWARN("requested title " + QString(title) + " not found");
+    WZWARN("Requested title " + QString(title) + " not found");
 
     // Let the playlist try the next title if a valid title was requested and
     // there is more than 1 title.
-    if (title <= md->titles.count() && md->titles.count() > 1) {
+    if (md->titles.count() > 1 && title <= md->titles.count()) {
         // Need to notify the requested title, otherwise the playlist will
         // select the second title instead of the title after this one.
         notifyTitleTrackChanged(title);
-        // Pass eof to trigger playNext() in playlist
-        received_end_of_file = true;
         // Ask player to quit
         quit(0);
+        // Pass eof to trigger playNext() in playlist
+        received_end_of_file = true;
         return;
     }
 
@@ -272,14 +281,35 @@ void TMPVProcess::fixTitle() {
 
 void TMPVProcess::checkTime(double sec) {
 
-    if (title_swictched && sec >= title_switch_time) {
-        title_swictched = false;
-        WZDEBUG("notify title track changed");
-        notifyTitleTrackChanged(selected_title);
+    if (md->detected_type == TMediaData::TYPE_CDDA
+            || md->detected_type == TMediaData::TYPE_VCD) {
+        // TODO: check if better to use sec instead of md->time_sec
+        int chapter = md->chapters.idForTime(md->time_sec, false);
+        int title;
+        if (chapter < 0) {
+            title = -1;
+        } else {
+            title = chapter - md->chapters.firstID() + md->titles.firstID();
+        }
+        notifyTitleTrackChanged(title);
+    } else if (md->detected_type == TMediaData::TYPE_DVD
+               || md->detected_type == TMediaData::TYPE_BLURAY) {
+
+        if (notified_player_is_running
+                && md->duration > 0
+                && sec > md->duration
+                && !quit_send) {
+
+            WZDEBUG(QString("Time %1 past end of title %2. Quitting.")
+                    .arg(sec).arg(md->duration));
+            quit(0);
+            received_end_of_file =  true;
+        }
     }
 }
 
 bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
+    Q_UNUSED(title)
 
     // MPV uses dvdnav to play DVDs, but without support for menus
     if (disc_type == "dvdnav") {
@@ -288,53 +318,33 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
         md->detected_type = md->stringToType(disc_type);
     }
 
-    // Due to caching it still can take a while before the previous title
-    // really ends, so store the title and the time to swicth and let
-    // checkTime() do the swithing when the moment arrives.
-    selected_title = title;
-
-    if (disc_type == "cdda" || disc_type == "vcd") {
-        if (notified_player_is_running) {
-            int chapter = title - md->titles.firstID() + md->chapters.firstID();
-            title_switch_time = md->chapters[chapter].getStart();
-            if (title_switch_time <= md->time_sec + 0.5) {
-                WZDEBUG("switched to track " + QString::number(title));
-                notifyTitleTrackChanged(title);
-            } else {
-                // Switch when the time comes
-                title_swictched = true;
-                title_switch_time -= 0.4;
-                WZDEBUG("saved title changed to " + QString::number(title)
-                        + " at " + QString::number(title_switch_time));
-            }
-        } else {
-            notifyTitleTrackChanged(title);
-        }
-    } else {
+    if (disc_type != "cdda" && disc_type != "vcd") {
         // When a title ends and hits a menu MPV can go haywire on invalid
         // video time stamps. By setting quit_at_end_of_title, parseLine() will
         // release it from its suffering when the title ends by sending a quit
         // and fake an eof, so the playlist can play the next item.
         if (notified_player_is_running && !quit_at_end_of_title) {
-            quit_at_end_of_title = true;
             // Set ms to wait before quitting. Cannnot rely on timestamp video,
             // because it can switch before the end of the title is reached.
-            // A note on margins:
-            // - Current md->time_sec can be behind
-            // - Menus tend to be triggered on the last second of video
+            // Notes on margins:
+            // - checkTime() quits when time > duration
+            // - Current time can lag behind
+            // - Menus or jumps back in time tend to be triggered at the end
+            //   of a title
             // - Quit needs time to arrive
+            quit_at_end_of_title = true;
             quit_at_end_of_title_ms =
-                (int) ((md->duration - md->time_sec) * 1000);
-            // Quit right away if less than 400 ms to go.
+                    (int) ((md->duration - md->time_sec_gui) * 1000);
+            // Quit right away if less than 400 ms to go
             if (quit_at_end_of_title_ms <= 400) {
-                WZDEBUG("quitting at end of title");
-                received_end_of_file =  true;
+                WZDEBUG("Quitting at end of title");
                 quit(0);
+                received_end_of_file =  true;
             } else {
                 // Quit when quit_at_end_of_title_ms elapsed
                 quit_at_end_of_title_ms -= 400;
                 quit_at_end_of_title_time.start();
-                WZDEBUG("marked title to quit in "
+                WZDEBUG("Marked title to quit in "
                         + QString::number(quit_at_end_of_title_ms) + " ms");
             }
         }
@@ -509,7 +519,7 @@ bool TMPVProcess::parseLine(QString& line) {
     static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 
     // Messages to show in statusline
-    static QRegExp rx_message("^(Playing:|\\[ytdl_hook)");
+    static QRegExp rx_message("^(Playing:|\\[ytdl_hook|libdvdread: Get key)");
 
     // Errors
     static QRegExp rx_file_open("^\\[file\\] Cannot open file '.*': (.*)");
@@ -522,13 +532,14 @@ bool TMPVProcess::parseLine(QString& line) {
 
 
     // Check to see if a DVD title needs to be terminated
-    if (quit_at_end_of_title && !quit_send
-        && quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
-        logger()->debug("parseline: %1 ms elapsed, quitting title",
-               quit_at_end_of_title_ms);
+    if (quit_at_end_of_title
+            && !quit_send
+            && quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
+
         quit_at_end_of_title = false;
-        received_end_of_file =  true;
+        WZDEBUG("Quitting title");
         quit(0);
+        received_end_of_file =  true;
         return true;
     }
 
@@ -716,18 +727,20 @@ void TMPVProcess::setMedia(const QString& media) {
             " P:${=pause} B:${=paused-for-cache} I:${=core-idle}";
 
     // MPV interprets the ID in a DVD URL as index [0..#titles-1] instead of
-    // [1..#titles]. Maybe one day they gonna fix it and this will break. Sigh.
-    // When no title is given it plays the longest title it can find.
-    // Need to change no title to 0, otherwise fixTitle() won't work.
-    // CDs work as expected, don't know about bluray, but assuming it's the same.
+    // [1..#titles]. Sigh. When no title is given it plays the longest title it
+    // can find. Need to change no title to 0, otherwise fixTitle() won't work.
+    // CDs work as expected, don't know about bluray, but assuming it's the
+    // same.
     QString url = media;
     TDiscName disc(media);
     if (disc.valid
-        && (disc.protocol == "dvd" || disc.protocol == "dvdnav"
+        && (disc.protocol == "dvd"
+            || disc.protocol == "dvdnav"
             || disc.protocol == "br")) {
-        if (disc.title > 0)
+        if (disc.title > 0) {
             disc.title--;
-        url = disc.toString(true);
+        }
+        url = disc.toString(false, true);
     } else if (md->image) {
         url = "mf://@" + temp_file_name;
     }
@@ -746,6 +759,11 @@ void TMPVProcess::setFixedOptions() {
     args << "--input-file=/dev/stdin";
     //arg << "--no-osc";
     //arg << "--msg-level=vd=v";
+
+    // Need cplayer msg level 6 to catch DVDNAV, NEW TITLE
+    // if (md->selected_type == TMediaData::TYPE_DVD) {
+    //    args << "-msg-level" << "cplayer=v";
+    // }
 }
 
 void TMPVProcess::disableInput() {

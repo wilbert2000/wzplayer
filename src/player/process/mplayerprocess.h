@@ -37,7 +37,7 @@ class TMPlayerProcess : public TPlayerProcess {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TMPlayerProcess(QObject* parent, TMediaData* mdata);
+    explicit TMPlayerProcess(QObject* parent, TMediaData* mdata);
 
     virtual bool startPlayer();
 
@@ -146,6 +146,7 @@ private:
     QString clip_info_name;
 
     bool mute_option_set;
+    bool pause_option_set;
 
     // Restore DVDNAV to pos before restart
     // need to be static to survive restart
@@ -174,7 +175,7 @@ private:
     void dvdnavRestore();
 
     bool parseStatusLine(double secs, const QString& line);
-    void parseFrame(double& s, const QString& line);
+    void parseFrame(double& secs, const QString& line);
     bool parseSubID(const QString& type, int id);
     bool parseSubTrack(const QString& type, int id, const QString& name, const QString& value);
     bool parseChapter(int id, const QString& type, const QString& value);

@@ -24,8 +24,7 @@
 
 class TName {
 public:
-    static QString nameForURL(const QString& url);
-    static QString baseNameForURL(const QString& url);
+    static QString nameForURL(QString url);
     static QString cleanTitle(const QString& name);
 
 private:

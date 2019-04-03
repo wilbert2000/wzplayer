@@ -28,6 +28,7 @@
 
 #include "gui/playlist/playlist.h"
 #include "gui/playlist/favlist.h"
+#include "gui/playlist/playlistwidget.h"
 
 #include "gui/about.h"
 #include "gui/timedialog.h"
@@ -78,6 +79,7 @@
 #include <QMimeData>
 #include <QNetworkProxy>
 #include <QCryptographicHash>
+#include <QTimer>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -142,6 +144,17 @@ TMainWindow::TMainWindow() :
     createActions();
     createToolbars();
     createMenus();
+
+    titleUpdater = new QTimer(this);
+    titleUpdater->setSingleShot(true);
+    titleUpdater->setInterval(250);
+    connect(titleUpdater, &QTimer::timeout,
+            this, &TMainWindow::onMediaInfoChanged);
+    connect(playlist->getPlaylistWidget(),
+            SIGNAL(playingItemChanged(TPlaylistItem*)),
+            titleUpdater, SLOT(start()));
+    connect(player, SIGNAL(mediaInfoChanged()),
+            titleUpdater, SLOT(start()));
 
     setupNetworkProxy();
     changeStayOnTop(pref->stay_on_top);
@@ -258,10 +271,6 @@ void TMainWindow::createPlayer() {
 
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TMainWindow::onNewMediaStartedPlaying,
-            Qt::QueuedConnection);
-
-    connect(player, &Player::TPlayer::mediaInfoChanged,
-            this, &TMainWindow::onMediaInfoChanged,
             Qt::QueuedConnection);
 
     connect(player, &Player::TPlayer::playerError,
@@ -1519,7 +1528,7 @@ void TMainWindow::createFilePropertiesDialog() {
 void TMainWindow::setDataToFileProperties() {
     WZDEBUG("");
 
-    file_properties_dialog->setPlayingTitle(playlist->getPlayingTitle(false));
+    file_properties_dialog->setPlayingTitle(playlist->getPlayingTitle());
 
     // Get info from player
     Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
@@ -1675,19 +1684,19 @@ QList<QAction*> TMainWindow::findNamedActions() const {
     for (int i = 0; i < allActions.count(); i++) {
         QAction* action = allActions.at(i);
         if (action->isSeparator()) {
-            WZTRACE(QString("Skipping separator %1")
-                    .arg(parentOrMenuName(action)));
+            //WZTRACE(QString("Skipping separator %1")
+            //        .arg(parentOrMenuName(action)));
         } else if (action->objectName().isEmpty()) {
-            WZTRACE(QString("Skipping action '' '%1' %2")
-                    .arg(action->text()).arg(parentOrMenuName(action)));
+            //WZTRACE(QString("Skipping action '' '%1' %2")
+            //        .arg(action->text()).arg(parentOrMenuName(action)));
         } else if (action->objectName() == "_q_qlineeditclearaction") {
-            WZTRACE("Skipping action _q_qlineeditclearaction");
+            //WZTRACE("Skipping action _q_qlineeditclearaction");
         } else {
             selectedActions.append(action);
-            WZTRACE(QString("Selected action %1 ('%2') %3")
-                        .arg(action->objectName())
-                        .arg(action->text())
-                        .arg(parentOrMenuName(action)));
+            //WZTRACE(QString("Selected action %1 ('%2') %3")
+            //            .arg(action->objectName())
+            //            .arg(action->text())
+            //            .arg(parentOrMenuName(action)));
 
         }
     }
@@ -1961,11 +1970,12 @@ void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
 }
 
 void TMainWindow::updateVideoTracks() {
-    WZTRACE("");
+
+    Maps::TTracks* videos = &player->mdat.videos;
+    WZTRACE(QString("%1 video tracks").arg(videos->count()));
 
     videoTrackGroup->clear();
 
-    Maps::TTracks* videos = &player->mdat.videos;
     if (videos->count() == 0) {
         QAction* a = videoTrackGroup->addAction(tr("<empty>"));
         a->setEnabled(false);
@@ -1987,11 +1997,12 @@ void TMainWindow::updateVideoTracks() {
 }
 
 void TMainWindow::updateAudioTracks() {
-    WZTRACE("");
+
+    Maps::TTracks* audios = &player->mdat.audios;
+    WZTRACE(QString("%1 audio tracks").arg(audios->count()));
 
     audioTrackGroup->clear();
 
-    Maps::TTracks* audios = &player->mdat.audios;
     if (audios->count() == 0) {
         QAction* a = audioTrackGroup->addAction(tr("<empty>"));
         a->setEnabled(false);
@@ -2184,7 +2195,8 @@ void TMainWindow::onNewMediaStartedPlaying() {
     enterFullscreenOnPlay();
 
     // Recents
-    pref->addRecent(player->mdat.filename, playlist->getPlayingTitle(false));
+    pref->addRecent(player->mdat.filename,
+                    playlist->getPlayingTitle(false, false));
     checkPendingActionsToRun();
 }
 
@@ -2231,7 +2243,7 @@ void TMainWindow::onStateChanged(Player::TState state) {
             msg(tr("Ready"));
             break;
         case Player::STATE_PLAYING:
-            msg(tr("Playing %1").arg(playlist->getPlayingTitle(false)));
+            msg(tr("Playing %1").arg(playlist->getPlayingTitle()));
             break;
         case Player::STATE_PAUSED:
             msg(tr("Paused"));

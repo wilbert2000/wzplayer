@@ -57,62 +57,71 @@ TDiscName::TDiscName(const QString& adevice, bool use_dvd_nav) :
     removeTrailingSlashFromDevice();
 }
 
-TDiscName::TDiscName(const QString& url) {
+TDiscName::TDiscName(const QString& url) : valid(false) {
 
-    // TODO: dvdread and title ranges dvd://1-99
-    static QRegExp rx1("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)/(.*)$", Qt::CaseInsensitive);
-    static QRegExp rx2("^(dvd|dvdnav|vcd|cdda|br):///(.*)$", Qt::CaseInsensitive);
-    static QRegExp rx3("^(dvd|dvdnav|vcd|cdda|br)://(\\d+)$", Qt::CaseInsensitive);
-    static QRegExp rx4("^(dvd|dvdnav|vcd|cdda|br):(//)?$", Qt::CaseInsensitive);
+    // TODO: title ranges dvd://1-99
+    static QRegExp rx("^(dvd|dvdnav|dvdread|vcd|cdda|br):(//(-?\\d*)(/(.*))?)?$",
+                      Qt::CaseInsensitive);
 
-    valid = false;
-
-    if (rx1.indexIn(url) >= 0) {
-        protocol = rx1.cap(1);
-        title = rx1.cap(2).toInt();
-        device = rx1.cap(3);
-        valid = true;
-    } else if (rx2.indexIn(url) >= 0) {
-        protocol = rx2.cap(1);
-        title = 0;
-        device = rx2.cap(2);
-        valid = true;
-    } else if (rx3.indexIn(url) >= 0) {
-        protocol = rx3.cap(1);
-        title = rx3.cap(2).toInt();
-        valid = true;
-    } else if (rx4.indexIn(url) >= 0) {
-        protocol = rx4.cap(1);
-        title = 0;
+    if (rx.indexIn(url) >= 0) {
+        protocol = rx.cap(1).toLower();
+        if (protocol == "dvdread") {
+            protocol == "dvd";
+        }
+        title = rx.cap(3).toInt();
+        device = rx.cap(5);
         valid = true;
     }
 
-    protocol = protocol.toLower();
     removeTrailingSlashFromDevice();
 }
 
-QString TDiscName::displayName(bool addDevice) const {
+QString TDiscName::tr(const char* s) {
+    return qApp->translate("TDiscName", s);
+}
+
+
+QString TDiscName::displayName(bool addDevice /* = true */) const {
 
     QString name;
 
-    if (valid && !device.isEmpty()) {
-        QFileInfo fi(device);
-        QString deviceName = fi.fileName();
-        // fileName() return empty if name ends in /
-        if (deviceName.isEmpty()) {
-            deviceName = device;
+    if (valid) {
+        QString deviceName;
+        if (device.isEmpty()) {
+            deviceName = protocol;
+        } else {
+            QFileInfo fi(device);
+            // To be compatible with TName::nameForURL() and
+            // TPlaylistItem::setFileInfo need to return completeBaseName() for
+            // iso's here.
+            if (fi.isFile()) {
+                deviceName = fi.completeBaseName();
+            } else {
+                fi.fileName();
+                // fileName() return empty if name ends in / like in / or c:/
+                if (deviceName.isEmpty()) {
+                    deviceName = device;
+                }
+            }
         }
-        if (title > 0) {
+
+        if (title < 0) {
+            if (addDevice) {
+                name += tr("Menu %1").arg(deviceName);
+            } else {
+                name += tr("Menu");
+            }
+        } else if (title == 0) {
+            name = deviceName;
+        } else {
             if (addDevice) {
                 name = deviceName + " - ";
             }
             if (protocol == "cdda" || protocol == "vcd") {
-                name += qApp->translate("TDiscName", "track %1").arg(title);
+                name += tr("Track %1").arg(title);
             } else {
-                name += qApp->translate("TDiscName", "title %1").arg(title);
+                name += tr("Title %1").arg(title);
             }
-        } else {
-            name = deviceName;
         }
     }
 
@@ -133,13 +142,17 @@ void TDiscName::removeTrailingSlashFromDevice() {
     }
 }
 
-QString TDiscName::toString(bool add_zero_title) const {
+QString TDiscName::toString(bool addMenuTitle, bool add_zero_title) const {
 
     QString s;
     if (valid) {
         s = protocol + "://";
-        if (title > 0 || (add_zero_title && title == 0)) {
+        if (title > 0) {
             s += QString::number(title);
+        } else if (title < 0 && addMenuTitle) {
+            s += "-1";
+        } else if (add_zero_title && title <= 0) {
+            s += "0";
         }
         if (!device.isEmpty()) {
             s += "/" + device;

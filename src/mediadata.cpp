@@ -37,6 +37,7 @@ TMediaData::TMediaData() :
     start_sec_player(0),
     start_sec_set(false),
     time_sec(0),
+    time_sec_gui(0),
     duration(0),
 
     mpegts(false),
@@ -83,27 +84,6 @@ bool TMediaData::selectedDisc() const {
     return isDisc(selected_type);
 }
 
-QString TMediaData::addTitleOrTrack(const QString& title) const {
-
-    if (disc.valid) {
-        if (disc.title > 0) {
-            if (isCD(detected_type)) {
-                static const char* format = QT_TRANSLATE_NOOP("TMediaData",
-                                                              "%1 track %2");
-                return qApp->translate("TMediaData", format)
-                        .arg(title).arg(disc.title);
-            }
-            static const char* format = QT_TRANSLATE_NOOP("TMediaData",
-                                                          "%1 title %2");
-            return qApp->translate("TMediaData", format)
-                    .arg(title).arg(disc.title);
-        }
-        return title + " - " + disc.displayName();
-    }
-
-    return title;
-}
-
 QString TMediaData::getTitle() const {
 
     if (filename.isEmpty()) {
@@ -112,18 +92,18 @@ QString TMediaData::getTitle() const {
 
     QString title = TName::cleanTitle(this->title);
     if (!title.isEmpty()) {
-        return addTitleOrTrack(title);
+        return title;
     }
     title = TName::cleanTitle(meta_data.value("title"));
     if (!title.isEmpty()) {
-        return addTitleOrTrack(title);
+        return title;
     }
     title = TName::cleanTitle(meta_data.value("name"));
     if (!title.isEmpty()) {
-        return addTitleOrTrack(title);
+        return title;
     }
 
-    return title;
+    return "";
 }
 
 // Return name field for playlist
@@ -133,6 +113,17 @@ QString TMediaData::name() const {
         return "";
     }
 
+    if (disc.valid) {
+        if (disc.title == 0) {
+            QString title = getTitle();
+            if (title.isEmpty()) {
+                return disc.displayName();
+            }
+            return QString("%1 - %2").arg(title).arg(disc.displayName());
+        }
+        return disc.displayName(false);
+    }
+
     if (selected_type != TYPE_FILE) {
         QString title = getTitle();
         if (!title.isEmpty()) {
@@ -140,11 +131,7 @@ QString TMediaData::name() const {
         }
     }
 
-    if (disc.valid) {
-        return disc.displayName();
-    }
-
-    return TName::baseNameForURL(filename);
+    return TName::nameForURL(filename);
 }
 
 QString TMediaData::typeToString(Type type) {
@@ -195,6 +182,9 @@ void TMediaData::list() const {
     WZDEBUG("selected type: " + typeToString(selected_type));
     WZDEBUG("detected type: " + typeToString(detected_type));
     WZDEBUG("disc URL valid: " + QString::number(disc.valid));
+    if (disc.valid) {
+        WZDEBUG("disc URL: " + disc.toString(true));
+    }
     WZDEBUG("stream_url: '" + stream_url + "'");
 
     WZDEBUG("start sec: " + QString::number(start_sec));
@@ -202,6 +192,7 @@ void TMediaData::list() const {
     WZDEBUG("start sec set: " + QString::number(start_sec_set));
     WZDEBUG("fuzzy time: '" + fuzzy_time + "'");
     WZDEBUG("time_sec: " + QString::number(time_sec));
+    WZDEBUG("time_sec_gui: " + QString::number(time_sec_gui));
     WZDEBUG("duration: " + QString::number(duration));
 
     WZDEBUG("demuxer: '" + demuxer + "'");
@@ -250,7 +241,8 @@ void TMediaData::list() const {
         i++;
     }
 
-    WZDEBUG("dvd_id: '" + dvd_id + "'");
+    WZDEBUG("dvd_disc_id: '" + dvd_disc_id + "'");
+    WZDEBUG("dvd_disc_serial: '" + dvd_disc_serial + "'");
     WZDEBUG("angle: " + QString::number(angle) + "/" + QString::number(angles));
 }
 

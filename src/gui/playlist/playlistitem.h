@@ -65,11 +65,13 @@ public:
     void setName(const QString& baseName,
                  const QString& ext,
                  bool protectName);
+    void resetName();
 
     QString extension() const { return mExt; }
 
     double duration() const { return mDuration; }
     void setDuration(double d) { mDuration = d; }
+    void setDurationEmit(double d) { mDuration = d; emitDataChanged(); }
 
     TPlaylistItemState state() const { return mState; }
     QString stateString() const;
@@ -99,6 +101,7 @@ public:
     bool isSymLink() const { return mSymLink; }
     QString target() const { return mTarget; }
     bool isUrl() const { return mURL; }
+    bool isDisc() const { return mDisc; }
 
     bool editURL() const { return mEditURL; }
     void setEditName() { mEditURL = false; }
@@ -163,6 +166,8 @@ private:
 
     bool mURL;
     bool mEditURL;
+
+    bool mDisc; // Disc according to TDiscName
 
     TPlaylistItemState mState;
     bool mPlayed;

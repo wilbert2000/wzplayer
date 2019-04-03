@@ -151,6 +151,12 @@ void TIconProvider::setStyle(QStyle* aStyle) {
     folderSymLinkIcon.addPixmap(style->standardPixmap(QStyle::SP_DirLinkOpenIcon),
                              QIcon::Normal, QIcon::On);
 
+    audioCDIcon = Images::icon("cdda");
+    videoCDIcon = Images::icon("vcd");
+    // TODO: icon size is 32
+    dvdIcon = Images::icon("dvd", iconSize.width());
+    brIcon = Images::icon("vcd", iconSize.width());
+
     iconPlayed =  style->standardIcon(QStyle::SP_DialogOkButton);
     iconLoading = Images::icon("loading");
     iconPlaying =  style->standardIcon(QStyle::SP_MediaPlay);

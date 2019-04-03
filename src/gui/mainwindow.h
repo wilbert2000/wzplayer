@@ -224,6 +224,7 @@ private:
     Playlist::TFavList* favlist;
 
     TAutoHideTimer* autoHideTimer;
+    QTimer* titleUpdater;
     TUpdateChecker* update_checker;
 
     QString pending_actions_to_run;
