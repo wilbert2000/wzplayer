@@ -19,7 +19,7 @@
 #ifndef GUI_MAINWINDOW_H
 #define GUI_MAINWINDOW_H
 
-#include "gui/action/menu/menuexec.h"
+#include "gui/action/menu/menu.h"
 #include "player/state.h"
 #include "config.h"
 #include "wzdebug.h"
@@ -48,7 +48,6 @@ class TTimeLabelAction;
 
 namespace Menu {
 
-class TMenu;
 class TMenuFile;
 class TMenuPlay;
 class TWindowSizeGroup;
@@ -194,7 +193,7 @@ protected:
     Action::Menu::TMenu* createContextMenu(const QString& name,
                                            const QString& text);
 
-    virtual Action::Menu::TMenuExec* createPopupMenu() override;
+    virtual Action::Menu::TMenu* createPopupMenu() override;
     virtual void closeEvent(QCloseEvent* e) override;
     virtual void hideEvent(QHideEvent* event) override;
     virtual void showEvent(QShowEvent* event) override;

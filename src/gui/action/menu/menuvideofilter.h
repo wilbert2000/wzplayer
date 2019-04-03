@@ -6,6 +6,9 @@
 
 
 namespace Gui {
+
+class TMainWindow;
+
 namespace Action {
 
 class TAction;

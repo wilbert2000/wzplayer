@@ -398,11 +398,11 @@ void TPList::createToolbar() {
     addAction(action);
 }
 
-void TPList::setContextMenuToolbar(Action::Menu::TMenuExec* menu) {
+void TPList::setContextMenuToolbar(Action::Menu::TMenu* menu) {
 
     toolbar->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(toolbar, &QToolBar::customContextMenuRequested,
-            menu, &Action::Menu::TMenuExec::execSlot);
+            menu, &Action::Menu::TMenu::execSlot);
 }
 
 void TPList::enablePaste() {

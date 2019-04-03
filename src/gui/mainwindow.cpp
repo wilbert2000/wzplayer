@@ -1245,7 +1245,7 @@ void TMainWindow::createMenus() {
     contextMenu = createContextMenu("context_menu", tr("Context menu"));
     TAction* a = new TAction(this, "show_context_menu",
                              tr("Show context menu"));
-    connect(a, &TAction::triggered, contextMenu, &Menu::TMenuExec::execSlot);
+    connect(a, &TAction::triggered, contextMenu, &Menu::TMenu::execSlot);
 
     connect(contextMenu, &QMenu::aboutToShow,
             autoHideTimer, &TAutoHideTimer::disable);
@@ -1257,7 +1257,7 @@ void TMainWindow::createMenus() {
             this, &TMainWindow::showContextMenu);
 
     // Set context menu toolbar playlists
-    Action::Menu::TMenuExec* menu = createPopupMenu();
+    Action::Menu::TMenu* menu = createPopupMenu();
     menu->menuAction()->setObjectName("dock_menu");
     menu->menuAction()->setText(tr("Dock menu"));
     menu->menuAction()->setIcon(Images::icon("dock_menu"));
@@ -1268,9 +1268,9 @@ void TMainWindow::createMenus() {
 // Called by main window to show context popup on toolbars and dock widgets.
 // The main window takes ownership of the returned menu and will delete it
 // after use, hence the need to create a new menu every time.
-Action::Menu::TMenuExec* TMainWindow::createPopupMenu() {
+Action::Menu::TMenu* TMainWindow::createPopupMenu() {
 
-    Action::Menu::TMenuExec* menu = new Action::Menu::TMenuExec(this);
+    Action::Menu::TMenu* menu = new Action::Menu::TMenu(this);
     menu->addAction(playlistDock->toggleViewAction());
     menu->addAction(favListDock->toggleViewAction());
     menu->addAction(logDock->toggleViewAction());

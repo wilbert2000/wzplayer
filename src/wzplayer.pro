@@ -78,7 +78,6 @@ HEADERS += wzdebug.h \
     gui/action/actionitem.h \
     gui/action/toolbareditor.h \
     gui/action/editabletoolbar.h \
-    gui/action/menu/menuexec.h \
     gui/action/menu/menu.h \
     gui/action/menu/menufile.h \
     gui/action/menu/menuplay.h \
@@ -201,7 +200,6 @@ SOURCES += wzdebug.cpp \
     gui/action/actionitem.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/editabletoolbar.cpp \
-    gui/action/menu/menuexec.cpp \
     gui/action/menu/menu.cpp \
     gui/action/menu/menufile.cpp \
     gui/action/menu/menuplay.cpp \

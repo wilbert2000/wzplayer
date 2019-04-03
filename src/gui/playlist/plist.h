@@ -41,7 +41,7 @@ public:
     virtual ~TPList() override;
 
     const TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
-    void setContextMenuToolbar(Action::Menu::TMenuExec* menu);
+    void setContextMenuToolbar(Action::Menu::TMenu* menu);
 
     void abortThread();
     void add(const QStringList& files,

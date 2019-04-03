@@ -12,7 +12,7 @@ TMenu::TMenu(QWidget* parent,
              const QString& name,
              const QString& text,
              const QString& icon) :
-    TMenuExec(parent) {
+    QMenu(parent) {
 
     menuAction()->setObjectName(name);
     menuAction()->setText(text);
@@ -22,6 +22,16 @@ TMenu::TMenu(QWidget* parent,
         menuAction()->setIcon(Images::icon(iconName));
     }
 }
+
+void TMenu::execSlot() {
+
+    // If visible hide, so exec will show the menu again at the new cursor pos
+    if (isVisible()) {
+        hide();
+    }
+    exec(QCursor::pos());
+}
+
 
 } // namespace Menu
 } // namespace Action

@@ -1,22 +1,22 @@
 #ifndef GUI_ACTION_MENU_MENU_H
 #define GUI_ACTION_MENU_MENU_H
 
-#include "gui/action/menu/menuexec.h"
+#include <QMenu>
 
 
 namespace Gui {
-
-class TMainWindow;
-
 namespace Action {
 namespace Menu {
 
-class TMenu : public TMenuExec {
+class TMenu : public QMenu {
+    Q_OBJECT
 public:
     explicit TMenu(QWidget* parent,
-                   const QString& name,
-                   const QString& text,
-                   const QString& icon = QString());
+                   const QString& name = "",
+                   const QString& text = "",
+                   const QString& icon = "");
+public slots:
+    void execSlot();
 };
 
 } // namespace Menu

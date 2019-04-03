@@ -13,11 +13,6 @@ class QtFileCopier;
 class QtCopyDialog;
 
 namespace Gui {
-
-namespace Action { namespace Menu {
-    class TMenuExec;
-}}
-
 namespace Playlist {
 
 class TPlaylistWidget : public QTreeWidget {
@@ -114,7 +109,7 @@ private:
     int sortSectionSaved;
     Qt::SortOrder sortOrderSaved;
 
-    Action::Menu::TMenuExec* columnsMenu;
+    Action::Menu::TMenu* columnsMenu;
 
     QTimer wordWrapTimer;
     QTimer scrollTimer;

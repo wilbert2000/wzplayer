@@ -1,7 +1,6 @@
 ﻿#include "gui/playlist/playlistwidget.h"
 
 #include "gui/playlist/playlistitem.h"
-#include "gui/action/menu/menuexec.h"
 #include "qtfilecopier/qtfilecopier.h"
 #include "qtfilecopier/qtcopydialog.h"
 #include "player/player.h"
@@ -110,10 +109,9 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
             this, &TPlaylistWidget::onSectionClicked);
 
     // Columns menu
-    columnsMenu = new Gui::Action::Menu::TMenuExec(this);
-    columnsMenu->menuAction()->setObjectName(shortName + "_columns_menu");
-    columnsMenu->menuAction()->setText(tr("View columns %1")
-                                       .arg(tranName.toLower()));
+    columnsMenu = new Gui::Action::Menu::TMenu(this,
+        shortName + "_columns_menu",
+        tr("View columns %1").arg(tranName.toLower()));
     QStringList colnames = QStringList() << "name" << "ext" << "length"
                         << "order";
     for(int i = 0; i < columnCount(); i++) {
@@ -128,7 +126,7 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
             this, &TPlaylistWidget::onColumnMenuTriggered);
     header()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(header(), &QHeaderView::customContextMenuRequested,
-            columnsMenu, &Gui::Action::Menu::TMenuExec::execSlot);
+            columnsMenu, &Gui::Action::Menu::TMenu::execSlot);
 }
 
 TPlaylistWidget::~TPlaylistWidget() {
