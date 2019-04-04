@@ -116,7 +116,7 @@ signals:
 
     void draggingChanged(bool);
 
-    void videoOutChanged(const QSize& size);
+    void videoOutChanged();
     void videoSizeFactorChanged(double, double);
 
 protected:
@@ -133,6 +133,7 @@ private:
     // Geometry
     QSize video_size;
     QSize last_video_out_size;
+    double last_fps;
     double aspect;
 
     // Zoom

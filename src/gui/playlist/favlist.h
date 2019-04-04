@@ -3,10 +3,12 @@
 
 #include "gui/playlist/plist.h"
 #include "wzdebug.h"
+#include <QIcon>
 
 
 class QTreeWidgetItem;
 class QTimer;
+class TWZTimer;
 
 namespace Gui {
 namespace Action {
@@ -47,6 +49,7 @@ private:
     QIcon currentFavIcon;
     QTimer* requestUpdateTimer;
     QTimer* requestSaveTimer;
+    TWZTimer* updatePlayingItemTimer;
 
     void createToolbar();
     QAction* fAction(QMenu* menu, const QString& filename) const;
@@ -60,7 +63,7 @@ private slots:
     void onRequestUpdateTimeout();
     void onAddedItems();
     void onModifiedChanged();
-    void onPlaylistPlayingItemUpdated(TPlaylistItem* item);
+    void onPlaylistPlayingItemUpdated();
     void onFavMenuTriggered(QAction* action);
     void updateFavMenu();
 };

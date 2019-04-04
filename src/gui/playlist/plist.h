@@ -2,7 +2,6 @@
 #define GUI_PLAYLIST_PLIST_H
 
 #include "gui/action/menu/menu.h"
-#include "gui/playlist/playlistitem.h"
 #include "wzdebug.h"
 #include <QWidget>
 
@@ -25,7 +24,8 @@ class TEditableToolbar;
 namespace Playlist {
 
 class TAddFilesThread;
-class TPList;
+class TPlaylistItem;
+class TPlaylistWidget;
 class TMenuAddRemoved;
 
 class TPList : public QWidget {
@@ -40,7 +40,7 @@ public:
                     const QString& aTransName);
     virtual ~TPList() override;
 
-    const TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
+    TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
     void setContextMenuToolbar(Action::Menu::TMenu* menu);
 
     void abortThread();
@@ -55,7 +55,6 @@ public:
 
     virtual void loadSettings();
     virtual void saveSettings();
-
 
 public slots:
     virtual void enableActions();

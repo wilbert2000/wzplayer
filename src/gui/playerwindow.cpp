@@ -100,6 +100,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     debug(logger()),
     video_size(0, 0),
     last_video_out_size(0, 0),
+    last_fps(0),
     aspect(0),
     zoom_factor(1.0),
     zoom_factor_fullscreen(1.0),
@@ -244,9 +245,11 @@ void TPlayerWindow::updateVideoWindow() {
     video_window->setGeometry(vwin);
 
     // Update status bar with new video out size
-    if (vsize != last_video_out_size) {
+    if (vsize != last_video_out_size
+            || qAbs(player->mdat.video_fps - last_fps) > 0.001) {
         last_video_out_size = vsize;
-        emit videoOutChanged(vsize);
+        last_fps = player->mdat.video_fps;
+        emit videoOutChanged();
     }
 
     //debug << "updateVideoWindow out window" << vwin

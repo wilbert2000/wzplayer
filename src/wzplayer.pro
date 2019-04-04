@@ -91,7 +91,6 @@ HEADERS += gui/action/menu/menu.h \
     gui/filedialog.h \
     gui/filepropertiesdialog.h \
     gui/helpwindow.h \
-    gui/infofile.h \
     gui/inputurl.h \
     gui/lineedit.h \
     gui/lineedit_with_icon.h \
@@ -154,6 +153,7 @@ HEADERS += gui/action/menu/menu.h \
     wzdebug.h \
     wzfiles.h \
     wztime.h \
+    wztimer.h \
     app.h
 
 
@@ -214,7 +214,6 @@ SOURCES += gui/action/menu/menu.cpp \
     gui/filedialog.cpp \
     gui/filepropertiesdialog.cpp \
     gui/helpwindow.cpp \
-    gui/infofile.cpp \
     gui/inputurl.cpp \
     gui/lineedit.cpp \
     gui/lineedit_with_icon.cpp \
@@ -276,6 +275,7 @@ SOURCES += gui/action/menu/menu.cpp \
     wzdebug.cpp \
     wzfiles.cpp \
     wztime.cpp \
+    wztimer.cpp \
     app.cpp \
     main.cpp
 

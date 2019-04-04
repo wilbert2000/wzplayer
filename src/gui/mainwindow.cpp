@@ -65,6 +65,7 @@
 #include "extensions.h"
 #include "colorutils.h"
 #include "wztime.h"
+#include "wztimer.h"
 #include "clhelp.h"
 #include "version.h"
 #include "desktop.h"
@@ -143,16 +144,19 @@ TMainWindow::TMainWindow() :
     createToolbars();
     createMenus();
 
-    titleUpdater = new QTimer(this);
+    titleUpdater = new TWZTimer(this, "titleupdater");
     titleUpdater->setSingleShot(true);
-    titleUpdater->setInterval(250);
-    connect(titleUpdater, &QTimer::timeout,
-            this, &TMainWindow::onMediaInfoChanged);
+    titleUpdater->setInterval(200);
+    connect(titleUpdater, &TWZTimer::timeout,
+            this, &TMainWindow::updateTitle);
     connect(playlist->getPlaylistWidget(),
-            SIGNAL(playingItemChanged(TPlaylistItem*)),
-            titleUpdater, SLOT(start()));
-    connect(player, SIGNAL(mediaInfoChanged()),
-            titleUpdater, SLOT(start()));
+            &Playlist::TPlaylistWidget::playingItemChanged,
+            titleUpdater, &TWZTimer::startVoid);
+    connect(playlist->getPlaylistWidget(),
+            &Playlist::TPlaylistWidget::modifiedChanged,
+            titleUpdater, &TWZTimer::startVoid);
+    connect(player, &Player::TPlayer::streamingTitleChanged,
+            titleUpdater, &TWZTimer::startVoid);
 
     setupNetworkProxy();
     changeStayOnTop(pref->stay_on_top);
@@ -244,7 +248,7 @@ void TMainWindow::createPlayerWindow() {
             this, &TMainWindow::xbutton2ClickFunction);
 
     connect(playerWindow, &Gui::TPlayerWindow::videoOutChanged,
-            this, &TMainWindow::displayVideoInfo, Qt::QueuedConnection);
+            this, &TMainWindow::displayVideoOut, Qt::QueuedConnection);
 }
 
 void TMainWindow::createPlayer() {
@@ -269,6 +273,9 @@ void TMainWindow::createPlayer() {
 
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TMainWindow::onNewMediaStartedPlaying,
+            Qt::QueuedConnection);
+    connect(player, &Player::TPlayer::mediaInfoChanged,
+            this, &TMainWindow::onMediaInfoChanged,
             Qt::QueuedConnection);
 
     connect(player, &Player::TPlayer::playerError,
@@ -1502,30 +1509,22 @@ void TMainWindow::applyNewSettings() {
 void TMainWindow::createFilePropertiesDialog() {
     WZDEBUG("");
 
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
     file_properties_dialog = new TFilePropertiesDialog(this);
     file_properties_dialog->setModal(false);
     connect(file_properties_dialog, &TFilePropertiesDialog::applied,
             this, &TMainWindow::applyFileProperties);
     connect(player, &Player::TPlayer::videoBitRateChanged,
-            file_properties_dialog, &TFilePropertiesDialog::showInfo);
+            titleUpdater, &TWZTimer::startVoid);
     connect(player, &Player::TPlayer::audioBitRateChanged,
-            file_properties_dialog, &TFilePropertiesDialog::showInfo);
-    Action::TAction* action = findChild<Action::TAction*>("view_properties");
-    if (action) {
-        connect(file_properties_dialog,
-                &TFilePropertiesDialog::visibilityChanged,
-                action, &Action::TAction::setChecked);
-    }
-
-    QApplication::restoreOverrideCursor();
+            titleUpdater, &TWZTimer::startVoid);
+    connect(file_properties_dialog, &TFilePropertiesDialog::visibilityChanged,
+            findAction("view_properties"), &Action::TAction::setChecked);
 }
 
 void TMainWindow::setDataToFileProperties() {
     WZDEBUG("");
 
-    file_properties_dialog->setPlayingTitle(playlist->getPlayingTitle());
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // Get info from player
     Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
@@ -1566,7 +1565,9 @@ void TMainWindow::setDataToFileProperties() {
     file_properties_dialog->setPlayerAdditionalAudioFilters(
                 player->mset.player_additional_audio_filters);
 
-    file_properties_dialog->showInfo();
+    file_properties_dialog->showInfo(playlist->getPlayingTitle(true));
+
+    QApplication::restoreOverrideCursor();
 }
 
 void TMainWindow::applyFileProperties() {
@@ -1848,7 +1849,7 @@ void TMainWindow::save() {
     pref->save();
 }
 
-void TMainWindow::displayVideoInfo() {
+void TMainWindow::displayVideoOut() {
 
     if (player->mdat.noVideo()) {
         video_info_label->setText("");
@@ -2168,19 +2169,22 @@ void TMainWindow::onMediaSettingsChanged() {
     subFPSGroup->setChecked(mset->external_subtitles_fps);
 }
 
-void TMainWindow::updateWindowTitle() {
+void TMainWindow::updateTitle() {
+    WZDEBUG("");
 
     QString title = playlist->getPlayingTitle(true);
-    // setWindowCaption = setWindowTitle + let TMainWindowTray have a look at it
+    // setWindowCaption = setWindowTitle and show it to TMainWindowTray
     setWindowCaption(title + (title.isEmpty() ? "" : " - ")
                      + TConfig::PROGRAM_NAME);
+
+    if (file_properties_dialog && file_properties_dialog->isVisible()) {
+        file_properties_dialog->showInfo(title);
+    }
 }
 
 void TMainWindow::onMediaInfoChanged() {
-    WZDEBUG("");
+    WZTRACE("");
 
-    updateWindowTitle();
-    displayVideoInfo();
     if (file_properties_dialog && file_properties_dialog->isVisible()) {
         setDataToFileProperties();
     }
@@ -2236,7 +2240,6 @@ void TMainWindow::onStateChanged(Player::TState state) {
     autoHideTimer->setAutoHideMouse(state == Player::STATE_PLAYING);
     switch (state) {
         case Player::STATE_STOPPED:
-            updateWindowTitle();
             msg(tr("Ready"));
             break;
         case Player::STATE_PLAYING:

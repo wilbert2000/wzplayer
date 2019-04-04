@@ -37,12 +37,7 @@ using namespace Settings;
 namespace Player {
 namespace Info {
 
-InfoData::~InfoData() {
-}
-
-
 TPlayerInfo* TPlayerInfo::static_obj = 0;
-
 
 TPlayerInfo* TPlayerInfo::obj() {
 
@@ -52,9 +47,9 @@ TPlayerInfo* TPlayerInfo::obj() {
     return static_obj;
 }
 
-TPlayerInfo::TPlayerInfo()
-    : QObject()
-    , bin_size(0) {
+TPlayerInfo::TPlayerInfo() :
+    QObject(),
+    bin_size(0) {
 }
 
 void TPlayerInfo::getInfo() {
@@ -168,8 +163,9 @@ void TPlayerInfo::getInfo(const QString& path) {
 QStringList TPlayerInfo::convertInfoListToList(const InfoList& l) {
 
     QStringList r;
-    for (int n = 0; n < l.count(); n++) {
-        r << l[n].name() + "|" + l[n].desc();
+    for (int i = 0; i < l.count(); i++) {
+        const InfoData& d = l.at(i);
+        r << d.name() + "|" + d.desc();
     }
     return r;
 }
@@ -177,10 +173,11 @@ QStringList TPlayerInfo::convertInfoListToList(const InfoList& l) {
 InfoList TPlayerInfo::convertListToInfoList(const QStringList& l) {
 
     InfoList r;
+    QStringList s;
     for (int n = 0; n < l.count(); n++) {
-        QStringList s = l[n].split("|");
+        s = l.at(n).split("|");
         if (s.count() >= 2) {
-            r.append(InfoData(s[0], s[1]));
+            r.append(InfoData(s.at(0), s.at(1)));
         }
     }
     return r;

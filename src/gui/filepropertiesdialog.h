@@ -36,8 +36,6 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
 public:
     TFilePropertiesDialog(QWidget* parent);
 
-    void setPlayingTitle(const QString& title) { playingTitle = title; }
-
     // Call it as soon as possible
     void setCodecs(const Player::Info::InfoList& vc,
                    const Player::Info::InfoList& ac,
@@ -62,13 +60,14 @@ public:
     void setPlayerAdditionalAudioFilters(const QString& s);
     QString playerAdditionalAudioFilters();
 
+    void showInfo(const QString& title);
+
     void saveSettings();
 
 public slots:
     void accept(); // Reimplemented to send a signal
     void reject();
     void apply();
-    void showInfo();
 
 signals:
     void applied();
@@ -82,10 +81,7 @@ protected slots:
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
-    int find(const QString& s, const Player::Info::InfoList& list) const;
-
 private:
-    QString playingTitle;
     Player::Info::InfoList vclist, aclist, demuxerlist;
     QString orig_demuxer, orig_ac, orig_vc;
 
@@ -93,6 +89,7 @@ private:
     QPushButton* cancelButton;
     QPushButton* applyButton;
 
+    int find(const QString& s, const Player::Info::InfoList& list) const;
 
     QString openPar(QString text);
     QString closePar();
@@ -101,7 +98,7 @@ private:
     void addTracks(QString& s,
                    const Maps::TTracks& tracks,
                    const QString& name);
-    QString getInfo();
+    QString getInfo(const QString& title);
 };
 
 } // namespace Gui

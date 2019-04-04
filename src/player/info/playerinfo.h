@@ -30,17 +30,12 @@ namespace Player {
 namespace Info {
 
 class InfoData {
-
 public:
     InfoData() {}
-    InfoData(const QString& name, const QString& desc) {
-        _name = name;
-        _desc = desc;
+    InfoData(const QString& name, const QString& desc) :
+        _name(name),
+        _desc(desc) {
     }
-    virtual ~InfoData();
-
-    void setName(const QString& name) { _name = name; }
-    void setDesc(const QString& desc) { _desc = desc; }
 
     QString name() const { return _name; }
     QString desc() const { return _desc; }
@@ -90,7 +85,6 @@ protected:
 
     InfoList vo_list;
     InfoList ao_list;
-
     InfoList demuxer_list;
     InfoList vc_list;
     InfoList ac_list;

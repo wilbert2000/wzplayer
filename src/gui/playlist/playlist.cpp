@@ -427,8 +427,8 @@ void TPlaylist::updatePlayingItem() {
     }
 
     bool filenameMismatch =
-            !player->mdat.filename.isEmpty()
-            && !item->isDisc()
+            !item->isDisc()
+            && !player->mdat.filename.isEmpty()
             && player->mdat.filename != item->filename();
     if (filenameMismatch) {
         WZWARN(QString("File name playing item '%1' does not match"

@@ -111,7 +111,7 @@ TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
             this, &TPlayer::onReceivedVideoOut);
 
     connect(proc, &Process::TPlayerProcess::receivedStreamTitle,
-            this, &TPlayer::mediaInfoChanged);
+            this, &TPlayer::streamingTitleChanged);
 
     connect(proc, &Process::TPlayerProcess::receivedVideoTracks,
             this, &TPlayer::videoTracksChanged);

@@ -1348,7 +1348,7 @@ TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* folder,
                                              TPlaylistItem* item) const {
 
     for(int i = 0; i < folder->childCount(); i++) {
-        TPlaylistItem* child = item->plChild(i);
+        TPlaylistItem* child = folder->plChild(i);
         if (child == item) {
             return child;
         }
@@ -1364,7 +1364,11 @@ TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* folder,
 }
 
 TPlaylistItem* TPlaylistWidget::validateItem(TPlaylistItem* item) const {
-    return validateItem(root(), item);
+
+    if (item) {
+        return validateItem(root(), item);
+    }
+    return 0;
 }
 
 TPlaylistItem* TPlaylistWidget::add(TPlaylistItem* item,

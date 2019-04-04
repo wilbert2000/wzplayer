@@ -30,6 +30,7 @@
 class QWidget;
 class QLabel;
 class QMenu;
+class TWZTimer;
 
 namespace Settings {
 class TMediaSettings;
@@ -223,7 +224,7 @@ private:
     Playlist::TFavList* favlist;
 
     TAutoHideTimer* autoHideTimer;
-    QTimer* titleUpdater;
+    TWZTimer* titleUpdater;
     TUpdateChecker* update_checker;
 
     QString pending_actions_to_run;
@@ -521,7 +522,6 @@ private:
     void onResizeOnLoadTriggered(bool b);
 
     void updateAudioEqualizer();
-    void updateWindowTitle();
 
     void restartApplication();
 
@@ -548,6 +548,7 @@ private slots:
     void updateVideoTracks();
     void updateAudioTracks();
     void updateSubtitleTracks();
+    void updateTitle();
 
     void startStopScreenshots();
     void startStopCapture();
@@ -568,7 +569,7 @@ private slots:
     void xbutton2ClickFunction();
 
     // Status bar
-    void displayVideoInfo();
+    void displayVideoOut();
     void displayInOutPoints();
     void displayFrames(bool);
 

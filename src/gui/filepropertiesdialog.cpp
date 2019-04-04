@@ -25,6 +25,8 @@
 #include "wzdebug.h"
 #include "wztime.h"
 
+#include <QScrollBar>
+
 
 namespace Gui {
 
@@ -121,7 +123,8 @@ void TFilePropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
     }
 }
 
-void TFilePropertiesDialog::setDemuxer(const QString& demuxer, const QString& original_demuxer) {
+void TFilePropertiesDialog::setDemuxer(const QString& demuxer,
+                                       const QString& original_demuxer) {
 
     if (!original_demuxer.isEmpty()) {
         orig_demuxer = original_demuxer;
@@ -316,7 +319,7 @@ QString TFilePropertiesDialog::addItem(QString tag, QString value) {
             "<td align=\"left\" colspan=\"3\">" + value + "</td></tr>";
 }
 
-QString TFilePropertiesDialog::getInfo() {
+QString TFilePropertiesDialog::getInfo(const QString& title) {
 
     const TMediaData& md = player->mdat;
 
@@ -348,7 +351,7 @@ QString TFilePropertiesDialog::getInfo() {
 
     QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
     s += "<h1><img src=\"" + Images::iconFilename(icon) + "\">"
-            + playingTitle + "</h1>\n";
+            + title + "</h1>\n";
 
     s += "<table width=\"100%\">";
 
@@ -500,9 +503,12 @@ QString TFilePropertiesDialog::getInfo() {
     return s;
 }
 
-void TFilePropertiesDialog::showInfo() {
+void TFilePropertiesDialog::showInfo(const QString& title) {
 
-    info_edit->setText(getInfo());
+    QScrollBar* bar = info_edit->verticalScrollBar();
+    int scrollPos = bar->value();
+    info_edit->setText(getInfo(title));
+    bar->setValue(scrollPos);
 }
 
 } // namespace Gui

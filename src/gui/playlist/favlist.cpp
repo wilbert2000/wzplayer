@@ -11,6 +11,7 @@
 #include "player/player.h"
 #include "images.h"
 #include "iconprovider.h"
+#include "wztimer.h"
 
 #include <QDir>
 #include <QTimer>
@@ -53,9 +54,15 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
             this, &TFavList::onAddedItems);
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
             this, &TFavList::onModifiedChanged);
+
+    // Timer to merge multiple updates of playing item playlist
+    updatePlayingItemTimer = new TWZTimer(this, "updateplayingitemtimer");
+    updatePlayingItemTimer->setSingleShot(true);
+    updatePlayingItemTimer->setInterval(250);
+    connect(updatePlayingItemTimer, &QTimer::timeout,
+            this, &TFavList::onPlaylistPlayingItemUpdated);
     connect(playlist->getPlaylistWidget(), &TPlaylistWidget::playingItemUpdated,
-            this, &TFavList::onPlaylistPlayingItemUpdated,
-            Qt::QueuedConnection);
+            updatePlayingItemTimer, &TWZTimer::startVoid);
 
     if (!QDir().mkpath(Settings::TPaths::favoritesPath())) {
         WZERROR(QString("Failed to create favorites directory '%1'. %2")
@@ -198,9 +205,7 @@ QAction* TFavList::findAction(const QString& filename) const {
     return fAction(favMenu, filename);
 }
 
-void TFavList::onPlaylistPlayingItemUpdated(TPlaylistItem* item) {
-
-    WZTRACE(item ? item->baseName() : "0");
+void TFavList::onPlaylistPlayingItemUpdated() {
 
     if (currentFavAction) {
         markCurrentFavAction(0);
@@ -208,13 +213,17 @@ void TFavList::onPlaylistPlayingItemUpdated(TPlaylistItem* item) {
 
     TPlaylistItem* playingItem = 0;
     TPlaylistItemState state = PSTATE_STOPPED;
+    TPlaylistItem* item = playlist->getPlaylistWidget()->playingItem;
     if (item) {
+        WZTRACE(QString("'%1' changed").arg(item->baseName()));
         QAction* action = findAction(item->filename());
         if (action) {
             markCurrentFavAction(action);
             playingItem = action->data().value<TPlaylistItem*>();
             state = item->state();
         }
+    } else {
+        WZTRACE("0 changed");
     }
     playlistWidget->setPlayingItem(playingItem, state);
 }
