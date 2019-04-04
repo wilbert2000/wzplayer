@@ -91,7 +91,7 @@ TToolbarEditor::TToolbarEditor(QWidget* parent,
     QStyleOptionButton styleOption;
     QRect r = QApplication::style()->subElementRect(
                 QStyle::SE_CheckBoxClickRect, &styleOption);
-    checkBoxWidth = r.width() + 12; // TODO: get 12 from style
+    checkBoxWidth = r.width() + 2 * 6; // TODO: get 6 from style
 }
 
 void TToolbarEditor::setIconSize(int size) {
