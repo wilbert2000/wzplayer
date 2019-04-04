@@ -98,6 +98,10 @@ signals:
 
 protected:
     virtual void dropEvent(QDropEvent* event) override;
+    virtual bool dropMimeData(QTreeWidgetItem *parent,
+                              int index,
+                              const QMimeData *data,
+                              Qt::DropAction action) override;
 
 protected slots:
     virtual void rowsAboutToBeRemoved(const QModelIndex& parent,
@@ -136,7 +140,8 @@ private:
                 QModelIndex *dropIndex);
     bool addDroppedItem(const QString& source,
                         const QString& dest,
-                        TPlaylistItem* item);
+                        TPlaylistItem* item,
+                        bool setCurrent);
     void moveItem(TPlaylistItem* item,
                   TPlaylistItem* target,
                   int& targetIndex);

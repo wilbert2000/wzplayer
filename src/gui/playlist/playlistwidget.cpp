@@ -606,16 +606,15 @@ void TPlaylistWidget::onDropDone(bool error) {
 
 bool TPlaylistWidget::addDroppedItem(const QString& source,
                                      const QString& dest,
-                                     TPlaylistItem* item) {
+                                     TPlaylistItem* item,
+                                     bool setCurrent) {
 
     QFileInfo fid(dest);
     if (fid.exists()) {
         TPlaylistItem* parent = findFilename(fid.absolutePath());
         if (parent) {
-            // Update item
-            item->updateFilename(source, dest);
-
             // Remove existing items
+            // TODO: check
             for(int i = parent->childCount() - 1; i >= 0; i--) {
                 if (dest.compare(parent->plChild(i)->path(),
                                  caseSensitiveFileNames) == 0) {
@@ -625,8 +624,17 @@ bool TPlaylistWidget::addDroppedItem(const QString& source,
 
             // Add item
             parent->addChild(item);
-            parent->setModified();
+            item->updateFilename(source, dest);
+            // Don't mark playlists as modified
+            if (item->isFolder()) {
+                parent->setModified();
+            } else {
+                item->setModified();
+            }
             item->setSelected(true);
+            if (setCurrent) {
+                setCurrentItem(item);
+            }
             return true;
         }
         WZERROR(QString("Destination '%1' not found in playlist.")
@@ -651,12 +659,9 @@ void TPlaylistWidget::onCopyFinished(int id, bool error) {
         if (sourceItem) {
             // Add clone to parent
             TPlaylistItem* destItem = sourceItem->clone();
-            if (addDroppedItem(source, dest, destItem)) {
+            if (addDroppedItem(source, dest, destItem,
+                               sourceItem == plCurrentItem())) {
                 destItem->setState(PSTATE_STOPPED);
-                destItem->setModified(true, true);
-                if (sourceItem == plCurrentItem()) {
-                    setCurrentItem(destItem);
-                }
                 WZINFOOBJ(QString("Copied '%1' to '%2'").arg(source).arg(dest));
             }
         } else {
@@ -704,7 +709,7 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
     } else {
         TPlaylistItem* sourceItem = findFilename(source);
         if (sourceItem) {
-            // Remove it from parent
+            // Remove source from parent
             bool isCurrentItem = sourceItem == plCurrentItem();
             TPlaylistItem* parent = sourceItem->plParent();
             int idx = parent->indexOfChild(sourceItem);
@@ -712,18 +717,14 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
             parent->setModified();
 
             // Add it to dest
-            if (addDroppedItem(source, dest, sourceItem)) {
+            if (addDroppedItem(source, dest, sourceItem, isCurrentItem)) {
                 if (stoppedFilename == dest) {
                     if (player->state() == Player::STATE_STOPPED) {
-                        isCurrentItem = false;
                         setCurrentItem(stoppedItem);
-                        WZDEBUG("Posting restart player");
+                        WZDEBUG("Posting play");
                         QTimer::singleShot(0, this->parent(), SLOT(play()));
                     }
                     stoppedFilename = "";
-                }
-                if (isCurrentItem) {
-                    setCurrentItem(sourceItem);
                 }
                 WZINFO(QString("Moved '%1' to '%2'").arg(source).arg(dest));
             }
@@ -742,7 +743,7 @@ void TPlaylistWidget::moveItem(TPlaylistItem* item,
                .arg(targetIndex));
 
     bool isCurrentItem = item == plCurrentItem();
-    bool isLink = item->isLink(); // Test before remove from parent
+    bool isLink = item->isLink(); // Get before remove from parent
 
     // Remove item from parent
     TPlaylistItem* parent = item->plParent();
@@ -775,11 +776,17 @@ void TPlaylistWidget::moveItem(TPlaylistItem* item,
     WZTRACEOBJ(QString("Inserting item '%1' at idx %2 into '%3'")
                .arg(item->filename()).arg(targetIndex).arg(parent->filename()));
     parent->insertChild(targetIndex, item);
-    parent->setModified();
+
+    // Don't mark playlists as modified
+    if (item->isFolder()) {
+        parent->setModified();
+    } else {
+        item->setModified();
+    }
+    item->setSelected(true);
     if (isCurrentItem) {
         setCurrentItem(item);
     }
-    item->setSelected(true);
     targetIndex++;
 }
 
@@ -793,6 +800,7 @@ void TPlaylistWidget::copyItem(TPlaylistItem* item,
 
     bool isCurrentItem = item == plCurrentItem();
     TPlaylistItem* destItem = item->clone();
+    target->insertChild(targetIndex, destItem);
 
     QString source = QDir::toNativeSeparators(item->path());
     QFileInfo fi(source);
@@ -807,13 +815,16 @@ void TPlaylistWidget::copyItem(TPlaylistItem* item,
         }
     }
 
-    WZTRACEOBJ(QString("Inserting item at idx %1").arg(targetIndex));
-    target->insertChild(targetIndex, destItem);
-    target->setModified();
+    // Don't mark playlists as modified
+    if (destItem->isFolder()) {
+        target->setModified();
+    } else {
+        destItem->setModified();
+    }
+    destItem->setSelected(true);
     if (isCurrentItem) {
         setCurrentItem(destItem);
     }
-    destItem->setSelected(true);
     targetIndex++;
     WZINFO(QString("Moved '%1' to '%2' inside '%3'")
            .arg(source).arg(destItem->filename()).arg(target->filename()));
@@ -825,23 +836,26 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
     WZDEBUG(QString("Selected target '%1'").arg(target->filename()));
 
     // Collect the dropped files
-    QDir targetDir(target->path());
+    QString targetFilename = target->path();
+    QDir targetDir(targetFilename);
+    bool targetIsDir = !targetFilename.isEmpty() && targetDir.exists();
     QStringList files;
     QList<TPlaylistItem*> skippedItems;
     QList<QTreeWidgetItem*> sel = selectedItems();
     for(int i = 0; i < sel.length(); i++) {
         TPlaylistItem* item = static_cast<TPlaylistItem*>(sel.at(i));
-        if (!item->isLink()) {
+        if (targetIsDir && !item->isLink()) {
             QFileInfo source(item->path());
-            if (action == Qt::CopyAction || source.dir() != targetDir) {
-                // Copy/move file
+            if (action == Qt::CopyAction
+                    || action == Qt::LinkAction
+                    || source.dir() != targetDir) {
                 files.append(source.absoluteFilePath());
                 WZTRACEOBJ(QString("Added '%1' to file copier")
                            .arg(source.absoluteFilePath()));
                 continue;
             }
         }
-        // Skip copy/move file
+        // Skip file system copy/move
         WZTRACEOBJ(QString("Skipping '%1'").arg(item->filename()));
         skippedItems.append(item);
     }
@@ -849,7 +863,7 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
     // move/copyItem() and the finished event handlers will select the new items
     clearSelection();
 
-    // Handle the items that don't need a file copy/move
+    // Handle the items that don't need a file sytem copy/move/link
     for(int i = 0; i < skippedItems.count(); i++) {
         if(action == Qt::MoveAction) {
             moveItem(skippedItems.at(i), target, targetIndex);
@@ -859,7 +873,7 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
     }
 
     if (files.count() == 0) {
-        WZDEBUG("No files to copy or move");
+        WZDEBUG("No files left to copy, move or link");
         return true;
     }
 
@@ -882,7 +896,13 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
     } else {
         connect(fileCopier, &QtFileCopier::finished,
                 this, &TPlaylistWidget::onCopyFinished);
-        fileCopier->copyFiles(files, target->path(), 0);
+        QtFileCopier::CopyFlags flags;
+        if (action == Qt::LinkAction) {
+            flags = QtFileCopier::MakeLinks;
+        } else {
+            flags = 0;
+        }
+        fileCopier->copyFiles(files, target->path(), flags);
     }
 
     return true;
@@ -896,91 +916,32 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
     int col = -1;
     int row = -1;
     if (dropOn(event, &row, &col, &index)) {
-        TPlaylistItem* target = static_cast<TPlaylistItem*>(
-                    index.internalPointer());
-        QString fn = target->path();
-        if (!fn.isEmpty() && QFileInfo(fn).isDir()) {
-            if (copyDialog) {
-                copyDialog->show();
-                copyDialog->raise();
-                QMessageBox::information(copyDialog, tr("Information"),
-                    tr("A copy or move action is still in progress. You can"
-                       " retry after it has finished."));
-                event->accept();
-            } else if (dropSelection(target, row, event->dropAction())) {
-                // Don't want QAbstractItemView to delete src
-                // because it was "moved"
-                event->setDropAction(Qt::CopyAction);
-                event->accept();
-            }
-        }
-    }
-
-    /*
-    QTreeWidgetItem* current = currentItem();
-    QList<QTreeWidgetItem*> sel;
-    QList<QTreeWidgetItem*> modified;
-
-    // Handle stuff that is gona move
-    bool moved = !event->isAccepted()
-            && event->source() == this
-            && event->dropAction() == Qt::MoveAction;
-
-    // Collect parents of selection to mark as modified if drop succeeds
-    sel = selectedItems();
-    if (moved) {
-        for(int i = 0; i < sel.count(); i++) {
-            QTreeWidgetItem* p = sel.at(i)->parent();
-            if (!modified.contains(p)) {
-                modified.append(p);
-            }
-        }
-    }
-    */
-
-    // Handle the drop
-    QTreeWidget::dropEvent(event);
-
-    /*
-    if (event->isAccepted()) {
-        if (moved) {
-            WZDEBUG("Selection moved");
-            // Restore current item and selection
-            clearSelection();
-            setCurrentItem(current);
-            for(int i = 0; i < sel.count(); i++) {
-                sel.at(i)->setSelected(true);
-            }
-
-            // Add new parent to modified items
-            if (!sel.isEmpty()) {
-                TPlaylistItem* parent = static_cast<TPlaylistItem*>(
-                            sel.at(0)->parent());
-                if (!modified.contains(parent)) {
-                    modified.append(parent);
-                }
-            }
+        event->accept();
+        if (copyDialog) {
+            copyDialog->show();
+            copyDialog->raise();
+            QMessageBox::information(copyDialog, tr("Information"),
+                tr("A copy or move action is still in progress. You can"
+                   " retry after it has finished."));
         } else {
-            WZDEBUG("Selection did not move");
+            TPlaylistItem* target = static_cast<TPlaylistItem*>(
+                        index.internalPointer());
+            dropSelection(target, row, event->dropAction());
+            // Don't want QAbstractItemView to delete src
+            // because it was "moved"
+            event->setDropAction(Qt::CopyAction);
         }
-
-        // Add new parent to modified items
-        if (!sel.isEmpty()) {
-            TPlaylistItem* parent = static_cast<TPlaylistItem*>(
-                        sel.at(0)->parent());
-            if (!modified.contains(parent)) {
-                modified.append(parent);
-            }
-        }
-
-        // Set modified
-        for(int i = 0; i < modified.count(); i++) {
-            static_cast<TPlaylistItem*>(modified.at(i))->setModified();
-        }
-    } else {
-        WZDEBUG("Drop not accepted");
     }
-    */
+
+    QTreeWidget::dropEvent(event);
+}
+
+bool TPlaylistWidget::dropMimeData(QTreeWidgetItem *parent,
+                                   int index,
+                                   const QMimeData *data,
+                                   Qt::DropAction action) {
+    WZTRACEOBJ("");
+    return QTreeWidget::dropMimeData(parent, index, data, action);
 }
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
