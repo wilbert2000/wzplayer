@@ -37,9 +37,8 @@ bool TFileLock::acquire(QString filename) {
 
     filename = QDir::toNativeSeparators(filename);
 
-    // TODO: case
     if (lockedFiles.contains(filename, caseSensitiveFileNames)) {
-        Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->info(
+        Log4Qt::Logger::logger("Gui::Playlist::TFileLock")->warn(
             "Acquire Skipping circular reference '%1'", filename);
         return false;
     }
