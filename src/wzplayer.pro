@@ -34,250 +34,251 @@ DEFINES += WZPLAYER_VERSION_STR=\\\"$$system(git describe --dirty --always --tag
 #DEFINES += PROGRAM_SWITCH
 
 
-HEADERS += wzdebug.h \
-    version.h \
-    colorutils.h \
-    subtracks.h \
-    discname.h \
-    extensions.h \
-    player/process/exitmsg.h \
-    player/process/process.h \
-    player/process/playerprocess.h \
-    player/process/mpvprocess.h \
-    player/process/mplayerprocess.h \
-    player/info/playerinfo.h \
-    player/info/playerinfomplayer.h \
-    player/info/playerinfompv.h \
-    player/state.h \
-    player/player.h \
-    mediadata.h \
-    settings/paths.h \
-    settings/assstyles.h \
-    settings/aspectratio.h \
-    settings/mediasettings.h \
-    settings/filters.h \
-    settings/preferences.h \
-    settings/filesettingsbase.h \
-    settings/filesettings.h \
-    settings/filesettingshash.h \
-    settings/tvsettings.h \
-    settings/lrulist.h \
-    settings/recents.h \
-    settings/cleanconfig.h \
-    settings/updatecheckerdata.h \
-    iconprovider.h \
-    images.h \
-    desktop.h \
+HEADERS += gui/action/menu/menu.h \
+    gui/action/menu/menuaudio.h \
+    gui/action/menu/menubrowse.h \
+    gui/action/menu/menufile.h \
+    gui/action/menu/menuhelp.h \
+    gui/action/menu/menuplay.h \
+    gui/action/menu/menusubtitle.h \
+    gui/action/menu/menuvideo.h \
+    gui/action/menu/menuvideocolorspace.h \
+    gui/action/menu/menuvideofilter.h \
+    gui/action/menu/menuview.h \
+    gui/action/menu/menuwindowsize.h \
     gui/action/action.h \
     gui/action/actiongroup.h \
+    gui/action/actionitem.h \
+    gui/action/actionseditor.h \
+    gui/action/editabletoolbar.h \
+    gui/action/shortcutgetter.h \
     gui/action/slider.h \
     gui/action/timeslider.h \
-    gui/action/widgetactions.h \
-    gui/action/shortcutgetter.h \
-    gui/action/actionseditor.h \
-    gui/action/actionitem.h \
     gui/action/toolbareditor.h \
-    gui/action/editabletoolbar.h \
-    gui/action/menu/menu.h \
-    gui/action/menu/menufile.h \
-    gui/action/menu/menuplay.h \
-    gui/action/menu/menuvideofilter.h \
-    gui/action/menu/menuwindowsize.h \
-    gui/action/menu/menuvideocolorspace.h \
-    gui/action/menu/menuvideo.h \
-    gui/action/menu/menuaudio.h \
-    gui/action/menu/menusubtitle.h \
-    gui/action/menu/menubrowse.h \
-    gui/action/menu/menuview.h \
-    gui/action/menu/menuhelp.h \
-    gui/deviceinfo.h \
-    gui/pref/languages.h \
-    gui/pref/vdpauproperties.h \
-    gui/pref/selectcolorbutton.h \
-    gui/pref/tristatecombo.h \
-    gui/pref/combobox.h \
-    gui/pref/dialog.h \
-    gui/pref/section.h \
-    gui/pref/playersection.h \
-    gui/pref/demuxer.h \
-    gui/pref/video.h \
-    gui/pref/audio.h \
-    gui/pref/subtitles.h \
-    gui/pref/interface.h \
-    gui/pref/playlistsection.h \
-    gui/pref/input.h \
-    gui/pref/drives.h \
-    gui/pref/capture.h \
-    gui/pref/performance.h \
-    gui/pref/network.h \
-    gui/msg.h \
-    gui/multilineinputdialog.h \
-    gui/infofile.h \
-    gui/filepropertiesdialog.h \
-    gui/stereo3ddialog.h \
-    gui/verticaltext.h \
-    gui/eqslider.h \
-    gui/videoequalizer.h \
-    gui/audioequalizer.h \
-    gui/about.h \
-    gui/timedialog.h \
-    gui/lineedit_with_icon.h \
-    gui/lineedit.h \
-    gui/filechooser.h \
-    gui/filedialog.h \
-    gui/inputurl.h \
+    gui/action/widgetactions.h \
     gui/playlist/addfilesthread.h \
+    gui/playlist/favlist.h \
+    gui/playlist/playlist.h \
     gui/playlist/playlistitem.h \
     gui/playlist/playlistwidget.h \
     gui/playlist/plist.h \
-    gui/playlist/playlist.h \
-    gui/playlist/favlist.h \
+    gui/pref/audio.h \
+    gui/pref/capture.h \
+    gui/pref/combobox.h \
+    gui/pref/demuxer.h \
+    gui/pref/dialog.h \
+    gui/pref/drives.h \
+    gui/pref/input.h \
+    gui/pref/interface.h \
+    gui/pref/languages.h \
+    gui/pref/network.h \
+    gui/pref/performance.h \
+    gui/pref/playersection.h \
+    gui/pref/playlistsection.h \
+    gui/pref/section.h \
+    gui/pref/selectcolorbutton.h \
+    gui/pref/subtitles.h \
+    gui/pref/tristatecombo.h \
+    gui/pref/vdpauproperties.h \
+    gui/pref/video.h \
+    gui/about.h \
+    gui/audioequalizer.h \
     gui/autohidetimer.h \
-    gui/playerwindow.h \
+    gui/deviceinfo.h \
+    gui/dockwidget.h \
+    gui/eqslider.h \
+    gui/filechooser.h \
+    gui/filedialog.h \
+    gui/filepropertiesdialog.h \
+    gui/helpwindow.h \
+    gui/infofile.h \
+    gui/inputurl.h \
+    gui/lineedit.h \
+    gui/lineedit_with_icon.h \
+    gui/logwindow.h \
+    gui/logwindowappender.h \
     gui/mainwindow.h \
     gui/mainwindowtray.h \
-    gui/dockwidget.h \
-    gui/logwindowappender.h \
-    gui/logwindow.h \
-    gui/helpwindow.h \
+    gui/msg.h \
+    gui/multilineinputdialog.h \
+    gui/playerwindow.h \
+    gui/stereo3ddialog.h \
+    gui/timedialog.h \
     gui/updatechecker.h \
-    maps/map.h \
-    maps/tracks.h \
-    maps/titletracks.h \
+    gui/verticaltext.h \
+    gui/videoequalizer.h \
     maps/chapters.h \
-    clhelp.h \
-    qtsingleapplication/qtsingleapplication.h \
-    qtsingleapplication/qtlocalpeer.h \
-    qtfilecopier/qtfilecopier.h \
+    maps/map.h \
+    maps/titletracks.h \
+    maps/tracks.h \
+    player/info/playerinfo.h \
+    player/info/playerinfomplayer.h \
+    player/info/playerinfompv.h \
+    player/process/exitmsg.h \
+    player/process/mplayerprocess.h \
+    player/process/mpvprocess.h \
+    player/process/playerprocess.h \
+    player/process/process.h \
+    player/player.h \
+    player/state.h \
     qtfilecopier/qtcopydialog.h \
+    qtfilecopier/qtfilecopier.h \
+    qtsingleapplication/qtlocalpeer.h \
+    qtsingleapplication/qtsingleapplication.h \
+    settings/aspectratio.h \
+    settings/assstyles.h \
+    settings/cleanconfig.h \
+    settings/filesettings.h \
+    settings/filesettingsbase.h \
+    settings/filesettingshash.h \
+    settings/filters.h \
+    settings/lrulist.h \
+    settings/mediasettings.h \
+    settings/paths.h \
+    settings/preferences.h \
+    settings/recents.h \
+    settings/tvsettings.h \
+    settings/updatecheckerdata.h \
+    clhelp.h \
+    colorutils.h \
     config.h \
+    desktop.h \
+    discname.h \
+    extensions.h \
+    iconprovider.h \
+    images.h \
+    mediadata.h \
     name.h \
+    subtracks.h \
+    version.h \
+    wzdebug.h \
     wzfiles.h \
     wztime.h \
     app.h
 
 
-SOURCES += wzdebug.cpp \
-    version.cpp \
-    colorutils.cpp \
-    subtracks.cpp \
-    discname.cpp \
-    extensions.cpp \
-    player/process/exitmsg.cpp \
-    player/process/process.cpp \
-    player/process/playerprocess.cpp \
-    player/process/mpvprocess.cpp \
-    player/process/mplayerprocess.cpp \
-    player/info/playerinfo.cpp \
-    player/info/playerinfomplayer.cpp \
-    player/info/playerinfompv.cpp \
-    player/player.cpp \
-    mediadata.cpp \
-    settings/paths.cpp \
-    settings/assstyles.cpp \
-    settings/aspectratio.cpp \
-    settings/mediasettings.cpp \
-    settings/filters.cpp \
-    settings/preferences.cpp \
-    settings/filesettingsbase.cpp \
-    settings/filesettings.cpp \
-    settings/filesettingshash.cpp \
-    settings/tvsettings.cpp \
-    settings/lrulist.cpp \
-    settings/recents.cpp \
-    settings/cleanconfig.cpp \
-    settings/updatecheckerdata.cpp \
-    iconprovider.cpp \
-    images.cpp \
-    desktop.cpp \
+SOURCES += gui/action/menu/menu.cpp \
+    gui/action/menu/menuaudio.cpp \
+    gui/action/menu/menubrowse.cpp \
+    gui/action/menu/menufile.cpp \
+    gui/action/menu/menuhelp.cpp \
+    gui/action/menu/menuplay.cpp \
+    gui/action/menu/menusubtitle.cpp \
+    gui/action/menu/menuvideo.cpp \
+    gui/action/menu/menuvideocolorspace.cpp \
+    gui/action/menu/menuvideofilter.cpp \
+    gui/action/menu/menuview.cpp \
+    gui/action/menu/menuwindowsize.cpp \
     gui/action/action.cpp \
     gui/action/actiongroup.cpp \
+    gui/action/actionitem.cpp \
+    gui/action/actionseditor.cpp \
+    gui/action/editabletoolbar.cpp \
+    gui/action/shortcutgetter.cpp \
     gui/action/slider.cpp \
     gui/action/timeslider.cpp \
-    gui/action/widgetactions.cpp \
-    gui/action/shortcutgetter.cpp \
-    gui/action/actionseditor.cpp \
-    gui/action/actionitem.cpp \
     gui/action/toolbareditor.cpp \
-    gui/action/editabletoolbar.cpp \
-    gui/action/menu/menu.cpp \
-    gui/action/menu/menufile.cpp \
-    gui/action/menu/menuplay.cpp \
-    gui/action/menu/menuvideofilter.cpp \
-    gui/action/menu/menuwindowsize.cpp \
-    gui/action/menu/menuvideocolorspace.cpp \
-    gui/action/menu/menuvideo.cpp \
-    gui/action/menu/menuaudio.cpp \
-    gui/action/menu/menusubtitle.cpp \
-    gui/action/menu/menubrowse.cpp \
-    gui/action/menu/menuview.cpp \
-    gui/action/menu/menuhelp.cpp \
-    gui/deviceinfo.cpp \
-    gui/pref/languages.cpp \
-    gui/pref/vdpauproperties.cpp \
-    gui/pref/selectcolorbutton.cpp \
-    gui/pref/tristatecombo.cpp \
-    gui/pref/combobox.cpp \
-    gui/pref/dialog.cpp \
-    gui/pref/section.cpp \
-    gui/pref/playersection.cpp \
-    gui/pref/demuxer.cpp \
-    gui/pref/video.cpp \
-    gui/pref/audio.cpp \
-    gui/pref/subtitles.cpp \
-    gui/pref/interface.cpp \
-    gui/pref/playlistsection.cpp \
-    gui/pref/input.cpp \
-    gui/pref/drives.cpp \
-    gui/pref/capture.cpp \
-    gui/pref/performance.cpp \
-    gui/pref/network.cpp \
-    gui/msg.cpp \
-    gui/multilineinputdialog.cpp \
-    gui/infofile.cpp \
-    gui/filepropertiesdialog.cpp \
-    gui/stereo3ddialog.cpp \
-    gui/verticaltext.cpp \
-    gui/eqslider.cpp \
-    gui/videoequalizer.cpp \
-    gui/audioequalizer.cpp \
-    gui/about.cpp \
-    gui/timedialog.cpp \
-    gui/lineedit_with_icon.cpp \
-    gui/lineedit.cpp \
-    gui/filechooser.cpp \
-    gui/filedialog.cpp \
-    gui/inputurl.cpp \
+    gui/action/widgetactions.cpp \
     gui/playlist/addfilesthread.cpp \
+    gui/playlist/favlist.cpp \
+    gui/playlist/playlist.cpp \
     gui/playlist/playlistitem.cpp \
     gui/playlist/playlistwidget.cpp \
     gui/playlist/plist.cpp \
-    gui/playlist/playlist.cpp \
-    gui/playlist/favlist.cpp \
+    gui/pref/audio.cpp \
+    gui/pref/capture.cpp \
+    gui/pref/combobox.cpp \
+    gui/pref/demuxer.cpp \
+    gui/pref/dialog.cpp \
+    gui/pref/drives.cpp \
+    gui/pref/input.cpp \
+    gui/pref/interface.cpp \
+    gui/pref/languages.cpp \
+    gui/pref/network.cpp \
+    gui/pref/performance.cpp \
+    gui/pref/playersection.cpp \
+    gui/pref/playlistsection.cpp \
+    gui/pref/section.cpp \
+    gui/pref/selectcolorbutton.cpp \
+    gui/pref/subtitles.cpp \
+    gui/pref/tristatecombo.cpp \
+    gui/pref/vdpauproperties.cpp \
+    gui/pref/video.cpp \
+    gui/about.cpp \
+    gui/audioequalizer.cpp \
     gui/autohidetimer.cpp \
-    gui/playerwindow.cpp \
+    gui/deviceinfo.cpp \
+    gui/dockwidget.cpp \
+    gui/eqslider.cpp \
+    gui/filechooser.cpp \
+    gui/filedialog.cpp \
+    gui/filepropertiesdialog.cpp \
+    gui/helpwindow.cpp \
+    gui/infofile.cpp \
+    gui/inputurl.cpp \
+    gui/lineedit.cpp \
+    gui/lineedit_with_icon.cpp \
+    gui/logwindow.cpp \
+    gui/logwindowappender.cpp \
     gui/mainwindow.cpp \
     gui/mainwindowtray.cpp \
-    gui/dockwidget.cpp \
-    gui/logwindowappender.cpp \
-    gui/logwindow.cpp \
-    gui/helpwindow.cpp \
+    gui/msg.cpp \
+    gui/multilineinputdialog.cpp \
+    gui/playerwindow.cpp \
+    gui/stereo3ddialog.cpp \
+    gui/timedialog.cpp \
     gui/updatechecker.cpp \
-    maps/map.cpp \
-    maps/tracks.cpp \
-    maps/titletracks.cpp \
+    gui/verticaltext.cpp \
+    gui/videoequalizer.cpp \
     maps/chapters.cpp \
-    clhelp.cpp \
-    qtsingleapplication/qtsingleapplication.cpp \
-    qtsingleapplication/qtlocalpeer.cpp \
-    qtfilecopier/qtfilecopier.cpp \
+    maps/map.cpp \
+    maps/titletracks.cpp \
+    maps/tracks.cpp \
+    player/info/playerinfo.cpp \
+    player/info/playerinfomplayer.cpp \
+    player/info/playerinfompv.cpp \
+    player/process/exitmsg.cpp \
+    player/process/mplayerprocess.cpp \
+    player/process/mpvprocess.cpp \
+    player/process/playerprocess.cpp \
+    player/process/process.cpp \
+    player/player.cpp \
     qtfilecopier/qtcopydialog.cpp \
+    qtfilecopier/qtfilecopier.cpp \
+    qtsingleapplication/qtlocalpeer.cpp \
+    qtsingleapplication/qtsingleapplication.cpp \
+    settings/aspectratio.cpp \
+    settings/assstyles.cpp \
+    settings/cleanconfig.cpp \
+    settings/filesettings.cpp \
+    settings/filesettingsbase.cpp \
+    settings/filesettingshash.cpp \
+    settings/filters.cpp \
+    settings/lrulist.cpp \
+    settings/mediasettings.cpp \
+    settings/paths.cpp \
+    settings/preferences.cpp \
+    settings/recents.cpp \
+    settings/tvsettings.cpp \
+    settings/updatecheckerdata.cpp \
+    clhelp.cpp \
+    colorutils.cpp \
     config.cpp \
+    desktop.cpp \
+    discname.cpp \
+    extensions.cpp \
+    iconprovider.cpp \
+    images.cpp \
+    mediadata.cpp \
     name.cpp \
+    subtracks.cpp \
+    version.cpp \
+    wzdebug.cpp \
     wzfiles.cpp \
     wztime.cpp \
     app.cpp \
     main.cpp
+
 
 FORMS = gui/logwindow.ui \
     gui/helpwindow.ui \
