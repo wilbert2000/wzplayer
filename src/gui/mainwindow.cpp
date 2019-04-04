@@ -1504,7 +1504,7 @@ void TMainWindow::createFilePropertiesDialog() {
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    file_properties_dialog = new TFilePropertiesDialog(this, &player->mdat);
+    file_properties_dialog = new TFilePropertiesDialog(this);
     file_properties_dialog->setModal(false);
     connect(file_properties_dialog, &TFilePropertiesDialog::applied,
             this, &TMainWindow::applyFileProperties);

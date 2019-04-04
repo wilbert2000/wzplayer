@@ -34,7 +34,7 @@ class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TFilePropertiesDialog(QWidget* parent, TMediaData* md);
+    TFilePropertiesDialog(QWidget* parent);
 
     void setPlayingTitle(const QString& title) { playingTitle = title; }
 
@@ -82,23 +82,26 @@ protected slots:
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
-    bool hasCodecsList() { return codecs_set; }
     int find(const QString& s, const Player::Info::InfoList& list) const;
-
-protected:
-    virtual void retranslateStrings();
-    virtual void changeEvent(QEvent* event);
 
 private:
     QString playingTitle;
-    bool codecs_set;
     Player::Info::InfoList vclist, aclist, demuxerlist;
     QString orig_demuxer, orig_ac, orig_vc;
-    TMediaData* media_data;
 
     QPushButton* okButton;
     QPushButton* cancelButton;
     QPushButton* applyButton;
+
+
+    QString openPar(QString text);
+    QString closePar();
+    QString addItem(QString tag, QString value);
+    QString formatSize(qint64 size);
+    void addTracks(QString& s,
+                   const Maps::TTracks& tracks,
+                   const QString& name);
+    QString getInfo();
 };
 
 } // namespace Gui
