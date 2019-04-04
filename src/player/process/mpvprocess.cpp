@@ -590,7 +590,7 @@ bool TMPVProcess::parseLine(QString& line) {
     // AO
     if (rx_ao.indexIn(line) >= 0) {
         md->ao = rx_ao.cap(1);
-        WZDEBUG("audio driver '" + md->ao + "'");
+        WZDEBUG("Audio driver '" + md->ao + "'");
         return true;
     }
 
@@ -655,37 +655,37 @@ bool TMPVProcess::parseLine(QString& line) {
         md->detected_type = TMediaData::TYPE_STREAM;
         QString s = rx_stream_title.cap(1);
         md->title = s;
-        WZDEBUG("stream title set to '" + md->title + "'");
+        WZDEBUG("Stream title set to '" + md->title + "'");
         emit receivedStreamTitle();
         return true;
     }
 
     // Errors
     if (rx_file_open.indexIn(line) >= 0) {
-        WZDEBUG("storing file open failed");
+        WZDEBUG("Storing file open failed");
         exit_code_override = TExitMsg::ERR_FILE_OPEN;
         TExitMsg::setExitCodeMsg(rx_file_open.cap(1));
         return true;
     }
     if (rx_failed_open.indexIn(line) >= 0) {
         if (exit_code_override == 0 && rx_failed_open.cap(1) == md->filename) {
-            WZDEBUG("storing open failed");
+            WZDEBUG("Storing open failed");
             exit_code_override = TExitMsg::ERR_OPEN;
         } else {
-            WZDEBUG("skipped open failed");
+            WZDEBUG("Skipped open failed");
         }
     }
     if (rx_failed_format.indexIn(line) >= 0) {
-        WZDEBUG("stored unrecognized file format");
+        WZDEBUG("Stored unrecognized file format");
         exit_code_override = TExitMsg::ERR_FILE_FORMAT;
     }
     if (rx_error_http_403.indexIn(line) >= 0) {
-        WZDEBUG("stored HTTP 403");
+        WZDEBUG("Stored HTTP 403");
         exit_code_override = TExitMsg::ERR_HTTP_403;
         return true;
     }
     if (rx_error_http_404.indexIn(line) >= 0) {
-        WZDEBUG("stored HTTP 404");
+        WZDEBUG("Stored HTTP 404");
         exit_code_override = TExitMsg::ERR_HTTP_404;
         return true;
     }
