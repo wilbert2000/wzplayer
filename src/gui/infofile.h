@@ -19,9 +19,6 @@
 #ifndef GUI_INFOFILE_H
 #define GUI_INFOFILE_H
 
-#include <QObject>
-#include <QString>
-
 #include "mediadata.h"
 #include "wzdebug.h"
 
@@ -47,8 +44,6 @@ private:
     void addTracks(QString& s,
                    const Maps::TTracks& tracks,
                    const QString& name);
-
-    void setMetaData(const QString& filename);
 };
 
 } // namespace Gui

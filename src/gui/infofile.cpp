@@ -35,26 +35,6 @@ TInfoFile::TInfoFile() :
     debug(logger()) {
 }
 
-void TInfoFile::setMetaData(const QString& filename) {
-
-    QString cmd = "ffmpeg";
-
-    QFileInfo fi(filename);
-    QString out = filename;
-    QString ext = fi.suffix().toLower();
-    out.chop(ext.length());
-    out += ".bak";
-    if (!ext.isEmpty()) {
-        out += "." + ext;
-    }
-
-    QStringList args = QStringList() << "-i" << filename
-                                     << "-codec" << "copy"
-                                     << out;
-    debug << cmd << args;
-    debug << debug;
-}
-
 QString TInfoFile::formatSize(qint64 size) {
 
     const qint64 MB = 1024 * 1024;
