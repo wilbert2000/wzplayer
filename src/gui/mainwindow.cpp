@@ -3253,7 +3253,7 @@ double TMainWindow::optimizeSize(double size) const {
     QSize video_size = res * size;
 
     // Limit size to perc of available space
-    const double f = 0.8;
+    const double f = 0.75;
 
     // Adjust width
     double max = f * availableSize.width();
@@ -3283,10 +3283,6 @@ double TMainWindow::optimizeSize(double size) const {
     if (i <= 0) {
         WZERROR("Selecting size 1 for invalid size");
         return 1;
-    }
-    if (i < 13) {
-        // High resolution stuff
-        return size;
     }
     if (i < 25) {
         // Can we scale up to 25%?
