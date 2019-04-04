@@ -2177,7 +2177,11 @@ void TMainWindow::updateTitle() {
     setWindowCaption(title + (title.isEmpty() ? "" : " - ")
                      + TConfig::PROGRAM_NAME);
 
-    if (file_properties_dialog && file_properties_dialog->isVisible()) {
+    if (file_properties_dialog
+            && file_properties_dialog->isVisible()
+            // onMediaInfoChanged() will handle the next 2 states
+            && player->state() != Player::STATE_LOADING
+            && player->state() != Player::STATE_RESTARTING) {
         file_properties_dialog->showInfo(title);
     }
 }
