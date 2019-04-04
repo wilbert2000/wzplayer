@@ -112,9 +112,7 @@ TMainWindow::TMainWindow() :
     setWindowIcon(Images::icon("logo", 64));
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
-
     // Disable animation of docks.
-    // TODO: test enable, disabling seems buggy.
     setAnimated(false);
 
     createStatusBar();
