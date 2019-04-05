@@ -59,7 +59,7 @@ class TPlayerWindow : public QWidget {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TPlayerWindow(QWidget* parent);
+    explicit TPlayerWindow(QWidget* parent, const QString& name);
 
     TVideoWindow* videoWindow() const { return video_window; }
 

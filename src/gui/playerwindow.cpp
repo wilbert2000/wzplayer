@@ -107,6 +107,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     delay_left_click(true),
     dragging(false) {
 
+    setObjectName(name);
     setMinimumSize(QSize(0, 0));
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
     TColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
@@ -115,7 +116,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     setFocusPolicy(Qt::StrongFocus);
 
     video_window = new TVideoWindow(this);
-    video_window->setObjectName("video_window");
+    video_window->setObjectName("video" + name);
     video_window->setMinimumSize(QSize(0, 0));
     video_window->setMouseTracking(true);
     setColorKey();

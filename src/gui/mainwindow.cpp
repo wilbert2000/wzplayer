@@ -226,8 +226,7 @@ void TMainWindow::createStatusBar() {
 
 void TMainWindow::createPlayerWindow() {
 
-    playerWindow = new TPlayerWindow(panel);
-    playerWindow->setObjectName("playerwindow");
+    playerWindow = new TPlayerWindow(panel, "playerwindow");
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
