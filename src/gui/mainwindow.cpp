@@ -43,9 +43,6 @@
 #include "gui/pref/interface.h"
 #include "gui/pref/input.h"
 
-#include "gui/action/actiongroup.h"
-#include "gui/action/widgetactions.h"
-#include "gui/action/editabletoolbar.h"
 #include "gui/action/menu/menufile.h"
 #include "gui/action/menu/menuplay.h"
 #include "gui/action/menu/menuwindowsize.h"
@@ -57,6 +54,11 @@
 #include "gui/action/menu/menubrowse.h"
 #include "gui/action/menu/menuview.h"
 #include "gui/action/menu/menuhelp.h"
+#include "gui/action/editabletoolbar.h"
+#include "gui/action/timeslideraction.h"
+#include "gui/action/widgetactions.h"
+#include "gui/action/actiongroup.h"
+
 #include "player/player.h"
 #include "player/process/exitmsg.h"
 #include "settings/paths.h"

@@ -19,8 +19,6 @@
 #ifndef GUI_ACTION_WIDGETACTIONS_H
 #define GUI_ACTION_WIDGETACTIONS_H
 
-#include "settings/preferences.h"
-
 #include <QWidgetAction>
 #include <QSlider>
 
@@ -41,40 +39,6 @@ public slots:
 
 protected:
     virtual void propagate_enabled(bool);
-};
-
-
-class TTimeSliderAction : public TWidgetAction {
-    Q_OBJECT
-public:
-    TTimeSliderAction(QWidget* parent);
-
-public slots:
-    virtual void setPosition(double sec);
-    virtual void setDuration(double);
-
-signals:
-    void positionChanged(double sec);
-    void percentageChanged(double percentage);
-    void dragPositionChanged(double sec);
-
-    void wheelUp();
-    void wheelDown();
-
-protected:
-    virtual QWidget* createWidget(QWidget* parent);
-
-private:
-    int pos;
-    int max_pos;
-    double duration;
-
-    void setPos();
-
-private slots:
-    void onPosChanged(int value);
-    void onDraggingPosChanged(int value);
-    void onDelayedDraggingPos(int value);
 };
 
 

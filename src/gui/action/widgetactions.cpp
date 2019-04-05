@@ -17,12 +17,14 @@
 */
 
 #include "gui/action/widgetactions.h"
+#include "gui/action/slider.h"
+#include "settings/preferences.h"
+#include "colorutils.h"
+
 #include <QLabel>
 #include <QToolButton>
 #include <QToolBar>
-#include "colorutils.h"
-#include "gui/action/timeslider.h"
-#include "settings/preferences.h"
+
 
 namespace Gui {
 namespace Action {
@@ -49,97 +51,6 @@ void TWidgetAction::propagate_enabled(bool b) {
 }
 
 
-TTimeSliderAction::TTimeSliderAction(QWidget* parent) :
-    TWidgetAction(parent),
-    pos(0),
-    max_pos(1000),
-    duration(0) {
-}
-
-void TTimeSliderAction::setPos() {
-
-    QList<QWidget*> l = createdWidgets();
-    for (int n = 0; n < l.count(); n++) {
-        TTimeSlider* s = (TTimeSlider*) l[n];
-        bool was_blocked = s->blockSignals(true);
-        s->setPos(pos);
-        s->blockSignals(was_blocked);
-    }
-}
-
-void TTimeSliderAction::setPosition(double sec) {
-
-    int p = 0;
-    if (sec > 0 && duration > 0.1) {
-        p = qRound((sec * max_pos) / duration);
-        if (p > max_pos) {
-            p = max_pos;
-        }
-    }
-
-    if (p != pos) {
-        pos = p;
-        setPos();
-    }
-}
-
-void TTimeSliderAction::setDuration(double t) {
-
-    duration = t;
-    QList<QWidget*> l = createdWidgets();
-    for (int n = 0; n < l.count(); n++) {
-        TTimeSlider* s = (TTimeSlider*) l[n];
-        s->setDuration(t);
-    }
-}
-
-// Slider pos changed
-void TTimeSliderAction::onPosChanged(int value) {
-
-    pos = value;
-    if (Settings::pref->relative_seeking || duration <= 0) {
-        emit percentageChanged((double) (pos * 100) / max_pos);
-    } else {
-        emit positionChanged(duration * pos / max_pos);
-    }
-}
-
-// Slider pos changed while dragging
-void TTimeSliderAction::onDraggingPosChanged(int value) {
-
-    pos = value;
-    emit dragPositionChanged(duration * pos / max_pos);
-}
-
-// Delayed slider pos while dragging
-void TTimeSliderAction::onDelayedDraggingPos(int value) {
-
-    pos = value;
-    if (Settings::pref->update_while_seeking) {
-        onPosChanged(pos);
-    }
-}
-
-QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
-
-    TTimeSlider* slider = new TTimeSlider(parent, pos, max_pos, duration,
-        Settings::pref->time_slider_drag_delay);
-    slider->setEnabled(isEnabled());
-
-    connect(slider, &TTimeSlider::posChanged,
-            this, &TTimeSliderAction::onPosChanged);
-    connect(slider, &TTimeSlider::draggingPosChanged,
-            this, &TTimeSliderAction::onDraggingPosChanged);
-    connect(slider, &TTimeSlider::delayedDraggingPos,
-            this, &TTimeSliderAction::onDelayedDraggingPos);
-
-    connect(slider, &TTimeSlider::wheelUp,
-            this, &TTimeSliderAction::wheelUp);
-    connect(slider, &TTimeSlider::wheelDown,
-            this, &TTimeSliderAction::wheelDown);
-
-    return slider;
-}
 
 
 TVolumeSliderAction::TVolumeSliderAction(QWidget* parent, int vol)

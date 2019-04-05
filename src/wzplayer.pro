@@ -54,6 +54,7 @@ HEADERS += gui/action/menu/menu.h \
     gui/action/shortcutgetter.h \
     gui/action/slider.h \
     gui/action/timeslider.h \
+    gui/action/timeslideraction.h \
     gui/action/toolbareditor.h \
     gui/action/widgetactions.h \
     gui/playlist/addfilesthread.h \
@@ -177,6 +178,7 @@ SOURCES += gui/action/menu/menu.cpp \
     gui/action/shortcutgetter.cpp \
     gui/action/slider.cpp \
     gui/action/timeslider.cpp \
+    gui/action/timeslideraction.cpp \
     gui/action/toolbareditor.cpp \
     gui/action/widgetactions.cpp \
     gui/playlist/addfilesthread.cpp \
