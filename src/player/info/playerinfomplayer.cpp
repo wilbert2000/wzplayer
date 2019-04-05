@@ -46,10 +46,13 @@ TPlayerInfoMplayer::TPlayerInfoMplayer(const QString& path)
 }
 
 void TPlayerInfoMplayer::getInfo() {
+
     waiting_for_key = true;
+    demuxer_list.clear();
+    vc_list.clear();
+    ac_list.clear();
     vo_list.clear();
     ao_list.clear();
-    demuxer_list.clear();
 
     run("-identify -vo help -ao help -demuxer help -vc help -ac help");
 }
