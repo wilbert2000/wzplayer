@@ -80,7 +80,7 @@ class TAutoHideTimer;
 class TDockWidget;
 class TLogWindow;
 class THelpWindow;
-class TFilePropertiesDialog;
+class TPropertiesDialog;
 class TAudioEqualizer;
 class TVideoEqualizer;
 class TUpdateChecker;
@@ -242,7 +242,7 @@ private:
     QPoint center_window_pos;
 
     // Windows
-    TFilePropertiesDialog* propertiesDialog;
+    TPropertiesDialog* propertiesDialog;
     Pref::TDialog* prefDialog;
     THelpWindow* help_window;
 

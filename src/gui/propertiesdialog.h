@@ -16,25 +16,25 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GUI_FILEPROPERTIESDIALOG_H
-#define GUI_FILEPROPERTIESDIALOG_H
+#ifndef GUI_PROPERTIESDIALOG_H
+#define GUI_PROPERTIESDIALOG_H
 
-#include "ui_filepropertiesdialog.h"
-#include "log4qt/logger.h"
+#include "ui_propertiesdialog.h"
 #include "player/info/playerinfo.h"
 #include "mediadata.h"
+#include "wzdebug.h"
 
 
 class QPushButton;
 
 namespace Gui {
 
-class TFilePropertiesDialog : public QDialog, public Ui::TFilePropertiesDialog {
+class TPropertiesDialog : public QDialog, public Ui::TPropertiesDialog {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TFilePropertiesDialog(QWidget* parent);
+    TPropertiesDialog(QWidget* parent);
 
     // Call it as soon as possible
     void setCodecs(const Player::Info::InfoList& vc,
@@ -103,4 +103,4 @@ private:
 
 } // namespace Gui
 
-#endif // GUI_FILEPROPERTIESDIALOG_H
+#endif // GUI_PROPERTIESDIALOG_H

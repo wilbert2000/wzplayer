@@ -90,7 +90,6 @@ HEADERS += gui/action/menu/menu.h \
     gui/eqslider.h \
     gui/filechooser.h \
     gui/filedialog.h \
-    gui/filepropertiesdialog.h \
     gui/helpwindow.h \
     gui/inputurl.h \
     gui/lineedit.h \
@@ -102,6 +101,7 @@ HEADERS += gui/action/menu/menu.h \
     gui/msg.h \
     gui/multilineinputdialog.h \
     gui/playerwindow.h \
+    gui/propertiesdialog.h \
     gui/stereo3ddialog.h \
     gui/timedialog.h \
     gui/updatechecker.h \
@@ -214,7 +214,6 @@ SOURCES += gui/action/menu/menu.cpp \
     gui/eqslider.cpp \
     gui/filechooser.cpp \
     gui/filedialog.cpp \
-    gui/filepropertiesdialog.cpp \
     gui/helpwindow.cpp \
     gui/inputurl.cpp \
     gui/lineedit.cpp \
@@ -226,6 +225,7 @@ SOURCES += gui/action/menu/menu.cpp \
     gui/msg.cpp \
     gui/multilineinputdialog.cpp \
     gui/playerwindow.cpp \
+    gui/propertiesdialog.cpp \
     gui/stereo3ddialog.cpp \
     gui/timedialog.cpp \
     gui/updatechecker.cpp \
@@ -282,31 +282,31 @@ SOURCES += gui/action/menu/menu.cpp \
     main.cpp
 
 
-FORMS = gui/logwindow.ui \
-    gui/helpwindow.ui \
-    gui/filepropertiesdialog.ui \
-    gui/eqslider.ui \
-    gui/inputurl.ui \
-    gui/videoequalizer.ui \
-    gui/about.ui \
-    gui/timedialog.ui \
-    gui/stereo3ddialog.ui \
-    gui/multilineinputdialog.ui \
-    gui/action/toolbareditor.ui \
-    gui/pref/vdpauproperties.ui \
-    gui/pref/dialog.ui \
-    gui/pref/playersection.ui \
-    gui/pref/demuxer.ui \
-    gui/pref/video.ui \
+FORMS = gui/action/toolbareditor.ui \
     gui/pref/audio.ui \
-    gui/pref/subtitles.ui \
-    gui/pref/interface.ui \
-    gui/pref/playlistsection.ui \
-    gui/pref/input.ui \
-    gui/pref/drives.ui \
     gui/pref/capture.ui \
-    gui/pref/performance.ui \
+    gui/pref/demuxer.ui \
+    gui/pref/dialog.ui \
+    gui/pref/drives.ui \
+    gui/pref/input.ui \
+    gui/pref/interface.ui \
     gui/pref/network.ui \
+    gui/pref/performance.ui \
+    gui/pref/playersection.ui \
+    gui/pref/playlistsection.ui \
+    gui/pref/subtitles.ui \
+    gui/pref/vdpauproperties.ui \
+    gui/pref/video.ui \
+    gui/about.ui \
+    gui/eqslider.ui \
+    gui/helpwindow.ui \
+    gui/inputurl.ui \
+    gui/logwindow.ui \
+    gui/multilineinputdialog.ui \
+    gui/propertiesdialog.ui \
+    gui/stereo3ddialog.ui \
+    gui/timedialog.ui \
+    gui/videoequalizer.ui \
     qtfilecopier/qtcopydialog.ui \
     qtfilecopier/qtoverwritedialog.ui \
     qtfilecopier/qtotherdialog.ui

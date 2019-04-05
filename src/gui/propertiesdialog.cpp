@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "gui/filepropertiesdialog.h"
+#include "gui/propertiesdialog.h"
 #include "settings/preferences.h"
 #include "player/player.h"
 #include "images.h"
@@ -30,7 +30,7 @@
 
 namespace Gui {
 
-TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent)
+TPropertiesDialog::TPropertiesDialog(QWidget* parent)
     : QDialog(parent, TConfig::DIALOG_FLAGS) {
 
     setupUi(this);
@@ -54,10 +54,10 @@ TFilePropertiesDialog::TFilePropertiesDialog(QWidget* parent)
     cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
     applyButton = buttonBox->button(QDialogButtonBox::Apply);
     connect(applyButton, &QPushButton::clicked,
-            this, &TFilePropertiesDialog::apply);
+            this, &TPropertiesDialog::apply);
 }
 
-void TFilePropertiesDialog::saveSettings() {
+void TPropertiesDialog::saveSettings() {
 
     Settings::pref->beginGroup("propertiesdialog");
     Settings::pref->setValue("pos", pos());
@@ -65,13 +65,13 @@ void TFilePropertiesDialog::saveSettings() {
     Settings::pref->endGroup();
 }
 
-void TFilePropertiesDialog::closeEvent(QCloseEvent* event) {
+void TPropertiesDialog::closeEvent(QCloseEvent* event) {
 
     emit visibilityChanged(false);
     event->accept();
 }
 
-void TFilePropertiesDialog::accept() {
+void TPropertiesDialog::accept() {
 
     setResult(QDialog::Accepted);
     hide();
@@ -79,20 +79,20 @@ void TFilePropertiesDialog::accept() {
     emit applied();
 }
 
-void TFilePropertiesDialog::reject() {
+void TPropertiesDialog::reject() {
 
     setResult(QDialog::Rejected);
     hide();
     emit visibilityChanged(false);
 }
 
-void TFilePropertiesDialog::apply() {
+void TPropertiesDialog::apply() {
 
     setResult(QDialog::Accepted);
     emit applied();
 }
 
-void TFilePropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
+void TPropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
                                       const Player::Info::InfoList& ac,
                                       const Player::Info::InfoList& demuxer) {
 
@@ -123,7 +123,7 @@ void TFilePropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
     }
 }
 
-void TFilePropertiesDialog::setDemuxer(const QString& demuxer,
+void TPropertiesDialog::setDemuxer(const QString& demuxer,
                                        const QString& original_demuxer) {
 
     if (!original_demuxer.isEmpty()) {
@@ -142,7 +142,7 @@ void TFilePropertiesDialog::setDemuxer(const QString& demuxer,
     WZDEBUG("'" + demuxer + "'");
 }
 
-QString TFilePropertiesDialog::demuxer() {
+QString TPropertiesDialog::demuxer() {
 
     int pos = demuxer_listbox->currentRow();
     if (pos < 0) {
@@ -151,7 +151,7 @@ QString TFilePropertiesDialog::demuxer() {
     return demuxerlist[pos].name();
 }
 
-void TFilePropertiesDialog::setVideoCodec(const QString& vc, const QString& original_vc) {
+void TPropertiesDialog::setVideoCodec(const QString& vc, const QString& original_vc) {
 
     if (!original_vc.isEmpty()) {
         orig_vc = original_vc;
@@ -169,7 +169,7 @@ void TFilePropertiesDialog::setVideoCodec(const QString& vc, const QString& orig
     WZDEBUG("'" + vc + "'");
 }
 
-QString TFilePropertiesDialog::videoCodec() {
+QString TPropertiesDialog::videoCodec() {
 
     int pos = vc_listbox->currentRow();
     if (pos < 0) {
@@ -178,7 +178,7 @@ QString TFilePropertiesDialog::videoCodec() {
     return vclist[pos].name();
 }
 
-void TFilePropertiesDialog::setAudioCodec(const QString& ac, const QString& original_ac) {
+void TPropertiesDialog::setAudioCodec(const QString& ac, const QString& original_ac) {
 
     if (!original_ac.isEmpty()) {
         orig_ac = original_ac;
@@ -195,7 +195,7 @@ void TFilePropertiesDialog::setAudioCodec(const QString& ac, const QString& orig
     WZDEBUG("'" + ac + "'");
 }
 
-QString TFilePropertiesDialog::audioCodec() {
+QString TPropertiesDialog::audioCodec() {
 
     int pos = ac_listbox->currentRow();
     if (pos < 0) {
@@ -204,19 +204,19 @@ QString TFilePropertiesDialog::audioCodec() {
     return aclist[pos].name();
 }
 
-void TFilePropertiesDialog::on_resetDemuxerButton_clicked() {
+void TPropertiesDialog::on_resetDemuxerButton_clicked() {
     setDemuxer(orig_demuxer);
 }
 
-void TFilePropertiesDialog::on_resetACButton_clicked() {
+void TPropertiesDialog::on_resetACButton_clicked() {
     setAudioCodec(orig_ac);
 }
 
-void TFilePropertiesDialog::on_resetVCButton_clicked() {
+void TPropertiesDialog::on_resetVCButton_clicked() {
     setVideoCodec(orig_vc);
 }
 
-int TFilePropertiesDialog::find(const QString& s,
+int TPropertiesDialog::find(const QString& s,
                                 const Player::Info::InfoList& list) const {
 
     int n = 0;
@@ -232,31 +232,31 @@ int TFilePropertiesDialog::find(const QString& s,
     return -1;
 }
 
-void TFilePropertiesDialog::setPlayerAdditionalArguments(const QString& args) {
+void TPropertiesDialog::setPlayerAdditionalArguments(const QString& args) {
     player_args_edit->setText(args);
 }
 
-QString TFilePropertiesDialog::playerAdditionalArguments() {
+QString TPropertiesDialog::playerAdditionalArguments() {
     return player_args_edit->text();
 }
 
-void TFilePropertiesDialog::setPlayerAdditionalVideoFilters(const QString& s) {
+void TPropertiesDialog::setPlayerAdditionalVideoFilters(const QString& s) {
     player_vfilters_edit->setText(s);
 }
 
-QString TFilePropertiesDialog::playerAdditionalVideoFilters() {
+QString TPropertiesDialog::playerAdditionalVideoFilters() {
     return player_vfilters_edit->text();
 }
 
-void TFilePropertiesDialog::setPlayerAdditionalAudioFilters(const QString& s) {
+void TPropertiesDialog::setPlayerAdditionalAudioFilters(const QString& s) {
     player_afilters_edit->setText(s);
 }
 
-QString TFilePropertiesDialog::playerAdditionalAudioFilters() {
+QString TPropertiesDialog::playerAdditionalAudioFilters() {
     return player_afilters_edit->text();
 }
 
-QString TFilePropertiesDialog::formatSize(qint64 size) {
+QString TPropertiesDialog::formatSize(qint64 size) {
 
     const qint64 MB = 1024 * 1024;
     const qint64 GB = 1024 * MB;
@@ -279,7 +279,7 @@ QString TFilePropertiesDialog::formatSize(qint64 size) {
                                        locale.toString(size));
 }
 
-void TFilePropertiesDialog::addTracks(QString& s,
+void TPropertiesDialog::addTracks(QString& s,
                           const Maps::TTracks& tracks,
                           const QString& name) {
 
@@ -305,21 +305,21 @@ void TFilePropertiesDialog::addTracks(QString& s,
     }
 }
 
-QString TFilePropertiesDialog::openPar(QString text) {
+QString TPropertiesDialog::openPar(QString text) {
     return "<tr><td>&nbsp;</td></tr>"
            "<tr><td colspan=\"5\"><h2>" + text + "</h2></td></tr>";
 }
 
-QString TFilePropertiesDialog::closePar() {
+QString TPropertiesDialog::closePar() {
     return "\n";
 }
 
-QString TFilePropertiesDialog::addItem(QString tag, QString value) {
+QString TPropertiesDialog::addItem(QString tag, QString value) {
     return "<tr><th align=\"left\" colspan=\"2\">" + tag+ "</th>"
             "<td align=\"left\" colspan=\"3\">" + value + "</td></tr>";
 }
 
-QString TFilePropertiesDialog::getInfo(const QString& title) {
+QString TPropertiesDialog::getInfo(const QString& title) {
 
     const TMediaData& md = player->mdat;
 
@@ -503,7 +503,7 @@ QString TFilePropertiesDialog::getInfo(const QString& title) {
     return s;
 }
 
-void TFilePropertiesDialog::showInfo(const QString& title) {
+void TPropertiesDialog::showInfo(const QString& title) {
 
     QScrollBar* bar = info_edit->verticalScrollBar();
     int scrollPos = bar->value();
@@ -513,4 +513,4 @@ void TFilePropertiesDialog::showInfo(const QString& title) {
 
 } // namespace Gui
 
-#include "moc_filepropertiesdialog.cpp"
+#include "moc_propertiesdialog.cpp"

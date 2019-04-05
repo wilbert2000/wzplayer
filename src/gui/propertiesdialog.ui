@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Ricardo Villalba</author>
- <class>Gui::TFilePropertiesDialog</class>
- <widget class="QDialog" name="Gui::TFilePropertiesDialog">
+ <class>Gui::TPropertiesDialog</class>
+ <widget class="QDialog" name="Gui::TPropertiesDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -168,7 +168,7 @@
          <item>
           <widget class="QPushButton" name="resetVCButton">
            <property name="text">
-            <string>&amp;Reset</string>
+            <string>Reset</string>
            </property>
           </widget>
          </item>
@@ -178,7 +178,7 @@
      </widget>
      <widget class="QWidget" name="ac_page">
       <attribute name="title">
-       <string>A&amp;udio codec</string>
+       <string>Audio codec</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
@@ -190,7 +190,7 @@
        <item>
         <widget class="QLabel" name="textLabel4">
          <property name="text">
-          <string>&amp;Select the audio codec:</string>
+          <string>Select the audio codec:</string>
          </property>
          <property name="wordWrap">
           <bool>false</bool>
@@ -230,7 +230,7 @@
          <item>
           <widget class="QPushButton" name="resetACButton">
            <property name="text">
-            <string>&amp;Reset</string>
+            <string>Reset</string>
            </property>
           </widget>
          </item>
@@ -240,7 +240,7 @@
      </widget>
      <widget class="QWidget" name="options_page">
       <attribute name="title">
-       <string notr="true">O&amp;ptions for player</string>
+       <string notr="true">Options for player</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
@@ -252,7 +252,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string notr="true">Additional options to pass to player for this file only</string>
+          <string notr="true">Additional options for this file only</string>
          </property>
          <layout class="QVBoxLayout">
           <property name="spacing">
@@ -287,7 +287,7 @@ Example: -flip -nosound</string>
             <item>
              <widget class="QLabel" name="textLabel1_3">
               <property name="text">
-               <string>&amp;Options:</string>
+               <string>Options:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -347,7 +347,7 @@ Example: scale=512:-2,mirror</string>
             <item>
              <widget class="QLabel" name="textLabel2_3">
               <property name="text">
-               <string>V&amp;ideo filters:</string>
+               <string>Video filters:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -406,7 +406,7 @@ Example: extrastereo,karaoke</string>
             <item>
              <widget class="QLabel" name="textLabel3_3">
               <property name="text">
-               <string>Audio &amp;filters:</string>
+               <string>Audio filters:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -473,7 +473,7 @@ Example: extrastereo,karaoke</string>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Gui::TFilePropertiesDialog</receiver>
+   <receiver>Gui::TPropertiesDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -489,7 +489,7 @@ Example: extrastereo,karaoke</string>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Gui::TFilePropertiesDialog</receiver>
+   <receiver>Gui::TPropertiesDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

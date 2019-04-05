@@ -22,7 +22,7 @@
 #include "gui/logwindow.h"
 #include "gui/helpwindow.h"
 #include "gui/autohidetimer.h"
-#include "gui/filepropertiesdialog.h"
+#include "gui/propertiesdialog.h"
 #include "gui/dockwidget.h"
 #include "gui/msg.h"
 
@@ -1517,11 +1517,11 @@ void TMainWindow::applyNewSettings() {
 void TMainWindow::createFilePropertiesDialog() {
     WZDEBUG("");
 
-    propertiesDialog = new TFilePropertiesDialog(this);
+    propertiesDialog = new TPropertiesDialog(this);
     propertiesDialog->setModal(false);
-    connect(propertiesDialog, &TFilePropertiesDialog::applied,
+    connect(propertiesDialog, &TPropertiesDialog::applied,
             this, &TMainWindow::applyFileProperties);
-    connect(propertiesDialog, &TFilePropertiesDialog::visibilityChanged,
+    connect(propertiesDialog, &TPropertiesDialog::visibilityChanged,
             findAction("view_properties"), &Action::TAction::setChecked);
 }
 
