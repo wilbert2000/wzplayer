@@ -1654,7 +1654,7 @@ void TMainWindow::showFilePropertiesDialog(bool checked) {
         if (!file_properties_dialog) {
             createFilePropertiesDialog();
         }
-        setDataToFileProperties();
+        setFilePropertiesData();
         file_properties_dialog->show();
     } else {
         file_properties_dialog->hide();
@@ -2193,7 +2193,7 @@ void TMainWindow::onMediaInfoChanged() {
     WZTRACE("");
 
     if (file_properties_dialog && file_properties_dialog->isVisible()) {
-        setDataToFileProperties();
+        setFilePropertiesData();
     }
 }
 

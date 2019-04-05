@@ -485,7 +485,7 @@ private:
     void setupNetworkProxy();
 
     void createSettingsDialog();
-    void setDataToFileProperties();
+    void setFilePropertiesData();
     void createFilePropertiesDialog();
     void configureDiscDevices();
 
