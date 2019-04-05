@@ -352,7 +352,7 @@ QString TPropertiesDialog::getInfo(const QString& title) {
         default: icon = "type_unknown";
     }
 
-    QString s = "<html><body bgcolor=\"white\"><font color=\"black\">";
+    QString s = "<html><body>\n";
     s += "<h1><img src=\"" + Images::iconFilename(icon) + "\">"
             + title + "</h1>\n";
 
