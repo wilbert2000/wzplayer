@@ -160,24 +160,24 @@ void TPlayerInfo::getInfo(const QString& path) {
     set.sync();
 }
 
-QStringList TPlayerInfo::convertInfoListToList(const InfoList& l) {
+QStringList TPlayerInfo::convertInfoListToList(const TNameDescList& l) {
 
     QStringList r;
     for (int i = 0; i < l.count(); i++) {
-        const InfoData& d = l.at(i);
+        const TNameDesc& d = l.at(i);
         r << d.name() + "|" + d.desc();
     }
     return r;
 }
 
-InfoList TPlayerInfo::convertListToInfoList(const QStringList& l) {
+TNameDescList TPlayerInfo::convertListToInfoList(const QStringList& l) {
 
-    InfoList r;
+    TNameDescList r;
     QStringList s;
     for (int n = 0; n < l.count(); n++) {
         s = l.at(n).split("|");
         if (s.count() >= 2) {
-            r.append(InfoData(s.at(0), s.at(1)));
+            r.append(TNameDesc(s.at(0), s.at(1)));
         }
     }
     return r;

@@ -32,7 +32,7 @@ using namespace Settings;
 
 namespace Gui { namespace Pref {
 
-TAudio::TAudio(QWidget* parent, const Player::Info::InfoList& aol)
+TAudio::TAudio(QWidget* parent, const Player::Info::TNameDescList& aol)
     : TSection(parent, 0)
     , ao_list(aol),
       player_id(pref->player_id),

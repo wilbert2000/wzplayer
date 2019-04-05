@@ -470,37 +470,5 @@ Example: extrastereo,karaoke</string>
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Gui::TPropertiesDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>267</x>
-     <y>468</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>267</x>
-     <y>246</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Gui::TPropertiesDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>267</x>
-     <y>468</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>267</x>
-     <y>246</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>

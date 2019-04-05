@@ -43,9 +43,9 @@ class TVideo : public TSection, public Ui::TVideo {
     DECLARE_QCLASS_LOGGER
 
 public:
-    Player::Info::InfoList vo_list;
+    Player::Info::TNameDescList vo_list;
 
-    TVideo(QWidget* parent, const Player::Info::InfoList& vol);
+    TVideo(QWidget* parent, const Player::Info::TNameDescList& vol);
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();

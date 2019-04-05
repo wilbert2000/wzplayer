@@ -21,9 +21,6 @@
 #define PLAYER_INFO_PLAYERINFOMPLAYER_H
 
 #include "player/info/playerinfo.h"
-#include <QObject>
-#include <QList>
-
 #include "wzdebug.h"
 
 class QProcess;
@@ -34,18 +31,16 @@ namespace Info {
 class TPlayerInfoMplayer : QObject {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
-
-
 public:
     TPlayerInfoMplayer(const QString& path);
 
     void getInfo();
 
-    InfoList voList() { return vo_list; }
-    InfoList aoList() { return ao_list; }
-    InfoList demuxerList() { return demuxer_list; }
-    InfoList vcList() { return vc_list; }
-    InfoList acList() { return ac_list; }
+    TNameDescList demuxerList() { return demuxer_list; }
+    TNameDescList voList() { return vo_list; }
+    TNameDescList vcList() { return vc_list; }
+    TNameDescList acList() { return ac_list; }
+    TNameDescList aoList() { return ao_list; }
 
 protected slots:
     virtual void readLine(QByteArray);
@@ -55,15 +50,13 @@ protected:
 
 protected:
     QString bin;
-
     QProcess* proc;
 
-    InfoList vo_list;
-    InfoList ao_list;
-
-    InfoList demuxer_list;
-    InfoList vc_list;
-    InfoList ac_list;
+    TNameDescList demuxer_list;
+    TNameDescList vc_list;
+    TNameDescList ac_list;
+    TNameDescList vo_list;
+    TNameDescList ao_list;
 
 private:
     bool waiting_for_key;

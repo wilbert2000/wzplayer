@@ -31,7 +31,7 @@ using namespace Settings;
 namespace Gui {
 namespace Pref {
 
-TVideo::TVideo(QWidget* parent, const Player::Info::InfoList& vol) :
+TVideo::TVideo(QWidget* parent, const Player::Info::TNameDescList& vol) :
     TSection(parent, 0),
     wzdebug(logger()),
     vo_list(vol),

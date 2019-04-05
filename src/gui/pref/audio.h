@@ -39,9 +39,9 @@ class TAudio : public TSection, public Ui::TAudio {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    Player::Info::InfoList ao_list;
+    Player::Info::TNameDescList ao_list;
 
-    TAudio(QWidget* parent, const Player::Info::InfoList& aol);
+    TAudio(QWidget* parent, const Player::Info::TNameDescList& aol);
 
     // Return the name of the section
     virtual QString sectionName();

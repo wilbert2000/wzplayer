@@ -32,22 +32,23 @@ TPlayerInfoMPV::TPlayerInfoMPV(const QString& path)
 
 void TPlayerInfoMPV::getInfo() {
 
-    vo_list.clear();
-    ao_list.clear();
     demuxer_list.clear();
     vc_list.clear();
     ac_list.clear();
+    vo_list.clear();
+    ao_list.clear();
     vf_list.clear();
 
-    vo_list = getList(run("--vo help"));
-    ao_list = getList(run("--ao help"));
     demuxer_list = getList(run("--demuxer help"));
     vc_list = getList(run("--vd help"));
     ac_list = getList(run("--ad help"));
+    vo_list = getList(run("--vo help"));
+    ao_list = getList(run("--ao help"));
+
     {
-        InfoList list = getList(run("--vf help"));
-        for (int n = 0; n < list.count(); n++) {
-            vf_list.append(list[n].name());
+        TNameDescList list = getList(run("--vf help"));
+        for (int i = 0; i < list.count(); i++) {
+            vf_list.append(list.at(i).name());
         }
     }
 
@@ -79,8 +80,9 @@ QList<QByteArray> TPlayerInfoMPV::run(QString options) {
     return r;
 }
 
-InfoList TPlayerInfoMPV::getList(const QList<QByteArray>& lines) {
-    InfoList l;
+TNameDescList TPlayerInfoMPV::getList(const QList<QByteArray>& lines) {
+
+    TNameDescList list;
 
     foreach(QByteArray line, lines) {
         line.replace("\n", "");
@@ -98,12 +100,12 @@ InfoList TPlayerInfoMPV::getList(const QList<QByteArray>& lines) {
                 if (name.endsWith(':')) name = name.left(name.count() - 1);
                 QString desc = line.mid(pos + 1);
                 desc = desc.replace(": ", "").replace("- ", "");
-                l.append(InfoData(name, desc));
+                list.append(TNameDesc(name, desc));
             }
         }
     }
 
-    return l;
+    return list;
 }
 
 QStringList TPlayerInfoMPV::getOptionsList(const QList<QByteArray> & lines) {

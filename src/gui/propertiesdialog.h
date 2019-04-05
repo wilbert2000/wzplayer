@@ -36,27 +36,22 @@ class TPropertiesDialog : public QDialog, public Ui::TPropertiesDialog {
 public:
     TPropertiesDialog(QWidget* parent);
 
-    // Call it as soon as possible
-    void setCodecs(const Player::Info::InfoList& vc,
-                   const Player::Info::InfoList& ac,
-                   const Player::Info::InfoList& demuxer);
-
     void setDemuxer(const QString& demuxer,
                     const QString& original_demuxer = "");
     QString demuxer();
 
+    void setCodecs(const Player::Info::TNameDescList& vc,
+                   const Player::Info::TNameDescList& ac,
+                   const Player::Info::TNameDescList& demuxer);
     void setVideoCodec(const QString& vc, const QString& original_vc = "");
     QString videoCodec();
-
     void setAudioCodec(const QString& ac, const QString& original_ac = "");
     QString audioCodec();
 
     void setPlayerAdditionalArguments(const QString& args);
     QString playerAdditionalArguments();
-
     void setPlayerAdditionalVideoFilters(const QString& s);
     QString playerAdditionalVideoFilters();
-
     void setPlayerAdditionalAudioFilters(const QString& s);
     QString playerAdditionalAudioFilters();
 
@@ -82,14 +77,14 @@ protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
 private:
-    Player::Info::InfoList vclist, aclist, demuxerlist;
-    QString orig_demuxer, orig_ac, orig_vc;
+    Player::Info::TNameDescList demuxerlist, vclist, aclist;
+    QString orig_demuxer, orig_vc, orig_ac;
 
     QPushButton* okButton;
     QPushButton* cancelButton;
     QPushButton* applyButton;
 
-    int find(const QString& s, const Player::Info::InfoList& list) const;
+    int find(const QString& s, const Player::Info::TNameDescList& list) const;
 
     QString openPar(QString text);
     QString closePar();

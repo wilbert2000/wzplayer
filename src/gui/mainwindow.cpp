@@ -1518,11 +1518,10 @@ void TMainWindow::createFilePropertiesDialog() {
     WZDEBUG("");
 
     propertiesDialog = new TPropertiesDialog(this);
-    propertiesDialog->setModal(false);
     connect(propertiesDialog, &TPropertiesDialog::applied,
             this, &TMainWindow::applyFileProperties);
     connect(propertiesDialog, &TPropertiesDialog::visibilityChanged,
-            findAction("view_properties"), &Action::TAction::setChecked);
+            viewPropertiesAct, &Action::TAction::setChecked);
 }
 
 void TMainWindow::setFilePropertiesData() {
@@ -1530,42 +1529,42 @@ void TMainWindow::setFilePropertiesData() {
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    // Get info from player
-    Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
-    i->getInfo();
-    propertiesDialog->setCodecs(i->vcList(),
-                                      i->acList(),
-                                      i->demuxerList());
+    // Get codecs and demuxer from player
+    Player::Info::TPlayerInfo* playerInfo = Player::Info::TPlayerInfo::obj();
+    playerInfo->getInfo();
+    // Set them in prop dialog
+    propertiesDialog->setCodecs(playerInfo->vcList(),
+                                playerInfo->acList(),
+                                playerInfo->demuxerList());
 
-    // Save a copy of the demuxer, video and audio codec
-    if (player->mset.original_demuxer.isEmpty())
-        player->mset.original_demuxer = player->mdat.demuxer;
-    if (player->mset.original_video_codec.isEmpty())
-        player->mset.original_video_codec = player->mdat.video_codec;
-    if (player->mset.original_audio_codec.isEmpty())
-        player->mset.original_audio_codec = player->mdat.audio_codec;
+    // Save a copy of the demuxer and codecs
+    TMediaData& mdat = player->mdat;
+    Settings::TMediaSettings& mset = player->mset;
+    if (mset.original_demuxer.isEmpty())
+        mset.original_demuxer = mdat.demuxer;
+    if (mset.original_video_codec.isEmpty())
+        mset.original_video_codec = mdat.video_codec;
+    if (mset.original_audio_codec.isEmpty())
+        mset.original_audio_codec = mdat.audio_codec;
 
     // Set demuxer, video and audio codec
-    QString demuxer = player->mset.forced_demuxer;
-    if (demuxer.isEmpty())
-        demuxer = player->mdat.demuxer;
-    QString vc = player->mset.forced_video_codec;
-    if (vc.isEmpty())
-        vc = player->mdat.video_codec;
-    QString ac = player->mset.forced_audio_codec;
-    if (ac.isEmpty())
-        ac = player->mdat.audio_codec;
+    QString demuxer = mset.forced_demuxer;
+    if (demuxer.isEmpty()) demuxer = mdat.demuxer;
+    QString vc = mset.forced_video_codec;
+    if (vc.isEmpty()) vc = mdat.video_codec;
+    QString ac = mset.forced_audio_codec;
+    if (ac.isEmpty()) ac = mdat.audio_codec;
 
-    propertiesDialog->setDemuxer(demuxer, player->mset.original_demuxer);
-    propertiesDialog->setVideoCodec(vc, player->mset.original_video_codec);
-    propertiesDialog->setAudioCodec(ac, player->mset.original_audio_codec);
+    propertiesDialog->setDemuxer(demuxer, mset.original_demuxer);
+    propertiesDialog->setVideoCodec(vc, mset.original_video_codec);
+    propertiesDialog->setAudioCodec(ac, mset.original_audio_codec);
 
     propertiesDialog->setPlayerAdditionalArguments(
-                player->mset.player_additional_options);
+                mset.player_additional_options);
     propertiesDialog->setPlayerAdditionalVideoFilters(
-                player->mset.player_additional_video_filters);
+                mset.player_additional_video_filters);
     propertiesDialog->setPlayerAdditionalAudioFilters(
-                player->mset.player_additional_audio_filters);
+                mset.player_additional_audio_filters);
 
     propertiesDialog->showInfo(playlist->getPlayingTitle(true));
 

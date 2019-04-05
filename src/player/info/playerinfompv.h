@@ -40,29 +40,28 @@ public:
 
     void getInfo();
 
-    InfoList voList() { return vo_list; }
-    InfoList aoList() { return ao_list; }
+    TNameDescList demuxerList() { return demuxer_list; }
+    TNameDescList vcList() { return vc_list; }
+    TNameDescList acList() { return ac_list; }
+    TNameDescList voList() { return vo_list; }
+    TNameDescList aoList() { return ao_list; }
 
-    InfoList demuxerList() { return demuxer_list; }
-    InfoList vcList() { return vc_list; }
-    InfoList acList() { return ac_list; }
     QStringList vfList() { return vf_list; }
     QStringList optionList() { return option_list; }
 
 protected:
     QList<QByteArray> run(QString options);
-    InfoList getList(const QList<QByteArray> &);
+    TNameDescList getList(const QList<QByteArray> &);
     QStringList getOptionsList(const QList<QByteArray> &);
 
 protected:
     QString bin;
 
-    InfoList vo_list;
-    InfoList ao_list;
-
-    InfoList demuxer_list;
-    InfoList vc_list;
-    InfoList ac_list;
+    TNameDescList demuxer_list;
+    TNameDescList vc_list;
+    TNameDescList ac_list;
+    TNameDescList vo_list;
+    TNameDescList ao_list;
 
     QStringList vf_list;
     QStringList option_list;

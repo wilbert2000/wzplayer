@@ -29,10 +29,10 @@
 namespace Player {
 namespace Info {
 
-class InfoData {
+class TNameDesc {
 public:
-    InfoData() {}
-    InfoData(const QString& name, const QString& desc) :
+    TNameDesc() {}
+    TNameDesc(const QString& name, const QString& desc) :
         _name(name),
         _desc(desc) {
     }
@@ -40,11 +40,11 @@ public:
     QString name() const { return _name; }
     QString desc() const { return _desc; }
 
-    bool operator<(const InfoData& other) const {
+    bool operator<(const TNameDesc& other) const {
         return name() < other.name();
     }
 
-    bool operator==(const InfoData& other) const {
+    bool operator==(const TNameDesc& other) const {
         return name() == other.name();
     }
 
@@ -53,7 +53,7 @@ private:
 };
 
 
-typedef QList<InfoData> InfoList;
+typedef QList<TNameDesc> TNameDescList;
 
 
 class TPlayerInfo : QObject {
@@ -66,12 +66,12 @@ public:
     void getInfo();
     void getInfo(const QString& path);
 
-    InfoList voList() { return vo_list; }
-    InfoList aoList() { return ao_list; }
+    TNameDescList voList() { return vo_list; }
+    TNameDescList aoList() { return ao_list; }
 
-    InfoList demuxerList() { return demuxer_list; }
-    InfoList vcList() { return vc_list; }
-    InfoList acList() { return ac_list; }
+    TNameDescList demuxerList() { return demuxer_list; }
+    TNameDescList vcList() { return vc_list; }
+    TNameDescList acList() { return ac_list; }
     QStringList vfList() { return vf_list; }
     QStringList optionList() { return option_list; }
 
@@ -83,18 +83,18 @@ protected:
     QString bin;
     qint64 bin_size;
 
-    InfoList vo_list;
-    InfoList ao_list;
-    InfoList demuxer_list;
-    InfoList vc_list;
-    InfoList ac_list;
+    TNameDescList vo_list;
+    TNameDescList ao_list;
+    TNameDescList demuxer_list;
+    TNameDescList vc_list;
+    TNameDescList ac_list;
     QStringList vf_list;
     QStringList option_list;
 
 private:
     static TPlayerInfo* static_obj;
-    static QStringList convertInfoListToList(const InfoList& l);
-    static InfoList convertListToInfoList(const QStringList& l);
+    static QStringList convertInfoListToList(const TNameDescList& l);
+    static TNameDescList convertListToInfoList(const QStringList& l);
     QString getGroup();
     void clearInfo();
 };

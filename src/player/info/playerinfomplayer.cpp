@@ -86,9 +86,9 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
                 QString desc = rx_driver.cap(2);
                 WZDEBUG("found driver: '" + name + "' '" + desc + "'");
                 if (reading_type == VO) {
-                    vo_list.append(InfoData(name, desc));
+                    vo_list.append(TNameDesc(name, desc));
                 } else if (reading_type == AO) {
-                    ao_list.append(InfoData(name, desc));
+                    ao_list.append(TNameDesc(name, desc));
                 }
             } else {
                 WZDEBUG("skipping line: '" + line + "'");
@@ -98,12 +98,12 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
                 QString name = rx_demuxer.cap(1);
                 QString desc = rx_demuxer.cap(3);
                 WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
-                demuxer_list.append(InfoData(name, desc));
+                demuxer_list.append(TNameDesc(name, desc));
             } else if (rx_demuxer2.indexIn(line) >= 0) {
                 QString name = rx_demuxer2.cap(1);
                 QString desc = rx_demuxer2.cap(2);
                 WZDEBUG("found demuxer: '" + name + "' '" + desc + "'");
-                demuxer_list.append(InfoData(name, desc));
+                demuxer_list.append(TNameDesc(name, desc));
             } else {
                 WZDEBUG("skipping line: '" + line + "'");
             }
@@ -113,9 +113,9 @@ void TPlayerInfoMplayer::readLine(QByteArray ba) {
                 QString desc = rx_codec.cap(4);
                 WZDEBUG("found codec '" + name + "' '" + desc + "'");
                 if (reading_type == VC) {
-                    vc_list.append(InfoData(name, desc));
+                    vc_list.append(TNameDesc(name, desc));
                 } else if (reading_type == AC) {
-                    ac_list.append(InfoData(name, desc));
+                    ac_list.append(TNameDesc(name, desc));
                 }
             } else {
                 WZDEBUG("skipping line '" + line + "'");

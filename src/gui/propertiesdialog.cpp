@@ -36,6 +36,7 @@ TPropertiesDialog::TPropertiesDialog(QWidget* parent)
     setupUi(this);
     retranslateUi(this);
     setWindowIcon(Images::icon("logo"));
+    setModal(false);
 
     // Restore pos and size
     Settings::pref->beginGroup("propertiesdialog");
@@ -53,6 +54,10 @@ TPropertiesDialog::TPropertiesDialog(QWidget* parent)
     okButton = buttonBox->button(QDialogButtonBox::Ok);
     cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
     applyButton = buttonBox->button(QDialogButtonBox::Apply);
+    connect(buttonBox, &QDialogButtonBox::accepted,
+            this, &TPropertiesDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected,
+            this, &TPropertiesDialog::reject);
     connect(applyButton, &QPushButton::clicked,
             this, &TPropertiesDialog::apply);
 }
@@ -92,9 +97,9 @@ void TPropertiesDialog::apply() {
     emit applied();
 }
 
-void TPropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
-                                      const Player::Info::InfoList& ac,
-                                      const Player::Info::InfoList& demuxer) {
+void TPropertiesDialog::setCodecs(const Player::Info::TNameDescList& vc,
+                                  const Player::Info::TNameDescList& ac,
+                                  const Player::Info::TNameDescList& demuxer) {
 
     vclist = vc;
     aclist = ac;
@@ -108,29 +113,27 @@ void TPropertiesDialog::setCodecs(const Player::Info::InfoList& vc,
     ac_listbox->clear();
     demuxer_listbox->clear();
 
-    Player::Info::InfoList::iterator it;
+    Player::Info::TNameDescList::iterator it;
 
     for (it = vclist.begin(); it != vclist.end(); ++it) {
         vc_listbox->addItem((*it).name() + " - " + (*it).desc());
     }
-
     for (it = aclist.begin(); it != aclist.end(); ++it) {
         ac_listbox->addItem((*it).name() + " - " + (*it).desc());
     }
-
     for (it = demuxerlist.begin(); it != demuxerlist.end(); ++it) {
         demuxer_listbox->addItem((*it).name() + " - " + (*it).desc());
     }
 }
 
 void TPropertiesDialog::setDemuxer(const QString& demuxer,
-                                       const QString& original_demuxer) {
+                                   const QString& original_demuxer) {
 
     if (!original_demuxer.isEmpty()) {
         orig_demuxer = original_demuxer;
         int pos = find(orig_demuxer, demuxerlist);
         if (pos >= 0) {
-            player->mdat.demuxer_description = demuxerlist[pos].desc();
+            player->mdat.demuxer_description = demuxerlist.at(pos).desc();
         }
     }
 
@@ -217,10 +220,10 @@ void TPropertiesDialog::on_resetVCButton_clicked() {
 }
 
 int TPropertiesDialog::find(const QString& s,
-                                const Player::Info::InfoList& list) const {
+                            const Player::Info::TNameDescList& list) const {
 
     int n = 0;
-    Player::Info::InfoList::const_iterator it;
+    Player::Info::TNameDescList::const_iterator it;
 
     for (it = list.constBegin(); it != list.constEnd(); ++it) {
         if ((*it).name() == s) {
