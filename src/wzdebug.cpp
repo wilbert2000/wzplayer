@@ -1,15 +1,16 @@
 #include "wzdebug.h"
 
+
 TWZDebug::TWZDebug(Log4Qt::Logger* aLogger) :
     QDebug(&msg),
     level(Log4Qt::Level::DEBUG_INT),
     logger(aLogger) {
 }
 
-TWZDebug& operator << (QDebug&, TWZDebug& d) {
+TWZDebug& operator << (TWZDebug&, TWZDebug& dest) {
 
-    d.logger->log(d.level, d.msg);
-    d.msg = "";
-    return d;
+    dest.logger->log(dest.level, dest.msg);
+    dest.msg = "";
+    return dest;
 }
 

@@ -20,7 +20,7 @@
 #define GUI_TIMESLIDER_H
 
 #include "gui/action/slider.h"
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 
 
 class QToolBar;
@@ -32,8 +32,6 @@ namespace Action {
 class TTimeSlider : public TSlider {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
-
 public:
     TTimeSlider(QWidget* parent,
                 int pos,

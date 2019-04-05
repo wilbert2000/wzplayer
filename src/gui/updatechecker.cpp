@@ -39,7 +39,7 @@ namespace Gui {
 TUpdateChecker::TUpdateChecker(QWidget* parent,
                                Settings::TUpdateCheckerData* data) :
     QObject(parent),
-    debug(logger()),
+    wzdebug(logger()),
     net_manager(0),
     d(0) {
 
@@ -87,7 +87,8 @@ void TUpdateChecker::check() {
 }
 
 QString TUpdateChecker::parseVersion(const QByteArray& data, const QString& name) {
-    debug << "parseVersion: data:\n" << data << debug;
+    wzdebug << "parseVersion: data:\n" << data;
+    wzdebug << wzdebug;
 
     QTemporaryFile tf;
     tf.open();

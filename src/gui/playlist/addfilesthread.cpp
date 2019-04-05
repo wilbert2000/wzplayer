@@ -82,7 +82,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
                                  bool images,
                                  bool favList) :
     QThread(parent),
-    debug(logger()),
+    wzdebug(logger()),
     files(aFiles),
     root(0),
     abortRequested(false),
@@ -127,8 +127,8 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
 #endif
 
     if (logger()->isDebugEnabled()) {
-        debug << "TAddFilesThread Searching for:" << nameFilterList;
-        debug << debug;
+        wzdebug << "TAddFilesThread Searching for:" << nameFilterList;
+        wzdebug << wzdebug;
     }
 }
 

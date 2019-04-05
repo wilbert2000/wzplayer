@@ -33,7 +33,7 @@ namespace Pref {
 
 TVideo::TVideo(QWidget* parent, const Player::Info::InfoList& vol) :
     TSection(parent, 0),
-    debug(logger()),
+    wzdebug(logger()),
     vo_list(vol),
     player_id(pref->player_id),
     mplayer_vo(pref->mplayer_vo),
@@ -129,11 +129,11 @@ void TVideo::setData(Settings::TPreferences* pref) {
     player_id = pref->player_id;
     mplayer_vo = pref->mplayer_vo;
     mpv_vo = pref->mpv_vo;
-    debug << "setData: player id" << player_id
+    wzdebug << "setData: player id" << player_id
           << "vo" << pref->vo
           << "mplayer vo" << mplayer_vo
-          << "mpv_vo" << mpv_vo
-          << debug;
+          << "mpv_vo" << mpv_vo;
+    wzdebug << wzdebug;
 
     setVO(pref->vo);
 
@@ -185,7 +185,7 @@ void TVideo::getData(Settings::TPreferences* pref) {
     if (pts != pref->use_correct_pts) {
         pref->use_correct_pts = pts;
         _requiresRestartPlayer = true;
-        logger()->debug("restart needed, use_correct_pts changed");
+        WZDEBUG("Restart needed, use_correct_pts changed");
     }
 
     pref->initial_postprocessing = initialPostprocessing();
@@ -202,11 +202,11 @@ void TVideo::getData(Settings::TPreferences* pref) {
 
 void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
                                bool keep_driver) {
-    debug << "updateDriverCombo: player id" << player_id
+    wzdebug << "updateDriverCombo: player id" << player_id
           << "keep_driver" << keep_driver
           << "current mplayer vo" << mplayer_vo
-          << "current mpv vo" << mpv_vo
-          << debug;
+          << "current mpv vo" << mpv_vo;
+    wzdebug << wzdebug;
 
     this->player_id = player_id;
     QString wanted_vo;
@@ -279,12 +279,14 @@ void TVideo::setVO(const QString& vo_driver) {
 
     int idx = vo_combo->findData(vo_driver);
     if (idx >= 0) {
-        debug << "setVO: found driver" << vo_driver << "idx" << idx << debug;
+        wzdebug << "setVO: found driver" << vo_driver << "idx" << idx;
+        wzdebug << wzdebug;
         vo_combo->setCurrentIndex(idx);
     } else {
         vo_combo->setCurrentIndex(vo_combo->findData("user_defined"));
         vo_user_defined_edit->setText(vo_driver);
-        debug << "setVO: set user def driver" << vo_driver << debug;
+        wzdebug << "setVO: set user def driver" << vo_driver;
+        wzdebug << wzdebug;
     }
 }
 

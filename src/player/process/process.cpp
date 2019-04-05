@@ -25,7 +25,7 @@ namespace Process {
 
 TProcess::TProcess(QObject* parent) :
     QProcess(parent),
-    debug(logger()),
+    wzdebug(logger()),
     line_count(0) {
 
     setProcessChannelMode(QProcess::MergedChannels);
@@ -61,10 +61,10 @@ QStringList TProcess::arguments() {
 }
 
 void TProcess::start() {
-    debug.level = Log4Qt::Level::INFO_INT;
-    debug << "start program:" << program << "args:" << args;
-    debug << debug;
-    debug.level = Log4Qt::Level::DEBUG_INT;
+    wzdebug.level = Log4Qt::Level::INFO_INT;
+    wzdebug << "start program:" << program << "args:" << args;
+    wzdebug << wzdebug;
+    wzdebug.level = Log4Qt::Level::DEBUG_INT;
 
     remaining_output.clear();
 

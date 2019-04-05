@@ -94,9 +94,8 @@ void TVideoWindow::restoreNormalBackground() {
 }
 
 
-TPlayerWindow::TPlayerWindow(QWidget* parent) :
+TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     QWidget(parent),
-    debug(logger()),
     video_size(0, 0),
     last_video_out_size(0, 0),
     fps(0),
@@ -246,8 +245,7 @@ void TPlayerWindow::updateVideoWindow() {
     video_window->setGeometry(vwin);
 
     // Update status bar with new video out size
-    if (vsize != last_video_out_size
-            || qAbs(fps - last_fps) > 0.001) {
+    if (vsize != last_video_out_size || qAbs(fps - last_fps) > 0.001) {
         last_video_out_size = vsize;
         last_fps = fps;
         emit videoOutChanged();

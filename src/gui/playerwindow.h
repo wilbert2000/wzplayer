@@ -56,7 +56,7 @@ protected:
 // Window containing video window
 class TPlayerWindow : public QWidget {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     explicit TPlayerWindow(QWidget* parent);

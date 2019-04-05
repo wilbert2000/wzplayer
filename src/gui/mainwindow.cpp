@@ -94,7 +94,7 @@ namespace Gui {
 
 TMainWindow::TMainWindow() :
     QMainWindow(),
-    debug(logger()),
+    wzdebug(logger()),
     update_checker(0),
     arg_close_on_finish(-1),
     ignore_show_hide_events(false),
@@ -1523,8 +1523,8 @@ void TMainWindow::createFilePropertiesDialog() {
             findAction("view_properties"), &Action::TAction::setChecked);
 }
 
-void TMainWindow::setDataToFileProperties() {
-    WZDEBUG("");
+void TMainWindow::setFilePropertiesData() {
+    WZTRACE("");
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
@@ -3172,7 +3172,7 @@ void TMainWindow::stop() {
 }
 
 void TMainWindow::setSizeFactor(double factor) {
-    WZDEBUG(QString::number(factor));
+    WZTRACE(QString::number(factor));
 
     if (player->mdat.noVideo()) {
         return;
@@ -3247,7 +3247,7 @@ void TMainWindow::hidePanel() {
 }
 
 double TMainWindow::optimizeSize(double size) const {
-    WZDEBUG("Size in " + QString::number(size));
+    WZTRACE("Size in " + QString::number(size));
 
     QSize res = playerWindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
@@ -3585,12 +3585,12 @@ bool TMainWindow::winEvent (MSG* m, long* result) {
             || ((m->wParam & 0xFFF0) == SC_MONITORPOWER)) {
             if (player->state() == Player::STATE_PLAYING
                 && player->mdat.hasVideo()) {
-                logger()->debug("winEvent: not allowing screensaver");
+                WZDEBUG("Not allowing screensaver");
                 (*result) = 0;
                 return true;
             }
 
-            logger()->debug("winEvent: allowing screensaver");
+            WZDEBUG("Allowing screensaver");
             return false;
         }
     }

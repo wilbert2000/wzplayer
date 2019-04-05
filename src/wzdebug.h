@@ -38,19 +38,19 @@
 
 #define DECLARE_QCLASS_LOGGER \
     LOG4QT_DECLARE_QCLASS_LOGGER \
-    TWZDebug debug; \
+    TWZDebug wzdebug; \
 private:
 
 
 class TWZDebug : public QDebug {
 public:
-    Log4Qt::Level level;
     QString msg;
+    Log4Qt::Level level;
     Log4Qt::Logger* logger;
 
     explicit TWZDebug(Log4Qt::Logger* aLogger);
 };
 
-TWZDebug& operator << (QDebug&, TWZDebug&);
+TWZDebug& operator << (TWZDebug&, TWZDebug&);
 
 #endif // WZDEBUG_H

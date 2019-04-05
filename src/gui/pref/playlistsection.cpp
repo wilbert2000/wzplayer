@@ -26,7 +26,7 @@ namespace Pref {
 
 TPlaylistSection::TPlaylistSection(QWidget* parent, Qt::WindowFlags f)
     : TSection(parent, f),
-    debug(logger()) {
+    wzdebug(logger()) {
 
     setupUi(this);
 

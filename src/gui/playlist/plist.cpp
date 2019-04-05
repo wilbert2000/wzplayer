@@ -116,7 +116,7 @@ TPList::TPList(TDockWidget* parent,
                const QString& aShortName,
                const QString& aTransName) :
     QWidget(parent),
-    debug(logger()),
+    wzdebug(logger()),
     mainWindow(mw),
     dock(parent),
     thread(0),
@@ -1355,7 +1355,8 @@ void TPList::add(const QStringList& files,
                     bool startPlay,
                     TPlaylistItem* target,
                     const QString& fileToPlay) {
-    debug << "add files" << files << "startPlay" << startPlay << debug;
+    wzdebug << "add files" << files << "startPlay" << startPlay;
+    wzdebug << wzdebug;
 
     addFiles = files;
     addStartPlay = startPlay;

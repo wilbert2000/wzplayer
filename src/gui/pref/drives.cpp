@@ -39,7 +39,7 @@ bool isCDDevice(QString drive) {
 
 TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
     : TSection(parent, f),
-      debug(logger()) {
+      wzdebug(logger()) {
     setupUi(this);
 
 #ifndef Q_OS_WIN
@@ -71,7 +71,7 @@ void TDrives::retranslateStrings() {
 }
 
 void TDrives::updateDriveCombos(bool detect_cd_devices) {
-    logger()->debug("updateDriveCombos: detect_cd_device " + detect_cd_devices);
+    WZDEBUG("detect_cd_device " + detect_cd_devices);
 
     // Save current values
     QString current_dvd_device = dvdDevice();

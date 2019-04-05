@@ -59,7 +59,7 @@ bool TPlayer::startPausedOnce = false;
 
 TPlayer::TPlayer(QWidget* parent, Gui::TPlayerWindow* pw) :
     QObject(parent),
-    debug(logger()),
+    wzdebug(logger()),
     mdat(),
     mset(&mdat),
     keepSize(false),
@@ -2483,7 +2483,7 @@ bool TPlayer::getMute() const {
 }
 
 void TPlayer::mute(bool b) {
-    logger()->debug("mute: %1", b);
+    logger()->debug("Mute %1", b);
 
     if (Settings::pref->global_volume) {
         Settings::pref->mute = b;

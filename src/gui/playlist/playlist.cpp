@@ -43,7 +43,7 @@ namespace Playlist {
 
 TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
     TPList(parent, mw, "playlist", "pl", tr("Playlist")),
-    debug(logger()),
+    wzdebug(logger()),
     reachedEndOfPlaylist(false) {
 
     setAcceptDrops(true);
@@ -789,8 +789,8 @@ void TPlaylist::findPlayingItem() {
 
 // Drag&drop
 void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
-    debug << "dragEnterEvent" << e->mimeData()->formats();
-    debug << debug;
+    wzdebug << "dragEnterEvent" << e->mimeData()->formats();
+    wzdebug << wzdebug;
 
     if (e->mimeData()->hasUrls()) {
         if (e->proposedAction() & Qt::CopyAction) {
@@ -807,8 +807,8 @@ void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
 }
 
 void TPlaylist::dropEvent(QDropEvent *e) {
-    debug << "dropEvent" << e->mimeData()->formats();
-    debug << debug;
+    wzdebug << "dropEvent" << e->mimeData()->formats();
+    wzdebug << wzdebug;
 
     if (e->mimeData()->hasUrls()) {
         QStringList files;
