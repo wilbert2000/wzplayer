@@ -242,7 +242,7 @@ private:
     QPoint center_window_pos;
 
     // Windows
-    TFilePropertiesDialog* file_properties_dialog;
+    TFilePropertiesDialog* propertiesDialog;
     Pref::TDialog* prefDialog;
     THelpWindow* help_window;
 

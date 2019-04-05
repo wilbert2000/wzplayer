@@ -102,7 +102,7 @@ TMainWindow::TMainWindow() :
     ignore_show_hide_events(false),
     save_size(true),
     center_window(false),
-    file_properties_dialog(0),
+    propertiesDialog(0),
     prefDialog(0),
     help_window(0),
     menubar_visible(true),
@@ -159,6 +159,11 @@ TMainWindow::TMainWindow() :
             titleUpdater, &TWZTimer::startVoid);
     connect(player, &Player::TPlayer::streamingTitleChanged,
             titleUpdater, &TWZTimer::startVoid);
+    connect(player, &Player::TPlayer::videoBitRateChanged,
+            titleUpdater, &TWZTimer::startVoid);
+    connect(player, &Player::TPlayer::audioBitRateChanged,
+            titleUpdater, &TWZTimer::startVoid);
+
 
     setupNetworkProxy();
     changeStayOnTop(pref->stay_on_top);
@@ -1512,15 +1517,11 @@ void TMainWindow::applyNewSettings() {
 void TMainWindow::createFilePropertiesDialog() {
     WZDEBUG("");
 
-    file_properties_dialog = new TFilePropertiesDialog(this);
-    file_properties_dialog->setModal(false);
-    connect(file_properties_dialog, &TFilePropertiesDialog::applied,
+    propertiesDialog = new TFilePropertiesDialog(this);
+    propertiesDialog->setModal(false);
+    connect(propertiesDialog, &TFilePropertiesDialog::applied,
             this, &TMainWindow::applyFileProperties);
-    connect(player, &Player::TPlayer::videoBitRateChanged,
-            titleUpdater, &TWZTimer::startVoid);
-    connect(player, &Player::TPlayer::audioBitRateChanged,
-            titleUpdater, &TWZTimer::startVoid);
-    connect(file_properties_dialog, &TFilePropertiesDialog::visibilityChanged,
+    connect(propertiesDialog, &TFilePropertiesDialog::visibilityChanged,
             findAction("view_properties"), &Action::TAction::setChecked);
 }
 
@@ -1532,7 +1533,7 @@ void TMainWindow::setFilePropertiesData() {
     // Get info from player
     Player::Info::TPlayerInfo* i = Player::Info::TPlayerInfo::obj();
     i->getInfo();
-    file_properties_dialog->setCodecs(i->vcList(),
+    propertiesDialog->setCodecs(i->vcList(),
                                       i->acList(),
                                       i->demuxerList());
 
@@ -1555,20 +1556,18 @@ void TMainWindow::setFilePropertiesData() {
     if (ac.isEmpty())
         ac = player->mdat.audio_codec;
 
-    file_properties_dialog->setDemuxer(demuxer, player->mset.original_demuxer);
-    file_properties_dialog->setVideoCodec(vc,
-                                          player->mset.original_video_codec);
-    file_properties_dialog->setAudioCodec(ac,
-                                          player->mset.original_audio_codec);
+    propertiesDialog->setDemuxer(demuxer, player->mset.original_demuxer);
+    propertiesDialog->setVideoCodec(vc, player->mset.original_video_codec);
+    propertiesDialog->setAudioCodec(ac, player->mset.original_audio_codec);
 
-    file_properties_dialog->setPlayerAdditionalArguments(
+    propertiesDialog->setPlayerAdditionalArguments(
                 player->mset.player_additional_options);
-    file_properties_dialog->setPlayerAdditionalVideoFilters(
+    propertiesDialog->setPlayerAdditionalVideoFilters(
                 player->mset.player_additional_video_filters);
-    file_properties_dialog->setPlayerAdditionalAudioFilters(
+    propertiesDialog->setPlayerAdditionalAudioFilters(
                 player->mset.player_additional_audio_filters);
 
-    file_properties_dialog->showInfo(playlist->getPlayingTitle(true));
+    propertiesDialog->showInfo(playlist->getPlayingTitle(true));
 
     QApplication::restoreOverrideCursor();
 }
@@ -1581,7 +1580,7 @@ void TMainWindow::applyFileProperties() {
 
     // Demuxer
     QString prev_demuxer = player->mset.forced_demuxer;
-    QString s = file_properties_dialog->demuxer();
+    QString s = propertiesDialog->demuxer();
     if (s == player->mset.original_demuxer) {
         s = "";
     }
@@ -1597,7 +1596,7 @@ void TMainWindow::applyFileProperties() {
     }
 
     // Video codec
-    s = file_properties_dialog->videoCodec();
+    s = propertiesDialog->videoCodec();
     if (s == player->mset.original_video_codec) {
         s = "";
     }
@@ -1607,7 +1606,7 @@ void TMainWindow::applyFileProperties() {
     }
 
     // Audio codec
-    s = file_properties_dialog->audioCodec();
+    s = propertiesDialog->audioCodec();
     if (s == player->mset.original_audio_codec) {
         s = "";
     }
@@ -1617,21 +1616,21 @@ void TMainWindow::applyFileProperties() {
     }
 
     // Additional options
-    s = file_properties_dialog->playerAdditionalArguments();
+    s = propertiesDialog->playerAdditionalArguments();
     if (s != player->mset.player_additional_options) {
         player->mset.player_additional_options = s;
         need_restart = true;
     }
 
     // Additional video filters
-    s = file_properties_dialog->playerAdditionalVideoFilters();
+    s = propertiesDialog->playerAdditionalVideoFilters();
     if (s != player->mset.player_additional_video_filters) {
         player->mset.player_additional_video_filters = s;
         need_restart = true;
     }
 
     // Additional audio filters
-    s = file_properties_dialog->playerAdditionalAudioFilters();
+    s = propertiesDialog->playerAdditionalAudioFilters();
     if (s != player->mset.player_additional_audio_filters) {
         player->mset.player_additional_audio_filters = s;
         need_restart = true;
@@ -1651,13 +1650,13 @@ void TMainWindow::showFilePropertiesDialog(bool checked) {
     WZDEBUG("");
 
     if (checked) {
-        if (!file_properties_dialog) {
+        if (!propertiesDialog) {
             createFilePropertiesDialog();
         }
         setFilePropertiesData();
-        file_properties_dialog->show();
+        propertiesDialog->show();
     } else {
-        file_properties_dialog->hide();
+        propertiesDialog->hide();
     }
 }
 
@@ -1832,8 +1831,8 @@ void TMainWindow::saveSettings() {
     if (help_window) {
         help_window->saveSettings(pref);
     }
-    if (file_properties_dialog) {
-        file_properties_dialog->saveSettings();
+    if (propertiesDialog) {
+        propertiesDialog->saveSettings();
     }
     if (prefDialog) {
         prefDialog->saveSettings();
@@ -2180,19 +2179,19 @@ void TMainWindow::updateTitle() {
     setWindowCaption(title + (title.isEmpty() ? "" : " - ")
                      + TConfig::PROGRAM_NAME);
 
-    if (file_properties_dialog
-            && file_properties_dialog->isVisible()
-            // onMediaInfoChanged() will handle the next 2 states
+    if (propertiesDialog
+            && propertiesDialog->isVisible()
+            // onMediaInfoChanged() will handle these 2 when playing starts
             && player->state() != Player::STATE_LOADING
             && player->state() != Player::STATE_RESTARTING) {
-        file_properties_dialog->showInfo(title);
+        propertiesDialog->showInfo(title);
     }
 }
 
 void TMainWindow::onMediaInfoChanged() {
     WZTRACE("");
 
-    if (file_properties_dialog && file_properties_dialog->isVisible()) {
+    if (propertiesDialog && propertiesDialog->isVisible()) {
         setFilePropertiesData();
     }
 }
