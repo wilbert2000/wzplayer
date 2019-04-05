@@ -18,6 +18,12 @@
 
 #include "gui/playerwindow.h"
 
+#include "gui/msg.h"
+#include "desktop.h"
+#include "settings/preferences.h"
+#include "colorutils.h"
+#include "images.h"
+
 #include <QTimer>
 #include <QCursor>
 #include <QEvent>
@@ -26,13 +32,6 @@
 #include <QPainter>
 #include <QApplication>
 #include <QLabel>
-
-#include "gui/msg.h"
-#include "desktop.h"
-#include "player/player.h"
-#include "settings/preferences.h"
-#include "colorutils.h"
-#include "images.h"
 
 
 using namespace Settings;
@@ -100,6 +99,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     debug(logger()),
     video_size(0, 0),
     last_video_out_size(0, 0),
+    fps(0),
     last_fps(0),
     aspect(0),
     zoom_factor(1.0),
@@ -129,8 +129,8 @@ TPlayerWindow::TPlayerWindow(QWidget* parent) :
     setDelayLeftClick(pref->delay_left_click);
 }
 
-void TPlayerWindow::setResolution(int width, int height) {
-    WZDEBUG(QString("%1 x %2").arg(width).arg(height));
+void TPlayerWindow::setResolution(int width, int height, const double fps) {
+    WZDEBUG(QString("%1 x %2 %3 fps").arg(width).arg(height).arg(fps));
 
     video_size = QSize(width, height);
     if (height == 0) {
@@ -138,6 +138,7 @@ void TPlayerWindow::setResolution(int width, int height) {
     } else {
         aspect = (double) width / height;
     }
+    this->fps = fps;
     if (!video_size.isEmpty() && video_window->normal_background) {
         setFastWindow();
     }
@@ -246,9 +247,9 @@ void TPlayerWindow::updateVideoWindow() {
 
     // Update status bar with new video out size
     if (vsize != last_video_out_size
-            || qAbs(player->mdat.video_fps - last_fps) > 0.001) {
+            || qAbs(fps - last_fps) > 0.001) {
         last_video_out_size = vsize;
-        last_fps = player->mdat.video_fps;
+        last_fps = fps;
         emit videoOutChanged();
     }
 
@@ -332,7 +333,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
     // Don't pass when button down, assuming the video is being dragged.
     if (event->buttons() == Qt::NoButton && video_window->underMouse()) {
         // Make event relative to video layer
-        player->dvdnavUpdateMousePos(event->pos() - video_window->pos());
+        emit dvdnavMousePos(event->pos() - video_window->pos());
     }
 
     // Pass event to parent
@@ -340,13 +341,7 @@ void TPlayerWindow::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void TPlayerWindow::onLeftClicked() {
-
-    if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
-        && video_window->underMouse()) {
-        player->dvdnavMouse();
-    } else {
-        emit leftClicked();
-    }
+    emit leftClicked();
 }
 
 void TPlayerWindow::mouseReleaseEvent(QMouseEvent* event) {
@@ -394,20 +389,6 @@ void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
         event->accept();
     } else {
         event->ignore();
-    }
-}
-
-void TPlayerWindow::wheelEvent(QWheelEvent* event) {
-
-    event->accept();
-
-    if (event->orientation() == Qt::Vertical) {
-        if (event->delta() >= 0)
-            player->wheelUp();
-        else
-            player->wheelDown();
-    } else {
-        WZDEBUG("ignoring horizontal event");
     }
 }
 
@@ -491,8 +472,9 @@ void TPlayerWindow::restoreNormalWindow() {
     WZTRACE("");
 
     video_window->restoreNormalBackground();
-    // Clear video size
+    // Clear video size and fps
     video_size = QSize(0, 0);
+    fps = 0;
 }
 
 } // namespace Gui

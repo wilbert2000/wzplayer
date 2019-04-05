@@ -283,7 +283,9 @@ bool TPlayerProcess::parseLine(QString& line) {
     return false;
 }
 
-bool TPlayerProcess::parseVO(const QString& vo, int sw, int sh, int dw, int dh) {
+bool TPlayerProcess::parseVO(const QString& vo,
+                             int sw, int sh,
+                             int dw, int dh) {
 
     md->vo = vo;
     md->video_width = sw;

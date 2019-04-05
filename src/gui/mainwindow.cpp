@@ -995,6 +995,8 @@ void TMainWindow::createActions() {
     dvdnavMouseAct = new TAction(this, "dvdnav_mouse", tr("DVD mouse click"));
     connect(dvdnavMouseAct, &TAction::triggered,
             player, &Player::TPlayer::dvdnavMouse);
+    connect(playerWindow, &TPlayerWindow::dvdnavMousePos,
+            player, &Player::TPlayer::dvdnavMousePos);
 
     dvdnavMenuAct = new TAction(this, "dvdnav_menu", tr("DVD menu"), "",
                                 Qt::CTRL | Qt::Key_Return);
@@ -3147,6 +3149,20 @@ void TMainWindow::dropEvent(QDropEvent *e) {
     QMainWindow::dropEvent(e);
 }
 
+void TMainWindow::wheelEvent(QWheelEvent* event) {
+
+    event->accept();
+
+    if (event->orientation() == Qt::Vertical) {
+        if (event->delta() >= 0)
+            player->wheelUp();
+        else
+            player->wheelDown();
+    } else {
+        WZINFO("Ignoring horizontal wheel event");
+    }
+}
+
 void TMainWindow::stop() {
     WZTRACE("");
 
@@ -3711,7 +3727,10 @@ void TMainWindow::runActionsLater(const QString& actions,
 void TMainWindow::leftClickFunction() {
     WZDEBUG("");
 
-    if (!pref->mouse_left_click_function.isEmpty()) {
+    if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
+        && playerWindow->videoWindow()->underMouse()) {
+        player->dvdnavMouse();
+    } else if (!pref->mouse_left_click_function.isEmpty()) {
         processAction(pref->mouse_left_click_function);
     }
 }

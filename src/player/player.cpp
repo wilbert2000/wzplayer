@@ -1814,20 +1814,21 @@ void TPlayer::seekToPrevSub() {
 void TPlayer::wheelUpFunc(Settings::TPreferences::TWheelFunction function) {
     WZDEBUG("");
 
-    if (function == Settings::TPreferences::DoNothing) {
-        function = (Settings::TPreferences::TWheelFunction)
-                   Settings::pref->wheel_function;
+    using namespace Settings;
+
+    if (function == TPreferences::DoNothing) {
+        function = (TPreferences::TWheelFunction) pref->wheel_function;
     }
     switch (function) {
-        case Settings::TPreferences::Volume: incVolume(); break;
-        case Settings::TPreferences::Zoom: incZoom(); break;
-        case Settings::TPreferences::Seeking:
-            Settings::pref->wheel_function_seeking_reverse
-                    ? rewind(Settings::pref->seeking4)
-                    : forward(Settings::pref->seeking4);
+        case TPreferences::Volume: incVolume(); break;
+        case TPreferences::Zoom: incZoom(); break;
+        case TPreferences::Seeking:
+            pref->wheel_function_seeking_reverse
+                    ? rewind(pref->seeking4)
+                    : forward(pref->seeking4);
             break;
-        case Settings::TPreferences::ChangeSpeed : incSpeed10(); break;
-        default : {} // do nothing
+        case TPreferences::ChangeSpeed : incSpeed10(); break;
+        case TPreferences::DoNothing: break;
     }
 }
 
@@ -3368,7 +3369,7 @@ void TPlayer::dvdnavMouse() {
             // Give a last update on the mouse position
             QPoint pos = playerwindow->videoWindow()->mapFromGlobal(
                              QCursor::pos());
-            dvdnavUpdateMousePos(pos);
+            dvdnavMousePos(pos);
             // Click
             proc->discButtonPressed("mouse");
         }
@@ -3376,7 +3377,7 @@ void TPlayer::dvdnavMouse() {
 }
 
 // Slot called by playerwindow to pass mouse move local to video
-void TPlayer::dvdnavUpdateMousePos(const QPoint& pos) {
+void TPlayer::dvdnavMousePos(const QPoint& pos) {
 
     if (proc->isReady()
         && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
@@ -3417,7 +3418,8 @@ void TPlayer::onReceivedVideoOut() {
 
     // w x h is output resolution selected by player with aspect and filters
     // applied
-    playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height);
+    playerwindow->setResolution(mdat.video_out_width, mdat.video_out_height,
+                                mdat.video_fps);
 
     // Normally, let the main window know the new video dimension, unless
     // restarting, then need to prevent the main window from resizing itself.

@@ -200,6 +200,7 @@ protected:
     virtual void showEvent(QShowEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent*) override;
     virtual void dropEvent(QDropEvent*) override;
+    virtual void wheelEvent(QWheelEvent* e) override;
 
 #if defined(Q_OS_WIN)
     // Disable screensaver

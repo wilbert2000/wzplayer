@@ -63,7 +63,7 @@ public:
 
     TVideoWindow* videoWindow() const { return video_window; }
 
-    void setResolution(int width, int height);
+    void setResolution(int width, int height, const double fps);
     QSize resolution() const { return video_size; }
     QSize lastVideoOutSize() const { return last_video_out_size; }
     double aspectRatio() const { return aspect; }
@@ -113,6 +113,7 @@ signals:
     void middleClicked();
     void xbutton1Clicked(); // first X button
     void xbutton2Clicked(); // second X button
+    void dvdnavMousePos(const QPoint& pos);
 
     void draggingChanged(bool);
 
@@ -120,12 +121,11 @@ signals:
     void videoSizeFactorChanged(double, double);
 
 protected:
-    virtual void resizeEvent(QResizeEvent*);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void mouseMoveEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void mouseDoubleClickEvent(QMouseEvent* e);
-    virtual void wheelEvent(QWheelEvent* e);
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
 
 private:
     TVideoWindow* video_window;
@@ -133,6 +133,7 @@ private:
     // Geometry
     QSize video_size;
     QSize last_video_out_size;
+    double fps;
     double last_fps;
     double aspect;
 

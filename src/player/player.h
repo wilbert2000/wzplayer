@@ -109,8 +109,6 @@ public:
     void setStartPausedOnce() { startPausedOnce = true; }
     void saveRestartState();
 
-    void dvdnavUpdateMousePos(const QPoint& pos);
-
 
 public slots:
     // Play
@@ -306,6 +304,7 @@ public slots:
     void dvdnavSelect();
     void dvdnavPrev();
     void dvdnavMouse();
+    void dvdnavMousePos(const QPoint& pos);
 
 
     // Window
