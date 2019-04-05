@@ -212,6 +212,7 @@ void TMediaData::list() const {
 
     WZDEBUG("video_format: '" + video_format + "'");
     WZDEBUG("video_codec: '" + video_codec + "'");
+    WZDEBUG("video_codec_description: '" + video_codec_description + "'");
     WZDEBUG("video_bitrate: " + QString::number(video_bitrate));
     WZDEBUG("video_hwdec: " + QString::number(video_hwdec));
     WZDEBUG("Video tracks:");

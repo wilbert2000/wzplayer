@@ -154,22 +154,31 @@ QString TPropertiesDialog::demuxer() {
     return demuxerlist[pos].name();
 }
 
-void TPropertiesDialog::setVideoCodec(const QString& vc, const QString& original_vc) {
+void TPropertiesDialog::setVideoCodec(const QString& vc,
+                                      const QString& original_vc) {
+
+    WZDEBUG("'" + vc + "'");
 
     if (!original_vc.isEmpty()) {
         orig_vc = original_vc;
         int pos = find(orig_vc, vclist);
         if (pos >= 0) {
-            player->mdat.video_codec_description = vclist[pos].desc();
+            vc_listbox->setCurrentRow(pos);
+            // player->mdat.video_codec_description is used by info page
+            player->mdat.video_codec_description = vclist.at(pos).desc();
+            WZTRACE(QString("Found video codec '%1'").arg(orig_vc));
+        } else {
+            WZWARN(QString("Video codec '%1' not found").arg(orig_vc));
         }
     }
 
     int pos = find(vc, vclist);
     if (pos >= 0) {
         vc_listbox->setCurrentRow(pos);
+        WZTRACE(QString("Found video codec '%1'").arg(vc));
+    } else {
+        WZWARN(QString("Video codec '%1' not found").arg(vc));
     }
-
-    WZDEBUG("'" + vc + "'");
 }
 
 QString TPropertiesDialog::videoCodec() {

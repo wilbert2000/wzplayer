@@ -95,12 +95,14 @@ TNameDescList TPlayerInfoMPV::getList(const QList<QByteArray>& lines) {
         }
         if (!line.isEmpty()) {
             int pos = line.indexOf(' ');
-            if (pos > -1) {
+            if (pos >= 0) {
                 QString name = line.left(pos);
                 if (name.endsWith(':')) name = name.left(name.count() - 1);
                 QString desc = line.mid(pos + 1);
                 desc = desc.replace(": ", "").replace("- ", "");
                 list.append(TNameDesc(name, desc));
+                WZTRACE(QString("Added name '%1' desc '%2'")
+                        .arg(name).arg(desc));
             }
         }
     }

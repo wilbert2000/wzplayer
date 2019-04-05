@@ -500,9 +500,7 @@ bool TMPVProcess::parseLine(QString& line) {
 
     static QRegExp rx_ao("^AO: \\[(.*)\\]");
 
-    static QRegExp rx_video_codec("^VIDEO_CODEC=\\s*(.*) \\[(.*)\\]");
     static QRegExp rx_video_property("^VIDEO_([A-Z]+)=\\s*(.*)");
-    static QRegExp rx_audio_codec("^AUDIO_CODEC=\\s*(.*) \\[(.*)\\]");
     static QRegExp rx_audio_property("^AUDIO_([A-Z]+)=\\s*(.*)");
 
     static QRegExp rx_meta_data("^METADATA_LIST=(.*)");
@@ -594,12 +592,20 @@ bool TMPVProcess::parseLine(QString& line) {
         return true;
     }
 
-    // Video codec best match.
-    // Fall back to generic VIDEO_CODEC if match fails.
-    if (rx_video_codec.indexIn(line) >= 0) {
-        md->video_codec = rx_video_codec.cap(2);
-        WZDEBUG("video_codec set to '" + md->video_codec + "'");
-        return true;
+    // Video codec
+    // Fall back to generic VIDEO_CODEC in TPlayerProcess::parseVideoProperty()
+    // if match fails.
+    if (line.startsWith("VIDEO_CODEC=")) {
+        int i = line.indexOf(" (");
+        if (i >= 0) {
+            md->video_codec = line.left(i).mid(12);
+            md->video_codec_description = line.mid(i + 2);
+            md->video_codec_description.chop(1);
+            WZDEBUG("video_codec set to '" + md->video_codec + "'");
+            WZDEBUG("video_codec_description set to '"
+                    + md->video_codec_description + "'");
+            return true;
+        }
     }
 
     // Video property VIDEO_name and value
@@ -608,12 +614,20 @@ bool TMPVProcess::parseLine(QString& line) {
                                   rx_video_property.cap(2));
     }
 
-    // Audio codec best match
-    // Fall back to generic AUDIO_CODEC if match fails.
-    if (rx_audio_codec.indexIn(line) >= 0) {
-        md->audio_codec = rx_audio_codec.cap(2);
-        WZDEBUG("audio_codec set to '" + md->audio_codec + "'");
-        return true;
+    // Audio codec
+    // Fall back to generic AUDIO_CODEC in TPlayerProcess::parseAudioProperty()
+    // if match fails.
+    if (line.startsWith("AUDIO_CODEC=")) {
+        int i = line.indexOf(" (");
+        if (i >= 0) {
+            md->audio_codec = line.left(i).mid(12);
+            md->audio_codec_description = line.mid(i + 2);
+            md->audio_codec_description.chop(1);
+            WZDEBUG("audio_codec set to '" + md->audio_codec + "'");
+            WZDEBUG("audio_codec_description set to '"
+                    + md->audio_codec_description + "'");
+            return true;
+        }
     }
 
     // Audio property AUDIO_name and value
