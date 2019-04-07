@@ -34,8 +34,8 @@ TAbout::TAbout(QWidget* parent)
     : QDialog(parent, TConfig::DIALOG_FLAGS) {
 
     setupUi(this);
-    setWindowIcon(Images::icon("logo", 64));
 
+    setWindowIcon(Images::icon("logo", 64));
     logo->setPixmap(QPixmap(":/default-theme/logo.png")
                     .scaledToHeight(64, Qt::SmoothTransformation));
     contrib_icon->setPixmap(Images::icon("contributors"));
@@ -44,31 +44,19 @@ TAbout::TAbout(QWidget* parent)
 
     info->setText(
         "<b>" + TConfig::PROGRAM_NAME
-        +"</b> &copy; 2015-2018 Wilbert Hengst.<br><br>"
+                +"</b> &copy; 2015-2019 Wilbert Hengst.<br><br>"
+
         + tr("WZPlayer is a graphical user interface for %1 and %2"
              " based on %3 by Ricardo Villalba.")
-            .arg("<a href=\"http://www.mplayerhq.hu/design7/info.html\">"
-                 "MPlayer</a>")
-            .arg("<a href=\"http://www.mpv.io\">MPV</a>")
-            .arg("<a href=\""  + TConfig::URL_SMPLAYER + "\">SMPlayer</a>")
-        + "<br><br><b>" + tr("Version: %1").arg(TVersion::version) + "</b>"
-        + "<br>" + tr("Using Qt %1 (compiled with Qt %2)")
-                   .arg(qVersion()).arg(QT_VERSION_STR)
-        + "<br><br><b>"+ tr("Links:") +"</b><br>"
-        + tr("Website:") + " " + link(TConfig::URL_HOMEPAGE));
+            .arg(link(TConfig::URL_MPLAYER, "MPlayer"))
+            .arg(link(TConfig::URL_MPV, "MPV"))
+            .arg(link(TConfig::URL_SMPLAYER, "SMPlayer")) + "<br><br>"
 
-    QString license_text =
-        "<i>This program is free software; you can redistribute it and/or"
-        " modify it under the terms of the GNU General Public License as"
-        " published by the Free Software Foundation; either version 2 of the"
-        " License or any later version.</i>";
-        
-    license->setText(license_text);
-    license->setOpenLinks(false);
-    license->setOpenExternalLinks(false);
-    connect(license, &QTextBrowser::anchorClicked, this, &TAbout::openLink);
+          "<b>" + tr("Version:") + "</b> " + TVersion::version + "<br>"
+        + tr("Using Qt %1 (compiled with Qt %2)")
+                .arg(qVersion()).arg(QT_VERSION_STR) + "<br><br>"
 
-    translators->setHtml(getTranslators());
+          "<b>" + tr("Home:") + "</b> " + link(TConfig::URL_HOMEPAGE));
 
     contributions->setText(
         tr("WZPlayer logo by %1")
@@ -80,64 +68,38 @@ TAbout::TAbout(QWidget* parent)
         + tr("Many other people contributed with patches. See the Readme.txt"
              " file for details."));
 
-    // Copy the background color ("window") of the tab widget to the "base"
-    // color of the qtextbrowsers
-    // Problem, it doesn't work with some styles,
-    // so first we change the "window" color of the tab widgets.
-    info_tab->setAutoFillBackground(true);
-    contributions_tab->setAutoFillBackground(true);
-    translations_tab->setAutoFillBackground(true);
-    license_tab->setAutoFillBackground(true);
+    translators->setHtml(
+        tr("Many people contributed with translations.") + " " +
+        tr("You can also help to translate WZPlayer into your own language.")
 
-    QPalette pal = info_tab->palette();
-    pal.setColor(QPalette::Window, palette().color(QPalette::Window));
+        + "<p>" + tr("Visit %1 and join a translation team.")
+        .arg(link("http://www.transifex.com/projects/p/wzplayer/")) + "</p>"
 
-    info_tab->setPalette(pal);
-    contributions_tab->setPalette(pal);
-    translations_tab->setPalette(pal);
-    license_tab->setPalette(pal);
+        + "<p>" + link(TConfig::URL_TRANSLATORS, tr("Click here"))
+        + tr(" for the translators from the transifex teams"));
 
-    QPalette p = info->palette();
-    //p.setBrush(QPalette::Base, info_tab->palette().window());
-    p.setColor(QPalette::Base, info_tab->palette().color(QPalette::Window));
+    license->setText("<i>This program is free software; you can redistribute it"
+        " and/or modify it under the terms of the GNU General Public License as"
+        " published by the Free Software Foundation; either version 2 of the"
+        " license or any later version.</i>");
 
-    info->setPalette(p);
-    contributions->setPalette(p);
-    translators->setPalette(p);
-    license->setPalette(p);
+    connect(buttonBox, &QDialogButtonBox::accepted,
+            this, &TAbout::accept);
 
-    tab_widget->removeTab(0);
+
+    // TODO: fix palette
+    /*
+    QPalette pal = info->palette();
+    pal.setColor(QPalette::Base, info_tab->palette().color(QPalette::Window));
+    pal.setBrush(QPalette::Base, info_tab->palette().window());
+
+    info->setPalette(pal);
+    contributions->setPalette(pal);
+    translators->setPalette(pal);
+    license->setPalette(pal);
+    */
 
     adjustSize();
-}
-
-QString TAbout::getTranslators() const {
-    return QString(
-         tr("Many people contributed with translations.") +" "+
-         tr("You can also help to translate WZPlayer into your own language.")
-         + "<p>" + tr("Visit %1 and join a translation team.")
-         .arg("<a href=\"http://www.transifex.com/projects/p/wzplayer/\">"
-              "http://www.transifex.com/projects/p/wzplayer/</a>")
-         + "<p><a href=\"" + TConfig::URL_TRANSLATORS + "\">"
-         + tr("Click here for the translators from the transifex teams")
-         + "</a>");
-}
-
-QString TAbout::trad(const QString & lang, const QString & author) const {
-    return trad(lang, QStringList() << author);
-}
-
-QString TAbout::trad(const QString& lang, const QStringList& authors) const {
-
-    QString s;
-    for (int n = 0; n < authors.count(); n++) {
-        QString author = authors[n];
-        s += author.replace("<", "&lt;").replace(">", "&gt;");
-        if (n < authors.count() - 1) {
-            s += ", ";
-        }
-    }
-    return QString("<p><b>%1</b>: %2</p>").arg(lang).arg(s);
 }
 
 QString TAbout::link(const QString& url, QString name) const {
@@ -147,16 +109,8 @@ QString TAbout::link(const QString& url, QString name) const {
     return QString("<a href=\"" + url + "\">" + name +"</a>");
 }
 
-QString TAbout::contr(const QString& author, const QString& thing) const {
-    return "<li>"+ tr("<b>%1</b> (%2)").arg(author).arg(thing) +"</li>";
-}
-
 QSize TAbout::sizeHint () const {
-    return QSize(518, 326);
-}
-
-void TAbout::openLink(const QUrl& link) {
-    QDesktopServices::openUrl(link);
+    return QSize(528, 336);
 }
 
 } // namespace

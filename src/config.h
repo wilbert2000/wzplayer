@@ -24,11 +24,14 @@ public:
     static const QString WZPLAYLIST;
 
     static const QString URL_HOMEPAGE;
+    static const QString URL_TRANSLATOR_TEAM;
     static const QString URL_TRANSLATORS;
     static const QString URL_CHANGES;
     static const QString URL_OPENSSL;
     static const QString URL_VERSION_INFO;
     static const QString URL_SMPLAYER;
+    static const QString URL_MPLAYER;
+    static const QString URL_MPV;
 };
 
 

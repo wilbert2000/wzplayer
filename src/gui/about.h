@@ -37,24 +37,10 @@ class TAbout : public QDialog, public Ui::TAbout {
     Q_OBJECT
 public:
     TAbout(QWidget* parent);
+    virtual QSize sizeHint() const override;
 
-    virtual QSize sizeHint () const;
-
-protected:
-    QString getTranslators() const;
-
-    //! Return a formatted string with the translator and language
-    QString trad(const QString& lang, const QString& author) const;
-
-    QString trad(const QString& lang, const QStringList& authors) const;
-
+private:
     QString link(const QString& url, QString name = "") const;
-
-    //! Return a formatted string with the contributor and what he did
-    QString contr(const QString& author, const QString & thing) const;
-
-protected slots:
-    void openLink(const QUrl & link);
 };
 
 } // namespace Gui
