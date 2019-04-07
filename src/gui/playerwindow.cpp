@@ -210,52 +210,63 @@ void TPlayerWindow::updateVideoWindow() {
     // MPlayer does not support pan in slave mode. It does support zoom through
     // the pansan slave command.
 
-    QSize wsize;
-    QSize vsize;
+    QSize wSize;
+    QSize vSize;
     if (pref->fullscreen) {
-        wsize = TDesktop::size(this);
-        vsize = wsize;
+        wSize = TDesktop::size(this);
+        vSize = wSize;
     } else {
-        wsize = size();
-        vsize = wsize - frame();
+        wSize = size();
+        vSize = wSize - frame();
     }
 
     // Select best fit: height adjusted or width adjusted,
-    // in case video aspect does not match the window aspect ratio.
     // Height adjusted gives horizontal black borders.
     // Width adjusted gives vertical black borders.
     if (aspect != 0) {
-        int height_adjusted = qRound(vsize.width() / aspect);
-        if (height_adjusted <= vsize.height()) {
-            // adjust the height
-            vsize.rheight() = height_adjusted;
+        int height = qRound(vSize.width() / aspect);
+        if (height <= vSize.height()) {
+            // adjust height
+            vSize.rheight() = height;
         } else {
-            // adjust the width
-            vsize.rwidth() = qRound(vsize.height() * aspect);
+            // adjust width
+            vSize.rwidth() = qRound(vSize.height() * aspect);
         }
     }
 
     // Zoom video size. A large size can blow up the video surface.
-    vsize *= zoom();
+    vSize *= zoom();
+
+    // Get height video window
+    int h = wSize.height();
+    if (!pref->fullscreen) {
+        h -= frame().height();
+    }
+
+    // Clip MPlayer and give MPV the full height of the window.
+    if (pref->isMPlayer() || h < vSize.height()) {
+        h = vSize.height();
+    }
 
     // Center video window
-    QSize c = (wsize - vsize) / 2;
-    QRect vwin(c.width(), c.height(), vsize.width(), vsize.height());
+    QRect vWin(0, 0, vSize.width(), h);
+    QSize c = (wSize - vWin.size()) / 2;
+    vWin.moveTo(c.width(), c.height());
 
     // Pan video window
-    vwin.translate(pan());
+    vWin.translate(pan());
 
     // Return to local coords in fullscreen
     if (pref->fullscreen) {
-        vwin.moveTo(vwin.topLeft() - pos() - parentWidget()->pos());
+        vWin.moveTo(vWin.topLeft() - pos() - parentWidget()->pos());
     }
 
     // Set geometry video window
-    video_window->setGeometry(vwin);
+    video_window->setGeometry(vWin);
 
     // Update status bar with new video out size
-    if (vsize != last_video_out_size || qAbs(fps - last_fps) > 0.001) {
-        last_video_out_size = vsize;
+    if (vSize != last_video_out_size || qAbs(fps - last_fps) > 0.001) {
+        last_video_out_size = vSize;
         last_fps = fps;
         emit videoOutChanged();
     }
