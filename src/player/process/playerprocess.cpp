@@ -28,7 +28,10 @@
 #include "player/process/mplayerprocess.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
+#include "wzdebug.h"
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::Process::TPlayerProcess)
 
 namespace Player {
 namespace Process {
@@ -36,7 +39,26 @@ namespace Process {
 const int waiting_for_answers_safe_guard_init = 100;
 
 
-TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
+TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
+                                                    const QString& name,
+                                                    TMediaData* md) {
+
+    TPlayerProcess* process;
+    if (Settings::pref->isMPlayer()) {
+        ::WZDEBUG("Creating TMPlayerProcess " + name);
+        process = new TMPlayerProcess(parent, name, md);
+    } else {
+        ::WZDEBUG("Creating TMPVProcess " + name);
+        process = new TMPVProcess(parent, name, md);
+    }
+
+    return process;
+}
+
+
+TPlayerProcess::TPlayerProcess(QObject* parent,
+                               const QString& name,
+                               TMediaData* mdata) :
     TProcess(parent),
     wzdebug(logger()),
     md(mdata),
@@ -44,6 +66,8 @@ TPlayerProcess::TPlayerProcess(QObject* parent, TMediaData* mdata) :
     received_end_of_file(false),
     quit_send(false),
     line_count(0) {
+
+    setObjectName(name);
 
     //qRegisterMetaType<TSubTracks>("TSubTracks");
     //qRegisterMetaType<Maps::TTracks>("Tracks");
@@ -72,23 +96,6 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
     } else {
         WZWARN("Process not running while trying to write '" + text + "'");
     }
-}
-
-TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
-                                                    TMediaData* md) {
-
-    TPlayerProcess* process;
-    Log4Qt::Logger* logger = Log4Qt::Logger::logger(
-                                 "Player::Process::TPlayerProcess");
-    if (Settings::pref->isMPlayer()) {
-        logger->debug("createPlayerProcess creating TMPlayerProcess");
-        process = new TMPlayerProcess(parent, md);
-    } else {
-        logger->debug("createPlayerProcess creating TMPVProcess");
-        process = new TMPVProcess(parent, md);
-    }
-
-    return process;
 }
 
 bool TPlayerProcess::startPlayer() {
@@ -492,10 +499,10 @@ void TPlayerProcess::setImageDuration(int duration) {
         frames = (duration * fps) + 1;
     }
 
-    WZDEBUG(QString("duration %1, frames %2, fps %3")
-            .arg(duration).arg(frames).arg(fps));
     if (temp_file.open()) {
         temp_file_name = temp_file.fileName();
+        WZDEBUG(QString("Writing %1 frames to '%2'. Duration %3, fps %4.")
+                .arg(frames).arg(temp_file_name).arg(duration).arg(fps));
         temp_file.resize(0);
         QTextStream text(&temp_file);
         for(int i = 0; i < frames; i++) {
@@ -509,13 +516,14 @@ void TPlayerProcess::setImageDuration(int duration) {
     setOption("fps", fps);
 }
 
-void TPlayerProcess::seek(double secs, int mode, bool precise, bool currently_paused) {
+void TPlayerProcess::seek(double secs, int mode, bool keyframes,
+                          bool currently_paused) {
 
     // Convert time to player time if time is absolute position in secs
     if (mode == 2) {
         secs = guiTimeToPlayerTime(secs);
     }
-    seekPlayerTime(secs, mode, precise, currently_paused);
+    seekPlayerTime(secs, mode, keyframes, currently_paused);
 }
 
 void TPlayerProcess::setCaptureDirectory(const QString& dir) {

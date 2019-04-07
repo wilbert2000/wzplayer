@@ -19,14 +19,12 @@
 #ifndef PLAYER_PROCESS_PLAYERPROCESS_H
 #define PLAYER_PROCESS_PLAYERPROCESS_H
 
-#include <QObject>
-#include <QVariant>
 #include <QTemporaryFile>
 
-#include "wzdebug.h"
 #include "player/process/process.h"
 #include "settings/assstyles.h"
 #include "subtracks.h"
+#include "wzdebug.h"
 
 
 class QRegExp;
@@ -42,9 +40,13 @@ class TPlayerProcess : public TProcess {
 public:
     enum ScreenshotType { Single = 0, Multiple = 1 };
 
-    static TPlayerProcess* createPlayerProcess(QObject* parent, TMediaData* md);
+    static TPlayerProcess* createPlayerProcess(QObject* parent,
+                                               const QString& name,
+                                               TMediaData* md);
 
-    explicit TPlayerProcess(QObject* parent, TMediaData* mdata);
+    explicit TPlayerProcess(QObject* parent,
+                            const QString& name,
+                            TMediaData* mdata);
 
     bool isRunning() const { return state() == QProcess::Running; }
     bool isReady() const {
@@ -84,9 +86,9 @@ public:
     virtual void setSecondarySubtitle(SubData::Type type, int ID) = 0;
     virtual void disableSecondarySubtitles() = 0;
     virtual void setSubtitlesVisibility(bool b) = 0;
-    virtual void seekPlayerTime(double secs, int mode, bool precise,
+    virtual void seekPlayerTime(double secs, int mode, bool keyframes,
                                 bool currently_paused) = 0;
-    virtual void seek(double secs, int mode, bool precise,
+    virtual void seek(double secs, int mode, bool keyframes,
                       bool currently_paused);
     virtual void mute(bool b) = 0;
     virtual void setPause(bool b) = 0;

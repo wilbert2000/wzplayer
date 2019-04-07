@@ -633,7 +633,7 @@
          </property>
          <layout class="QVBoxLayout">
           <item>
-           <widget class="QRadioButton" name="absolute_seeking_button">
+           <widget class="QRadioButton" name="seek_absolute_button">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -641,12 +641,12 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&amp;Absolute seeking</string>
+             <string>Seek Absolute</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="relative_seeking_button">
+           <widget class="QRadioButton" name="seek_relative_button">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -654,7 +654,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&amp;Relative seeking</string>
+             <string>Seek relative</string>
             </property>
            </widget>
           </item>
@@ -666,9 +666,9 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="precise_seeking_check">
+           <widget class="QCheckBox" name="seek_keyframes_check">
             <property name="text">
-             <string>&amp;Precise seeking</string>
+             <string>Seek to key frames</string>
             </property>
            </widget>
           </item>
@@ -780,9 +780,9 @@
   <tabstop>seek3_seconds_spin</tabstop>
   <tabstop>seek4_minutes_spin</tabstop>
   <tabstop>seek4_seconds_spin</tabstop>
-  <tabstop>absolute_seeking_button</tabstop>
-  <tabstop>relative_seeking_button</tabstop>
-  <tabstop>precise_seeking_check</tabstop>
+  <tabstop>seek_absolute_button</tabstop>
+  <tabstop>seek_relative_button</tabstop>
+  <tabstop>seek_keyframes_check</tabstop>
   <tabstop>timeslider_behaviour_combo</tabstop>
  </tabstops>
  <resources/>

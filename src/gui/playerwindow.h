@@ -63,6 +63,8 @@ public:
 
     TVideoWindow* videoWindow() const { return video_window; }
 
+    static QSize frame() { return QSize(2, 2); }
+
     void setResolution(int width, int height, const double fps);
     QSize resolution() const { return video_size; }
     QSize lastVideoOutSize() const { return last_video_out_size; }
@@ -151,6 +153,8 @@ private:
     QTime left_button_pressed_time;
     QPoint drag_pos;
     bool dragging;
+
+    bool isPreviewWindow;
 
     void moveVideo(QPoint delta);
 

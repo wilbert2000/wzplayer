@@ -300,8 +300,8 @@ void TPreferences::reset() {
 
     update_while_seeking = true;
     time_slider_drag_delay = 200;
-    relative_seeking = false;
-    precise_seeking = true;
+    seek_relative = false;
+    seek_keyframes = false;
 
 
     // Drives section
@@ -617,8 +617,8 @@ void TPreferences::save() {
     setValue("update_while_seeking", update_while_seeking);
     setValue("time_slider_drag_delay", time_slider_drag_delay);
 
-    setValue("relative_seeking", relative_seeking);
-    setValue("precise_seeking", precise_seeking);
+    setValue("seek_relative", seek_relative);
+    setValue("seek_keyframes", seek_keyframes);
     endGroup();
 
 
@@ -1169,8 +1169,8 @@ void TPreferences::load() {
                            .toBool();
     time_slider_drag_delay = value("time_slider_drag_delay",
                                    time_slider_drag_delay).toInt();
-    relative_seeking = value("relative_seeking", relative_seeking).toBool();
-    precise_seeking = value("precise_seeking", precise_seeking).toBool();
+    seek_relative = value("seek_relative", seek_relative).toBool();
+    seek_keyframes = value("seek_keyframes", seek_keyframes).toBool();
     endGroup();
 
 

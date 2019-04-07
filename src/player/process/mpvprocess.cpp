@@ -36,8 +36,10 @@
 namespace Player {
 namespace Process {
 
-TMPVProcess::TMPVProcess(QObject* parent, TMediaData* mdata) :
-    TPlayerProcess(parent, mdata) {
+TMPVProcess::TMPVProcess(QObject* parent,
+                         const QString& name,
+                         TMediaData* mdata) :
+    TPlayerProcess(parent, name, mdata) {
 }
 
 bool TMPVProcess::startPlayer() {
@@ -1133,7 +1135,7 @@ void TMPVProcess::setSubtitlesVisibility(bool b) {
 
 void TMPVProcess::seekPlayerTime(double secs,
                                  int mode,
-                                 bool precise,
+                                 bool keyframes,
                                  bool currently_paused) {
     Q_UNUSED(currently_paused)
 
@@ -1143,7 +1145,7 @@ void TMPVProcess::seekPlayerTime(double secs,
         case 1 : s += "absolute-percent "; break;
         case 2 : s += "absolute "; break;
     }
-    if (precise) s += "exact"; else s += "keyframes";
+    if (keyframes) s += "keyframes"; else s += "exact";
     writeToPlayer(s);
 }
 

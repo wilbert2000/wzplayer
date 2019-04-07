@@ -23,11 +23,12 @@
 #include "wzdebug.h"
 
 
+class QPoint;
 class QToolBar;
+class QHelpEvent;
 
 namespace Gui {
 namespace Action {
-
 
 class TTimeSlider : public TSlider {
     Q_OBJECT
@@ -41,6 +42,7 @@ public:
 
     virtual int pos();
     virtual double duration();
+    int getTime(const QPoint& pos);
 
 public slots:
     virtual void setPos(int); // Don't use setValue!
@@ -54,6 +56,8 @@ signals:
 
     void wheelUp();
     void wheelDown();
+
+    void toolTipEvent(TTimeSlider* slider, QPoint pos, int secs);
 
 protected slots:
     void stopUpdate();
@@ -74,6 +78,8 @@ private:
 
     int last_pos_to_send;
     QTimer* timer;
+
+    bool onToolTipEvent(QHelpEvent* event);
 }; // class TTimeSlider
 
 } // namespace Action

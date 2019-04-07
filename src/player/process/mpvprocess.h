@@ -36,7 +36,9 @@ class TMPVProcess : public TPlayerProcess {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TMPVProcess(QObject* parent, TMediaData* mdata);
+    explicit TMPVProcess(QObject* parent,
+                         const QString& name,
+                         TMediaData* mdata);
 
     virtual bool startPlayer();
 
@@ -61,7 +63,8 @@ public:
     void setSecondarySubtitle(SubData::Type type, int ID);
     void disableSecondarySubtitles();
     void setSubtitlesVisibility(bool b);
-    void seekPlayerTime(double secs, int mode, bool precise, bool currently_paused);
+    void seekPlayerTime(double secs, int mode, bool keyframes,
+                        bool currently_paused);
     void mute(bool b);
     void setPause(bool b);
     void frameStep();

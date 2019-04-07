@@ -5,14 +5,27 @@
 #include "wzdebug.h"
 
 
+class TWZTimer;
+
+namespace Player {
+class TPlayer;
+}
+
 namespace Gui {
+
+class TMainWindow;
+
 namespace Action {
+
+class TTimeSlider;
 
 class TTimeSliderAction : public TWidgetAction {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    DECLARE_QCLASS_LOGGER
 public:
-    TTimeSliderAction(QWidget* parent);
+    TTimeSliderAction(TMainWindow* mw,
+                      QWidget* aPanel,
+                      Player::TPlayer* player);
 
 public slots:
     void setPosition(double sec);
@@ -30,16 +43,25 @@ protected:
     virtual QWidget* createWidget(QWidget* parent) override;
 
 private:
+    QWidget* panel;
+    Player::TPlayer* previewPlayer;
+    TWZTimer* previewTimer;
+    TTimeSlider* previewSlider;
+    int lastPreviewTime;
+
     int pos;
     int maxPos;
     double duration;
 
     void setPos();
+    void preview();
 
 private slots:
     void onPosChanged(int value);
     void onDraggingPosChanged(int value);
     void onDelayedDraggingPos(int value);
+    void onToolTipEvent(TTimeSlider* slider, QPoint pos, int secs);
+    void onPreviewTimerTimeout();
 };
 
 } // namespace Action

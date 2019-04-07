@@ -47,11 +47,17 @@ class TPlayer : public QObject {
     DECLARE_QCLASS_LOGGER
 
 public:
-    TPlayer(QWidget* parent, Gui::TPlayerWindow *pw);
+    TPlayer(QWidget* parent,
+            const QString& name,
+            Gui::TPlayerWindow* pw,
+            TPlayer* aPreviewPlayer);
     virtual ~TPlayer() override;
 
     TMediaData mdat;
     Settings::TMediaSettings mset;
+    Gui::TPlayerWindow* playerWindow;
+    TPlayer* previewPlayer;
+
     bool keepSize;
 
     //! Return the current state
@@ -375,7 +381,6 @@ private:
     static bool startPausedOnce;
 
     Player::Process::TPlayerProcess* proc;
-    Gui::TPlayerWindow* playerwindow;
 
     TState _state;
     bool seeking;
@@ -397,6 +402,7 @@ private:
     void startPlayer(bool loopImage = false);
     void stopPlayer();
     void restartPlayer(TState state = STATE_RESTARTING);
+
     void setInPointSec(double sec);
     void setOutPointSec(double sec);
 
@@ -404,6 +410,9 @@ private:
     void initVolume();
     void initMediaSettings();
     void onPlayingStartedNewMedia();
+
+    void startPreviewPlayer();
+    void updatePreviewWindowSize();
 
     bool haveVideoFilters() const;
     void setVideoFilter(const QString& filter, bool enable,
@@ -420,7 +429,7 @@ private:
     void getPanFromPlayerWindow();
     void pan(int dx, int dy);
 
-    void seekCmd(double secs, int mode);
+    void seekCmd(double value, int mode);
     void handleOutPoint();
     void updateLoop();
 

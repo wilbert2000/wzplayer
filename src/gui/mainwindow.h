@@ -32,6 +32,10 @@ class QLabel;
 class QMenu;
 class TWZTimer;
 
+namespace Player {
+class TPlayer;
+}
+
 namespace Settings {
 class TMediaSettings;
 }
@@ -216,6 +220,8 @@ private:
 
     QWidget* panel;
     TPlayerWindow* playerWindow;
+    TPlayerWindow* previewWindow;
+    Player::TPlayer* previewPlayer;
 
     TDockWidget* logDock;
     TLogWindow* logWindow;
@@ -473,8 +479,8 @@ private:
     void createStatusBar();
     void createPanel();
     void createLogDock();
-    void createPlayerWindow();
-    void createPlayer();
+    void createPlayerWindows();
+    void createPlayers();
     void createPlaylist();
     void createFavList();
     void createVideoEqualizer();

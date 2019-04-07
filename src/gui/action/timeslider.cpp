@@ -19,10 +19,7 @@
 #include "gui/action/timeslider.h"
 #include <QWheelEvent>
 #include <QTimer>
-#include <QToolTip>
 #include <QStyleOptionSlider>
-#include "wzdebug.h"
-#include "wztime.h"
 
 
 namespace Gui {
@@ -33,12 +30,12 @@ TTimeSlider::TTimeSlider(QWidget* parent,
                          int pos,
                          int max_pos,
                          double duration,
-                         int drag_delay)
-    : TSlider(parent)
-    , dont_update(false)
-    , position(pos)
-    , _duration(duration)
-    , last_pos_to_send(-1) {
+                         int drag_delay) :
+    TSlider(parent),
+    dont_update(false),
+    position(pos),
+    _duration(duration),
+    last_pos_to_send(-1) {
 
     setMinimum(0);
     setMaximum(max_pos);
@@ -135,26 +132,32 @@ void TTimeSlider::wheelEvent(QWheelEvent* e) {
     }
 }
 
+int TTimeSlider::getTime(const QPoint& pos) {
+
+    QStyleOptionSlider opt;
+    initStyleOption(&opt);
+    // Rect of handle/knob
+    const QRect sliderRect = style()->subControlRect(
+                QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+    // Center of handle
+    const QPoint center = sliderRect.center() - sliderRect.topLeft();
+
+    int val = pixelPosToRangeValue(pick(pos - center));
+    return qRound(val * _duration / maximum());
+}
+
+bool TTimeSlider::onToolTipEvent(QHelpEvent* event) {
+
+    emit toolTipEvent(this, event->globalPos(), getTime(event->pos()));
+    event->accept();
+    return true;
+}
+
 bool TTimeSlider::event(QEvent* event) {
 
     if (event->type() == QEvent::ToolTip) {
-        QHelpEvent* help_event = static_cast<QHelpEvent*>(event);
-        QStyleOptionSlider opt;
-        initStyleOption(&opt);
-        // Rect of handle/knob
-        const QRect sliderRect = style()->subControlRect(
-            QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-        // Center of handle
-        const QPoint center = sliderRect.center() - sliderRect.topLeft();
-
-        int val = pixelPosToRangeValue(pick(help_event->pos() - center));
-        int time = qRound(val * _duration / maximum());
-        QToolTip::showText(help_event->globalPos(), TWZTime::formatTime(time),
-                           this);
-        event->accept();
-        return true;
+        return onToolTipEvent(static_cast<QHelpEvent*>(event));
     }
-
     return QWidget::event(event);
 }
 

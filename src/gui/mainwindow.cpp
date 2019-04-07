@@ -133,8 +133,8 @@ TMainWindow::TMainWindow() :
 
     createPanel();
     createLogDock();
-    createPlayerWindow();
-    createPlayer();
+    createPlayerWindows();
+    createPlayers();
     createPlaylist();
     createFavList();
 
@@ -182,7 +182,7 @@ void TMainWindow::createPanel() {
     panel = new QWidget(this);
     panel->setObjectName("panel");
     panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    panel->setMinimumSize(QSize(1, 1));
+    panel->setMinimumSize(TPlayerWindow::frame());
     setCentralWidget(panel);
 }
 
@@ -229,7 +229,7 @@ void TMainWindow::createStatusBar() {
     statusBar()->addPermanentWidget(time_label, 0);
 }
 
-void TMainWindow::createPlayerWindow() {
+void TMainWindow::createPlayerWindows() {
 
     playerWindow = new TPlayerWindow(panel, "playerwindow");
 
@@ -239,7 +239,7 @@ void TMainWindow::createPlayerWindow() {
     layout->addWidget(playerWindow);
     panel->setLayout(layout);
 
-    // Connect player window mouse events
+    // Player window mouse events
     connect(playerWindow, &Gui::TPlayerWindow::leftClicked,
             this, &TMainWindow::leftClickFunction);
     connect(playerWindow, &Gui::TPlayerWindow::rightClicked,
@@ -255,11 +255,16 @@ void TMainWindow::createPlayerWindow() {
 
     connect(playerWindow, &Gui::TPlayerWindow::videoOutChanged,
             this, &TMainWindow::displayVideoOut, Qt::QueuedConnection);
+
+    previewWindow = new TPlayerWindow(panel, "previewwindow");
+    previewWindow->hide();
 }
 
-void TMainWindow::createPlayer() {
+void TMainWindow::createPlayers() {
 
-    new Player::TPlayer(this, playerWindow);
+    previewPlayer = new Player::TPlayer(this, "previewplayer", previewWindow, 0);
+
+    new Player::TPlayer(this, "player", playerWindow, previewPlayer);
 
     connect(player, &Player::TPlayer::positionChanged,
             this, &TMainWindow::onPositionChanged);
@@ -1104,9 +1109,7 @@ void TMainWindow::createActions() {
 
 
     // Time slider
-    timeslider_action = new TTimeSliderAction(this);
-    timeslider_action->setObjectName("timeslider_action");
-    timeslider_action->setText(tr("Time slider"));
+    timeslider_action = new TTimeSliderAction(this, panel, previewPlayer);
 
     connect(player, &Player::TPlayer::positionChanged,
             timeslider_action, &TTimeSliderAction::setPosition);
@@ -3236,7 +3239,8 @@ void TMainWindow::hidePanel() {
             update();
         }
 
-        if (!logDock->isVisible() && !playlistDock->isVisible()
+        if (!logDock->isVisible()
+                && !playlistDock->isVisible()
                 && !favListDock->isVisible()) {
             resize(width(), height() - panel->height());
         }
@@ -3270,7 +3274,9 @@ double TMainWindow::optimizeSize(double size) const {
         return pref->size_factor;
     }
 
-    availableSize = availableSize - frameSize() + panel->frameSize();
+    availableSize = availableSize
+            - frameSize() + panel->frameSize()
+            - TPlayerWindow::frame();
 
     QSize video_size = res * size;
 
@@ -3475,12 +3481,12 @@ void TMainWindow::resizeMainWindow(int w,
                                    int h,
                                    double size_factor,
                                    bool try_twice) {
-    WZDEBUG("video size " + QString::number(w) + " x " + QString::number(h)
+    WZDEBUG("Video size " + QString::number(w) + " x " + QString::number(h)
             + ", window size " + QString::number(pref->size_factor));
 
-    QSize panel_size = QSize(w, h) * size_factor;
+    QSize panel_size = QSize(w, h) * size_factor + playerWindow->frame();
     if (panel_size == panel->size()) {
-        WZTRACE("panel has requested size");
+        WZTRACE("Panel has requested size");
         return;
     }
 
@@ -3495,8 +3501,8 @@ void TMainWindow::resizeMainWindow(int w,
         if (try_twice) {
             resizeMainWindow(w, h, size_factor, false);
         } else {
-            WZDEBUG(QString("resizeMainWindow: resize failed. Panel"
-                            " size now %1 x %2. Wanted size %3 x %4")
+            WZDEBUG(QString("Resize failed. Panel size now %1 x %2."
+                            " Wanted size %3 x %4")
                             .arg(panel->size().width())
                             .arg(panel->size().height())
                             .arg(panel_size.width())

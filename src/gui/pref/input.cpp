@@ -184,8 +184,8 @@ void TInput::setData(Settings::TPreferences* pref) {
     setSeeking4(pref->seeking4);
 
     setUpdateWhileDragging(pref->update_while_seeking);
-    setRelativeSeeking(pref->relative_seeking);
-    setPreciseSeeking(pref->precise_seeking);
+    setSeekRelative(pref->seek_relative);
+    setSeekKeyframes(pref->seek_keyframes);
 }
 
 void TInput::getData(Settings::TPreferences* pref) {
@@ -215,8 +215,8 @@ void TInput::getData(Settings::TPreferences* pref) {
     pref->seeking4 = seeking4();
 
     pref->update_while_seeking = updateWhileDragging();
-    pref->relative_seeking= relativeSeeking();
-    pref->precise_seeking = preciseSeeking();
+    pref->seek_relative= seekRelative();
+    pref->seek_keyframes = seekKeyframes();
 }
 
 /*
@@ -405,21 +405,21 @@ bool TInput::updateWhileDragging() {
     return (timeslider_behaviour_combo->currentIndex() == 0);
 }
 
-void TInput::setRelativeSeeking(bool b) {
-    relative_seeking_button->setChecked(b);
-    absolute_seeking_button->setChecked(!b);
+void TInput::setSeekRelative(bool b) {
+    seek_relative_button->setChecked(b);
+    seek_absolute_button->setChecked(!b);
 }
 
-bool TInput::relativeSeeking() {
-    return relative_seeking_button->isChecked();
+bool TInput::seekRelative() {
+    return seek_relative_button->isChecked();
 }
 
-void TInput::setPreciseSeeking(bool b) {
-    precise_seeking_check->setChecked(b);
+void TInput::setSeekKeyframes(bool b) {
+    seek_keyframes_check->setChecked(b);
 }
 
-bool TInput::preciseSeeking() {
-    return precise_seeking_check->isChecked();
+bool TInput::seekKeyframes() {
+    return seek_keyframes_check->isChecked();
 }
 
 void TInput::createHelp() {
@@ -432,15 +432,15 @@ void TInput::createHelp() {
         tr("This table allows you to change the keyboard shortcuts of actions."
            " Double click or press enter on a item, or press the"
            " <b>Change shortcut</b> button to open the"
-           " <i>Modify shortcut</i> dialog.<br><br>"
-           "There are two ways to change a shortcut:<br>"
+           " <i>Modify shortcut</i> dialog.<br/><br/>"
+           "There are two ways to change a shortcut:<br/>"
            "If the <b>Capture</b> button is on then just press the key"
-           " or combination of keys you want to assign to the shortcut.<br>"
+           " or combination of keys you want to assign to the shortcut.<br/>"
            "If the <b>Capture</b> button is off you can enter the full name"
-           " of the key.<br><br>"
+           " of the key.<br/><br/>"
            "Sadly shortcuts cannot differentiate between the numeric key pad"
            " and normal keys or between the left Shift, Ctrl, Meta, Alt"
-           " and the right Shift, Ctrl, Meta and AltGr modifiers.<br>"
+           " and the right Shift, Ctrl, Meta and AltGr modifiers.<br/>"
            "You can assign multiple shortcuts to one action and one shortcut"
            " may consist of up to 4 keys with multiple modifiers."),
            false);
@@ -450,10 +450,10 @@ void TInput::createHelp() {
     addSectionGroup(tr("Buttons"));
 
     setWhatsThis(left_click_combo, tr("Left click"),
-        tr("Select the action for left click on the mouse."));
+        tr("Select the action for the left mouse button."));
 
     setWhatsThis(double_click_combo, tr("Double click"),
-        tr("Select the action for double click on the mouse."));
+        tr("Select the action for double clicking the left mouse button."));
 
     setWhatsThis(wait_for_double_click_check,
         tr("Wait for double click before triggering left click action"),
@@ -462,8 +462,8 @@ void TInput::createHelp() {
            " click is detected, the left click action is canceled and the"
            " double click action is triggered instead. This is the default"
            " left click behaviour.").arg(qApp->doubleClickInterval())
-        + "<br><br>"
-        + tr("For precise seeking, it can be convenient to trigger the left"
+        + "<br/><br/>"
+        + tr("While seeking, it can be convenient to trigger the left"
              " click action right away, without delay, to instantly pause a"
              " video. Consequently this will cause a left click action being"
              " triggered before and after each double click action."
@@ -472,7 +472,7 @@ void TInput::createHelp() {
              " because the first left click will be canceled by the second."));
 
     setWhatsThis(middle_click_combo, tr("Middle click"),
-        tr("Select the action for middle click on the mouse."));
+       tr("Select the action for the middle mouse button."));
 
     setWhatsThis(xbutton1_click_combo, tr("X Button 1"),
         tr("Select the action for the X button 1."));
@@ -521,20 +521,27 @@ void TInput::createHelp() {
            "move the mouse wheel."));
 
     setWhatsThis(seeking_method_group, tr("Seeking method"),
-        tr("Sets the method to be used when seeking."
-           " Absolute seeking seeks with the requested timestamp. It may be"
-           " a bit more accurate, while relative seeking, seeks with"
-           " a time offset, 5 seconds forward from here, and may work better"
-           " with files having a wrong duration."));
+        tr("Sets the method to be used when seeking.<br/><br/>"
 
-    setWhatsThis(precise_seeking_check, tr("Precise seeking"),
-        tr("If checked, seeks are more accurate but slower."
-           " If not checked seeks are done to keyframes and faster,"
-           " but can be off by quite a few seconds for heavily"
-           " compressed videos with only a few keyframes."));
+           "Seek absolute seeks with an absolute time.<br/>"
+           "Seek relative seeks with an offset from the current time,"
+           " like so many seconds forward or backward.<br/><br/>"
+
+           "Relative seeks tend to work better in streams with strange or"
+           " corrupted timestamps, while absolute seeks tend to be a bit more"
+           " accurate."));
+
+    setWhatsThis(seek_keyframes_check, tr("Seek to key frames"),
+        tr("If checked, seeks are done to the closest key frame, which speeds"
+           " up seeking considerably, but is less accurate, especially in"
+           " heavely compressed videos with only a few keyframes.<br/><br/>"
+           "If not checked, seeks are a best attempt to seek to the requested"
+           " absolute or relative time, but take quite a bit longer, depending"
+           " on how well the playing media supports seeking."));
 
     setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
-        tr("Select whether or not to update the video while dragging the time slider."));
+        tr("Select whether or not to update the video while dragging the time"
+           " slider."));
 }
 
 }} // namespace Gui::Pref

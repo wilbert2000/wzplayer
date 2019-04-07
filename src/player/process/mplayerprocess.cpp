@@ -47,8 +47,10 @@ double TMPlayerProcess::dvdnav_time_to_restore;
 bool TMPlayerProcess::dvdnav_pause_to_restore;
 
 
-TMPlayerProcess::TMPlayerProcess(QObject* parent, TMediaData* mdata) :
-    TPlayerProcess(parent, mdata),
+TMPlayerProcess::TMPlayerProcess(QObject* parent,
+                                 const QString& name,
+                                 TMediaData* mdata) :
+    TPlayerProcess(parent, name, mdata),
     mute_option_set(false),
     pause_option_set(false) {
 }
@@ -433,32 +435,34 @@ bool TMPlayerProcess::dvdnavTitleIsMenu() {
 void TMPlayerProcess::dvdnavSave() {
 
     // For DVDNAV remember the current video title set, title and pos
-    // TODO: should clear restore_dvdnav on player crash
-    if (md->detected_type == TMediaData::TYPE_DVDNAV) {
-        restore_dvdnav = true;
-        dvdnav_vts_to_restore = md->titles.getSelectedVTS();
-        dvdnav_title_to_restore_vts = md->titles.getSelectedID();
-        if (dvdnav_title_to_restore_vts < 0) {
-            // For a menu we need a title to be able to restore the VTS the
-            // menu belongs to, because there is no command to select a VTS.
-            // When no title is found (-1), we just see how far we get.
-            dvdnav_title_to_restore_vts = md->titles.findTitleForVTS(
-                dvdnav_vts_to_restore);
-        }
-        dvdnav_title_to_restore = md->titles.getSelectedID();
-        dvdnav_time_to_restore = md->time_sec;
-        if (dvdnav_time_to_restore > md->duration) {
-            dvdnav_time_to_restore = 0;
-        }
-        dvdnav_pause_to_restore = paused;
+    // TODO: Clear restore_dvdnav when?
+    if (objectName() == "playerproc") {
+        if (md->detected_type == TMediaData::TYPE_DVDNAV) {
+            restore_dvdnav = true;
+            dvdnav_vts_to_restore = md->titles.getSelectedVTS();
+            dvdnav_title_to_restore_vts = md->titles.getSelectedID();
+            if (dvdnav_title_to_restore_vts < 0) {
+                // For a menu we need a title to be able to restore the VTS the
+                // menu belongs to, because there is no command to select a VTS.
+                // When no title is found (-1), we just see how far we get.
+                dvdnav_title_to_restore_vts = md->titles.findTitleForVTS(
+                    dvdnav_vts_to_restore);
+            }
+            dvdnav_title_to_restore = md->titles.getSelectedID();
+            dvdnav_time_to_restore = md->time_sec;
+            if (dvdnav_time_to_restore > md->duration) {
+                dvdnav_time_to_restore = 0;
+            }
+            dvdnav_pause_to_restore = paused;
 
-        // Open the disc, not just the current title
-        md->disc.title = 0;
-        md->filename = md->disc.toString(false);
-        md->selected_type = TMediaData::TYPE_DVDNAV;
-        WZDEBUG("saved state '" + md->filename + "'");
-    } else {
-        restore_dvdnav = false;
+            // Open the disc, not just the current title
+            md->disc.title = 0;
+            md->filename = md->disc.toString(false);
+            md->selected_type = TMediaData::TYPE_DVDNAV;
+            WZDEBUG("Saved state '" + md->filename + "'");
+        } else {
+            restore_dvdnav = false;
+        }
     }
 }
 
@@ -467,10 +471,10 @@ void TMPlayerProcess::save() {
 }
 
 void TMPlayerProcess::dvdnavRestoreTime() {
-    WZDEBUG("restoring time " + QString::number(dvdnav_time_to_restore));
+    WZDEBUG("Restoring time " + QString::number(dvdnav_time_to_restore));
 
     // seek time, abs, exact, currently paused
-    seekPlayerTime(dvdnav_time_to_restore - 5, 2, true, false);
+    seekPlayerTime(dvdnav_time_to_restore - 5, 2, false, false);
     if (dvdnav_pause_to_restore) {
         setPause(dvdnav_pause_to_restore);
     }
@@ -486,7 +490,7 @@ void TMPlayerProcess::dvdnavRestore() {
     // VTS
     if (dvdnav_vts_to_restore != md->titles.getSelectedVTS()) {
         if (dvdnav_title_to_restore_vts > 0) {
-            WZDEBUG("restoring VTS " + QString::number(dvdnav_vts_to_restore)
+            WZDEBUG("Restoring VTS " + QString::number(dvdnav_vts_to_restore)
                     + " with title "
                     + QString::number(dvdnav_title_to_restore_vts));
             setTitle(dvdnav_title_to_restore_vts);
@@ -495,7 +499,7 @@ void TMPlayerProcess::dvdnavRestore() {
                 restore_title = false;
             }
         } else {
-            WZDEBUG("don't have a title to restore for VTS "
+            WZDEBUG("Don't have a title to restore for VTS "
                     + QString::number(dvdnav_vts_to_restore)
                     + ", canceling restore");
             return;
@@ -505,14 +509,14 @@ void TMPlayerProcess::dvdnavRestore() {
     if (dvdnav_title_to_restore <= 0) {
         // Menu
         if (did_set_title || md->titles.getSelectedID() > 0) {
-            WZDEBUG("restoring menu");
+            WZDEBUG("Restoring menu");
             discButtonPressed("menu");
         }
     } else {
         // Title
         if (restore_title
             && dvdnav_title_to_restore != md->titles.getSelectedID()) {
-            WZDEBUG("restoring title "
+            WZDEBUG("Restoring title "
                     + QString::number(dvdnav_title_to_restore));
             setTitle(dvdnav_title_to_restore);
         }
@@ -1413,7 +1417,7 @@ void TMPlayerProcess::setSubtitlesVisibility(bool b) {
 
 void TMPlayerProcess::seekPlayerTime(double secs,
                                      int mode,
-                                     bool precise,
+                                     bool keyframes,
                                      bool currently_paused) {
     // seek <value> [type]
     // Seek to some place in the movie.
@@ -1422,7 +1426,7 @@ void TMPlayerProcess::seekPlayerTime(double secs,
     // 2 is a seek to an absolute position of <value> seconds.
 
     QString s = QString("seek %1 %2").arg(secs).arg(mode);
-    if (precise) s += " 1"; else s += " -1";
+    if (keyframes) s += " -1"; else s += " 1";
 
     // pausing_keep does strange things with seek, so need to use pausing
     // instead, hence the leakage of currently_paused.
@@ -1476,9 +1480,9 @@ void TMPlayerProcess::frameBackStep() {
             + QString::number(frame_backstep_time_requested));
 
     seekPlayerTime(frame_backstep_time_requested, // time to seek
-                   2,        // seek absolute
-                   true,    // seek precise
-                   true);    // currently paused
+                   2,     // seek absolute
+                   false, // seek keyframes
+                   true); // currently paused
 
     // Don't retry when hitting zero
     if (frame_backstep_time_requested <= md->start_sec

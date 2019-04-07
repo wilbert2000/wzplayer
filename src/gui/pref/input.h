@@ -29,7 +29,6 @@ namespace Pref {
 
 class TInput : public TSection, public Ui::TInput {
     Q_OBJECT
-
 public:
     TInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
@@ -38,7 +37,6 @@ public:
 
     // Pass data to the dialog
     void setData(Settings::TPreferences* pref);
-
     // Apply changes
     virtual void getData(Settings::TPreferences* pref);
 
@@ -93,11 +91,11 @@ private:
     void setUpdateWhileDragging(bool);
     bool updateWhileDragging();
 
-    void setRelativeSeeking(bool);
-    bool relativeSeeking();
+    void setSeekRelative(bool);
+    bool seekRelative();
 
-    void setPreciseSeeking(bool);
-    bool preciseSeeking();
+    void setSeekKeyframes(bool);
+    bool seekKeyframes();
 }; // class TInput
 
 } // namespace Pref

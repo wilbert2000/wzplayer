@@ -105,20 +105,26 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     zoom_factor_fullscreen(1.0),
     double_clicked(false),
     delay_left_click(true),
-    dragging(false) {
+    dragging(false),
+    isPreviewWindow(name == "previewwindow") {
 
     setObjectName(name);
-    setMinimumSize(QSize(0, 0));
+    setMinimumSize(frame());
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
     TColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
     setAutoFillBackground(true);
-    setMouseTracking(true);
-    setFocusPolicy(Qt::StrongFocus);
+
+    if (!isPreviewWindow) {
+        setMouseTracking(true);
+        setFocusPolicy(Qt::StrongFocus);
+    }
 
     video_window = new TVideoWindow(this);
     video_window->setObjectName("video" + name);
     video_window->setMinimumSize(QSize(0, 0));
-    video_window->setMouseTracking(true);
+    if (!isPreviewWindow) {
+        video_window->setMouseTracking(true);
+    }
     setColorKey();
 
     left_click_timer = new QTimer(this);
@@ -156,8 +162,9 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) const {
             factorY = (double) last_video_out_size.height()
                       / video_size.height();
         } else {
-            factorX = (double) width() / video_size.width();
-            factorY = (double) height() /  video_size.height();
+            QSize s = size() - frame();
+            factorX = (double) s.width() / video_size.width();
+            factorY = (double) s.height() /  video_size.height();
         }
     }
 }
@@ -203,10 +210,15 @@ void TPlayerWindow::updateVideoWindow() {
     // MPlayer does not support pan in slave mode. It does support zoom through
     // the pansan slave command.
 
-    // On fullscreen ignore the toolbars
-    QSize wsize = pref->fullscreen ? TDesktop::size(this) : size();
-    // Set video size to window size
-    QSize vsize = wsize;
+    QSize wsize;
+    QSize vsize;
+    if (pref->fullscreen) {
+        wsize = TDesktop::size(this);
+        vsize = wsize;
+    } else {
+        wsize = size();
+        vsize = wsize - frame();
+    }
 
     // Select best fit: height adjusted or width adjusted,
     // in case video aspect does not match the window aspect ratio.
@@ -235,11 +247,7 @@ void TPlayerWindow::updateVideoWindow() {
 
     // Return to local coords in fullscreen
     if (pref->fullscreen) {
-        vwin.moveTo(vwin.topLeft()
-                    - pos() // Could assume pos() player window always (0,0)
-                    // Put the docks on top of the video area:
-                    - ((QWidget*)parent())->pos() // pos() panel
-                    );
+        vwin.moveTo(vwin.topLeft() - pos() - parentWidget()->pos());
     }
 
     // Set geometry video window

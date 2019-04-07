@@ -322,8 +322,8 @@ public:
 
     //! If true, seeking will be done using a
     //! percentage (with fractions) instead of time.
-    bool relative_seeking;
-    bool precise_seeking; //! Enable precise_seeking (only available with mplayer2)
+    bool seek_relative;
+    bool seek_keyframes;
 
 
     // Drives section
