@@ -874,13 +874,8 @@ void TPList::stop() {
     if (playlistWidget->playingItem) {
         playlistWidget->setPlayingItem(0);
     }
-    if (player->state() == Player::STATE_STOPPED) {
-        if (thread) {
-            abortThread();
-        } else {
-            playlistWidget->abortFileCopier();
-        }
-    }
+    abortThread();
+    playlistWidget->abortFileCopier();
     // player->stop() done by TPlaylist::stop()
 }
 
