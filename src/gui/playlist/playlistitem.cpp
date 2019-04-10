@@ -566,9 +566,6 @@ QVariant TPlaylistItem::data(int column, int role) const {
     return QTreeWidgetItem::data(column, role);
 }
 
-
-}
-
 void TPlaylistItem::setFilename(const QString& fileName,
                                 const QString& baseName) {
 
@@ -598,7 +595,6 @@ void TPlaylistItem::setName(const QString& baseName,
     setItemIcon();
     setStateIcon();
     setSizeHintName();
-
 }
 
 void TPlaylistItem::setStateIcon() {
