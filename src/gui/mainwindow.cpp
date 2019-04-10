@@ -3166,7 +3166,7 @@ void TMainWindow::stop() {
 }
 
 void TMainWindow::setSizeFactor(double factor) {
-    WZTRACE(QString::number(factor));
+    WZTRACE(factor);
 
     if (player->mdat.noVideo()) {
         return;
@@ -3398,7 +3398,7 @@ double TMainWindow::getDefaultSize() const {
 }
 
 void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
-    WZTRACE(QString::number(w) + " x " + QString::number(h));
+    WZTRACE(QString("%1 x %2").arg(w).arg(h));
 
     if (w <= 0 || h <= 0) {
         // No video
@@ -3424,8 +3424,8 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
         } else {
             // Adjust the size factor to the current window size
             playerWindow->updateSizeFactor();
-            WZDEBUG("adjusted size factor to "
-                    + QString::number(pref->size_factor));
+            WZDEBUG(QString("Adjusted size factor to %1")
+                    .arg(pref->size_factor));
         }
     }
 

@@ -77,8 +77,7 @@ bool TMPlayerProcess::startPlayer() {
 }
 
 void TMPlayerProcess::getSelectedSubtitles() {
-    // TODO: OBJ version
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     if (md->subs.count() > 0) {
         writeToPlayer("get_property sub_source");
@@ -92,7 +91,7 @@ void TMPlayerProcess::getSelectedSubtitles() {
 }
 
 void TMPlayerProcess::getSelectedTracks() {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     if (md->videos.count() > 0)
         writeToPlayer("get_property switch_video");
@@ -104,7 +103,7 @@ void TMPlayerProcess::getSelectedTracks() {
 void TMPlayerProcess::getSelectedAngle() {
 
     if (md->videos.count() > 0) {
-        WZDEBUG("");
+        WZDEBUGOBJ("");
         // Need "angle/number of angles", hence use run instead of
         // get_property angle, which only gives the current angle
         writeToPlayer("run \"echo ID_ANGLE_EX=${angle}\"");
@@ -117,12 +116,12 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name,
     if (name == "ID") {
         int id = value.toInt();
         if (md->videos.contains(id)) {
-            WZDEBUG("found video track id " + QString::number(id));
+            WZDEBUGOBJ("Found video track id " + QString::number(id));
             get_selected_video_track = true;
         } else {
             md->videos.addID(id);
             video_tracks_changed = true;
-            WZDEBUG("added video track id " + QString::number(id));
+            WZDEBUGOBJ("Added video track id " + QString::number(id));
         }
         return true;
     }
@@ -133,10 +132,10 @@ bool TMPlayerProcess::parseVideoProperty(const QString& name,
             return setVideoTrack(rx_track.cap(1).toInt());
         }
         if (value == "disabled") {
-            WZDEBUG("no video track");
+            WZDEBUGOBJ("No video track");
             return true;
         }
-        WZWARN("failed to parse video track ID '" + value + "'");
+        WZWARNOBJ("Failed to parse video track ID '" + value + "'");
         return false;
     }
 
@@ -150,12 +149,12 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name,
     if (name == "ID") {
         int id = value.toInt();
         if (md->audios.contains(id)) {
-            WZDEBUG("found audio track id " + QString::number(id));
+            WZDEBUGOBJ("Found audio track id " + QString::number(id));
             get_selected_audio_track = true;
         } else {
             md->audios.addID(id);
             audio_tracks_changed = true;
-            WZDEBUG("added audio track id " + QString::number(id));
+            WZDEBUGOBJ("Added audio track id " + QString::number(id));
         }
         return true;
     }
@@ -166,11 +165,11 @@ bool TMPlayerProcess::parseAudioProperty(const QString& name,
             return setAudioTrack(rx_track.cap(1).toInt());
         }
         if (value == "disabled") {
-            WZDEBUG("no audio track");
+            WZDEBUGOBJ("No audio track");
             return true;
         }
         if (!value.startsWith("$")) {
-            WZWARN("failed to parse audio track ID '" + value + "'");
+            WZWARNOBJ("Failed to parse audio track ID '" + value + "'");
         }
         return false;
     }
@@ -199,11 +198,11 @@ bool TMPlayerProcess::parseSubID(const QString& type, int id) {
     if (md->subs.find(sub_type, id) < 0) {
         md->subs.add(sub_type, id);
         subtitles_changed = true;
-        WZDEBUG("created subtitle id " + QString::number(id) + " type '"
-                + type + "'");
+        WZDEBUGOBJ("Created subtitle id " + QString::number(id) + " type '"
+                   + type + "'");
     } else {
-        WZDEBUG("found subtitle id " + QString::number(id) + " type '"
-                + type + "'");
+        WZDEBUGOBJ("Found subtitle id " + QString::number(id) + " type '"
+                   + type + "'");
         get_selected_subtitle = true;
     }
 
@@ -225,7 +224,7 @@ bool TMPlayerProcess::parseSubTrack(const QString& type,
     }
 
     if (md->subs.find(sub_type, id) < 0) {
-        WZDEBUG("adding new subtitle id " + QString::number(id));
+        WZDEBUGOBJ("Adding new subtitle id " + QString::number(id));
         md->subs.add(sub_type, id);
     }
 
@@ -235,14 +234,14 @@ bool TMPlayerProcess::parseSubTrack(const QString& type,
         md->subs.changeLang(sub_type, id, value);
     subtitles_changed = true;
 
-    WZDEBUG("updated subtitle id " + QString::number(id) + " type " + type
-            + " field " + name + " to " + value);
+    WZDEBUGOBJ("Updated subtitle id " + QString::number(id) + " type " + type
+               + " field " + name + " to " + value);
     return true;
 }
 
 bool TMPlayerProcess::setVideoTrack(int id) {
 
-    WZDEBUG("selecting video track with id " + QString::number(id));
+    WZDEBUGOBJ("Selecting video track with id " + QString::number(id));
     md->videos.setSelectedID(id);
     if (notified_player_is_running) {
         emit receivedVideoTrackChanged(id);
@@ -252,7 +251,7 @@ bool TMPlayerProcess::setVideoTrack(int id) {
 
 bool TMPlayerProcess::setAudioTrack(int id) {
 
-    WZDEBUG("selecting audio track with id " + QString::number(id));
+    WZDEBUGOBJ("Selecting audio track with id " + QString::number(id));
     md->audios.setSelectedID(id);
     if (notified_player_is_running) {
         emit receivedAudioTrackChanged(id);
@@ -281,7 +280,7 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
     // Subtitle track
     if (name == "SUB_SOURCE") {
-        WZDEBUG("subtitle source set to " + QString::number(i));
+        WZDEBUGOBJ("Subtitle source set to " + QString::number(i));
         sub_source = i;
         if (i < 0 && md->subs.selectedID() >= 0) {
             md->subs.clearSelected();
@@ -292,41 +291,41 @@ bool TMPlayerProcess::parseAnswer(const QString& name, const QString& value) {
 
     if (name == "SUB_DEMUX") {
         if (sub_source == SubData::Sub) {
-            WZDEBUG("selected subtitle track id " + QString::number(i)
-                    + " from demuxer");
+            WZDEBUGOBJ("Selected subtitle track id " + QString::number(i)
+                       + " from demuxer");
             md->subs.setSelected(SubData::Sub, i);
             emit receivedSubtitleTrackChanged();
         } else {
-            WZDEBUG("did not select subs from demuxer");
+            WZDEBUGOBJ("Did not select subs from demuxer");
         }
         return true;
     }
 
     if (name == "SUB_VOB") {
         if (sub_source == SubData::Vob) {
-            WZDEBUG("selected VOB subtitle track id " + QString::number(i));
+            WZDEBUGOBJ("Selected VOB subtitle track id " + QString::number(i));
             md->subs.setSelected(SubData::Vob, i);
             emit receivedSubtitleTrackChanged();
         } else {
-            WZDEBUG("did not select VOB subtitles");
+            WZDEBUGOBJ("Did not select VOB subtitles");
         }
         return true;
     }
 
     if (name == "SUB_FILE") {
         if (sub_source == SubData::File) {
-            WZDEBUG("selected subtitle track id " + QString::number(i)
-                    + " from external file");
+            WZDEBUGOBJ("Selected subtitle track id " + QString::number(i)
+                       + " from external file");
             md->subs.setSelected(SubData::File, i);
             emit receivedSubtitleTrackChanged();
         } else {
-            WZDEBUG("did not select external subtitles");
+            WZDEBUGOBJ("Did not select external subtitles");
         }
         return true;
     }
 
     if (name != "ERROR") {
-        WZWARN("unexpected answer '" + name + "' = '" + value + "'");
+        WZWARNOBJ("Unexpected answer '" + name + "' = '" + value + "'");
     }
 
     return false;
@@ -345,7 +344,7 @@ bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
     if (id == clip_info_id) {
         result = parseMetaDataProperty(clip_info_name, value);
     } else {
-        WZWARN("unexpected id " + QString(id) + " with value '" + value + "'");
+        WZWARNOBJ("Unexpected id " + QString(id) + " with value '" + value + "'");
         result = false;
     }
     clip_info_id = -1;
@@ -354,7 +353,7 @@ bool TMPlayerProcess::parseClipInfoValue(int id, const QString& value) {
 }
 
 bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
-    WZDEBUG("Selecting VTS " + QString::number(vts));
+    WZDEBUGOBJ("Selecting VTS " + QString::number(vts));
 
     md->detected_type = TMediaData::TYPE_DVDNAV;
     md->titles.setSelectedVTS(vts);
@@ -365,7 +364,7 @@ bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
         // Videos don't get reannounced
 
         // Audios
-        WZDEBUG("Clearing audio tracks");
+        WZDEBUGOBJ("Clearing audio tracks");
         md->audios = Maps::TTracks();
         audio_tracks_changed = true;
 
@@ -380,8 +379,8 @@ bool TMPlayerProcess::dvdnavVTSChanged(int vts) {
 }
 
 bool TMPlayerProcess::dvdnavTitleChanged(int title) {
-    WZDEBUG("Title changed from " + QString::number(md->titles.getSelectedID())
-            + " to " + QString::number(title));
+    WZDEBUGOBJ("Title changed from " + QString::number(md->titles.getSelectedID())
+               + " to " + QString::number(title));
 
     // Reset start time and time
     md->start_sec = 0;
@@ -408,7 +407,7 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
         writeToPlayer("get_property length");
     }
 
-    WZDEBUG("notifyDuration(" + QString::number(md->duration) + ")");
+    WZDEBUGOBJ("notifyDuration(" + QString::number(md->duration) + ")");
     notifyDuration(md->duration, true);
 
     if (notified_player_is_running) {
@@ -421,7 +420,7 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
 }
 
 bool TMPlayerProcess::dvdnavTitleIsMenu() {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     if (notified_player_is_running) {
         notifyTime(0);
@@ -460,7 +459,7 @@ void TMPlayerProcess::dvdnavSave() {
             md->disc.title = 0;
             md->filename = md->disc.toString(false);
             md->selected_type = TMediaData::TYPE_DVDNAV;
-            WZDEBUG("Saved state '" + md->filename + "'");
+            WZDEBUGOBJ("Saved state '" + md->filename + "'");
         } else {
             restore_dvdnav = false;
         }
@@ -472,7 +471,7 @@ void TMPlayerProcess::save() {
 }
 
 void TMPlayerProcess::dvdnavRestoreTime() {
-    WZDEBUG("Restoring time " + QString::number(dvdnav_time_to_restore));
+    WZDEBUGOBJ("Restoring time " + QString::number(dvdnav_time_to_restore));
 
     // seek time, abs, exact, currently paused
     seekPlayerTime(dvdnav_time_to_restore - 5, 2, false, false);
@@ -482,7 +481,7 @@ void TMPlayerProcess::dvdnavRestoreTime() {
 }
 
 void TMPlayerProcess::dvdnavRestore() {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     restore_dvdnav = false;
     bool restore_title = true;
@@ -491,18 +490,18 @@ void TMPlayerProcess::dvdnavRestore() {
     // VTS
     if (dvdnav_vts_to_restore != md->titles.getSelectedVTS()) {
         if (dvdnav_title_to_restore_vts > 0) {
-            WZDEBUG("Restoring VTS " + QString::number(dvdnav_vts_to_restore)
-                    + " with title "
-                    + QString::number(dvdnav_title_to_restore_vts));
+            WZDEBUGOBJ("Restoring VTS " + QString::number(dvdnav_vts_to_restore)
+                       + " with title "
+                       + QString::number(dvdnav_title_to_restore_vts));
             setTitle(dvdnav_title_to_restore_vts);
             did_set_title = true;
             if (dvdnav_title_to_restore_vts == dvdnav_title_to_restore) {
                 restore_title = false;
             }
         } else {
-            WZDEBUG("Don't have a title to restore for VTS "
-                    + QString::number(dvdnav_vts_to_restore)
-                    + ", canceling restore");
+            WZDEBUGOBJ("Don't have a title to restore for VTS "
+                       + QString::number(dvdnav_vts_to_restore)
+                       + ", canceling restore");
             return;
         }
     }
@@ -510,15 +509,15 @@ void TMPlayerProcess::dvdnavRestore() {
     if (dvdnav_title_to_restore <= 0) {
         // Menu
         if (did_set_title || md->titles.getSelectedID() > 0) {
-            WZDEBUG("Restoring menu");
+            WZDEBUGOBJ("Restoring menu");
             discButtonPressed("menu");
         }
     } else {
         // Title
         if (restore_title
             && dvdnav_title_to_restore != md->titles.getSelectedID()) {
-            WZDEBUG("Restoring title "
-                    + QString::number(dvdnav_title_to_restore));
+            WZDEBUGOBJ("Restoring title "
+                       + QString::number(dvdnav_title_to_restore));
             setTitle(dvdnav_title_to_restore);
         }
         if (dvdnav_time_to_restore > 20) {
@@ -531,7 +530,7 @@ void TMPlayerProcess::dvdnavRestore() {
 
 // Title changed for non DVDNAV disc
 bool TMPlayerProcess::titleChanged(TMediaData::Type type, int title) {
-    WZDEBUG("Title " + QString::number(title));
+    WZDEBUGOBJ("Title " + QString::number(title));
 
     md->detected_type = type;
     notifyTitleTrackChanged(title);
@@ -560,27 +559,27 @@ bool TMPlayerProcess::parseProperty(const QString& name, const QString& value) {
     // Subtitle filename
     if (name == "FILE_SUB_FILENAME") {
         if (sub_file_id >= 0) {
-            WZDEBUG("set filename sub id " + QString::number(sub_file_id)
-                    + " to '" + value + "'");
+            WZDEBUGOBJ("Set filename sub id " + QString::number(sub_file_id)
+                       + " to '" + value + "'");
             md->subs.changeFilename(SubData::File, sub_file_id, value);
             subtitles_changed = true;
             return true;
         }
-        WZWARN("unexpected subtitle filename '" + value + "'");
+        WZWARNOBJ("Unexpected subtitle filename '" + value + "'");
         return false;
     }
 
     // DVD title
     if (name == "DVD_VOLUME_ID") {
         md->title = value;
-        WZDEBUG("DVD title set to '" + md->title + "'");
+        WZDEBUGOBJ("DVD title set to '" + md->title + "'");
         return true;
     }
 
     // DVD disc ID
     if (name == "DVD_DISC_ID") {
         md->dvd_disc_id = value;
-        WZDEBUG("DVD DISC ID set to '" + md->dvd_disc_id + "'");
+        WZDEBUGOBJ("DVD DISC ID set to '" + md->dvd_disc_id + "'");
         return true;
     }
 
@@ -594,16 +593,16 @@ bool TMPlayerProcess::parseChapter(int id,
     if(type == "START") {
         double time = value.toDouble()/1000;
         md->chapters.addStart(id, time);
-        WZDEBUG("chapter ID " + QString::number(id)
-                + " starts at " + QString::number(time));
+        WZDEBUGOBJ("Chapter ID " + QString::number(id)
+                   + " starts at " + QString::number(time));
     } else if(type == "END") {
         double time = value.toDouble()/1000;
         md->chapters.addEnd(id, time);
-        WZDEBUG("chapter ID " + QString::number(id)
-                + " ends at " + QString::number(time));
+        WZDEBUGOBJ("Chapter ID " + QString::number(id)
+                   + " ends at " + QString::number(time));
     } else {
         md->chapters.addName(id, value);
-        WZDEBUG("chapter ID " + QString::number(id) + " name '" + value + "'");
+        WZDEBUGOBJ("Chapter ID " + QString::number(id) + " name '" + value + "'");
     }
 
     return true;
@@ -625,8 +624,8 @@ bool TMPlayerProcess::parseCDTrack(const QString& type,
 
     md->titles.addDuration(id, duration, true);
 
-    WZDEBUG("added " + type + " track with duration "
-            + QString::number(duration));
+    WZDEBUGOBJ("Added " + type + " track with duration "
+               + QString::number(duration));
     return true;
 }
 
@@ -635,8 +634,8 @@ bool TMPlayerProcess::parseTitleLength(int id, const QString& value) {
     // DVD/Bluray title length
     double duration = value.toDouble();
     md->titles.addDuration(id, duration);
-    WZDEBUG("length for title " + QString::number(id)
-            + " set to " + QString::number(duration));
+    WZDEBUGOBJ("Length for title " + QString::number(id)
+               + " set to " + QString::number(duration));
     return true;
 }
 
@@ -661,15 +660,15 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters,
         idx++;
     }
 
-    WZDEBUG("added " + QString::number(chapters.count()) + " chapters");
+    WZDEBUGOBJ("Added " + QString::number(chapters.count()) + " chapters");
     return true;
 }
 
 bool TMPlayerProcess::parsePause() {
 
     if (md->pos_sec > frame_backstep_time_start) {
-        WZDEBUG(QString("Retrying frameBackStep at %1 looking for %2")
-                .arg(md->pos_sec).arg(frame_backstep_time_start));
+        WZDEBUGOBJ(QString("Retrying frameBackStep at %1 looking for %2")
+                   .arg(md->pos_sec).arg(frame_backstep_time_start));
         frameBackStep();
         return true;
     }
@@ -677,7 +676,7 @@ bool TMPlayerProcess::parsePause() {
 
     paused = true;
 
-    WZDEBUG("emit receivedPause()");
+    WZDEBUGOBJ("emit receivedPause()");
     emit receivedPause();
 
     return true;
@@ -703,14 +702,14 @@ void TMPlayerProcess::convertTitlesToChapters() {
         md->chapters.setSelectedID(md->titles.getSelectedID() - first_title_id);
     }
 
-    WZDEBUG("added " + QString::number(md->chapters.count()) + " chapers");
+    WZDEBUGOBJ("Added " + QString::number(md->chapters.count()) + " chapers");
 }
 
 void TMPlayerProcess::notifyChanges() {
 
     if (video_tracks_changed) {
         video_tracks_changed = false;
-        WZDEBUG("emit receivedVideoTracks()");
+        WZDEBUGOBJ("emit receivedVideoTracks()");
         emit receivedVideoTracks();
         get_selected_video_track = true;
     }
@@ -720,7 +719,7 @@ void TMPlayerProcess::notifyChanges() {
     }
     if (audio_tracks_changed) {
         audio_tracks_changed = false;
-        WZDEBUG("emit receivedAudioTracks()");
+        WZDEBUGOBJ("emit receivedAudioTracks()");
         emit receivedAudioTracks();
         get_selected_audio_track = true;
     }
@@ -730,7 +729,7 @@ void TMPlayerProcess::notifyChanges() {
     }
     if (subtitles_changed) {
         subtitles_changed = false;
-        WZDEBUG("emit receivedSubtitleTracks()");
+        WZDEBUGOBJ("emit receivedSubtitleTracks()");
         emit receivedSubtitleTracks();
         get_selected_subtitle = true;
     }
@@ -741,7 +740,7 @@ void TMPlayerProcess::notifyChanges() {
 }
 
 void TMPlayerProcess::playingStarted() {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     // Set mute here because mplayer doesn't have an option
     // to set mute from the command line
@@ -811,8 +810,8 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
         if (!start_frame_set) {
             start_frame_set = true;
             start_frame = frame;
-            WZDEBUG(QString("Start frame set to %1. Line '%2'")
-                    .arg(start_frame).arg(line));
+            WZDEBUGOBJ(QString("Start frame set to %1. Line '%2'")
+                       .arg(start_frame).arg(line));
             // Timestamp has resolution of 0.1, hence 0.05
             frame_off_by_one = 0.05 + 1 / md->video_fps;
         }
@@ -828,10 +827,10 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
                 secs = secsc;
                 md->fuzzy_time = "=";
             } else if (da <= frame_off_by_one) {
-                //WZTRACE(QString("Frame %1 off by one d %2. Start frame %3,"
-                //                " secs %4, secsc %5, line '%6'")
-                //        .arg(frame).arg(d).arg(start_frame).arg(secs)
-                //        .arg(secsc).arg(line));
+                //WZTRACEOBJ(QString("Frame %1 off by one d %2. Start frame %3,"
+                //                   " secs %4, secsc %5, line '%6'")
+                //           .arg(frame).arg(d).arg(start_frame).arg(secs)
+                //           .arg(secsc).arg(line));
                 if (d < 0) {
                     start_frame--;
                     md->fuzzy_time = "<";
@@ -842,12 +841,12 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
             } else {
                 // Resync start frame
                 int newStartFrame = qRound(secs * md->video_fps) - frame;
-                //WZTRACE(QString("Frame %1 is out of sync by %2. Secs %3,"
-                //                " secsc %4, 1/fps %5. Updating start frame"
-                //                " from %6 to %7.\nLine '%8'")
-                //        .arg(frame).arg(d).arg(secs).arg(secsc)
-                //        .arg(1/md->video_fps).arg(start_frame)
-                //        .arg(newStartFrame).arg(line));
+                //WZTRACEOBJ(QString("Frame %1 is out of sync by %2. Secs %3,"
+                //                   " secsc %4, 1/fps %5. Updating start frame"
+                //                   " from %6 to %7.\nLine '%8'")
+                //           .arg(frame).arg(d).arg(secs).arg(secsc)
+                //           .arg(1/md->video_fps).arg(start_frame)
+                //           .arg(newStartFrame).arg(line));
                 start_frame = newStartFrame;
             }
         }
@@ -1067,7 +1066,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     // Matroshka chapters
     if (rx_mkvchapters.indexIn(line) >= 0) {
         int c = rx_mkvchapters.cap(1).toInt();
-        WZDEBUG("adding MKV chapter " + QString::number(c));
+        WZDEBUGOBJ("Adding MKV chapter " + QString::number(c));
         md->chapters.addID(c);
         return true;
     }
@@ -1096,7 +1095,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
         if (md->titles.contains(title))
             return parseTitleChapters(md->titles[title].chapters,
                                       rx_dvdnav_chapters.cap(2));
-        WZWARN("unexpected title " + QString::number(title));
+        WZWARNOBJ("Unexpected title " + QString::number(title));
         return false;
     }
     if (rx_dvdnav_switched_vts.indexIn(line) >= 0) {
@@ -1111,7 +1110,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     if (rx_dvdread_vts_count.indexIn(line) >= 0) {
         int count = rx_dvdread_vts_count.cap(1).toInt();
         md->titles.setVTSCount(count);
-        WZDEBUG("VTS count set to " + QString::number(count));
+        WZDEBUGOBJ("VTS count set to " + QString::number(count));
         return true;
     }
 
@@ -1129,7 +1128,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     if (rx_stream_title_and_url.indexIn(line) >= 0) {
         QString s = rx_stream_title_and_url.cap(1);
         QString url = rx_stream_title_and_url.cap(2);
-        WZDEBUG("stream title '" + s + "', stream_url '" + url + "'");
+        WZDEBUGOBJ("Stream title '" + s + "', stream_url '" + url + "'");
         md->detected_type = TMediaData::TYPE_STREAM;
         md->title = s;
         md->stream_url = url;
@@ -1139,7 +1138,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
 
     if (rx_stream_title.indexIn(line) >= 0) {
         QString s = rx_stream_title.cap(1);
-        WZDEBUG("stream title '" + s + "'");
+        WZDEBUGOBJ("Stream title '" + s + "'");
         md->detected_type = TMediaData::TYPE_STREAM;
         md->title = s;
         emit receivedStreamTitle();
@@ -1149,7 +1148,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     // Screenshot
     if (rx_screenshot.indexIn(line) >= 0) {
         QString shot = rx_screenshot.cap(1);
-        WZDEBUG("screenshot: '" + shot + "'");
+        WZDEBUGOBJ("Screenshot: '" + shot + "'");
         emit receivedScreenshot(shot);
         return true;
     }
@@ -1162,43 +1161,43 @@ bool TMPlayerProcess::parseLine(QString& line) {
     // Errors
     if (rx_error_open.indexIn(line) >= 0) {
         if (exit_code_override == 0 && rx_error_open.cap(1) == md->filename) {
-            WZDEBUG("storing open failed");
+            WZDEBUGOBJ("Storing open failed");
             exit_code_override = TExitMsg::ERR_OPEN;
         } else {
-            WZDEBUG("skipped open failed");
+            WZDEBUGOBJ("Skipped open failed");
         }
         return true;
     }
     if (rx_error_http_403.indexIn(line) >= 0) {
-        WZDEBUG("storing HTTP 403");
+        WZDEBUGOBJ("Storing HTTP 403");
         exit_code_override = TExitMsg::ERR_HTTP_403;
         return true;
     }
     if (rx_error_http_404.indexIn(line) >= 0) {
-        WZDEBUG("storing HTTP 404");
+        WZDEBUGOBJ("Storing HTTP 404");
         exit_code_override = TExitMsg::ERR_HTTP_404;
         return true;
     }
     if (rx_error_no_stream_found.indexIn(line) >= 0) {
         if (exit_code_override == 0) {
-            WZDEBUG("storing no stream");
+            WZDEBUGOBJ("Storing no stream");
             exit_code_override = TExitMsg::ERR_NO_STREAM_FOUND;
         } else {
-            WZDEBUG("skipped no stream");
+            WZDEBUGOBJ("Skipped no stream");
         }
         return true;
     }
 
     // Font cache
     if (rx_fontcache.indexIn(line) >= 0) {
-        WZDEBUG("emit receivedUpdatingFontCache()");
+        WZDEBUGOBJ("emit receivedUpdatingFontCache()");
         emit receivedUpdatingFontCache();
         return true;
     }
 
     // Messages to display
     if (rx_message.indexIn(line) >= 0) {
-        WZDEBUG("emit receivedMessage(" + line + ")");
+        WZDEBUGOBJ("emit receivedMessage(" + line + ")");
         emit receivedMessage(line);
         return true;
     }
@@ -1477,7 +1476,7 @@ void TMPlayerProcess::frameBackStep() {
     if (frame_backstep_time_requested < 0) {
         frame_backstep_time_requested = 0;
     }
-    WZDEBUG("emulating frame back step. Trying "
+    WZDEBUGOBJ("Emulating frame back step. Trying "
             + QString::number(frame_backstep_time_requested));
 
     seekPlayerTime(frame_backstep_time_requested, // time to seek
@@ -1689,7 +1688,7 @@ void TMPlayerProcess::setStereo3DFilter(bool,
 void TMPlayerProcess::setSubStyles(const TAssStyles& styles,
                                    const QString& assStylesFile) {
     if (assStylesFile.isEmpty()) {
-        WZWARN("assStylesFile empty");
+        WZWARNOBJ("assStylesFile empty");
         return;
     }
 
@@ -1701,7 +1700,7 @@ void TMPlayerProcess::setSubStyles(const TAssStyles& styles,
     if (QFile::exists(assStylesFile)) {
         setOption("ass-styles", assStylesFile);
     } else {
-        WZWARN("'" + assStylesFile + "' does not exist");
+        WZWARNOBJ("'" + assStylesFile + "' does not exist");
     }
 }
 

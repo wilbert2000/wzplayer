@@ -7,10 +7,15 @@ TWZDebug::TWZDebug(Log4Qt::Logger* aLogger) :
     logger(aLogger) {
 }
 
+void TWZDebug::flush() {
+
+    logger->log(level, msg);
+    msg = "";
+}
+
 TWZDebug& operator << (TWZDebug&, TWZDebug& dest) {
 
-    dest.logger->log(dest.level, dest.msg);
-    dest.msg = "";
+    dest.flush();
     return dest;
 }
 
