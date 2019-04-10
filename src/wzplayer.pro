@@ -366,7 +366,6 @@ OTHER_FILES += \
     ../latest_versions.txt \
     ../Readme.txt \
     ../wzplayer.spec \
-    ../setup/scripts/install_wzplayer.cmd \
     ../setup/scripts/make_pkgs.cmd \
     ../man/wzplayer.1 \
     wzplayer.rc \

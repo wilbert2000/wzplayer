@@ -11,16 +11,12 @@ echo.
 echo This script will temporarily rename the wzplayer-build and mplayer directories.
 echo Make sure these files ^& directories are not opened when running the script.
 echo.
-echo 1 - NSIS                          10 - NSIS [32-bit/64-bit]
-echo 2 - NSIS [64-bit]                 11 - Portable [32-bit/64-bit]
-echo 3 - Portable                      20 - Portable SFX [32-bit/64-bit]
-echo 4 - Portable [64-bit]
-echo 5 - Without MPlayer
-echo 6 - Without MPlayer [64-bit]
+echo 1 - NSIS [64-bit]
+echo 2 - Without MPlayer [64-bit]
 echo.
 
-:: Relative directory of all the source files to this script
-set TOP_LEVEL_DIR=..
+:: Root dir op wzplayer project
+set PROJECT_DIR=..
 
 :: Reset in case ran again in same command prompt instance
 set ALL_PKG_VER=
@@ -54,15 +50,13 @@ where /q where.exe 2>NUL && (
   )
 )
 
-set SMPLAYER_DIR=%TOP_LEVEL_DIR%\wzplayer-build
-set SMPLAYER_DIR64=%TOP_LEVEL_DIR%\wzplayer-build64
-set MPLAYER_DIR=%TOP_LEVEL_DIR%\mplayer
-set OUTPUT_DIR=%TOP_LEVEL_DIR%\output
-set PORTABLE_EXE_DIR=%TOP_LEVEL_DIR%\portable
+set BUILD_DIR64=%PROJECT_DIR%\wzplayer-build64
+set MPLAYER_DIR=%PROJECT_DIR%\mplayer
+set OUTPUT_DIR=%PROJECT_DIR%\output
 
 :cmdline_parsing
 if "%1" == ""               goto reask
-for %%w in (1 2 3 4 5 6 10 11 20) do (
+for %%w in (1 2) do (
   if "%1" == "%%w" (
     set USER_CHOICE=%%w
     goto pkgver
@@ -78,7 +72,7 @@ set USER_CHOICE=
 set /P USER_CHOICE="Choose an action: "
 echo.
 
-for %%z in (1 2 3 4 5 6 10 11 20) do if "%USER_CHOICE%" == "%%z" goto pkgver
+for %%z in (1 2) do if "%USER_CHOICE%" == "%%z" goto pkgver
 if "%USER_CHOICE%" == ""  goto superend
 goto reask
 
@@ -143,315 +137,36 @@ if not defined VER_REVISION (
   set PORTABLE_PKG_VER=%ALL_PKG_VER%
 )
 
-if "%USER_CHOICE%" == "1"  goto nsispkg
-if "%USER_CHOICE%" == "2"  goto nsispkg64
-if "%USER_CHOICE%" == "3"  goto portable
-if "%USER_CHOICE%" == "4"  goto portable64
-if "%USER_CHOICE%" == "5"  goto nomplayer
-if "%USER_CHOICE%" == "6"  goto nomplayer64
-if "%USER_CHOICE%" == "10"  goto nsispkg
-if "%USER_CHOICE%" == "11"  goto portable
-if "%USER_CHOICE%" == "20"  goto portablesfx
+if "%USER_CHOICE%" == "1"  goto nsispkg64
+if "%USER_CHOICE%" == "2"  goto nomplayer64
 :: Should not happen
 goto end
-
-:nsispkg
-
-echo --- WZPlayer NSIS Package [32-bit] ---
-echo.
-
-if exist %TOP_LEVEL_DIR%\wzplayer-build\Qt5Core.dll (
-  set DEF_QT5=/DQT5
-) else (
-  set DEF_QT5=
-)
-
-if exist %TOP_LEVEL_DIR%\wzplayer-build (
-  %MAKENSIS_EXE_PATH% /V3 /DVER_MAJOR=%VER_MAJOR% /DVER_MINOR=%VER_MINOR% /DVER_BUILD=%VER_BUILD% %VER_REV_CMD% %DEF_QT5% %TOP_LEVEL_DIR%\wzplayer.nsi
-)
-
-if not "%USER_CHOICE%" == "10"  goto end
 
 :nsispkg64
 echo --- WZPlayer NSIS Package [64-bit] ---
 echo.
 
-if exist %TOP_LEVEL_DIR%\wzplayer-build64\Qt5Core.dll (
-  set DEF_QT5="/DQT5"
-) else (
-  set DEF_QT5=
-)
+set DEF_QT5="/DQT5"
 
-if exist %TOP_LEVEL_DIR%\wzplayer-build64 (
-  %MAKENSIS_EXE_PATH% /V3 /DVER_MAJOR=%VER_MAJOR% /DVER_MINOR=%VER_MINOR% /DVER_BUILD=%VER_BUILD% %VER_REV_CMD% /DWIN64 %DEF_QT5% %TOP_LEVEL_DIR%\wzplayer.nsi
+if exist %PROJECT_DIR%\wzplayer-build64 (
+  %MAKENSIS_EXE_PATH% /V3 /DVER_MAJOR=%VER_MAJOR% /DVER_MINOR=%VER_MINOR% /DVER_BUILD=%VER_BUILD% %VER_REV_CMD% /DWIN64 %DEF_QT5% %PROJECT_DIR%\wzplayer.nsi
 )
 
 goto end
 
-:portable
-echo --- WZPlayer Portable Package [32-bit] ---
-echo.
-
-if not exist %SMPLAYER_DIR% (
-  echo WZPlayer sources missing.
-  goto end
-)
-
-REM Check for portable exes
-if not exist "%PORTABLE_EXE_DIR%\wzplayer-portable.exe" (
-  echo WZPlayer portable EXE not found!
-  goto end
-)
-
-REM if not exist "%PORTABLE_EXE_DIR%\smtube-portable.exe" (
-REM  echo Warning: SMTube portable EXE not found!
-REM )
-
-if exist %TOP_LEVEL_DIR%\wzplayer-build\Qt5Core.dll (
-  set QT5_SUFFIX="-qt5"
-  set QT5_OUTPUT_DIR="\Qt5"
-) else (
-  set QT5_SUFFIX=""
-  set QT5_OUTPUT_DIR=""
-)
-
-ren "%SMPLAYER_DIR%" "wzplayer-portable-%PORTABLE_PKG_VER%%QT5_SUFFIX%"
-set SMPLAYER_PORTABLE_DIR="%TOP_LEVEL_DIR%\wzplayer-portable-%PORTABLE_PKG_VER%%QT5_SUFFIX%"
-
-if not exist "%TOP_LEVEL_DIR%\wzplayer-portable-%PORTABLE_PKG_VER%%QT5_SUFFIX%" (
-  echo Oops! Unable to find renamed directory, make sure no files are opened.
-  goto end
-)
-
-echo Backing up files...
-
-ren "%SMPLAYER_PORTABLE_DIR%\wzplayer.exe" wzplayer.bak
-REM ren "%SMPLAYER_PORTABLE_DIR%\smtube.exe" smtube.bak
-
-echo Creating screenshots dir...
-
-mkdir "%SMPLAYER_PORTABLE_DIR%\screenshots"
-
-echo Creating wzplayer.ini...
-
-echo [%%General]> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo screenshot_directory=.\\screenshots>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo.>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo [wzplayer]>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo check_if_upgraded=false>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-
-echo Creating wzplayer_orig.ini...
-
-echo [%%General]> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo screenshot_directory=.\\screenshots>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo.>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo [wzplayer]>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo check_if_upgraded=false>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-
-REM echo Creating mplayer config...
-
-REM echo ^<cachedir^>../fontconfig^</cachedir^>> "%SMPLAYER_PORTABLE_DIR%\mplayer\fonts\local.conf"
-
-echo Copying portable .exe...
-
-copy /y "%PORTABLE_EXE_DIR%\wzplayer-portable.exe" "%SMPLAYER_PORTABLE_DIR%\wzplayer.exe"
-REM copy /y "%PORTABLE_EXE_DIR%\smtube-portable.exe" "%SMPLAYER_PORTABLE_DIR%\smtube.exe"
-
-echo Finalizing package...
-7za a -t7z "%OUTPUT_DIR%%QT5_OUTPUT_DIR%\wzplayer-portable-%PORTABLE_PKG_VER%%QT5_SUFFIX%.7z" "%SMPLAYER_PORTABLE_DIR%" -xr!*.bak* -xr!qxtcore.dll -xr!mplayer64.exe -xr!mencoder.exe -xr!mencoder64.exe -xr!mplayer64.exe.debug -xr!mencoder64.exe.debug -xr!mplayer.exe.debug -xr!mencoder.exe.debug -xr!gdb.exe -xr!gdb64.exe -xr!vfw2menc.exe -xr!buildinfo -xr!buildinfo64 -xr!buildinfo-mencoder-32 -xr!buildinfo-mencoder-debug-32 -xr!buildinfo-mplayer-32 -xr!buildinfo-mplayer-debug-32 -xr!buildinfo-mencoder-64 -xr!buildinfo-mencoder-debug-64 -xr!buildinfo-mplayer-64 -xr!buildinfo-mplayer-debug-64 -xr!mpv64.exe -xr!mpv64.com -mx9 >nul
-
-echo.
-echo Restoring source folder(s) back to its original state...
-echo.
-rmdir "%SMPLAYER_PORTABLE_DIR%\screenshots"
-del "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-del "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-del "%SMPLAYER_PORTABLE_DIR%\wzplayer.exe"
-REM del "%SMPLAYER_PORTABLE_DIR%\smtube.exe"
-REM del "%SMPLAYER_PORTABLE_DIR%\mplayer\fonts\local.conf"
-ren "%SMPLAYER_PORTABLE_DIR%\wzplayer.bak" wzplayer.exe
-REM ren "%SMPLAYER_PORTABLE_DIR%\smtube.bak" smtube.exe
-ren "%SMPLAYER_PORTABLE_DIR%" wzplayer-build
-
-if not "%USER_CHOICE%" == "11"  goto end
-
-:portable64
-echo --- WZPlayer Portable Package [64-bit] ---
-echo.
-
-if not exist %SMPLAYER_DIR64% (
-  echo WZPlayer sources missing.
-  goto end
-)
-
-REM Check for portable exes
-if not exist "%PORTABLE_EXE_DIR%\wzplayer-portable64.exe" (
-  echo WZPlayer portable EXE not found!
-  goto end
-)
-
-REM if not exist "%PORTABLE_EXE_DIR%\smtube-portable64.exe" (
-REM  echo Warning: SMTube portable EXE not found!
-REM )
-
-if exist %TOP_LEVEL_DIR%\wzplayer-build64\Qt5Core.dll (
-  set QT5_SUFFIX="-qt5"
-  set QT5_OUTPUT_DIR="\Qt5"
-) else (
-  set QT5_SUFFIX=""
-  set QT5_OUTPUT_DIR=""
-)
-
-ren "%SMPLAYER_DIR64%" "wzplayer-portable-%PORTABLE_PKG_VER%-x64%QT5_SUFFIX%"
-set SMPLAYER_PORTABLE_DIR="%TOP_LEVEL_DIR%\wzplayer-portable-%PORTABLE_PKG_VER%-x64%QT5_SUFFIX%"
-
-if not exist "%TOP_LEVEL_DIR%\wzplayer-portable-%PORTABLE_PKG_VER%-x64%QT5_SUFFIX%" (
-  echo Oops! Unable to find renamed directory, make sure no files are opened.
-  goto end
-)
-
-echo Backing up files...
-
-ren "%SMPLAYER_PORTABLE_DIR%\wzplayer.exe" wzplayer.bak
-REM ren "%SMPLAYER_PORTABLE_DIR%\smtube.exe" smtube.bak
-ren "%SMPLAYER_PORTABLE_DIR%\mplayer\mplayer.exe" mplayer.exe.bak32
-ren "%SMPLAYER_PORTABLE_DIR%\mplayer\mplayer64.exe" mplayer.exe
-
-if exist "%SMPLAYER_PORTABLE_DIR%\mpv\fonts" (
-  ren "%SMPLAYER_PORTABLE_DIR%\mpv\fonts" fonts.bak32
-)
-if exist "%SMPLAYER_PORTABLE_DIR%\mpv\mpv" (
-  ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv" mpv.bak32
-)
-
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.exe" mpv.exe.bak32
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.com" mpv.com.bak32
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv64.exe" mpv.exe
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv64.com" mpv.com
-
-echo Creating screenshots dir...
-
-mkdir "%SMPLAYER_PORTABLE_DIR%\screenshots"
-
-echo Creating wzplayer.ini...
-
-echo [%%General]> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo screenshot_directory=.\\screenshots>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo.>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo [wzplayer]>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-echo check_if_upgraded=false>> "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-
-echo Creating wzplayer_orig.ini...
-
-echo [%%General]> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo screenshot_directory=.\\screenshots>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo.>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo [wzplayer]>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-echo check_if_upgraded=false>> "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-
-REM echo Creating mplayer config...
-
-REM echo ^<cachedir^>../fontconfig^</cachedir^>> "%SMPLAYER_PORTABLE_DIR%\mplayer\fonts\local.conf"
-
-echo Copying portable .exe...
-
-copy /y "%PORTABLE_EXE_DIR%\wzplayer-portable64.exe" "%SMPLAYER_PORTABLE_DIR%\wzplayer.exe"
-REM copy /y "%PORTABLE_EXE_DIR%\smtube-portable64.exe" "%SMPLAYER_PORTABLE_DIR%\smtube.exe"
-
-echo Finalizing package...
-7za a -t7z "%OUTPUT_DIR%%QT5_OUTPUT_DIR%\wzplayer-portable-%PORTABLE_PKG_VER%-x64%QT5_SUFFIX%.7z" "%SMPLAYER_PORTABLE_DIR%" -xr!*.bak* -xr!qxtcore.dll -xr!mencoder.exe -xr!mencoder64.exe  -xr!mplayer64.exe.debug -xr!mencoder64.exe.debug -xr!mplayer.exe.debug -xr!mencoder.exe.debug -xr!gdb.exe -xr!gdb64.exe -xr!vfw2menc.exe -xr!codecs -xr!buildinfo -xr!buildinfo64 -xr!buildinfo-mencoder-32 -xr!buildinfo-mencoder-debug-32 -xr!buildinfo-mplayer-32 -xr!buildinfo-mplayer-debug-32 -xr!buildinfo-mencoder-64 -xr!buildinfo-mencoder-debug-64 -xr!buildinfo-mplayer-64 -xr!buildinfo-mplayer-debug-64 -mx9 >nul
-
-echo.
-echo Restoring source folder(s) back to its original state...
-echo.
-rmdir "%SMPLAYER_PORTABLE_DIR%\screenshots"
-del "%SMPLAYER_PORTABLE_DIR%\wzplayer.ini"
-del "%SMPLAYER_PORTABLE_DIR%\wzplayer_orig.ini"
-del "%SMPLAYER_PORTABLE_DIR%\wzplayer.exe"
-REM del "%SMPLAYER_PORTABLE_DIR%\smtube.exe"
-ren "%SMPLAYER_PORTABLE_DIR%\mplayer\mplayer.exe" mplayer64.exe
-ren "%SMPLAYER_PORTABLE_DIR%\mplayer\mplayer.exe.bak32" mplayer.exe
-REM del "%SMPLAYER_PORTABLE_DIR%\mplayer\fonts\local.conf"
-ren "%SMPLAYER_PORTABLE_DIR%\wzplayer.bak" wzplayer.exe
-REM ren "%SMPLAYER_PORTABLE_DIR%\smtube.bak" smtube.exe
-
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.exe" mpv64.exe
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.com" mpv64.com
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.exe.bak32" mpv.exe
-ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.com.bak32" mpv.com
-
-if exist "%SMPLAYER_PORTABLE_DIR%\mpv\fonts.bak32" (
-  ren "%SMPLAYER_PORTABLE_DIR%\mpv\fonts.bak32" fonts
-)
-if exist "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.bak32" (
-  ren "%SMPLAYER_PORTABLE_DIR%\mpv\mpv.bak32" mpv
-)
-
-ren "%SMPLAYER_PORTABLE_DIR%" wzplayer-build64
-
-goto end
-
-:portablesfx
-
-if exist %TOP_LEVEL_DIR%\wzplayer-build\Qt5Core.dll (
-  set DEF_QT5=/DQT5
-) else (
-  set DEF_QT5=
-)
-
-if exist %PORTABLE_EXE_DIR%\wzplayer-portable.exe (
-  if exist %TOP_LEVEL_DIR%\wzplayer-build (
-  %MAKENSIS_EXE_PATH% /V3 /DVER_MAJOR=%VER_MAJOR% /DVER_MINOR=%VER_MINOR% /DVER_BUILD=%VER_BUILD% %VER_REV_CMD% %DEF_QT5% %TOP_LEVEL_DIR%\smportable.nsi
-  )
-)
-
-if exist %TOP_LEVEL_DIR%\wzplayer-build64\Qt5Core.dll (
-  set DEF_QT5=/DQT5
-) else (
-  set DEF_QT5=
-)
-
-if exist %PORTABLE_EXE_DIR%\wzplayer-portable64.exe (
-  if exist %TOP_LEVEL_DIR%\wzplayer-build64 (
-  %MAKENSIS_EXE_PATH% /V3 /DVER_MAJOR=%VER_MAJOR% /DVER_MINOR=%VER_MINOR% /DVER_BUILD=%VER_BUILD% %VER_REV_CMD% /DWIN64 %DEF_QT5% %TOP_LEVEL_DIR%\smportable.nsi
-  )
-)
-
-goto end
-
-:nomplayer
-echo --- Creating WZPlayer w/o MPlayer Package [32-bit] ---
-echo.
-
-ren %SMPLAYER_DIR% wzplayer-%ALL_PKG_VER%
-set SMPLAYER_NOMP_DIR=%TOP_LEVEL_DIR%\wzplayer-%ALL_PKG_VER%
-
-::
-echo Finalizing package...
-7za a -t7z %OUTPUT_DIR%\wzplayer-%ALL_PKG_VER%_without_mplayer.7z %SMPLAYER_NOMP_DIR% -xr!mplayer -mx9 >nul
-
-ren %SMPLAYER_NOMP_DIR% wzplayer-build
-
-echo.
-echo Restoring source folder(s) back to its original state....
-
-goto end
 
 :nomplayer64
-echo --- Creating WZPlayer w/o MPlayer Package [64-bit] ---
+echo --- Creating WZPlayer without MPlayer Package [64-bit] ---
 echo.
 
-ren %SMPLAYER_DIR64% wzplayer-%ALL_PKG_VER%-x64
-set SMPLAYER_NOMP_DIR=%TOP_LEVEL_DIR%\wzplayer-%ALL_PKG_VER%-x64
+ren %BUILD_DIR64% wzplayer-%ALL_PKG_VER%-x64
+set WZPLAYER_NOMP_DIR=%PROJECT_DIR%\wzplayer-%ALL_PKG_VER%-x64
 
 ::
 echo Finalizing package...
-7za a -t7z %OUTPUT_DIR%\wzplayer-%ALL_PKG_VER%-x64_without_mplayer.7z %SMPLAYER_NOMP_DIR% -xr!mplayer -mx9 >nul
+7za a -t7z %OUTPUT_DIR%\wzplayer-%ALL_PKG_VER%-x64_without_mplayer.7z %WZPLAYER_NOMP_DIR% -xr!mplayer -mx9 >nul
 
-ren %SMPLAYER_NOMP_DIR% wzplayer-build64
-
-echo.
-echo Restoring source folder(s) back to its original state....
+ren %WZPLAYER_NOMP_DIR% wzplayer-build64
 
 goto end
 

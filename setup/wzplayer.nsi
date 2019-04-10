@@ -49,17 +49,9 @@
   Name "WZPlayer ${WZPLAYER_VERSION}"
   BrandingText "WZPlayer for Windows v${WZPLAYER_VERSION}"
 !ifdef WIN64
-  !ifdef QT5
   OutFile "output\Qt5\wzplayer-${WZPLAYER_VERSION}-x64-qt5.exe"
-  !else
-  OutFile "output\wzplayer-${WZPLAYER_VERSION}-x64.exe"
-  !endif
 !else
-  !ifdef QT5
   OutFile "output\Qt5\wzplayer-${WZPLAYER_VERSION}-win32-qt5.exe"
-  !else
-  OutFile "output\wzplayer-${WZPLAYER_VERSION}-win32.exe"
-  !endif
 !endif
 
   ;Version tab properties
@@ -352,10 +344,8 @@ Section $(Section_WZPlayer) SecWZPlayer
   ; File /r "${WZPLAYER_BUILD_DIR}\open-fonts\*.*"
 
   ;Qt platforms (Qt 5+)
-!ifdef QT5
   SetOutPath "$INSTDIR\platforms"
   File /r "${WZPLAYER_BUILD_DIR}\platforms\*.*"
-!endif
 
   ;WZPlayer key shortcuts
   SetOutPath "$INSTDIR\shortcuts"
@@ -642,16 +632,8 @@ ${MementoSectionDone}
   ;Txt
   Delete "$INSTDIR\Copying.txt"
   Delete "$INSTDIR\Copying_BSD.txt"
-  Delete "$INSTDIR\Copying_libmaia.txt"
-  Delete "$INSTDIR\Copying_openssl.txt"
-  Delete "$INSTDIR\dvdmenus.txt"
-  Delete "$INSTDIR\Finding_subtitles.txt"
   Delete "$INSTDIR\Install.txt"
-  Delete "$INSTDIR\Notes_about_mpv.txt"
-  Delete "$INSTDIR\Not_so_obvious_things.txt"
-  Delete "$INSTDIR\Portable_Edition.txt"
   Delete "$INSTDIR\Readme.txt"
-  Delete "$INSTDIR\Watching_TV.txt"
 
   ;Binaries
   Delete "$INSTDIR\wzplayer.exe"
@@ -662,10 +644,7 @@ ${MementoSectionDone}
   Delete "$INSTDIR\libstdc++-6.dll"
   Delete "$INSTDIR\libwinpthread-1.dll"
   Delete "$INSTDIR\mingwm10.dll"
-  Delete "$INSTDIR\zlib1.dll"
   Delete "$INSTDIR\Qt*.dll"
-  Delete "$INSTDIR\libeay32.dll"
-  Delete "$INSTDIR\ssleay32.dll"
   Delete "$INSTDIR\sample.avi"
 
   ;Delete registry keys
