@@ -1,7 +1,7 @@
 Name:           wzplayer
 Version:        %{version}
 Release:        1%{?dist}
-Summary:        A great media player
+Summary:        A media player
 
 Group:          Applications/Multimedia
 License:        GPL-2.0+

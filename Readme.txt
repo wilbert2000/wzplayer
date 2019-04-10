@@ -16,9 +16,10 @@
 
     -------------------------------------------------------------------------
 
-    WZPlayer is a graphical user interface for MPV and MPlayer based on
-    SMPlayer, http://www.smplayer.info. It offers menus, buttons and controls to
-    conveniently play the media supported by MPV and MPlayer.
+    WZPlayer is an interface for MPV and MPlayer based on SMPlayer,
+    http://www.smplayer.info.
+    It offers buttons and controls to conveniently play the media supported
+    by MPV and MPlayer.
 
     WZPlayer uses Qt (https://www.qt.io) for its user interface, promising to
     run on any platform supported by Qt. It has only been properly tested on

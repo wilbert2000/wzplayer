@@ -1,4 +1,4 @@
-This document explains how to build and install wzplayer.
+This document explains how to build and install WZPlayer.
 
 1) Build
 2) Installation
@@ -46,7 +46,7 @@ Will first build and than install wzplayer under /usr.
 
 3) Packages
 ---------------
-To create a package have a look at create_deb.sh and create_rpm,sh.
+To create a package have a look at create_deb.sh and create_rpm.sh scripts.
 
 
 4) Build on Windows
