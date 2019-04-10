@@ -18,12 +18,8 @@
 
 
 #include "gui/pref/dialog.h"
-#include <QTextBrowser>
-
-#include "config.h"
-#include "images.h"
+#include "gui/mainwindow.h"
 #include "settings/preferences.h"
-#include "desktop.h"
 #include "gui/pref/section.h"
 #include "gui/pref/playersection.h"
 #include "gui/pref/demuxer.h"
@@ -37,17 +33,23 @@
 #include "gui/pref/capture.h"
 #include "gui/pref/performance.h"
 #include "gui/pref/network.h"
+#include "config.h"
+#include "images.h"
+#include "desktop.h"
+
 
 #if USE_ASSOCIATIONS
 #include "gui/pref/associations.h"
 #endif
 
+#include <QTextBrowser>
+
 
 namespace Gui {
 namespace Pref {
 
-TDialog::TDialog(QWidget* parent)
-    : QDialog(parent) {
+TDialog::TDialog(TMainWindow* mw) :
+    QDialog(mw) {
 
     setupUi(this);
 
@@ -102,7 +104,7 @@ TDialog::TDialog(QWidget* parent)
     page_playlist = new TPlaylistSection(this);
     addSection(page_playlist);
 
-    page_input = new TInput(this);
+    page_input = new TInput(this, mw);
     addSection(page_input);
 
     page_drives = new TDrives(this);

@@ -1482,6 +1482,10 @@ void TMainWindow::applyNewSettings() {
     // Keyboard and mouse
     playerWindow->setDelayLeftClick(pref->delay_left_click);
     setSeekTexts();
+    // Enable wiil restart player if seek_preview was not set
+    if (!pref->seek_preview) {
+        player->previewPlayer->stop();
+    }
 
     // Network
     setupNetworkProxy();

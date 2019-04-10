@@ -609,7 +609,18 @@ QString TActionsEditor::cleanActionText(const QString& text,
     s = s.replace("&", ""); // Remove ampersand
     s = s.replace("...", ""); // Remove ...
     s = s.replace("\t", " "); // Replace tabs used by aspectratio menu
-    return s.simplified();
+    s = s.simplified();
+
+    if (actionName.startsWith("seek_rewind")
+            && actionName != "seek_rewind_frame") {
+        return tr("Rewind %1").arg(s);
+    }
+    if (actionName.startsWith("seek_forward")
+            && actionName != "seek_forward_frame") {
+        return tr("Forward %1").arg(s);
+    }
+
+    return s;
 }
 
 QString TActionsEditor::actionToString(QAction *action) {

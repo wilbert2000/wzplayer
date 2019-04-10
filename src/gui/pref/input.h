@@ -25,12 +25,15 @@
 
 
 namespace Gui {
+
+class TMainWindow;
+
 namespace Pref {
 
 class TInput : public TSection, public Ui::TInput {
     Q_OBJECT
 public:
-    TInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
+    TInput(QWidget* parent, TMainWindow* mw);
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();
@@ -40,8 +43,10 @@ public:
     // Apply changes
     virtual void getData(Settings::TPreferences* pref);
 
-protected:
-    void createMouseCombos();
+private:
+    void addActionItem(TMainWindow* mw, const QString& name);
+    void createMouseCombos(TMainWindow* mw);
+    void createHelp();
 
     void setLeftClickFunction(const QString& f);
     QString leftClickFunction();
@@ -69,12 +74,6 @@ protected:
 
     void setWheelFunctionSeekingReverse(bool b);
     bool wheelFunctionSeekingReverse();
-
-protected:
-    virtual void retranslateStrings();
-
-private:
-    void createHelp();
 
     void setSeeking1(int n);
     int seeking1();

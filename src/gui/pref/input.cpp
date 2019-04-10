@@ -18,134 +18,31 @@
 
 
 #include "gui/pref/input.h"
-#include "images.h"
+#include "gui/mainwindow.h"
+#include "gui/action/actionseditor.h"
 #include "settings/preferences.h"
+#include "images.h"
 
 using namespace Settings;
 
 namespace Gui { namespace Pref {
 
-TInput::TInput(QWidget* parent, Qt::WindowFlags f)
-    : TSection(parent, f) {
+TInput::TInput(QWidget* parent, TMainWindow* mw)
+    : TSection(parent) {
 
     setupUi(this);
-    retranslateStrings();
-}
-
-QString TInput::sectionName() {
-    return tr("Input");
-}
-
-QPixmap TInput::sectionIcon() {
-    return Images::icon("pref_input", iconSize);
-}
-
-void TInput::createMouseCombos() {
-
-    left_click_combo->clear();
-    right_click_combo->clear();
-    double_click_combo->clear();
-    middle_click_combo->clear();
-    xbutton1_click_combo->clear();
-    xbutton2_click_combo->clear();
-
-    // TODO: use actions editors actionTextToDescription()
-    left_click_combo->addItem(tr("None"), "");
-    left_click_combo->addItem(tr("Play"), "play");
-    left_click_combo->addItem(tr("Play / Pause"), "play_or_pause");
-    left_click_combo->addItem(tr("Pause"), "pause");
-    left_click_combo->addItem(tr("Stop"), "stop");
-    left_click_combo->addItem(tr("Frame back step"), "seek_rewind_frame");
-    left_click_combo->addItem(tr("Go backward (short)"), "seek_rewind1");
-    left_click_combo->addItem(tr("Go backward (medium)"), "seek_rewind2");
-    left_click_combo->addItem(tr("Go backward (long)"), "seek_rewind3");
-    left_click_combo->addItem(tr("Frame step"), "seek_forward_frame");
-    left_click_combo->addItem(tr("Go forward (short)"), "seek_forward1");
-    left_click_combo->addItem(tr("Go forward (medium)"), "seek_forward2");
-    left_click_combo->addItem(tr("Go forward (long)"), "seek_forward3");
-    left_click_combo->addItem(tr("Increase volume"), "increase_volume");
-    left_click_combo->addItem(tr("Decrease volume"), "decrease_volume");
-    left_click_combo->addItem(tr("Fullscreen"), "fullscreen");
-    left_click_combo->addItem(tr("Screenshot"), "screenshot");
-    left_click_combo->addItem(tr("Always on top"), "on_top_always");
-    left_click_combo->addItem(tr("Never on top"), "on_top_never");
-    left_click_combo->addItem(tr("On top while playing"), "on_top_while_playing");
-    left_click_combo->addItem(tr("Mute"), "mute");
-    left_click_combo->addItem(tr("Next OSD level"), "osd_next");
-    left_click_combo->addItem(tr("Playlist"), "view_playlist");
-    left_click_combo->addItem(tr("Reset zoom"), "reset_zoom_pan");
-    left_click_combo->addItem(tr("Exit fullscreen"), "exit_fullscreen");
-    left_click_combo->addItem(tr("Normal speed"), "normal_speed");
-    left_click_combo->addItem(tr("Frame counter"), "frame_counter");
-    left_click_combo->addItem(tr("Settings"), "view_settings");
-    left_click_combo->addItem(tr("Double size"), "size_toggle_double");
-    left_click_combo->addItem(tr("Next chapter"), "next_chapter");
-    left_click_combo->addItem(tr("Previous chapter"), "prev_chapter");
-    left_click_combo->addItem(tr("Show video equalizer"), "video_equalizer");
-    left_click_combo->addItem(tr("Show audio equalizer"), "audio_equalizer");
-    left_click_combo->addItem(tr("Show context menu"), "show_context_menu");
-    left_click_combo->addItem(tr("Next wheel action"), "next_wheel_function");
-    left_click_combo->addItem(tr("DVD mouse click"), "dvdnav_mouse");
-    left_click_combo->addItem(tr("DVD return to main menu"), "dvdnav_menu");
-    left_click_combo->addItem(tr("DVD return to previous menu"), "dvdnav_prev");
-    left_click_combo->addItem(tr("DVD move cursor up"), "dvdnav_up");
-    left_click_combo->addItem(tr("DVD move cursor down"), "dvdnav_down");
-    left_click_combo->addItem(tr("DVD move cursor left"), "dvdnav_left");
-    left_click_combo->addItem(tr("DVD move cursor right"), "dvdnav_right");
-    left_click_combo->addItem(tr("DVD select button"), "dvdnav_select");
-
-    // Copy to other combos
-    for (int n=0; n < left_click_combo->count(); n++) {
-        double_click_combo->addItem(left_click_combo->itemText(n),
-                                     left_click_combo->itemData(n));
-
-        right_click_combo->addItem(left_click_combo->itemText(n),
-                                    left_click_combo->itemData(n));
-
-        middle_click_combo->addItem(left_click_combo->itemText(n),
-                                     left_click_combo->itemData(n));
-
-        xbutton1_click_combo->addItem(left_click_combo->itemText(n),
-                                       left_click_combo->itemData(n));
-
-        xbutton2_click_combo->addItem(left_click_combo->itemText(n),
-                                       left_click_combo->itemData(n));
-    }
-}
-
-void TInput::retranslateStrings() {
-
-    int wheel_function = wheel_function_combo->currentIndex();
-
     retranslateUi(this);
 
     keyboard_icon->setPixmap(Images::icon("keyboard"));
     mouse_icon->setPixmap(Images::icon("mouse"));
 
-    // Mouse function combos
-    int mouse_left = left_click_combo->currentIndex();
-    int mouse_right = right_click_combo->currentIndex();
-    int mouse_double = double_click_combo->currentIndex();
-    int mouse_middle = middle_click_combo->currentIndex();
-    int mouse_xclick1 = xbutton1_click_combo->currentIndex();
-    int mouse_xclick2 = xbutton2_click_combo->currentIndex();
+    createMouseCombos(mw);
 
-    createMouseCombos();
-
-    left_click_combo->setCurrentIndex(mouse_left);
-    right_click_combo->setCurrentIndex(mouse_right);
-    double_click_combo->setCurrentIndex(mouse_double);
-    middle_click_combo->setCurrentIndex(mouse_middle);
-    xbutton1_click_combo->setCurrentIndex(mouse_xclick1);
-    xbutton2_click_combo->setCurrentIndex(mouse_xclick2);
-
-    wheel_function_combo->clear();
     wheel_function_combo->addItem(tr("No function"), TPreferences::DoNothing);
     wheel_function_combo->addItem(tr("Media seeking"), TPreferences::Seeking);
     wheel_function_combo->addItem(tr("Volume control"), TPreferences::Volume);
     wheel_function_combo->addItem(tr("Zoom video"), TPreferences::Zoom);
     wheel_function_combo->addItem(tr("Change speed"), TPreferences::ChangeSpeed);
-    wheel_function_combo->setCurrentIndex(wheel_function);
 
     wheel_function_seek->setText(tr("Media &seeking"));
     wheel_function_zoom->setText(tr("&Zoom video"));
@@ -160,6 +57,93 @@ void TInput::retranslateStrings() {
     seek_rate_icon->setPixmap(Images::icon("seek_frequency", 32));
 
     createHelp();
+}
+
+QString TInput::sectionName() {
+    return tr("Input");
+}
+
+QPixmap TInput::sectionIcon() {
+    return Images::icon("pref_input", iconSize);
+}
+
+void TInput::addActionItem(TMainWindow* mw, const QString& name) {
+
+    QAction* action = mw->findAction(name);
+    left_click_combo->addItem(
+                tr("%1 (%2)")
+                .arg(Action::TActionsEditor::cleanActionText(action->text(),
+                                                             name))
+                .arg(name),
+                name);
+}
+
+void TInput::createMouseCombos(TMainWindow* mw) {
+
+    left_click_combo->clear();
+    right_click_combo->clear();
+    double_click_combo->clear();
+    middle_click_combo->clear();
+    xbutton1_click_combo->clear();
+    xbutton2_click_combo->clear();
+
+    left_click_combo->addItem(tr("None"), "");
+    addActionItem(mw, "pl_play");
+    addActionItem(mw, "play_or_pause");
+    addActionItem(mw, "pause");
+    addActionItem(mw, "stop");
+    addActionItem(mw, "seek_rewind_frame");
+    addActionItem(mw, "seek_rewind1");
+    addActionItem(mw, "seek_rewind2");
+    addActionItem(mw, "seek_rewind3");
+    addActionItem(mw, "seek_forward_frame");
+    addActionItem(mw, "seek_forward1");
+    addActionItem(mw, "seek_forward2");
+    addActionItem(mw, "seek_forward3");
+    addActionItem(mw, "increase_volume");
+    addActionItem(mw, "decrease_volume");
+    addActionItem(mw, "fullscreen");
+    addActionItem(mw, "screenshot");
+    addActionItem(mw, "stay_on_top_always");
+    addActionItem(mw, "stay_on_top_never");
+    addActionItem(mw, "stay_on_top_playing");
+    addActionItem(mw, "mute");
+    addActionItem(mw, "osd_next");
+    addActionItem(mw, "view_playlist");
+    addActionItem(mw, "reset_zoom_pan");
+    addActionItem(mw, "exit_fullscreen");
+    addActionItem(mw, "speed_normal");
+    addActionItem(mw, "toggle_frames");
+    addActionItem(mw, "view_settings");
+    addActionItem(mw, "size_toggle_double");
+    addActionItem(mw, "next_chapter");
+    addActionItem(mw, "prev_chapter");
+    addActionItem(mw, "video_equalizer");
+    addActionItem(mw, "audio_equalizer");
+    addActionItem(mw, "show_context_menu");
+    addActionItem(mw, "next_wheel_function");
+    addActionItem(mw, "dvdnav_mouse");
+    addActionItem(mw, "dvdnav_menu");
+    addActionItem(mw, "dvdnav_prev");
+    addActionItem(mw, "dvdnav_up");
+    addActionItem(mw, "dvdnav_down");
+    addActionItem(mw, "dvdnav_left");
+    addActionItem(mw, "dvdnav_right");
+    addActionItem(mw, "dvdnav_select");
+
+    // Copy to other combos
+    for (int n = 0; n < left_click_combo->count(); n++) {
+        double_click_combo->addItem(left_click_combo->itemText(n),
+                                    left_click_combo->itemData(n));
+        right_click_combo->addItem(left_click_combo->itemText(n),
+                                   left_click_combo->itemData(n));
+        middle_click_combo->addItem(left_click_combo->itemText(n),
+                                    left_click_combo->itemData(n));
+        xbutton1_click_combo->addItem(left_click_combo->itemText(n),
+                                      left_click_combo->itemData(n));
+        xbutton2_click_combo->addItem(left_click_combo->itemText(n),
+                                      left_click_combo->itemData(n));
+    }
 }
 
 void TInput::setData(Settings::TPreferences* pref) {
@@ -217,6 +201,10 @@ void TInput::getData(Settings::TPreferences* pref) {
 
     pref->seek_relative= seekRelative();
     pref->seek_keyframes = seekKeyframes();
+
+    if (seek_preview_check->isChecked() && !pref->seek_preview) {
+        _requiresRestartPlayer = true;
+    }
     pref->seek_preview = seek_preview_check->isChecked();
 }
 

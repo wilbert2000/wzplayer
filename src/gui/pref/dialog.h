@@ -29,6 +29,9 @@ class QPushButton;
 
 
 namespace Gui {
+
+class TMainWindow;
+
 namespace Pref {
 
 class TSection;
@@ -74,7 +77,7 @@ public:
 #endif
     };
 
-    TDialog(QWidget* parent);
+    TDialog(TMainWindow* mw);
 
     TInput* mod_input() const { return page_input; }
 
