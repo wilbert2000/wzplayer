@@ -109,6 +109,7 @@ bool TPlayerProcess::startPlayer() {
     waiting_for_answers_safe_guard = waiting_for_answers_safe_guard_init;
 
     paused = false;
+    buffering = false;
 
     received_end_of_file = false;
     quit_send = false;
@@ -217,14 +218,14 @@ double TPlayerProcess::playerTimeToGuiTime(double sec) {
 void TPlayerProcess::notifyTime(double time_sec) {
 
     // Store video timestamp
-    md->time_sec = time_sec;
-    md->time_sec_gui = playerTimeToGuiTime(time_sec);
+    md->pos_sec = time_sec;
+    md->pos_sec_gui = playerTimeToGuiTime(time_sec);
 
     // Give descendants a look at the time
-    checkTime(md->time_sec_gui);
+    checkTime(md->pos_sec_gui);
 
     // Pass timestamp to GUI
-    emit receivedPosition(md->time_sec_gui);
+    emit receivedPosition(md->pos_sec_gui);
 }
 
 // TODO: move to TMPVProcess

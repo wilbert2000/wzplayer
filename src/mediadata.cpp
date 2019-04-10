@@ -36,8 +36,8 @@ TMediaData::TMediaData() :
     start_sec(0),
     start_sec_player(0),
     start_sec_set(false),
-    time_sec(0),
-    time_sec_gui(0),
+    pos_sec(0),
+    pos_sec_gui(0),
     duration(0),
 
     mpegts(false),
@@ -191,8 +191,8 @@ void TMediaData::list() const {
     WZDEBUG("start sec player: " + QString::number(start_sec_player));
     WZDEBUG("start sec set: " + QString::number(start_sec_set));
     WZDEBUG("fuzzy time: '" + fuzzy_time + "'");
-    WZDEBUG("time_sec: " + QString::number(time_sec));
-    WZDEBUG("time_sec_gui: " + QString::number(time_sec_gui));
+    WZDEBUG("pos_sec: " + QString::number(pos_sec));
+    WZDEBUG("pos_sec_gui: " + QString::number(pos_sec_gui));
     WZDEBUG("duration: " + QString::number(duration));
 
     WZDEBUG("demuxer: '" + demuxer + "'");

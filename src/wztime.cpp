@@ -38,11 +38,8 @@ QString TWZTime::formatTimeSec(int secs) {
 }
 
 // Format time as hh:mm:ss.zzz
-QString TWZTime::formatTimeMS(const double& aSecs,
-                              bool wantMinutes,
-                              bool zeroPadded) {
+QString TWZTime::formatMS(int ms, bool wantMinutes, bool zeroPadded) {
 
-    int ms = qRound(aSecs * 1000);
     QString negative;
     if (ms < 0) {
         ms = -ms;
@@ -103,4 +100,19 @@ QString TWZTime::formatTimeMS(const double& aSecs,
             .arg(negative)
             .arg(secs)
             .arg(mSecs);
+}
+
+// Format time as hh:mm:ss.zzz
+QString TWZTime::formatTimeMS(const double& aSecs,
+                              bool wantMinutes,
+                              bool zeroPadded) {
+    return formatMS(qRound(aSecs * 1000), wantMinutes, zeroPadded);
+}
+
+QString TWZTime::formatTimeStampMS(const double &secs) {
+    return formatTimeMS(secs, true, true);
+}
+
+QString TWZTime::formatDurationMS(const double &secs) {
+    return formatTimeMS(secs);
 }

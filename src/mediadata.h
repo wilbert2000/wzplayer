@@ -69,10 +69,10 @@ public:
     bool start_sec_set;
     QString fuzzy_time;
     // Current time video, without start time substracted
-    double time_sec;
+    double pos_sec;
     // Current time video, with start time substracted and MPEG-TS PTS
     // timestamp rollover corrected. Also in TMediaSettings.
-    double time_sec_gui;
+    double pos_sec_gui;
     double duration;
     int durationMS() const { return qRound(duration * 1000); }
 

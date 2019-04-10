@@ -706,6 +706,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="seek_preview_check">
+            <property name="text">
+             <string>Show preview when hoovering the time slider</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

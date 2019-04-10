@@ -54,6 +54,7 @@ public:
                && !received_end_of_file
                && isRunning();
     }
+    bool isBuffering() const { return buffering; }
 
     virtual bool startPlayer();
 
@@ -196,6 +197,7 @@ protected:
     bool notified_player_is_running;
     int waiting_for_answers;
     bool paused;
+    bool buffering;
 
     bool received_end_of_file;
     bool quit_send;

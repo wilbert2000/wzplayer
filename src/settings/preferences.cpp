@@ -301,6 +301,7 @@ void TPreferences::reset() {
     seek_rate = 200;
     seek_relative = false;
     seek_keyframes = false;
+    seek_preview = true;
 
 
     // Drives section
@@ -613,9 +614,10 @@ void TPreferences::save() {
     setValue("seeking4", seeking4);
     setValue("seeking_current_action", seeking_current_action);
 
-    setValue("time_slider_drag_delay", seek_rate);
+    setValue("seek_rate", seek_rate);
     setValue("seek_relative", seek_relative);
     setValue("seek_keyframes", seek_keyframes);
+    setValue("seek_preview", seek_preview);
     endGroup();
 
 
@@ -1162,10 +1164,10 @@ void TPreferences::load() {
     seeking_current_action = value("seeking_current_action",
                                    seeking_current_action).toInt();
 
-    seek_rate = value("time_slider_drag_delay",
-                                   seek_rate).toInt();
+    seek_rate = value("seek_rate", seek_rate).toInt();
     seek_relative = value("seek_relative", seek_relative).toBool();
     seek_keyframes = value("seek_keyframes", seek_keyframes).toBool();
+    seek_preview = value("seek_preview", seek_preview).toBool();
     endGroup();
 
 

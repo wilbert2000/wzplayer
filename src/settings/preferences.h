@@ -321,6 +321,7 @@ public:
     //! percentage (with fractions) instead of time.
     bool seek_relative;
     bool seek_keyframes;
+    bool seek_preview;
 
 
     // Drives section

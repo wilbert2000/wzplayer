@@ -377,7 +377,7 @@ QString TPropertiesDialog::getInfo(const QString& title) {
     if (!md.stream_url.isEmpty()) {
         s += addItem(tr("Stream URL"), md.stream_url);
     }
-    s += addItem(tr("Duration"), TWZTime::formatTimeMS(md.duration)
+    s += addItem(tr("Duration"), TWZTime::formatDurationMS(md.duration)
                  + " " + tr("(h:min:sec%1ms)").arg(QLocale().decimalPoint()));
     s += addItem(tr("Start time"),
                  TWZTime::formatTimeSec(qRound(md.start_sec_player))

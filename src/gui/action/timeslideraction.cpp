@@ -79,6 +79,7 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
     return slider;
 }
 
+// Update this pos and widgets pos
 void TTimeSliderAction::setPos(int ms) {
 
     posMS = ms;
@@ -92,6 +93,7 @@ void TTimeSliderAction::setPos(int ms) {
     }
 }
 
+// Slot triggered by player when play position updated
 void TTimeSliderAction::setPosition(int ms) {
 
     if (ms < 0) {
@@ -108,6 +110,7 @@ void TTimeSliderAction::setPosition(int ms) {
     }
 }
 
+// Slot triggered by player when duration updated
 void TTimeSliderAction::setDuration(int ms) {
     WZDEBUG(QString("Received duration %1 ms").arg(ms));
 
@@ -128,10 +131,12 @@ void TTimeSliderAction::setDuration(int ms) {
 
 void TTimeSliderAction::onUpdatePosTimerTimeout() {
 
-    if (qAbs(requestedPos - posMS) > POS_RES) {
+    if (previewPlayer->isBuffering()) {
+        WZDEBUG("Waiting for player to catch up");
+        updatePosTimer->start();
+    } else if (qAbs(requestedPos - posMS) > POS_RES) {
         if (Settings::pref->seek_relative) {
-            double p = double(requestedPos * 100) / durationMS;
-            emit percentageChanged(p);
+            emit percentageChanged(double(requestedPos * 100) / durationMS);
         } else {
             emit positionChanged(requestedPos);
         }

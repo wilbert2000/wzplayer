@@ -171,7 +171,7 @@ void TPlayer::setState(TState s) {
         WZDEBUGOBJ(QString("State changed from %1 to %2 at %3")
                    .arg(stateToString())
                    .arg(stateToString(s))
-                   .arg(mset.current_sec));
+                   .arg(TWZTime::formatTimeMS(mset.current_sec)));
         _state = s;
         emit stateChanged(_state);
     }
@@ -224,6 +224,10 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
 
     WZDEBUGOBJ("Entering the stopped state");
     setState(STATE_STOPPED);
+
+    if (previewPlayer) {
+        previewPlayer->stop();
+    }
 
     if (eof || exit_code == Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED) {
         WZDEBUGOBJ("Emit mediaEOF()");
@@ -757,14 +761,18 @@ void TPlayer::onPlayingStartedNewMedia() {
 
 void TPlayer::startPreviewPlayer() {
 
-    if (previewPlayer
-            && mdat.selected_type == TMediaData::TYPE_FILE
-            && !mdat.image
-            && mdat.hasVideo()) {
-        WZDEBUGOBJ("Starting preview player");
-        previewPlayer->open(mdat.filename);
-    } else {
-        WZDEBUGOBJ("No preview player");
+    if (previewPlayer) {
+        if (mdat.selected_type == TMediaData::TYPE_FILE
+                && !mdat.image
+                && mdat.hasVideo()) {
+            if (Settings::pref->seek_preview) {
+                WZDEBUGOBJ("Starting preview player");
+                previewPlayer->open(mdat.filename);
+                return;
+            }
+            WZINFO("Preview has been disabled in settings");
+        }
+        previewPlayer->stop();
     }
 }
 
@@ -1762,7 +1770,7 @@ void TPlayer::seekCmd(double value, int mode) {
 
     bool keyFrames = Settings::pref->seek_keyframes;
     if (mode == 0) {
-        QString s(tr("Seek %1%2 from %3")
+        QString s(tr("Seek to %1%2 from %3")
                   .arg(keyFrames ? tr("key frame ") : "" )
                   .arg(TWZTime::formatTimeMS(value))
                   .arg(TWZTime::formatTimeMS(mset.current_sec, true)));
@@ -1800,7 +1808,7 @@ void TPlayer::seekCmd(double value, int mode) {
         proc->seek(value, mode, Settings::pref->seek_keyframes,
                    _state == STATE_PAUSED);
     } else {
-        WZWARNOBJ("Player not ready. Ignoring seek command");
+        WZTRACEOBJ("Player not ready. Ignoring seek command");
     }
 }
 
@@ -2913,7 +2921,7 @@ void TPlayer::onReceivedPosition(double sec) {
 
 // TMPVProcess sends it only once after initial start
 void TPlayer::onReceivedPause() {
-    WZDEBUGOBJ("At " + QString::number(mset.current_sec));
+    WZDEBUGOBJ("At " + TWZTime::formatTimeMS(mset.current_sec, true));
     setState(STATE_PAUSED);
 }
 
@@ -3470,16 +3478,24 @@ void TPlayer::displayScreenshotName(const QString& filename) {
 
 void TPlayer::displayUpdatingFontCache() {
     WZDEBUGOBJ("");
-    Gui::msg(tr("Updating the font cache. This may take some seconds..."));
+    Gui::msg(tr("Updating the font cache. This may take a while..."));
+}
+
+bool TPlayer::isBuffering() const {
+    return proc->isBuffering();
 }
 
 void TPlayer::displayBuffering() {
+    WZTRACEOBJ("Buffering...");
     Gui::msg(tr("Buffering..."));
 }
 
 void TPlayer::displayBufferingEnded() {
-    Gui::msg(tr("Playing from %1")
-        .arg(TWZTime::formatTimeSec(qRound(mset.current_sec))));
+    WZTRACEOBJ("Buffering ended");
+
+    Gui::msg(QString("%1 from %2")
+             .arg(previewPlayer ? tr("Playing") : tr("Seeking"))
+             .arg(TWZTime::formatTimeMS(mset.current_sec)));
 }
 
 void TPlayer::updatePreviewWindowSize() {

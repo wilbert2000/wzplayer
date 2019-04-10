@@ -77,13 +77,10 @@ public:
             || _state == STATE_PLAYING
             || _state == STATE_PAUSED;
     }
+    bool isBuffering() const;
 
-    bool hasVideo() const {
-        return mdat.hasVideo();
-    }
-    bool hasAudio() const {
-        return mdat.hasAudio();
-    }
+    bool hasVideo() const { return mdat.hasVideo(); }
+    bool hasAudio() const { return mdat.hasAudio(); }
     bool hasExternalSubs() const;
 
     int getVolume() const;

@@ -44,7 +44,6 @@ TMPVProcess::TMPVProcess(QObject* parent,
 
 bool TMPVProcess::startPlayer() {
 
-    received_buffering = false;
     received_title_not_found = false;
     quit_at_end_of_title = false;
     request_bit_rate_info = !md->image;
@@ -286,7 +285,7 @@ void TMPVProcess::checkTime(double sec) {
     if (md->detected_type == TMediaData::TYPE_CDDA
             || md->detected_type == TMediaData::TYPE_VCD) {
         // TODO: check if better to use sec instead of md->time_sec
-        int chapter = md->chapters.idForTime(md->time_sec, false);
+        int chapter = md->chapters.idForTime(md->pos_sec, false);
         int title;
         if (chapter < 0) {
             title = -1;
@@ -336,7 +335,7 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
             // - Quit needs time to arrive
             quit_at_end_of_title = true;
             quit_at_end_of_title_ms =
-                    (int) ((md->duration - md->time_sec_gui) * 1000);
+                    (int) ((md->duration - md->pos_sec_gui) * 1000);
             // Quit right away if less than 400 ms to go
             if (quit_at_end_of_title_ms <= 400) {
                 WZDEBUGOBJ("Quitting at end of title");
@@ -411,12 +410,12 @@ void TMPVProcess::playingStarted() {
 
     // MPV can give negative times for TS without giving a start time.
     // Correct them by setting the start time.
-    if (!md->start_sec_set && md->time_sec < 0) {
-        WZDEBUGOBJ("Setting negative start time " + QString::number(md->time_sec));
-        md->start_sec = md->time_sec;
+    if (!md->start_sec_set && md->pos_sec < 0) {
+        WZDEBUGOBJ("Setting negative start time " + QString::number(md->pos_sec));
+        md->start_sec = md->pos_sec;
         // No longer need rollover protection (though not set for MPV anyway).
         md->mpegts = false;
-        notifyTime(md->time_sec);
+        notifyTime(md->pos_sec);
     }
 
     if (TMediaData::isCD(md->detected_type)) {
@@ -437,6 +436,7 @@ void TMPVProcess::requestBitrateInfo() {
 
 bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     // Parse custom status line
+    // rx("^T:([0-9\\.-]*)/([0-9\\.-]+) P:(yes|no) B:(yes|no) I:(yes|no)");
     // T:${=time-pos}/${=duration:${=length:0}} P:${=pause}
     // B:${=paused-for-cache} I:${=core-idle}
 
@@ -462,7 +462,7 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     }
 
     if (paused) {
-        // Don't emit signal receivedPause(): it is racy and not needed for MPV
+        // Don't emit signal receivedPause(), it is not needed for MPV
         return true;
     }
 
@@ -470,18 +470,18 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     bool buffering = rx.cap(4) == "yes";
     bool idle = rx.cap(5) == "yes";
 
-    if (buffering or idle) {
-        received_buffering = true;
+    if (buffering || idle) {
+        buffering = true;
         emit receivedBuffering();
         return true;
     }
 
-    if (received_buffering) {
-        received_buffering = false;
+    if (buffering) {
+        buffering = false;
         emit receivedBufferingEnded();
     }
 
-    if (request_bit_rate_info && md->time_sec > 11) {
+    if (request_bit_rate_info && md->pos_sec > 11) {
         request_bit_rate_info = false;
         requestBitrateInfo();
     }

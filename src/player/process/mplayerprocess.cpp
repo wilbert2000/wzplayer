@@ -77,6 +77,7 @@ bool TMPlayerProcess::startPlayer() {
 }
 
 void TMPlayerProcess::getSelectedSubtitles() {
+    // TODO: OBJ version
     WZDEBUG("");
 
     if (md->subs.count() > 0) {
@@ -449,7 +450,7 @@ void TMPlayerProcess::dvdnavSave() {
                     dvdnav_vts_to_restore);
             }
             dvdnav_title_to_restore = md->titles.getSelectedID();
-            dvdnav_time_to_restore = md->time_sec;
+            dvdnav_time_to_restore = md->pos_sec;
             if (dvdnav_time_to_restore > md->duration) {
                 dvdnav_time_to_restore = 0;
             }
@@ -666,9 +667,9 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters,
 
 bool TMPlayerProcess::parsePause() {
 
-    if (md->time_sec > frame_backstep_time_start) {
-        WZDEBUG("retrying frameBackStep at " + QString::number(md->time_sec)
-                + " looking for " + QString::number(frame_backstep_time_start));
+    if (md->pos_sec > frame_backstep_time_start) {
+        WZDEBUG(QString("Retrying frameBackStep at %1 looking for %2")
+                .arg(md->pos_sec).arg(frame_backstep_time_start));
         frameBackStep();
         return true;
     }
@@ -764,7 +765,7 @@ void TMPlayerProcess::playingStarted() {
     get_selected_subtitle = false;
 
     // Reset the check duration timer
-    check_duration_time = md->time_sec;
+    check_duration_time = md->pos_sec;
     if (md->detectedDisc()) {
         // Don't check disc, it does its own duration managment
         check_duration_time_diff = 360000;
@@ -1462,7 +1463,7 @@ void TMPlayerProcess::frameBackStep() {
         } else {
             frame_backstep_step = 1 / md->video_fps;
         }
-        frame_backstep_time_start = md->time_sec - frame_backstep_step;
+        frame_backstep_time_start = md->pos_sec - frame_backstep_step;
         frame_backstep_time_requested = frame_backstep_time_start;
     } else {
         // Retry call from parsePause()

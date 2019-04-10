@@ -2859,8 +2859,7 @@ void TMainWindow::saveThumbnail() {
         if (canonical.isEmpty()) {
             WZWARN("Canonical path for '" + fn + "' not found");
         } else {
-            QString time =TWZTime::formatTimeMS(player->mset.current_sec,
-                                                true, true);
+            QString time =TWZTime::formatTimeStampMS(player->mset.current_sec);
             saveThumbnailToIni(canonical, time);
 
             // Remove cached thumbnails

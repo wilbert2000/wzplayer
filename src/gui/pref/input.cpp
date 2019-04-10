@@ -185,6 +185,7 @@ void TInput::setData(Settings::TPreferences* pref) {
 
     setSeekRelative(pref->seek_relative);
     setSeekKeyframes(pref->seek_keyframes);
+    seek_preview_check->setChecked(pref->seek_preview);
 }
 
 void TInput::getData(Settings::TPreferences* pref) {
@@ -216,6 +217,7 @@ void TInput::getData(Settings::TPreferences* pref) {
 
     pref->seek_relative= seekRelative();
     pref->seek_keyframes = seekKeyframes();
+    pref->seek_preview = seek_preview_check->isChecked();
 }
 
 /*
@@ -532,15 +534,21 @@ void TInput::createHelp() {
            " tends to be the most accurate.<br/>"
            "<b>Seek with percentage of duration</b> uses a percentage to seek,"
            " like seek to 10.53% of the video, and might help out for streams"
-           " with strange or corrupted time stamps."));
+           " with misunderstood or corrupted time stamps."));
 
     setWhatsThis(seek_keyframes_check, tr("Seek to key frames"),
-        tr("If checked, seeks are done to the closest key frame, which speeds"
+        tr("If checked, seeks are done to the nearest key frame, which speeds"
            " up seeking considerably, but is less accurate, especially in"
            " heavely compressed videos with only a few keyframes.<br/><br/>"
            "If unchecked, seeks are a best attempt to seek to the requested"
            " absolute or relative time, but take quite a bit longer, depending"
            " on how well the playing media supports seeking."));
+
+    setWhatsThis(seek_preview_check,
+                 tr("Show preview when hoovering the time slider"),
+                 tr("Show a preview, for local files, when hoovering over the"
+                    " time slider if enabled.<br/>"
+                    "Disable it when you have performance issues."));
 }
 
 }} // namespace Gui::Pref
