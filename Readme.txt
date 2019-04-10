@@ -38,9 +38,9 @@
        url: http://qt.gitorious.org/qt-solutions
        license: BSD (see src/qtsingleapplication/qtsingleapplication.h)
 
-     * libmaia by Sebastian Wiedenroth
-       url: https://github.com/wiedi/libmaia
-       license: Simplified BSD License (see src/findsubtitles/maia/LICENSE)
+     * log4Qt by Martin Heinrich
+       url: https://sourceforge.net/project/showfiles.php?group_id=212208
+       license: Apache License Version 2.0. 
 
     Some icons were taken from:
 
