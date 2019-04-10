@@ -1,7 +1,7 @@
 [linux]
-stable=v2019.04.10
-unstable=v2019.04.10
+stable=v2019.04.11
+unstable=v2019.04.11
 
 [windows]
-stable=v2019.04.10
-unstable=v2019.04.10
+stable=v2019.04.11
+unstable=v2019.04.11
