@@ -2,7 +2,7 @@ Source: wzplayer
 Section: graphics
 Priority: extra
 Maintainer: Wilbert Hengst <wplayer@xs4all.nl>
-Build-Depends: debhelper (>= 5), libqt4-dev, zlib1g-dev
+Build-Depends: debhelper (>= 5), libqt5-dev, zlib1g-dev
 Standards-Version: 3.7.2
 
 Package: wzplayer
@@ -12,8 +12,8 @@ Depends: ${shlibs:Depends}, mplayer | mplayer-nogui | mpv (>= 0.6.2)
 Recommends: alsa-utils, x11-utils
 Replaces: wzplayer-translations, wzplayer-l10n
 Provides: wzplayer-translations, wzplayer-l10n
-Description: A great media player
- WZPlayer is a graphical user interface for MPV and MPlayer based upon
- SMPlayer, http://www.smplayer.info, by Ricardo Villalba. With improved
+Description: A media player
+ WZPlayer is an interface for MPV and MPlayer based upon SMPlayer,
+ http://www.smplayer.info, by Ricardo Villalba. With improved
  performance, scaling, DVDNAV support, no setup needed, lots of setup
  available. No support and lots of source...

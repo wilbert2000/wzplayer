@@ -1,2 +1,2 @@
 ?package(wzplayer):needs="X11" section="Apps/Graphics"\
-  title="wzplayer" command="/usr/bin/wzplayer"
+  title="WZPlayer" command="/usr/bin/wzplayer"
