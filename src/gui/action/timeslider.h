@@ -23,8 +23,6 @@
 #include "wzdebug.h"
 
 
-class QPoint;
-class QToolBar;
 class QHelpEvent;
 
 namespace Gui {
@@ -34,50 +32,34 @@ class TTimeSlider : public TSlider {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-    TTimeSlider(QWidget* parent,
-                int pos,
-                int max_pos,
-                double duration,
-                int drag_delay);
+    TTimeSlider(QWidget* parent, int posMS, int durationMS);
 
-    virtual int pos();
-    virtual double duration();
-    int getTime(const QPoint& pos);
+    void setPosMS(int ms); // Don't use setValue!
+    void setDurationMS(int ms);
 
-public slots:
-    virtual void setPos(int); // Don't use setValue!
-    virtual void setDuration(double t);
+    int getTimeMS(const QPoint& pos);
 
 signals:
-    void posChanged(int);
-    void draggingPosChanged(int);
-    //! Emitted with a few ms of delay
-    void delayedDraggingPos(int);
+    void posChanged(int ms);
+    void draggingPosChanged(int ms);
 
     void wheelUp();
     void wheelDown();
 
-    void toolTipEvent(TTimeSlider* slider, QPoint pos, int secs);
+    void toolTipEvent(TTimeSlider* slider, QPoint pos, int ms);
 
 protected slots:
-    void stopUpdate();
-    void resumeUpdate();
-    void mouseReleased();
+    void startDragging();
+    void stopDragging();
     void onValueChanged(int);
-    void checkDragging(int);
-    void sendDelayedPos();
 
 protected:
     virtual void wheelEvent(QWheelEvent* e);
     virtual bool event(QEvent* event);
 
 private:
-    bool dont_update;
-    int position;
-    double _duration;
-
-    int last_pos_to_send;
-    QTimer* timer;
+    bool dragging;
+    bool pausedPlayer;
 
     bool onToolTipEvent(QHelpEvent* event);
 }; // class TTimeSlider

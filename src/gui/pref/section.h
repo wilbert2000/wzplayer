@@ -77,7 +77,8 @@ protected:
     void setWhatsThis(QWidget* w,
                       const QString& title,
                       const QString& text,
-                      bool set_tooltip = true);
+                      bool set_tooltip = true,
+                      bool set_help = true);
     void clearHelp();
     
 private:

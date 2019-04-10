@@ -23,18 +23,11 @@ class TTimeSliderAction : public TWidgetAction {
     Q_OBJECT
     DECLARE_QCLASS_LOGGER
 public:
-    TTimeSliderAction(TMainWindow* mw,
-                      QWidget* aPanel,
-                      Player::TPlayer* player);
-
-public slots:
-    void setPosition(double sec);
-    void setDuration(double);
+    TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player);
 
 signals:
-    void positionChanged(double sec);
+    void positionChanged(int ms);
     void percentageChanged(double percentage);
-    void dragPositionChanged(double sec);
 
     void wheelUp();
     void wheelDown();
@@ -43,24 +36,27 @@ protected:
     virtual QWidget* createWidget(QWidget* parent) override;
 
 private:
-    QWidget* panel;
+    TWZTimer* updatePosTimer;
+    int posMS;
+    int durationMS;
+    int requestedPos;
+
     Player::TPlayer* previewPlayer;
     TWZTimer* previewTimer;
     TTimeSlider* previewSlider;
     int lastPreviewTime;
 
-    int pos;
-    int maxPos;
-    double duration;
-
-    void setPos();
+    void setPos(int ms);
     void preview();
 
 private slots:
-    void onPosChanged(int value);
-    void onDraggingPosChanged(int value);
-    void onDelayedDraggingPos(int value);
-    void onToolTipEvent(TTimeSlider* slider, QPoint pos, int secs);
+    void setPosition(int ms);
+    void setDuration(int ms);
+
+    void onPosChanged(int ms);
+    void onToolTipEvent(TTimeSlider* slider, QPoint pos, int ms);
+
+    void onUpdatePosTimerTimeout();
     void onPreviewTimerTimeout();
 };
 

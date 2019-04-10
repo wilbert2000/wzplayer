@@ -49,21 +49,23 @@ int TSlider::pixelPosToRangeValue(int pos) const
 {
     QStyleOptionSlider opt;
     initStyleOption(&opt);
-    QRect gr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
-    QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-    int sliderMin, sliderMax, sliderLength;
+    QRect grooveRect = style()->subControlRect(QStyle::CC_Slider, &opt,
+                                               QStyle::SC_SliderGroove, this);
+    QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt,
+                                               QStyle::SC_SliderHandle, this);
 
+    int sliderMin, sliderMax;
     if (orientation() == Qt::Horizontal) {
-        sliderLength = sr.width();
-        sliderMin = gr.x();
-        sliderMax = gr.right() - sliderLength + 1;
+        sliderMin = grooveRect.x();
+        sliderMax = grooveRect.x() + grooveRect.width() - sliderRect.width();
     } else {
-        sliderLength = sr.height();
-        sliderMin = gr.y();
-        sliderMax = gr.bottom() - sliderLength + 1;
+        sliderMin = grooveRect.y();
+        sliderMax = grooveRect.y() + grooveRect.height() - sliderRect.height();
     }
-    return QStyle::sliderValueFromPosition(minimum(), maximum(), pos - sliderMin,
-                                           sliderMax - sliderMin, opt.upsideDown);
+    return QStyle::sliderValueFromPosition(
+                minimum(), maximum(),
+                pos - sliderMin, sliderMax - sliderMin,
+                opt.upsideDown);
 }
 
 // Based on code from qslider.cpp
@@ -73,7 +75,8 @@ void TSlider::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         QStyleOptionSlider opt;
         initStyleOption(&opt);
-        const QRect sliderRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+        const QRect sliderRect = style()->subControlRect(
+                    QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
         if (sliderRect.contains(event->pos())) {
             QSlider::mousePressEvent(event);
         } else {

@@ -8,47 +8,65 @@
 #include "wztime.h"
 #include "wztimer.h"
 
+#include <QApplication>
 #include <QToolTip>
 
 
 namespace Gui {
 namespace Action {
 
+const int POS_RES = 10;
+const int NO_POS = -POS_RES - 1;
 
-TTimeSliderAction::TTimeSliderAction(TMainWindow* mw,
-                                     QWidget* aPanel,
-                                     Player::TPlayer* player) :
+TTimeSliderAction::TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player) :
     TWidgetAction(mw),
     wzdebug(logger()),
-    panel(aPanel),
-    previewPlayer(player),
-    lastPreviewTime(-1),
-    pos(0),
-    maxPos(1000),
-    duration(0) {
+    posMS(0),
+    durationMS(0),
+    requestedPos(0),
+    previewPlayer(player->previewPlayer),
+    lastPreviewTime(NO_POS) {
 
     setObjectName("timeslider_action");
     setText(tr("Time slider"));
 
+    connect(player, &Player::TPlayer::positionChanged,
+            this, &TTimeSliderAction::setPosition);
+    connect(player, &Player::TPlayer::durationChanged,
+            this, &TTimeSliderAction::setDuration);
+
+    connect(this, &TTimeSliderAction::positionChanged,
+            player, &Player::TPlayer::seekMS);
+    connect(this, &TTimeSliderAction::percentageChanged,
+            player, &Player::TPlayer::seekPercentage);
+
+    connect(this, &TTimeSliderAction::wheelUp,
+            player, &Player::TPlayer::wheelUpSeeking);
+    connect(this, &TTimeSliderAction::wheelDown,
+            player, &Player::TPlayer::wheelDownSeeking);
+
+    updatePosTimer = new TWZTimer(this, "updatepostimer", false);
+    updatePosTimer->setSingleShot(true);
+    updatePosTimer->setInterval(Settings::pref->seek_rate);
+    connect(updatePosTimer, &TWZTimer::timeout,
+            this, &TTimeSliderAction::onUpdatePosTimerTimeout);
+
     previewTimer = new TWZTimer(this, "previewtimer", false);
     previewTimer->setSingleShot(true);
-    previewTimer->setInterval(100);
+    previewTimer->setInterval(Settings::pref->seek_rate);
     connect(previewTimer, &TWZTimer::timeout,
             this, &TTimeSliderAction::onPreviewTimerTimeout);
 }
 
 QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 
-    TTimeSlider* slider = new TTimeSlider(parent, pos, maxPos, duration,
-        Settings::pref->time_slider_drag_delay);
+    TTimeSlider* slider = new TTimeSlider(parent, posMS, durationMS);
     slider->setEnabled(isEnabled());
 
     connect(slider, &TTimeSlider::posChanged,
             this, &TTimeSliderAction::onPosChanged);
     connect(slider, &TTimeSlider::draggingPosChanged,
-            this, &TTimeSliderAction::onDraggingPosChanged);
-    connect(slider, &TTimeSlider::delayedDraggingPos,
-            this, &TTimeSliderAction::onDelayedDraggingPos);
+            this, &TTimeSliderAction::onPosChanged);
 
     connect(slider, &TTimeSlider::wheelUp,
             this, &TTimeSliderAction::wheelUp);
@@ -61,134 +79,155 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
     return slider;
 }
 
-void TTimeSliderAction::setPos() {
+void TTimeSliderAction::setPos(int ms) {
+
+    posMS = ms;
 
     QList<QWidget*> widgets = createdWidgets();
     for(int i = 0; i < widgets.count(); i++) {
         TTimeSlider* widget = static_cast<TTimeSlider*>(widgets.at(i));
-        bool was_blocked = widget->blockSignals(true);
-        widget->setPos(pos);
-        widget->blockSignals(was_blocked);
+        bool wasBlocked = widget->blockSignals(true);
+        widget->setPosMS(posMS);
+        widget->blockSignals(wasBlocked);
     }
 }
 
-void TTimeSliderAction::setPosition(double sec) {
+void TTimeSliderAction::setPosition(int ms) {
 
-    int p = 0;
-    if (sec > 0 && duration > 0.1) {
-        p = qRound((sec * maxPos) / duration);
-        if (p > maxPos) {
-            p = maxPos;
+    if (ms < 0) {
+        WZWARN(QString("Received negative position %1").arg(ms));
+        ms = 0;
+    } else if (ms > durationMS) {
+        WZWARN(QString("Received position %1 larger than duration %2")
+               .arg(ms).arg(durationMS));
+        ms = durationMS;
+    }
+
+    if (ms != posMS) {
+        setPos(ms);
+    }
+}
+
+void TTimeSliderAction::setDuration(int ms) {
+    WZDEBUG(QString("Received duration %1 ms").arg(ms));
+
+    durationMS = ms;
+
+    // Probably changed video
+    lastPreviewTime = NO_POS;
+    requestedPos = NO_POS;
+
+    QList<QWidget*> widgets = createdWidgets();
+    for (int i = 0; i < widgets.count(); i++) {
+        TTimeSlider* slider = static_cast<TTimeSlider*>(widgets.at(i));
+        bool wasBlocked = slider->blockSignals(true);
+        slider->setDurationMS(durationMS);
+        slider->blockSignals(wasBlocked);
+    }
+}
+
+void TTimeSliderAction::onUpdatePosTimerTimeout() {
+
+    if (qAbs(requestedPos - posMS) > POS_RES) {
+        if (Settings::pref->seek_relative) {
+            double p = double(requestedPos * 100) / durationMS;
+            emit percentageChanged(p);
+        } else {
+            emit positionChanged(requestedPos);
         }
-    }
-
-    if (p != pos) {
-        pos = p;
-        setPos();
-    }
-}
-
-void TTimeSliderAction::setDuration(double t) {
-
-    duration = t;
-    QList<QWidget*> l = createdWidgets();
-    for (int n = 0; n < l.count(); n++) {
-        TTimeSlider* s = (TTimeSlider*) l[n];
-        s->setDuration(t);
     }
 }
 
 // Slider pos changed
-void TTimeSliderAction::onPosChanged(int value) {
+void TTimeSliderAction::onPosChanged(int ms) {
 
-    pos = value;
-    if (Settings::pref->seek_relative || duration <= 0) {
-        emit percentageChanged((double) (pos * 100) / maxPos);
-    } else {
-        emit positionChanged(duration * pos / maxPos);
-    }
-}
-
-// Slider pos changed while dragging
-void TTimeSliderAction::onDraggingPosChanged(int value) {
-
-    pos = value;
-    emit dragPositionChanged(duration * pos / maxPos);
-}
-
-// Delayed slider pos while dragging
-void TTimeSliderAction::onDelayedDraggingPos(int value) {
-
-    pos = value;
-    if (Settings::pref->update_while_seeking) {
-        onPosChanged(pos);
-    }
-}
-
-void TTimeSliderAction::onPreviewTimerTimeout() {
-
-    if (previewSlider->underMouse()) {
-        preview();
-    } else {
-        previewPlayer->playerWindow->hide();
-        lastPreviewTime = -1;
+    requestedPos = ms;
+    if (durationMS <= 0) {
+        WZWARN(QString("Ignoring posChanged() while duration %1 <= 0")
+               .arg(durationMS));
+    } else if (!updatePosTimer->isActive()) {
+        updatePosTimer->start();
     }
 }
 
 void TTimeSliderAction::preview() {
 
+    TPlayerWindow* playerWindow = previewPlayer->playerWindow;
     QPoint pos = QCursor::pos();
-    int secs = previewSlider->getTime(previewSlider->mapFromGlobal(pos));
-    if (secs != lastPreviewTime) {
-        lastPreviewTime = secs;
-        pos = panel->mapFromGlobal(pos);
+    int ms = previewSlider->getTimeMS(previewSlider->mapFromGlobal(pos));
+    if (qAbs(ms - lastPreviewTime) > POS_RES) {
+        // 10 ms -> resolution 100 fps
+        lastPreviewTime = ms;
 
-        QWidget* parent = previewSlider->parentWidget();
-        QRect r = parent->frameGeometry();
-        parent = parent->parentWidget();
-        if (parent) {
-            r.moveTo(parent->mapToGlobal(r.topLeft()));
+        // Map geometry parent widget slider to global
+        QWidget* parentWidget = previewSlider->parentWidget();
+        QRect r = parentWidget->frameGeometry();
+        if (parentWidget->parentWidget()) {
+            r.moveTo(parentWidget->parentWidget()->mapToGlobal(r.topLeft()));
         }
-        r.moveTo(panel->mapFromGlobal(r.topLeft()));
 
+        // Map to local parent player window
+        parentWidget = playerWindow->parentWidget();
+        r.moveTo(parentWidget->mapFromGlobal(r.topLeft()));
+        pos = parentWidget->mapFromGlobal(pos);
+
+        // Set pos
         const int d = 6;
-        TPlayerWindow* playerWindow = previewPlayer->playerWindow;
         if (previewSlider->orientation() == Qt::Horizontal) {
             pos.rx() = pos.x() - playerWindow->width() / 2;
-            if (pos.y() > panel->height() / 2) {
+            if (pos.y() > parentWidget->height() / 2) {
                 pos.ry() = r.top() - playerWindow->height() - d;
             } else {
                 pos.ry() = r.top() + r.height() + d;
             }
         } else {
             pos.ry() = pos.y() - playerWindow->height() / 2;
-            if (pos.x() > panel->width() / 2) {
+            if (pos.x() > parentWidget->width() / 2) {
                 pos.rx() = r.x() - playerWindow->width() - d;
             } else {
                 pos.rx() = r.x() + r.width() + d;
             }
         }
+
+        // Move player window
         playerWindow->move(pos);
+        // Show player window
         if (!playerWindow->isVisible()) {
             playerWindow->setVisible(true);
+            playerWindow->raise();
         }
 
+        // Seek requested time
         previewPlayer->pause();
-        previewPlayer->seekTime(secs);
+        previewPlayer->seekMS(ms);
+    } else if (!playerWindow->isVisible()) {
+        playerWindow->setVisible(true);
+        playerWindow->raise();
     }
 
     previewTimer->start();
 }
 
+void TTimeSliderAction::onPreviewTimerTimeout() {
+
+    if (previewSlider->underMouse() && !QApplication::mouseButtons()) {
+        preview();
+    } else {
+        previewPlayer->playerWindow->hide();
+    }
+}
+
 void TTimeSliderAction::onToolTipEvent(TTimeSlider* slider,
                                        QPoint pos,
-                                       int secs) {
+                                       int ms) {
 
-    if (previewPlayer->statePOP()) {
+    if (previewPlayer->statePOP() && durationMS > 0) {
         previewSlider = slider;
-        previewTimer->start();
+        if (!previewTimer->isActive()) {
+            previewTimer->start();
+        }
     } else {
-        QToolTip::showText(pos, TWZTime::formatTime(secs), slider);
+        QToolTip::showText(pos, TWZTime::formatTimeSec(ms / 1000), slider);
     }
 }
 

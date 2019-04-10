@@ -12,7 +12,7 @@ namespace Process {
 QString TExitMsg::exitCodeMsg;
 
 void TExitMsg::setExitCodeMsg(const QString &msg) {
-    WZDEBUG(msg);
+    WZDEBUG("'" + msg + "'");
     exitCodeMsg = msg;
 }
 

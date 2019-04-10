@@ -7,8 +7,10 @@
 class TWZTime {
 public:
     // Format time as hh:mm:ss
-    static QString formatTime(int secs);
-    static QString formatTimeMS(int ms);
+    static QString formatTimeSec(int secs);
+    static QString formatTimeMS(const double& aSecs,
+                                bool wantMinutes = false,
+                                bool zeroPadded = false);
 };
 
 

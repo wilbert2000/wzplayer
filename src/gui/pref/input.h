@@ -88,9 +88,6 @@ private:
     void setSeeking4(int n);
     int seeking4();
 
-    void setUpdateWhileDragging(bool);
-    bool updateWhileDragging();
-
     void setSeekRelative(bool);
     bool seekRelative();
 

@@ -47,7 +47,7 @@ QString TTitleData::getDisplayName(bool add_duration) const {
     }
 
     if (add_duration && duration >= 0) {
-        dname += " (" + TWZTime::formatTime(qRound(duration)) + ")";
+        dname += " (" + TWZTime::formatTimeSec(qRound(duration)) + ")";
     }
 
     return dname;

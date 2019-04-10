@@ -41,7 +41,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 24;
+static const int CURRENT_CONFIG_VERSION = 25;
 const Log4Qt::Level TPreferences::log_default_level = Log4Qt::Level::DEBUG_INT;
 
 TPreferences* pref = 0;
@@ -298,8 +298,7 @@ void TPreferences::reset() {
     seeking4 = 30;
     seeking_current_action = 1; // seek short jump
 
-    update_while_seeking = true;
-    time_slider_drag_delay = 200;
+    seek_rate = 200;
     seek_relative = false;
     seek_keyframes = false;
 
@@ -614,9 +613,7 @@ void TPreferences::save() {
     setValue("seeking4", seeking4);
     setValue("seeking_current_action", seeking_current_action);
 
-    setValue("update_while_seeking", update_while_seeking);
-    setValue("time_slider_drag_delay", time_slider_drag_delay);
-
+    setValue("time_slider_drag_delay", seek_rate);
     setValue("seek_relative", seek_relative);
     setValue("seek_keyframes", seek_keyframes);
     endGroup();
@@ -1165,10 +1162,8 @@ void TPreferences::load() {
     seeking_current_action = value("seeking_current_action",
                                    seeking_current_action).toInt();
 
-    update_while_seeking = value("update_while_seeking", update_while_seeking)
-                           .toBool();
-    time_slider_drag_delay = value("time_slider_drag_delay",
-                                   time_slider_drag_delay).toInt();
+    seek_rate = value("time_slider_drag_delay",
+                                   seek_rate).toInt();
     seek_relative = value("seek_relative", seek_relative).toBool();
     seek_keyframes = value("seek_keyframes", seek_keyframes).toBool();
     endGroup();

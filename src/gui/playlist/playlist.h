@@ -116,7 +116,7 @@ private slots:
     void onPlayerError();
     void onNewMediaStartedPlaying();
     void onTitleTrackChanged(int id);
-    void onDurationChanged(double duration);
+    void onDurationChanged(int ms);
     void onMediaEOF();
 };
 

@@ -459,7 +459,7 @@ void TPlaylistWidget::editStart(TPlaylistItem* current) {
     // Unselect the extension
     if (!current->isWZPlaylist()) {
         QString ext = current->extension();
-        if (!ext.isEmpty()) {
+        if (!ext.isEmpty() && ext.length() < 6) {
             QKeyEvent e(QEvent::KeyPress, Qt::Key_Left, Qt::ShiftModifier);
             QWidget* editor = qApp->focusWidget();
             for(int i = ext.length(); i >= 0; i--) {
@@ -606,8 +606,7 @@ void TPlaylistWidget::onDropDone(bool error) {
 
 bool TPlaylistWidget::addDroppedItem(const QString& source,
                                      const QString& dest,
-                                     TPlaylistItem* item,
-                                     bool setCurrent) {
+                                     TPlaylistItem* item) {
 
     QFileInfo fid(dest);
     if (fid.exists()) {
@@ -625,16 +624,21 @@ bool TPlaylistWidget::addDroppedItem(const QString& source,
             // Add item
             parent->addChild(item);
             item->updateFilename(source, dest);
+
             // Don't mark playlists as modified
             if (item->isFolder()) {
                 parent->setModified();
             } else {
                 item->setModified();
             }
-            item->setSelected(true);
-            if (setCurrent) {
+
+            // Set first as currentItem
+            if (selectedItems().count() == 0) {
                 setCurrentItem(item);
             }
+            item->setSelected(true);
+
+            // Accept item
             return true;
         }
         WZERROR(QString("Destination '%1' not found in playlist.")
@@ -659,8 +663,7 @@ void TPlaylistWidget::onCopyFinished(int id, bool error) {
         if (sourceItem) {
             // Add clone to parent
             TPlaylistItem* destItem = sourceItem->clone();
-            if (addDroppedItem(source, dest, destItem,
-                               sourceItem == plCurrentItem())) {
+            if (addDroppedItem(source, dest, destItem)) {
                 destItem->setState(PSTATE_STOPPED);
                 WZINFOOBJ(QString("Copied '%1' to '%2'").arg(source).arg(dest));
             }
@@ -710,14 +713,13 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
         TPlaylistItem* sourceItem = findFilename(source);
         if (sourceItem) {
             // Remove source from parent
-            bool isCurrentItem = sourceItem == plCurrentItem();
             TPlaylistItem* parent = sourceItem->plParent();
             int idx = parent->indexOfChild(sourceItem);
             parent->takeChild(idx);
             parent->setModified();
 
             // Add it to dest
-            if (addDroppedItem(source, dest, sourceItem, isCurrentItem)) {
+            if (addDroppedItem(source, dest, sourceItem)) {
                 if (stoppedFilename == dest) {
                     if (player->state() == Player::STATE_STOPPED) {
                         setCurrentItem(stoppedItem);

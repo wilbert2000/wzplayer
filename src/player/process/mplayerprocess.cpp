@@ -407,8 +407,8 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
         writeToPlayer("get_property length");
     }
 
-    WZDEBUG("emit durationChanged(" + QString::number(md->duration) + ")");
-    emit durationChanged(md->duration);
+    WZDEBUG("notifyDuration(" + QString::number(md->duration) + ")");
+    notifyDuration(md->duration, true);
 
     if (notified_player_is_running) {
         getSelectedAngle();
@@ -827,10 +827,10 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
                 secs = secsc;
                 md->fuzzy_time = "=";
             } else if (da <= frame_off_by_one) {
-                WZTRACE(QString("Frame %1 off by one d %2. Start frame %3,"
-                                " secs %4, secsc %5, line '%6'")
-                        .arg(frame).arg(d).arg(start_frame).arg(secs).arg(secsc)
-                        .arg(line));
+                //WZTRACE(QString("Frame %1 off by one d %2. Start frame %3,"
+                //                " secs %4, secsc %5, line '%6'")
+                //        .arg(frame).arg(d).arg(start_frame).arg(secs)
+                //        .arg(secsc).arg(line));
                 if (d < 0) {
                     start_frame--;
                     md->fuzzy_time = "<";

@@ -104,7 +104,7 @@ bool TMPVProcess::parseSubtitleTrack(int id,
     bool sec_selected = sec_type != SubData::None && sec_ID >= 0;
 
     if (sub_type == sec_type && id == sec_ID) {
-        WZDEBUG("found secondary subtitle track");
+        WZDEBUGOBJ("found secondary subtitle track");
         // Secondary sub, don't select the primary sub
         selected = false;
     }
@@ -141,7 +141,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "TITLES") {
         int n_titles = value.toInt();
-        WZDEBUG("Creating " + QString::number(n_titles) + " titles");
+        WZDEBUGOBJ("Creating " + QString::number(n_titles) + " titles");
         for (int idx = 0; idx < n_titles; idx++) {
             md->titles.addID(idx + 1);
             writeToPlayer(QString("print_text \"INFO_TITLE_LENGTH=%1"
@@ -168,7 +168,7 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "CHAPTERS") {
         int n_chapters = value.toInt();
-        WZDEBUG("Requesting start and titel of " + QString::number(n_chapters)
+        WZDEBUGOBJ("Requesting start and titel of " + QString::number(n_chapters)
                 + " chapter(s)");
         for (int n = 0; n < n_chapters; n++) {
             writeToPlayer(QString("print_text \"CHAPTER_%1="
@@ -181,21 +181,21 @@ bool TMPVProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "MEDIA_TITLE") {
         if (md->image) {
-            WZDEBUG("Ignoring image title");
+            WZDEBUGOBJ("Ignoring image title");
         } else if (md->disc.valid) {
             // For a disc, always set the title, unless it is "cdrom"
             if (value != "cdrom") {
                 md->title = value;
-                WZDEBUG("Title set to '" + md->title + "'");
+                WZDEBUGOBJ("Title set to '" + md->title + "'");
             }
         } else {
             QString name = TName::nameForURL(md->filename);
             QString ext = QFileInfo(md->filename).suffix();
             if (value == name || value == name + "." + ext) {
-                WZDEBUG("Ignoring title matching file name");
+                WZDEBUGOBJ("Ignoring title matching file name");
             } else {
                 md->title = value;
-                WZDEBUG("Title set to '" + md->title + "'");
+                WZDEBUGOBJ("Title set to '" + md->title + "'");
             }
         }
         return true;
@@ -224,7 +224,7 @@ bool TMPVProcess::parseChapter(int id, double start, QString title) {
 
     waiting_for_answers--;
     md->chapters.addChapter(id, title, start);
-    WZDEBUG("Added chapter id " + QString::number(id)
+    WZDEBUGOBJ("Added chapter id " + QString::number(id)
             + " starting at " + QString::number(start)
             + " with title '" + title + "'");
     return true;
@@ -257,12 +257,12 @@ void TMPVProcess::fixTitle() {
     // as VTS by DVDNAV, but it also makes it possible to sequentially play all
     // titles, needed because MPV does not support menus.
     if (!received_title_not_found) {
-        WZDEBUG(QString("Notify requested title %1").arg(title));
+        WZDEBUGOBJ(QString("Notify requested title %1").arg(title));
         notifyTitleTrackChanged(title);
         return;
     }
 
-    WZWARN("Requested title " + QString(title) + " not found");
+    WZWARNOBJ("Requested title " + QString(title) + " not found");
 
     // Let the playlist try the next title if a valid title was requested and
     // there is more than 1 title.
@@ -302,7 +302,7 @@ void TMPVProcess::checkTime(double sec) {
                 && sec > md->duration
                 && !quit_send) {
 
-            WZDEBUG(QString("Time %1 past end of title %2. Quitting.")
+            WZDEBUGOBJ(QString("Time %1 past end of title %2. Quitting.")
                     .arg(sec).arg(md->duration));
             quit(0);
             received_end_of_file =  true;
@@ -339,14 +339,14 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
                     (int) ((md->duration - md->time_sec_gui) * 1000);
             // Quit right away if less than 400 ms to go
             if (quit_at_end_of_title_ms <= 400) {
-                WZDEBUG("Quitting at end of title");
+                WZDEBUGOBJ("Quitting at end of title");
                 quit(0);
                 received_end_of_file =  true;
             } else {
                 // Quit when quit_at_end_of_title_ms elapsed
                 quit_at_end_of_title_ms -= 400;
                 quit_at_end_of_title_time.start();
-                WZDEBUG("Marked title to quit in "
+                WZDEBUGOBJ("Marked title to quit in "
                         + QString::number(quit_at_end_of_title_ms) + " ms");
             }
         }
@@ -371,7 +371,7 @@ void TMPVProcess::convertChaptersToTitles() {
 
     // Just for safety...
     if (md->titles.count() > 0) {
-        WZWARN("Found unexpected titles");
+        WZWARNOBJ("Found unexpected titles");
         return;
     }
     if (md->chapters.count() == 1) {
@@ -403,16 +403,16 @@ void TMPVProcess::convertChaptersToTitles() {
         }
     }
 
-    WZDEBUG("Created " + QString::number(md->titles.count()) + " titles");
+    WZDEBUGOBJ("Created " + QString::number(md->titles.count()) + " titles");
 }
 
 void TMPVProcess::playingStarted() {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     // MPV can give negative times for TS without giving a start time.
     // Correct them by setting the start time.
     if (!md->start_sec_set && md->time_sec < 0) {
-        WZDEBUG("Setting negative start time " + QString::number(md->time_sec));
+        WZDEBUGOBJ("Setting negative start time " + QString::number(md->time_sec));
         md->start_sec = md->time_sec;
         // No longer need rollover protection (though not set for MPV anyway).
         md->mpegts = false;
@@ -537,7 +537,7 @@ bool TMPVProcess::parseLine(QString& line) {
             && quit_at_end_of_title_time.elapsed() >= quit_at_end_of_title_ms) {
 
         quit_at_end_of_title = false;
-        WZDEBUG("Quitting title");
+        WZDEBUGOBJ("Quitting title");
         quit(0);
         received_end_of_file =  true;
         return true;
@@ -590,7 +590,7 @@ bool TMPVProcess::parseLine(QString& line) {
     // AO
     if (rx_ao.indexIn(line) >= 0) {
         md->ao = rx_ao.cap(1);
-        WZDEBUG("Audio driver '" + md->ao + "'");
+        WZDEBUGOBJ("Audio driver '" + md->ao + "'");
         return true;
     }
 
@@ -603,8 +603,8 @@ bool TMPVProcess::parseLine(QString& line) {
             md->video_codec = line.left(i).mid(12);
             md->video_codec_description = line.mid(i + 2);
             md->video_codec_description.chop(1);
-            WZDEBUG("video_codec set to '" + md->video_codec + "'");
-            WZDEBUG("video_codec_description set to '"
+            WZDEBUGOBJ("video_codec set to '" + md->video_codec + "'");
+            WZDEBUGOBJ("video_codec_description set to '"
                     + md->video_codec_description + "'");
             return true;
         }
@@ -625,8 +625,8 @@ bool TMPVProcess::parseLine(QString& line) {
             md->audio_codec = line.left(i).mid(12);
             md->audio_codec_description = line.mid(i + 2);
             md->audio_codec_description.chop(1);
-            WZDEBUG("audio_codec set to '" + md->audio_codec + "'");
-            WZDEBUG("audio_codec_description set to '"
+            WZDEBUGOBJ("audio_codec set to '" + md->audio_codec + "'");
+            WZDEBUGOBJ("audio_codec_description set to '"
                     + md->audio_codec_description + "'");
             return true;
         }
@@ -671,37 +671,37 @@ bool TMPVProcess::parseLine(QString& line) {
         md->detected_type = TMediaData::TYPE_STREAM;
         QString s = rx_stream_title.cap(1);
         md->title = s;
-        WZDEBUG("Stream title set to '" + md->title + "'");
+        WZDEBUGOBJ("Stream title set to '" + md->title + "'");
         emit receivedStreamTitle();
         return true;
     }
 
     // Errors
     if (rx_file_open.indexIn(line) >= 0) {
-        WZDEBUG("Storing file open failed");
+        WZDEBUGOBJ("Storing file open failed");
         exit_code_override = TExitMsg::ERR_FILE_OPEN;
         TExitMsg::setExitCodeMsg(rx_file_open.cap(1));
         return true;
     }
     if (rx_failed_open.indexIn(line) >= 0) {
         if (exit_code_override == 0 && rx_failed_open.cap(1) == md->filename) {
-            WZDEBUG("Storing open failed");
+            WZDEBUGOBJ("Storing open failed");
             exit_code_override = TExitMsg::ERR_OPEN;
         } else {
-            WZDEBUG("Skipped open failed");
+            WZDEBUGOBJ("Skipped open failed");
         }
     }
     if (rx_failed_format.indexIn(line) >= 0) {
-        WZDEBUG("Stored unrecognized file format");
+        WZDEBUGOBJ("Stored unrecognized file format");
         exit_code_override = TExitMsg::ERR_FILE_FORMAT;
     }
     if (rx_error_http_403.indexIn(line) >= 0) {
-        WZDEBUG("Stored HTTP 403");
+        WZDEBUGOBJ("Stored HTTP 403");
         exit_code_override = TExitMsg::ERR_HTTP_403;
         return true;
     }
     if (rx_error_http_404.indexIn(line) >= 0) {
-        WZDEBUG("Stored HTTP 404");
+        WZDEBUGOBJ("Stored HTTP 404");
         exit_code_override = TExitMsg::ERR_HTTP_404;
         return true;
     }
@@ -807,9 +807,9 @@ void TMPVProcess::addVFIfAvailable(const QString& vf, const QString& value) {
             s += "=" + value;
         }
         args << s;
-        WZDEBUG("added video filter '" + s + "'");
+        WZDEBUGOBJ("Added video filter '" + s + "'");
     } else {
-        WZINFO("video filter '" + vf + "' is not available");
+        WZINFOOBJ("Video filter '" + vf + "' is not available");
     }
 }
 
@@ -971,7 +971,7 @@ void TMPVProcess::setOption(const QString& name, const QVariant& value) {
     } else if (name == "prefer-ipv6") {
         args << "--ytdl-raw-options=force-ipv6=";
     } else {
-        WZINFO("ignoring option name '" + name
+        WZINFOOBJ("ignoring option name '" + name
                + "' value '" + value.toString() + "'");
     }
 }
@@ -1359,7 +1359,7 @@ void TMPVProcess::setOSDScale(double value) {
 void TMPVProcess::setVideoFilter(const QString& filter,
                            bool enable,
                            const QVariant& option) {
-    WZDEBUG("filter '" + filter + "', enable " + QString::number(enable)
+    WZDEBUGOBJ("filter '" + filter + "', enable " + QString::number(enable)
             + ", option " + option.toString());
 
     QString f;
@@ -1404,7 +1404,7 @@ void TMPVProcess::setVideoFilter(const QString& filter,
     } else if (filter == "kerndeint") {
         f = "lavfi=[kerndeint=" + option.toString() +"]";
     } else {
-        WZDEBUG("unknown filter '" + filter + "'");
+        WZDEBUGOBJ("unknown filter '" + filter + "'");
     }
 
     if (!f.isEmpty()) {

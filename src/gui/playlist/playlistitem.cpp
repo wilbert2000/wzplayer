@@ -43,7 +43,7 @@ const int USER_TYPE = QTreeWidgetItem::UserType + 1;
 // Constructor used for root item
 TPlaylistItem::TPlaylistItem() :
     QTreeWidgetItem(USER_TYPE),
-    mDuration(0),
+    mDurationMS(0),
     mOrder(1),
     mFolder(true),
     mPlaylist(false),
@@ -74,7 +74,7 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
     mFilename(item.filename()),
     mBaseName(item.baseName()),
     mExt(item.extension()),
-    mDuration(item.duration()),
+    mDurationMS(item.durationMS()),
     mOrder(item.order()),
 
     mFolder(item.isFolder()),
@@ -103,12 +103,12 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
 TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
                              const QString& filename,
                              const QString& name,
-                             double duration,
+                             int durationMS,
                              bool protectName) :
     QTreeWidgetItem(parent, USER_TYPE),
     mFilename(QDir::toNativeSeparators(filename)),
     mBaseName(name),
-    mDuration(duration),
+    mDurationMS(durationMS),
     mEditURL(false),
     mState(PSTATE_STOPPED),
     mPlayed(false),
@@ -520,8 +520,8 @@ QVariant TPlaylistItem::data(int column, int role) const {
         }
         if (column == COL_LENGTH) {
             QString s;
-            if (mDuration > 0) {
-                s = TWZTime::formatTime(qRound(mDuration));
+            if (mDurationMS > 0) {
+                s = TWZTime::formatTimeSec(qRound(double(mDurationMS) / 1000));
             }
             return QVariant(s);
         }
@@ -933,7 +933,7 @@ bool TPlaylistItem::operator <(const QTreeWidgetItem& other) const {
     case COL_NAME:
         return QString::localeAwareCompare(mBaseName, o->baseName()) < 0;
     case COL_EXT: return QString::localeAwareCompare(mExt, o->extension()) < 0;
-    case COL_LENGTH: return mDuration < o->duration();
+    case COL_LENGTH: return mDurationMS < o->durationMS();
     default: return mOrder < o->order();
     }
 }

@@ -80,7 +80,7 @@ TPlayerProcess::TPlayerProcess(QObject* parent,
 void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
 
     if (log) {
-        WZDEBUG(text);
+        WZDEBUGOBJ(text);
     }
 
     if (received_end_of_file) {
@@ -121,9 +121,8 @@ bool TPlayerProcess::startPlayer() {
 
 // Slot called when the process is finished
 void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    WZDEBUG("Exit code " + QString::number(exitCode)
-            + ", override " + QString::number(exit_code_override)
-            + ", status " + QString::number(exitStatus));
+    WZDEBUGOBJ(QString("Exit code %1, override %2, status %3")
+               .arg(exitCode).arg(exit_code_override).arg(exitStatus));
 
     if (exit_code_override) {
         exitCode = exit_code_override;
@@ -137,7 +136,7 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 }
 
 void TPlayerProcess::playingStarted() {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     notified_player_is_running = true;
 
@@ -147,7 +146,7 @@ void TPlayerProcess::playingStarted() {
     emit receivedSubtitleTracks();
     emit receivedTitleTracks();
 
-    WZDEBUG("emit playerFullyLoaded()");
+    WZDEBUGOBJ("emit playerFullyLoaded()");
     emit playerFullyLoaded();
 }
 
@@ -155,24 +154,31 @@ void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
 
     int selected = md->titles.getSelectedID();
     if (new_title != selected) {
-        WZDEBUG("Title changed from " + QString::number(selected)
-                + " to " + QString::number(new_title));
+        WZDEBUGOBJ(QString("Title changed from %1 to %2")
+                .arg(selected).arg(new_title));
         md->titles.setSelectedID(new_title);
         if (notified_player_is_running) {
-            WZDEBUG("emit receivedTitleTrackChanged()");
+            WZDEBUGOBJ("emit receivedTitleTrackChanged()");
             emit receivedTitleTrackChanged(new_title);
         }
     }
 }
 
-void TPlayerProcess::notifyDuration(double duration) {
+void TPlayerProcess::notifyDuration(double duration, bool forceEmit) {
 
-    // Duration changed?
-    if (qAbs(duration - md->duration) > 0.001) {
-        WZDEBUG("Duration changed from " + QString::number(md->duration)
-                + " to " + QString::number(duration));
-        md->duration = duration;
-        emit durationChanged(md->duration);
+    if (duration < 0) {
+        WZWARN(QString("Received negative duration %1").arg(duration));
+        duration = 0;
+    }
+
+    int oldMS = md->durationMS();
+    md->duration = duration;
+    int ms = md->durationMS();
+
+    if (oldMS != ms || forceEmit) {
+        WZDEBUGOBJ(QString("Duration updated from %1 ms to %2 ms")
+                   .arg(oldMS).arg(ms));
+        emit durationChanged(ms);
     }
 }
 
@@ -238,7 +244,7 @@ bool TPlayerProcess::waitForAnswers() {
 }
 
 void TPlayerProcess::quit(int exit_code) {
-    WZDEBUG("");
+    WZDEBUGOBJ("");
 
     if (!quit_send) {
         quit_send = true;
@@ -256,7 +262,7 @@ bool TPlayerProcess::parseLine(QString& line) {
     if (quit_send) {
         return true;
     }
-    WZDEBUG("'" + line + "'");
+    WZDEBUGOBJ("'" + line + "'");
 
     // Video out driver
     if (rx_vo.indexIn(line) >= 0) {
@@ -274,7 +280,7 @@ bool TPlayerProcess::parseLine(QString& line) {
 
     // End of file
     if (rx_eof.indexIn(line) >= 0)  {
-        WZDEBUG("Received end of file");
+        WZDEBUGOBJ("Received end of file");
         received_end_of_file = true;
         return true;
     }
@@ -282,7 +288,7 @@ bool TPlayerProcess::parseLine(QString& line) {
     // DVD serial number
     if (rx_dvd_serial.indexIn(line) >= 0)  {
         md->dvd_disc_serial = rx_dvd_serial.cap(1);
-        WZDEBUG("Serial set to " + md->dvd_disc_serial);
+        WZDEBUGOBJ("Serial set to " + md->dvd_disc_serial);
         return true;
     }
 
@@ -305,7 +311,7 @@ bool TPlayerProcess::parseVO(const QString& vo,
         md->video_out_height = dh;
     }
 
-    WZDEBUG(QString("parseVO: VO '%1' %2 x %3 => %4 x %5")
+    WZDEBUGOBJ(QString("parseVO: VO '%1' %2 x %3 => %4 x %5")
             .arg(md->vo).arg(md->video_width).arg(md->video_height)
             .arg(md->video_out_width).arg(md->video_out_height));
 
@@ -320,17 +326,17 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
 
     if (name == "ASPECT") {
         md->video_aspect = value;
-        WZDEBUG("video aspect ratio set to '" + md->video_aspect + "'");
+        WZDEBUGOBJ("video_aspect set to '" + md->video_aspect + "'");
         return true;
     }
     if (name == "FPS") {
         md->video_fps = value.toDouble();
-        WZDEBUG("video_fps set to " + QString::number(md->video_fps));
+        WZDEBUGOBJ("video_fps set to " + QString::number(md->video_fps));
         return true;
     }
     if (name == "BITRATE") {
         md->video_bitrate = value.toInt();
-        WZDEBUG("video_bitrate set to " + QString::number(md->video_bitrate));
+        WZDEBUGOBJ("video_bitrate set to " + QString::number(md->video_bitrate));
         if (notified_player_is_running) {
             emit videoBitRateChanged(md->video_bitrate);
         }
@@ -338,23 +344,23 @@ bool TPlayerProcess::parseVideoProperty(const QString& name, const QString& valu
     }
     if (name == "FORMAT") {
         md->video_format = value;
-        WZDEBUG("video_format set to '" + md->video_format + "'");
+        WZDEBUGOBJ("video_format set to '" + md->video_format + "'");
         return true;
     }
     if (name == "CODEC") {
         md->video_codec = value;
-        WZDEBUG("video_codec set to '" + md->video_codec + "'");
+        WZDEBUGOBJ("video_codec set to '" + md->video_codec + "'");
         return true;
     }
     // TODO: check MPlayer
     if (name == "COLORMATRIX") {
         md->video_colorspace = value;
-        WZDEBUG("video_colorspace set to '" + md->video_colorspace + "'");
+        WZDEBUGOBJ("video_colorspace set to '" + md->video_colorspace + "'");
         return true;
     }
     if (name == "OUTCOLORMATRIX") {
         md->video_out_colorspace = value;
-        WZDEBUG("video_out_colorspace set to '" + md->video_out_colorspace + "'");
+        WZDEBUGOBJ("video_out_colorspace set to '" + md->video_out_colorspace + "'");
         return true;
     }
 
@@ -365,7 +371,7 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
 
     if (name == "BITRATE") {
         md->audio_bitrate = value.toInt();
-        WZDEBUG("audio_bitrate set to " + QString::number(md->audio_bitrate));
+        WZDEBUGOBJ("audio_bitrate set to " + QString::number(md->audio_bitrate));
         if (notified_player_is_running) {
             emit audioBitRateChanged(md->audio_bitrate);
         }
@@ -373,22 +379,22 @@ bool TPlayerProcess::parseAudioProperty(const QString& name, const QString& valu
     }
     if (name == "FORMAT") {
         md->audio_format = value;
-        WZDEBUG("audio_format set to '" + md->audio_format + "'");
+        WZDEBUGOBJ("audio_format set to '" + md->audio_format + "'");
         return true;
     }
     if (name == "RATE") {
         md->audio_rate = value.toInt();
-        WZDEBUG("audio_rate set to " + QString::number(md->audio_rate));
+        WZDEBUGOBJ("audio_rate set to " + QString::number(md->audio_rate));
         return true;
     }
     if (name == "NCH") {
         md->audio_nch = value.toInt();
-        WZDEBUG("audio_nch set to " + QString::number(md->audio_nch));
+        WZDEBUGOBJ("audio_nch set to " + QString::number(md->audio_nch));
         return true;
     }
     if (name == "CODEC") {
         md->audio_codec = value;
-        WZDEBUG("audio_codec set to '" + md->audio_codec + "'");
+        WZDEBUGOBJ("audio_codec set to '" + md->audio_codec + "'");
         return true;
     }
 
@@ -409,10 +415,10 @@ bool TPlayerProcess::parseAngle(const QString& value) {
         md->angle = 0;
         md->angles = 0;
     }
-    WZDEBUG(QString("selected angle %1/%2").arg(md->angle).arg(md->angles));
+    WZDEBUGOBJ(QString("selected angle %1/%2").arg(md->angle).arg(md->angles));
 
     if (notified_player_is_running) {
-        WZDEBUG("emit receivedAngles()");
+        WZDEBUGOBJ("emit receivedAngles()");
         emit receivedAngles();
     }
 
@@ -423,15 +429,15 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
 
     if (name == "START_TIME") {
         if (value.isEmpty() || value == "unknown") {
-            WZDEBUG("start time not set");
+            WZDEBUGOBJ("Start time not set");
         } else {
             md->start_sec_player = value.toDouble();
             if (Settings::pref->isMPV()) {
                 md->start_sec_set = true;
                 md->start_sec = md->start_sec_player;
             }
-            WZDEBUG("start time set to "
-                    + QString::number(md->start_sec_player));
+            WZDEBUGOBJ(QString("Start time set to %1")
+                       .arg(md->start_sec_player));
         }
         return true;
     }
@@ -441,11 +447,11 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
     }
     if (name == "DEMUXER") {
         md->demuxer = value;
-        WZDEBUG("demuxer set to '" + md->demuxer + "'");
+        WZDEBUGOBJ("Demuxer set to '" + md->demuxer + "'");
         // TODO: better mpeg TS detection
         if (md->demuxer == "mpegts") {
             md->mpegts = true;
-            WZDEBUG("detected mpegts");
+            WZDEBUGOBJ("Detected mpegts");
         }
         return true;
     }
@@ -461,7 +467,7 @@ bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
     name = name.trimmed();
     value = value.trimmed();
     md->meta_data[name] = value;
-    WZDEBUG(QString("'%1' set to '%2'").arg(name).arg(value));
+    WZDEBUGOBJ(QString("'%1' set to '%2'").arg(name).arg(value));
     return true;
 }
 
@@ -501,7 +507,7 @@ void TPlayerProcess::setImageDuration(int duration) {
 
     if (temp_file.open()) {
         temp_file_name = temp_file.fileName();
-        WZDEBUG(QString("Writing %1 frames to '%2'. Duration %3, fps %4.")
+        WZDEBUGOBJ(QString("Writing %1 frames to '%2'. Duration %3, fps %4.")
                 .arg(frames).arg(temp_file_name).arg(duration).arg(fps));
         temp_file.resize(0);
         QTextStream text(&temp_file);

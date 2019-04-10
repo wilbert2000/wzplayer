@@ -623,7 +623,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                 continue;
             }
         } else {
-            int d = (int) item->duration();
+            double d = double(item->durationMS()) / 1000;
             stream << "#EXTINF:" << d << "," << item->baseName() << "\n";
             if (!savedMetaData) {
                 if (isFavList || d || item->edited()) {
@@ -684,14 +684,14 @@ bool TPList::saveM3uFile(TPlaylistItem* folder,
     } while (true);
 
 
+    // Use EXT-X-VERSION=3 so we can store durations in seconds with fraction.
+
     QTextStream stream(&file);
-    if (QFileInfo(filename).suffix().toLower() == "m3u") {
-        stream.setCodec(QTextCodec::codecForLocale());
-    } else {
-        stream.setCodec("UTF-8");
-    }
+    stream.setLocale(QLocale::c()); // Need . as decimal separator
+    stream.setCodec("UTF-8");
 
     stream << "#EXTM3U" << "\n"
+           << "#EXT-X-VERSION:3\n"
            << "# Playlist created by WZPlayer " << TVersion::version << "\n";
 
     // Keep track of whether we saved anything usefull

@@ -116,10 +116,13 @@ void TSection::restartIfStringChanged(QString& old_value,
 void TSection::setWhatsThis(QWidget* w,
                            const QString& title,
                            const QString& text,
-                           bool set_tooltip) {
+                           bool set_tooltip,
+                           bool set_help) {
 
     w->setWhatsThis(text);
-    help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
+    if (set_help) {
+        help_message += "<b>"+title+"</b><br>"+text+"<br><br>";
+    }
     if (set_tooltip) {
         w->setToolTip("<qt>"+ text +"</qt>");
     }

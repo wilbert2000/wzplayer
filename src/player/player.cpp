@@ -762,10 +762,9 @@ void TPlayer::startPreviewPlayer() {
             && !mdat.image
             && mdat.hasVideo()) {
         WZDEBUGOBJ("Starting preview player");
-        previewPlayer->setStartPausedOnce();
         previewPlayer->open(mdat.filename);
     } else {
-        WZDEBUGOBJ("Selected no preview player");
+        WZDEBUGOBJ("No preview player");
     }
 }
 
@@ -807,7 +806,7 @@ void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
 }
 
 void TPlayer::frameStep() {
-    WZDEBUGOBJ("At " + QString::number(mset.current_sec));
+    WZDEBUGOBJ("At " + TWZTime::formatTimeMS(mset.current_sec, true));
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -819,7 +818,7 @@ void TPlayer::frameStep() {
 }
 
 void TPlayer::frameBackStep() {
-    WZDEBUGOBJ("At " + QString::number(mset.current_sec));
+    WZDEBUGOBJ("At " + TWZTime::formatTimeMS(mset.current_sec, true));
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -1023,11 +1022,11 @@ void TPlayer::startPlayer(bool loopImage) {
 
         // Set mset.current_sec
         mset.current_sec = ss;
-        emit positionChanged(ss);
+        emit positionChanged(qRound(ss * 1000));
     }
 
     restartTime = 0;
-    if (startPausedOnce) {
+    if (startPausedOnce || isPreviewPlayer()) {
         startPausedOnce = false;
         proc->setOption("pause");
     }
@@ -1161,6 +1160,7 @@ void TPlayer::startPlayer(bool loopImage) {
 
     // OSD
     if (previewPlayer) {
+        // Normal player
         proc->setOption("osdlevel", Settings::pref->osd_level);
         if (Settings::pref->isMPlayer()) {
             proc->setOption("osd-scale", Settings::pref->subfont_osd_scale);
@@ -1169,7 +1169,15 @@ void TPlayer::startPlayer(bool loopImage) {
             proc->setOption("osd-scale-by-window", "no");
         }
     } else {
+        // Preview player
         proc->setOption("osdlevel", Settings::TPreferences::SeekTimer);
+        if (Settings::pref->isMPlayer()) {
+            proc->setOption("osd-scale",
+                            qRound(0.8 * Settings::pref->subfont_osd_scale));
+        } else {
+            proc->setOption("osd-scale", 0.8 * Settings::pref->osd_scale);
+            proc->setOption("osd-scale-by-window", "no");
+        }
     }
 
     // Subtitle search fuzziness
@@ -1347,9 +1355,6 @@ void TPlayer::startPlayer(bool loopImage) {
         proc->setOption("dvdangle", QString::number(mset.current_angle));
     }
 
-    // TODO: TMPVProcess title and track switch code does not run nicely when
-    // caching is set. Seeks inside the cache don't notify track or title
-    // changes...
     cache_size = -1;
     if (mdat.selected_type == TMediaData::TYPE_DVDNAV) {
         // Always set no cache for DVDNAV
@@ -1593,7 +1598,7 @@ end_video_filters:
         proc->setOption("volume", QString::number(getVolume()));
     }
 
-    if (getMute()) {
+    if (getMute() || isPreviewPlayer()) {
         proc->setOption("mute");
     }
 
@@ -1757,10 +1762,14 @@ void TPlayer::seekCmd(double value, int mode) {
 
     bool keyFrames = Settings::pref->seek_keyframes;
     if (mode == 0) {
-        WZDEBUGOBJ(QString("Seek relative %1 seconds %2at %3")
-                   .arg(value)
-                   .arg(keyFrames ? "key frames " : "" )
-                   .arg(mset.current_sec));
+        QString s(tr("Seek %1%2 from %3")
+                  .arg(keyFrames ? tr("key frame ") : "" )
+                  .arg(TWZTime::formatTimeMS(value))
+                  .arg(TWZTime::formatTimeMS(mset.current_sec, true)));
+        if (previewPlayer) {
+            Gui::msgOSD(s);
+        }
+        WZDEBUGOBJ(s);
     } else {
         if (value < 0)
             value = 0;
@@ -1768,15 +1777,22 @@ void TPlayer::seekCmd(double value, int mode) {
             if (value > 100) {
                 value = 100;
             }
-            WZDEBUGOBJ(QString("Seek %1% %2at %3")
-                       .arg(value)
-                       .arg(keyFrames ? "key frames " : "" )
-                       .arg(mset.current_sec));
+            QString s(tr("Seek %1%2%")
+                      .arg(keyFrames ? "key frame " : "" )
+                      .arg(value));
+            if (previewPlayer) {
+                Gui::msgOSD(s);
+            }
+            WZDEBUGOBJ(s);
         } else {
-            WZDEBUGOBJ(QString("Seek absolute %1 seconds %2at %3")
-                       .arg(value)
-                       .arg(keyFrames ? "key frames " : "" )
-                       .arg(mset.current_sec));
+            QString s(tr("Seek to %1%2")
+                      .arg(keyFrames ? "key frame " : "" )
+                       .arg(TWZTime::formatTimeMS(value, true)));
+
+            if (previewPlayer) {
+                Gui::msgOSD(s);
+            }
+            WZDEBUGOBJ(s);
         }
     }
 
@@ -1784,7 +1800,7 @@ void TPlayer::seekCmd(double value, int mode) {
         proc->seek(value, mode, Settings::pref->seek_keyframes,
                    _state == STATE_PAUSED);
     } else {
-        WZWARNOBJ("Ignored seek command, player not ready");
+        WZWARNOBJ("Player not ready. Ignoring seek command");
     }
 }
 
@@ -1796,8 +1812,12 @@ void TPlayer::seekPercentage(double perc) {
     seekCmd(perc, 1);
 }
 
-void TPlayer::seekTime(double sec) {
+void TPlayer::seekSecond(double sec) {
     seekCmd(sec, 2);
+}
+
+void TPlayer::seekMS(int ms) {
+    seekCmd(double(ms) / 1000, 2);
 }
 
 void TPlayer::forward1() {
@@ -1919,7 +1939,7 @@ void TPlayer::setInPointSec(double sec) {
         mset.in_point = 0;
     }
     QString msg = tr("In point set to %1")
-                  .arg(TWZTime::formatTime(qRound(mset.in_point)));
+                  .arg(TWZTime::formatTimeSec(qRound(mset.in_point)));
 
     if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
         mset.out_point = -1;
@@ -1938,9 +1958,9 @@ void TPlayer::setInPoint() {
 
 void TPlayer::seekInPoint() {
 
-    seekTime(mset.in_point);
+    seekSecond(mset.in_point);
     Gui::msgOSD(tr("Seeking to %1")
-                .arg(TWZTime::formatTime(qRound(mset.in_point))));
+                .arg(TWZTime::formatTimeSec(qRound(mset.in_point))));
 }
 
 void TPlayer::clearInPoint() {
@@ -1964,7 +1984,7 @@ void TPlayer::setOutPointSec(double sec) {
 
     QString msg;
     msg = tr("Out point set to %1, repeat set")
-          .arg(TWZTime::formatTime(qRound(mset.out_point)));
+          .arg(TWZTime::formatTimeSec(qRound(mset.out_point)));
     if (mset.in_point >= mset.out_point) {
         mset.in_point = 0;
         msg += tr(" and cleared in point");
@@ -1991,8 +2011,8 @@ void TPlayer::seekOutPoint() {
         Gui::msgOSD(tr("Out point not set"));
         return;
     }
-    seekTime(seek);
-    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatTime(qRound(seek))));
+    seekSecond(seek);
+    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatTimeSec(qRound(seek))));
 }
 
 void TPlayer::clearOutPoint() {
@@ -2658,16 +2678,25 @@ void TPlayer::setOSDScale(double value) {
     if (value < 0) value = 0;
 
     if (Settings::pref->isMPlayer()) {
-        if (value != Settings::pref->subfont_osd_scale) {
-            Settings::pref->subfont_osd_scale = value;
-            if (proc->isRunning())
+        if (isPreviewPlayer()) {
+            if (proc->isRunning()) {
                 restartPlayer();
+            }
+        } else if (value != Settings::pref->subfont_osd_scale) {
+            Settings::pref->subfont_osd_scale = value;
+            if (proc->isRunning()) {
+                restartPlayer();
+            }
         }
     } else {
-        if (value != Settings::pref->osd_scale) {
+        if (isPreviewPlayer()) {
+            proc->setOSDScale(0.8 * Settings::pref->osd_scale);
+        } else if (value != Settings::pref->osd_scale) {
             Settings::pref->osd_scale = value;
-            if (proc->isRunning())
+            if (proc->isRunning()) {
                 proc->setOSDScale(Settings::pref->osd_scale);
+            }
+            previewPlayer->setOSDScale(Settings::pref->osd_scale);
         }
     }
 }
@@ -2823,20 +2852,17 @@ void TPlayer::handleOutPoint() {
                            .arg(mset.out_point)
                            .arg(mset.in_point));
                 seeking = true;
-                seekTime(mset.in_point);
+                seekSecond(mset.in_point);
             }
         } else {
-            WZDEBUGOBJ("Position " + QString::number(mset.current_sec)
-                       + " reached out point " + QString::number(mset.out_point)
-                       + ", sending quit");
-
+            WZDEBUGOBJ(QString("Position %1 reached out point %2, sending quit")
+                       .arg(mset.current_sec).arg(mset.out_point));
             proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
-        WZDEBUGOBJ("Done handling out point, position "
-                   + QString::number(mset.current_sec)
-                   + " no longer after out point "
-                   + QString::number(mset.out_point));
+        WZDEBUGOBJ(QString("Done handling out point, position %1 no longer"
+                           " after out point %2")
+                   .arg(mset.current_sec).arg(mset.out_point));
         seeking = false;
     }
 }
@@ -2847,7 +2873,7 @@ void TPlayer::onReceivedPosition(double sec) {
 
     handleOutPoint();
 
-    emit positionChanged(sec);
+    emit positionChanged(qRound(sec * 1000));
 
     // Check chapter
     if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
@@ -3453,7 +3479,7 @@ void TPlayer::displayBuffering() {
 
 void TPlayer::displayBufferingEnded() {
     Gui::msg(tr("Playing from %1")
-        .arg(TWZTime::formatTime(qRound(mset.current_sec))));
+        .arg(TWZTime::formatTimeSec(qRound(mset.current_sec))));
 }
 
 void TPlayer::updatePreviewWindowSize() {

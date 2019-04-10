@@ -168,7 +168,7 @@ void TPlaylist::onShuffleToggled(bool toggled) {
 }
 
 void TPlaylist::playOrPause() {
-    WZDEBUG("state " + player->stateToString());
+    WZDEBUG("State " + player->stateToString());
 
     switch (player->state()) {
         case Player::STATE_PLAYING: player->pause(); break;
@@ -383,32 +383,40 @@ void TPlaylist::enablePlayOrPause() {
         playOrPauseAct->setEnabled(true);
         if (thread) {
             playOrPauseAct->setIcon(iconProvider.iconLoading);
-            WZTRACE("Enabled in state playing while loading");
+            WZTRACE("Enabled pause in state playing while loading");
         } else {
             playOrPauseAct->setIcon(iconProvider.pauseIcon);
-            WZTRACE("Enabled in state playing");
+            WZTRACE("Enabled pause in state playing");
         }
     } else if (ps == Player::STATE_PAUSED) {
         playOrPauseAct->setTextAndTip(tr("Play"));
         playOrPauseAct->setEnabled(true);
         if (thread) {
             playOrPauseAct->setIcon(iconProvider.iconLoading);
-            WZTRACE("Enabled in state paused while loading");
+            WZTRACE("Enabled play in state paused while loading");
         } else {
             playOrPauseAct->setIcon(iconProvider.playIcon);
-            WZTRACE("Enabled in state paused");
+            WZTRACE("Enabled play in state paused");
         }
-    } else if (ps == Player::STATE_RESTARTING || ps == Player::STATE_LOADING) {
+    } else {
         QString s = player->stateToString().toLower();
-        playOrPauseAct->setTextAndTip(tr("Stop %1").arg(s));
-        playOrPauseAct->setIcon(iconProvider.iconStopping);
-        playOrPauseAct->setEnabled(true);
-        WZTRACE("Enabled in state " + s);
-    } else if (ps == Player::STATE_STOPPED) {
-        playOrPauseAct->setTextAndTip(tr("Play"));
-        playOrPauseAct->setIcon(iconProvider.playIcon);
-        playOrPauseAct->setEnabled(!player->mdat.filename.isEmpty()
-                                   || playlistWidget->hasPlayableItems());
+        if (ps == Player::STATE_RESTARTING || ps == Player::STATE_LOADING) {
+            playOrPauseAct->setTextAndTip(tr("Stop %1").arg(s));
+            playOrPauseAct->setIcon(iconProvider.iconStopping);
+            playOrPauseAct->setEnabled(true);
+            WZTRACE("Enabled stop in state " + s);
+        } else if (ps == Player::STATE_STOPPED) {
+            playOrPauseAct->setTextAndTip(tr("Play"));
+            playOrPauseAct->setIcon(iconProvider.playIcon);
+            bool e = !player->mdat.filename.isEmpty()
+                    || playlistWidget->hasPlayableItems();
+            playOrPauseAct->setEnabled(e);
+            if (e) {
+                WZTRACE("Enabled play in state " + s);
+            } else {
+                WZTRACE("Disabled play in state " + s);
+            }
+        }
     }
 } // enablePlayOrPause()
 
@@ -534,13 +542,14 @@ void TPlaylist::onNewMediaStartedPlayingUpdatePlayingItem() {
 
     // Update item duration
     if (md->duration > 0 && !md->image) {
-        if (!playlistFilename.isEmpty()
-            && qAbs(md->duration - playingItem->duration()) > 1) {
+        int ms = md->durationMS();
+        WZDEBUG(QString("Updating duration from %1 ms to %2 ms")
+                .arg(playingItem->durationMS()).arg(ms));
+        if (qAbs(ms - playingItem->durationMS())
+                > TConfig::DURATION_MODIFIED_TRESHOLD) {
             modified = true;
         }
-        WZDEBUG(QString("Updating duration from %1 to %2")
-                .arg(playingItem->duration()).arg(md->duration));
-        playingItem->setDuration(md->duration);
+        playingItem->setDurationMS(ms);
     }
 
     if (modified) {
@@ -618,9 +627,13 @@ void TPlaylist::onNewMediaStartedPlaying() {
         // Handle current item started playing
         onNewMediaStartedPlayingUpdatePlayingItem();
 
-        // Pause a single image
-        if (player->mdat.image && playlistWidget->hasSingleItem()) {
-            mainWindow->runActionsLater("pause", true, true);
+        if (playlistWidget->hasSingleItem()) {
+            // Pause a single image
+            if (player->mdat.image) {
+                mainWindow->runActionsLater("pause", true, true);
+            }
+            // Hide playlist with single item
+            mainWindow->hideDock(dock);
         }
 
         return;
@@ -654,7 +667,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
                                                     0, // duration
                                                     false /* protext name */);
             if (md->titles.getSelectedID() < 0) {
-                item->setDuration(md->duration);
+                item->setDurationMS(md->durationMS());
                 playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
             }
         }
@@ -675,9 +688,11 @@ void TPlaylist::onNewMediaStartedPlaying() {
         TPlaylistItem* current = new TPlaylistItem(playlistWidget->root(),
                                                    filename,
                                                    md->name(),
-                                                   md->duration,
+                                                   qRound(md->duration * 1000),
                                                    false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
+        // Hide playlist with single item
+        mainWindow->hideDock(dock);
     }
 
     setPLaylistTitle();
@@ -700,16 +715,16 @@ void TPlaylist::onTitleTrackChanged(int id) {
     TPlaylistItem* item = playlistWidget->findFilename(filename);
     if (item) {
         if (player->mdat.duration > 0 || id == -1) {
-            item->setDuration(player->mdat.duration);
+            item->setDurationMS(player->mdat.durationMS());
         }
         playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
     } else {
-        WZWARN("Title id " + QString::number(id) + " with filename '"
-               + filename + "' not found in playlist");
+        WZWARN(QString("Title id %1 with filename '%2' not found in playlist")
+               .arg(id).arg(filename));
     }
 }
 
-void TPlaylist::onDurationChanged(double duration) {
+void TPlaylist::onDurationChanged(int ms) {
 
     TPlaylistItem* item = playlistWidget->playingItem;
     if (item) {
@@ -717,21 +732,21 @@ void TPlaylist::onDurationChanged(double duration) {
             int selectedTitle = player->mdat.titles.getSelectedID();
             int itemTitle = TDiscName(item->filename()).title;
             if (selectedTitle == itemTitle) {
-                if (duration > 0 || itemTitle == -1) {
-                    WZTRACE(QString("Updating duration title %1 with name %2"
-                                    " from %3 to %4")
+                if (ms > 0 || itemTitle == -1) {
+                    WZTRACE(QString("Updating duration title %1 with name '%2'"
+                                    " from %3 ms to %4 ms")
                             .arg(itemTitle)
                             .arg(item->baseName())
-                            .arg(item->duration())
-                            .arg(duration));
-                    item->setDurationEmit(duration);
+                            .arg(item->durationMS())
+                            .arg(ms));
+                    item->setDurationMSEmit(ms);
                 } else {
-                    WZTRACE(QString("Keeping duration item title %1 with"
-                                    " name %2 and duration %3 instead of %4")
+                    WZTRACE(QString("Keeping duration item title %1 with name"
+                                    " '%2' and duration %3 ms instead of %4 ms")
                             .arg(itemTitle)
                             .arg(item->baseName())
-                            .arg(item->duration())
-                            .arg(duration));
+                            .arg(item->durationMS())
+                            .arg(ms));
                 }
             } else {
                 WZTRACE(QString("Selected title %1 does not match item title %2"
@@ -740,18 +755,18 @@ void TPlaylist::onDurationChanged(double duration) {
                         .arg(itemTitle)
                         .arg(item->baseName()));
             }
-        } else if (duration > 0 && !player->mdat.image) {
-            WZTRACE(QString("Updating duration %1 from %2 to %3")
-                    .arg(item->baseName()).arg(item->duration()).arg(duration));
-            if (!playlistFilename.isEmpty()
-                    && qAbs(duration - item->duration()) > 1) {
+        } else if (ms > 0 && !player->mdat.image) {
+            WZTRACE(QString("Updating duration '%1' from %2 ms to %3 ms")
+                    .arg(item->baseName()).arg(item->durationMS()).arg(ms));
+            if (qAbs(ms - item->durationMS())
+                    > TConfig::DURATION_MODIFIED_TRESHOLD) {
                 item->setModified();
             }
-            item->setDurationEmit(duration);
+            item->setDurationMSEmit(ms);
         } else {
-            WZTRACE(QString("Keeping duration %1 instead of %2 for '%3'")
-                    .arg(item->duration())
-                    .arg(duration)
+            WZTRACE(QString("Keeping duration %1 ms instead of %2 ms for '%3'")
+                    .arg(item->durationMS())
+                    .arg(ms)
                     .arg(item->baseName()));
         }
     } else {

@@ -33,7 +33,7 @@ TInput::TInput(QWidget* parent, Qt::WindowFlags f)
 }
 
 QString TInput::sectionName() {
-    return tr("Actions");
+    return tr("Input");
 }
 
 QPixmap TInput::sectionIcon() {
@@ -41,6 +41,7 @@ QPixmap TInput::sectionIcon() {
 }
 
 void TInput::createMouseCombos() {
+
     left_click_combo->clear();
     right_click_combo->clear();
     double_click_combo->clear();
@@ -115,7 +116,6 @@ void TInput::createMouseCombos() {
 void TInput::retranslateStrings() {
 
     int wheel_function = wheel_function_combo->currentIndex();
-    int timeslider_pos = timeslider_behaviour_combo->currentIndex();
 
     retranslateUi(this);
 
@@ -157,8 +157,7 @@ void TInput::retranslateStrings() {
     seek2_icon->setPixmap(Images::icon("seek_forward2", 32));
     seek3_icon->setPixmap(Images::icon("seek_forward3", 32));
     seek4_icon->setPixmap(Images::icon("mouse", 32));
-
-    timeslider_behaviour_combo->setCurrentIndex(timeslider_pos);
+    seek_rate_icon->setPixmap(Images::icon("seek_frequency", 32));
 
     createHelp();
 }
@@ -182,8 +181,8 @@ void TInput::setData(Settings::TPreferences* pref) {
     setSeeking2(pref->seeking2);
     setSeeking3(pref->seeking3);
     setSeeking4(pref->seeking4);
+    seek_rate_spin->setValue(pref->seek_rate);
 
-    setUpdateWhileDragging(pref->update_while_seeking);
     setSeekRelative(pref->seek_relative);
     setSeekKeyframes(pref->seek_keyframes);
 }
@@ -213,8 +212,8 @@ void TInput::getData(Settings::TPreferences* pref) {
     pref->seeking2 = seeking2();
     pref->seeking3 = seeking3();
     pref->seeking4 = seeking4();
+    pref->seek_rate = seek_rate_spin->value();
 
-    pref->update_while_seeking = updateWhileDragging();
     pref->seek_relative= seekRelative();
     pref->seek_keyframes = seekKeyframes();
 }
@@ -306,11 +305,11 @@ void TInput::setWheelFunctionCycle(TPreferences::TWheelFunctions flags){
 
 Settings::TPreferences::TWheelFunctions TInput::wheelFunctionCycle() {
 
-    Settings::TPreferences::TWheelFunctions seekflags (QFlag ((int) TPreferences::Seeking)) ;
-    Settings::TPreferences::TWheelFunctions volumeflags (QFlag ((int) TPreferences::Volume)) ;
-    Settings::TPreferences::TWheelFunctions zoomflags (QFlag ((int) TPreferences::Zoom)) ;
-    Settings::TPreferences::TWheelFunctions speedflags (QFlag ((int) TPreferences::ChangeSpeed)) ;
-    Settings::TPreferences::TWheelFunctions out (QFlag (0));
+    TPreferences::TWheelFunctions seekflags (QFlag ((int) TPreferences::Seeking)) ;
+    TPreferences::TWheelFunctions volumeflags (QFlag ((int) TPreferences::Volume)) ;
+    TPreferences::TWheelFunctions zoomflags (QFlag ((int) TPreferences::Zoom)) ;
+    TPreferences::TWheelFunctions speedflags (QFlag ((int) TPreferences::ChangeSpeed)) ;
+    TPreferences::TWheelFunctions out (QFlag (0));
     if(wheel_function_seek->isChecked()){
         out = out | seekflags;
     }
@@ -394,17 +393,6 @@ int TInput::seeking4() {
     return s;
 }
 
-void TInput::setUpdateWhileDragging(bool b) {
-    if (b)
-        timeslider_behaviour_combo->setCurrentIndex(0);
-    else
-        timeslider_behaviour_combo->setCurrentIndex(1);
-}
-
-bool TInput::updateWhileDragging() {
-    return (timeslider_behaviour_combo->currentIndex() == 0);
-}
-
 void TInput::setSeekRelative(bool b) {
     seek_relative_button->setChecked(b);
     seek_absolute_button->setChecked(!b);
@@ -475,10 +463,10 @@ void TInput::createHelp() {
        tr("Select the action for the middle mouse button."));
 
     setWhatsThis(xbutton1_click_combo, tr("X Button 1"),
-        tr("Select the action for the X button 1."));
+        tr("Select the action for X button 1."));
 
     setWhatsThis(xbutton2_click_combo, tr("X Button 2"),
-        tr("Select the action for the X button 2."));
+        tr("Select the action for X button 2."));
 
 
     addSectionGroup(tr("Wheel"));
@@ -487,61 +475,72 @@ void TInput::createHelp() {
         tr("Select the action for scrolling the mouse wheel."));
 
     setWhatsThis(wheel_function_seek, tr("Media seeking"),
-        tr("Check it to enable seeking as action for the mouse wheel."));
+        tr("Enable seeking as action for the mouse wheel."));
 
     setWhatsThis(wheel_function_volume, tr("Volume control"),
-        tr("Check it to enable changing volume as action for the mouse wheel."));
+        tr("Enable changing volume as action for the mouse wheel."));
 
     setWhatsThis(wheel_function_zoom, tr("Zoom video"),
-        tr("Check it to enable zooming as action for the mouse wheel."));
+        tr("Enable zooming as action for the mouse wheel."));
 
     setWhatsThis(wheel_function_speed, tr("Change speed"),
-        tr("Check it to enable changing speed as action for the mouse wheel."));
+        tr("Enable changing speed as action for the mouse wheel."));
 
-    setWhatsThis(wheel_function_seeking_reverse_check, tr("Reverse mouse wheel seeking"),
-        tr("Check it to seek in the opposite direction."));
+    setWhatsThis(wheel_function_seeking_reverse_check,
+                 tr("Reverse wheel direction"),
+                 tr("Reverse the direction of the mouse wheel."));
 
 
     addSectionTitle(tr("Seeking"));
 
     setWhatsThis(seek1_minutes_spin, tr("Short jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("short jump")));
+                 tr("Set the time to seek forward or rewind for the %1 action.")
+                 .arg(tr("short jump")));
+    setWhatsThis(seek1_seconds_spin, tr("Short jump"),
+                 tr("Set the time to seek forward or rewind for the %1 action.")
+                 .arg(tr("short jump")), true, false);
 
     setWhatsThis(seek2_minutes_spin, tr("Medium jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("medium jump")));
+                 tr("Set the time to seek forward or rewind for the %1 action.")
+                 .arg(tr("medium jump")));
+    setWhatsThis(seek2_seconds_spin, tr("Medium jump"),
+                 tr("Set the time to seek forward or rewind for the %1 action.")
+                 .arg(tr("medium jump")), true, false);
 
     setWhatsThis(seek3_minutes_spin, tr("Long jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "choose the %1 action.").arg(tr("long jump")));
+                 tr("Set the time to seek forward or rewind for the %1 action.")
+                 .arg(tr("long jump")));
+    setWhatsThis(seek3_seconds_spin, tr("Long jump"),
+                 tr("Set the time to seek forward or rewind for the %1 action.")
+                 .arg(tr("long jump")), true, false);
 
     setWhatsThis(seek4_minutes_spin, tr("Mouse wheel jump"),
-        tr("Select the time that should be go forward or backward when you "
-           "move the mouse wheel."));
+        tr("Set the time to seek forward or rewind for the mouse wheel."));
+    setWhatsThis(seek4_seconds_spin, tr("Mouse wheel jump"),
+        tr("Set the time to seek forward or rewind for the mouse wheel."));
+
+    setWhatsThis(seek_rate_spin, tr("Drag rate"),
+        tr("Rate limit the number of seeks send to the player, while dragging"
+           " the time slider or previewing, to once every specified number of"
+           " milliseconds."));
 
     setWhatsThis(seeking_method_group, tr("Seeking method"),
-        tr("Sets the method to be used when seeking.<br/><br/>"
+        tr("Sets the method to be used for seeking while dragging the"
+           " time slider or previewing a video.<br/><br/>"
 
-           "Seek absolute seeks with an absolute time.<br/>"
-           "Seek relative seeks with an offset from the current time,"
-           " like so many seconds forward or backward.<br/><br/>"
-
-           "Relative seeks tend to work better in streams with strange or"
-           " corrupted timestamps, while absolute seeks tend to be a bit more"
-           " accurate."));
+           "<b>Seek with time stamp</b> seeks with an absolute time stamp and"
+           " tends to be the most accurate.<br/>"
+           "<b>Seek with percentage of duration</b> uses a percentage to seek,"
+           " like seek to 10.53% of the video, and might help out for streams"
+           " with strange or corrupted time stamps."));
 
     setWhatsThis(seek_keyframes_check, tr("Seek to key frames"),
         tr("If checked, seeks are done to the closest key frame, which speeds"
            " up seeking considerably, but is less accurate, especially in"
            " heavely compressed videos with only a few keyframes.<br/><br/>"
-           "If not checked, seeks are a best attempt to seek to the requested"
+           "If unchecked, seeks are a best attempt to seek to the requested"
            " absolute or relative time, but take quite a bit longer, depending"
            " on how well the playing media supports seeking."));
-
-    setWhatsThis(timeslider_behaviour_combo, tr("Behaviour of time slider"),
-        tr("Select whether or not to update the video while dragging the time"
-           " slider."));
 }
 
 }} // namespace Gui::Pref

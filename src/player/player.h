@@ -57,6 +57,7 @@ public:
     Settings::TMediaSettings mset;
     Gui::TPlayerWindow* playerWindow;
     TPlayer* previewPlayer;
+    bool isPreviewPlayer() const { return previewPlayer == 0; }
 
     bool keepSize;
 
@@ -137,7 +138,8 @@ public slots:
 
     void seekRelative(double secs);
     void seekPercentage(double perc);
-    void seekTime(double sec);
+    void seekSecond(double sec);
+    void seekMS(int ms);
 
     void setSpeed(double value);
     void incSpeed10(); //!< Inc speed 10%
@@ -349,8 +351,8 @@ signals:
     //! Sent when requested to play, but there is no file to play
     void noFileToPlay();
 
-    void positionChanged(double sec);
-    void durationChanged(double);
+    void positionChanged(int ms);
+    void durationChanged(int ms);
 
     void aspectRatioChanged(int);
 

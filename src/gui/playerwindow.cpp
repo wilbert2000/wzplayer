@@ -113,16 +113,19 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
     TColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
     setAutoFillBackground(true);
-
-    if (!isPreviewWindow) {
-        setMouseTracking(true);
+    if (isPreviewWindow) {
+        setEnabled(false);
+    } else {
         setFocusPolicy(Qt::StrongFocus);
+        setMouseTracking(true);
     }
 
     video_window = new TVideoWindow(this);
     video_window->setObjectName("video" + name);
     video_window->setMinimumSize(QSize(0, 0));
-    if (!isPreviewWindow) {
+    if (isPreviewWindow) {
+        video_window->setEnabled(false);
+    } else {
         video_window->setMouseTracking(true);
     }
     setColorKey();
@@ -156,7 +159,7 @@ void TPlayerWindow::getSizeFactors(double& factorX, double& factorY) const {
         factorX = 0;
         factorY = 0;
     } else {
-        if (pref->fullscreen) {
+        if (pref->fullscreen && !isPreviewWindow) {
             // Should both be the same...
             factorX = (double) last_video_out_size.width() / video_size.width();
             factorY = (double) last_video_out_size.height()
@@ -212,7 +215,7 @@ void TPlayerWindow::updateVideoWindow() {
 
     QSize wSize;
     QSize vSize;
-    if (pref->fullscreen) {
+    if (pref->fullscreen && !isPreviewWindow) {
         wSize = TDesktop::size(this);
         vSize = wSize;
     } else {
@@ -237,19 +240,28 @@ void TPlayerWindow::updateVideoWindow() {
     // Zoom video size. A large size can blow up the video surface.
     vSize *= zoom();
 
-    // Get height video window
-    int h = wSize.height();
-    if (!pref->fullscreen) {
-        h -= frame().height();
+    // Width video window
+    int w = wSize.width();
+    if (!pref->fullscreen || isPreviewWindow) {
+        w -= frame().width();
+    }
+    // Clip MPlayer and give MPV the full width of the window.
+    if (pref->isMPlayer() || w < vSize.width()) {
+        w = vSize.width();
     }
 
+    // Height video window
+    int h = wSize.height();
+    if (!pref->fullscreen || isPreviewWindow) {
+        h -= frame().height();
+    }
     // Clip MPlayer and give MPV the full height of the window.
     if (pref->isMPlayer() || h < vSize.height()) {
         h = vSize.height();
     }
 
     // Center video window
-    QRect vWin(0, 0, vSize.width(), h);
+    QRect vWin(0, 0, w, h);
     QSize c = (wSize - vWin.size()) / 2;
     vWin.moveTo(c.width(), c.height());
 
@@ -257,7 +269,7 @@ void TPlayerWindow::updateVideoWindow() {
     vWin.translate(pan());
 
     // Return to local coords in fullscreen
-    if (pref->fullscreen) {
+    if (pref->fullscreen && !isPreviewWindow) {
         vWin.moveTo(vWin.topLeft() - pos() - parentWidget()->pos());
     }
 
@@ -427,7 +439,7 @@ void TPlayerWindow::setZoom(double factor,
 
     if (updateVideoWindow) {
         this->updateVideoWindow();
-        if (pref->fullscreen) {
+        if (pref->fullscreen && !isPreviewWindow) {
             updateSizeFactor();
         }
     }

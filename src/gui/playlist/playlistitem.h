@@ -43,7 +43,7 @@ public:
     TPlaylistItem(QTreeWidgetItem* parent,
                   const QString& filename,
                   const QString& name,
-                  double duration,
+                  int durationMS,
                   bool protectName = false);
 
     virtual QVariant data(int column, int role) const override;
@@ -69,9 +69,9 @@ public:
 
     QString extension() const { return mExt; }
 
-    double duration() const { return mDuration; }
-    void setDuration(double d) { mDuration = d; }
-    void setDurationEmit(double d) { mDuration = d; emitDataChanged(); }
+    int durationMS() const { return mDurationMS; }
+    void setDurationMS(int ms) { mDurationMS = ms; }
+    void setDurationMSEmit(int ms) { mDurationMS = ms; emitDataChanged(); }
 
     TPlaylistItemState state() const { return mState; }
     QString stateString() const;
@@ -148,7 +148,7 @@ private:
     QString mFilename;
     QString mBaseName;
     QString mExt;
-    double mDuration;
+    int mDurationMS;
     int mOrder;
 
     // Anything that can contain something else, like a directory, a playlist,

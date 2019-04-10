@@ -104,6 +104,9 @@ public:
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
     QAction* findAction(const QString& name);
 
+    bool haveDockedDocks() const;
+    void hideDock(TDockWidget* dock);
+
     Action::TAction* seekIntToAction(int i) const;
 
     //! Execute all the actions after the video has started to play
@@ -495,7 +498,7 @@ private:
     void createFilePropertiesDialog();
     void configureDiscDevices();
 
-    void setTimeLabel(double sec, bool changed);
+    void setTimeLabel(int ms, bool changed);
 
     QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
@@ -581,14 +584,13 @@ private slots:
     void displayFrames(bool);
 
     void onStateChanged(Player::TState state);
-    void onDurationChanged(double duration);
-    void onPositionChanged(double);
+    void onDurationChanged(int ms);
+    void onPositionChanged(int ms);
     void onVideoOutResolutionChanged(int w, int h);
     void onNewMediaStartedPlaying();
     void onMediaInfoChanged();
     void onMediaSettingsChanged();
     void onPlaylistFinished();
-    void onDragPositionChanged(double);
 };
 
 } // namespace Gui

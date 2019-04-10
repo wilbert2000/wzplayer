@@ -181,7 +181,7 @@ bool TAddFilesThread::nameBlackListed(const QString& name) {
 TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
                                            const QFileInfo& fi,
                                            const QString& name,
-                                           double duration,
+                                           int durationMS,
                                            bool protectName) {
 
     QString parentPath = parent->playlistPath();
@@ -200,7 +200,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
         return new TPlaylistItem(parent,
                                  filename,
                                  name,
-                                 duration,
+                                 durationMS,
                                  protectName);
     }
 
@@ -212,7 +212,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
         return new TPlaylistItem(parent,
                                  filename,
                                  name,
-                                 duration,
+                                 durationMS,
                                  protectName);
     }
 
@@ -232,7 +232,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
     if (parent->childCount()) {
         TPlaylistItem* child = parent->plChild(parent->childCount() - 1);
         if (child->playlistPath() == path) {
-            createPath(child, fi, name, duration, protectName);
+            createPath(child, fi, name, durationMS, protectName);
             return child;
         }
     }
@@ -240,7 +240,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
     WZDEBUG("Creating folder '" + path + "'");
     emit displayMessage(path, 0);
     TPlaylistItem* folder = new TPlaylistItem(parent, path, dir, 0);
-    createPath(folder, fi, name, duration, protectName);
+    createPath(folder, fi, name, durationMS, protectName);
     return folder;
 }
 
@@ -338,6 +338,7 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
     }
 
     QTextStream stream(&file);
+    stream.setLocale(QLocale::c());
     if (playlistItem->extension() == "m3u") {
         stream.setCodec(QTextCodec::codecForLocale());
     } else {
@@ -345,9 +346,9 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
     }
 
     QString name;
-    double duration = 0;
+    int durationMS = 0;
     bool edited;
-    static QRegExp rx("^#EXTINF:\\s*(\\d+)\\s*,\\s*(.*)");
+    static QRegExp rx("^#EXTINF:\\s*(\\d+(\\.\\d*)?)\\s*,\\s*(.*)");
 
     QString path = playlistPath;
     if (!path.endsWith(QDir::separator())) {
@@ -364,13 +365,13 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
             continue;
         }
         if (rx.indexIn(line) >= 0) {
-            duration = rx.cap(1).toDouble();
-            name = rx.cap(2).simplified();
+            durationMS = qRound(rx.cap(1).toDouble() * 1000);
+            name = rx.cap(3).simplified();
         } else if (!line.startsWith("#")) {
             edited = !name.isEmpty() && name != TName::nameForURL(line);
-            addItem(playlistItem, line, name, duration, edited, true);
+            addItem(playlistItem, line, name, durationMS, edited, true);
             name = "";
-            duration = 0;
+            durationMS = 0;
         } else if (line.startsWith("#WZP-blacklist:")) {
             QString fn = line.mid(15);
             if (fn.startsWith(path)) {
@@ -555,7 +556,7 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
 TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                                         QString filename,
                                         QString name,
-                                        double duration,
+                                        int durationMS,
                                         bool protectName,
                                         bool useBlackList) {
 
@@ -616,7 +617,7 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
             } else {
                 WZTRACE(QString("Adding URL '%1'").arg(filename));
             }
-            return new TPlaylistItem(parent, filename, name, duration,
+            return new TPlaylistItem(parent, filename, name, durationMS,
                                      protectName);
         }
     }
@@ -647,7 +648,7 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
             return 0;
         }
 
-        item = createPath(parent, fi, name, duration, protectName);
+        item = createPath(parent, fi, name, durationMS, protectName);
     }
 
     playlistPath = savedPlaylistPath;

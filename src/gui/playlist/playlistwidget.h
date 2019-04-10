@@ -140,8 +140,7 @@ private:
                 QModelIndex *dropIndex);
     bool addDroppedItem(const QString& source,
                         const QString& dest,
-                        TPlaylistItem* item,
-                        bool setCurrent);
+                        TPlaylistItem* item);
     void moveItem(TPlaylistItem* item,
                   TPlaylistItem* target,
                   int& targetIndex);

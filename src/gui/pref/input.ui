@@ -420,7 +420,7 @@
             <item>
              <widget class="QCheckBox" name="wheel_function_seeking_reverse_check">
               <property name="text">
-               <string>R&amp;everse wheel while seeking</string>
+               <string>R&amp;everse wheel direction</string>
               </property>
              </widget>
             </item>
@@ -489,17 +489,10 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="4">
-           <widget class="QSpinBox" name="seek4_seconds_spin">
-            <property name="maximum">
-             <number>59</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QLabel" name="seek1_seconds_unit_label">
+          <item row="0" column="3">
+           <widget class="QLabel" name="seek1_minute_unit_label">
             <property name="text">
-             <string>Seconds</string>
+             <string>Minutes</string>
             </property>
            </widget>
           </item>
@@ -513,78 +506,19 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="seek2_label">
-            <property name="text">
-             <string>&amp;Medium jump</string>
-            </property>
-            <property name="buddy">
-             <cstring>seek2_minutes_spin</cstring>
-            </property>
-           </widget>
+          <item row="1" column="3">
+           <widget class="QSpinBox" name="seek1_minutes_spin"/>
           </item>
-          <item row="2" column="4">
-           <widget class="QSpinBox" name="seek2_seconds_spin">
-            <property name="maximum">
-             <number>59</number>
-            </property>
-           </widget>
+          <item row="3" column="3">
+           <widget class="QSpinBox" name="seek3_minutes_spin"/>
           </item>
-          <item row="1" column="4">
-           <widget class="QSpinBox" name="seek1_seconds_spin">
-            <property name="maximum">
-             <number>59</number>
-            </property>
-           </widget>
+          <item row="2" column="3">
+           <widget class="QSpinBox" name="seek2_minutes_spin"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="seek1_icon">
             <property name="text">
              <string notr="true">Icon</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLabel" name="seek4_label">
-            <property name="text">
-             <string>&amp;Mouse wheel jump</string>
-            </property>
-            <property name="buddy">
-             <cstring>seek4_minutes_spin</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="seek2_icon">
-            <property name="text">
-             <string notr="true">Icon</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="seek3_icon">
-            <property name="text">
-             <string notr="true">Icon</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="seek1_label">
-            <property name="text">
-             <string>Short &amp;jump</string>
-            </property>
-            <property name="buddy">
-             <cstring>seek1_minutes_spin</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="seek3_label">
-            <property name="text">
-             <string>&amp;Long jump</string>
-            </property>
-            <property name="buddy">
-             <cstring>seek3_minutes_spin</cstring>
             </property>
            </widget>
           </item>
@@ -601,22 +535,122 @@
             </property>
            </spacer>
           </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="seek1_seconds_unit_label">
+            <property name="text">
+             <string>Seconds</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="seek2_label">
+            <property name="text">
+             <string>&amp;Medium jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek2_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="seek3_label">
+            <property name="text">
+             <string>&amp;Long jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek3_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="seek2_icon">
+            <property name="text">
+             <string notr="true">Icon</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QSpinBox" name="seek1_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="seek4_label">
+            <property name="text">
+             <string>&amp;Mouse wheel jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek4_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="4">
+           <widget class="QSpinBox" name="seek4_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="seek1_label">
+            <property name="text">
+             <string>Short &amp;jump</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek1_minutes_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4">
+           <widget class="QSpinBox" name="seek2_seconds_spin">
+            <property name="maximum">
+             <number>59</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="seek3_icon">
+            <property name="text">
+             <string notr="true">Icon</string>
+            </property>
+           </widget>
+          </item>
           <item row="4" column="3">
            <widget class="QSpinBox" name="seek4_minutes_spin"/>
           </item>
-          <item row="3" column="3">
-           <widget class="QSpinBox" name="seek3_minutes_spin"/>
-          </item>
-          <item row="2" column="3">
-           <widget class="QSpinBox" name="seek2_minutes_spin"/>
-          </item>
-          <item row="1" column="3">
-           <widget class="QSpinBox" name="seek1_minutes_spin"/>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="seek1_minute_unit_label">
+          <item row="5" column="0">
+           <widget class="QLabel" name="seek_rate_icon">
             <property name="text">
-             <string>Minutes</string>
+             <string notr="true">Icon</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="seek_rate_label">
+            <property name="text">
+             <string>Drag rate</string>
+            </property>
+            <property name="buddy">
+             <cstring>seek_rate_spin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QSpinBox" name="seek_rate_spin">
+            <property name="maximum">
+             <number>999</number>
+            </property>
+            <property name="singleStep">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="4">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>ms</string>
             </property>
            </widget>
           </item>
@@ -641,7 +675,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Seek Absolute</string>
+             <string>Seek with time stamp</string>
             </property>
            </widget>
           </item>
@@ -654,7 +688,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Seek relative</string>
+             <string>Seek with percentage duration</string>
             </property>
            </widget>
           </item>
@@ -675,7 +709,7 @@
          </layout>
         </widget>
        </item>
-       <item row="6" column="0" colspan="2">
+       <item row="5" column="0" colspan="2">
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -687,56 +721,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="4" column="0">
-        <layout class="QHBoxLayout">
-         <property name="spacing">
-          <number>6</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Beha&amp;viour of time slider:</string>
-           </property>
-           <property name="buddy">
-            <cstring>timeslider_behaviour_combo</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="timeslider_behaviour_combo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <item>
-            <property name="text">
-             <string>Seek to position while dragging</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Seek to position when released</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>81</width>
-             <height>25</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>
@@ -780,10 +764,10 @@
   <tabstop>seek3_seconds_spin</tabstop>
   <tabstop>seek4_minutes_spin</tabstop>
   <tabstop>seek4_seconds_spin</tabstop>
+  <tabstop>seek_rate_spin</tabstop>
   <tabstop>seek_absolute_button</tabstop>
   <tabstop>seek_relative_button</tabstop>
   <tabstop>seek_keyframes_check</tabstop>
-  <tabstop>timeslider_behaviour_combo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

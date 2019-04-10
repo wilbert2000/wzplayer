@@ -17,8 +17,9 @@
 */
 
 #include "gui/action/timeslider.h"
+#include "player/player.h"
+
 #include <QWheelEvent>
-#include <QTimer>
 #include <QStyleOptionSlider>
 
 
@@ -26,96 +27,59 @@ namespace Gui {
 namespace Action {
 
 
-TTimeSlider::TTimeSlider(QWidget* parent,
-                         int pos,
-                         int max_pos,
-                         double duration,
-                         int drag_delay) :
+TTimeSlider::TTimeSlider(QWidget* parent, int posMS, int durationMS) :
     TSlider(parent),
-    dont_update(false),
-    position(pos),
-    _duration(duration),
-    last_pos_to_send(-1) {
+    dragging(false) {
 
     setMinimum(0);
-    setMaximum(max_pos);
-    setValue(position);
+    setMaximum(durationMS);
+    setValue(posMS);
 
     connect(this, &TTimeSlider::sliderPressed,
-            this, &TTimeSlider::stopUpdate);
+            this, &TTimeSlider::startDragging);
     connect(this, &TTimeSlider::sliderReleased,
-            this, &TTimeSlider::resumeUpdate);
-    connect(this, &TTimeSlider::sliderReleased,
-            this, &TTimeSlider::mouseReleased);
+            this, &TTimeSlider::stopDragging);
     connect(this, &TTimeSlider::valueChanged,
             this, &TTimeSlider::onValueChanged);
-    connect(this, &TTimeSlider::draggingPosChanged,
-            this, &TTimeSlider::checkDragging);
-
-    timer = new QTimer(this);
-    timer->setInterval(drag_delay);
-    connect(timer, &QTimer::timeout, this, &TTimeSlider::sendDelayedPos);
 }
 
-void TTimeSlider::setPos(int v) {
+void TTimeSlider::setPosMS(int ms) {
 
-    if (v != position && !dont_update) {
-        position = v;
-        setValue(v);
+    if (!dragging) {
+        setValue(ms);
     }
 }
 
-int TTimeSlider::pos() {
-    return position;
+void TTimeSlider::setDurationMS(int ms) {
+    setMaximum(ms);
 }
 
-void TTimeSlider::setDuration(double t) {
-    _duration = t;
+void TTimeSlider::startDragging() {
+
+    dragging = true;
+
+    pausedPlayer = player->state() == Player::STATE_PLAYING;
+    if (pausedPlayer) {
+        player->pause();
+    }
 }
 
-double TTimeSlider::duration() {
-    return _duration;
-}
+void TTimeSlider::stopDragging() {
 
-void TTimeSlider::stopUpdate() {
-
-    dont_update = true;
-    last_pos_to_send = -1;
-    timer->start();
-}
-
-void TTimeSlider::resumeUpdate() {
-
-    dont_update = false;
-    timer->stop();
-    last_pos_to_send = -1;
-}
-
-void TTimeSlider::mouseReleased() {
+    dragging = false;
     emit posChanged(value());
+
+    if (pausedPlayer && player->state() == Player::STATE_PAUSED) {
+        player->play();
+    }
 }
 
 void TTimeSlider::onValueChanged(int v) {
 
-    bool dragging = dont_update;
-    if (!dragging) {
-        if (v != position) {
-            emit posChanged(v);
-        }
-    } else {
+    if (dragging) {
         emit draggingPosChanged(v);
-    }
-}
-
-void TTimeSlider::checkDragging(int v) {
-    last_pos_to_send = v;
-}
-
-void TTimeSlider::sendDelayedPos() {
-
-    if (last_pos_to_send != -1) {
-        emit delayedDraggingPos(last_pos_to_send);
-        last_pos_to_send = -1;
+    } else {
+        emit posChanged(v);
     }
 }
 
@@ -128,11 +92,11 @@ void TTimeSlider::wheelEvent(QWheelEvent* e) {
         else
             emit wheelDown();
     } else {
-        WZDEBUG("ignoring horizontal wheel event");
+        WZDEBUG("Ignoring horizontal wheel event");
     }
 }
 
-int TTimeSlider::getTime(const QPoint& pos) {
+int TTimeSlider::getTimeMS(const QPoint& pos) {
 
     QStyleOptionSlider opt;
     initStyleOption(&opt);
@@ -142,13 +106,12 @@ int TTimeSlider::getTime(const QPoint& pos) {
     // Center of handle
     const QPoint center = sliderRect.center() - sliderRect.topLeft();
 
-    int val = pixelPosToRangeValue(pick(pos - center));
-    return qRound(val * _duration / maximum());
+    return pixelPosToRangeValue(pick(pos - center));
 }
 
 bool TTimeSlider::onToolTipEvent(QHelpEvent* event) {
 
-    emit toolTipEvent(this, event->globalPos(), getTime(event->pos()));
+    emit toolTipEvent(this, event->globalPos(), getTimeMS(event->pos()));
     event->accept();
     return true;
 }

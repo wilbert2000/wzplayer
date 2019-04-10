@@ -256,7 +256,7 @@ void TMainWindow::createPlayerWindows() {
     connect(playerWindow, &Gui::TPlayerWindow::videoOutChanged,
             this, &TMainWindow::displayVideoOut, Qt::QueuedConnection);
 
-    previewWindow = new TPlayerWindow(panel, "previewwindow");
+    previewWindow = new TPlayerWindow(this, "previewwindow");
     previewWindow->hide();
 }
 
@@ -1109,24 +1109,7 @@ void TMainWindow::createActions() {
 
 
     // Time slider
-    timeslider_action = new TTimeSliderAction(this, panel, previewPlayer);
-
-    connect(player, &Player::TPlayer::positionChanged,
-            timeslider_action, &TTimeSliderAction::setPosition);
-    connect(player, &Player::TPlayer::durationChanged,
-            timeslider_action, &TTimeSliderAction::setDuration);
-
-    connect(timeslider_action, &TTimeSliderAction::positionChanged,
-            player, &Player::TPlayer::seekTime);
-    connect(timeslider_action, &TTimeSliderAction::percentageChanged,
-            player, &Player::TPlayer::seekPercentage);
-    connect(timeslider_action, &TTimeSliderAction::dragPositionChanged,
-            this, &TMainWindow::onDragPositionChanged);
-
-    connect(timeslider_action, &TTimeSliderAction::wheelUp,
-            player, &Player::TPlayer::wheelUpSeeking);
-    connect(timeslider_action, &TTimeSliderAction::wheelDown,
-            player, &Player::TPlayer::wheelDownSeeking);
+    timeslider_action = new TTimeSliderAction(this, player);
 
     // Volume slider action
     volumeslider_action = new TVolumeSliderAction(this, player->getVolume());
@@ -1875,13 +1858,13 @@ void TMainWindow::displayInOutPoints() {
     QString s;
     int secs = qRound(player->mset.in_point);
     if (secs > 0)
-        s = tr("I: %1", "In point in statusbar").arg(TWZTime::formatTime(secs));
+        s = tr("I: %1", "In point in statusbar").arg(TWZTime::formatTimeSec(secs));
 
     secs = qRound(player->mset.out_point);
     if (secs > 0) {
         if (!s.isEmpty()) s += " ";
         s += tr("O: %1", "Out point in statusbar")
-                .arg(TWZTime::formatTime(secs));
+                .arg(TWZTime::formatTimeSec(secs));
     }
 
     if (player->mset.loop) {
@@ -1895,7 +1878,7 @@ void TMainWindow::displayInOutPoints() {
 void TMainWindow::displayFrames(bool b) {
 
     pref->show_frames = b;
-    onDurationChanged(player->mdat.duration);
+    onDurationChanged(player->mdat.durationMS());
 }
 
 void TMainWindow::setFloatingToolbarsVisible(bool visible) {
@@ -2331,16 +2314,14 @@ void TMainWindow::updateSeekDefaultAction(QAction* action) {
     }
 }
 
-void TMainWindow::setTimeLabel(double sec, bool changed) {
+void TMainWindow::setTimeLabel(int ms, bool changed) {
 
     static int lastSec = -1111;
 
-    // TODO: <-1..0> looses sign
-    int s = sec;
-
+    int s = ms / 1000;
     if (s != lastSec) {
         lastSec = s;
-        positionText = TWZTime::formatTime(s);
+        positionText = TWZTime::formatTimeSec(s);
         changed = true;
     }
 
@@ -2348,18 +2329,16 @@ void TMainWindow::setTimeLabel(double sec, bool changed) {
     if (pref->show_frames) {
         double fps = player->mdat.video_fps;
         if (fps > 0) {
-            sec -= s;
-            if (sec < 0) {
-                sec = -sec;
+            if (ms < 0) {
+                ms = -ms;
+                s = -s;
             }
-            sec *= fps;
-            // TODO: fix floats. Example 0.84 * 25 = 20 if floored instead of 21
-            sec += 0.0001;
-            s = sec;
-            if (s < 10) {
-                frames = ".0" + QString::number(s);
+            ms = ms - s * 1000;
+            int frame = qRound((ms * fps) / 1000);
+            if (frame < 10) {
+                frames = ".0" + QString::number(frame);
             } else {
-                frames = "."  + QString::number(s);
+                frames = "."  + QString::number(frame);
             }
             frames += player->mdat.fuzzy_time;
             changed = true;
@@ -2371,19 +2350,21 @@ void TMainWindow::setTimeLabel(double sec, bool changed) {
     }
 }
 
-void TMainWindow::onPositionChanged(double sec) {
-    setTimeLabel(sec, false);
+void TMainWindow::onPositionChanged(int ms) {
+    setTimeLabel(ms, false);
 }
 
-void TMainWindow::onDurationChanged(double duration) {
+void TMainWindow::onDurationChanged(int ms) {
 
-    durationText = "/" + TWZTime::formatTime(qRound(duration));
+    int s = ms / 1000;
+    durationText = "/" + TWZTime::formatTimeSec(s);
 
     if (pref->show_frames) {
         double fps = player->mdat.video_fps;
         if (fps > 0) {
-            duration -= (int) duration;
-            QString frames = QString::number(qRound(duration * fps));
+            ms = ms - s * 1000;
+            int frame = qRound((ms * fps) / 1000);
+            QString frames = QString::number(frame);
             if (frames.length() < 2) {
                 frames = "0" + frames;
             }
@@ -2391,17 +2372,7 @@ void TMainWindow::onDurationChanged(double duration) {
         }
     }
 
-    setTimeLabel(player->mset.current_sec, true);
-}
-
-void TMainWindow::onDragPositionChanged(double t) {
-
-    QString s = tr("Jump to %1").arg(TWZTime::formatTime(qRound(t)));
-    msg(s, 1000);
-
-    if (pref->fullscreen) {
-        player->displayTextOnOSD(s);
-    }
+    setTimeLabel(ms, true);
 }
 
 void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
@@ -2888,8 +2859,8 @@ void TMainWindow::saveThumbnail() {
         if (canonical.isEmpty()) {
             WZWARN("Canonical path for '" + fn + "' not found");
         } else {
-            QString time =TWZTime::formatTimeMS(
-                qRound(player->mset.current_sec * 1000));
+            QString time =TWZTime::formatTimeMS(player->mset.current_sec,
+                                                true, true);
             saveThumbnailToIni(canonical, time);
 
             // Remove cached thumbnails
@@ -2961,7 +2932,7 @@ void TMainWindow::showSeekToDialog() {
     d.setMaximumTime((int) player->mdat.duration);
     d.setTime((int) player->mset.current_sec);
     if (d.exec() == QDialog::Accepted) {
-        player->seekTime(d.time());
+        player->seekSecond(d.time());
     }
 }
 
@@ -3025,6 +2996,14 @@ void TMainWindow::setFullscreen(bool b) {
         showNormal();
         didExitFullscreen();
     }
+
+    if (qApp->focusWidget() == 0
+            || qApp->focusWidget()->visibleRegion().isEmpty()) {
+        if (panel->isVisible()) {
+            playerWindow->activateWindow();
+            playerWindow->setFocus();
+        }
+    }
 }
 
 void TMainWindow::toggleFullscreen() {
@@ -3055,9 +3034,13 @@ void TMainWindow::didEnterFullscreen() {
     if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
                       TVersion::qtVersion())) {
         // First time there is no fullscreen toolbar state
-        WZDEBUG("fullscreen toolbar state not restored");
+        WZDEBUG("Fullscreen tool state not restored");
+        playlistDock->hide();
+        favListDock->hide();
+        logDock->hide();
         toolbar->hide();
         toolbar2->hide();
+        controlbar->show();
     }
     pref->endGroup();
 
@@ -3088,7 +3071,13 @@ void TMainWindow::didExitFullscreen() {
     pref->beginGroup(settingsGroupName());
     if (!restoreState(pref->value("toolbars_state").toByteArray(),
                       TVersion::qtVersion())) {
-        logger()->warn("didExitFullscreen: failed to restore toolbar state");
+        WZWARN("Failed to restore tool state");
+        playlistDock->hide();
+        favListDock->hide();
+        logDock->hide();
+        toolbar->show();
+        toolbar2->show();
+        controlbar->show();
     }
     pref->endGroup();
 
@@ -3229,23 +3218,46 @@ void TMainWindow::toggleDoubleSize() {
     }
 }
 
+bool TMainWindow::haveDockedDocks() const {
+
+    return (logDock->isVisible() && !logDock->isFloating())
+            || (playlistDock->isVisible() && !playlistDock->isFloating())
+            || (favListDock->isVisible() && !favListDock->isFloating());
+}
+
+void TMainWindow::hideDock(TDockWidget* dock) {
+
+    if (dock->isVisible()) {
+        bool dockIsFloating = dock->isFloating();
+        QRect dockRect(dock->frameGeometry());
+        QRect panelRect(panel->frameGeometry());
+        dock->hide();
+        if (!dockIsFloating && !haveDockedDocks()) {
+            QSize s(size());
+            if (dockRect.x() < panelRect.x()
+                    || dockRect.x() >= panelRect.x() + panelRect.width()) {
+                s.rwidth() -= dockRect.width();
+            } else {
+                s.rheight() -= dockRect.height();
+            }
+            resize(s);
+        }
+    }
+}
+
 void TMainWindow::hidePanel() {
     WZDEBUG("");
 
-    if (panel->isVisible()) {
-        // Exit from fullscreen
-        if (pref->fullscreen) {
-            setFullscreen(false);
-            update();
-        }
+    // Exit from fullscreen
+    if (pref->fullscreen) {
+        setFullscreen(false);
+        update();
+    }
 
-        if (!logDock->isVisible()
-                && !playlistDock->isVisible()
-                && !favListDock->isVisible()) {
-            resize(width(), height() - panel->height());
-        }
-
+    if (panel->isVisible() && !haveDockedDocks()) {
+        QSize s(width(), height() - panel->height());
         panel->hide();
+        resize(s);
     }
 }
 
@@ -3311,6 +3323,10 @@ double TMainWindow::optimizeSize(double size) const {
     if (i <= 0) {
         WZERROR("Selecting size 1 for invalid size");
         return 1;
+    }
+    if (i < 13) {
+        // Hires
+        return size;
     }
     if (i < 25) {
         // Can we scale up to 25%?

@@ -151,7 +151,7 @@ signals:
     void playerFullyLoaded();
 
     void receivedVideoOut();
-    void durationChanged(double);
+    void durationChanged(int ms);
     void receivedPosition(double sec);
     void receivedPause();
 
@@ -207,7 +207,7 @@ protected:
     double playerTimeToGuiTime(double sec);
 
     void notifyTitleTrackChanged(int new_title);
-    void notifyDuration(double duration);
+    void notifyDuration(double duration, bool forceEmit = false);
     virtual void checkTime(double sec);
     void notifyTime(double time_sec);
     bool waitForAnswers();

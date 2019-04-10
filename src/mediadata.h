@@ -74,6 +74,7 @@ public:
     // timestamp rollover corrected. Also in TMediaSettings.
     double time_sec_gui;
     double duration;
+    int durationMS() const { return qRound(duration * 1000); }
 
     // Demuxer
     QString demuxer;

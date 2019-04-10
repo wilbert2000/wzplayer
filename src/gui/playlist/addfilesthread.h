@@ -74,7 +74,7 @@ private:
     TPlaylistItem* createPath(TPlaylistItem* parent,
                               const QFileInfo& fi,
                               const QString& name,
-                              double duration,
+                              int durationMS,
                               bool protectName);
 
     void addNewItems(TPlaylistItem* playlistItem);
@@ -88,7 +88,7 @@ private:
     TPlaylistItem* addItem(TPlaylistItem* parent,
                            QString filename,
                            QString name,
-                           double duration,
+                           int durationMS,
                            bool protectName,
                            bool useBlackList);
 

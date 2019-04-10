@@ -310,16 +310,13 @@ public:
     TWheelFunctions wheel_function_cycle;
     bool wheel_function_seeking_reverse;
 
-    // Configurable seeking
+    // Seeking
     int seeking1; // By default 10s
     int seeking2; // By default 1m
     int seeking3; // By default 10m
     int seeking4; // For mouse wheel, by default 30s
     int seeking_current_action;
-
-    bool update_while_seeking;
-    int time_slider_drag_delay;
-
+    int seek_rate; // Seek every seek_rate ms when dragging or previewing
     //! If true, seeking will be done using a
     //! percentage (with fractions) instead of time.
     bool seek_relative;
