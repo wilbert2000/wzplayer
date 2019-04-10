@@ -929,6 +929,27 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
 }
 #endif
 
+static QStringList splitArguments(const QString& args) {
+
+    QStringList l;
+
+    bool opened_quote = false;
+    int init_pos = 0;
+    for (int n = 0; n < args.length(); n++) {
+        if (args[n] == QChar(' ') && !opened_quote) {
+            l.append(args.mid(init_pos, n - init_pos));
+            init_pos = n + 1;
+        } else if (args[n] == QChar('\"'))
+            opened_quote = !opened_quote;
+
+        if (n == args.length() - 1) {
+            l.append(args.mid(init_pos, n - init_pos + 1));
+        }
+    }
+
+    return l;
+}
+
 void TPlayer::saveRestartState() {
     WZDEBUGOBJ("");
 
@@ -1709,8 +1730,7 @@ end_video_filters:
 
     // Per file additional options
     if (!mset.player_additional_options.isEmpty()) {
-        QStringList args = Player::Process::TProcess::splitArguments(
-                               mset.player_additional_options);
+        QStringList args = splitArguments(mset.player_additional_options);
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
             if (!arg.isEmpty()) {
@@ -1722,8 +1742,8 @@ end_video_filters:
 
     // Global additional options
     if (!Settings::pref->player_additional_options.isEmpty()) {
-        QStringList args = Player::Process::TProcess::splitArguments(
-                                     Settings::pref->player_additional_options);
+        QStringList args = splitArguments(
+                    Settings::pref->player_additional_options);
         for (int n = 0; n < args.count(); n++) {
             QString arg = args[n].trimmed();
             if (!arg.isEmpty()) {

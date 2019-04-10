@@ -62,7 +62,7 @@ QStringList TProcess::arguments() {
 
 void TProcess::start() {
     wzdebug.level = Log4Qt::Level::INFO_INT;
-    wzdebug << "start program:" << program << "args:" << args;
+    wzdebug << "Start program:" << program << "args:" << args;
     wzdebug << wzdebug;
     wzdebug.level = Log4Qt::Level::DEBUG_INT;
 
@@ -74,14 +74,14 @@ void TProcess::start() {
 void TProcess::handleLine(QString& line) {
 
     if (!parseLine(line)) {
-        WZTRACE("ignored");
+        WZTRACEOBJ("ignored");
     }
 
     line_count++;
     if (line_count % 10000 == 0) {
-        WZDEBUG("parsed " + QString::number(line_count) +" lines at "
-                + QString::number((line_count * 1000.0) / line_time.elapsed())
-                + " lines per second");
+        WZDEBUGOBJ(QString("Parsed %1 lines at %2 lines per second")
+                   .arg(line_count)
+                   .arg(double(line_count * 1000) / line_time.elapsed()));
     }
 }
 
@@ -133,32 +133,11 @@ void TProcess::readStdOut() {
 void TProcess::procFinished() {
 
     qint64 ba = bytesAvailable();
-    WZDEBUG("available bytes " + QString::number(ba));
+    WZDEBUGOBJ("Available bytes " + QString::number(ba));
     // Read last output
     if (ba > 0) {
         readStdOut();
     }
-}
-
-QStringList TProcess::splitArguments(const QString& args) {
-
-    QStringList l;
-
-    bool opened_quote = false;
-    int init_pos = 0;
-    for (int n = 0; n < args.length(); n++) {
-        if (args[n] == QChar(' ') && !opened_quote) {
-            l.append(args.mid(init_pos, n - init_pos));
-            init_pos = n + 1;
-        } else if (args[n] == QChar('\"'))
-            opened_quote = !opened_quote;
-
-        if (n == args.length() - 1) {
-            l.append(args.mid(init_pos, n - init_pos + 1));
-        }
-    }
-
-    return l;
 }
 
 } // namespace Process
