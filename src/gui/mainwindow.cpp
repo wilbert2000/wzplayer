@@ -2161,7 +2161,7 @@ void TMainWindow::onMediaSettingsChanged() {
 }
 
 void TMainWindow::updateTitle() {
-    WZDEBUG("");
+    WZTRACE("");
 
     QString title = playlist->getPlayingTitle(true);
     // setWindowCaption = setWindowTitle and show it to TMainWindowTray
@@ -3203,7 +3203,7 @@ void TMainWindow::setSizeFactor(double factor) {
 }
 
 void TMainWindow::setSizePercentage(int percentage) {
-    WZDEBUG(QString::number(percentage) + "%");
+    WZTRACE(QString::number(percentage) + "%");
 
     if (percentage == 33) {
         setSizeFactor((double) 1 / 3);
@@ -3496,12 +3496,10 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
     }
 }
 
-void TMainWindow::resizeMainWindow(int w,
-                                   int h,
-                                   double size_factor,
+void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
                                    bool try_twice) {
-    WZDEBUG("Video size " + QString::number(w) + " x " + QString::number(h)
-            + ", window size " + QString::number(pref->size_factor));
+    WZDEBUG(QString("Video size %1 x %2, size factor %3")
+            .arg(w).arg(h).arg(pref->size_factor));
 
     QSize panel_size = QSize(w, h) * size_factor + playerWindow->frame();
     if (panel_size == panel->size()) {
@@ -3536,7 +3534,7 @@ void TMainWindow::setStayOnTop(bool b) {
     if (b == stay_on_top) {
         return;
     }
-    WZDEBUG(QString::number(b));
+    WZTRACE(b);
 
     ignore_show_hide_events = true;
     bool visible = isVisible();
@@ -3749,7 +3747,7 @@ void TMainWindow::runActionsLater(const QString& actions,
 }
 
 void TMainWindow::leftClickFunction() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
         && playerWindow->videoWindow()->underMouse()) {
@@ -3760,7 +3758,7 @@ void TMainWindow::leftClickFunction() {
 }
 
 void TMainWindow::rightClickFunction() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (!pref->mouse_right_click_function.isEmpty()) {
         processAction(pref->mouse_right_click_function);
@@ -3768,7 +3766,7 @@ void TMainWindow::rightClickFunction() {
 }
 
 void TMainWindow::doubleClickFunction() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (!pref->mouse_double_click_function.isEmpty()) {
         processAction(pref->mouse_double_click_function);
@@ -3776,7 +3774,7 @@ void TMainWindow::doubleClickFunction() {
 }
 
 void TMainWindow::middleClickFunction() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (!pref->mouse_middle_click_function.isEmpty()) {
         processAction(pref->mouse_middle_click_function);
@@ -3784,7 +3782,7 @@ void TMainWindow::middleClickFunction() {
 }
 
 void TMainWindow::xbutton1ClickFunction() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (!pref->mouse_xbutton1_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton1_click_function);
@@ -3792,7 +3790,7 @@ void TMainWindow::xbutton1ClickFunction() {
 }
 
 void TMainWindow::xbutton2ClickFunction() {
-    WZDEBUG("");
+    WZTRACE("");
 
     if (!pref->mouse_xbutton2_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton2_click_function);
