@@ -480,14 +480,6 @@ void TApp::start() {
         main_window->getPlaylist()->openFiles(files_to_play, current_file);
     }
 
-    // Add load of favorites to actions
-    if (onLoadActions.isEmpty()) {
-        onLoadActions = "fav_refresh";
-    } else {
-        // Prepend, it runs async after media started playing
-        onLoadActions = "fav_refresh " + onLoadActions;
-    }
-
     main_window->runActionsLater(onLoadActions, files_to_play.count() == 0);
 
     // Free files_to_play

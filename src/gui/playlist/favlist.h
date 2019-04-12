@@ -43,12 +43,13 @@ protected slots:
     virtual void removeAll() override;
 
 private:
+    bool loaded;
     TPlaylist* playlist;
     Action::Menu::TMenu* favMenu;
     QAction* currentFavAction;
     QIcon currentFavIcon;
-    QTimer* requestUpdateTimer;
-    QTimer* requestSaveTimer;
+    TWZTimer* requestUpdateTimer;
+    TWZTimer* requestSaveTimer;
     TWZTimer* updatePlayingItemTimer;
 
     void createToolbar();
@@ -59,6 +60,8 @@ private:
     void requestUpdate();
 
 private slots:
+    void loadFavorites();
+    void onDockToggled(bool visible);
     void onRequestSaveTimeout();
     void onRequestUpdateTimeout();
     void onAddedItems();
