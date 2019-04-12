@@ -149,5 +149,17 @@ QString TPaths::subtitleStyleFileName() {
     return configDir + QDir::separator() + "styles.ass";
 }
 
+QString TPaths::playerInfoFileName() {
+    return dataPath() +  "/player_info_version_3.ini";
+}
+
+QString TPaths::fileSettingsFileName() {
+    return dataPath() +  "/" + TConfig::PROGRAM_ID + "_files.ini";
+}
+
+QString TPaths::fileSettingsHashPath() {
+    return dataPath() +  "/file_settings";
+}
+
 } // namespace Settings
 

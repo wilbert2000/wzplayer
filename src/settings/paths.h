@@ -40,6 +40,9 @@ public:
     static QString translationPath();
     static QString qtTranslationPath();
     static QString subtitleStyleFileName();
+    static QString playerInfoFileName();
+    static QString fileSettingsFileName();
+    static QString fileSettingsHashPath();
     static QString genericCachePath();
 
 private:

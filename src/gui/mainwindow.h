@@ -158,7 +158,7 @@ public slots:
     int forceCloseOnFinish() { return arg_close_on_finish; }
 
     // Handle message from new intance send by TApp
-    void handleMessageFromOtherInstances(const QString& message);
+    void onReceivedMessage(const QString& msg);
 
     void save();
 
@@ -237,7 +237,7 @@ private:
     TWZTimer* titleUpdater;
     TUpdateChecker* update_checker;
 
-    QString pending_actions_to_run;
+    QString pending_actions;
     // Pass settings from command line
     int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
 
@@ -502,10 +502,7 @@ private:
 
     QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
-    //! Execute all actions in \a actions. The actions should be
-    //! separated by spaces. Checkable actions could have a parameter:
-    //! true or false.
-    void runActions(QString actions);
+    void postAction(const QString& actionName, bool hasArg, bool arg);
     void enableSubtitleActions();
     void enableActions();
 
@@ -537,7 +534,7 @@ private:
 
 private slots:
     void onPlayerError(int exit_code);
-    void checkPendingActionsToRun();
+    void checkPendingActions();
     void showContextMenu();
 
     void clearRecentsListDialog();
@@ -588,7 +585,7 @@ private slots:
     void onPositionChanged(int ms);
     void onVideoOutResolutionChanged(int w, int h);
     void onNewMediaStartedPlaying();
-    void onMediaInfoChanged();
+    void onMediaStartedPlaying();
     void onMediaSettingsChanged();
     void onPlaylistFinished();
 };

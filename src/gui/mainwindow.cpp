@@ -285,8 +285,8 @@ void TMainWindow::createPlayers() {
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TMainWindow::onNewMediaStartedPlaying,
             Qt::QueuedConnection);
-    connect(player, &Player::TPlayer::mediaInfoChanged,
-            this, &TMainWindow::onMediaInfoChanged,
+    connect(player, &Player::TPlayer::mediaStartedPlaying,
+            this, &TMainWindow::onMediaStartedPlaying,
             Qt::QueuedConnection);
 
     connect(player, &Player::TPlayer::playerError,
@@ -2170,18 +2170,10 @@ void TMainWindow::updateTitle() {
 
     if (propertiesDialog
             && propertiesDialog->isVisible()
-            // onMediaInfoChanged() will handle these 2 when playing starts
+            // onMediaStartedPlaying() will handle these 2 when playing starts
             && player->state() != Player::STATE_LOADING
             && player->state() != Player::STATE_RESTARTING) {
         propertiesDialog->showInfo(title);
-    }
-}
-
-void TMainWindow::onMediaInfoChanged() {
-    WZTRACE("");
-
-    if (propertiesDialog && propertiesDialog->isVisible()) {
-        setFilePropertiesData();
     }
 }
 
@@ -2189,11 +2181,17 @@ void TMainWindow::onNewMediaStartedPlaying() {
     WZTRACE("");
 
     enterFullscreenOnPlay();
-
-    // Recents
     pref->addRecent(player->mdat.filename,
                     playlist->getPlayingTitle(false, false));
-    checkPendingActionsToRun();
+    runActionsLater(pref->actions_to_run, true);
+}
+
+void TMainWindow::onMediaStartedPlaying() {
+    WZTRACE("");
+
+    if (propertiesDialog && propertiesDialog->isVisible()) {
+        setFilePropertiesData();
+    }
 }
 
 void TMainWindow::onPlaylistFinished() {
@@ -2377,40 +2375,6 @@ void TMainWindow::onDurationChanged(int ms) {
     }
 
     setTimeLabel(ms, true);
-}
-
-void TMainWindow::handleMessageFromOtherInstances(const QString& message) {
-    WZDEBUG("msg + '" + message + "'");
-
-    int pos = message.indexOf(' ');
-    if (pos >= 0) {
-        emit gotMessageFromOtherInstance();
-        QString command = message.left(pos);
-        QString arg = message.mid(pos + 1);
-        if (command == "open_file") {
-            playlist->open(arg);
-        } else if (command == "open_files") {
-            QStringList file_list = arg.split(" <<sep>> ");
-            playlist->openFiles(file_list);
-        } else if (command == "add_to_playlist") {
-            QStringList file_list = arg.split(" <<sep>> ");
-            playlist->add(file_list);
-        } else if (command == "media_title") {
-            QStringList list = arg.split(" <<sep>> ");
-            player->addForcedTitle(list[0], list[1]);
-        } else if (command == "action") {
-            processAction(arg);
-        } else if (command == "load_sub") {
-            player->setInitialSubtitle(arg);
-            if (player->statePOP()) {
-                player->loadSub(arg);
-            }
-        } else {
-            WZWARN(QString("Received unknown command '%1'").arg(message));
-        }
-    } else {
-        WZWARN(QString("Received message '%1' without arguments").arg(message));
-    }
 }
 
 void TMainWindow::closeEvent(QCloseEvent* e)  {
@@ -3652,77 +3616,62 @@ void TMainWindow::processAction(QString action_name) {
     }
 }
 
-void TMainWindow::runActions(QString actions) {
+void TMainWindow::postAction(const QString& actionName, bool hasArg, bool arg) {
 
-    actions = actions.simplified(); // Remove white space
+    QAction* action = findChild<QAction*>(actionName);
+    if (action) {
+        if (hasArg) {
+            if (!action->isCheckable()) {
+                QMessageBox::warning(this, tr("Unexpected argument"),
+                    tr("Got boolean argument %1 for action %2, which is not"
+                       " a checkable action. Ignoring the action.")
+                    .arg(arg).arg(actionName));
+                return;
+            }
+            if (action->isChecked() == arg) {
+                WZINFO(QString("Checkable action %1 already set to %2")
+                       .arg(actionName).arg(arg));
+                return;
+            }
+        }
 
-    QAction* action;
-    QStringList actionsList = actions.split(" ");
+        // Post to action slot trigger()
+        WZINFO(QString("Posting action '%1'").arg(actionName));
+        QTimer::singleShot(0, action, SLOT(trigger()));
+    } else {
+        WZWARN("Action '" + actionName + "' not found");
+        QMessageBox::warning(this, tr("Action not found"),
+                             tr("Action '%1' not found.").arg(actionName));
+    }
+}
 
-    for (int n = 0; n < actionsList.count(); n++) {
-        const QString& actionStr = actionsList.at(n);
-        QString arg;
-        bool check;
+void TMainWindow::checkPendingActions() {
+
+   QStringList actionList = pending_actions.split(" ", QString::SkipEmptyParts);
+   if (actionList.count()) {
+        const QString& action = actionList.takeFirst();
 
         // Set arg if the next word is a boolean
-        if (n + 1 < actionsList.count()) {
-            arg = actionsList.at(n + 1).toLower();
+        QString arg;
+        bool value;
+        if (actionList.count()) {
+            arg = actionList.at(0).toLower();
             if (arg == "true" || arg == "1") {
-                check = true;
-                n++;
+                value = true;
+                actionList.takeFirst();
             } else if (arg == "false" || arg == "0") {
-                check = false;
-                n++;
+                value = false;
+                actionList.takeFirst();
             } else {
                 arg = "";
             }
         }
 
-        action = findChild<QAction*>(actionStr);
-        if (action) {
-            if (!arg.isEmpty()) {
-                if (!action->isCheckable()) {
-                    QMessageBox::warning(this, tr("Unexpected argument"),
-                        tr("Got boolean argument %1 for action %2, which is not"
-                           " a checkable action. Ignoring the action.")
-                        .arg(arg).arg(actionStr));
-                    continue;
-                }
-                if (action->isChecked() == check) {
-                    WZINFO(QString("Checkable action %1 already set to %2")
-                           .arg(actionStr).arg(arg));
-                    continue;
-                }
-            }
-
-            // Post to action slot trigger()
-            WZINFO(QString("Posting action '%1'").arg(actionStr));
-            QTimer::singleShot(0, action, SLOT(trigger()));
-        } else {
-            WZWARN("Action '" + actionStr + "' not found");
-            QMessageBox::warning(this, tr("Action not found"),
-                                 tr("Action '%1' not found.").arg(actionStr));
+        pending_actions = actionList.join(" ");
+        postAction(action, !arg.isEmpty(), value);
+        if (!pending_actions.isEmpty()) {
+            QTimer::singleShot(0, this, SLOT(checkPendingActions()));
         }
-    } //end for
-} // void TMainWindow::runActions(QString actions)
-
-// Slot called by onNewMediaStartedPlaying and the runActionsLater() timer
-void TMainWindow::checkPendingActionsToRun() {
-
-    QString actions;
-    if (pending_actions_to_run.isEmpty()) {
-        actions = pref->actions_to_run;
-    } else {
-        actions = pending_actions_to_run;
-        pending_actions_to_run = "";
-        if (!pref->actions_to_run.isEmpty()) {
-            actions = pref->actions_to_run + " " + actions;
-        }
-    }
-
-    if (!actions.isEmpty()) {
-        WZINFO("Running pending actions '" + actions + "'");
-        runActions(actions);
     }
 }
 
@@ -3731,19 +3680,65 @@ void TMainWindow::runActionsLater(const QString& actions,
                                   bool prepend) {
     WZDEBUG("Scheduling actions '" + actions + "'");
 
-    if (actions.isEmpty()) {
+    if (!actions.isEmpty()) {
+        if (pending_actions.isEmpty()) {
+            pending_actions = actions;
+        } else if (prepend) {
+            pending_actions = actions + " " + pending_actions;
+        } else {
+            pending_actions += " " + actions;
+        }
+        pending_actions = pending_actions.simplified();
+    }
+
+    if (postCheck && !pending_actions.isEmpty()) {
+        QTimer::singleShot(0, this, SLOT(checkPendingActions()));
+    }
+}
+
+void TMainWindow::onReceivedMessage(const QString& msg) {
+    WZDEBUG("'" + msg + "'");
+
+    emit gotMessageFromOtherInstance();
+    if (msg == "hello") {
         return;
     }
-    if (pending_actions_to_run.isEmpty()) {
-        pending_actions_to_run = actions;
-    } else if (prepend) {
-        pending_actions_to_run = actions + " " + pending_actions_to_run;
-    } else {
-        pending_actions_to_run += " " + actions;
+    int pos = msg.indexOf(' ');
+    if (pos >= 0) {
+        QString command = msg.left(pos);
+        QString arg = msg.mid(pos + 1);
+        if (command == "send_actions") {
+            runActionsLater(arg, true);
+            return;
+        }
+        if (command == "open_file") {
+            playlist->open(arg);
+            return;
+        }
+        if (command == "open_files") {
+            QStringList file_list = arg.split(" <<sep>> ");
+            playlist->openFiles(file_list);
+            return;
+        }
+        if (command == "add_to_playlist") {
+            QStringList file_list = arg.split(" <<sep>> ");
+            playlist->add(file_list);
+            return;
+        }
+        if (command == "media_title") {
+            QStringList list = arg.split(" <<sep>> ");
+            player->addForcedTitle(list[0], list[1]);
+            return;
+        }
+        if (command == "load_sub") {
+            player->setInitialSubtitle(arg);
+            if (player->statePOP()) {
+                player->loadSub(arg);
+            }
+            return;
+        }
     }
-    if (postCheck) {
-        QTimer::singleShot(0, this, SLOT(checkPendingActionsToRun()));
-    }
+    WZERROR(QString("Received malformed message '%1'").arg(msg));
 }
 
 void TMainWindow::leftClickFunction() {

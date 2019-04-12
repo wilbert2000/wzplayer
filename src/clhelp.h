@@ -20,12 +20,11 @@
 
 //! Provides help about the comand line options.
 
-class CLHelp 
-{
+class CLHelp {
 public:
     static QString help(bool html = false);
 
-protected:
+private:
     static QString formatText(QString s, int col);
     static QString formatHelp(QString parameter,
                               QString help,

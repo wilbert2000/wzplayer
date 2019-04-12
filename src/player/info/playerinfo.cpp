@@ -106,8 +106,7 @@ void TPlayerInfo::getInfo(const QString& path) {
                 .arg(dataPath).arg(strerror(errno)));
     }
 
-    QString inifile = dataPath + "/player_info_version_"
-                      + QString::number(INFOREADER_SAVE_VERSION) + ".ini";
+    QString inifile = TPaths::playerInfoFileName();
     QSettings set(inifile, QSettings::IniFormat);
     set.beginGroup(getGroup());
 

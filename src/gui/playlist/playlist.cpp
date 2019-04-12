@@ -630,7 +630,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         if (playlistWidget->hasSingleItem()) {
             // Pause a single image
             if (player->mdat.image) {
-                mainWindow->runActionsLater("pause", true, true);
+                mainWindow->runActionsLater("pause", false, true);
             }
             // Hide playlist with single item
             mainWindow->hideDock(dock);

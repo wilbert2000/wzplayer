@@ -341,7 +341,7 @@ signals:
     void mediaSettingsChanged();
     void videoOutResolutionChanged(int w, int h);
     void newMediaStartedPlaying();
-    void mediaInfoChanged();
+    void mediaStartedPlaying();
     void streamingTitleChanged();
     void mediaEOF(); // Media has arrived to the end.
     void playerError(int exitCode);

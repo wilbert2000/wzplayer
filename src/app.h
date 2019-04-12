@@ -40,6 +40,7 @@ class TApp : public QtSingleApplication {
 public:
     enum TExitCode {
              ERROR_INVALID_ARGUMENT = -1,
+             NO_OTHER_INSTANCE = -1,
              NO_ERROR = 0,
              START_APP = 1111
     };
@@ -54,14 +55,17 @@ public:
     static TStartFS start_in_fullscreen;
     static bool acceptClipboardAsURL();
 
-    TApp(int& argc, char** argv);
+    explicit TApp(int& argc, char** argv);
     virtual ~TApp();
 
     void start();
 
     // Process command line arguments.
-    // Returning anything but TExitCode::NoExit makes ::main() exit.
+    // Returning anything but TExitCode::START_APP makes ::main() exit.
     TExitCode processArgs();
+
+signals:
+    void receivedMessage(QString msg);
 
 private:
     static bool restarting;
@@ -75,7 +79,7 @@ private:
     QTranslator qt_trans;
 
     QString subtitle_file;
-    QString actions; //!< Actions to be run on startup
+    QString onLoadActions; //!< Actions to be run on startup
     QString media_title; //!< Force a title for the first file
 
     // Change position and size
@@ -102,6 +106,7 @@ private:
 
 private slots:
     void onRequestRestart();
+    void onMessageReceived(QString msg);
 };
 
 #endif // APP_H

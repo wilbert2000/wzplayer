@@ -743,22 +743,6 @@ void TPlayer::initMediaSettings() {
     emit mediaSettingsChanged();
 }
 
-void TPlayer::onPlayingStartedNewMedia() {
-    WZTRACEOBJ("");
-
-    if (previewPlayer) {
-        mdat.list();
-    }
-
-    // Copy the demuxer
-    mset.current_demuxer = mdat.demuxer;
-    if (previewPlayer && Settings::pref->remember_media_settings) {
-        mset.list();
-    }
-
-    emit newMediaStartedPlaying();
-}
-
 void TPlayer::startPreviewPlayer() {
 
     if (previewPlayer) {
@@ -776,6 +760,22 @@ void TPlayer::startPreviewPlayer() {
     }
 }
 
+void TPlayer::onPlayingStartedNewMedia() {
+    WZTRACEOBJ("");
+
+    if (previewPlayer) {
+        mdat.list();
+    }
+
+    // Copy the demuxer
+    mset.current_demuxer = mdat.demuxer;
+    if (previewPlayer && Settings::pref->remember_media_settings) {
+        mset.list();
+    }
+
+    emit newMediaStartedPlaying();
+}
+
 // Slot called when signal playerFullyLoaded arrives.
 void TPlayer::onPlayingStarted() {
     WZTRACEOBJ("");
@@ -783,17 +783,14 @@ void TPlayer::onPlayingStarted() {
     if (forced_titles.contains(mdat.filename)) {
         mdat.title = forced_titles[mdat.filename];
     }
-
     if (_state != STATE_RESTARTING) {
         onPlayingStartedNewMedia();
     }
-
     setState(STATE_PLAYING);
 
-    WZTRACEOBJ("emit mediaInfoChanged()");
-    emit mediaInfoChanged();
-
     startPreviewPlayer();
+    WZTRACEOBJ("emit mediaStartedPlaying()");
+    emit mediaStartedPlaying();
 
     WZDEBUGOBJ(QString("Loading done in %1 ms").arg(time.elapsed()));
 }

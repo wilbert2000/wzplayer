@@ -1347,9 +1347,9 @@ void TPList::addStartThread() {
 }
 
 void TPList::add(const QStringList& files,
-                    bool startPlay,
-                    TPlaylistItem* target,
-                    const QString& fileToPlay) {
+                 bool startPlay,
+                 TPlaylistItem* target,
+                 const QString& fileToPlay) {
     wzdebug << "add files" << files << "startPlay" << startPlay;
     wzdebug << wzdebug;
 

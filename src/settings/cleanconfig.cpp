@@ -18,13 +18,13 @@ void TCleanConfig::clean() {
     s = TPaths::subtitleStyleFileName();
     if (QFile::exists(s)) files_to_delete << s;
 
-    s = TPaths::configPath() + "/wzplayer_files.ini";
+    s = TPaths::playerInfoFileName();
     if (QFile::exists(s)) files_to_delete << s;
 
-    s = TPaths::configPath() + "/player_info_version_3.ini";
+    s = TPaths::fileSettingsFileName();
     if (QFile::exists(s)) files_to_delete << s;
 
-    s = TPaths::configPath() + "/file_settings";
+    s = TPaths::fileSettingsHashPath();
     if (QFile::exists(s)) files_to_delete << listDir(s);
 
     printf("Deleting files:\n");

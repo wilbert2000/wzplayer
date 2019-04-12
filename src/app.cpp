@@ -247,9 +247,8 @@ TApp::TExitCode TApp::processArgs() {
         QStringList regExts;
         RegAssoc.GetRegisteredExtensions(extensions.allPlayable(), regExts);
         RegAssoc.RestoreFileAssociations(regExts);
-        WZINFO("Restored associations");
 #endif
-        return NoError;
+        return NO_ERROR;
     }
 #endif
 
@@ -263,50 +262,53 @@ TApp::TExitCode TApp::processArgs() {
 
     logInfo();
 
-    QString send_action; // Action to be passed to running instance
+    QString send_actions; // Action to be passed to running instance
     bool add_to_playlist = false;
 
+#define MSG(s) printf("%s\n", s)
+
     for (int n = 1; n < args.count(); n++) {
-        QString argument = args[n];
+        QString argument = args.at(n);
         QString name = getArgName(argument);
 
         if (name == "loglevel") {
             // Already handled by main
             n++;
-        } else if (name == "send-action") {
+        } else if (name == "send-actions") {
             if (n + 1 < args.count()) {
                 n++;
-                send_action = args[n];
+                send_actions = args.at(n);
             } else {
-                WZERROR("expected action after option --send-action");
+                MSG("Expected action after option --send-actions");
                 return ERROR_INVALID_ARGUMENT;
             }
-        } else if (name == "actions") {
-            if (n+1 < args.count()) {
+        } else if (name == "onload-actions") {
+            if (n + 1 < args.count()) {
                 n++;
-                actions = args[n];
+                onLoadActions = args.at(n);
             } else {
-                WZERROR("expected actions after option --actions");
+                MSG("Expected action after option --onload-actions");
                 return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "sub") {
             if (n + 1 < args.count()) {
                 n++;
-                QString file = args[n];
+                QString file = args.at(n);
                 if (QFile::exists(file)) {
                     subtitle_file = QFileInfo(file).absoluteFilePath();
                 } else {
-                    WZERROR("file '" + file + "' doesn\'t exists");
+                    MSG(("File '" + file + "' not found").toLocal8Bit().data());
+                    return ERROR_INVALID_ARGUMENT;
                 }
             } else {
-                WZERROR("expected parameter after option --sub");
+                MSG("Expected file name after option --sub");
                 return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "media-title") {
             if (n + 1 < args.count()) {
                 n++;
                 if (media_title.isEmpty()) {
-                    media_title = args[n];
+                    media_title = args.at(n);
                 }
             }
         } else if (name == "close-at-end") {
@@ -316,36 +318,34 @@ TApp::TExitCode TApp::processArgs() {
         } else if (name == "add-to-playlist") {
             add_to_playlist = true;
         } else if (name == "help" || name == "h" || name == "?") {
-            if (!restarting) {
-                printf("%s\n", CLHelp::help().toLocal8Bit().data());
-                return NO_ERROR;
-            }
+            MSG(CLHelp::help().toLocal8Bit().data());
+            return NO_ERROR;
         } else if (name == "pos") {
             if (n + 2 < args.count()) {
-                bool ok_x, ok_y;
+                bool xOK, yOK;
                 n++;
-                gui_position.setX(args[n].toInt(&ok_x));
+                gui_position.setX(args.at(n).toInt(&xOK));
                 n++;
-                gui_position.setY(args[n].toInt(&ok_y));
-                if (!restarting && ok_x && ok_y) {
+                gui_position.setY(args.at(n).toInt(&yOK));
+                if (!restarting && xOK && yOK) {
                     move_gui = true;
                 }
             } else {
-                WZERROR("expected x and y position after option --pos");
+                MSG("Expected x and y position after option --pos");
                 return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "size") {
             if (n + 2 < args.count()) {
-                bool ok_width, ok_height;
+                bool widthOK, heightOK;
                 n++;
-                gui_size.setWidth(args[n].toInt(&ok_width));
+                gui_size.setWidth(args.at(n).toInt(&widthOK));
                 n++;
-                gui_size.setHeight(args[n].toInt(&ok_height));
-                if (!restarting && ok_width && ok_height) {
+                gui_size.setHeight(args.at(n).toInt(&heightOK));
+                if (!restarting && widthOK && heightOK) {
                     resize_gui = true;
                 }
             } else {
-                WZERROR("expected width and height after option --size");
+                MSG("Expected width and height after option --size");
                 return ERROR_INVALID_ARGUMENT;
             }
         } else if (name == "fullscreen") {
@@ -357,42 +357,48 @@ TApp::TExitCode TApp::processArgs() {
                 start_in_fullscreen = FS_FALSE;
             }
         } else if (addCommandLineFiles) {
-            WZDEBUG("adding '" + argument + "' to files to play");
+            WZDEBUG("Adding '" + argument + "' to files to play");
             files_to_play.append(argument);
         }
     }
 
-    if (Settings::pref->use_single_window) {
-        // Single instance
-        if (isRunning()) {
-            sendMessage("Hello");
-
-            if (!send_action.isEmpty()) {
-                sendMessage("action " + send_action);
-            } else {
-                if (!subtitle_file.isEmpty()) {
-                    sendMessage("load_sub " + subtitle_file);
-                }
-
-                if (!media_title.isEmpty()) {
-                    sendMessage("media_title " + files_to_play[0] + " <<sep>> "
-                        + media_title);
-                }
-
-                if (!files_to_play.isEmpty()) {
-                    QString command = "open_files";
-                    if (add_to_playlist) {
-                        command = "add_to_playlist";
-                    }
-                    sendMessage(command + " " + files_to_play.join(" <<sep>> "));
-                }
-            }
-
+    if (!send_actions.isEmpty()) {
+        if (isRunning()
+                && sendMessage("hello")
+                && sendMessage("send_actions " + send_actions)) {
             return NO_ERROR;
         }
+        return NO_OTHER_INSTANCE;
+    }
+
+    // Single instance
+    if (Settings::pref->use_single_window
+            && isRunning()
+            && sendMessage("hello")) {
+
+        if (!subtitle_file.isEmpty()) {
+            sendMessage("load_sub " + subtitle_file);
+        }
+        if (!media_title.isEmpty()) {
+            sendMessage("media_title " + files_to_play[0] + " <<sep>> "
+                        + media_title);
+        }
+        if (!files_to_play.isEmpty()) {
+            QString cmd = add_to_playlist ? "add_to_playlist" : "open_files";
+            sendMessage(cmd + " " + files_to_play.join(" <<sep>> "));
+        }
+
+        return NO_ERROR;
     }
 
     return TApp::START_APP;
+}
+
+void TApp::onMessageReceived(QString msg) {
+    // The default timeout for sendMessage() is 5 seconds. To improve the chance
+    // that we respond within 5 seconds, handle the message here and send it to
+    // the main window on a queued connection.
+    emit receivedMessage(msg);
 }
 
 void TApp::createGUI() {
@@ -400,17 +406,20 @@ void TApp::createGUI() {
 
     main_window = new Gui::TMainWindowTray();
 
+    connect(this, &TApp::messageReceived,
+            this, &TApp::onMessageReceived);
+    connect(this, &TApp::receivedMessage,
+            main_window, &Gui::TMainWindowTray::onReceivedMessage,
+            Qt::QueuedConnection);
+    setActivationWindow(main_window);
+
+    connect(main_window, &Gui::TMainWindowTray::requestRestart,
+            this, &TApp::onRequestRestart);
+
     WZTRACE("Applying settings");
     main_window->loadSettings();
 
     main_window->setForceCloseOnFinish(close_at_end);
-
-    connect(main_window, &Gui::TMainWindowTray::requestRestart,
-            this, &TApp::onRequestRestart);
-    connect(this, &TApp::messageReceived,
-            main_window, &Gui::TMainWindowTray::handleMessageFromOtherInstances);
-
-    setActivationWindow(main_window);
 
     if (move_gui) {
         main_window->move(gui_position);
@@ -458,8 +467,8 @@ void TApp::start() {
         // Nothing to open
         player->setState(Player::STATE_STOPPED);
         // Check clipboard
-        if (actions.isEmpty() && acceptClipboardAsURL()) {
-            actions = "open_url";
+        if (onLoadActions.isEmpty() && acceptClipboardAsURL()) {
+            onLoadActions = "open_url";
         }
     } else {
         if (!subtitle_file.isEmpty()) {
@@ -472,14 +481,14 @@ void TApp::start() {
     }
 
     // Add load of favorites to actions
-    if (actions.isEmpty()) {
-        actions = "fav_refresh";
+    if (onLoadActions.isEmpty()) {
+        onLoadActions = "fav_refresh";
     } else {
         // Prepend, it runs async after media started playing
-        actions = "fav_refresh " + actions;
+        onLoadActions = "fav_refresh " + onLoadActions;
     }
 
-    main_window->runActionsLater(actions, files_to_play.count() == 0);
+    main_window->runActionsLater(onLoadActions, files_to_play.count() == 0);
 
     // Free files_to_play
     files_to_play.clear();

@@ -65,7 +65,7 @@ QString TFileSettingsHash::iniFilenameFor(const QString& filename) {
         return QString();
     }
 
-    QString dir_name = TPaths::configPath() + "/file_settings/" + hash[0];
+    QString dir_name = TPaths::fileSettingsHashPath() + "/" + hash[0];
     QDir dir(TPaths::configPath());
     if (!dir.exists(dir_name)) {
         if (!dir.mkpath(dir_name)) {

@@ -29,8 +29,7 @@ namespace Settings {
 
 
 TFileSettings::TFileSettings() :
-    TFileSettingsBase(TPaths::configPath() + "/" + TConfig::PROGRAM_ID
-                      + "_files.ini") {
+    TFileSettingsBase(TPaths::fileSettingsFileName()) {
 }
 
 QString TFileSettings::filenameToGroupname(const QString& filename) {
