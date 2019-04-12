@@ -245,7 +245,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TMainWindow* mw)
 
     addAction(mw->findAction("stop"));
     addAction(mw->findAction("play_or_pause"));
-    addAction(mw->findAction("pl_play_in_new_window"));
+    addAction(mw->findAction("pl_play_in_new_win"));
 
     addSeparator();
     // Forward menu

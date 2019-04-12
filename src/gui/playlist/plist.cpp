@@ -217,7 +217,7 @@ void TPList::createActions() {
     connect(playAct, &Action::TAction::triggered, this, &TPList::play);
 
     // Play in new window
-    playInNewWindowAct = new TAction(owner, shortName + "_play_in_new_window",
+    playInNewWindowAct = new TAction(owner, shortName + "_play_in_new_win",
                              tr("Play in new window"), "play",
                              Qt::CTRL | Qt::Key_Space);
     connect(playInNewWindowAct, &TAction::triggered,
@@ -336,7 +336,7 @@ void TPList::createActions() {
 
     // Add removed sub menu
     playlistAddMenu->addMenu(new TMenuAddRemoved(
-                                 this, shortName + "_add_removed_menu"));
+                                 this, shortName + "_add_rm_menu"));
 
     contextMenu->addMenu(playlistAddMenu);
 
