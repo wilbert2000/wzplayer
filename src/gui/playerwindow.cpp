@@ -139,7 +139,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
 }
 
 void TPlayerWindow::setResolution(int width, int height, const double fps) {
-    WZDEBUG(QString("%1 x %2 %3 fps").arg(width).arg(height).arg(fps));
+    WZDEBUGOBJ(QString("%1 x %2 %3 fps").arg(width).arg(height).arg(fps));
 
     video_size = QSize(width, height);
     if (height == 0) {
@@ -187,8 +187,8 @@ void TPlayerWindow::updateSizeFactor() {
     if (!video_size.isEmpty()) {
         double old_factor = pref->size_factor;
         pref->size_factor = getSizeFactor();
-        // WZTRACE(QString("updating size from %1 to %2")
-        //         .arg(old_factor).arg(pref->size_factor));
+        // WZTRACEOBJ(QString("updating size from %1 to %2")
+        //            .arg(old_factor).arg(pref->size_factor));
         // Need to emit if old == new to detect changes by user
         emit videoSizeFactorChanged(old_factor, pref->size_factor);
     }
@@ -494,12 +494,12 @@ void TPlayerWindow::setColorKey() {
 }
 
 void TPlayerWindow::setFastWindow() {
-    WZTRACE("");
+    WZTRACEOBJ("");
     video_window->setFastBackground();
 }
 
 void TPlayerWindow::restoreNormalWindow() {
-    WZTRACE("");
+    WZTRACEOBJ("");
 
     video_window->restoreNormalBackground();
     // Clear video size and fps

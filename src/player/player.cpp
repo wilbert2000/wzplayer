@@ -1787,7 +1787,7 @@ void TPlayer::seekCmd(double value, int mode) {
 
     bool keyFrames = Settings::pref->seek_keyframes;
     if (mode == 0) {
-        QString s(tr("Seek to %1%2 from %3")
+        QString s(tr("Seek %1%2 from %3")
                   .arg(keyFrames ? tr("key frame ") : "" )
                   .arg(TWZTime::formatTimeMS(value))
                   .arg(TWZTime::formatTimeMS(mset.current_sec, true)));
