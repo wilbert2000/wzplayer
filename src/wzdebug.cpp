@@ -1,11 +1,12 @@
 #include "wzdebug.h"
 
 
-TWZDebug::TWZDebug(Log4Qt::Logger* aLogger) :
+TWZDebug::TWZDebug(Log4Qt::Logger* aLogger, Log4Qt::Level aLevel) :
     QDebug(&msg),
-    logger(aLogger) {
+    logger(aLogger),
+    level(aLevel) {
 }
 
 TWZDebug::~TWZDebug() {
-    logger->log(Log4Qt::Level::DEBUG_INT, msg);
+    logger->log(level, msg);
 }
