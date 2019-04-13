@@ -133,7 +133,7 @@ void TApp::changeStyleSheet(const QString& style) {
 }
 
 void TApp::setupStyle() {
-    WZTRACE("");
+    WZT;
 
     // Set application style
     // From help: Warning: To ensure that the application's style is set
@@ -161,7 +161,7 @@ bool TApp::loadCatalog(QTranslator& translator,
     QString loc = name + "_" + locale;
     bool loaded = translator.load(loc, dir);
     if (loaded) {
-        WZINFO("Loaded '" + loc + "' from '" + dir + "'");
+        WZI << "Loaded" << loc << "from" << dir;
     } else {
         WZD << loc << "not found in" << dir;
     }
@@ -187,7 +187,7 @@ void TApp::loadTranslation() {
 }
 
 void TApp::loadConfig(bool portable) {
-    WZDEBUG("");
+    WZD;
 
     // Setup config dir
     Settings::TPaths::setConfigPath(portable);
@@ -357,7 +357,7 @@ TApp::TExitCode TApp::processArgs() {
                 start_in_fullscreen = FS_FALSE;
             }
         } else if (addCommandLineFiles) {
-            WZDEBUG("Adding '" + argument + "' to files to play");
+            WZD << "Adding" << argument << "to files to play";
             files_to_play.append(argument);
         }
     }
@@ -456,7 +456,7 @@ bool TApp::acceptClipboardAsURL() {
 }
 
 void TApp::start() {
-    WZTRACE("");
+    WZT;
 
     // Create the main window. It will be destoyed when leaving exec().
     createGUI();
@@ -492,7 +492,7 @@ void TApp::start() {
 }
 
 void TApp::onRequestRestart() {
-    WZDEBUG("");
+    WZD;
 
     restarting = true;
     if (Settings::pref->fullscreen && start_in_fullscreen != FS_TRUE) {
@@ -508,8 +508,9 @@ void TApp::onRequestRestart() {
 
 void TApp::logInfo() {
 
-    QString s = tr("WZPlayer %1 running on %2")
-                .arg(TVersion::version)
+    QString s = tr("%1 %2 running on %3")
+            .arg(TConfig::PROGRAM_NAME)
+            .arg(TVersion::version)
 
 #ifdef Q_OS_LINUX
                 .arg("Linux");
@@ -523,18 +524,18 @@ void TApp::logInfo() {
 
 #endif
 
-    WZINFO(s);
-    WZINFO(QString("Compiled with Qt version " QT_VERSION_STR
-           ", running on Qt version ") + qVersion());
-    WZINFO("Application dir '" + applicationDirPath() + "'");
-    WZINFO("Configuration dir '" + Settings::TPaths::configPath() + "'");
-    WZINFO("Data dir '" + Settings::TPaths::dataPath() + "'");
-    WZINFO("Favorites dir '" + Settings::TPaths::favoritesPath() + "'");
-    WZINFO("Screenshots dir '" + Settings::pref->screenshot_directory + "'");
-    WZINFO("Translation dir '" + Settings::TPaths::translationPath() + "'");
-    WZINFO("Themes dir '" + Settings::TPaths::themesPath() + "'");
-    WZINFO("Shortcuts dir '" + Settings::TPaths::shortcutsPath() + "'");
-    WZINFO("Current dir '" + QDir::currentPath() + "'");
+    WZI << s;
+    WZI << "Compiled with Qt version" << QT_VERSION_STR
+        << "running on Qt version" << qVersion();
+    WZI << "Application dir" << applicationDirPath();
+    WZI << "Configuration dir" << Settings::TPaths::configPath();
+    WZI << "Data dir" << Settings::TPaths::dataPath();
+    WZI << "Favorites dir" << Settings::TPaths::favoritesPath();
+    WZI << "Screenshots dir" << Settings::pref->screenshot_directory;
+    WZI << "Translation dir" << Settings::TPaths::translationPath();
+    WZI << "Themes dir" << Settings::TPaths::themesPath();
+    WZI << "Shortcuts dir" << Settings::TPaths::shortcutsPath();
+    WZI << "Current dir" << QDir::currentPath();
 }
 
 #include "moc_app.cpp"

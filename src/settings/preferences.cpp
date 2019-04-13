@@ -364,7 +364,7 @@ void TPreferences::reset() {
 }
 
 void TPreferences::save() {
-    WZTRACE("");
+    WZT;
 
     setValue("config_version", config_version);
 
@@ -735,7 +735,7 @@ QString TPreferences::getAbsolutePathPlayer(const QString& player) {
     if (!found_player.isEmpty()) {
         path = found_player;
     }
-    WZDEBUG("'" + path + "'");
+    WZD << path;
     return path;
 }
 
@@ -793,14 +793,13 @@ void TPreferences::setPlayerBin(QString bin,
         }
 
         if (found_bin.isEmpty()) {
-            WZWARN("Failed to find player '" + bin + "'");
+            WZW << "Failed to find player" << bin;
         } else if (allow_other_player || found_id == wanted_player) {
-            WZWARN("Failed to find player '" + bin
-                   + "', selecting '" + found_bin + "'");
+            WZW << "Failed to find player" << bin << "selecting" << found_bin;
             bin = found_bin;
         } else {
-            WZWARN("Failed to find player '" + bin
-                   + "'. Maybe try '" + found_bin + "' instead.");
+            WZWARN("Failed to find player \"" + bin
+                   + "\". Maybe try \"" + found_bin + "\" instead.");
         }
     } else {
         bin = found_bin;
@@ -824,13 +823,13 @@ void TPreferences::setPlayerBin(QString bin,
         }
     }
 
-    WZINFO("Selected player '" + bin + "'");
-    WZTRACE("mplayer video driver vo '" + mplayer_vo
-            + "', audio driver ao '" + mplayer_ao
-            + "', additional options '" + mplayer_additional_options + "'");
-    WZTRACE("mpv video driver vo '" + mpv_vo
-            + "', audio driver ao '" + mpv_ao
-            + "', additional options '" + mpv_additional_options + "'");
+    WZI << "Selected player" << bin;
+    WZT << "mplayer video driver vo" << mplayer_vo
+        << "audio driver ao" << mplayer_ao
+        << "additional options" << mplayer_additional_options;
+    WZT << "mpv video driver vo" << mpv_vo
+        << "audio driver ao" << mpv_ao
+        << "additional options" << mpv_additional_options;
 }
 
 
@@ -1260,9 +1259,8 @@ void TPreferences::load() {
     filters.load(this);
 
 
-    WZINFO(QString("Loaded configuration file version %1,"
-                   " executable CURRENT_CONFIG_VERSION is %2")
-           .arg(config_version).arg(CURRENT_CONFIG_VERSION));
+    WZI << "Loaded configuration file version" << config_version
+        << "executable CURRENT_CONFIG_VERSION is" << CURRENT_CONFIG_VERSION;
 
     // Check config version
     if (config_version < CURRENT_CONFIG_VERSION) {
@@ -1343,7 +1341,7 @@ void TPreferences::setupScreenshotFolder() {
     }
 
     if (QDir(screenshot_directory).exists()) {
-        WZTRACE("Using folder '" + screenshot_directory + "'");
+        WZT << "Using folder" << screenshot_directory;
     } else {
         WZTRACE(QString("Folder '%1' not found, disabling screenshots")
                .arg(screenshot_directory));
@@ -1361,10 +1359,10 @@ void TPreferences::compileTitleBlackList() {
         if (!s.isEmpty()) {
             rx.setPattern(s);
             if (rx.isValid()) {
-                WZTRACE("Adding '" + rx.pattern() + "'");
+                WZT << "Adding" << rx.pattern();
                 rxTitleBlacklist.append(rx);
             } else {
-                WZWARN("Failed to parse regular expression '" + s + "'");
+                WZW << "Failed to parse regular expression" << s;
             }
         }
     }

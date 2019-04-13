@@ -21,7 +21,7 @@ bool TWZFiles::directoryIsEmpty(const QString& directory) {
                                      | QDir::NoDotAndDotDot
                                      | QDir::Hidden
                                      | QDir::System).count();
-    WZTRACE(QString("Found %1 files in '%2'").arg(c).arg(directory));
+    WZTRACE(QString("Found %1 files in \"%2\"").arg(c).arg(directory));
     return c == 0;
 }
 
@@ -30,7 +30,7 @@ QString TWZFiles::findExecutable(const QString& name) {
 
     QFileInfo fi(name);
     if (fi.isFile() && fi.isExecutable()) {
-        WZTRACE("Found '" + name + "'");
+        WZT << "Found" << name;
         return fi.absoluteFilePath();
     }
 
@@ -65,13 +65,13 @@ QString TWZFiles::findExecutable(const QString& name) {
         QString candidate = search_paths[n] + "/" + name;
         fi.setFile(candidate);
         if (fi.isFile() && fi.isExecutable()) {
-            WZTRACE("Found '" + fi.absoluteFilePath() + "'");
+            WZT << "Found" << fi.absoluteFilePath();
             return fi.absoluteFilePath();
         }
     }
 
     // Name not found
-    WZINFO("Executable '" + name + "' not found");
+    WZI << "Executable" << name << "not found";
     return QString();
 }
 

@@ -53,11 +53,11 @@ void TPaths::setConfigPath(bool portable) {
         // Create config directory
         QDir dir(configDir);
         if (!dir.mkpath(configDir)) {
-            WZERROR(QString("Failed to create configuration directory '%1'. %2")
-                    .arg(configDir).arg(strerror(errno)));
+            WZE << "Failed to create configuration directory" << configDir
+                << strerror(errno);
         }
     }
-    WZTRACE(QString("Configuration directory set to '%1'").arg(configDir));
+    WZT << "Configuration directory set to" << configDir;
 }
 
 QString TPaths::iniFileName() {

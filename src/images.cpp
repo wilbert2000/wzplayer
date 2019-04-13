@@ -40,7 +40,7 @@ bool Images::has_rcc = false;
 void Images::setTheme(const QString& name) {
 
     if (!last_resource_loaded.isEmpty()) {
-        WZDEBUG("Unloading '" + last_resource_loaded + "'");
+        WZD << "Unloading" << last_resource_loaded;
         QResource::unregisterResource(last_resource_loaded);
         last_resource_loaded = "";
     }
@@ -54,7 +54,7 @@ void Images::setTheme(const QString& name) {
     } else {
         themes_path = TPaths::themesPath();
     }
-    WZDEBUG("Themes path: '" + themes_path + "'");
+    WZD << "Themes path" << themes_path;
 
     QString rs_file;
     if (!current_theme.isEmpty()) {
@@ -64,12 +64,12 @@ void Images::setTheme(const QString& name) {
             if (QResource::registerResource(rs_file)) {
                 last_resource_loaded = rs_file;
                 has_rcc = true;
-                WZDEBUG("Registered resource file '" + rs_file + "'");
+                WZD << "Registered resource file" << rs_file;
             } else {
-                WZWARN("Failded to register resource file '" + rs_file + "'");
+                WZW << "Failded to register resource file" << rs_file;
             }
         } else {
-            WZDEBUG("No resource file found at '" + rs_file + "'");
+            WZD << "No resource file found at" << rs_file;
         }
     }
 }
@@ -107,7 +107,7 @@ QPixmap Images::icon(const QString& name, int size) {
 
     QPixmap pixmap(iconFilename(name));
     if (pixmap.isNull()) {
-        // WZTRACE("'" + name + "' not found");
+        // WZT << name << "not found");
     } else if (size > 0) {
         pixmap = resize(pixmap, size);
     }
