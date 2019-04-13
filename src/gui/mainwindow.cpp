@@ -98,7 +98,7 @@ TMainWindow::TMainWindow() :
     QMainWindow(),
     wzdebug(logger()),
     update_checker(0),
-    arg_close_on_finish(-1),
+    optionCloseOnFinish(-1),
     ignore_show_hide_events(false),
     save_size(true),
     center_window(false),
@@ -474,6 +474,16 @@ void TMainWindow::createActions() {
     pauseAct = new TAction(this, "pause", tr("Pause"), "",
                            QKeySequence("Media Pause")); // MCE remote key
     connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
+
+    // Play/pause
+    playOrPauseAct = new TAction(this, "play_or_pause", tr("Play"), "play",
+                                 Qt::Key_Space);
+    // Add MCE remote key
+    playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
+    connect(playOrPauseAct, &TAction::triggered,
+            playlist, &Playlist::TPlaylist::playOrPause);
+    connect(playlist, &Playlist::TPlaylist::busyChanged,
+            this, &TMainWindow::enablePlayOrPause);
 
     // Seek forward
     seekFrameAct = new TAction(this, "seek_forward_frame", tr("Frame step"), "",
@@ -1176,17 +1186,17 @@ void TMainWindow::createMenus() {
     using namespace Action;
 
     fileMenu = new Menu::TMenuFile(this, this, favlist->getFavMenu());
-    menuBar()->addMenu(fileMenu);
+    addAction(menuBar()->addMenu(fileMenu));
     playMenu = new Menu::TMenuPlay(this, this);
-    menuBar()->addMenu(playMenu);
+    addAction(menuBar()->addMenu(playMenu));
     videoMenu = new Menu::TMenuVideo(this, this);
-    menuBar()->addMenu(videoMenu);
+    addAction(menuBar()->addMenu(videoMenu));
     audioMenu = new Menu::TMenuAudio(this, this);
-    menuBar()->addMenu(audioMenu);
+    addAction(menuBar()->addMenu(audioMenu));
     subtitleMenu = new Menu::TMenuSubtitle(this, this);
-    menuBar()->addMenu(subtitleMenu);
+    addAction(menuBar()->addMenu(subtitleMenu));
     browseMenu = new Menu::TMenuBrowse(this, this);
-    menuBar()->addMenu(browseMenu);
+    addAction(menuBar()->addMenu(browseMenu));
 
     // Statusbar menu
     statusbarMenu = new QMenu(this);
@@ -1660,10 +1670,20 @@ QString parentOrMenuName(QAction* action) {
 
     QString name = action->parent()->objectName();
     if (name.isEmpty()) {
+        QString s;
         QMenu* menu = qobject_cast<QMenu*>(action->parent());
         if (menu) {
-            return "from menu '" + menu->menuAction()->objectName() + "'";
+            s = menu->menuAction()->objectName();
+            if (!s.isEmpty()) {
+                return "owned by menu '" + s + "'";
+            }
+            s = "owned by unnamed menu";
+            if (menu->parent()) {
+                s += " with grandparent '" + menu->parent()->objectName() + "'";
+            }
+            return s;
         }
+        return "not owned by menu";
     }
     return "with parent '" + name + "'";
 }
@@ -1679,8 +1699,10 @@ QList<QAction*> TMainWindow::findNamedActions() const {
             //WZTRACE(QString("Skipping separator %1")
             //        .arg(parentOrMenuName(action)));
         } else if (action->objectName().isEmpty()) {
-            //WZTRACE(QString("Skipping action '' '%1' %2")
-            //        .arg(action->text()).arg(parentOrMenuName(action)));
+            WZTRACE(QString("Skipping unnamed %1action '%2' %3")
+                    .arg(action->menu() ? "menu" : "")
+                    .arg(action->text())
+                    .arg(parentOrMenuName(action)));
         } else if (action->objectName() == "_q_qlineeditclearaction") {
             //WZTRACE("Skipping action _q_qlineeditclearaction");
         } else {
@@ -2201,8 +2223,8 @@ void TMainWindow::onPlaylistFinished() {
     WZDEBUG("");
 
     // Handle "Close on end of playlist" option
-    if (arg_close_on_finish != 0) {
-        if ((arg_close_on_finish == 1) || (pref->close_on_finish)) {
+    if (optionCloseOnFinish != 0) {
+        if ((optionCloseOnFinish == 1) || (pref->close_on_finish)) {
             close();
         }
     }
@@ -2442,6 +2464,53 @@ void TMainWindow::enableSubtitleActions() {
     // useCustomSubStyleAct always enabled
 }
 
+void TMainWindow::enablePlayOrPause() {
+
+    Player::TState ps = player->state();
+    if (ps == Player::STATE_STOPPING) {
+        playOrPauseAct->setTextAndTip(tr("Stopping player..."));
+        playOrPauseAct->setIcon(iconProvider.iconStopping);
+        playOrPauseAct->setEnabled(false);
+        WZTRACE("Disabled in state stopping");
+    } else if (ps == Player::STATE_PLAYING) {
+        playOrPauseAct->setTextAndTip(tr("Pause"));
+        playOrPauseAct->setEnabled(true);
+        if (playlist->isBusy() || favlist->isBusy()) {
+            playOrPauseAct->setIcon(iconProvider.iconLoading);
+            WZTRACE("Enabled pause in state playing while busy");
+        } else {
+            playOrPauseAct->setIcon(iconProvider.pauseIcon);
+            WZTRACE("Enabled pause in state playing");
+        }
+    } else if (ps == Player::STATE_PAUSED) {
+        playOrPauseAct->setTextAndTip(tr("Play"));
+        playOrPauseAct->setEnabled(true);
+        if (playlist->isBusy() || favlist->isBusy()) {
+            playOrPauseAct->setIcon(iconProvider.iconLoading);
+            WZTRACE("Enabled play in state paused while busy");
+        } else {
+            playOrPauseAct->setIcon(iconProvider.playIcon);
+            WZTRACE("Enabled play in state paused");
+        }
+    } else {
+        QString s = player->stateToString().toLower();
+        if (ps == Player::STATE_RESTARTING || ps == Player::STATE_LOADING) {
+            playOrPauseAct->setTextAndTip(tr("Stop %1").arg(s));
+            playOrPauseAct->setIcon(iconProvider.iconStopping);
+            playOrPauseAct->setEnabled(true);
+            WZTRACE("Enabled stop in state " + s);
+        } else if (ps == Player::STATE_STOPPED) {
+            playOrPauseAct->setTextAndTip(tr("Play"));
+            playOrPauseAct->setIcon(iconProvider.playIcon);
+            bool e = !player->mdat.filename.isEmpty()
+                    || playlist->hasPlayableItems();
+            playOrPauseAct->setEnabled(e);
+            WZTRACE(QString("%1 play in state stopped")
+                    .arg(e ? "Enabled" : "Disabled"));
+        }
+    }
+} // enablePlayOrPause()
+
 void TMainWindow::enableActions() {
     WZTRACE("State " + player->stateToString());
 
@@ -2449,6 +2518,7 @@ void TMainWindow::enableActions() {
 
     // Time slider
     timeslider_action->enable(enable);
+
     // Play lists
     playlist->enableActions();
     favlist->enableActions();
@@ -2462,15 +2532,14 @@ void TMainWindow::enableActions() {
 
 
     // Play menu
-    // Stop
     stopAct->setEnabled(player->state() == Player::STATE_PLAYING
                         || player->state() == Player::STATE_PAUSED
                         || player->state() == Player::STATE_RESTARTING
                         || player->state() == Player::STATE_LOADING
                         || playlist->isBusy()
                         || favlist->isBusy());
-    // Pause
     pauseAct->setEnabled(player->state() == Player::STATE_PLAYING);
+    enablePlayOrPause();
 
     // Seek forward
     seekFrameAct->setEnabled(enable);

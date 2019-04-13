@@ -118,6 +118,7 @@ public slots:
     void openRecent();
     virtual void closeWindow();
 
+    void stop();
     void updateSeekDefaultAction(QAction* action);
 
     void exitFullscreen();
@@ -155,8 +156,8 @@ public slots:
     void helpCheckUpdates();
     void helpAbout();
 
-    void setForceCloseOnFinish(int n) { arg_close_on_finish = n; }
-    int forceCloseOnFinish() { return arg_close_on_finish; }
+    void setForceCloseOnFinish(int n) { optionCloseOnFinish = n; }
+    int forceCloseOnFinish() { return optionCloseOnFinish; }
 
     // Handle message from new intance send by TApp
     void onReceivedMessage(const QString& msg);
@@ -186,18 +187,11 @@ signals:
     void seekRewindDefaultActionChanged(QAction* action);
 
 protected:
-    Playlist::TPlaylist* playlist;
-
+    Action::TAction* playOrPauseAct;
     Action::TAction* closeAct;
     Action::TAction* quitAct;
-
-    Action::Menu::TMenuFile* fileMenu;
-    Action::Menu::TMenuPlay* playMenu;
-    Action::Menu::TMenuVideo* videoMenu;
-    Action::Menu::TMenuAudio* audioMenu;
-    Action::Menu::TMenuSubtitle* subtitleMenu;
-    Action::Menu::TMenuBrowse* browseMenu;
     Action::Menu::TMenuView* viewMenu;
+
     Action::Menu::TMenu* createContextMenu(const QString& name,
                                            const QString& text);
 
@@ -229,7 +223,7 @@ private:
     TDockWidget* logDock;
     TLogWindow* logWindow;
     TDockWidget* playlistDock;
-    // Playlist::TPlaylist* playlist is protected
+    Playlist::TPlaylist* playlist;
     TDockWidget* favListDock;
     Playlist::TFavList* favlist;
 
@@ -239,7 +233,7 @@ private:
 
     QString pending_actions;
     // Pass settings from command line
-    int arg_close_on_finish; // -1 = not set, 1 = true, 0 = false
+    int optionCloseOnFinish; // -1 = not set, 1 = true, 0 = false
 
     bool ignore_show_hide_events;
     QString first_fullscreen_filename;
@@ -263,6 +257,15 @@ private:
     Action::TTimeSliderAction* timeslider_action;
     Action::TVolumeSliderAction* volumeslider_action;
 
+    // Menu bar
+    Action::Menu::TMenuFile* fileMenu;
+    Action::Menu::TMenuPlay* playMenu;
+    Action::Menu::TMenuVideo* videoMenu;
+    Action::Menu::TMenuAudio* audioMenu;
+    Action::Menu::TMenuSubtitle* subtitleMenu;
+    Action::Menu::TMenuBrowse* browseMenu;
+    // Action::Menu::TMenuView* viewMenu; protected
+
     // File menu
     Action::TAction* clearRecentsAct;
 
@@ -276,6 +279,7 @@ private:
     // Play menu
     Action::TAction* stopAct;
     Action::TAction* pauseAct;
+    // Action::TAction* playOrPauseAct; protected
 
     // Seek forward menu
     Action::TAction* seekFrameAct;
@@ -503,6 +507,7 @@ private:
     QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
     void postAction(const QString& actionName, bool hasArg, bool arg);
+
     void enableSubtitleActions();
     void enableActions();
 
@@ -549,9 +554,9 @@ private slots:
     void openAudioCD();
     void saveThumbnail();
 
-    void stop();
     void showSeekToDialog();
 
+    void enablePlayOrPause();
     void updateVideoTracks();
     void updateAudioTracks();
     void updateSubtitleTracks();

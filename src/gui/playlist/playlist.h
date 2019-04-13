@@ -48,13 +48,13 @@ public:
     Action::TAction* playNextAct;
     Action::TAction* playPrevAct;
 
-    void openDisc(const TDiscName& disc);
-
     QString playingFile() const;
     QString getPlayingTitle(bool addModified = false,
                             bool useStreamingTitle = true) const;
     void getFilesToPlay(QStringList& files) const;
+    bool hasPlayableItems() const;
 
+    void openDisc(const TDiscName& disc);
     virtual void startPlay() override;
 
     virtual void loadSettings() override;
@@ -67,6 +67,7 @@ public slots:
     void openDirectoryDialog();
 
     virtual void stop() override;
+    void playOrPause();
 
     virtual void enableActions() override;
     virtual void findPlayingItem() override;
@@ -85,7 +86,6 @@ protected slots:
     virtual void refresh() override;
 
 private:
-    Action::TAction* playOrPauseAct;
     Action::TAction* repeatAct;
     Action::TAction* shuffleAct;
 
@@ -103,10 +103,8 @@ private:
 
     void onNewMediaStartedPlayingUpdatePlayingItem();
     void updatePlayingItem();
-    void enablePlayOrPause();
 
 private slots:
-    void playOrPause();
     void playNext(bool loop_playlist = true);
     void playPrev();
 

@@ -92,6 +92,7 @@ public slots:
     void updateItemPath();
 
 signals:
+    void busyChanged();
     void modifiedChanged();
     void playingItemChanged(TPlaylistItem* item);
     void playingItemUpdated(TPlaylistItem* item);

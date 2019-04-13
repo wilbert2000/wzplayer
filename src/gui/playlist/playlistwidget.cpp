@@ -144,6 +144,7 @@ void TPlaylistWidget::abortFileCopier() {
         fileCopier->cancelAll();
         fileCopier->deleteLater();
         fileCopier = 0;
+        emit busyChanged();
     }
 }
 
@@ -602,6 +603,7 @@ void TPlaylistWidget::onDropDone(bool error) {
     copyDialog = 0;
     fileCopier->deleteLater();
     fileCopier = 0;
+    emit busyChanged();
 }
 
 bool TPlaylistWidget::addDroppedItem(const QString& source,
@@ -886,6 +888,8 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
     connect(fileCopier, &QtFileCopier::done,
             this, &TPlaylistWidget::onDropDone,
             Qt::QueuedConnection);
+
+    emit busyChanged();
 
     // Pass files to copier
     if (action == Qt::MoveAction) {

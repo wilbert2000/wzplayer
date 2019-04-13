@@ -160,6 +160,8 @@ void TPList::createTree() {
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
             this, &TPList::setPLaylistTitle,
             Qt::QueuedConnection);
+    connect(playlistWidget, &TPlaylistWidget::busyChanged,
+            this, &TPList::onPlaylistWidgetBusyChanged);
 }
 
 void TPList::createActions() {
@@ -1255,7 +1257,11 @@ void TPList::onThreadFinished() {
         } else {
             WZDEBUGOBJ("Thread aborted");
             addFiles.clear();
+
             enableActions();
+            if (!playlistWidget->isBusy()) {
+                emit busyChanged();
+            }
         }
         return;
     }
@@ -1275,12 +1281,16 @@ void TPList::onThreadFinished() {
         if (!isFavList) {
             QMessageBox::information(this, tr("Nothing to play"), msg);
         }
+
         enableActions();
+        if (!playlistWidget->isBusy()) {
+            emit busyChanged();
+        }
         return;
     }
 
-    // Returns a newly created root when all items are replaced
-    // or 0 when the new items are inserted into the existing root.
+    // playlistWidget->add returns a newly created root when all items are
+    // replaced or 0 when the new items are inserted into the existing root.
     root = playlistWidget->add(root, addTarget);
     if (root) {
         if (isFavList) {
@@ -1293,6 +1303,9 @@ void TPList::onThreadFinished() {
         }
     }
 
+    if (!playlistWidget->isBusy()) {
+        emit busyChanged();
+    }
     emit addedItems();
 
     if (addStartPlay) {
@@ -1308,6 +1321,15 @@ void TPList::onThreadFinished() {
     }
 
     enableActions();
+}
+
+void TPList::onPlaylistWidgetBusyChanged() {
+    WZTRACEOBJ(QString("File copier busy %1. Add files busy %2")
+               .arg(playlistWidget->isBusy()).arg(thread != 0));
+
+    if (thread == 0) {
+        emit busyChanged();
+    }
 }
 
 void TPList::addStartThread() {
@@ -1343,6 +1365,9 @@ void TPList::addStartThread() {
 
         thread->start();
         enableActions();
+        if (!playlistWidget->isBusy()) {
+            emit busyChanged();
+        }
     }
 }
 

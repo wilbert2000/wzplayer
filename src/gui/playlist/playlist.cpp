@@ -73,13 +73,6 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
 
 void TPlaylist::createActions() {
 
-    // Play/pause
-    playOrPauseAct = new TAction(mainWindow, "play_or_pause", tr("Play"),
-                                 "play", Qt::Key_Space);
-    // Add MCE remote key
-    playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
-    connect(playOrPauseAct, &TAction::triggered, this, &TPlaylist::playOrPause);
-
     // Play next
     playNextAct = new TAction(mainWindow, "play_next", tr("Play next"), "next",
                               QKeySequence(">"));
@@ -173,11 +166,12 @@ void TPlaylist::playOrPause() {
     switch (player->state()) {
         case Player::STATE_PLAYING: player->pause(); break;
         case Player::STATE_PAUSED: player->play(); break;
+
         case Player::STATE_STOPPING: break;
 
         case Player::STATE_RESTARTING:
         case Player::STATE_LOADING:
-            stop();
+            mainWindow->stop();
             break;
 
         case Player::STATE_STOPPED:
@@ -337,6 +331,11 @@ QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
 
+bool TPlaylist::hasPlayableItems() const {
+    return playlistWidget->hasPlayableItems();
+}
+
+
 QString TPlaylist::getPlayingTitle(bool addModified,
                                    bool useStreamingTitle) const {
 
@@ -370,56 +369,6 @@ QString TPlaylist::getPlayingTitle(bool addModified,
     return title;
 }
 
-void TPlaylist::enablePlayOrPause() {
-
-    Player::TState ps = player->state();
-    if (ps == Player::STATE_STOPPING) {
-        playOrPauseAct->setTextAndTip(tr("Stopping player..."));
-        playOrPauseAct->setIcon(iconProvider.iconStopping);
-        playOrPauseAct->setEnabled(false);
-        WZTRACE("Disabled in state stopping");
-    } else if (ps == Player::STATE_PLAYING) {
-        playOrPauseAct->setTextAndTip(tr("Pause"));
-        playOrPauseAct->setEnabled(true);
-        if (thread) {
-            playOrPauseAct->setIcon(iconProvider.iconLoading);
-            WZTRACE("Enabled pause in state playing while loading");
-        } else {
-            playOrPauseAct->setIcon(iconProvider.pauseIcon);
-            WZTRACE("Enabled pause in state playing");
-        }
-    } else if (ps == Player::STATE_PAUSED) {
-        playOrPauseAct->setTextAndTip(tr("Play"));
-        playOrPauseAct->setEnabled(true);
-        if (thread) {
-            playOrPauseAct->setIcon(iconProvider.iconLoading);
-            WZTRACE("Enabled play in state paused while loading");
-        } else {
-            playOrPauseAct->setIcon(iconProvider.playIcon);
-            WZTRACE("Enabled play in state paused");
-        }
-    } else {
-        QString s = player->stateToString().toLower();
-        if (ps == Player::STATE_RESTARTING || ps == Player::STATE_LOADING) {
-            playOrPauseAct->setTextAndTip(tr("Stop %1").arg(s));
-            playOrPauseAct->setIcon(iconProvider.iconStopping);
-            playOrPauseAct->setEnabled(true);
-            WZTRACE("Enabled stop in state " + s);
-        } else if (ps == Player::STATE_STOPPED) {
-            playOrPauseAct->setTextAndTip(tr("Play"));
-            playOrPauseAct->setIcon(iconProvider.playIcon);
-            bool e = !player->mdat.filename.isEmpty()
-                    || playlistWidget->hasPlayableItems();
-            playOrPauseAct->setEnabled(e);
-            if (e) {
-                WZTRACE("Enabled play in state " + s);
-            } else {
-                WZTRACE("Disabled play in state " + s);
-            }
-        }
-    }
-} // enablePlayOrPause()
-
 void TPlaylist::updatePlayingItem() {
 
     Player::TState ps = player->state();
@@ -434,6 +383,7 @@ void TPlaylist::updatePlayingItem() {
         return;
     }
 
+    // TODO:
     bool filenameMismatch =
             !item->isDisc()
             && !player->mdat.filename.isEmpty()
@@ -487,7 +437,6 @@ void TPlaylist::enableActions() {
 
     WZTRACE("State " + player->stateToString());
     updatePlayingItem();
-    enablePlayOrPause();
 
     bool e = thread == 0
             && player->stateReady()

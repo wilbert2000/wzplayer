@@ -64,6 +64,7 @@ public slots:
 
 signals:
     void addedItems();
+    void busyChanged();
 
 protected:
     TMainWindow* mainWindow;
@@ -183,6 +184,7 @@ private slots:
                               QTreeWidgetItem* previous);
     void onItemActivated(QTreeWidgetItem* i, int column);
     void onThreadFinished();
+    void onPlaylistWidgetBusyChanged();
 };
 
 class TMenuAddRemoved : public Action::Menu::TMenu {
