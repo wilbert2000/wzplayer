@@ -158,12 +158,10 @@ TActionsEditor::TActionsEditor(QWidget* parent) :
 }
 
 QString TActionsEditor::getWindowForAction(QAction* action) const {
-    //WZTRACE("Action " + action->objectName());
 
     QString window;
     QObject* parent = action->parent();
     while (parent && window.isEmpty()) {
-        //WZTRACE("Parent " + parent->objectName());
         window = parent->objectName();
         parent = parent->parent();
     }
@@ -177,6 +175,18 @@ QString TActionsEditor::getWindowForAction(QAction* action) const {
         window = "mainwindow";
     }
 
+    if (window == "mainwindow") {
+        return tr("All");
+    }
+    if (window == "playlist" || window.startsWith("pl_")) {
+        return tr("Playlist");
+    }
+    if (window == "favlist" || window.startsWith("fav_")) {
+        return tr("Favorites");
+    }
+
+    WZERROR(QString("Found unexpected owner '%1' for action '%2'")
+            .arg(window).arg(action->objectName()));
     return window;
 }
 
