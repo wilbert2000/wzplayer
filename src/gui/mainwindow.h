@@ -147,7 +147,8 @@ public slots:
     void toggleStayOnTop();
 
     void showFilePropertiesDialog(bool checked);
-    void showConfigFolder();
+    void browseConfigFolder();
+    void browseDataFolder();
     void showSettingsDialog();
 
     void helpCLOptions();

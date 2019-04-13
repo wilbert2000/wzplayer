@@ -2885,8 +2885,12 @@ void TMainWindow::helpCheckUpdates() {
     update_checker->check();
 }
 
-void TMainWindow::showConfigFolder() {
+void TMainWindow::browseConfigFolder() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::configPath()));
+}
+
+void TMainWindow::browseDataFolder() {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(TPaths::dataPath()));
 }
 
 void TMainWindow::helpAbout() {
