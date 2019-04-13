@@ -409,14 +409,17 @@ void TApp::createGUI() {
     connect(this, &TApp::messageReceived,
             this, &TApp::onMessageReceived);
     connect(this, &TApp::receivedMessage,
+            main_window, &Gui::TMainWindowTray::showMainWindow,
+            Qt::QueuedConnection);
+    connect(this, &TApp::receivedMessage,
             main_window, &Gui::TMainWindowTray::onReceivedMessage,
             Qt::QueuedConnection);
-    setActivationWindow(main_window);
-
     connect(main_window, &Gui::TMainWindowTray::requestRestart,
             this, &TApp::onRequestRestart);
 
-    WZTRACE("Applying settings");
+    setActivationWindow(main_window);
+
+    WZTRACE("Loading main window settings");
     main_window->loadSettings();
 
     main_window->setForceCloseOnFinish(close_at_end);

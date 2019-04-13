@@ -52,29 +52,27 @@ TMainWindowTray::TMainWindowTray() :
     closeAct->setVisible(false);
     connect(quitAct, &Action::TAction::triggered, this, &TMainWindowTray::quit);
 
-    showTrayAct = new Action::TAction(this, "show_tray_icon",
+    viewSystemTrayAct = new Action::TAction(this, "view_sytemtray",
                                       tr("Show in system tray"));
-    showTrayAct->setCheckable(true);
-    showTrayAct->setChecked(false);
-    connect(showTrayAct, &Action::TAction::toggled,
-            this, &TMainWindowTray::onShowTrayActToggled);
-
+    viewSystemTrayAct->setCheckable(true);
+    viewSystemTrayAct->setChecked(false);
+    connect(viewSystemTrayAct, &Action::TAction::toggled,
+            this, &TMainWindowTray::onViewSystemTrayActToggled);
     viewMenu->addSeparator();
-    viewMenu->addAction(showTrayAct);
+    viewMenu->addAction(viewSystemTrayAct);
 
-    showMainWindowAct = new Action::TAction(this, "tray_restore_hide", "");
-    updateShowMainWindowAct();
+    showMainWindowAct = new Action::TAction(this, "view_main_window", "");
+    updateShowMainWindowActText();
     connect(showMainWindowAct, &Action::TAction::triggered,
             this, &TMainWindowTray::toggleShowMainWindow);
 
-    QMenu* menu = createContextMenu("", "");
+    // Give menu no name to not show up in action editors
+    QMenu* menu = createContextMenu("", tr("%1 system tray")
+                                    .arg(TConfig::PROGRAM_NAME));
     menu->addSeparator();
-    menu->addAction(showMainWindowAct);
+    menu->addAction(playOrPauseAct);
     menu->addAction(quitAct);
     tray->setContextMenu(menu);
-
-    connect(this, &TMainWindowTray::gotMessageFromOtherInstance,
-            this, &TMainWindowTray::showMainWin);
 }
 
 TMainWindowTray::~TMainWindowTray() {
@@ -86,7 +84,7 @@ bool TMainWindowTray::startHidden() const {
 #if defined(Q_OS_WIN)
     return false;
 #else
-    return hideMainWindowOnStartup && showTrayAct->isChecked();
+    return hideMainWindowOnStartup && viewSystemTrayAct->isChecked();
 #endif
 }
 
@@ -96,7 +94,7 @@ void TMainWindowTray::setWindowCaption(const QString& title) {
     tray->setToolTip(title);
 }
 
-void TMainWindowTray::updateShowMainWindowAct() {
+void TMainWindowTray::updateShowMainWindowActText() {
 
     if (isVisible()) {
         showMainWindowAct->setTextAndTip(tr("Hide in system tray"));
@@ -110,7 +108,7 @@ void TMainWindowTray::switchToTray() {
 
     player->pause();
     exitFullscreen();
-    showMainWindow(false);
+    showMainWin(false);
 
     if (pref->balloon_count > 0) {
         tray->showMessage(TConfig::PROGRAM_NAME,
@@ -137,7 +135,7 @@ void TMainWindowTray::quit() {
     TMainWindow::closeWindow();
 }
 
-void TMainWindowTray::onShowTrayActToggled(bool show) {
+void TMainWindowTray::onViewSystemTrayActToggled(bool show) {
     WZTRACE("");
 
     tray->setVisible(show);
@@ -155,28 +153,28 @@ void TMainWindowTray::onSystemTrayActivated(
     }
 }
 
-void TMainWindowTray::showMainWindow(bool b) {
+void TMainWindowTray::showMainWin(bool b) {
 
     setVisible(b);
-    updateShowMainWindowAct();
+    updateShowMainWindowActText();
+}
+
+void TMainWindowTray::showMainWindow() {
+
+    if (!isVisible()) {
+        showMainWin(true);
+    }
 }
 
 void TMainWindowTray::toggleShowMainWindow() {
     WZTRACE("");
 
     if (tray->isVisible()) {
-        showMainWindow(!isVisible());
+        showMainWin(!isVisible());
     } else {
         // Never end up without GUI
-        showMainWin();
-        updateShowMainWindowAct();
-    }
-}
-
-void TMainWindowTray::showMainWin() {
-
-    if (!isVisible()) {
-        showMainWindow(true);
+        showMainWindow();
+        updateShowMainWindowActText();
     }
 }
 
@@ -186,7 +184,7 @@ void TMainWindowTray::saveSettings() {
     TMainWindow::saveSettings();
 
     pref->beginGroup("mainwindowtray");
-    pref->setValue("show_tray_icon", showTrayAct->isChecked());
+    pref->setValue("show_tray_icon", viewSystemTrayAct->isChecked());
     pref->setValue("hide_main_window_on_startup", !isVisible());
     pref->endGroup();
 }
@@ -197,12 +195,12 @@ void TMainWindowTray::loadSettings() {
     TMainWindow::loadSettings();
 
     pref->beginGroup("mainwindowtray");
-    showTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());
+    viewSystemTrayAct->setChecked(pref->value("show_tray_icon", false).toBool());
     hideMainWindowOnStartup = pref->value("hide_main_window_on_startup",
                                           hideMainWindowOnStartup).toBool();
     pref->endGroup();
 
-    updateShowMainWindowAct();
+    updateShowMainWindowActText();
 }
 
 } // namespace Gui

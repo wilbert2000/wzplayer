@@ -3706,7 +3706,6 @@ void TMainWindow::runActionsLater(const QString& actions,
 void TMainWindow::onReceivedMessage(const QString& msg) {
     WZDEBUG("'" + msg + "'");
 
-    emit gotMessageFromOtherInstance();
     if (msg == "hello") {
         return;
     }

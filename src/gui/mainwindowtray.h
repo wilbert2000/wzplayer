@@ -44,6 +44,7 @@ public:
 
 public slots:
     virtual void closeWindow() override;
+    void showMainWindow();
 
 protected slots:
     virtual void quit();
@@ -51,18 +52,17 @@ protected slots:
 
 private:
     QSystemTrayIcon* tray;
-    Action::TAction* showTrayAct;
+    Action::TAction* viewSystemTrayAct;
     Action::TAction* showMainWindowAct;
     bool hideMainWindowOnStartup;
 
     void switchToTray();
-    void updateShowMainWindowAct();
-    void showMainWindow(bool b);
+    void updateShowMainWindowActText();
+    void showMainWin(bool b);
 
 private slots:
-    void onShowTrayActToggled(bool show);
+    void onViewSystemTrayActToggled(bool show);
     void onSystemTrayActivated(QSystemTrayIcon::ActivationReason);
-    void showMainWin();
     void toggleShowMainWindow();
 };
 
