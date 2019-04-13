@@ -21,7 +21,7 @@ class TTimeSlider;
 
 class TTimeSliderAction : public TWidgetAction {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player);
 

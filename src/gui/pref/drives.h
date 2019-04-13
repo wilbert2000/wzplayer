@@ -33,7 +33,7 @@ namespace Pref {
 
 class TDrives : public TSection, public Ui::TDrives {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TDrives(QWidget* parent = 0, Qt::WindowFlags f = 0);

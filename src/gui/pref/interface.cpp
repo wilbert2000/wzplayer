@@ -32,8 +32,7 @@ namespace Gui {
 namespace Pref {
 
 TInterface::TInterface(QWidget* parent, Qt::WindowFlags f)
-    : TSection(parent, f),
-    wzdebug(logger()) {
+    : TSection(parent, f) {
 
     setupUi(this);
 

@@ -26,7 +26,6 @@ namespace Info {
 
 TPlayerInfoMPV::TPlayerInfoMPV(const QString& path)
     : QObject(),
-    wzdebug(logger()),
     bin(path) {
 }
 

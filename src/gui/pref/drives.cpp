@@ -38,8 +38,7 @@ bool isCDDevice(QString drive) {
 #endif
 
 TDrives::TDrives(QWidget* parent, Qt::WindowFlags f)
-    : TSection(parent, f),
-      wzdebug(logger()) {
+    : TSection(parent, f) {
     setupUi(this);
 
 #ifndef Q_OS_WIN

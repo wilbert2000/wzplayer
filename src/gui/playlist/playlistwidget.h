@@ -17,7 +17,7 @@ namespace Playlist {
 
 class TPlaylistWidget : public QTreeWidget {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     explicit TPlaylistWidget(QWidget* parent,

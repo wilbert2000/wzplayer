@@ -31,7 +31,7 @@ namespace Gui { namespace Pref {
 
 class TInterface : public TSection, public Ui::TInterface {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TInterface(QWidget* parent = 0, Qt::WindowFlags f = 0);

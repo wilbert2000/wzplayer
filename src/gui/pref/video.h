@@ -40,7 +40,7 @@ namespace Pref {
 
 class TVideo : public TSection, public Ui::TVideo {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     Player::Info::TNameDescList vo_list;

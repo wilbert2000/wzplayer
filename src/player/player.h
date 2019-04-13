@@ -44,7 +44,7 @@ namespace Process {
 
 class TPlayer : public QObject {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TPlayer(QWidget* parent,

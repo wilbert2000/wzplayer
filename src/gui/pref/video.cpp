@@ -33,7 +33,6 @@ namespace Pref {
 
 TVideo::TVideo(QWidget* parent, const Player::Info::TNameDescList& vol) :
     TSection(parent, 0),
-    wzdebug(logger()),
     vo_list(vol),
     player_id(pref->player_id),
     mplayer_vo(pref->mplayer_vo),
@@ -129,12 +128,10 @@ void TVideo::setData(Settings::TPreferences* pref) {
     player_id = pref->player_id;
     mplayer_vo = pref->mplayer_vo;
     mpv_vo = pref->mpv_vo;
-    wzdebug << "setData: player id" << player_id
-          << "vo" << pref->vo
-          << "mplayer vo" << mplayer_vo
-          << "mpv_vo" << mpv_vo;
-    wzdebug << wzdebug;
-
+    WZD << "Player id" << player_id
+        << "vo" << pref->vo
+        << "mplayer vo" << mplayer_vo
+        << "mpv_vo" << mpv_vo;
     setVO(pref->vo);
 
 #if !defined(Q_OS_WIN)
@@ -202,11 +199,10 @@ void TVideo::getData(Settings::TPreferences* pref) {
 
 void TVideo::updateDriverCombo(TPreferences::TPlayerID player_id,
                                bool keep_driver) {
-    wzdebug << "updateDriverCombo: player id" << player_id
-          << "keep_driver" << keep_driver
-          << "current mplayer vo" << mplayer_vo
-          << "current mpv vo" << mpv_vo;
-    wzdebug << wzdebug;
+    WZD << "Player id" << player_id
+        << "keep_driver" << keep_driver
+        << "current mplayer vo" << mplayer_vo
+        << "current mpv vo" << mpv_vo;
 
     this->player_id = player_id;
     QString wanted_vo;
@@ -279,14 +275,12 @@ void TVideo::setVO(const QString& vo_driver) {
 
     int idx = vo_combo->findData(vo_driver);
     if (idx >= 0) {
-        wzdebug << "setVO: found driver" << vo_driver << "idx" << idx;
-        wzdebug << wzdebug;
+        WZD << "Found driver" << vo_driver << "idx" << idx;
         vo_combo->setCurrentIndex(idx);
     } else {
         vo_combo->setCurrentIndex(vo_combo->findData("user_defined"));
         vo_user_defined_edit->setText(vo_driver);
-        wzdebug << "setVO: set user def driver" << vo_driver;
-        wzdebug << wzdebug;
+        WZD << "Set user defined driver" << vo_driver;
     }
 }
 

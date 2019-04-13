@@ -59,15 +59,12 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
 TPlayerProcess::TPlayerProcess(QObject* parent,
                                const QString& name,
                                TMediaData* mdata) :
-    TProcess(parent),
-    wzdebug(logger()),
+    TProcess(parent, name),
     md(mdata),
     notified_player_is_running(false),
     received_end_of_file(false),
     quit_send(false),
     line_count(0) {
-
-    setObjectName(name);
 
     //qRegisterMetaType<TSubTracks>("TSubTracks");
     //qRegisterMetaType<Maps::TTracks>("Tracks");

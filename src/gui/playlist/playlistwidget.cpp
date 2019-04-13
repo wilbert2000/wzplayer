@@ -33,7 +33,6 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
                                  const QString& shortName,
                                  const QString& tranName) :
     QTreeWidget(parent),
-    wzdebug(logger()),
     playingItem(0),
     sortSection(-1),
     sortOrder(Qt::AscendingOrder),
@@ -915,8 +914,7 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
 }
 
 void TPlaylistWidget::dropEvent(QDropEvent* event) {
-    wzdebug << "dropEvent" << event->mimeData()->formats();
-    wzdebug << wzdebug;
+    WZDOBJ << event->mimeData()->formats();
 
     QModelIndex index;
     int col = -1;

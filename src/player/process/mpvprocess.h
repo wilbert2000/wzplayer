@@ -34,7 +34,6 @@ namespace Process {
 class TMPVProcess : public TPlayerProcess {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     explicit TMPVProcess(QObject* parent,
                          const QString& name,

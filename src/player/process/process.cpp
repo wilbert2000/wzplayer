@@ -23,11 +23,11 @@
 namespace Player {
 namespace Process {
 
-TProcess::TProcess(QObject* parent) :
+TProcess::TProcess(QObject* parent, const QString& name) :
     QProcess(parent),
-    wzdebug(logger()),
     line_count(0) {
 
+    setObjectName(name);
     setProcessChannelMode(QProcess::MergedChannels);
 
     connect(this, &TProcess::readyReadStandardOutput,
@@ -61,10 +61,7 @@ QStringList TProcess::arguments() {
 }
 
 void TProcess::start() {
-    wzdebug.level = Log4Qt::Level::INFO_INT;
-    wzdebug << "Start program:" << program << "args:" << args;
-    wzdebug << wzdebug;
-    wzdebug.level = Log4Qt::Level::DEBUG_INT;
+    WZDOBJ << "Program:" << program << "args:" << args;
 
     remaining_output.clear();
 

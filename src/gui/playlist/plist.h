@@ -30,7 +30,7 @@ class TMenuAddRemoved;
 
 class TPList : public QWidget {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
     friend class TMenuAddRemoved;
 public:
     explicit TPList(TDockWidget* parent,

@@ -20,7 +20,6 @@ const int NO_POS = -POS_RES - 1;
 
 TTimeSliderAction::TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player) :
     TWidgetAction(mw),
-    wzdebug(logger()),
     posMS(0),
     durationMS(0),
     requestedPos(0),

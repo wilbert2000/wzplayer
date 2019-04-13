@@ -21,37 +21,30 @@
 #define WZERROR(s) WZLOG(Log4Qt::Level::ERROR_INT, s)
 #define WZERROROBJ(s) WZLOGOBJ(Log4Qt::Level::ERROR_INT, s)
 
-/*
- *
- * Usage:
- * in header add:
- * DECLARE_QCLASS_LOGGER
- * in constructor add:
- * debug(logger())
- * for logging use:
- * debug << msg << "more msg"
- * debug.flush();
- * The first debug captures the msg, the second flushes it to the log
- *
- */
-
-#define DECLARE_QCLASS_LOGGER \
-    LOG4QT_DECLARE_QCLASS_LOGGER \
-    TWZDebug wzdebug; \
-private:
 
 
 class TWZDebug : public QDebug {
 public:
-    QString msg;
-    Log4Qt::Level level;
-    Log4Qt::Logger* logger;
-
     explicit TWZDebug(Log4Qt::Logger* aLogger);
+    ~TWZDebug();
 
-    void flush();
+private:
+    QString msg;
+    Log4Qt::Logger* logger;
 };
 
-TWZDebug& operator << (TWZDebug&, TWZDebug&);
+/*
+ * Usage:
+ * in header add:
+ * LOG4QT_DECLARE_QCLASS_LOGGER
+ * for logging use:
+ * WZD << msg << "more msg"
+ * or
+ * WZDOBJ << msg << "more msg"
+ */
+
+
+#define WZD TWZDebug(logger()) << __FUNCTION__
+#define WZDOBJ TWZDebug(logger()) << __FUNCTION__ << qUtf8Printable("(" + objectName() + ")")
 
 #endif // WZDEBUG_H

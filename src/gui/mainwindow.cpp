@@ -96,7 +96,6 @@ namespace Gui {
 
 TMainWindow::TMainWindow() :
     QMainWindow(),
-    wzdebug(logger()),
     update_checker(0),
     optionCloseOnFinish(-1),
     ignore_show_hide_events(false),

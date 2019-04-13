@@ -15,7 +15,6 @@ namespace Gui {
 
 TAutoHideTimer::TAutoHideTimer(QObject *parent, QWidget* playerwin)
     : QTimer(parent),
-    wzdebug(logger()),
     disabled(0),
     autoHide(false),
     settingVisible(false),

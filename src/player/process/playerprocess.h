@@ -35,8 +35,7 @@ namespace Process {
 
 class TPlayerProcess : public TProcess {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
-
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     enum ScreenshotType { Single = 0, Multiple = 1 };
 

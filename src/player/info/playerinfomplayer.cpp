@@ -38,7 +38,6 @@ namespace Info {
 
 TPlayerInfoMplayer::TPlayerInfoMplayer(const QString& path)
     : QObject(),
-    wzdebug(logger()),
     bin(path) {
 
     proc = new QProcess(this);

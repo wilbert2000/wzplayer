@@ -21,7 +21,7 @@ public:
 
 class TAutoHideTimer : public QTimer {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     explicit TAutoHideTimer(QObject *parent, QWidget* playerwin);

@@ -19,7 +19,7 @@ class TPlaylistItem;
 
 class TAddFilesThread : public QThread {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TAddFilesThread(QObject* parent,

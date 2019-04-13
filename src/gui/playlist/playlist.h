@@ -40,7 +40,7 @@ class TPlaylistItem;
 
 class TPlaylist : public TPList {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     explicit TPlaylist(TDockWidget* parent, TMainWindow* mw);

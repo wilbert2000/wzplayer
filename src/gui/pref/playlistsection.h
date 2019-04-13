@@ -32,7 +32,7 @@ namespace Gui { namespace Pref {
 
 class TPlaylistSection : public TSection, public Ui::TPlaylistSection {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TPlaylistSection(QWidget* parent = 0, Qt::WindowFlags f = 0);

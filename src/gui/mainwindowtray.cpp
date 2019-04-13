@@ -40,7 +40,6 @@ namespace Gui {
 
 TMainWindowTray::TMainWindowTray() :
     TMainWindow(),
-    wzdebug(logger()),
     hideMainWindowOnStartup(false) {
 
     tray = new QSystemTrayIcon(this);

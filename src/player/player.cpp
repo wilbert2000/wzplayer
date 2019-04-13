@@ -62,7 +62,6 @@ TPlayer::TPlayer(QWidget* parent,
                  Gui::TPlayerWindow* pw,
                  TPlayer* aPreviewPlayer) :
     QObject(parent),
-    wzdebug(logger()),
     mdat(),
     mset(&mdat),
     playerWindow(pw),

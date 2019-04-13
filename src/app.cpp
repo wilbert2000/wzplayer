@@ -77,7 +77,7 @@ TApp::~TApp() {
 }
 
 QString TApp::loadStyleSheet(const QString& filename) {
-    WZDEBUG("'" + filename + "'");
+    WZD << filename;
 
     QFile file(filename);
     file.open(QFile::ReadOnly);
@@ -99,7 +99,7 @@ QString TApp::loadStyleSheet(const QString& filename) {
 }
 
 void TApp::changeStyleSheet(const QString& style) {
-    WZDEBUG("'" + style + "'");
+    WZD << style;
 
     using namespace Settings;
 
@@ -163,7 +163,7 @@ bool TApp::loadCatalog(QTranslator& translator,
     if (loaded) {
         WZINFO("Loaded '" + loc + "' from '" + dir + "'");
     } else {
-        WZDEBUG("'" + loc + "' not found in '" + dir + "'");
+        WZD << loc << "not found in" << dir;
     }
     return loaded;
 }

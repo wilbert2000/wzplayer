@@ -92,7 +92,7 @@ class TUpdateChecker;
 
 class TMainWindow : public QMainWindow {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     TMainWindow();

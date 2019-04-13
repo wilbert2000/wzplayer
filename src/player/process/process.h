@@ -35,10 +35,10 @@ namespace Process {
 
 class TProcess : public QProcess {
     Q_OBJECT
-    DECLARE_QCLASS_LOGGER
+    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TProcess(QObject* parent);
+    TProcess(QObject* parent, const QString& name);
 
     virtual void setExecutable(const QString& p) { program = p; }
     QString executable() { return program; }

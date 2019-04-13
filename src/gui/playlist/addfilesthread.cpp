@@ -82,7 +82,6 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
                                  bool images,
                                  bool favList) :
     QThread(parent),
-    wzdebug(logger()),
     files(aFiles),
     root(0),
     abortRequested(false),
@@ -90,6 +89,8 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     recurse(recurseSubDirs),
     addImages(images),
     isFavList(favList) {
+
+    setObjectName("add" + parent->objectName() + "thread");
 
     rxNameBlacklist.reserve(nameBlacklist.count());
     QRegExp rx("", Qt::CaseInsensitive);
@@ -99,10 +100,10 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
         if (!name.isEmpty()) {
             rx.setPattern(name);
             if (rx.isValid()) {
-                WZINFO("Compiled '" + rx.pattern() + "' for blacklist");
+                WZINFOOBJ("Compiled '" + rx.pattern() + "' for blacklist");
                 rxNameBlacklist.append(rx);
             } else {
-                WZERROR("Failed to parse regular expression '" + name + "'");
+                WZERROROBJ("Failed to parse regular expression '" + name + "'");
             }
         }
     }
@@ -126,10 +127,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     nameFilterList << "*.lnk";
 #endif
 
-    if (logger()->isDebugEnabled()) {
-        wzdebug << "TAddFilesThread Searching for:" << nameFilterList;
-        wzdebug << wzdebug;
-    }
+    WZDOBJ << "Searching for:" << nameFilterList;
 }
 
 TAddFilesThread::~TAddFilesThread() {
@@ -139,7 +137,7 @@ TAddFilesThread::~TAddFilesThread() {
 void TAddFilesThread::run() {
 
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
-    WZDEBUG(QString("Running in directory '%1'").arg(playlistPath));
+    WZDEBUGOBJ(QString("Running in directory '%1'").arg(playlistPath));
 
     root = new TPlaylistItem(0, playlistPath, "", 0);
     root->setFlags(ROOT_FLAGS);
@@ -154,8 +152,8 @@ void TAddFilesThread::run() {
         root->setFilename("");
     }
 
-    WZINFO(QString("Run done. Stopped %1, aborted %2")
-           .arg(stopRequested).arg(abortRequested));
+    WZINFOOBJ(QString("Run done. Stopped %1, aborted %2")
+              .arg(stopRequested).arg(abortRequested));
     if (abortRequested) {
         emit displayMessage(tr("Scan aborted"), TConfig::MESSAGE_DURATION);
     } else if (stopRequested) {
@@ -170,7 +168,7 @@ bool TAddFilesThread::nameBlackListed(const QString& name) {
     for(int i = rxNameBlacklist.size() - 1; i >= 0; i--) {
         const QRegExp& rx = rxNameBlacklist.at(i);
         if (rx.indexIn(name) >= 0) {
-            WZINFO("Skipping '" + name + "' on '" + rx.pattern() + "'");
+            WZINFOOBJ("Skipping '" + name + "' on '" + rx.pattern() + "'");
             return true;
         }
     }
@@ -207,8 +205,8 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
     // File residing outside parent directory from symbolic link or playlist
     if (!path.startsWith(parentPathPlusSep)) {
         QString filename = fi.absoluteFilePath();
-        WZTRACE(QString("Creating link in '%1' to '%2'")
-                .arg(parent->filename()).arg(filename));
+        WZTRACEOBJ(QString("Creating link in '%1' to '%2'")
+                   .arg(parent->filename()).arg(filename));
         return new TPlaylistItem(parent,
                                  filename,
                                  name,
@@ -223,7 +221,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
         dir = dir.left(i);
     }
     if (dir.isEmpty()) {
-        WZERROR("Invalid path");
+        WZERROROBJ("Invalid path");
         return 0;
     }
     path = parentPathPlusSep + dir;
@@ -237,7 +235,7 @@ TPlaylistItem* TAddFilesThread::createPath(TPlaylistItem* parent,
         }
     }
 
-    WZDEBUG("Creating folder '" + path + "'");
+    WZDEBUGOBJ("Creating folder '" + path + "'");
     emit displayMessage(path, 0);
     TPlaylistItem* folder = new TPlaylistItem(parent, path, dir, 0);
     createPath(folder, fi, name, durationMS, protectName);
@@ -289,7 +287,7 @@ void TAddFilesThread::addNewItems(TPlaylistItem* playlistItem) {
                                           caseSensitiveFileNames,
                                           QRegExp::FixedString));
         if (i >= 0) {
-            WZINFO("'" + filename + "' is blacklisted");
+            WZINFOOBJ("'" + filename + "' is blacklisted");
             blacklist.removeAt(i);
             continue;
         }
@@ -308,11 +306,11 @@ void TAddFilesThread::addNewItems(TPlaylistItem* playlistItem) {
         TPlaylistItem* newItem = 0;
         if (fi.isDir()) {
             if (recurse) {
-                WZINFO("Adding new folder '" + filename + "'");
+                WZINFOOBJ("Adding new folder '" + filename + "'");
                 newItem = addDirectory(playlistItem, fi, filename, false);
             }
         } else {
-            WZINFO("Adding new file '" + filename + "'");
+            WZINFOOBJ("Adding new file '" + filename + "'");
             newItem = addFile(playlistItem, fi);
         }
         if (newItem) {
@@ -394,7 +392,7 @@ TPlaylistItem* TAddFilesThread::openPlaylist(TPlaylistItem *parent,
                                              const QFileInfo& fi,
                                              const QString& name,
                                              bool protectName) {
-    WZDEBUG("'" + fi.filePath() + "'");
+    WZDEBUGOBJ("'" + fi.filePath() + "'");
 
     TFileLock lock(fi, lockedFiles);
     if (!lock.locked) {
@@ -430,12 +428,12 @@ TPlaylistItem* TAddFilesThread::openPlaylist(TPlaylistItem *parent,
         if (playlistItem->childCount()) {
             latestDir = playlistPath;
         } else {
-            WZINFO("Found no playable items in '" + sourceFileName + "'");
+            WZINFOOBJ("Found no playable items in '" + sourceFileName + "'");
             delete playlistItem;
             playlistItem = 0;
         }
     } else {
-        WZERROR("Failed to open '" + sourceFileName + "'");
+        WZERROROBJ("Failed to open '" + sourceFileName + "'");
         emit displayMessage(tr("Failed to open '%1'").arg(sourceFileName),
                             TConfig::ERROR_MESSAGE_DURATION);
         delete playlistItem;
@@ -479,7 +477,7 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
                                              QFileInfo& fi,
                                              QString name,
                                              bool protectName) {
-    WZDEBUG("'" + fi.absoluteFilePath() + "'");
+    WZDEBUGOBJ("'" + fi.absoluteFilePath() + "'");
 
     TFileLock lock(fi, lockedFiles);
     if (!lock.locked) {
@@ -487,8 +485,8 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
     }
 
     if (protectName) {
-        WZINFO(QString("Setting edited for '%1' in folder '%2'")
-               .arg(name).arg(parent->filename()));
+        WZINFOOBJ(QString("Setting edited for '%1' in folder '%2'")
+                  .arg(name).arg(parent->filename()));
     }
 
     emit displayMessage(fi.absoluteFilePath(), 0);
@@ -532,7 +530,7 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
             if (recurse) {
                 addDirectory(dirItem, f, f.fileName(), false);
             } else {
-                WZTRACE("Skipping directory '" + f.fileName() + "'");
+                WZTRACEOBJ("Skipping directory '" + f.fileName() + "'");
             }
         } else {
             addFile(dirItem, f);
@@ -543,9 +541,9 @@ TPlaylistItem* TAddFilesThread::addDirectory(TPlaylistItem* parent,
         latestDir = directory.path();
     } else if (isFavList && parent->baseName() == "Favorites") {
         // Keep empty folders inside favorites directory
-        WZINFO("Found no playable items in '" + dirItem->filename() + "'");
+        WZINFOOBJ("Found no playable items in '" + dirItem->filename() + "'");
     } else {
-        WZDEBUG("Found no playable items in '" + dirItem->filename() + "'");
+        WZDEBUGOBJ("Found no playable items in '" + dirItem->filename() + "'");
         delete dirItem;
         dirItem = 0;
     }
@@ -565,8 +563,8 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
     }
 
     if (protectName) {
-        WZINFO(QString("Setting edited for '%1' in folder '%2'")
-               .arg(name).arg(parent->filename()));
+        WZINFOOBJ(QString("Setting edited for '%1' in folder '%2'")
+                  .arg(name).arg(parent->filename()));
     }
 
     QFileInfo fi(playlistPath, filename);
@@ -580,19 +578,20 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
             QDir dir = fi.dir();
             if (dir.exists()) {
                 if (dir == QDir(playlistPath)) {
-                    WZERROR(QString("Skipping self referencing folder in"
-                                    " playlist '%1'").arg(filename));
+                    WZERROROBJ(QString("Skipping self referencing folder in"
+                                       " playlist '%1'").arg(filename));
                     return 0;
                 }
 
                 fi.setFile(dir.absolutePath());
                 name = "";
                 protectName = false;
-                WZINFO(QString("'%1' does not exists. Adding directory '%2'"
-                               " instead")
+                WZINFOOBJ(QString("'%1' does not exists. Adding directory '%2'"
+                                  " instead")
                        .arg(filename).arg(fi.absoluteFilePath()));
             } else {
-                WZINFO("Ignoring no longer existing playlist '" + filename + "'");
+                WZINFOOBJ("Ignoring no longer existing playlist '" + filename
+                          + "'");
                 return 0;
             }
         } else {
@@ -601,21 +600,22 @@ TPlaylistItem* TAddFilesThread::addItem(TPlaylistItem* parent,
                 if (name.isEmpty()) {
                     name = disc.displayName();
                 }
-                WZTRACE(QString("Adding disc '%1'").arg(filename));
+                WZTRACEOBJ(QString("Adding disc '%1'").arg(filename));
             } else if (QUrl(filename).scheme().isEmpty()) {
                 // Non existing local file
                 if (!isFavList && parent->isWZPlaylist()) {
-                    WZINFO(QString("Ignoring no longer existing file '%1'")
-                           .arg(filename));
+                    WZINFOOBJ(QString("Ignoring no longer existing file '%1'")
+                              .arg(filename));
                     parent->setModified();
                     return 0;
                 }
-                WZINFO(QString("Adding non-existing file '%1'").arg(filename));
+                WZINFOOBJ(QString("Adding non-existing file '%1'")
+                          .arg(filename));
                 // Don't set item to failed yet, might be temporarely
                 // unaccesible or a syntax the player understands, but which
                 // is not a valid filename.
             } else {
-                WZTRACE(QString("Adding URL '%1'").arg(filename));
+                WZTRACEOBJ(QString("Adding URL '%1'").arg(filename));
             }
             return new TPlaylistItem(parent, filename, name, durationMS,
                                      protectName);
