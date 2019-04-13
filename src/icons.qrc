@@ -151,7 +151,7 @@
         <file>default-theme/trash.png</file>
         <file>default-theme/clear_left.png</file>
         <file>default-theme/folder_open.png</file>
-        <file>default-theme/open_config_dir.png</file>
+        <file>default-theme/browse_configdir.png</file>
         <file>default-theme/guide.png</file>
         <file>default-theme/crash.png</file>
         <file>default-theme/shutdown.png</file>

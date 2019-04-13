@@ -131,7 +131,8 @@ TMenuView::TMenuView(QWidget* parent,
     addMenu(editToolBarMenu);
 
     addSeparator();
-    addAction(mw->findAction("open_config_dir"));
+    addAction(mw->findAction("browse_configdir"));
+    addAction(mw->findAction("browse_datadir"));
     addAction(mw->findAction("view_settings"));
 
     // Tray action added by TMainWindowTray

@@ -1084,10 +1084,13 @@ void TMainWindow::createActions() {
     addAction(action);
     autoHideTimer->add(action, logDock);
 
-    // Open config dir
-    a = new TAction(this, "open_config_dir",
-                    tr("Open configuration folder..."));
-    connect(a, &TAction::triggered, this, &TMainWindow::showConfigFolder);
+    // Browse config dir
+    a = new TAction(this, "browse_configdir", tr("Browse settings folder..."));
+    connect(a, &TAction::triggered, this, &TMainWindow::browseConfigFolder);
+
+    // Browse data dir
+    a = new TAction(this, "browse_datadir", tr("Browse data folder..."));
+    connect(a, &TAction::triggered, this, &TMainWindow::browseDataFolder);
 
     // Settings
     a = new TAction(this, "view_settings", tr("Settings..."), "",
