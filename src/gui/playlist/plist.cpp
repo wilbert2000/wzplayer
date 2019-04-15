@@ -111,15 +111,14 @@ void TMenuAddRemoved::onCurrentItemChanged(QTreeWidgetItem* current,
 }
 
 TPList::TPList(TDockWidget* parent,
-               TMainWindow* mw,
                const QString& name,
                const QString& aShortName,
                const QString& aTransName) :
     QWidget(parent),
-    mainWindow(mw),
     dock(parent),
     thread(0),
     disableEnableActions(0),
+    reachedEndOfPlaylist(false),
     shortName(aShortName),
     tranName(aTransName),
     restartThread(false),
@@ -149,7 +148,7 @@ TPList::~TPList() {
 void TPList::createTree() {
 
     playlistWidget = new TPlaylistWidget(this, mainWindow,
-                                         objectName() + "widget",
+                                         objectName() + "_widget",
                                          shortName, tranName);
 
     connect(playlistWidget, &TPlaylistWidget::itemActivated,
@@ -169,11 +168,7 @@ void TPList::createActions() {
 
     QString tranNameLower = tranName.toLower();
     QObject* owner;
-    if (isFavList) {
-        owner = this;
-    } else {
-        owner = mainWindow;
-    }
+    if (isFavList) owner = this; else owner = mainWindow;
 
     // Open playlist
     openAct = new TAction(owner, shortName + "_open",
@@ -193,7 +188,7 @@ void TPList::createActions() {
     connect(saveAct, &TAction::triggered, this, &TPList::save);
 
     // SaveAs
-    saveAsAct = new TAction(owner, shortName + "_saveas",
+    saveAsAct = new TAction(owner, shortName + "_save_as",
                             tr("Save %1 as...").arg(tranNameLower), "noicon");
     saveAsAct->setIcon(iconProvider.saveAsIcon);
     connect(saveAsAct, &TAction::triggered, this, &TPList::saveAs);
@@ -212,7 +207,7 @@ void TPList::createActions() {
     connect(browseDirAct, &TAction::triggered, this, &TPList::browseDir);
 
     // Play
-    playAct = new TAction(owner, shortName + "_play", tr("Play"), "play",
+    playAct = new TAction(this, shortName + "_play", tr("Play"), "play",
                           Qt::SHIFT | Qt::Key_Space);
     playAct->addShortcut(Qt::Key_MediaPlay);
     connect(playAct, &Action::TAction::triggered, this, &TPList::play);
@@ -447,13 +442,12 @@ void TPList::enableActions() {
     browseDirAct->setEnabled(haveFile || cur);
     browseDirAct->setText(tr("Browse %1")
                           .arg(cur
-                               ? (cur->isUrl()
-                                  ? tr("URL")
-                                  : tr("folder"))
+                               ? (cur->isUrl() ? tr("URL") : tr("folder"))
                                : tr("the void")));
     browseDirAct->setToolTip(tr("Browse '%1'")
                              .arg(getBrowseURL().toDisplayString()));
 
+    playAct->setEnabled(haveFile || playlistWidget->hasPlayableItems());
     playInNewWindowAct->setEnabled(haveFile || playlistWidget->hasItems());
 
     bool enable = !isBusy() && player->stateReady();
@@ -474,6 +468,10 @@ void TPList::enableActions() {
 
 bool TPList::isBusy() const {
     return thread || playlistWidget->isBusy();
+}
+
+bool TPList::hasPlayableItems() const {
+    return playlistWidget->hasPlayableItems();
 }
 
 void TPList::makeActive() {
@@ -880,14 +878,124 @@ void TPList::stop() {
     // player->stop() done by TPlaylist::stop()
 }
 
+TPlaylistItem* TPList::getRandomItem() const {
+
+    bool foundFreeItem = false;
+    double count =  playlistWidget->countChildren();
+    int selected = int(count * qrand() / (RAND_MAX + 1.0));
+    bool foundSelected = false;
+
+    do {
+        int idx = 0;
+        QTreeWidgetItemIterator it(playlistWidget);
+        while (*it) {
+            TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
+            if (!i->isFolder()) {
+                if (idx == selected) {
+                    foundSelected = true;
+                }
+
+                if (!i->played() && i->state() != PSTATE_FAILED) {
+                    if (foundSelected) {
+                        return i;
+                    } else {
+                        foundFreeItem = true;
+                    }
+                }
+
+                idx++;
+            }
+            it++;
+        }
+    } while (foundFreeItem);
+
+    WZDEBUG("End of playlist");
+    return 0;
+}
+
+void TPList::startPlay() {
+    WZTOBJ;
+
+    TPlaylistItem* item = playlistWidget->firstPlaylistItem();
+    if (item) {
+        if (shuffleAct->isChecked()) {
+            playItem(getRandomItem());
+        } else {
+            playItem(item);
+        }
+    } else {
+        WZINFO("Nothing to play");
+        msg(tr("Nothing to play"));
+    }
+}
+
+void TPList::playEx() {
+    WZTRACEOBJ("");
+
+    if (reachedEndOfPlaylist && playlistWidget->hasPlayableItems()) {
+        playNext(true);
+    } else if (playlistWidget->playingItem) {
+        playItem(playlistWidget->playingItem);
+    } else if (player->mdat.filename.isEmpty()) {
+        startPlay();
+    } else {
+        TPlaylistItem* item = playlistWidget->findFilename(player->mdat.filename);
+        if (item) {
+            playItem(item);
+        } else {
+            player->play();
+        }
+    }
+}
+
 void TPList::play() {
     WZTRACEOBJ("");
 
     TPlaylistItem* item = playlistWidget->plCurrentItem();
-    if (item) {
+    if (item
+            && dock->isActiveWindow()
+            && !dock->visibleRegion().isEmpty()) {
         playItem(item);
     } else {
-        player->play();
+        playEx();
+    }
+}
+
+void TPList::playNext(bool loop_playlist) {
+    WZDEBUG("");
+
+    TPlaylistItem* item;
+    if (shuffleAct->isChecked()) {
+        item = getRandomItem();
+        if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
+            // Restart the playlist
+            playlistWidget->clearPlayed();
+            item = getRandomItem();
+        }
+    } else {
+        item = playlistWidget->getNextPlaylistItem();
+        if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
+            // Select first item in playlist
+            item = playlistWidget->firstPlaylistItem();
+        }
+    }
+    playItem(item, player->mdat.image);
+}
+
+void TPList::playPrev() {
+    WZDEBUG("");
+
+    TPlaylistItem* item = playlistWidget->playingItem;
+    if (item && shuffleAct->isChecked()) {
+        item = playlistWidget->findPreviousPlayedTime(item);
+    } else {
+        item = playlistWidget->getPreviousPlaylistWidgetItem();
+    }
+    if (item == 0) {
+        item = playlistWidget->lastPlaylistItem();
+    }
+    if (item) {
+        playItem(item, player->mdat.image);
     }
 }
 
@@ -1000,6 +1108,21 @@ void TPList::newFolder() {
     item->setModified();
     playlistWidget->setCurrentItem(item);
     playlistWidget->editName();
+}
+
+bool TPList::findPlayingItem() {
+
+    TPlaylistItem* i = playlistWidget->playingItem;
+    if (i) {
+        makeActive();
+        if (i == playlistWidget->currentItem()) {
+            playlistWidget->scrollToItem(i);
+        } else {
+            playlistWidget->setCurrentItem(i);
+        }
+        return true;
+    }
+    return false;
 }
 
 void TPList::copySelection(const QString& actionName) {

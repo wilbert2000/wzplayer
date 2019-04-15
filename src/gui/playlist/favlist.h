@@ -24,14 +24,13 @@ class TFavList : public TPList {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-    explicit TFavList(TDockWidget* parent, TMainWindow* mw, TPlaylist* playlst);
+    explicit TFavList(TDockWidget* parent, TPlaylist* playlst);
 
-    virtual void startPlay() override;
     Action::Menu::TMenu* getFavMenu() const { return favMenu; }
 
 public slots:
     virtual void enableActions() override;
-    virtual void findPlayingItem() override;
+    virtual bool findPlayingItem() override;
 
 protected:
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) override;
@@ -45,8 +44,9 @@ protected slots:
 private:
     bool loaded;
     TPlaylist* playlist;
-    Action::Menu::TMenu* favMenu;
+    QAction* loadFavoritesAction;
     QAction* currentFavAction;
+    Action::Menu::TMenu* favMenu;
     QIcon currentFavIcon;
     TWZTimer* requestUpdateTimer;
     TWZTimer* requestSaveTimer;

@@ -407,6 +407,7 @@ private:
     void reset();
     void setPlayerBin0(QString bin);
     void setPlayerID();
+    void setAction(QString& action, const QString& name);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::TWheelFunctions)

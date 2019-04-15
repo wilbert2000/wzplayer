@@ -57,7 +57,6 @@ QStringList TApp::files_to_play;
 
 TApp::TApp(int& argc, char** argv) :
     QtSingleApplication(TConfig::PROGRAM_ID, argc, argv),
-    main_window(0),
     move_gui(false),
     resize_gui(false),
     close_at_end(-1) {
@@ -404,31 +403,31 @@ void TApp::onMessageReceived(QString msg) {
 void TApp::createGUI() {
     WZTRACE("Creating main window");
 
-    main_window = new Gui::TMainWindowTray();
+    Gui::TMainWindowTray* mw = new Gui::TMainWindowTray();
 
     connect(this, &TApp::messageReceived,
             this, &TApp::onMessageReceived);
     connect(this, &TApp::receivedMessage,
-            main_window, &Gui::TMainWindowTray::showMainWindow,
+            mw, &Gui::TMainWindowTray::showMainWindow,
             Qt::QueuedConnection);
     connect(this, &TApp::receivedMessage,
-            main_window, &Gui::TMainWindowTray::onReceivedMessage,
+            mw, &Gui::TMainWindowTray::onReceivedMessage,
             Qt::QueuedConnection);
-    connect(main_window, &Gui::TMainWindowTray::requestRestart,
+    connect(mw, &Gui::TMainWindowTray::requestRestart,
             this, &TApp::onRequestRestart);
 
-    setActivationWindow(main_window);
+    setActivationWindow(mw);
 
     WZTRACE("Loading main window settings");
-    main_window->loadSettings();
+    mw->loadSettings();
 
-    main_window->setForceCloseOnFinish(close_at_end);
+    mw->setForceCloseOnFinish(close_at_end);
 
     if (move_gui) {
-        main_window->move(gui_position);
+        mw->move(gui_position);
     }
     if (resize_gui) {
-        main_window->resize(gui_size);
+        mw->resize(gui_size);
     }
 
     WZTRACE("Created main window");
@@ -461,9 +460,12 @@ void TApp::start() {
     // Create the main window. It will be destoyed when leaving exec().
     createGUI();
 
+    Gui::TMainWindowTray* mw = static_cast<Gui::TMainWindowTray*>(
+                Gui::mainWindow);
+
     // Show main window
-    if (!main_window->startHidden() || !files_to_play.isEmpty()) {
-        main_window->show();
+    if (!mw->startHidden() || !files_to_play.isEmpty()) {
+        mw->show();
     }
 
     if (files_to_play.isEmpty()) {
@@ -480,10 +482,16 @@ void TApp::start() {
         if (!media_title.isEmpty()) {
             player->addForcedTitle(files_to_play[0], media_title);
         }
-        main_window->getPlaylist()->openFiles(files_to_play, current_file);
+        mw->getPlaylist()->openFiles(files_to_play, current_file);
     }
 
-    main_window->runActionsLater(onLoadActions, files_to_play.count() == 0);
+    // Check ready action when done with loading
+    if (onLoadActions.isEmpty()) {
+        onLoadActions = "ready true";
+    } else {
+        onLoadActions += " ready true";
+    }
+    mw->runActionsLater(onLoadActions, files_to_play.count() == 0);
 
     // Free files_to_play
     files_to_play.clear();
@@ -499,7 +507,7 @@ void TApp::onRequestRestart() {
         start_in_fullscreen = FS_RESTART;
     }
 
-    Gui::Playlist::TPlaylist* playlist = main_window->getPlaylist();
+    Gui::Playlist::TPlaylist* playlist = Gui::mainWindow->getPlaylist();
     playlist->getFilesToPlay(files_to_play);
     current_file = playlist->playingFile();
     player->saveRestartState();

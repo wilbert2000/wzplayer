@@ -15,7 +15,7 @@ namespace Menu {
 
 TFilterGroup::TFilterGroup(TMainWindow* mw) : QActionGroup(mw) {
 
-    setObjectName("filtergroup");
+    setObjectName("filter_group");
     setExclusive(false);
     setEnabled(false);
 
@@ -79,19 +79,19 @@ void TFilterGroup::updateFilters() {
 TMenuVideoFilter::TMenuVideoFilter(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "videofilter_menu", tr("Video filters"), "video_filters") {
 
-    QActionGroup* group = mw->findChild<TFilterGroup*>("filtergroup");
+    QActionGroup* group = mw->findChild<TFilterGroup*>("filter_group");
     addActions(group->actions());
 
     // Denoise
     TMenu* menu = new TMenu(this, "denoise_menu", tr("Denoise"), "denoise");
-    group = mw->findChild<TActionGroup*>("denoisegroup");
+    group = mw->findChild<TActionGroup*>("denoise_group");
     menu->addActions(group->actions());
     addMenu(menu);
     connect(menu, &TMenu::aboutToShow, mw, &TMainWindow::updateFilters);
 
     // Unsharp
     menu = new TMenu(this, "sharpen_menu", tr("Sharpen"), "sharpen");
-    group = mw->findChild<TActionGroup*>("sharpengroup");
+    group = mw->findChild<TActionGroup*>("sharpen_group");
     menu->addActions(group->actions());
     addMenu(menu);
     connect(menu, &TMenu::aboutToShow, mw, &TMainWindow::updateFilters);

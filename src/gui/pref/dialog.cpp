@@ -104,7 +104,7 @@ TDialog::TDialog(TMainWindow* mw) :
     page_playlist = new TPlaylistSection(this);
     addSection(page_playlist);
 
-    page_input = new TInput(this, mw);
+    page_input = new TInput(this);
     addSection(page_input);
 
     page_drives = new TDrives(this);

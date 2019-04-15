@@ -96,11 +96,8 @@ void TTimeSliderAction::setPos(int ms) {
 void TTimeSliderAction::setPosition(int ms) {
 
     if (ms < 0) {
-        WZWARN(QString("Received negative position %1").arg(ms));
         ms = 0;
     } else if (ms > durationMS) {
-        WZWARN(QString("Received position %1 larger than duration %2")
-               .arg(ms).arg(durationMS));
         ms = durationMS;
     }
 

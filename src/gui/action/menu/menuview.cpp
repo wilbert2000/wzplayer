@@ -12,7 +12,7 @@ namespace Action {
 namespace Menu {
 
 TOSDGroup::TOSDGroup(TMainWindow *mw) :
-    TActionGroup(mw, "osdgroup") {
+    TActionGroup(mw, "osd_group") {
 
     // Always enabled
     new TActionGroupItem(mw, this, "osd_none", tr("Subtitles only"),
@@ -40,18 +40,18 @@ public:
 TMenuOSD::TMenuOSD(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "osd_menu", tr("OSD"), "osd") {
 
-    addAction(mw->findAction("osd_next"));
+    addAction(mw->requireAction("osd_next"));
 
     addSeparator();
     addActions(mw->findChild<TOSDGroup*>()->actions());
 
     addSeparator();
-    addAction(mw->findAction("osd_inc_scale"));
-    addAction(mw->findAction("osd_dec_scale"));
+    addAction(mw->requireAction("osd_inc_scale"));
+    addAction(mw->requireAction("osd_dec_scale"));
 
     addSeparator();
-    addAction(mw->findAction("osd_show_filename"));
-    addAction(mw->findAction("osd_show_time"));
+    addAction(mw->requireAction("osd_show_filename"));
+    addAction(mw->requireAction("osd_show_time"));
 }
 
 
@@ -121,19 +121,19 @@ TMenuView::TMenuView(QWidget* parent,
     addMenu(new TMenuStayOnTop(this, mw));
 
     addSeparator();
-    addAction(mw->findAction("view_playlist"));
-    addAction(mw->findAction("view_favorites"));
-    addAction(mw->findAction("view_log"));
-    addAction(mw->findAction("view_properties"));
+    addAction(mw->requireAction("view_playlist"));
+    addAction(mw->requireAction("view_favorites"));
+    addAction(mw->requireAction("view_log"));
+    addAction(mw->requireAction("view_properties"));
 
     addSeparator();
     addMenu(toolBarMenu);
     addMenu(editToolBarMenu);
 
     addSeparator();
-    addAction(mw->findAction("browse_configdir"));
-    addAction(mw->findAction("browse_datadir"));
-    addAction(mw->findAction("view_settings"));
+    addAction(mw->requireAction("browse_config_dir"));
+    addAction(mw->requireAction("browse_data_dir"));
+    addAction(mw->requireAction("view_settings"));
 
     // Tray action added by TMainWindowTray
 }

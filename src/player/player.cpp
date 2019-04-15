@@ -82,7 +82,7 @@ TPlayer::TPlayer(QWidget* parent,
     connect(keepSizeTimer, &QTimer::timeout, this, &TPlayer::clearKeepSize);
 
     proc = Player::Process::TPlayerProcess::createPlayerProcess(
-                this, name + "proc", &mdat);
+                this, name + "_proc", &mdat);
 
     connect(proc, &Process::TPlayerProcess::errorOccurred,
             this, &TPlayer::onProcessError);

@@ -93,8 +93,9 @@ class TUpdateChecker;
 class TMainWindow : public QMainWindow {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
+    TWZTimer* optimizeSizeTimer;
+
     TMainWindow();
     virtual ~TMainWindow() override;
 
@@ -102,14 +103,13 @@ public:
     virtual void saveSettings();
 
     Playlist::TPlaylist* getPlaylist() const { return playlist; }
-    QAction* findAction(const QString& name);
+    QAction* requireAction(const QString& name);
 
-    bool haveDockedDocks() const;
-    void hideDock(TDockWidget* dock);
+    bool dockNeedsResize(TDockWidget* dock, Qt::DockWidgetArea area) const;
 
     Action::TAction* seekIntToAction(int i) const;
 
-    //! Execute all the actions after the video has started to play
+    //! Execute actions after the video has started to play
     void runActionsLater(const QString& actions,
                          bool postCheck,
                          bool prepend = false);
@@ -187,7 +187,7 @@ signals:
     void seekRewindDefaultActionChanged(QAction* action);
 
 protected:
-    Action::TAction* playOrPauseAct;
+    Action::TAction* playPauseStopAct;
     Action::TAction* closeAct;
     Action::TAction* quitAct;
     Action::Menu::TMenuView* viewMenu;
@@ -228,9 +228,10 @@ private:
     Playlist::TFavList* favlist;
 
     TAutoHideTimer* autoHideTimer;
-    TWZTimer* titleUpdater;
+    TWZTimer* titleUpdateTimer;
     TUpdateChecker* update_checker;
 
+    Action::TAction* readyAction;
     QString pending_actions;
     // Pass settings from command line
     int optionCloseOnFinish; // -1 = not set, 1 = true, 0 = false
@@ -278,8 +279,13 @@ private:
 
     // Play menu
     Action::TAction* stopAct;
+    Action::TAction* playAct;
     Action::TAction* pauseAct;
-    // Action::TAction* playOrPauseAct; protected
+    Action::TAction* playPauseAct;
+    // Action::TAction* playPauseStopAct; protected
+
+    Action::TAction* playNextAct;
+    Action::TAction* playPrevAct;
 
     // Seek forward menu
     Action::TAction* seekFrameAct;
@@ -504,6 +510,7 @@ private:
 
     void setTimeLabel(int ms, bool changed);
 
+    void checkActionValid(QString& action, const QString& def);
     QList<QAction*> findNamedActions() const;
     void processAction(QString action_name);
     void postAction(const QString& actionName, bool hasArg, bool arg);
@@ -511,6 +518,7 @@ private:
     void enableSubtitleActions();
     void enableActions();
 
+    bool haveDockedDocks() const;
     void hidePanel();
     void setFloatingToolbarsVisible(bool visible);
 
@@ -554,9 +562,11 @@ private slots:
     void openAudioCD();
     void saveThumbnail();
 
+    void play();
+    void playPauseStop();
     void showSeekToDialog();
 
-    void enablePlayOrPause();
+    void enablePlayPauseStop();
     void updateVideoTracks();
     void updateAudioTracks();
     void updateSubtitleTracks();
@@ -594,6 +604,8 @@ private slots:
     void onMediaSettingsChanged();
     void onPlaylistFinished();
 };
+
+extern TMainWindow* mainWindow;
 
 } // namespace Gui
 

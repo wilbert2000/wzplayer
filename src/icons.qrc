@@ -70,7 +70,7 @@
         <file>default-theme/previous.png</file>
         <file>default-theme/saturation.png</file>
         <file>default-theme/save.png</file>
-        <file>default-theme/saveas.png</file>
+        <file>default-theme/save_as.png</file>
         <file>default-theme/save_thumbnail.png</file>
         <file>default-theme/screenshot.png</file>
         <file>default-theme/screenshots.png</file>
@@ -118,7 +118,7 @@
         <file>default-theme/window_size_menu.png</file>
         <file>default-theme/audio_channels.png</file>
         <file>default-theme/pl_open.png</file>
-        <file>default-theme/audiotrack_menu.png</file>
+        <file>default-theme/audio_track_menu.png</file>
         <file>default-theme/pl_repeat.png</file>
         <file>default-theme/toolbars.png</file>
         <file>default-theme/stay_on_top_menu.png</file>
@@ -126,7 +126,7 @@
         <file>default-theme/stay_on_top_never.png</file>
         <file>default-theme/stay_on_top_playing.png</file>
         <file>default-theme/stay_on_top_toggle.png</file>
-        <file>default-theme/stereomode_menu.png</file>
+        <file>default-theme/stereo_mode_menu.png</file>
         <file>default-theme/deinterlace.png</file>
         <file>default-theme/cl_help.png</file>
         <file>default-theme/osd.png</file>
@@ -151,7 +151,7 @@
         <file>default-theme/trash.png</file>
         <file>default-theme/clear_left.png</file>
         <file>default-theme/folder_open.png</file>
-        <file>default-theme/browse_configdir.png</file>
+        <file>default-theme/browse_config_dir.png</file>
         <file>default-theme/guide.png</file>
         <file>default-theme/crash.png</file>
         <file>default-theme/shutdown.png</file>

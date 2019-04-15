@@ -29,14 +29,9 @@
 #include <QTranslator>
 
 
-namespace Gui {
-class TMainWindowTray;
-}
-
 class TApp : public QtSingleApplication {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     enum TExitCode {
              ERROR_INVALID_ARGUMENT = -1,
@@ -56,7 +51,7 @@ public:
     static bool acceptClipboardAsURL();
 
     explicit TApp(int& argc, char** argv);
-    virtual ~TApp();
+    virtual ~TApp() override;
 
     void start();
 
@@ -72,8 +67,6 @@ private:
     static bool addCommandLineFiles;
     static QString current_file;
     static QStringList files_to_play;
-
-    Gui::TMainWindowTray* main_window;
 
     QTranslator app_trans;
     QTranslator qt_trans;

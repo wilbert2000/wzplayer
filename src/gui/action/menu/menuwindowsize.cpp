@@ -15,7 +15,7 @@ namespace Menu {
 
 
 TWindowSizeGroup::TWindowSizeGroup(TMainWindow* mw, TPlayerWindow* pw)
-    : TActionGroup(mw, "windowsizegroup")
+    : TActionGroup(mw, "window_size_group")
     , size_percentage(qRound(pref->size_factor * 100))
     , playerWindow(pw) {
 
@@ -105,9 +105,9 @@ TMenuWindowSize::TMenuWindowSize(QWidget* parent, TMainWindow* mw) :
     addActions(group->actions());
 
     addSeparator();
-    addAction(mw->findAction("size_toggle_double"));
-    addAction(mw->findAction("size_optimize"));
-    addAction(mw->findAction("resize_on_load"));
+    addAction(mw->requireAction("size_toggle_double"));
+    addAction(mw->requireAction("size_optimize"));
+    addAction(mw->requireAction("resize_on_load"));
 
     connect(mw, &TMainWindow::setWindowSizeToolTip,
             this, &TMenuWindowSize::setWindowSizeToolTip);

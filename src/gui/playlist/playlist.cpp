@@ -41,13 +41,25 @@ using namespace Action;
 
 namespace Playlist {
 
-TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
-    TPList(parent, mw, "playlist", "pl", tr("Playlist")),
-    reachedEndOfPlaylist(false) {
+TPlaylist::TPlaylist(TDockWidget* parent) :
+    TPList(parent, "playlist", "pl", tr("Playlist")) {
 
     setAcceptDrops(true);
 
-    createActions();
+    // Repeat
+    repeatAct = new TAction(mainWindow, "pl_repeat", tr("Repeat playlist"),
+                            "", Qt::CTRL | Qt::Key_Backslash);
+    repeatAct->setCheckable(true);
+    connect(repeatAct, &TAction::triggered,
+            this, &TPlaylist::onRepeatToggled);
+
+    // Shuffle
+    shuffleAct = new TAction(mainWindow, "pl_shuffle", tr("Shuffle playlist"),
+                             "shuffle", Qt::ALT | Qt::Key_Backslash);
+    shuffleAct->setCheckable(true);
+    connect(shuffleAct, &TAction::triggered,
+            this, &TPlaylist::onShuffleToggled);
+
     createToolbar();
 
     connect(player, &Player::TPlayer::playerError,
@@ -70,45 +82,12 @@ TPlaylist::TPlaylist(TDockWidget* parent, TMainWindow* mw) :
     qsrand(t.hour() * 3600 + t.minute() * 60 + t.second());
 }
 
-void TPlaylist::createActions() {
-
-    // Play next
-    playNextAct = new TAction(mainWindow, "play_next", tr("Play next"), "next",
-                              QKeySequence(">"));
-    playNextAct->addShortcut(QKeySequence("."));
-    playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
-    playNextAct->setData(4);
-    connect(playNextAct, &TAction::triggered, this, &TPlaylist::playNext);
-
-    // Play prev
-    playPrevAct = new TAction(mainWindow, "play_prev", tr("Play previous"),
-                              "previous", QKeySequence("<"));
-    playPrevAct->addShortcut(QKeySequence(","));
-    playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
-    playPrevAct->setData(4);
-    connect(playPrevAct, &TAction::triggered, this, &TPlaylist::playPrev);
-
-    // Repeat
-    repeatAct = new TAction(mainWindow, "pl_repeat", tr("Repeat playlist"),
-                            "", Qt::CTRL | Qt::Key_Backslash);
-    repeatAct->setCheckable(true);
-    connect(repeatAct, &TAction::triggered,
-            this, &TPlaylist::onRepeatToggled);
-
-    // Shuffle
-    shuffleAct = new TAction(mainWindow, "pl_shuffle", tr("Shuffle playlist"),
-                             "shuffle", Qt::ALT | Qt::Key_Backslash);
-    shuffleAct->setCheckable(true);
-    connect(shuffleAct, &TAction::triggered,
-            this, &TPlaylist::onShuffleToggled);
-}
-
 void TPlaylist::createToolbar() {
 
     QStringList actions;
     actions << "pl_open"
             << "pl_save"
-            << "pl_saveas"
+            << "pl_save_as"
             << "separator"
             << "pl_add_menu"
             << "pl_remove_menu"
@@ -143,127 +122,11 @@ void TPlaylist::getFilesToPlay(QStringList& files) const {
     }
 }
 
-void TPlaylist::onRepeatToggled(bool toggled) {
-
-    if (toggled)
-        msgOSD(tr("Repeat playlist set"));
-    else
-        msgOSD(tr("Repeat playlist cleared"));
-}
-
-void TPlaylist::onShuffleToggled(bool toggled) {
-
-    if (toggled)
-        msgOSD(tr("Shuffle playlist set"));
-    else
-        msgOSD(tr("Shuffle playlist cleared"));
-}
-
-void TPlaylist::playOrPause() {
-    WZDEBUG("State " + player->stateToString());
-
-    switch (player->state()) {
-        case Player::STATE_PLAYING: player->pause(); break;
-        case Player::STATE_PAUSED: player->play(); break;
-
-        case Player::STATE_STOPPING: break;
-
-        case Player::STATE_RESTARTING:
-        case Player::STATE_LOADING:
-            mainWindow->stop();
-            break;
-
-        case Player::STATE_STOPPED:
-        default:
-            if (reachedEndOfPlaylist && playlistWidget->hasPlayableItems()) {
-                playNext(true);
-            } else if (playlistWidget->playingItem) {
-                playItem(playlistWidget->playingItem);
-            } else if (player->mdat.filename.isEmpty()) {
-                startPlay();
-            } else {
-                TPlaylistItem* item = playlistWidget->findFilename(
-                            player->mdat.filename);
-                if (item) {
-                    playItem(item);
-                } else {
-                    player->play();
-                }
-            }
-            break;
-    }
-}
-
 void TPlaylist::stop() {
     WZINFO("State " + player->stateToString());
 
     TPList::stop();
     player->stop();
-}
-
-TPlaylistItem* TPlaylist::getRandomItem() const {
-
-    bool foundFreeItem = false;
-    double count =  playlistWidget->countChildren();
-    int selected = int(count * qrand() / (RAND_MAX + 1.0));
-    bool foundSelected = false;
-
-    do {
-        int idx = 0;
-        QTreeWidgetItemIterator it(playlistWidget);
-        while (*it) {
-            TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
-            if (!i->isFolder()) {
-                if (idx == selected) {
-                    foundSelected = true;
-                }
-
-                if (!i->played() && i->state() != PSTATE_FAILED) {
-                    if (foundSelected) {
-                        return i;
-                    } else {
-                        foundFreeItem = true;
-                    }
-                }
-
-                idx++;
-            }
-            it++;
-        }
-    } while (foundFreeItem);
-
-    WZDEBUG("End of playlist");
-    return 0;
-}
-
-bool TPlaylist::haveUnplayedItems() const {
-
-    QTreeWidgetItemIterator it(playlistWidget);
-    while (*it) {
-        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
-        if (!i->isFolder() && !i->played() && i->state() != PSTATE_FAILED) {
-            return true;
-        }
-        ++it;
-    }
-
-    return false;
-}
-
-void TPlaylist::startPlay() {
-    WZTRACE("");
-
-    TPlaylistItem* item = playlistWidget->firstPlaylistItem();
-    if (item) {
-        if (shuffleAct->isChecked()) {
-            playItem(getRandomItem());
-        } else {
-            playItem(item);
-        }
-    } else {
-        WZINFO("Nothing to play");
-        msg(tr("Nothing to play"));
-    }
 }
 
 void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
@@ -288,52 +151,42 @@ void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
     }
 }
 
-void TPlaylist::playNext(bool loop_playlist) {
-    WZDEBUG("");
+void TPlaylist::playPause() {
+    WZDEBUG("State " + player->stateToString());
 
-    TPlaylistItem* item;
-    if (shuffleAct->isChecked()) {
-        item = getRandomItem();
-        if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
-            // Restart the playlist
-            playlistWidget->clearPlayed();
-            item = getRandomItem();
-        }
-    } else {
-        item = playlistWidget->getNextPlaylistItem();
-        if (item == 0 && (repeatAct->isChecked() || loop_playlist)) {
-            // Select first item in playlist
-            item = playlistWidget->firstPlaylistItem();
-        }
+    switch (player->state()) {
+        case Player::STATE_PLAYING: player->pause(); break;
+        case Player::STATE_PAUSED: player->play(); break;
+
+        case Player::STATE_STOPPING:
+        case Player::STATE_RESTARTING:
+        case Player::STATE_LOADING:
+            break;
+
+        case Player::STATE_STOPPED:
+        default:
+            playEx();
+            break;
     }
-    playItem(item, player->mdat.image);
 }
 
-void TPlaylist::playPrev() {
-    WZDEBUG("");
+bool TPlaylist::haveUnplayedItems() const {
 
-    TPlaylistItem* item = playlistWidget->playingItem;
-    if (item && shuffleAct->isChecked()) {
-        item = playlistWidget->findPreviousPlayedTime(item);
-    } else {
-        item = playlistWidget->getPreviousPlaylistWidgetItem();
+    QTreeWidgetItemIterator it(playlistWidget);
+    while (*it) {
+        TPlaylistItem* i = static_cast<TPlaylistItem*>(*it);
+        if (!i->isFolder() && !i->played() && i->state() != PSTATE_FAILED) {
+            return true;
+        }
+        ++it;
     }
-    if (item == 0) {
-        item = playlistWidget->lastPlaylistItem();
-    }
-    if (item) {
-        playItem(item, player->mdat.image);
-    }
+
+    return false;
 }
 
 QString TPlaylist::playingFile() const {
     return playlistWidget->playingFile();
 }
-
-bool TPlaylist::hasPlayableItems() const {
-    return playlistWidget->hasPlayableItems();
-}
-
 
 QString TPlaylist::getPlayingTitle(bool addModified,
                                    bool useStreamingTitle) const {
@@ -437,13 +290,7 @@ void TPlaylist::enableActions() {
     WZTRACE("State " + player->stateToString());
     updatePlayingItem();
 
-    bool e = thread == 0
-            && player->stateReady()
-            && playlistWidget->hasPlayableItems();
-    playNextAct->setEnabled(e);
-    playPrevAct->setEnabled(e);
     findPlayingAct->setEnabled(playlistWidget->playingItem);
-    // Repeat and shuffle always enabled
 
     TPList::enableActions();
     disableEnableActions--;
@@ -468,7 +315,7 @@ void TPlaylist::clear(bool clearFilename) {
     TPList::clear(clearFilename);
 }
 
-void TPlaylist::onNewMediaStartedPlayingUpdatePlayingItem() {
+void TPlaylist::onNewFileStartedPlaying() {
 
     TPlaylistItem* playingItem = playlistWidget->playingItem;
     if (!playingItem) {
@@ -515,76 +362,88 @@ void TPlaylist::onNewMediaStartedPlayingUpdatePlayingItem() {
     return;
 }
 
+bool TPlaylist::onNewDiscStartedPlaying() {
+
+    if (playlistWidget->playingItem == 0) {
+        WZDEBUG("No playing item");
+        return false;
+    }
+
+    const TMediaData* md = &player->mdat;
+    TDiscName curDisc(playlistWidget->playingItem->filename());
+    if (curDisc.protocol == "dvdnav" && Settings::pref->isMPV()) {
+        curDisc.protocol = "dvd";
+    }
+    if (curDisc.valid
+            && curDisc.title != 0
+            && curDisc.protocol == md->disc.protocol
+            && curDisc.device == md->disc.device) {
+
+        if (!dvdSerial.isEmpty()) {
+            if (dvdSerial == md->dvd_disc_serial) {
+                WZD << "Item is from current disc with serial" << dvdSerial;
+                return true;
+            }
+            WZD << "Serial player" << md->dvd_disc_serial
+                << "mismatches serial playlist" << dvdSerial
+                << "- Loading new disc playlist";
+            return false;
+        }
+
+        // No serial
+        if (!dvdTitle.isEmpty()) {
+            if (dvdTitle == md->title) {
+                WZD << "Item is from current disc with no serial and matching"
+                       " title" << dvdTitle;
+                return true;
+            }
+            WZD << "Title player" << md->title
+                << "mismatches title from playlist" << dvdTitle
+                << "- Loading new disc playlist";
+            return false;
+            }
+
+        // No serial, no title
+        if (md->titles.count() == playlistWidget->countItems()) {
+            WZDEBUG("Assuming item is from current disc without serial and"
+                    " without title");
+            return true;
+        }
+
+        WZDEBUG("Title counts mismatch - Loading new disc playlist");
+        return false;
+    }
+
+    WZDEBUG("Playing item is not a disc - Loading new disc playlist");
+    return false;
+}
+
 void TPlaylist::onNewMediaStartedPlaying() {
 
     const TMediaData* md = &player->mdat;
     QString filename = md->filename;
-    TPlaylistItem* playingItem = playlistWidget->playingItem;
-    QString curFilename;
-    if (playingItem) {
-        curFilename = playingItem->filename();
-    }
 
     if (md->disc.valid) {
-        TDiscName curDisc(curFilename);
-        if (curDisc.protocol == "dvdnav" && Settings::pref->isMPV()) {
-            curDisc.protocol = "dvd";
+        if (onNewDiscStartedPlaying()) {
+            return;
         }
-        if (curDisc.valid
-                && curDisc.title != 0
-                && curDisc.protocol == md->disc.protocol
-                && curDisc.device == md->disc.device) {
-
-            if (!dvdSerial.isEmpty()) {
-                if (dvdSerial == md->dvd_disc_serial) {
-                    WZDEBUG("Item is from current disc with serial "
-                            + dvdSerial);
-                    return;
-                }
-                WZDEBUG(QString("Serial player '%1' mismatches serial playlist"
-                                " '%2'. Reloading disc playlist")
-                        .arg(md->dvd_disc_serial).arg(dvdSerial));
-                // Fall through to reload disc playlist
-            } else {
-                // No serial
-                if (!dvdTitle.isEmpty()) {
-                    if (dvdTitle == md->title) {
-                        WZDEBUG("Item is from current disc with no serial"
-                                " and title '" + dvdTitle + "'");
-                        return;
-                    }
-                    WZDEBUG(QString("Title player '%1' mismatches title"
-                                    " playlist '%2'. Reloading disc playlist")
-                            .arg(md->title).arg(dvdTitle));
-                    // Fall through to reload disc playlist
-                } else {
-                    // No serial, no title
-                    if (md->titles.count() == playlistWidget->countItems()) {
-                        WZDEBUG("Assuming item is from current disc without"
-                                " serial and without title");
-                        return;
-                    } else {
-                        WZDEBUG("Title counts mismatch."
-                                " Reloading disc playlist");
-                        // Fall through to reload disc playlist
-                    }
-                }
-            }
-        } // if (curDisc.valid ...)
-    } else if (filename == curFilename) {
+    } else if (playlistWidget->playingItem
+               && filename == playlistWidget->playingItem->filename()) {
         // Handle current item started playing
-        onNewMediaStartedPlayingUpdatePlayingItem();
+        onNewFileStartedPlaying();
 
         if (playlistWidget->hasSingleItem()) {
             // Pause a single image
             if (player->mdat.image) {
                 mainWindow->runActionsLater("pause", false, true);
             }
-            // Hide playlist with single item
-            mainWindow->hideDock(dock);
         }
 
         return;
+    } else {
+        // TODO: find it in playlist?
+        // No for play in new window with single instance?
+        // Yes for preserving current playlist whenever possible.
     }
 
     // Create new playlist
@@ -639,8 +498,6 @@ void TPlaylist::onNewMediaStartedPlaying() {
                                                    qRound(md->duration * 1000),
                                                    false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
-        // Hide playlist with single item
-        mainWindow->hideDock(dock);
     }
 
     setPLaylistTitle();
@@ -734,19 +591,6 @@ void TPlaylist::refresh() {
         }
         clear(false);
         add(QStringList() << playlistFilename, !playing.isEmpty(), 0, playing);
-    }
-}
-
-void TPlaylist::findPlayingItem() {
-
-    TPlaylistItem* i = playlistWidget->playingItem;
-    if (i) {
-        makeActive();
-        if (i == playlistWidget->currentItem()) {
-            playlistWidget->scrollToItem(i);
-        } else {
-            playlistWidget->setCurrentItem(i);
-        }
     }
 }
 
@@ -898,10 +742,25 @@ void TPlaylist::openDirectoryDialog() {
 void TPlaylist::openDisc(const TDiscName& disc) {
 
     if (maybeSave()) {
-        // onNewMediaStartedPlaying() will pick up the playlist
         clear();
         player->openDisc(disc);
     }
+}
+
+void TPlaylist::onRepeatToggled(bool toggled) {
+
+    if (toggled)
+        msgOSD(tr("Repeat playlist set"));
+    else
+        msgOSD(tr("Repeat playlist cleared"));
+}
+
+void TPlaylist::onShuffleToggled(bool toggled) {
+
+    if (toggled)
+        msgOSD(tr("Shuffle playlist set"));
+    else
+        msgOSD(tr("Shuffle playlist cleared"));
 }
 
 void TPlaylist::saveSettings() {

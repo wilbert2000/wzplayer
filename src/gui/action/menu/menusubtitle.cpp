@@ -12,7 +12,7 @@ namespace Menu {
 
 
 TClosedCaptionsGroup::TClosedCaptionsGroup(TMainWindow* mw)
-    : TActionGroup(mw, "closedcaptionsgroup") {
+    : TActionGroup(mw, "closed_captions_group") {
 
     setEnabled(false);
     new TActionGroupItem(mw, this, "cc_none", tr("Off"), 0);
@@ -38,7 +38,7 @@ TMenuCC::TMenuCC(QWidget* parent, TMainWindow* mw)
 
 
 TSubFPSGroup::TSubFPSGroup(TMainWindow* mw)
-    : TActionGroup(mw, "subfpsgroup") {
+    : TActionGroup(mw, "sub_fps_group") {
 
     setEnabled(false);
     new TActionGroupItem(mw, this, "sub_fps_none", tr("Default"),
@@ -73,29 +73,29 @@ TMenuSubFPS::TMenuSubFPS(QWidget* parent, TMainWindow* mw)
 TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "subtitle_menu", tr("Subtitles"), "noicon") {
 
-    addAction(mw->findAction("dec_sub_pos"));
-    addAction(mw->findAction("inc_sub_pos"));
+    addAction(mw->requireAction("dec_sub_pos"));
+    addAction(mw->requireAction("inc_sub_pos"));
 
     addSeparator();
-    addAction(mw->findAction("inc_sub_scale"));
-    addAction(mw->findAction("dec_sub_scale"));
+    addAction(mw->requireAction("inc_sub_scale"));
+    addAction(mw->requireAction("dec_sub_scale"));
 
     addSeparator();
-    addAction(mw->findAction("inc_sub_delay"));
-    addAction(mw->findAction("dec_sub_delay"));
-    addAction(mw->findAction("sub_delay"));
+    addAction(mw->requireAction("inc_sub_delay"));
+    addAction(mw->requireAction("dec_sub_delay"));
+    addAction(mw->requireAction("sub_delay"));
 
     addSeparator();
-    addAction(mw->findAction("inc_sub_step"));
-    addAction(mw->findAction("dec_sub_step"));
-    addAction(mw->findAction("seek_next_sub"));
-    addAction(mw->findAction("seek_prev_sub"));
+    addAction(mw->requireAction("inc_sub_step"));
+    addAction(mw->requireAction("dec_sub_step"));
+    addAction(mw->requireAction("seek_next_sub"));
+    addAction(mw->requireAction("seek_prev_sub"));
 
     // Subtitle tracks
     addSeparator();
     subtitleTrackMenu = new TMenu(this, "subtitle_track_menu",
                                   tr("Subtitle track"), "sub");
-    subtitleTrackMenu->addAction(mw->findAction("next_subtitle"));
+    subtitleTrackMenu->addAction(mw->requireAction("next_subtitle"));
     subtitleTrackMenu->addSeparator();
     addMenu(subtitleTrackMenu);
 
@@ -111,15 +111,15 @@ TMenuSubtitle::TMenuSubtitle(QWidget* parent, TMainWindow* mw)
 
     // Closed caption
     addMenu(new TMenuCC(this, mw));
-    addAction(mw->findAction("use_forced_subs_only"));
+    addAction(mw->requireAction("use_forced_subs_only"));
 
     addSeparator();
-    addAction(mw->findAction("load_subs"));
-    addAction(mw->findAction("unload_subs"));
+    addAction(mw->requireAction("load_subs"));
+    addAction(mw->requireAction("unload_subs"));
     addMenu(new TMenuSubFPS(this, mw));
 
     addSeparator();
-    addAction(mw->findAction("use_custom_sub_style"));
+    addAction(mw->requireAction("use_custom_sub_style"));
 }
 
 void TMenuSubtitle::subtitleTrackGroupsChanged(

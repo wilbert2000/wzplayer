@@ -159,35 +159,35 @@ TActionsEditor::TActionsEditor(QWidget* parent) :
 
 QString TActionsEditor::getWindowForAction(QAction* action) const {
 
-    QString window;
+    QString name;
     QObject* parent = action->parent();
-    while (parent && window.isEmpty()) {
-        window = parent->objectName();
+    while (parent && name.isEmpty()) {
+        name = parent->objectName();
         parent = parent->parent();
     }
 
-    if (window.endsWith("widget")) {
-        window = window.left(window.length() - 6);
-    } else if (window.endsWith("group")
-               || window.endsWith("dock")
-               || window.startsWith("toolbar")
-               || window == "controlbar") {
-        window = "mainwindow";
+    if (name.endsWith("_widget")) {
+        name = name.left(name.length() - 7);
+    } else if (name.endsWith("_group")
+               || name.endsWith("_dock")
+               || name.startsWith("toolbar")
+               || name == "controlbar") {
+        name = "mainwindow";
     }
 
-    if (window == "mainwindow") {
+    if (name == "mainwindow") {
         return tr("All");
     }
-    if (window == "playlist" || window.startsWith("pl_")) {
+    if (name == "playlist" || name.startsWith("pl_")) {
         return tr("Playlist");
     }
-    if (window == "favlist" || window.startsWith("fav_")) {
+    if (name == "favlist" || name.startsWith("fav_")) {
         return tr("Favorites");
     }
 
     WZERROR(QString("Found unexpected owner '%1' for action '%2'")
-            .arg(window).arg(action->objectName()));
-    return window;
+            .arg(name).arg(action->objectName()));
+    return name;
 }
 
 void TActionsEditor::setActionsTable() {
@@ -599,8 +599,11 @@ QString TActionsEditor::cleanActionText(const QString& text,
                                         const QString& actionName) {
 
     // Actions modifying their text
-    if (actionName == "play_or_pause") {
+    if (actionName == "play_pause") {
         return tr("Play or pause");
+    }
+    if (actionName == "play_pause_stop") {
+        return tr("Play, pause or stop");
     }
     if (actionName == "aspect_detect") {
         return tr("Auto");

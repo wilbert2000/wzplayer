@@ -20,22 +20,21 @@ public:
 TMenuDisc::TMenuDisc(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "opem_disc_menu", tr("Open disc"), "open_disc") {
 
-    addAction(mw->findAction("open_dvd_disc"));
-    addAction(mw->findAction("open_dvd_iso"));
-    addAction(mw->findAction("open_dvd_folder"));
+    addAction(mw->requireAction("open_dvd_disc"));
+    addAction(mw->requireAction("open_dvd_iso"));
+    addAction(mw->requireAction("open_dvd_folder"));
     addSeparator();
-    addAction(mw->findAction("open_bluray_disc"));
-    addAction(mw->findAction("open_bluray_iso"));
-    addAction(mw->findAction("open_bluray_folder"));
+    addAction(mw->requireAction("open_bluray_disc"));
+    addAction(mw->requireAction("open_bluray_iso"));
+    addAction(mw->requireAction("open_bluray_folder"));
     addSeparator();
-    addAction(mw->findAction("open_vcd"));
-    addAction(mw->findAction("open_audio_cd"));
+    addAction(mw->requireAction("open_vcd"));
+    addAction(mw->requireAction("open_audio_cd"));
 }
 
 
 TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu) :
-    TMenu(parent, "file_menu", tr("File"), "noicon"),
-    mainWindow(mw) {
+    TMenu(parent, "file_menu", tr("File"), "noicon") {
 
     // Favorites
     addMenu(favMenu);
@@ -53,32 +52,32 @@ TMenuFile::TMenuFile(QWidget* parent, TMainWindow* mw, TMenu* favMenu) :
             this, &TMenuFile::onSettingsChanged);
 
     addSeparator();
-    addAction(mw->findAction("open_url"));
-    addAction(mw->findAction("open_file"));
-    addAction(mw->findAction("open_directory"));
+    addAction(mw->requireAction("open_url"));
+    addAction(mw->requireAction("open_file"));
+    addAction(mw->requireAction("open_directory"));
 
     // Disc submenu
     addMenu(new TMenuDisc(this, mw));
 
     // Playlist
     addSeparator();
-    addAction(mw->findAction("pl_open"));
-    addAction(mw->findAction("pl_save"));
-    addAction(mw->findAction("pl_saveas"));
-    addAction(mw->findAction("pl_refresh"));
+    addAction(mw->requireAction("pl_open"));
+    addAction(mw->requireAction("pl_save"));
+    addAction(mw->requireAction("pl_save_as"));
+    addAction(mw->requireAction("pl_refresh"));
 
     addSeparator();
     // Browse dir
-    addAction(mw->findAction("pl_browse_dir"));
+    addAction(mw->requireAction("pl_browse_dir"));
     // Save thumbnail
 #ifdef Q_OS_LINUX
-    addAction(mw->findAction("save_thumbnail"));
+    addAction(mw->requireAction("save_thumbnail"));
 #endif
 
     // Close & quit
     addSeparator();
-    addAction(mw->findAction("close"));
-    addAction(mw->findAction("quit"));
+    addAction(mw->requireAction("close"));
+    addAction(mw->requireAction("quit"));
 }
 
 void TMenuFile::updateRecents() {
@@ -104,7 +103,8 @@ void TMenuFile::updateRecents() {
         QAction* a = new QAction(name, recentFilesMenu);
         a->setStatusTip(url);
         a->setData(i);
-        connect(a, &QAction::triggered, mainWindow, &TMainWindow::openRecent);
+        connect(a, &QAction::triggered,
+                Gui::mainWindow, &TMainWindow::openRecent);
         recentFilesMenu->addAction(a);
     }
 
@@ -112,7 +112,7 @@ void TMenuFile::updateRecents() {
     if (count > 0) {
         recentFilesMenu->addSeparator();
     }
-    recentFilesMenu->addAction(mainWindow->findAction("recents_clear"));
+    recentFilesMenu->addAction(mainWindow->requireAction("recents_clear"));
 }
 
 void TMenuFile::onRecentsChanged() {

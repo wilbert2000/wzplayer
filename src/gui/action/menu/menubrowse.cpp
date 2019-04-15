@@ -11,7 +11,7 @@ namespace Action {
 namespace Menu {
 
 TTitleGroup::TTitleGroup(TMainWindow *mw) :
-    TActionGroup(mw, "titlegroup") {
+    TActionGroup(mw, "title_group") {
 
     connect(this, &TTitleGroup::activated,
             player, &Player::TPlayer::setTitle);
@@ -48,7 +48,7 @@ void TTitleGroup::updateTitles() {
 TChapterGroup::TChapterGroup(TMainWindow *mw,
                              TAction* prvChapterAct,
                              TAction* nxtChapterAct) :
-    TActionGroup(mw, "chaptergroup"),
+    TActionGroup(mw, "chapter_group"),
     prevChapterAct(prvChapterAct),
     nextChapterAct(nxtChapterAct) {
 
@@ -92,7 +92,7 @@ void TChapterGroup::updateChapters() {
 }
 
 TAngleGroup::TAngleGroup(TMainWindow *mw, TAction* nxtAngleAct) :
-    TActionGroup(mw, "anglegroup"),
+    TActionGroup(mw, "angle_group"),
     nextAngleAct(nxtAngleAct) {
 
     connect(this, &TAngleGroup::activated,
@@ -150,8 +150,8 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
 
     // Chapters
     chaptersMenu = new TMenu(this, "chapters_menu", tr("Chapter"), "chapter");
-    chaptersMenu->addAction(mw->findAction("next_chapter"));
-    chaptersMenu->addAction(mw->findAction("prev_chapter"));
+    chaptersMenu->addAction(mw->requireAction("next_chapter"));
+    chaptersMenu->addAction(mw->requireAction("prev_chapter"));
     chaptersMenu->addSeparator();
     addMenu(chaptersMenu);
 
@@ -161,7 +161,7 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
 
     // Angles submenu
     anglesMenu = new TMenu(this, "angles_menu", tr("Angle"), "angle");
-    anglesMenu->addAction(mw->findAction("next_angle"));
+    anglesMenu->addAction(mw->requireAction("next_angle"));
     anglesMenu->addSeparator();
     addMenu(anglesMenu);
 
@@ -171,16 +171,16 @@ TMenuBrowse::TMenuBrowse(QWidget* parent, TMainWindow* mw)
 
     addSeparator();
     // DVDNAV
-    addAction(mw->findAction("dvdnav_up"));
-    addAction(mw->findAction("dvdnav_down"));
-    addAction(mw->findAction("dvdnav_left"));
-    addAction(mw->findAction("dvdnav_right"));
+    addAction(mw->requireAction("dvdnav_up"));
+    addAction(mw->requireAction("dvdnav_down"));
+    addAction(mw->requireAction("dvdnav_left"));
+    addAction(mw->requireAction("dvdnav_right"));
 
     addSeparator();
-    addAction(mw->findAction("dvdnav_select"));
+    addAction(mw->requireAction("dvdnav_select"));
     // dvdnav_mouse Not in menu
-    addAction(mw->findAction("dvdnav_menu"));
-    addAction(mw->findAction("dvdnav_prev"));
+    addAction(mw->requireAction("dvdnav_menu"));
+    addAction(mw->requireAction("dvdnav_prev"));
 }
 
 void TMenuBrowse::updateTitles(TTitleGroup* titleGroup) {

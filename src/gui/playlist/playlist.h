@@ -43,19 +43,14 @@ class TPlaylist : public TPList {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    explicit TPlaylist(TDockWidget* parent, TMainWindow* mw);
-
-    Action::TAction* playNextAct;
-    Action::TAction* playPrevAct;
+    explicit TPlaylist(TDockWidget* parent);
 
     QString playingFile() const;
     QString getPlayingTitle(bool addModified = false,
                             bool useStreamingTitle = true) const;
     void getFilesToPlay(QStringList& files) const;
-    bool hasPlayableItems() const;
 
     void openDisc(const TDiscName& disc);
-    virtual void startPlay() override;
 
     virtual void loadSettings() override;
     virtual void saveSettings() override;
@@ -67,10 +62,9 @@ public slots:
     void openDirectoryDialog();
 
     virtual void stop() override;
-    void playOrPause();
+    void playPause();
 
     virtual void enableActions() override;
-    virtual void findPlayingItem() override;
 
 signals:
     void playlistFinished();
@@ -86,28 +80,20 @@ protected slots:
     virtual void refresh() override;
 
 private:
-    Action::TAction* repeatAct;
-    Action::TAction* shuffleAct;
-
-    bool reachedEndOfPlaylist;
     QString dvdTitle;
     QString dvdSerial;
 
-    void createActions();
     void createToolbar();
 
-    TPlaylistItem* getRandomItem() const;
     bool haveUnplayedItems() const;
 
     void openDirectory(const QString& dir);
 
-    void onNewMediaStartedPlayingUpdatePlayingItem();
+    void onNewFileStartedPlaying();
+    bool onNewDiscStartedPlaying();
     void updatePlayingItem();
 
 private slots:
-    void playNext(bool loop_playlist = true);
-    void playPrev();
-
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
 

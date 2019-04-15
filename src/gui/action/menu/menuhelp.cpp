@@ -9,9 +9,9 @@ namespace Menu {
 TMenuHelp::TMenuHelp(QWidget* parent, TMainWindow* mw) :
     TMenu(parent, "help_menu", tr("Help"), "noicon") {
 
-    addAction(mw->findAction("help_cl_options"));
-    addAction(mw->findAction("help_check_updates"));
-    addAction(mw->findAction("help_about"));
+    addAction(mw->requireAction("help_cl_options"));
+    addAction(mw->requireAction("help_check_updates"));
+    addAction(mw->requireAction("help_about"));
 }
 
 } // namespace Menu

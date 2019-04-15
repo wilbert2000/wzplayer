@@ -42,13 +42,13 @@ public:
 TMenuSeekForward::TMenuSeekForward(QWidget* parent, TMainWindow* mw) :
     TMenuSeek(parent, mw, "seek_forward_menu", tr("Seek forward"), 0) {
 
-    addAction(mw->findAction("seek_forward_frame"));
+    addAction(mw->requireAction("seek_forward_frame"));
     addSeparator();
-    addAction(mw->findAction("seek_forward1"));
-    addAction(mw->findAction("seek_forward2"));
-    addAction(mw->findAction("seek_forward3"));
+    addAction(mw->requireAction("seek_forward1"));
+    addAction(mw->requireAction("seek_forward2"));
+    addAction(mw->requireAction("seek_forward3"));
     addSeparator();
-    addAction(mw->findAction("play_next"));
+    addAction(mw->requireAction("play_next"));
 
     connect(mw, &TMainWindow::seekForwardDefaultActionChanged,
             this, &TMenuSeekForward::updateDefaultAction);
@@ -61,15 +61,15 @@ public:
 };
 
 TMenuSeekRewind::TMenuSeekRewind(QWidget* parent, TMainWindow* mw) :
-    TMenuSeek(parent, mw, "seek_rewind_menu", tr("Seek backwards"), 5) {
+    TMenuSeek(parent, mw, "seek_rewind_menu", tr("Seek backward"), 5) {
 
-    addAction(mw->findAction("seek_rewind_frame"));
+    addAction(mw->requireAction("seek_rewind_frame"));
     addSeparator();
-    addAction(mw->findAction("seek_rewind1"));
-    addAction(mw->findAction("seek_rewind2"));
-    addAction(mw->findAction("seek_rewind3"));
+    addAction(mw->requireAction("seek_rewind1"));
+    addAction(mw->requireAction("seek_rewind2"));
+    addAction(mw->requireAction("seek_rewind3"));
     addSeparator();
-    addAction(mw->findAction("play_prev"));
+    addAction(mw->requireAction("play_prev"));
 
     connect(mw, &TMainWindow::seekRewindDefaultActionChanged,
             this, &TMenuSeekRewind::updateDefaultAction);
@@ -135,30 +135,30 @@ public:
 TMenuPlaySpeed::TMenuPlaySpeed(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "play_speed_menu", tr("Play speed")) {
 
-    addAction(mw->findAction("speed_normal"));
+    addAction(mw->requireAction("speed_normal"));
 
     addSeparator();
-    addAction(mw->findAction("spedd_half"));
-    addAction(mw->findAction("speed_double"));
+    addAction(mw->requireAction("spedd_half"));
+    addAction(mw->requireAction("speed_double"));
 
     addSeparator();
-    addAction(mw->findAction("speed_dec_10"));
-    addAction(mw->findAction("speed_inc_10"));
+    addAction(mw->requireAction("speed_dec_10"));
+    addAction(mw->requireAction("speed_inc_10"));
 
     addSeparator();
-    addAction(mw->findAction("speed_dec_4"));
-    addAction(mw->findAction("speed_inc_4"));
+    addAction(mw->requireAction("speed_dec_4"));
+    addAction(mw->requireAction("speed_inc_4"));
 
     addSeparator();
-    addAction(mw->findAction("speed_dec_1"));
-    addAction(mw->findAction("speed_inc_1"));
+    addAction(mw->requireAction("speed_dec_1"));
+    addAction(mw->requireAction("speed_inc_1"));
 }
 
 
 TInOutGroup::TInOutGroup(TMainWindow *mw) :
     QActionGroup(mw) {
 
-    setObjectName("inoutgroup");
+    setObjectName("inout_group");
     setExclusive(false);
     setEnabled(false);
 
@@ -221,31 +221,31 @@ public:
 TMenuInOut::TMenuInOut(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "in_out_menu", tr("In-out points")) {
 
-    addAction(mw->findAction("set_in"));
-    addAction(mw->findAction("set_out"));
+    addAction(mw->requireAction("set_in"));
+    addAction(mw->requireAction("set_out"));
 
     addSeparator();
-    addAction(mw->findAction("clear_in"));
-    addAction(mw->findAction("clear_out"));
-    addAction(mw->findAction("clear_in_out"));
+    addAction(mw->requireAction("clear_in"));
+    addAction(mw->requireAction("clear_out"));
+    addAction(mw->requireAction("clear_in_out"));
 
     addSeparator();
-    addAction(mw->findAction("seek_in"));
-    addAction(mw->findAction("seek_out"));
+    addAction(mw->requireAction("seek_in"));
+    addAction(mw->requireAction("seek_out"));
 
     addSeparator();
-    addAction(mw->findAction("repeat_in_out"));
-    addAction(mw->findAction("pl_repeat"));
-    addAction(mw->findAction("pl_shuffle"));
+    addAction(mw->requireAction("repeat_in_out"));
+    addAction(mw->requireAction("pl_repeat"));
+    addAction(mw->requireAction("pl_shuffle"));
 }
 
 // Create main play menu
 TMenuPlay::TMenuPlay(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "play_menu", tr("Play")) {
 
-    addAction(mw->findAction("stop"));
-    addAction(mw->findAction("play_or_pause"));
-    addAction(mw->findAction("pl_play_in_new_win"));
+    addAction(mw->requireAction("stop"));
+    addAction(mw->requireAction("play_pause_stop"));
+    addAction(mw->requireAction("pl_play_in_new_win"));
 
     addSeparator();
     // Forward menu
@@ -253,7 +253,7 @@ TMenuPlay::TMenuPlay(QWidget* parent, TMainWindow* mw)
     // Rewind menu
     addMenu(new TMenuSeekRewind(this, mw));
     // Seek to time
-    addAction(mw->findAction("seek_to"));
+    addAction(mw->requireAction("seek_to"));
 
     addSeparator();
     // Speed submenu

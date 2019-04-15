@@ -69,7 +69,7 @@ TMainWindowTray::TMainWindowTray() :
     QMenu* menu = createContextMenu("", tr("%1 system tray")
                                     .arg(TConfig::PROGRAM_NAME));
     menu->addSeparator();
-    menu->addAction(playOrPauseAct);
+    menu->addAction(playPauseStopAct);
     menu->addAction(quitAct);
     tray->setContextMenu(menu);
 }

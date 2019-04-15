@@ -41,7 +41,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 25;
+static const int CURRENT_CONFIG_VERSION = 26;
 const Log4Qt::Level TPreferences::log_default_level = Log4Qt::Level::DEBUG_INT;
 
 TPreferences* pref = 0;
@@ -281,7 +281,7 @@ void TPreferences::reset() {
 
     // Actions section
     // Mouse tab
-    mouse_left_click_function = "play_or_pause";
+    mouse_left_click_function = "play_pause";
     delay_left_click = true;
     mouse_right_click_function = "show_context_menu";
     mouse_double_click_function = "fullscreen";
@@ -832,6 +832,9 @@ void TPreferences::setPlayerBin(QString bin,
         << "additional options" << mpv_additional_options;
 }
 
+void TPreferences::setAction(QString& action, const QString& name) {
+    action = value(name, action).toString();
+}
 
 void TPreferences::load() {
 
@@ -1128,21 +1131,13 @@ void TPreferences::load() {
 
 
     beginGroup("mouse");
-    mouse_left_click_function = value("mouse_left_click_function",
-                                      mouse_left_click_function).toString();
+    setAction(mouse_left_click_function, "mouse_left_click_function");
     delay_left_click = value("delay_left_click", delay_left_click).toBool();
-    mouse_right_click_function = value("mouse_right_click_function",
-                                       mouse_right_click_function).toString();
-    mouse_double_click_function = value("mouse_double_click_function",
-                                        mouse_double_click_function).toString();
-    mouse_middle_click_function = value("mouse_middle_click_function",
-                                        mouse_middle_click_function).toString();
-    mouse_xbutton1_click_function = value("mouse_xbutton1_click_function",
-                                          mouse_xbutton1_click_function)
-                                    .toString();
-    mouse_xbutton2_click_function = value("mouse_xbutton2_click_function",
-                                          mouse_xbutton2_click_function)
-                                    .toString();
+    setAction(mouse_right_click_function, "mouse_right_click_function");
+    setAction(mouse_double_click_function, "mouse_double_click_function");
+    setAction(mouse_middle_click_function, "mouse_middle_click_function");
+    setAction(mouse_xbutton1_click_function, "mouse_xbutton1_click_function");
+    setAction(mouse_xbutton2_click_function, "mouse_xbutton2_click_function");
     wheel_function = value("mouse_wheel_function", wheel_function).toInt();
     {
         int wheel_function_cycle_int = value("wheel_function_cycle",

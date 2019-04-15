@@ -53,10 +53,10 @@ void TDesktop::centerWindow(QWidget* w) {
     }
 }
 
-void TDesktop::keepInsideDesktop(QWidget* w) {
+bool TDesktop::keepInsideDesktop(QWidget* w) {
 
     if (w->isMaximized()) {
-        return;
+        return false;
     }
 
     QRect available = QApplication::desktop()->availableGeometry(w);
@@ -78,13 +78,13 @@ void TDesktop::keepInsideDesktop(QWidget* w) {
         pos.ry() = available.y();
     }
 
-    if (pos != w->pos()) {
-        WZDEBUG("Moving from " + QString::number(w->pos().x())
-                + ", " + QString::number(w->pos().y())
-                + " to " + QString::number(pos.x())
-                + ", " + QString::number(pos.y()));
-        w->move(pos);
+    if (pos == w->pos()) {
+        return false;
     }
+
+    WZD << "Moving from" << w->pos() << "to" << pos;
+    w->move(pos);
+    return true;
 }
 
 

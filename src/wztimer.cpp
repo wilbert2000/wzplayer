@@ -8,7 +8,7 @@ TWZTimer::TWZTimer(QObject* parent, const QString& name, bool logEvents) :
     setObjectName(name);
 }
 
-void TWZTimer::startVoid(){
+void TWZTimer::logStart(){
 
     if (log) {
         WZTRACEOBJ(QString("Starting with interval %1 ms").arg(interval()));

@@ -11,7 +11,7 @@ class TWZTimer : public QTimer {
 public:
     TWZTimer(QObject* parent, const QString& name, bool logEvents = true);
 public slots:
-    void startVoid();
+    void logStart();
 protected:
     void timerEvent(QTimerEvent *e) override;
 private:

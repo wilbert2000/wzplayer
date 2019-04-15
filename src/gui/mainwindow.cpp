@@ -94,6 +94,8 @@ using namespace Settings;
 
 namespace Gui {
 
+TMainWindow* mainWindow = 0;
+
 TMainWindow::TMainWindow() :
     QMainWindow(),
     update_checker(0),
@@ -109,6 +111,8 @@ TMainWindow::TMainWindow() :
     fullscreen_menubar_visible(false),
     fullscreen_statusbar_visible(true) {
 
+    mainWindow = this;
+
     setObjectName("mainwindow");
     setWindowTitle(TConfig::PROGRAM_NAME);
     setWindowIcon(Images::icon("logo", 64));
@@ -116,6 +120,11 @@ TMainWindow::TMainWindow() :
     setAcceptDrops(true);
     // Disable animation of docks.
     setAnimated(false);
+
+    // Ready action
+    readyAction = new Action::TAction(this, "ready", "", "noicon");
+    readyAction->setCheckable(true);
+    readyAction->setChecked(false);
 
     createStatusBar();
 
@@ -129,6 +138,13 @@ TMainWindow::TMainWindow() :
 
     // Resize window to default size
     resize(pref->default_size);
+
+    // Optimize size timer
+    optimizeSizeTimer = new TWZTimer(this, "optimize_size_timer");
+    optimizeSizeTimer->setSingleShot(true);
+    optimizeSizeTimer->setInterval(100);
+    connect(optimizeSizeTimer, &TWZTimer::timeout,
+            this, &TMainWindow::optimizeSizeFactor);
 
     createPanel();
     createLogDock();
@@ -145,23 +161,25 @@ TMainWindow::TMainWindow() :
     createToolbars();
     createMenus();
 
-    titleUpdater = new TWZTimer(this, "titleupdater");
-    titleUpdater->setSingleShot(true);
-    titleUpdater->setInterval(200);
-    connect(titleUpdater, &TWZTimer::timeout,
+    titleUpdateTimer = new TWZTimer(this, "title_update_timer");
+    titleUpdateTimer->setSingleShot(true);
+    titleUpdateTimer->setInterval(200);
+    connect(titleUpdateTimer, &TWZTimer::timeout,
             this, &TMainWindow::updateTitle);
     connect(playlist->getPlaylistWidget(),
             &Playlist::TPlaylistWidget::playingItemChanged,
-            titleUpdater, &TWZTimer::startVoid);
+            titleUpdateTimer, &TWZTimer::logStart);
     connect(playlist->getPlaylistWidget(),
             &Playlist::TPlaylistWidget::modifiedChanged,
-            titleUpdater, &TWZTimer::startVoid);
+            titleUpdateTimer, &TWZTimer::logStart);
     connect(player, &Player::TPlayer::streamingTitleChanged,
-            titleUpdater, &TWZTimer::startVoid);
+            titleUpdateTimer, &TWZTimer::logStart);
+
+    // To update bitrates if properties dialog is visible
     connect(player, &Player::TPlayer::videoBitRateChanged,
-            titleUpdater, &TWZTimer::startVoid);
+            titleUpdateTimer, &TWZTimer::logStart);
     connect(player, &Player::TPlayer::audioBitRateChanged,
-            titleUpdater, &TWZTimer::startVoid);
+            titleUpdateTimer, &TWZTimer::logStart);
 
 
     setupNetworkProxy();
@@ -230,7 +248,7 @@ void TMainWindow::createStatusBar() {
 
 void TMainWindow::createPlayerWindows() {
 
-    playerWindow = new TPlayerWindow(panel, "playerwindow");
+    playerWindow = new TPlayerWindow(panel, "player_window");
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
@@ -255,13 +273,13 @@ void TMainWindow::createPlayerWindows() {
     connect(playerWindow, &Gui::TPlayerWindow::videoOutChanged,
             this, &TMainWindow::displayVideoOut, Qt::QueuedConnection);
 
-    previewWindow = new TPlayerWindow(this, "previewwindow");
+    previewWindow = new TPlayerWindow(this, "preview_window");
     previewWindow->hide();
 }
 
 void TMainWindow::createPlayers() {
 
-    previewPlayer = new Player::TPlayer(this, "previewplayer", previewWindow, 0);
+    previewPlayer = new Player::TPlayer(this, "preview_player", previewWindow, 0);
 
     new Player::TPlayer(this, "player", playerWindow, previewPlayer);
 
@@ -300,7 +318,7 @@ void TMainWindow::createPlayers() {
 
 void TMainWindow::createLogDock() {
 
-    logDock = new TDockWidget(this, "logdock", tr("Log"));
+    logDock = new TDockWidget(this, panel, "log_dock", tr("Log"));
     logWindow = new TLogWindow(logDock);
     logDock->setWidget(logWindow);
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
@@ -308,8 +326,9 @@ void TMainWindow::createLogDock() {
 
 void TMainWindow::createPlaylist() {
 
-    playlistDock = new TDockWidget(this, "playlistdock", tr("Playlist"));
-    playlist = new Playlist::TPlaylist(playlistDock, this);
+    playlistDock = new TDockWidget(this, panel, "playlist_dock",
+                                   tr("Playlist"));
+    playlist = new Playlist::TPlaylist(playlistDock);
     playlistDock->setWidget(playlist);
     addDockWidget(Qt::LeftDockWidgetArea, playlistDock);
 
@@ -320,8 +339,8 @@ void TMainWindow::createPlaylist() {
 
 void TMainWindow::createFavList() {
 
-    favListDock = new TDockWidget(this, "favlistdock", tr("Favorites"));
-    favlist = new Playlist::TFavList(favListDock, this, playlist);
+    favListDock = new TDockWidget(this, panel, "favlist_dock", tr("Favorites"));
+    favlist = new Playlist::TFavList(favListDock, playlist);
     favListDock->setWidget(favlist);
     addDockWidget(Qt::RightDockWidgetArea, favListDock);
 }
@@ -469,20 +488,53 @@ void TMainWindow::createActions() {
     stopAct = new TAction(this, "stop", tr("Stop"), "", Qt::Key_MediaStop);
     connect(stopAct, &TAction::triggered, this, &TMainWindow::stop);
 
+    // Play
+    playAct = new TAction(this, "play", tr("Play"), "",
+                          Qt::SHIFT | Qt::Key_Space);
+    playAct->addShortcut(Qt::Key_MediaPlay);
+    connect(playAct, &Action::TAction::triggered,
+            this, &TMainWindow::play);
+
     // Pause
     pauseAct = new TAction(this, "pause", tr("Pause"), "",
                            QKeySequence("Media Pause")); // MCE remote key
     connect(pauseAct, &TAction::triggered, player, &Player::TPlayer::pause);
 
     // Play/pause
-    playOrPauseAct = new TAction(this, "play_or_pause", tr("Play"), "play",
-                                 Qt::Key_Space);
+    playPauseAct = new TAction(this, "play_pause", tr("Play"), "play",
+                               Qt::Key_Space);
     // Add MCE remote key
-    playOrPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
-    connect(playOrPauseAct, &TAction::triggered,
-            playlist, &Playlist::TPlaylist::playOrPause);
+    playPauseAct->addShortcut(QKeySequence("Toggle Media Play/Pause"));
+    connect(playPauseAct, &TAction::triggered,
+            playlist, &Playlist::TPlaylist::playPause);
+
+    // Play/pause/stop
+    playPauseStopAct = new TAction(this, "play_pause_stop", tr("Play"), "play");
+    connect(playPauseStopAct, &TAction::triggered,
+            this, &TMainWindow::playPauseStop);
+
+    // Play next
+    playNextAct = new TAction(this, "play_next", tr("Play next"), "next",
+                              QKeySequence(">"));
+    playNextAct->addShortcut(QKeySequence("."));
+    playNextAct->addShortcut(Qt::Key_MediaNext); // MCE remote key
+    playNextAct->setData(4);
+    connect(playNextAct, &TAction::triggered,
+            playlist, &Playlist::TPlaylist::playNext);
+
+    // Play prev
+    playPrevAct = new TAction(this, "play_prev", tr("Play previous"),
+                              "previous", QKeySequence("<"));
+    playPrevAct->addShortcut(QKeySequence(","));
+    playPrevAct->addShortcut(Qt::Key_MediaPrevious); // MCE remote key
+    playPrevAct->setData(4);
+    connect(playPrevAct, &TAction::triggered,
+            playlist, &Playlist::TPlaylist::playPrev);
+
+    // Update enabled state play buttons when busyChanged
     connect(playlist, &Playlist::TPlaylist::busyChanged,
-            this, &TMainWindow::enablePlayOrPause);
+            this, &TMainWindow::enablePlayPauseStop);
+
 
     // Seek forward
     seekFrameAct = new TAction(this, "seek_forward_frame", tr("Frame step"), "",
@@ -693,7 +745,7 @@ void TMainWindow::createActions() {
     filterGroup = new Menu::TFilterGroup(this);
 
     // Denoise
-    denoiseGroup = new TActionGroup(this, "denoisegroup");
+    denoiseGroup = new TActionGroup(this, "denoise_group");
     denoiseGroup->setEnabled(false);
     new TActionGroupItem(this, denoiseGroup, "denoise_none", tr("Off"),
                          TMediaSettings::NoDenoise);
@@ -705,7 +757,7 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::setDenoiser);
 
     // Unsharp
-    sharpenGroup = new TActionGroup(this, "sharpengroup");
+    sharpenGroup = new TActionGroup(this, "sharpen_group");
     sharpenGroup->setEnabled(false);
     new TActionGroupItem(this, sharpenGroup, "sharpen_off", tr("None"), 0);
     new TActionGroupItem(this, sharpenGroup, "blur", tr("Blur"), 1);
@@ -725,7 +777,7 @@ void TMainWindow::createActions() {
     connect(nextVideoTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextVideoTrack);
 
-    videoTrackGroup = new TActionGroup(this, "videotrackgroup");
+    videoTrackGroup = new TActionGroup(this, "videotrack_group");
     connect(videoTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setVideoTrack);
     connect(player, &Player::TPlayer::videoTrackChanged,
@@ -844,7 +896,7 @@ void TMainWindow::createActions() {
                                     QKeySequence("*"));
     connect(nextAudioTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextAudioTrack);
-    audioTrackGroup = new TActionGroup(this, "audiotrackgroup");
+    audioTrackGroup = new TActionGroup(this, "audiotrack_group");
     connect(audioTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setAudioTrack);
     connect(player, &Player::TPlayer::audioTrackChanged,
@@ -919,7 +971,7 @@ void TMainWindow::createActions() {
     connect(nextSubtitleAct, &TAction::triggered,
             player, &Player::TPlayer::nextSubtitle);
 
-    subtitleTrackGroup = new TActionGroup(this, "subtitletrackgroup");
+    subtitleTrackGroup = new TActionGroup(this, "subtitle_track_group");
     connect(subtitleTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSubtitle);
     connect(player, &Player::TPlayer::subtitlesChanged,
@@ -928,7 +980,7 @@ void TMainWindow::createActions() {
     connect(player, &Player::TPlayer::subtitleTrackChanged,
             this, &TMainWindow::updateSubtitleTracks);
 
-    secondarySubtitleTrackGroup = new TActionGroup(this, "subtitletrack2group");
+    secondarySubtitleTrackGroup = new TActionGroup(this, "subtitle_track2_group");
     connect(secondarySubtitleTrackGroup, &TActionGroup::activated,
             player, &Player::TPlayer::setSecondarySubtitle);
     // Need to update all, to disable sub in primary track
@@ -1094,11 +1146,11 @@ void TMainWindow::createActions() {
     autoHideTimer->add(action, logDock);
 
     // Browse config dir
-    a = new TAction(this, "browse_configdir", tr("Browse settings folder..."));
+    a = new TAction(this, "browse_config_dir", tr("Browse settings folder..."));
     connect(a, &TAction::triggered, this, &TMainWindow::browseConfigFolder);
 
     // Browse data dir
-    a = new TAction(this, "browse_datadir", tr("Browse data folder..."));
+    a = new TAction(this, "browse_data_dir", tr("Browse data folder..."));
     connect(a, &TAction::triggered, this, &TMainWindow::browseDataFolder);
 
     // Settings
@@ -1217,8 +1269,8 @@ void TMainWindow::createMenus() {
     toolbarMenu->addAction(controlbar->toggleViewAction());
 
     toolbarMenu->addSeparator();
-    toolbarMenu->addAction(findAction("toggle_pl_toolbar"));
-    toolbarMenu->addAction(findAction("toggle_fav_toolbar"));
+    toolbarMenu->addAction(requireAction("toggle_pl_toolbar"));
+    toolbarMenu->addAction(requireAction("toggle_fav_toolbar"));
 
     toolbarMenu->addSeparator();
     toolbarMenu->addAction(viewStatusBarAct);
@@ -1238,13 +1290,13 @@ void TMainWindow::createMenus() {
     editToolbarMenu = new Menu::TMenu(this, "toolbar_edit_menu",
                                       tr("Edit toolbars"));
 
-    editToolbarMenu->addAction(findAction("edit_toolbar1"));
-    editToolbarMenu->addAction(findAction("edit_toolbar2"));
-    editToolbarMenu->addAction(findAction("edit_controlbar"));
+    editToolbarMenu->addAction(requireAction("edit_toolbar1"));
+    editToolbarMenu->addAction(requireAction("edit_toolbar2"));
+    editToolbarMenu->addAction(requireAction("edit_controlbar"));
 
     editToolbarMenu->addSeparator();
-    editToolbarMenu->addAction(findAction("edit_pl_toolbar"));
-    editToolbarMenu->addAction(findAction("edit_fav_toolbar"));
+    editToolbarMenu->addAction(requireAction("edit_pl_toolbar"));
+    editToolbarMenu->addAction(requireAction("edit_fav_toolbar"));
 
     viewMenu = new Menu::TMenuView(this, this, toolbarMenu, editToolbarMenu);
     menuBar()->addMenu(viewMenu);
@@ -1321,7 +1373,7 @@ void TMainWindow::createToolbars() {
                                               tr("Control bar"));
     QStringList actions;
     actions << "stop"
-            << "play_or_pause"
+            << "play_pause_stop"
             << "seek_rewind_menu"
             << "seek_forward_menu"
             << "in_out_menu|0|1"
@@ -1674,17 +1726,18 @@ QString parentOrMenuName(QAction* action) {
         if (menu) {
             s = menu->menuAction()->objectName();
             if (!s.isEmpty()) {
-                return "owned by menu '" + s + "'";
+                return "owned by menu \"" + s + "\"";
             }
             s = "owned by unnamed menu";
             if (menu->parent()) {
-                s += " with grandparent '" + menu->parent()->objectName() + "'";
+                s += " with grandparent \"" + menu->parent()->objectName()
+                        + "\"";
             }
             return s;
         }
         return "not owned by menu";
     }
-    return "with parent '" + name + "'";
+    return "with parent \"" + name + "\"";
 }
 
 QList<QAction*> TMainWindow::findNamedActions() const {
@@ -1694,32 +1747,30 @@ QList<QAction*> TMainWindow::findNamedActions() const {
 
     for (int i = 0; i < allActions.count(); i++) {
         QAction* action = allActions.at(i);
-        if (action->isSeparator()) {
-            //WZTRACE(QString("Skipping separator %1")
-            //        .arg(parentOrMenuName(action)));
-        } else if (action->objectName().isEmpty()) {
-            WZTRACE(QString("Skipping unnamed %1action '%2' %3")
-                    .arg(action->menu() ? "menu" : "")
-                    .arg(action->text())
-                    .arg(parentOrMenuName(action)));
-        } else if (action->objectName() == "_q_qlineeditclearaction") {
-            //WZTRACE("Skipping action _q_qlineeditclearaction");
-        } else {
-            selectedActions.append(action);
-            //WZTRACE(QString("Selected action %1 ('%2') %3")
-            //            .arg(action->objectName())
-            //            .arg(action->text())
-            //            .arg(parentOrMenuName(action)));
-
+        if (!action->isSeparator()) {
+            if (action->objectName().isEmpty()) {
+                WZTRACE(QString("Skipping unnamed %1action \"%2\" %3")
+                        .arg(action->menu() ? "menu " : "")
+                        .arg(action->text())
+                        .arg(parentOrMenuName(action)));
+            } else if (action->objectName() == "_q_qlineeditclearaction") {
+            } else {
+                selectedActions.append(action);
+                //WZTRACE(QString("Selected action %1 ('%2') %3")
+                //            .arg(action->objectName())
+                //            .arg(action->text())
+                //            .arg(parentOrMenuName(action)));
+            }
         }
     }
+
     WZDEBUG(QString("Selected %1 actions out of %2 found actions")
             .arg(selectedActions.count()).arg(allActions.count()));
 
     return selectedActions;
 }
 
-QAction* TMainWindow::findAction(const QString &name) {
+QAction* TMainWindow::requireAction(const QString &name) {
 
     QAction* action = findChild<QAction*>(name);
     if (action) {
@@ -1729,6 +1780,15 @@ QAction* TMainWindow::findAction(const QString &name) {
     WZERROR(QString("Action '%1' not found").arg(name));
     Q_ASSERT(false);
     return action;
+}
+
+void TMainWindow::checkActionValid(QString& action, const QString& def) {
+
+    if (!action.isEmpty() && !findChild<QAction*>(action)) {
+        WZW << "Action" << action
+            << "not found. Resetting it to default" << def;
+        action = def;
+    }
 }
 
 void TMainWindow::loadSettings() {
@@ -1741,6 +1801,13 @@ void TMainWindow::loadSettings() {
     Action::TAction::allActions = findNamedActions();
     // Load modified actions from settings
     Action::TActionsEditor::loadSettings(pref);
+
+    checkActionValid(pref->mouse_left_click_function, "play_pause");
+    checkActionValid(pref->mouse_right_click_function, "show_context_menu");
+    checkActionValid(pref->mouse_double_click_function, "fullscreen");
+    checkActionValid(pref->mouse_middle_click_function, "next_wheel_function");
+    checkActionValid(pref->mouse_xbutton1_click_function, "");
+    checkActionValid(pref->mouse_xbutton2_click_function, "");
 
     pref->beginGroup(settingsGroupName());
 
@@ -1855,6 +1922,7 @@ void TMainWindow::saveSettings() {
 void TMainWindow::save() {
 
     msg(tr("Saving settings"), 0);
+    player->saveMediaSettings();
     if (pref->clean_config) {
         pref->clean_config = false;
         pref->remove("");
@@ -2128,6 +2196,7 @@ void TMainWindow::updateAudioEqualizer() {
 
 void TMainWindow::onResizeOnLoadTriggered(bool b) {
     pref->resize_on_load = b;
+    msgOSD(tr("Resize on load %1").arg(b ? tr("set") : tr("cleared")));
 }
 
 void TMainWindow::updateWindowSizeMenu() {
@@ -2188,13 +2257,14 @@ void TMainWindow::updateTitle() {
     WZTRACE("");
 
     QString title = playlist->getPlayingTitle(true);
-    // setWindowCaption = setWindowTitle and show it to TMainWindowTray
+    // setWindowCaption == setWindowTitle() and show it to TMainWindowTray
     setWindowCaption(title + (title.isEmpty() ? "" : " - ")
                      + TConfig::PROGRAM_NAME);
 
     if (propertiesDialog
             && propertiesDialog->isVisible()
             // onMediaStartedPlaying() will handle these 2 when playing starts
+            // TODO: not on error...
             && player->state() != Player::STATE_LOADING
             && player->state() != Player::STATE_RESTARTING) {
         propertiesDialog->showInfo(title);
@@ -2207,7 +2277,6 @@ void TMainWindow::onNewMediaStartedPlaying() {
     enterFullscreenOnPlay();
     pref->addRecent(player->mdat.filename,
                     playlist->getPlayingTitle(false, false));
-    runActionsLater(pref->actions_to_run, true);
 }
 
 void TMainWindow::onMediaStartedPlaying() {
@@ -2216,6 +2285,7 @@ void TMainWindow::onMediaStartedPlaying() {
     if (propertiesDialog && propertiesDialog->isVisible()) {
         setFilePropertiesData();
     }
+    runActionsLater(pref->actions_to_run, true);
 }
 
 void TMainWindow::onPlaylistFinished() {
@@ -2257,6 +2327,8 @@ void TMainWindow::onStateChanged(Player::TState state) {
     autoHideTimer->setAutoHideMouse(state == Player::STATE_PLAYING);
     switch (state) {
         case Player::STATE_STOPPED:
+            // Check pending actions
+            runActionsLater("", true);
             msg(tr("Ready"));
             break;
         case Player::STATE_PLAYING:
@@ -2317,12 +2389,12 @@ Action::TAction* TMainWindow::seekIntToAction(int i) const {
         case 1: return seek1Act;
         case 2: return seek2Act;
         case 3: return seek3Act;
-        case 4: return playlist->playNextAct;
+        case 4: return playNextAct;
         case 5: return seekBackFrameAct;
         case 6: return seekBack1Act;
         case 7: return seekBack2Act;
         case 8: return seekBack3Act;
-        case 9: return playlist->playPrevAct;
+        case 9: return playPrevAct;
         default:
             WZERROR(QString("Undefined seek action %1. Returning seek2Act")
                     .arg(i));
@@ -2405,11 +2477,14 @@ void TMainWindow::closeEvent(QCloseEvent* e)  {
     WZDEBUG("");
 
     if (playlist->maybeSave() && favlist->maybeSave()) {
-        playlist->abortThread();
-        favlist->abortThread();
-        player->close();
-        player->setState(Player::STATE_STOPPING);
+        readyAction->setChecked(false);
+        // TODO: When fullscreen the window size will not yet be updated by the
+        // time it is saved by saveSettings, so block saving it.
+        // Maybe use update() when comming from fs?
+        save_size = !pref->fullscreen;
         exitFullscreen();
+        hide();
+        stop();
         save();
         e->accept();
     } else {
@@ -2463,52 +2538,85 @@ void TMainWindow::enableSubtitleActions() {
     // useCustomSubStyleAct always enabled
 }
 
-void TMainWindow::enablePlayOrPause() {
+void TMainWindow::enablePlayPauseStop() {
 
     Player::TState ps = player->state();
+    stopAct->setEnabled(ps == Player::STATE_PLAYING
+                        || ps == Player::STATE_PAUSED
+                        || ps == Player::STATE_RESTARTING
+                        || ps == Player::STATE_LOADING
+                        || playlist->isBusy()
+                        || favlist->isBusy());
+
+    playAct->setEnabled(!player->mdat.filename.isEmpty()
+                        || playlist->hasPlayableItems());
+
+    pauseAct->setEnabled(ps == Player::STATE_PLAYING);
+
     if (ps == Player::STATE_STOPPING) {
-        playOrPauseAct->setTextAndTip(tr("Stopping player..."));
-        playOrPauseAct->setIcon(iconProvider.iconStopping);
-        playOrPauseAct->setEnabled(false);
+        playPauseAct->setTextAndTip(tr("Stopping player..."));
+        playPauseAct->setIcon(iconProvider.iconStopping);
+        playPauseAct->setEnabled(false);
+        playPauseStopAct->setTextAndTip(tr("Stopping player..."));
+        playPauseStopAct->setIcon(iconProvider.iconStopping);
+        playPauseStopAct->setEnabled(false);
         WZTRACE("Disabled in state stopping");
     } else if (ps == Player::STATE_PLAYING) {
-        playOrPauseAct->setTextAndTip(tr("Pause"));
-        playOrPauseAct->setEnabled(true);
+        playPauseAct->setTextAndTip(tr("Pause"));
+        playPauseAct->setEnabled(true);
+        playPauseStopAct->setTextAndTip(tr("Pause"));
+        playPauseStopAct->setEnabled(true);
         if (playlist->isBusy() || favlist->isBusy()) {
-            playOrPauseAct->setIcon(iconProvider.iconLoading);
+            playPauseAct->setIcon(iconProvider.iconLoading);
+            playPauseStopAct->setIcon(iconProvider.iconLoading);
             WZTRACE("Enabled pause in state playing while busy");
         } else {
-            playOrPauseAct->setIcon(iconProvider.pauseIcon);
+            playPauseAct->setIcon(iconProvider.pauseIcon);
+            playPauseStopAct->setIcon(iconProvider.pauseIcon);
             WZTRACE("Enabled pause in state playing");
         }
     } else if (ps == Player::STATE_PAUSED) {
-        playOrPauseAct->setTextAndTip(tr("Play"));
-        playOrPauseAct->setEnabled(true);
+        playPauseAct->setTextAndTip(tr("Play"));
+        playPauseAct->setEnabled(true);
+        playPauseStopAct->setTextAndTip(tr("Play"));
+        playPauseStopAct->setEnabled(true);
         if (playlist->isBusy() || favlist->isBusy()) {
-            playOrPauseAct->setIcon(iconProvider.iconLoading);
+            playPauseAct->setIcon(iconProvider.iconLoading);
+            playPauseStopAct->setIcon(iconProvider.iconLoading);
             WZTRACE("Enabled play in state paused while busy");
         } else {
-            playOrPauseAct->setIcon(iconProvider.playIcon);
+            playPauseAct->setIcon(iconProvider.playIcon);
+            playPauseStopAct->setIcon(iconProvider.playIcon);
             WZTRACE("Enabled play in state paused");
         }
     } else {
         QString s = player->stateToString().toLower();
         if (ps == Player::STATE_RESTARTING || ps == Player::STATE_LOADING) {
-            playOrPauseAct->setTextAndTip(tr("Stop %1").arg(s));
-            playOrPauseAct->setIcon(iconProvider.iconStopping);
-            playOrPauseAct->setEnabled(true);
+            playPauseAct->setTextAndTip(player->stateToString());
+            playPauseAct->setIcon(iconProvider.iconLoading);
+            playPauseAct->setEnabled(false);
+            playPauseStopAct->setTextAndTip(tr("Stop %1").arg(s));
+            playPauseStopAct->setIcon(iconProvider.iconStopping);
+            playPauseStopAct->setEnabled(true);
             WZTRACE("Enabled stop in state " + s);
         } else if (ps == Player::STATE_STOPPED) {
-            playOrPauseAct->setTextAndTip(tr("Play"));
-            playOrPauseAct->setIcon(iconProvider.playIcon);
+            playPauseAct->setTextAndTip(tr("Play"));
+            playPauseAct->setIcon(iconProvider.playIcon);
+            playPauseStopAct->setTextAndTip(tr("Play"));
+            playPauseStopAct->setIcon(iconProvider.playIcon);
             bool e = !player->mdat.filename.isEmpty()
                     || playlist->hasPlayableItems();
-            playOrPauseAct->setEnabled(e);
+            playPauseAct->setEnabled(e);
+            playPauseStopAct->setEnabled(e);
             WZTRACE(QString("%1 play in state stopped")
                     .arg(e ? "Enabled" : "Disabled"));
         }
     }
-} // enablePlayOrPause()
+
+    bool e = player->stateReady() && playlist->hasPlayableItems();
+    playNextAct->setEnabled(e);
+    playPrevAct->setEnabled(e);
+} // enablePlayPauseStop()
 
 void TMainWindow::enableActions() {
     WZTRACE("State " + player->stateToString());
@@ -2531,14 +2639,7 @@ void TMainWindow::enableActions() {
 
 
     // Play menu
-    stopAct->setEnabled(player->state() == Player::STATE_PLAYING
-                        || player->state() == Player::STATE_PAUSED
-                        || player->state() == Player::STATE_RESTARTING
-                        || player->state() == Player::STATE_LOADING
-                        || playlist->isBusy()
-                        || favlist->isBusy());
-    pauseAct->setEnabled(player->state() == Player::STATE_PLAYING);
-    enablePlayOrPause();
+    enablePlayPauseStop();
 
     // Seek forward
     seekFrameAct->setEnabled(enable);
@@ -2553,6 +2654,7 @@ void TMainWindow::enableActions() {
 
     // Seek to time
     seekToTimeAct->setEnabled(enable);
+    // Repeat and shuffle always enabled
 
 
     // Video menu
@@ -2908,6 +3010,34 @@ void TMainWindow::saveThumbnail() {
     }
 }
 
+void TMainWindow::play() {
+    WZD;
+
+    if (favListDock->isActiveWindow()
+            && !favListDock->visibleRegion().isEmpty()) {
+        favlist->play();
+    } else if (playlist->hasPlayableItems()) {
+        playlist->play();
+    } else if (!player->mdat.filename.isEmpty()) {
+        player->play();
+    } else if (favlist->hasPlayableItems()) {
+        favlist->play();
+    } else {
+        msg(tr("Nothing to play"));
+    }
+}
+
+void TMainWindow::playPauseStop() {
+    WZDEBUG("State " + player->stateToString());
+
+    if (player->state() == Player::STATE_RESTARTING
+            || player->state() == Player::STATE_LOADING) {
+        stop();
+    } else {
+        playlist->playPause();
+    }
+}
+
 void TMainWindow::loadSub() {
     WZDEBUG("");
 
@@ -3038,14 +3168,6 @@ void TMainWindow::setFullscreen(bool b) {
         showNormal();
         didExitFullscreen();
     }
-
-    if (qApp->focusWidget() == 0
-            || qApp->focusWidget()->visibleRegion().isEmpty()) {
-        if (panel->isVisible()) {
-            playerWindow->activateWindow();
-            playerWindow->setFocus();
-        }
-    }
 }
 
 void TMainWindow::toggleFullscreen() {
@@ -3130,7 +3252,7 @@ void TMainWindow::didExitFullscreen() {
         // Set default zoom
         pref->size_factor = pref->initial_zoom_factor;
         // Needs delay for framesize to settle down...
-        QTimer::singleShot(100, this, SLOT(optimizeSizeFactor()));
+        optimizeSizeTimer->logStart();
     }
 
     emit didExitFullscreenSignal();
@@ -3205,7 +3327,7 @@ void TMainWindow::stop() {
 }
 
 void TMainWindow::setSizeFactor(double factor) {
-    WZTRACE(factor);
+    WZT << factor;
 
     if (player->mdat.noVideo()) {
         return;
@@ -3260,31 +3382,22 @@ void TMainWindow::toggleDoubleSize() {
     }
 }
 
+bool TMainWindow::dockNeedsResize(TDockWidget* dock, Qt::DockWidgetArea area) const {
+
+    return !pref->fullscreen
+            && !dock->isFloating()
+            && area != Qt::NoDockWidgetArea
+            && readyAction->isChecked()
+            && (dock == logDock || area != logDock->getArea())
+            && (dock == playlistDock || area != playlistDock->getArea())
+            && (dock == favListDock || area != favListDock->getArea());
+}
+
 bool TMainWindow::haveDockedDocks() const {
 
     return (logDock->isVisible() && !logDock->isFloating())
             || (playlistDock->isVisible() && !playlistDock->isFloating())
             || (favListDock->isVisible() && !favListDock->isFloating());
-}
-
-void TMainWindow::hideDock(TDockWidget* dock) {
-
-    if (dock->isVisible()) {
-        bool dockIsFloating = dock->isFloating();
-        QRect dockRect(dock->frameGeometry());
-        QRect panelRect(panel->frameGeometry());
-        dock->hide();
-        if (!dockIsFloating && !haveDockedDocks()) {
-            QSize s(size());
-            if (dockRect.x() < panelRect.x()
-                    || dockRect.x() >= panelRect.x() + panelRect.width()) {
-                s.rwidth() -= dockRect.width();
-            } else {
-                s.rheight() -= dockRect.height();
-            }
-            resize(s);
-        }
-    }
 }
 
 void TMainWindow::hidePanel() {
@@ -3296,15 +3409,17 @@ void TMainWindow::hidePanel() {
         update();
     }
 
-    if (panel->isVisible() && !haveDockedDocks()) {
+    if (panel->isVisible()) {
         QSize s(width(), height() - panel->height());
         panel->hide();
-        resize(s);
+        if (!haveDockedDocks()) {
+            resize(s);
+        }
     }
 }
 
 double TMainWindow::optimizeSize(double size) const {
-    WZTRACE("Size in " + QString::number(size));
+    WZT << "Size in" << size;
 
     QSize res = playerWindow->resolution();
     if (res.width() <= 0 || res.height() <= 0) {
@@ -3324,6 +3439,7 @@ double TMainWindow::optimizeSize(double size) const {
 
     // Return current size for VO size change caused by TPlayer::setAspectRatio
     if (player->keepSize) {
+        WZTRACE("Keep size requested");
         player->clearKeepSize();
         return pref->size_factor;
     }
@@ -3721,6 +3837,7 @@ void TMainWindow::postAction(const QString& actionName, bool hasArg, bool arg) {
 }
 
 void TMainWindow::checkPendingActions() {
+    WZT;
 
    QStringList actionList = pending_actions.split(" ", QString::SkipEmptyParts);
    if (actionList.count()) {
@@ -3753,7 +3870,7 @@ void TMainWindow::checkPendingActions() {
 void TMainWindow::runActionsLater(const QString& actions,
                                   bool postCheck,
                                   bool prepend) {
-    WZDEBUG("Scheduling actions '" + actions + "'");
+    WZD << "Scheduling actions" << actions;
 
     if (!actions.isEmpty()) {
         if (pending_actions.isEmpty()) {
@@ -3772,7 +3889,7 @@ void TMainWindow::runActionsLater(const QString& actions,
 }
 
 void TMainWindow::onReceivedMessage(const QString& msg) {
-    WZDEBUG("'" + msg + "'");
+    WZD << msg;
 
     if (msg == "hello") {
         return;

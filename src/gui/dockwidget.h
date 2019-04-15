@@ -12,13 +12,27 @@ class TDockWidget : public QDockWidget {
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     TDockWidget(QWidget* parent,
+                QWidget* aPanel,
                 const QString& objectName,
                 const QString& title);
+
+    Qt::DockWidgetArea getArea() const;
+
+protected:
+    virtual void closeEvent(QCloseEvent* e) override;
+
+private:
+    QWidget* panel;
+    Qt::DockWidgetArea lastArea;
+
+    void resizeMainWindow(bool visible);
+    void triggerResize(bool visible);
 
 private slots:
     void onToggleViewTriggered(bool visible);
     void onFocusChanged(QWidget *old, QWidget *now);
     void onDockVisibilityChanged(bool visible);
+    void onDockLocationChanged(Qt::DockWidgetArea area);
 };
 
 } // namespace Gui

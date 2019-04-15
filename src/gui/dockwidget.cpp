@@ -1,10 +1,9 @@
 #include "gui/dockwidget.h"
-#include "settings/preferences.h"
+#include "gui/mainwindow.h"
 #include "desktop.h"
-#include "wzdebug.h"
+#include "wztimer.h"
 
 #include <QApplication>
-#include <QAction>
 
 
 using namespace Settings;
@@ -12,9 +11,12 @@ using namespace Settings;
 namespace Gui {
 
 TDockWidget::TDockWidget(QWidget* parent,
+                         QWidget* aPanel,
                          const QString& objectName,
                          const QString& title) :
-    QDockWidget(title, parent) {
+    QDockWidget(title, parent),
+    panel(aPanel),
+    lastArea(Qt::NoDockWidgetArea) {
 
     setObjectName(objectName);
     setAcceptDrops(true);
@@ -25,20 +27,91 @@ TDockWidget::TDockWidget(QWidget* parent,
             this, &TDockWidget::onFocusChanged);
     connect(this, &TDockWidget::visibilityChanged,
             this, &TDockWidget::onDockVisibilityChanged);
+    connect(this, &TDockWidget::dockLocationChanged,
+            this, &TDockWidget::onDockLocationChanged);
     connect(toggleViewAction(), &QAction::triggered,
-            this, &TDockWidget::onToggleViewTriggered,
-            Qt::QueuedConnection);
+            this, &TDockWidget::onToggleViewTriggered);
+
+    hide();
 
     // QTBUG-48296 keeps panels inside desktop
     // Use alt+left mouse button to override
 }
 
-// The toggleViewAction won't raise the dock when making it visible, do it here
+void TDockWidget::onDockLocationChanged(Qt::DockWidgetArea area) {
+    lastArea = area;
+}
+
+Qt::DockWidgetArea TDockWidget::getArea() const {
+
+    if (isFloating() || !isVisible() || !panel->isVisible()) {
+        return Qt::NoDockWidgetArea;
+    }
+    return lastArea;
+}
+
+void TDockWidget::resizeMainWindow(bool visible) {
+
+    QRect r = mainWindow->geometry();
+    if (lastArea == Qt::LeftDockWidgetArea
+            || lastArea == Qt::RightDockWidgetArea) {
+        if (visible) {
+            r.setWidth(r.width() + frameSize().width());
+            if (lastArea == Qt::LeftDockWidgetArea) {
+                r.moveLeft(r.x() - frameSize().width());
+            }
+        } else {
+            r.setWidth(r.width() - frameSize().width());
+            if (lastArea == Qt::LeftDockWidgetArea) {
+                r.moveLeft(r.x() + frameSize().width());
+            }
+        }
+    } else if (visible) {
+        r.setHeight(r.height() + frameSize().height());
+        if (lastArea == Qt::TopDockWidgetArea) {
+            r.moveTop(r.y() - frameSize().width());
+        }
+    } else {
+        r.setHeight(r.height() - frameSize().height());
+        if (lastArea == Qt::TopDockWidgetArea) {
+            r.moveTop(r.y() + frameSize().width());
+        }
+    }
+    mainWindow->setGeometry(r);
+
+    if (visible) {
+        if (TDesktop::keepInsideDesktop(mainWindow)) {
+            mainWindow->optimizeSizeTimer->logStart();
+        }
+    }
+}
+
+void TDockWidget::triggerResize(bool visible) {
+
+    if (Gui::mainWindow->dockNeedsResize(this, lastArea)) {
+        WZTRACEOBJ("Resizing");
+        resizeMainWindow(visible);
+    }
+}
+
+void TDockWidget::closeEvent(QCloseEvent* e) {
+
+    QDockWidget::closeEvent(e);
+    triggerResize(false);
+}
+
+// Note: called when toggleViewAction() triggered, not when close button used
 void TDockWidget::onToggleViewTriggered(bool visible) {
 
-    if (visible && visibleRegion().isEmpty()) {
-        WZTRACEOBJ("Raising");
-        raise();
+    if (visible) {
+        // If !visible resize already triggered by closeEvent()
+        triggerResize(visible);
+
+        // The toggleViewAction won't raise the dock when making it visible
+        if (visibleRegion().isEmpty()) {
+            WZTRACEOBJ("Raising");
+            raise();
+        }
     }
 }
 
@@ -59,25 +132,24 @@ void TDockWidget::onFocusChanged(QWidget*, QWidget *now) {
 // When a tabbed dock has focus and we switch to another dock, switch focus
 // with it, to prevent the focus staying behind on a no longer visible dock.
 void TDockWidget::onDockVisibilityChanged(bool visible) {
-    //WZTRACEOBJ(QString("Visible arg %1 visible %2 Focus widget %3")
-    //           .arg(visible)
-    //           .arg(isVisible())
-    //           .arg(qApp->focusWidget()
-    //                ? qApp->focusWidget()->objectName()
-    //                : "none"));
+    //WZTOBJ << "Visible arg" << visible
+    //       << "isVisible()" << isVisible()
+    //       << "Focus widget"
+    //       << (qApp->focusWidget()
+    //           ? qApp->focusWidget()->objectName()
+    //           : "none");
 
     if (visible && focusProxy()) {
         QString proxyName = focusProxy()->objectName();
         QWidget* fw = qApp->focusWidget();
         while (fw) {
             QString name = fw->objectName();
-            if (name == "playerwindow" // Just a speedup
-                    || name == proxyName // Just a speedup
+            if (name == proxyName // Just a speedup
                     || name == objectName()) {
                 break;
-            } else if (name.endsWith("widget") || name.endsWith("dock")) {
-                WZTRACEOBJ(QString("Currently active %1. Setting focus to %2")
-                           .arg(name).arg(proxyName));
+            } else if (name.endsWith("_widget") || name.endsWith("_dock")) {
+                WZTOBJ << "Current focus" << name
+                       << "- Setting focus to" << proxyName;
                 focusProxy()->setFocus();
                 break;
             } else {

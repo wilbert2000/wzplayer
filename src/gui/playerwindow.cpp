@@ -106,7 +106,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     double_clicked(false),
     delay_left_click(true),
     dragging(false),
-    isPreviewWindow(name == "previewwindow") {
+    isPreviewWindow(name == "preview_window") {
 
     setObjectName(name);
     setMinimumSize(frame());
@@ -187,8 +187,8 @@ void TPlayerWindow::updateSizeFactor() {
     if (!video_size.isEmpty()) {
         double old_factor = pref->size_factor;
         pref->size_factor = getSizeFactor();
-        // WZTRACEOBJ(QString("updating size from %1 to %2")
-        //            .arg(old_factor).arg(pref->size_factor));
+        //WZTOBJ << "Updating size from" << old_factor
+        //       << "to" << pref->size_factor;
         // Need to emit if old == new to detect changes by user
         emit videoSizeFactorChanged(old_factor, pref->size_factor);
     }

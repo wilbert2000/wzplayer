@@ -27,7 +27,7 @@ using namespace Settings;
 
 namespace Gui { namespace Pref {
 
-TInput::TInput(QWidget* parent, TMainWindow* mw)
+TInput::TInput(QWidget* parent)
     : TSection(parent) {
 
     setupUi(this);
@@ -36,7 +36,7 @@ TInput::TInput(QWidget* parent, TMainWindow* mw)
     keyboard_icon->setPixmap(Images::icon("keyboard"));
     mouse_icon->setPixmap(Images::icon("mouse"));
 
-    createMouseCombos(mw);
+    createMouseCombos();
 
     wheel_function_combo->addItem(tr("No function"), TPreferences::DoNothing);
     wheel_function_combo->addItem(tr("Media seeking"), TPreferences::Seeking);
@@ -67,9 +67,9 @@ QPixmap TInput::sectionIcon() {
     return Images::icon("pref_input", iconSize);
 }
 
-void TInput::addActionItem(TMainWindow* mw, const QString& name) {
+void TInput::addActionItem(const QString& name) {
 
-    QAction* action = mw->findAction(name);
+    QAction* action = Gui::mainWindow->requireAction(name);
     left_click_combo->addItem(
                 tr("%1 (%2)")
                 .arg(Action::TActionsEditor::cleanActionText(action->text(),
@@ -78,7 +78,7 @@ void TInput::addActionItem(TMainWindow* mw, const QString& name) {
                 name);
 }
 
-void TInput::createMouseCombos(TMainWindow* mw) {
+void TInput::createMouseCombos() {
 
     left_click_combo->clear();
     right_click_combo->clear();
@@ -88,48 +88,49 @@ void TInput::createMouseCombos(TMainWindow* mw) {
     xbutton2_click_combo->clear();
 
     left_click_combo->addItem(tr("None"), "");
-    addActionItem(mw, "pl_play");
-    addActionItem(mw, "play_or_pause");
-    addActionItem(mw, "pause");
-    addActionItem(mw, "stop");
-    addActionItem(mw, "seek_rewind_frame");
-    addActionItem(mw, "seek_rewind1");
-    addActionItem(mw, "seek_rewind2");
-    addActionItem(mw, "seek_rewind3");
-    addActionItem(mw, "seek_forward_frame");
-    addActionItem(mw, "seek_forward1");
-    addActionItem(mw, "seek_forward2");
-    addActionItem(mw, "seek_forward3");
-    addActionItem(mw, "increase_volume");
-    addActionItem(mw, "decrease_volume");
-    addActionItem(mw, "fullscreen");
-    addActionItem(mw, "screenshot");
-    addActionItem(mw, "stay_on_top_always");
-    addActionItem(mw, "stay_on_top_never");
-    addActionItem(mw, "stay_on_top_playing");
-    addActionItem(mw, "mute");
-    addActionItem(mw, "osd_next");
-    addActionItem(mw, "view_playlist");
-    addActionItem(mw, "reset_zoom_pan");
-    addActionItem(mw, "exit_fullscreen");
-    addActionItem(mw, "speed_normal");
-    addActionItem(mw, "toggle_frames");
-    addActionItem(mw, "view_settings");
-    addActionItem(mw, "size_toggle_double");
-    addActionItem(mw, "next_chapter");
-    addActionItem(mw, "prev_chapter");
-    addActionItem(mw, "video_equalizer");
-    addActionItem(mw, "audio_equalizer");
-    addActionItem(mw, "show_context_menu");
-    addActionItem(mw, "next_wheel_function");
-    addActionItem(mw, "dvdnav_mouse");
-    addActionItem(mw, "dvdnav_menu");
-    addActionItem(mw, "dvdnav_prev");
-    addActionItem(mw, "dvdnav_up");
-    addActionItem(mw, "dvdnav_down");
-    addActionItem(mw, "dvdnav_left");
-    addActionItem(mw, "dvdnav_right");
-    addActionItem(mw, "dvdnav_select");
+    addActionItem("pl_play");
+    addActionItem("play_pause");
+    addActionItem("play_pause_stop");
+    addActionItem("pause");
+    addActionItem("stop");
+    addActionItem("seek_rewind_frame");
+    addActionItem("seek_rewind1");
+    addActionItem("seek_rewind2");
+    addActionItem("seek_rewind3");
+    addActionItem("seek_forward_frame");
+    addActionItem("seek_forward1");
+    addActionItem("seek_forward2");
+    addActionItem("seek_forward3");
+    addActionItem("increase_volume");
+    addActionItem("decrease_volume");
+    addActionItem("fullscreen");
+    addActionItem("screenshot");
+    addActionItem("stay_on_top_always");
+    addActionItem("stay_on_top_never");
+    addActionItem("stay_on_top_playing");
+    addActionItem("mute");
+    addActionItem("osd_next");
+    addActionItem("view_playlist");
+    addActionItem("reset_zoom_pan");
+    addActionItem("exit_fullscreen");
+    addActionItem("speed_normal");
+    addActionItem("toggle_frames");
+    addActionItem("view_settings");
+    addActionItem("size_toggle_double");
+    addActionItem("next_chapter");
+    addActionItem("prev_chapter");
+    addActionItem("video_equalizer");
+    addActionItem("audio_equalizer");
+    addActionItem("show_context_menu");
+    addActionItem("next_wheel_function");
+    addActionItem("dvdnav_mouse");
+    addActionItem("dvdnav_menu");
+    addActionItem("dvdnav_prev");
+    addActionItem("dvdnav_up");
+    addActionItem("dvdnav_down");
+    addActionItem("dvdnav_left");
+    addActionItem("dvdnav_right");
+    addActionItem("dvdnav_select");
 
     // Copy to other combos
     for (int n = 0; n < left_click_combo->count(); n++) {
@@ -216,13 +217,15 @@ void TInput::setActionsList(QStringList l) {
 */
 
 void TInput::setLeftClickFunction(const QString& f) {
+
     int pos = left_click_combo->findData(f);
-    if (pos == -1) pos = 0; //None
+    if (pos == -1) pos = 0; // None
     left_click_combo->setCurrentIndex(pos);
 }
 
 QString TInput::leftClickFunction() {
-    return left_click_combo->itemData(left_click_combo->currentIndex()).toString();
+    return left_click_combo->itemData(left_click_combo->currentIndex())
+            .toString();
 }
 
 void TInput::setRightClickFunction(const QString& f) {
@@ -446,7 +449,7 @@ void TInput::createHelp() {
              " video. Consequently this will cause a left click action being"
              " triggered before and after each double click action."
              " This won't cause much trouble if the default action for the"
-             " left mouse button, play_or_pause, is still assigned,"
+             " left mouse button, play_pause, is still assigned,"
              " because the first left click will be canceled by the second."));
 
     setWhatsThis(middle_click_combo, tr("Middle click"),

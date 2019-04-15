@@ -33,7 +33,7 @@ namespace Pref {
 class TInput : public TSection, public Ui::TInput {
     Q_OBJECT
 public:
-    TInput(QWidget* parent, TMainWindow* mw);
+    TInput(QWidget* parent);
 
     virtual QString sectionName();
     virtual QPixmap sectionIcon();
@@ -44,8 +44,8 @@ public:
     virtual void getData(Settings::TPreferences* pref);
 
 private:
-    void addActionItem(TMainWindow* mw, const QString& name);
-    void createMouseCombos(TMainWindow* mw);
+    void addActionItem(const QString& name);
+    void createMouseCombos();
     void createHelp();
 
     void setLeftClickFunction(const QString& f);

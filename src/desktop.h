@@ -30,7 +30,7 @@ public:
     static QSize availableSize(const QWidget* w);
     static double aspectRatio(const QWidget* w);
     static void centerWindow(QWidget* w);
-    static void keepInsideDesktop(QWidget* w);
+    static bool keepInsideDesktop(QWidget* w);
 };
 
 #endif // DESKTOP_H

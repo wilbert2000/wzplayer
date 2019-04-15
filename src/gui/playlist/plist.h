@@ -34,14 +34,13 @@ class TPList : public QWidget {
     friend class TMenuAddRemoved;
 public:
     explicit TPList(TDockWidget* parent,
-                    TMainWindow* mw,
                     const QString& name,
                     const QString& aShortName,
                     const QString& aTransName);
     virtual ~TPList() override;
 
+    bool hasPlayableItems() const;
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
-    void setContextMenuToolbar(Action::Menu::TMenu* menu);
 
     void abortThread();
     void add(const QStringList& files,
@@ -50,8 +49,8 @@ public:
              const QString& fileToPlay = "");
     bool isBusy() const;
 
-    virtual void startPlay() = 0;
     bool maybeSave();
+    void setContextMenuToolbar(Action::Menu::TMenu* menu);
 
     virtual void loadSettings();
     virtual void saveSettings();
@@ -60,20 +59,23 @@ public slots:
     virtual void enableActions();
 
     virtual void stop();
-    virtual void findPlayingItem() = 0;
+    void play();
+    void playNext(bool loop_playlist = true);
+    void playPrev();
+    virtual bool findPlayingItem();
 
 signals:
     void addedItems();
     void busyChanged();
 
 protected:
-    TMainWindow* mainWindow;
     TDockWidget* dock;
     TPlaylistWidget* playlistWidget;
     Action::TEditableToolbar* toolbar;
     QString playlistFilename;
     TAddFilesThread* thread;
     int disableEnableActions;
+    bool reachedEndOfPlaylist;
 
     QAction* openAct;
     Action::TAction* saveAct;
@@ -84,6 +86,8 @@ protected:
     Action::TAction* playAct;
     Action::TAction* playInNewWindowAct;
     Action::TAction* findPlayingAct;
+    QAction* repeatAct;
+    QAction* shuffleAct;
 
     Action::TAction* editNameAct;
     Action::TAction* resetNameAct;
@@ -104,6 +108,7 @@ protected:
 
     virtual void clear(bool clearFilename = true);
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) = 0;
+    void playEx();
     void openPlaylist(const QString& filename);
     void makeActive();
     void setPlaylistFilename(const QString& filename);
@@ -112,10 +117,10 @@ protected slots:
     virtual void openPlaylistDialog();
     bool save(bool allowFail);
     virtual bool saveAs();
-    void play();
     virtual void refresh() = 0;
     virtual void removeAll();
 
+    void startPlay();
     void setPLaylistTitle();
 
 private:
@@ -137,6 +142,8 @@ private:
     void createTree();
     void createActions();
     void createToolbar();
+
+    TPlaylistItem* getRandomItem() const;
 
     void enableRemoveFromDiskAction();
 

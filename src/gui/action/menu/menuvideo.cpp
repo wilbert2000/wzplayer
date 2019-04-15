@@ -20,7 +20,7 @@ namespace Action {
 namespace Menu {
 
 TAspectGroup::TAspectGroup(TMainWindow *mw) :
-    TActionGroup(mw, "aspectgroup") {
+    TActionGroup(mw, "aspect_group") {
 
     setEnabled(false);
     aspectAutoAct = new TActionGroupItem(mw, this, "aspect_detect",
@@ -102,10 +102,10 @@ TMenuAspect::TMenuAspect(QWidget* parent, TMainWindow* mw) :
 
     TAspectGroup* group = mw->findChild<TAspectGroup*>();
     addActions(group->actions());
-    insertSeparator(mw->findAction("aspect_1_1"));
-    insertSeparator(mw->findAction("aspect_none"));
+    insertSeparator(mw->requireAction("aspect_1_1"));
+    insertSeparator(mw->requireAction("aspect_none"));
     addSeparator();
-    addAction(mw->findAction("aspect_next"));
+    addAction(mw->requireAction("aspect_next"));
 
     connect(group, &TAspectGroup::setAspectToolTip,
             this, &TMenuAspect::setAspectToolTip);
@@ -124,7 +124,7 @@ void TMenuAspect::setAspectToolTip(QString tip) {
 
 
 TDeinterlaceGroup::TDeinterlaceGroup(TMainWindow* mw)
-    : TActionGroup(mw, "deinterlacegroup") {
+    : TActionGroup(mw, "deinterlace_group") {
 
     setEnabled(false);
     new TActionGroupItem(mw, this, "deinterlace_none", tr("None"),
@@ -152,14 +152,14 @@ TMenuDeinterlace::TMenuDeinterlace(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "deinterlace_menu", tr("Deinterlace"), "deinterlace") {
 
     TDeinterlaceGroup* group = mw->findChild<TDeinterlaceGroup*>(
-                "deinterlacegroup");
+                "deinterlace_group");
     addActions(group->actions());
     addSeparator();
-    addAction(mw->findAction("toggle_deinterlacing"));
+    addAction(mw->requireAction("toggle_deinterlacing"));
 }
 
 TRotateGroup::TRotateGroup(TMainWindow* mw) :
-    TActionGroup(mw, "rotategroup") {
+    TActionGroup(mw, "rotate_group") {
 
     setEnabled(false);
     new TActionGroupItem(mw, this, "rotate_none", tr("No rotation"), 0);
@@ -179,10 +179,10 @@ public:
 TMenuTransform::TMenuTransform(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "transform_menu", tr("Transform"), "transform") {
 
-    addAction(mw->findAction("flip"));
-    addAction(mw->findAction("mirror"));
+    addAction(mw->requireAction("flip"));
+    addAction(mw->requireAction("mirror"));
     addSeparator();
-    TRotateGroup* group = mw->findChild<TRotateGroup*>("rotategroup");
+    TRotateGroup* group = mw->findChild<TRotateGroup*>("rotate_group");
     addActions(group->actions());
 
     connect(this, &TMenuTransform::aboutToShow,
@@ -193,7 +193,7 @@ TMenuTransform::TMenuTransform(QWidget* parent, TMainWindow* mw)
 TZoomAndPanGroup::TZoomAndPanGroup(TMainWindow* mw)
     : QActionGroup(mw) {
 
-    setObjectName("zoomandpangroup");
+    setObjectName("zoom_and_pan_group");
     setExclusive(false);
     setEnabled(false);
 
@@ -244,17 +244,18 @@ public:
 TMenuZoomAndPan::TMenuZoomAndPan(QWidget* parent, TMainWindow* mw)
     : TMenu(parent, "zoom_and_pan_menu", tr("Zoom and pan")) {
 
-    TZoomAndPanGroup* group = mw->findChild<TZoomAndPanGroup*>("zoomandpangroup");
+    TZoomAndPanGroup* group = mw->findChild<TZoomAndPanGroup*>(
+                "zoom_and_pan_group");
     addActions(group->actions());
-    insertSeparator(mw->findAction("inc_zoom"));
-    insertSeparator(mw->findAction("move_left"));
+    insertSeparator(mw->requireAction("inc_zoom"));
+    insertSeparator(mw->requireAction("move_left"));
 }
 
 
 TMenuVideoTracks::TMenuVideoTracks(QWidget* parent, TMainWindow* mw)
-    : TMenu(parent, "videotrack_menu", tr("Video track")) {
+    : TMenu(parent, "video_track_menu", tr("Video track")) {
 
-    addAction(mw->findAction("next_video_track"));
+    addAction(mw->requireAction("next_video_track"));
     addSeparator();
     connect(mw, &TMainWindow::videoTrackGroupChanged,
             this, &TMenuVideoTracks::updateVideoTracks);
@@ -268,7 +269,7 @@ void TMenuVideoTracks::updateVideoTracks(TActionGroup* group) {
 TMenuVideo::TMenuVideo(QWidget* parent, TMainWindow* mw) :
         TMenu(parent, "video_menu", tr("Video"), "noicon") {
 
-    addAction(mw->findAction("fullscreen"));
+    addAction(mw->requireAction("fullscreen"));
 
     addSeparator();
     // Aspect submenu
@@ -280,8 +281,8 @@ TMenuVideo::TMenuVideo(QWidget* parent, TMainWindow* mw) :
 
     addSeparator();
     // Equalizer
-    addAction(mw->findAction("video_equalizer"));
-    addAction(mw->findAction("reset_video_equalizer"));
+    addAction(mw->requireAction("video_equalizer"));
+    addAction(mw->requireAction("reset_video_equalizer"));
     // Color space
     addMenu(new TMenuVideoColorSpace(this, mw));
 
@@ -293,7 +294,7 @@ TMenuVideo::TMenuVideo(QWidget* parent, TMainWindow* mw) :
     // Video filter submenu
     addMenu(new TMenuVideoFilter(this, mw));
     // Stereo 3D
-    addAction(mw->findAction("stereo_3d_filter"));
+    addAction(mw->requireAction("stereo_3d_filter"));
 
     addSeparator();
     // Video tracks
@@ -301,9 +302,9 @@ TMenuVideo::TMenuVideo(QWidget* parent, TMainWindow* mw) :
 
     addSeparator();
     // Screenshots
-    addAction(mw->findAction("screenshot"));
-    addAction(mw->findAction("screenshots"));
-    addAction(mw->findAction("capture_stream"));
+    addAction(mw->requireAction("screenshot"));
+    addAction(mw->requireAction("screenshots"));
+    addAction(mw->requireAction("capture_stream"));
 }
 
 } // namespace Menu

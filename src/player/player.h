@@ -112,7 +112,7 @@ public:
 
     void setStartPausedOnce() { startPausedOnce = true; }
     void saveRestartState();
-
+    void saveMediaSettings();
 
 public slots:
     // Play
@@ -405,7 +405,6 @@ private:
     void setInPointSec(double sec);
     void setOutPointSec(double sec);
 
-    void saveMediaSettings();
     void initVolume();
     void initMediaSettings();
     void onPlayingStartedNewMedia();

@@ -21,41 +21,51 @@
 namespace Gui {
 namespace Playlist {
 
-TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
-    TPList(parent, mw, "favlist", "fav", tr("Favorites")),
+TFavList::TFavList(TDockWidget *parent, TPlaylist* playlst) :
+    TPList(parent, "favlist", "fav", tr("Favorites")),
     loaded(false),
     playlist(playlst),
     currentFavAction(0) {
 
     playlistWidget->setSort(TPlaylistItem::COL_ORDER, Qt::AscendingOrder);
 
-    createToolbar();
+    // Repeat and shuffle
+    repeatAct = mainWindow->requireAction("pl_repeat");
+    shuffleAct = mainWindow->requireAction("pl_shuffle");
 
+    // Load favorites action
+    loadFavoritesAction = new Action::TAction(this, "fav_load",
+                                              tr("Load favorites"), "noicon");
+    loadFavoritesAction->setIcon(iconProvider.openIcon);
+    connect(loadFavoritesAction, &Action::TAction::triggered,
+            this, &TFavList::loadFavorites);
+    // Load favorites when loading of media done
+    mainWindow->runActionsLater("fav_load", false, true);
     // Load favorites when dock becomes visible
     connect(dock->toggleViewAction(), &QAction::toggled,
             this, &TFavList::onDockToggled);
-    // or 15 seconds passed
-    QTimer::singleShot(15000, this, &TFavList::loadFavorites);
+
+    createToolbar();
 
     favMenu = new Action::Menu::TMenu(this, "favorites_menu", tr("Favorites"));
     favMenu->addAction(addPlayingFileAct);
     favMenu->addAction(dock->toggleViewAction());
+    connect(favMenu, &Action::Menu::TMenu::triggered,
+            this, &TFavList::onFavMenuTriggered);
     // Load favorites when menu shown
     connect(favMenu, &Action::Menu::TMenu::aboutToShow,
             this, &TFavList::loadFavorites);
-    connect(favMenu, &Action::Menu::TMenu::triggered,
-            this, &TFavList::onFavMenuTriggered);
 
     // Timers to merge TPlist::addedItems and/or multiple
     // TPlaylistWidget::modified signals
-    requestUpdateTimer = new TWZTimer(this, "favrequestupdatetimer");
+    requestUpdateTimer = new TWZTimer(this, "fav_request_update_timer");
     requestUpdateTimer->setSingleShot(true);
     requestUpdateTimer->setInterval(0);
     connect(requestUpdateTimer, &TWZTimer::timeout,
             this, &TFavList::onRequestUpdateTimeout);
 
     // Timer to save favorites
-    requestSaveTimer = new TWZTimer(this, "favrequestsavetimer");
+    requestSaveTimer = new TWZTimer(this, "fav_request_save_timer");
     requestSaveTimer->setSingleShot(true);
     requestSaveTimer->setInterval(10000);
     connect(requestSaveTimer, &TWZTimer::timeout,
@@ -66,14 +76,14 @@ TFavList::TFavList(TDockWidget *parent, TMainWindow* mw, TPlaylist* playlst) :
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
             this, &TFavList::onModifiedChanged);
 
-    // Timer to merge multiple updates of playing item playlist
-    updatePlayingItemTimer = new TWZTimer(this, "favupdateplayingitemtimer");
+    // Timer to merge multiple updates of playing item from playlist
+    updatePlayingItemTimer = new TWZTimer(this, "fav_update_playing_item_timer");
     updatePlayingItemTimer->setSingleShot(true);
     updatePlayingItemTimer->setInterval(250);
     connect(updatePlayingItemTimer, &QTimer::timeout,
             this, &TFavList::onPlaylistPlayingItemUpdated);
     connect(playlist->getPlaylistWidget(), &TPlaylistWidget::playingItemUpdated,
-            updatePlayingItemTimer, &TWZTimer::startVoid);
+            updatePlayingItemTimer, &TWZTimer::logStart);
 
     if (!QDir().mkpath(Settings::TPaths::favoritesPath())) {
         WZERROR(QString("Failed to create favorites directory '%1'. %2")
@@ -112,20 +122,17 @@ void TFavList::enableActions() {
     disableEnableActions--;
 }
 
-// Currently not used
-void TFavList::startPlay() {
-    WZTRACE("");
-    playlist->startPlay();
-}
-
 void TFavList::playItem(TPlaylistItem* item, bool keepPaused) {
 
     if (item) {
+        reachedEndOfPlaylist = false;
         // Could ignore keepPaused, only used by playlist playPrev/Next
         if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
            player->setStartPausedOnce();
         }
         playlist->open(item->filename(), item->baseName());
+    } else {
+        reachedEndOfPlaylist = true;
     }
 }
 
@@ -156,8 +163,8 @@ bool TFavList::saveAs() {
 void TFavList::refresh() {
     WZTRACE("");
 
-    loaded = true;
     if (maybeSave()) {
+        loaded = true;
         clear(false);
         if (QFileInfo(Settings::TPaths::favoritesPath()).exists()) {
             add(QStringList() << playlistFilename);
@@ -183,18 +190,12 @@ void TFavList::onDockToggled(bool visible) {
     }
 }
 
-void TFavList::findPlayingItem() {
+bool TFavList::findPlayingItem() {
 
-    TPlaylistItem* i = playlistWidget->findFilename(player->mdat.filename);
-    if (i) {
-        makeActive();
-        if (i == playlistWidget->currentItem()) {
-            playlistWidget->scrollToItem(i);
-        } else {
-            playlistWidget->setCurrentItem(i);
-        }
+    if (TPList::findPlayingItem()) {
+        return true;
     } else {
-        playlist->findPlayingItem();
+        return playlist->findPlayingItem();
     }
 }
 
@@ -263,7 +264,7 @@ void TFavList::onRequestSaveTimeout() {
 
     if (playlistWidget->isModified()) {
         if (isBusy() || playlistWidget->isEditing()) {
-            requestSaveTimer->startVoid();
+            requestSaveTimer->logStart();
         } else {
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
             save(false);
@@ -281,7 +282,7 @@ void TFavList::onRequestUpdateTimeout() {
     WZTRACE("");
 
     if (isBusy()) {
-        requestUpdateTimer->startVoid();
+        requestUpdateTimer->logStart();
     } else {
         updateFavMenu();
     }
@@ -291,7 +292,7 @@ void TFavList::requestUpdate() {
     WZTRACE("");
 
     currentFavAction = 0;
-    requestUpdateTimer->startVoid();
+    requestUpdateTimer->logStart();
  }
 
 void TFavList::onAddedItems() {
@@ -361,17 +362,16 @@ void TFavList::updFavMenu(QMenu* menu, TPlaylistItem* folder) {
 }
 
 void TFavList::updateFavMenu() {
-    WZTRACE("");
+    WZT << "Menu active" << favMenu->isActiveWindow();
 
     currentFavAction = 0;
     playlistWidget->setPlayingItem(0);
 
     // Using clear() on an active menu is not appreciated
     if (favMenu->isActiveWindow()) {
-        WZTRACE("Menu is active");
         QList<QAction*> actions = favMenu->actions();
         for(int i = actions.count() - 1; i >= 2 ; i--) {
-            // Kind of hard to test whether this really works...
+            // Kind of hard to test whether this works...
             QAction* action = actions.at(i);
             favMenu->removeAction(action);
             QMenu* menu = action->menu();
@@ -383,7 +383,6 @@ void TFavList::updateFavMenu() {
             }
         }
     } else {
-        WZTRACE("Menu not active");
         favMenu->clear();
         favMenu->addAction(addPlayingFileAct);
         favMenu->addAction(dock->toggleViewAction());
@@ -396,7 +395,7 @@ void TFavList::updateFavMenu() {
     }
 
     if (playlistWidget->isModified()) {
-        requestSaveTimer->startVoid();
+        requestSaveTimer->logStart();
     }
 }
 

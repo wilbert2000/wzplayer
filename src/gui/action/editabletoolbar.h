@@ -25,9 +25,6 @@
 
 
 namespace Gui {
-
-class TMainWindow;
-
 namespace Action {
 
 class TEditableToolbar : public QToolBar {
