@@ -116,6 +116,8 @@ signals:
     void xbutton1Clicked(); // first X button
     void xbutton2Clicked(); // second X button
     void dvdnavMousePos(const QPoint& pos);
+    void wheelUp();
+    void wheelDown();
 
     void draggingChanged(bool);
 
@@ -128,6 +130,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* e) override;
     virtual void mouseReleaseEvent(QMouseEvent* e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
+    virtual void wheelEvent(QWheelEvent* e) override;
 
 private:
     TVideoWindow* video_window;

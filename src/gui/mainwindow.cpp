@@ -314,6 +314,11 @@ void TMainWindow::createPlayers() {
             this, &TMainWindow::displayInOutPoints);
     connect(player, &Player::TPlayer::mediaSettingsChanged,
             this, &TMainWindow::displayInOutPoints);
+
+    connect(playerWindow, &TPlayerWindow::wheelUp,
+            player, &Player::TPlayer::wheelUp);
+    connect(playerWindow, &TPlayerWindow::wheelDown,
+            player, &Player::TPlayer::wheelDown);
 }
 
 void TMainWindow::createLogDock() {
@@ -3304,20 +3309,6 @@ void TMainWindow::dropEvent(QDropEvent *e) {
     QMainWindow::dropEvent(e);
 }
 
-void TMainWindow::wheelEvent(QWheelEvent* event) {
-
-    event->accept();
-
-    if (event->orientation() == Qt::Vertical) {
-        if (event->delta() >= 0)
-            player->wheelUp();
-        else
-            player->wheelDown();
-    } else {
-        WZINFO("Ignoring horizontal wheel event");
-    }
-}
-
 void TMainWindow::stop() {
     WZTRACE("");
 
@@ -3382,7 +3373,8 @@ void TMainWindow::toggleDoubleSize() {
     }
 }
 
-bool TMainWindow::dockNeedsResize(TDockWidget* dock, Qt::DockWidgetArea area) const {
+bool TMainWindow::dockNeedsResize(TDockWidget* dock,
+                                  Qt::DockWidgetArea area) const {
 
     return !pref->fullscreen
             && !dock->isFloating()

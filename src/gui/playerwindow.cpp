@@ -237,15 +237,16 @@ void TPlayerWindow::updateVideoWindow() {
     }
 
     // Zoom video size. A large size can blow up the video surface.
-    vSize *= zoom();
+    double zoom = this->zoom();
+    vSize *= zoom;
 
     // Width video window
     int w = wSize.width();
     if (!pref->fullscreen || isPreviewWindow) {
         w -= frame().width();
     }
-    // Clip MPlayer and give MPV the full width of the window.
-    if (pref->isMPlayer() || w < vSize.width()) {
+    // Clip MPlayer and give MPV the full width of the window if zoom >= 1
+    if (pref->isMPlayer() || w < vSize.width() || zoom < 1) {
         w = vSize.width();
     }
 
@@ -254,8 +255,8 @@ void TPlayerWindow::updateVideoWindow() {
     if (!pref->fullscreen || isPreviewWindow) {
         h -= frame().height();
     }
-    // Clip MPlayer and give MPV the full height of the window.
-    if (pref->isMPlayer() || h < vSize.height()) {
+    // Clip MPlayer and give MPV the full height of the window if zoom >= 1
+    if (pref->isMPlayer() || h < vSize.height() || zoom < 1) {
         h = vSize.height();
     }
 
@@ -417,6 +418,19 @@ void TPlayerWindow::mouseDoubleClickEvent(QMouseEvent* event) {
         event->accept();
     } else {
         event->ignore();
+    }
+}
+
+void TPlayerWindow::wheelEvent(QWheelEvent* event) {
+
+    if (event->orientation() == Qt::Vertical) {
+        event->accept();
+        if (event->delta() >= 0)
+            emit wheelUp();
+        else
+            emit wheelDown();
+    } else {
+        WZINFO("Ignoring horizontal wheel event");
     }
 }
 
