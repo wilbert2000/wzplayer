@@ -624,13 +624,16 @@ QString TActionsEditor::cleanActionText(const QString& text,
     s = s.replace("\t", " "); // Replace tabs used by aspectratio menu
     s = s.simplified();
 
-    if (actionName.startsWith("seek_rewind")
-            && actionName != "seek_rewind_frame") {
-        return tr("Rewind %1").arg(s);
-    }
-    if (actionName.startsWith("seek_forward")
-            && actionName != "seek_forward_frame") {
-        return tr("Forward %1").arg(s);
+    if (actionName.startsWith("seek_rewind")) {
+        QChar c = actionName.at(11);
+        if (c >= '1' && c <= '3') {
+            return tr("Rewind %1").arg(s);
+        }
+    } else if (actionName.startsWith("seek_forward")) {
+        QChar c = actionName.at(12);
+        if (c >= '1' && c <= '3') {
+            return tr("Forward %1").arg(s);
+        }
     }
 
     return s;
