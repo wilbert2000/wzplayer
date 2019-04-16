@@ -58,18 +58,18 @@ TFavList::TFavList(TDockWidget *parent, TPlaylist* playlst) :
 
     // Timers to merge TPlist::addedItems and/or multiple
     // TPlaylistWidget::modified signals
-    requestUpdateTimer = new TWZTimer(this, "fav_request_update_timer");
-    requestUpdateTimer->setSingleShot(true);
-    requestUpdateTimer->setInterval(0);
-    connect(requestUpdateTimer, &TWZTimer::timeout,
-            this, &TFavList::onRequestUpdateTimeout);
+    updateTimer = new TWZTimer(this, "fav_update_timer");
+    updateTimer->setSingleShot(true);
+    updateTimer->setInterval(0);
+    connect(updateTimer, &TWZTimer::timeout,
+            this, &TFavList::onUpdateTimerTimeout);
 
     // Timer to save favorites
-    requestSaveTimer = new TWZTimer(this, "fav_request_save_timer");
-    requestSaveTimer->setSingleShot(true);
-    requestSaveTimer->setInterval(10000);
-    connect(requestSaveTimer, &TWZTimer::timeout,
-            this, &TFavList::onRequestSaveTimeout);
+    saveTimer = new TWZTimer(this, "fav_save_timer");
+    saveTimer->setSingleShot(true);
+    saveTimer->setInterval(10000);
+    connect(saveTimer, &TWZTimer::timeout,
+            this, &TFavList::onSaveTimerTimeout);
 
     connect(this, &TFavList::addedItems,
             this, &TFavList::onAddedItems);
@@ -259,12 +259,12 @@ void TFavList::onPlaylistPlayingItemUpdated() {
     playlistWidget->setPlayingItem(playingItem, state);
 }
 
-void TFavList::onRequestSaveTimeout() {
+void TFavList::onSaveTimerTimeout() {
     WZTRACE("");
 
     if (playlistWidget->isModified()) {
         if (isBusy() || playlistWidget->isEditing()) {
-            requestSaveTimer->logStart();
+            saveTimer->logStart();
         } else {
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
             save(false);
@@ -278,11 +278,11 @@ void TFavList::onRequestSaveTimeout() {
     }
 }
 
-void TFavList::onRequestUpdateTimeout() {
+void TFavList::onUpdateTimerTimeout() {
     WZTRACE("");
 
     if (isBusy()) {
-        requestUpdateTimer->logStart();
+        updateTimer->logStart();
     } else {
         updateFavMenu();
     }
@@ -292,7 +292,7 @@ void TFavList::requestUpdate() {
     WZTRACE("");
 
     currentFavAction = 0;
-    requestUpdateTimer->logStart();
+    updateTimer->logStart();
  }
 
 void TFavList::onAddedItems() {
@@ -395,7 +395,7 @@ void TFavList::updateFavMenu() {
     }
 
     if (playlistWidget->isModified()) {
-        requestSaveTimer->logStart();
+        saveTimer->logStart();
     }
 }
 

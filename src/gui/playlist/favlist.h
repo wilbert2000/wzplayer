@@ -48,8 +48,8 @@ private:
     QAction* currentFavAction;
     Action::Menu::TMenu* favMenu;
     QIcon currentFavIcon;
-    TWZTimer* requestUpdateTimer;
-    TWZTimer* requestSaveTimer;
+    TWZTimer* updateTimer;
+    TWZTimer* saveTimer;
     TWZTimer* updatePlayingItemTimer;
 
     void createToolbar();
@@ -62,8 +62,8 @@ private:
 private slots:
     void loadFavorites();
     void onDockToggled(bool visible);
-    void onRequestSaveTimeout();
-    void onRequestUpdateTimeout();
+    void onSaveTimerTimeout();
+    void onUpdateTimerTimeout();
     void onAddedItems();
     void onModifiedChanged();
     void onPlaylistPlayingItemUpdated();
