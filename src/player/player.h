@@ -326,14 +326,6 @@ public slots:
                           int duration = TConfig::MESSAGE_DURATION,
                           int level = 1);
 
-    void wheelUpFunc(Settings::TPreferences::TWheelFunction function);
-    void wheelUpSeeking();
-    void wheelUp();
-    void wheelDownFunc(Settings::TPreferences::TWheelFunction function);
-    void wheelDownSeeking();
-    void wheelDown();
-    void nextWheelFunction();
-
     void clearKeepSize();
 
 signals:

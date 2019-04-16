@@ -370,7 +370,6 @@ void TPlayer::open(QString filename, bool loopImage) {
         }
     }
 
-    // TODO: Check modifying the passed in filename...
     QUrl url(filename);
     QString scheme = url.scheme();
     if (scheme == "file") {
@@ -509,7 +508,7 @@ void TPlayer::openTV(QString channel_id) {
 }
 
 void TPlayer::openStream(const QString& name) {
-    WZDEBUGOBJ("'" + name + "'");
+    WZDOBJ << name;
 
     close();
     mdat.filename = name;
@@ -1898,63 +1897,6 @@ void TPlayer::seekToPrevSub() {
     proc->seekSub(-1);
 }
 
-void TPlayer::wheelUpFunc(Settings::TPreferences::TWheelFunction function) {
-    WZDEBUGOBJ("");
-
-    using namespace Settings;
-
-    if (function == TPreferences::DoNothing) {
-        function = (TPreferences::TWheelFunction) pref->wheel_function;
-    }
-    switch (function) {
-        case TPreferences::Volume: incVolume(); break;
-        case TPreferences::Zoom: incZoom(); break;
-        case TPreferences::Seeking:
-            pref->wheel_function_seeking_reverse
-                    ? rewind(pref->seeking4)
-                    : forward(pref->seeking4);
-            break;
-        case TPreferences::ChangeSpeed : incSpeed10(); break;
-        case TPreferences::DoNothing: break;
-    }
-}
-
-void TPlayer::wheelUpSeeking() {
-    wheelUpFunc(Settings::TPreferences::Seeking);
-}
-
-void TPlayer::wheelUp() {
-    wheelUpFunc(Settings::TPreferences::DoNothing);
-}
-
-void TPlayer::wheelDownFunc(Settings::TPreferences::TWheelFunction function) {
-    WZDEBUGOBJ("");
-
-    if (function == Settings::TPreferences::DoNothing) {
-        function = (Settings::TPreferences::TWheelFunction)
-                   Settings::pref->wheel_function;
-    }
-    switch (function) {
-        case Settings::TPreferences::Volume: decVolume(); break;
-        case Settings::TPreferences::Zoom: decZoom(); break;
-        case Settings::TPreferences::Seeking:
-            Settings::pref->wheel_function_seeking_reverse
-                    ? forward(Settings::pref->seeking4)
-                    : rewind(Settings::pref->seeking4);
-            break;
-        case Settings::TPreferences::ChangeSpeed: decSpeed10(); break;
-        default : {} // do nothing
-    }
-}
-
-void TPlayer::wheelDownSeeking() {
-    wheelDownFunc(Settings::TPreferences::Seeking);
-}
-
-void TPlayer::wheelDown() {
-    wheelDownFunc(Settings::TPreferences::DoNothing);
-}
-
 void TPlayer::setInPointSec(double sec) {
     WZDEBUGOBJ(QString::number(sec));
 
@@ -3198,45 +3140,6 @@ void TPlayer::setAspectRatio(int id) {
 
 void TPlayer::nextAspectRatio() {
     setAspectRatio(mset.aspect_ratio.nextMenuID());
-}
-
-void TPlayer::nextWheelFunction() {
-
-    int a = Settings::pref->wheel_function;
-
-    bool done = false;
-    if (((int) Settings::pref->wheel_function_cycle) == 0) {
-        return;
-    }
-    while(!done){
-        // get next a
-        a = a * 2;
-        if (a == 32) {
-            a = 2;
-        }
-        // See if we are done
-        if (Settings::pref->wheel_function_cycle.testFlag(
-                (Settings::TPreferences::TWheelFunction)a)) {
-            done = true;
-        }
-    }
-    Settings::pref->wheel_function = a;
-    QString m = "";
-    switch(a){
-    case Settings::TPreferences::Seeking:
-        m = tr("Mouse wheel seeks now");
-        break;
-    case Settings::TPreferences::Volume:
-        m = tr("Mouse wheel changes volume now");
-        break;
-    case Settings::TPreferences::Zoom:
-        m = tr("Mouse wheel changes zoom level now");
-        break;
-    case Settings::TPreferences::ChangeSpeed:
-        m = tr("Mouse wheel changes speed now");
-        break;
-    }
-    Gui::msgOSD(m);
 }
 
 void TPlayer::setetterbox(bool b) {

@@ -40,9 +40,9 @@ TTimeSliderAction::TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player) :
             player, &Player::TPlayer::seekPercentage);
 
     connect(this, &TTimeSliderAction::wheelUp,
-            player, &Player::TPlayer::wheelUpSeeking);
+            mw, &TMainWindow::wheelUpSeeking);
     connect(this, &TTimeSliderAction::wheelDown,
-            player, &Player::TPlayer::wheelDownSeeking);
+            mw, &TMainWindow::wheelDownSeeking);
 
     updatePosTimer = new TWZTimer(this, "updatepostimer", false);
     updatePosTimer->setSingleShot(true);

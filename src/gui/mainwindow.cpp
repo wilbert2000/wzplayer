@@ -166,6 +166,8 @@ TMainWindow::TMainWindow() :
     titleUpdateTimer->setInterval(200);
     connect(titleUpdateTimer, &TWZTimer::timeout,
             this, &TMainWindow::updateTitle);
+
+    // Changes to title
     connect(playlist->getPlaylistWidget(),
             &Playlist::TPlaylistWidget::playingItemChanged,
             titleUpdateTimer, &TWZTimer::logStart);
@@ -316,9 +318,9 @@ void TMainWindow::createPlayers() {
             this, &TMainWindow::displayInOutPoints);
 
     connect(playerWindow, &TPlayerWindow::wheelUp,
-            player, &Player::TPlayer::wheelUp);
+            this, &TMainWindow::wheelUp);
     connect(playerWindow, &TPlayerWindow::wheelDown,
-            player, &Player::TPlayer::wheelDown);
+            this, &TMainWindow::wheelDown);
 }
 
 void TMainWindow::createLogDock() {
@@ -1234,7 +1236,7 @@ void TMainWindow::createActions() {
     a = new Action::TAction(this, "next_wheel_function",
                             tr("Next wheel function"), 0, Qt::Key_W);
     connect(a, &Action::TAction::triggered,
-            player, &Player::TPlayer::nextWheelFunction);
+            this, &TMainWindow::nextWheelFunction);
 } // createActions
 
 void TMainWindow::createMenus() {
@@ -3973,6 +3975,102 @@ void TMainWindow::xbutton2ClickFunction() {
     if (!pref->mouse_xbutton2_click_function.isEmpty()) {
         processAction(pref->mouse_xbutton2_click_function);
     }
+}
+
+void TMainWindow::wheelUpFunc(Settings::TPreferences::TWheelFunction function) {
+    WZDEBUGOBJ("");
+
+    using namespace Settings;
+
+    if (function == TPreferences::DoNothing) {
+        function = (TPreferences::TWheelFunction) pref->wheel_function;
+    }
+    switch (function) {
+        case TPreferences::Volume: player->incVolume(); break;
+        case TPreferences::Zoom: player->incZoom(); break;
+        case TPreferences::Seeking:
+            pref->wheel_function_seeking_reverse
+                    ? player->rewind(pref->seeking4)
+                    : player->forward(pref->seeking4);
+            break;
+        case TPreferences::ChangeSpeed : player->incSpeed10(); break;
+        case TPreferences::DoNothing: break;
+    }
+}
+
+void TMainWindow::wheelUpSeeking() {
+    wheelUpFunc(Settings::TPreferences::Seeking);
+}
+
+void TMainWindow::wheelUp() {
+    wheelUpFunc(Settings::TPreferences::DoNothing);
+}
+
+void TMainWindow::wheelDownFunc(Settings::TPreferences::TWheelFunction function) {
+    WZDEBUGOBJ("");
+
+    if (function == Settings::TPreferences::DoNothing) {
+        function = (Settings::TPreferences::TWheelFunction)
+                   Settings::pref->wheel_function;
+    }
+    switch (function) {
+        case Settings::TPreferences::Volume: player->decVolume(); break;
+        case Settings::TPreferences::Zoom: player->decZoom(); break;
+        case Settings::TPreferences::Seeking:
+            Settings::pref->wheel_function_seeking_reverse
+                    ? player->forward(Settings::pref->seeking4)
+                    : player->rewind(Settings::pref->seeking4);
+            break;
+        case Settings::TPreferences::ChangeSpeed: player->decSpeed10(); break;
+        default : {} // do nothing
+    }
+}
+
+void TMainWindow::wheelDownSeeking() {
+    wheelDownFunc(Settings::TPreferences::Seeking);
+}
+
+void TMainWindow::wheelDown() {
+    wheelDownFunc(Settings::TPreferences::DoNothing);
+}
+
+void TMainWindow::nextWheelFunction() {
+
+    int a = Settings::pref->wheel_function;
+
+    bool done = false;
+    if (((int) Settings::pref->wheel_function_cycle) == 0) {
+        return;
+    }
+    while(!done){
+        // get next a
+        a = a * 2;
+        if (a == 32) {
+            a = 2;
+        }
+        // See if we are done
+        if (Settings::pref->wheel_function_cycle.testFlag(
+                (Settings::TPreferences::TWheelFunction)a)) {
+            done = true;
+        }
+    }
+    Settings::pref->wheel_function = a;
+    QString m = "";
+    switch(a){
+    case Settings::TPreferences::Seeking:
+        m = tr("Mouse wheel seeks now");
+        break;
+    case Settings::TPreferences::Volume:
+        m = tr("Mouse wheel changes volume now");
+        break;
+    case Settings::TPreferences::Zoom:
+        m = tr("Mouse wheel changes zoom level now");
+        break;
+    case Settings::TPreferences::ChangeSpeed:
+        m = tr("Mouse wheel changes speed now");
+        break;
+    }
+    Gui::msgOSD(m);
 }
 
 } // namespace Gui

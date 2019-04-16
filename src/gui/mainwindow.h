@@ -20,6 +20,7 @@
 #define GUI_MAINWINDOW_H
 
 #include "gui/action/menu/menu.h"
+#include "settings/mediasettings.h"
 #include "player/state.h"
 #include "config.h"
 #include "wzdebug.h"
@@ -155,6 +156,9 @@ public slots:
     void helpCLOptions();
     void helpCheckUpdates();
     void helpAbout();
+
+    void wheelUpSeeking();
+    void wheelDownSeeking();
 
     void setForceCloseOnFinish(int n) { optionCloseOnFinish = n; }
     int forceCloseOnFinish() { return optionCloseOnFinish; }
@@ -588,6 +592,12 @@ private slots:
     void middleClickFunction();
     void xbutton1ClickFunction();
     void xbutton2ClickFunction();
+
+    void wheelUpFunc(Settings::TPreferences::TWheelFunction function);
+    void wheelUp();
+    void wheelDownFunc(Settings::TPreferences::TWheelFunction function);
+    void wheelDown();
+    void nextWheelFunction();
 
     // Status bar
     void displayVideoOut();
