@@ -81,7 +81,7 @@ TFavList::TFavList(TDockWidget *parent, TPlaylist* playlst) :
     updatePlayingItemTimer->setSingleShot(true);
     updatePlayingItemTimer->setInterval(250);
     connect(updatePlayingItemTimer, &QTimer::timeout,
-            this, &TFavList::onPlaylistPlayingItemUpdated);
+            this, &TFavList::updatePlayingItem);
     connect(playlist->getPlaylistWidget(), &TPlaylistWidget::playingItemUpdated,
             updatePlayingItemTimer, &TWZTimer::logStart);
 
@@ -126,7 +126,6 @@ void TFavList::playItem(TPlaylistItem* item, bool keepPaused) {
 
     if (item) {
         reachedEndOfPlaylist = false;
-        // Could ignore keepPaused, only used by playlist playPrev/Next
         if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
            player->setStartPausedOnce();
         }
@@ -236,7 +235,7 @@ QAction* TFavList::findAction(const QString& filename) const {
     return fAction(favMenu, filename);
 }
 
-void TFavList::onPlaylistPlayingItemUpdated() {
+void TFavList::updatePlayingItem() {
 
     if (currentFavAction) {
         markCurrentFavAction(0);
@@ -246,15 +245,17 @@ void TFavList::onPlaylistPlayingItemUpdated() {
     TPlaylistItemState state = PSTATE_STOPPED;
     TPlaylistItem* item = playlist->getPlaylistWidget()->playingItem;
     if (item) {
-        WZTRACE(QString("'%1' changed").arg(item->baseName()));
         QAction* action = findAction(item->filename());
         if (action) {
             markCurrentFavAction(action);
             playingItem = action->data().value<TPlaylistItem*>();
             state = item->state();
+            WZT << "Found" << item->editName();
+        } else {
+            WZT << item->editName() << "not found";
         }
     } else {
-        WZTRACE("0 changed");
+        WZTRACE("No playing item");
     }
     playlistWidget->setPlayingItem(playingItem, state);
 }

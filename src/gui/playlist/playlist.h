@@ -19,6 +19,7 @@
 #define GUI_PLAYLIST_PLAYLIST_H
 
 #include "gui/playlist/plist.h"
+#include "player/state.h"
 #include "wzdebug.h"
 
 
@@ -91,13 +92,13 @@ private:
 
     void onNewFileStartedPlaying();
     bool onNewDiscStartedPlaying();
-    void updatePlayingItem();
 
 private slots:
     void onRepeatToggled(bool toggled);
     void onShuffleToggled(bool toggled);
 
     void onPlayerError();
+    void onStateChanged(Player::TState state);
     void onNewMediaStartedPlaying();
     void onTitleTrackChanged(int id);
     void onDurationChanged(int ms);

@@ -66,7 +66,7 @@ private slots:
     void onUpdateTimerTimeout();
     void onAddedItems();
     void onModifiedChanged();
-    void onPlaylistPlayingItemUpdated();
+    void updatePlayingItem();
     void onFavMenuTriggered(QAction* action);
     void updateFavMenu();
 };

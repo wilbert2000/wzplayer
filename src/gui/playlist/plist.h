@@ -146,6 +146,7 @@ private:
     TPlaylistItem* getRandomItem() const;
 
     void enableRemoveFromDiskAction();
+    void enableActionsCurrentItem();
 
     QUrl getBrowseURL();
     void copySelection(const QString& actionName);

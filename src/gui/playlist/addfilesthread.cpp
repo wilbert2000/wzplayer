@@ -90,7 +90,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
     addImages(images),
     isFavList(favList) {
 
-    setObjectName("add_" + parent->objectName() + "_thread");
+    setObjectName(parent->objectName() + "_thread");
 
     rxNameBlacklist.reserve(nameBlacklist.count());
     QRegExp rx("", Qt::CaseInsensitive);

@@ -428,6 +428,39 @@ void TPList::enableRemoveMenu() {
     enableRemoveFromDiskAction();
 }
 
+void TPList::enableActionsCurrentItem() {
+    WZTOBJ;
+
+    TPlaylistItem* cur = playlistWidget->plCurrentItem();
+    bool haveFile = !player->mdat.filename.isEmpty();
+    browseDirAct->setEnabled(haveFile || cur);
+    browseDirAct->setText(tr("Browse %1")
+                          .arg(cur
+                               ? (cur->isUrl() ? tr("URL") : tr("folder"))
+                               : tr("the void")));
+    browseDirAct->setToolTip(tr("Browse '%1'")
+                             .arg(getBrowseURL().toDisplayString()));
+
+    bool enable = !isBusy() && player->stateReady();
+    editNameAct->setEnabled(enable && cur);
+    resetNameAct->setEnabled(enable && cur && cur->edited());
+    newFolderAct->setEnabled(enable);
+
+    cutAct->setEnabled(enable && cur);
+    copyAct->setEnabled(haveFile || cur);
+
+    enableRemoveMenu();
+}
+
+void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
+                                  QTreeWidgetItem* previous) {
+    WZTRACEOBJ(QString("Changed from '%1' to '%2'")
+            .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "0")
+            .arg(current ? current->text(TPlaylistItem::COL_NAME) : "0"));
+
+    enableActionsCurrentItem();
+}
+
 void TPList::enableActions() {
     WZTRACEOBJ("");
 
@@ -438,32 +471,14 @@ void TPList::enableActions() {
     refreshAct->setEnabled(!playlistFilename.isEmpty());
 
     bool haveFile = !player->mdat.filename.isEmpty();
-    TPlaylistItem* cur = playlistWidget->plCurrentItem();
-    browseDirAct->setEnabled(haveFile || cur);
-    browseDirAct->setText(tr("Browse %1")
-                          .arg(cur
-                               ? (cur->isUrl() ? tr("URL") : tr("folder"))
-                               : tr("the void")));
-    browseDirAct->setToolTip(tr("Browse '%1'")
-                             .arg(getBrowseURL().toDisplayString()));
-
     playAct->setEnabled(haveFile || playlistWidget->hasPlayableItems());
     playInNewWindowAct->setEnabled(haveFile || playlistWidget->hasItems());
-
-    bool enable = !isBusy() && player->stateReady();
-    editNameAct->setEnabled(enable && cur);
-    resetNameAct->setEnabled(enable && cur && cur->edited());
-    newFolderAct->setEnabled(enable);
+    newFolderAct->setEnabled(!isBusy() && player->stateReady());
     // findPlayingAct by descendants
-
-    cutAct->setEnabled(enable && cur);
-    copyAct->setEnabled(haveFile || cur);
     enablePaste();
-
-    // Add menu
     addPlayingFileAct->setEnabled(haveFile);
-    // Remove menu
-    enableRemoveMenu();
+
+    enableActionsCurrentItem();
 }
 
 bool TPList::isBusy() const {
@@ -683,6 +698,7 @@ bool TPList::saveM3uFile(TPlaylistItem* folder,
     } while (true);
 
 
+    // TODO: Preserve non 3-version
     // Use EXT-X-VERSION=3 so we can store durations in seconds with fraction.
 
     QTextStream stream(&file);
@@ -1115,11 +1131,10 @@ bool TPList::findPlayingItem() {
     TPlaylistItem* i = playlistWidget->playingItem;
     if (i) {
         makeActive();
-        if (i == playlistWidget->currentItem()) {
-            playlistWidget->scrollToItem(i);
-        } else {
+        if (i != playlistWidget->currentItem()) {
             playlistWidget->setCurrentItem(i);
         }
+        playlistWidget->scrollToItem(i);
         return true;
     }
     return false;
@@ -1298,15 +1313,6 @@ void TPList::browseDir() {
                              tr("Failed to validate URL '%1'")
                              .arg(url.toString(QUrl::None)));
     }
-}
-
-void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
-                                  QTreeWidgetItem* previous) {
-    WZTRACEOBJ(QString("Changed from '%1' to '%2'")
-            .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "0")
-            .arg(current ? current->text(TPlaylistItem::COL_NAME) : "0"));
-
-    enableActions();
 }
 
 void TPList::onItemActivated(QTreeWidgetItem* i, int) {

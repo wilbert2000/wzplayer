@@ -64,6 +64,8 @@ TPlaylist::TPlaylist(TDockWidget* parent) :
 
     connect(player, &Player::TPlayer::playerError,
             this, &TPlaylist::onPlayerError);
+    connect(player, &Player::TPlayer::stateChanged,
+            this, &TPlaylist::onStateChanged);
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TPlaylist::onNewMediaStartedPlaying);
     connect(player, &Player::TPlayer::titleTrackChanged,
@@ -136,12 +138,14 @@ void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
         item = playlistWidget->getNextPlaylistItem(item);
     }
     if (item) {
-        WZDEBUG("'" + item->filename() + "'");
-        if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
-           player->setStartPausedOnce();
-        }
+        WZD << item->filename();
         playlistWidget->setPlayingItem(item, item->state());
-        player->open(item->filename(), playlistWidget->hasSingleItem());
+        if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
+            player->setStartPausedOnce();
+        }
+        player->open(item->filename(),
+                     getPlayingTitle(false, false),
+                     playlistWidget->hasSingleItem());
     } else {
         WZDEBUG("End of playlist");
         stop();
@@ -221,62 +225,57 @@ QString TPlaylist::getPlayingTitle(bool addModified,
     return title;
 }
 
-void TPlaylist::updatePlayingItem() {
-
-    Player::TState ps = player->state();
-    if (ps == Player::STATE_STOPPING) {
-        WZTRACE("No updates in state stopping");
-        return;
-    }
+void TPlaylist::onStateChanged(Player::TState state) {
 
     TPlaylistItem* item = playlistWidget->playingItem;
     if (!item) {
         WZTRACE("No playing item");
         return;
     }
+    WZTRACE(player->stateToString());
 
-    // TODO:
-    bool filenameMismatch =
-            !item->isDisc()
-            && !player->mdat.filename.isEmpty()
-            && player->mdat.filename != item->filename();
-    if (filenameMismatch) {
-        WZWARN(QString("File name playing item '%1' does not match"
-                       " player filename '%2' in state %3")
-               .arg(item->filename())
-               .arg(player->mdat.filename)
-               .arg(player->stateToString()));
-    }
+    switch (state) {
+        case Player::STATE_STOPPED:
+            if (item->state() != PSTATE_STOPPED && item->state() != PSTATE_FAILED) {
+                playlistWidget->setPlayingItem(item, PSTATE_STOPPED);
+            }
+            break;
+        case Player::STATE_PLAYING:
+        case Player::STATE_PAUSED:
+            if (item->state() != PSTATE_PLAYING) {
+                playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
+            }
+            break;
+        case Player::STATE_STOPPING:
+            break;
+        case Player::STATE_RESTARTING:
+            if (item->state() != PSTATE_LOADING) {
+                playlistWidget->setPlayingItem(item, PSTATE_LOADING);
+            }
+            break;
+        case Player::STATE_LOADING:
+            // The player->open(url) call can change the URL. It sets
+            // player->mdat.filename just before switching state to loading.
+            // If we do not copy the url here, onNewMediaStartedPlaying() will
+            // start a new playlist, clearing the current playlist.
+            if (player->mdat.selected_type == TMediaData::TYPE_FILE
+                    && !player->mdat.filename.isEmpty()
+                    && player->mdat.filename != item->filename()
+                    && !playlistWidget->hasSingleItem()) {
+                WZWARN(QString("File name playing item '%1' does not match"
+                               " file name player '%2' in state loading.")
+                       .arg(item->filename()).arg(player->mdat.filename));
 
-    if (ps == Player::STATE_STOPPED) {
-        if (item->state() != PSTATE_STOPPED && item->state() != PSTATE_FAILED) {
-            playlistWidget->setPlayingItem(item, PSTATE_STOPPED);
-        }
-    } else if (ps == Player::STATE_PLAYING || ps == Player::STATE_PAUSED) {
-        if (item->state() != PSTATE_PLAYING) {
-            playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
-        }
-    } else  if (ps == Player::STATE_RESTARTING) {
-        if (item->state() != PSTATE_LOADING) {
-            playlistWidget->setPlayingItem(item, PSTATE_LOADING);
-        }
-    } else if (ps == Player::STATE_LOADING) {
+                // Savest to just start a new playlist. Alternatively:
+                // item->setFilename(player->mdat.filename);
+                // item->setModified();
+            }
 
-        // The player->open(url) call can change the URL. It sets
-        // player->mdat.filename just before switching state to loading.
-        // If we do not copy the url here, onNewMediaStartedPlaying() will
-        // start a new playlist, clearing the current playlist.
-        if (filenameMismatch) {
-            // TODO:
-            // WZWARN("Updating item file name");
-            // item->setFilename(player->mdat.filename);
-            // item->setModified();
-        }
-
-        if (item->state() != PSTATE_LOADING) {
-            playlistWidget->setPlayingItem(item, PSTATE_LOADING);
-        }
-    }
+            if (item->state() != PSTATE_LOADING) {
+                playlistWidget->setPlayingItem(item, PSTATE_LOADING);
+            }
+            break;
+    } // switch (state)
 }
 
 void TPlaylist::enableActions() {
@@ -288,11 +287,9 @@ void TPlaylist::enableActions() {
     disableEnableActions++;
 
     WZTRACE("State " + player->stateToString());
-    updatePlayingItem();
-
     findPlayingAct->setEnabled(playlistWidget->playingItem);
-
     TPList::enableActions();
+
     disableEnableActions--;
 }
 
@@ -431,23 +428,19 @@ void TPlaylist::onNewMediaStartedPlaying() {
                && filename == playlistWidget->playingItem->filename()) {
         // Handle current item started playing
         onNewFileStartedPlaying();
-
-        if (playlistWidget->hasSingleItem()) {
-            // Pause a single image
-            if (player->mdat.image) {
-                mainWindow->runActionsLater("pause", false, true);
-            }
+        // Pause a single image
+        if (player->mdat.image && playlistWidget->hasSingleItem()) {
+            mainWindow->runActionsLater("pause", false, true);
         }
-
         return;
     } else {
-        // TODO: find it in playlist?
-        // No for play in new window with single instance?
+        // Find it in playlist?
+        // No for play in new window with single instance.
         // Yes for preserving current playlist whenever possible.
     }
 
     // Create new playlist
-    WZTRACE("Creating new playlist for '" + filename + "'");
+    WZT << "Creating new playlist for" << filename;
     clear();
 
     if (md->disc.valid) {

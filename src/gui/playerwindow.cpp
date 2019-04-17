@@ -121,7 +121,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     }
 
     video_window = new TVideoWindow(this);
-    video_window->setObjectName("video" + name);
+    video_window->setObjectName("video_" + name);
     video_window->setMinimumSize(QSize(0, 0));
     if (isPreviewWindow) {
         video_window->setEnabled(false);
