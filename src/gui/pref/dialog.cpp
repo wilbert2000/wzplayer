@@ -63,6 +63,8 @@ TDialog::TDialog(TMainWindow* mw) :
         move(p);
         resize(s);
         TDesktop::keepInsideDesktop(this);
+    } else {
+        TDesktop::centerWindow(this);
     }
 
     helpButton = buttonBox->button(QDialogButtonBox::Help);
