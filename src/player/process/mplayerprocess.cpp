@@ -964,8 +964,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
                                 " cache|^\\[ass\\] Init");
 
     // General messages to pass on to core
-    static QRegExp rx_message("^(Playing "
-                              "|Cache "
+    static QRegExp rx_message("^(Cache "
                               "|Generating "
                               "|Connecting "
                               "|Resolving "

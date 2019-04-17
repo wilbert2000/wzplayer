@@ -38,7 +38,7 @@ QString TChapterData::getDisplayName() const {
     }
 
     if (start >= 0) {
-        dname += " (" + TWZTime::formatTimeSec(qRound(start)) + ")";
+        dname += " (" + TWZTime::formatSec(qRound(start)) + ")";
     }
 
     return dname;

@@ -77,6 +77,7 @@ void TDockWidget::resizeMainWindow(bool visible) {
             r.moveTop(r.y() + frameSize().width());
         }
     }
+
     mainWindow->setGeometry(r);
 
     if (visible) {

@@ -19,13 +19,13 @@
 #ifndef PLAYER_PROCESS_PLAYERPROCESS_H
 #define PLAYER_PROCESS_PLAYERPROCESS_H
 
-#include <QTemporaryFile>
-
 #include "player/process/process.h"
 #include "settings/assstyles.h"
 #include "subtracks.h"
 #include "wzdebug.h"
 
+#include <QTemporaryFile>
+#include <QTime>
 
 class QRegExp;
 class TMediaData;
@@ -46,6 +46,8 @@ public:
     explicit TPlayerProcess(QObject* parent,
                             const QString& name,
                             TMediaData* mdata);
+
+    QTime time;
 
     bool isRunning() const { return state() == QProcess::Running; }
     bool isReady() const {

@@ -521,7 +521,7 @@ QVariant TPlaylistItem::data(int column, int role) const {
         if (column == COL_LENGTH) {
             QString s;
             if (mDurationMS > 0) {
-                s = TWZTime::formatTimeSec(qRound(double(mDurationMS) / 1000));
+                s = TWZTime::formatSec(qRound(double(mDurationMS) / 1000));
             }
             return QVariant(s);
         }
@@ -842,8 +842,8 @@ void TPlaylistItem::setSpacing() {
     bounding = br.height() - opt.fontMetrics.lineSpacing();
 
     setText(COL_NAME, "");
-    WZTRACE(QString("hSpacing %1 vspacing %2 bounding %3")
-            .arg(hSpacing).arg(vSpacing).arg(bounding));
+    //WZTRACE(QString("hSpacing %1 vspacing %2 bounding %3")
+    //        .arg(hSpacing).arg(vSpacing).arg(bounding));
 }
 
 QSize TPlaylistItem::getSizeHintName(int level) const {

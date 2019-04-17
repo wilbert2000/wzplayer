@@ -16,17 +16,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QSettings>
-
-#include "wzdebug.h"
-#include "config.h"
-#include "settings/aspectratio.h"
 #include "settings/mediasettings.h"
 #include "settings/preferences.h"
+#include "settings/aspectratio.h"
 #include "maps/tracks.h"
-#include "subtracks.h"
 #include "mediadata.h"
+#include "subtracks.h"
+#include "wztime.h"
+#include "config.h"
+#include "wzdebug.h"
 
+#include <QSettings>
 
 namespace Settings {
 
@@ -49,8 +49,7 @@ void TMediaSettings::reset() {
 
     player_id = pref->player_id;
 
-    current_sec = 0;
-
+    current_ms = 0;
     current_video_id = NoneSelected;
     current_audio_id = NoneSelected;
     external_audio = "";
@@ -207,7 +206,7 @@ QString TMediaSettings::getColorSpaceDescriptionString() {
 
 void TMediaSettings::list() {
 
-    WZDEBUG("current_sec: " + QString::number(current_sec));
+    WZDEBUG("current_ms: " + QString::number(current_ms));
     WZDEBUG("current_video_id: " + QString::number(current_video_id));
     WZDEBUG("current_audio_id: " + QString::number(current_audio_id));
 
@@ -283,8 +282,8 @@ void TMediaSettings::list() {
     WZDEBUG("rotate: " + QString::number(rotate));
 
     WZDEBUG("loop: " + QString::number(loop));
-    WZDEBUG("in_point: " + QString::number(in_point));
-    WZDEBUG("out_point: " + QString::number(out_point));
+    WZDEBUG("in_point: " + TWZTime::formatMS(in_point));
+    WZDEBUG("out_point: " + TWZTime::formatMS(out_point));
 
     WZDEBUG("current_demuxer: '" + current_demuxer + "'");
 
@@ -349,10 +348,10 @@ void TMediaSettings::save(QSettings* set) {
 
     set->setValue("external_subtitles_fps", external_subtitles_fps);
 
-    if (current_sec < md->duration - 10) {
-        set->setValue("current_sec", current_sec);
+    if (current_ms < (md->duration - 10) * 1000) {
+        set->setValue("current_ms", current_ms);
     } else {
-        set->setValue("current_sec", 0);
+        set->setValue("current_ms", 0);
     }
 
     set->setValue("current_angle", current_angle);
@@ -479,7 +478,7 @@ void TMediaSettings::load(QSettings* set) {
         sub.setFilename(set->value("external_subtitles", "").toString());
     }
 
-    current_sec = set->value("current_sec", current_sec).toDouble();
+    current_ms = set->value("current_ms", current_ms).toInt();
 
     current_angle = set->value("current_angle", current_angle).toInt();
     if (current_angle < 0) {

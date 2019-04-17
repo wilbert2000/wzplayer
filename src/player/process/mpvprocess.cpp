@@ -461,29 +461,29 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
         return true;
     }
 
-    if (paused) {
-        // Don't emit signal receivedPause(), it is not needed for MPV
-        return true;
-    }
+    // Don't emit signal receivedPause(), it is not needed for MPV
+    if (!paused) {
+        // Parse status flags
+        bool buff = rx.cap(4) == "yes";
+        bool idle = rx.cap(5) == "yes";
 
-    // Parse status flags
-    bool buffering = rx.cap(4) == "yes";
-    bool idle = rx.cap(5) == "yes";
+        if (buff || idle) {
+            buffering = true;
+            emit receivedBuffering();
+            return true;
+        }
 
-    if (buffering || idle) {
-        buffering = true;
-        emit receivedBuffering();
-        return true;
+        if (request_bit_rate_info
+                && md->pos_sec_gui > 11
+                && time.elapsed() > 11000) {
+            request_bit_rate_info = false;
+            requestBitrateInfo();
+        }
     }
 
     if (buffering) {
         buffering = false;
         emit receivedBufferingEnded();
-    }
-
-    if (request_bit_rate_info && md->pos_sec > 11) {
-        request_bit_rate_info = false;
-        requestBitrateInfo();
     }
 
     return true;
@@ -519,7 +519,7 @@ bool TMPVProcess::parseLine(QString& line) {
     static QRegExp rx_property("^INFO_([A-Z_]+)=\\s*(.*)");
 
     // Messages to show in statusline
-    static QRegExp rx_message("^(Playing:|\\[ytdl_hook|libdvdread: Get key)");
+    static QRegExp rx_message("^(\\[ytdl_hook|libdvdread: Get key)");
 
     // Errors
     static QRegExp rx_file_open("^\\[file\\] Cannot open file '.*': (.*)");

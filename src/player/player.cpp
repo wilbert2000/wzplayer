@@ -35,6 +35,7 @@
 
 #include "wztime.h"
 #include "discname.h"
+#include "name.h"
 #include "mediadata.h"
 #include "extensions.h"
 #include "colorutils.h"
@@ -54,7 +55,7 @@ Player::TPlayer* player = 0;
 
 namespace Player {
 
-double TPlayer::restartTime = 0;
+int TPlayer::restartMS = 0;
 bool TPlayer::startPausedOnce = false;
 
 TPlayer::TPlayer(QWidget* parent,
@@ -100,10 +101,10 @@ TPlayer::TPlayer(QWidget* parent,
             this, &TPlayer::onReceivedPause);
 
     connect(proc, &Process::TPlayerProcess::receivedBuffering,
-            this, &TPlayer::displayBuffering);
+            this, &TPlayer::onReceivedBuffering);
 
     connect(proc, &Process::TPlayerProcess::receivedBufferingEnded,
-            this, &TPlayer::displayBufferingEnded);
+            this, &TPlayer::onReceivedBufferingEnded);
 
     connect(proc, &Process::TPlayerProcess::receivedMessage,
             this, &TPlayer::onReceivedMessage);
@@ -157,20 +158,20 @@ TPlayer::TPlayer(QWidget* parent,
 }
 
 TPlayer::~TPlayer() {
-    WZTRACEOBJ("");
 
-    if (objectName() == "player") {
+    if (previewPlayer) {
         player = 0;
     }
 }
 
 void TPlayer::setState(TState s) {
 
-    if (s != _state) {
+    // emit if changed or state is loading
+    if (s != _state || s == STATE_LOADING) {
         WZDEBUGOBJ(QString("State changed from %1 to %2 at %3")
                    .arg(stateToString())
                    .arg(stateToString(s))
-                   .arg(TWZTime::formatTimeMS(mset.current_sec)));
+                   .arg(TWZTime::formatMS(mset.current_ms)));
         _state = s;
         emit stateChanged(_state);
     }
@@ -254,7 +255,7 @@ void TPlayer::saveMediaSettings() {
         return;
     }
     WZINFOOBJ("Saving settings for '" + mdat.filename + "'");
-    Gui::msg(tr("Saving settings for %1").arg(mdat.filename), 0);
+    Gui::msg(tr("Saving settings for %1").arg(displayName), 0);
 
     if (mdat.selected_type == TMediaData::TYPE_FILE) {
         if (Settings::pref->file_settings_method.toLower() == "hash") {
@@ -269,7 +270,7 @@ void TPlayer::saveMediaSettings() {
         settings.saveSettingsFor(mdat.filename, mset);
     }
 
-    Gui::msg(tr("Saved settings for %1").arg(mdat.filename));
+    Gui::msg(tr("Saved settings for %1").arg(displayName));
 } // saveMediaSettings
 
 void TPlayer::close() {
@@ -280,7 +281,15 @@ void TPlayer::close() {
     saveMediaSettings();
     // Clear media data
     mdat = TMediaData();
-    WZDEBUGOBJ("Closed");
+
+    // Set display name
+    if (!newDisplayName.isEmpty()) {
+        displayName = newDisplayName;
+        newDisplayName = "";
+        WZDOBJ << "Closed. Display name set to" << displayName;
+    } else {
+        WZDEBUGOBJ("Closed");
+    }
 }
 
 void TPlayer::openDisc(TDiscName disc, bool fast_open) {
@@ -299,8 +308,6 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         setTitle(disc.title);
         return;
     }
-
-    Gui::msg(tr("Opening %1").arg(disc.toString(false)), 0);
 
     // Add device from pref if none specified
     if (disc.device.isEmpty()) {
@@ -342,8 +349,10 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         disc.protocol = "dvd";
     }
     mdat.filename = disc.toString(false);
+    displayName = mdat.filename;
     mdat.selected_type = (TMediaData::Type) disc.disc();
     mdat.disc = disc;
+
     // Clear settings
     mset.reset();
 
@@ -358,15 +367,27 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
 } // openDisc
 
 // Generic open, autodetect type
-void TPlayer::open(QString filename, bool loopImage) {
-    WZDEBUGOBJ("'" + filename + "'");
+void TPlayer::open(QString filename,
+                   QString displayName,
+                   bool loopImage) {
+    WZDOBJ << filename;
 
     if (filename.isEmpty()) {
         filename = mdat.filename;
+        displayName = this->displayName;
         if (filename.isEmpty()) {
             WZINFOOBJ("No file to play");
             Gui::msg(tr("No file to play"));
             return;
+        }
+    }
+
+    // Set display name to use in messages. Moved to displayName by close().
+    newDisplayName = displayName;
+    if (newDisplayName.isEmpty()) {
+        newDisplayName = TName::nameForURL(filename);
+        if (newDisplayName.isEmpty()) {
+            newDisplayName = filename;
         }
     }
 
@@ -395,7 +416,7 @@ void TPlayer::open(QString filename, bool loopImage) {
     // Forget a previous disc
     mdat.disc.valid = false;
 
-    Gui::msg(tr("Opening %1").arg(filename), 0);
+    Gui::msg(tr("Opening %1").arg(newDisplayName), 0);
 
     if (fi.exists()) {
         if (fi.isRelative()) {
@@ -437,7 +458,7 @@ void TPlayer::open(QString filename, bool loopImage) {
 }
 
 void TPlayer::openFile(const QString& filename, bool loopImage) {
-    WZTRACEOBJ("'" + filename + "'");
+    WZTOBJ << filename;
 
     close();
     mdat.filename = QDir::toNativeSeparators(filename);
@@ -462,7 +483,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
         }
 
         if (!Settings::pref->remember_time_pos) {
-            mset.current_sec = 0;
+            mset.current_ms = 0;
         }
     }
 
@@ -470,7 +491,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
 }
 
 void TPlayer::openTV(QString channel_id) {
-    WZDEBUGOBJ(channel_id);
+    WZDOBJ << channel_id;
 
     close();
 
@@ -790,7 +811,7 @@ void TPlayer::onPlayingStarted() {
     WZTRACEOBJ("emit mediaStartedPlaying()");
     emit mediaStartedPlaying();
 
-    WZDEBUGOBJ(QString("Loading done in %1 ms").arg(time.elapsed()));
+    WZDEBUGOBJ(QString("Loading done in %1 ms").arg(proc->time.elapsed()));
 }
 
 void TPlayer::clearOSD() {
@@ -809,7 +830,7 @@ void TPlayer::displayTextOnOSD(const QString& text, int duration, int level) {
 }
 
 void TPlayer::frameStep() {
-    WZDEBUGOBJ("At " + TWZTime::formatTimeMS(mset.current_sec, true));
+    WZDEBUGOBJ("At " + TWZTime::formatMS(mset.current_ms));
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -821,7 +842,7 @@ void TPlayer::frameStep() {
 }
 
 void TPlayer::frameBackStep() {
-    WZDEBUGOBJ("At " + TWZTime::formatTimeMS(mset.current_sec, true));
+    WZDEBUGOBJ("At " + TWZTime::formatMS(mset.current_ms));
 
     if (proc->isRunning()) {
         if (_state == STATE_PAUSED) {
@@ -957,16 +978,14 @@ void TPlayer::saveRestartState() {
     if (!mdat.filename.isEmpty()) {
         proc->save();
         if (mdat.detected_type != TMediaData::TYPE_DVDNAV) {
-            restartTime = mset.current_sec;
+            restartMS = mset.current_ms;
             startPausedOnce = _state == STATE_PAUSED;
         }
     }
 }
 
 void TPlayer::startPlayer(bool loopImage) {
-
-    WZDEBUGOBJ("Starting time");
-    time.start();
+    WZDOBJ;
 
     if (_state != STATE_RESTARTING) {
         // Clear background
@@ -976,8 +995,8 @@ void TPlayer::startPlayer(bool loopImage) {
     }
 
     QString fileName = mdat.filename;
-    WZDEBUGOBJ("'" + fileName + "'");
-    Gui::msg(tr("Starting %1...").arg(fileName), 0);
+    WZDOBJ << fileName;
+    Gui::msg(tr("Starting %1...").arg(displayName), 0);
 
     // Check URL playlist
     if (fileName.endsWith("|playlist")) {
@@ -1014,7 +1033,7 @@ void TPlayer::startPlayer(bool loopImage) {
     seeking = false;
     {
         // Clear start time
-        double ss = 0;
+        int ss = 0;
         if (mdat.selected_type == TMediaData::TYPE_FILE) {
             if (mdat.image) {
                 proc->setImageDuration(Settings::pref->imageDuration);
@@ -1024,32 +1043,26 @@ void TPlayer::startPlayer(bool loopImage) {
                     proc->setOption("loop", 0 /* loop forever */);
                 }
             }
-
-            if (mset.in_point > 0) {
-                ss = mset.in_point;
-            }
-
+            ss = mset.in_point;
             // current_sec may override in point, but cannot be beyond out point
-            if (mset.current_sec > 0
-                && (mset.out_point <= 0 || mset.current_sec < mset.out_point)) {
-                ss = mset.current_sec;
+            if (mset.current_ms > 0
+                && (mset.out_point <= 0 || mset.current_ms < mset.out_point)) {
+                ss = mset.current_ms;
             }
-
-            if (restartTime != 0) {
-                ss = restartTime;
+            if (restartMS != 0) {
+                ss = restartMS;
             }
-
             if (ss != 0) {
-                proc->setOption("ss", ss);
+                proc->setOption("ss", double(ss) / 1000);
             }
         }
 
-        // Set mset.current_sec
-        mset.current_sec = ss;
-        emit positionChanged(qRound(ss * 1000));
+        // Set mset.current_ms
+        mset.current_ms = ss;
+        emit positionChanged(mset.current_ms);
     }
 
-    restartTime = 0;
+    restartMS = 0;
     if (startPausedOnce || isPreviewPlayer()) {
         startPausedOnce = false;
         proc->setOption("pause");
@@ -1767,7 +1780,7 @@ end_video_filters:
     proc->setProcessEnvironment(env);
 
     if (proc->startPlayer()) {
-        Gui::msg(tr("Loading %1...").arg(fileName));
+        Gui::msg(tr("Loading %1...").arg(displayName), 0);
     } else {
         // Error reported by onProcessError()
         WZERROROBJ("Player process didn't start, entering the stopped state");
@@ -1788,7 +1801,7 @@ void TPlayer::seekCmd(double value, int mode) {
         QString s(tr("Seek %1%2 from %3")
                   .arg(keyFrames ? tr("key frame ") : "" )
                   .arg(TWZTime::formatTimeMS(value))
-                  .arg(TWZTime::formatTimeMS(mset.current_sec, true)));
+                  .arg(TWZTime::formatMS(mset.current_ms)));
         if (previewPlayer) {
             Gui::msgOSD(s);
         }
@@ -1810,7 +1823,7 @@ void TPlayer::seekCmd(double value, int mode) {
         } else {
             QString s(tr("Seek to %1%2")
                       .arg(keyFrames ? "key frame " : "" )
-                       .arg(TWZTime::formatTimeMS(value, true)));
+                       .arg(TWZTime::formatTimeMS(value)));
 
             if (previewPlayer) {
                 Gui::msgOSD(s);
@@ -1897,15 +1910,15 @@ void TPlayer::seekToPrevSub() {
     proc->seekSub(-1);
 }
 
-void TPlayer::setInPointSec(double sec) {
-    WZDEBUGOBJ(QString::number(sec));
+void TPlayer::setInPointMS(int ms) {
+    WZDEBUGOBJ(QString::number(ms));
 
-    mset.in_point = sec;
-    if (mset.in_point < 0) {
-        mset.in_point = 0;
+    if (ms < 0) {
+        ms = 0;
     }
+    mset.in_point = ms;
     QString msg = tr("In point set to %1")
-                  .arg(TWZTime::formatTimeSec(qRound(mset.in_point)));
+                  .arg(TWZTime::formatMS(mset.in_point));
 
     if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
         mset.out_point = -1;
@@ -1919,14 +1932,13 @@ void TPlayer::setInPointSec(double sec) {
 }
 
 void TPlayer::setInPoint() {
-    setInPointSec(mset.current_sec);
+    setInPointMS(mset.current_ms);
 }
 
 void TPlayer::seekInPoint() {
 
-    seekSecond(mset.in_point);
-    Gui::msgOSD(tr("Seeking to %1")
-                .arg(TWZTime::formatTimeSec(qRound(mset.in_point))));
+    seekMS(mset.in_point);
+    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatMS(mset.in_point)));
 }
 
 void TPlayer::clearInPoint() {
@@ -1937,20 +1949,20 @@ void TPlayer::clearInPoint() {
     Gui::msgOSD(tr("Cleared in point"));
 }
 
-void TPlayer::setOutPointSec(double sec) {
-    WZDEBUGOBJ(QString::number(sec));
+void TPlayer::setOutPointMS(int ms) {
+    WZDEBUGOBJ(QString::number(ms));
 
-    if (sec <= 0) {
+    if (ms <= 0) {
         clearOutPoint();
         return;
     }
 
-    mset.out_point = sec;
+    mset.out_point = ms;
     mset.loop = true;
 
     QString msg;
     msg = tr("Out point set to %1, repeat set")
-          .arg(TWZTime::formatTimeSec(qRound(mset.out_point)));
+            .arg(TWZTime::formatMS(mset.out_point));
     if (mset.in_point >= mset.out_point) {
         mset.in_point = 0;
         msg += tr(" and cleared in point");
@@ -1963,12 +1975,12 @@ void TPlayer::setOutPointSec(double sec) {
 }
 
 void TPlayer::setOutPoint() {
-    setOutPointSec(mset.current_sec);
+    setOutPointMS(mset.current_ms);
 }
 
 void TPlayer::seekOutPoint() {
 
-    double seek;
+    int seek;
     if (mset.loop && _state != STATE_PAUSED) {
         seek = mset.in_point;
     } else if (mset.out_point > 0){
@@ -1977,8 +1989,8 @@ void TPlayer::seekOutPoint() {
         Gui::msgOSD(tr("Out point not set"));
         return;
     }
-    seekSecond(seek);
-    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatTimeSec(qRound(seek))));
+    seekMS(seek);
+    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatMS(seek)));
 }
 
 void TPlayer::clearOutPoint() {
@@ -2809,37 +2821,37 @@ void TPlayer::handleOutPoint() {
     }
 
     // Handle out point
-    if (mset.out_point > 0 && mset.current_sec > mset.out_point) {
+    if (mset.out_point > 0 && mset.current_ms > mset.out_point) {
         if (mset.loop) {
             if (!seeking && mset.in_point < mset.out_point) {
                 WZDEBUGOBJ(QString("Position %1 reached out point %2"
                                    ", start seeking in point %3")
-                           .arg(mset.current_sec)
+                           .arg(mset.current_ms)
                            .arg(mset.out_point)
                            .arg(mset.in_point));
                 seeking = true;
-                seekSecond(mset.in_point);
+                seekMS(mset.in_point);
             }
         } else {
             WZDEBUGOBJ(QString("Position %1 reached out point %2, sending quit")
-                       .arg(mset.current_sec).arg(mset.out_point));
+                       .arg(mset.current_ms).arg(mset.out_point));
             proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
         WZDEBUGOBJ(QString("Done handling out point, position %1 no longer"
                            " after out point %2")
-                   .arg(mset.current_sec).arg(mset.out_point));
+                   .arg(mset.current_ms).arg(mset.out_point));
         seeking = false;
     }
 }
 
 void TPlayer::onReceivedPosition(double sec) {
 
-    mset.current_sec = sec;
+    mset.current_ms = sec * 1000;
 
     handleOutPoint();
 
-    emit positionChanged(qRound(sec * 1000));
+    emit positionChanged(mset.current_ms);
 
     // Check chapter
     if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
@@ -2879,7 +2891,7 @@ void TPlayer::onReceivedPosition(double sec) {
 
 // TMPVProcess sends it only once after initial start
 void TPlayer::onReceivedPause() {
-    WZDEBUGOBJ("At " + TWZTime::formatTimeMS(mset.current_sec, true));
+    WZDEBUGOBJ("At " + TWZTime::formatMS(mset.current_ms));
     setState(STATE_PAUSED);
 }
 
@@ -3404,17 +3416,20 @@ bool TPlayer::isBuffering() const {
     return proc->isBuffering();
 }
 
-void TPlayer::displayBuffering() {
-    WZTRACEOBJ("Buffering...");
-    Gui::msg(tr("Buffering..."));
+void TPlayer::onReceivedBuffering() {
+
+    if (previewPlayer) {
+        WZTRACEOBJ("Buffering...");
+        Gui::msg(tr("Buffering..."));
+    }
 }
 
-void TPlayer::displayBufferingEnded() {
-    WZTRACEOBJ("Buffering ended");
+void TPlayer::onReceivedBufferingEnded() {
 
-    Gui::msg(QString("%1 from %2")
-             .arg(previewPlayer ? tr("Playing") : tr("Seeking"))
-             .arg(TWZTime::formatTimeMS(mset.current_sec)));
+    if (previewPlayer) {
+        WZTRACEOBJ("Buffering ended");
+        Gui::msg("Playing from " + TWZTime::formatMS(mset.current_ms));
+    }
 }
 
 void TPlayer::updatePreviewWindowSize() {

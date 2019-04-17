@@ -20,7 +20,6 @@
 #define PLAYER_PLAYER_H
 
 #include <QProcess>
-#include <QTime>
 
 #include "wzdebug.h"
 #include "config.h"
@@ -90,7 +89,9 @@ public:
     bool videoFiltersEnabled(bool displayMessage = false);
 
     //! Generic open, with autodetection of type
-    void open(QString filename = "", bool loopImage = false);
+    void open(QString filename = "",
+              QString displayName = "",
+              bool loopImage = false);
     //! Open disc
     void openDisc(TDiscName disc, bool fast_open = false);
 
@@ -368,23 +369,24 @@ signals:
     void audioBitRateChanged(int bitrate);
 
 private:
-    static double restartTime;
+    static int restartMS;
     static bool startPausedOnce;
+
+    static QString equalizerListToString(const Settings::TAudioEqualizerList&
+                                         values);
 
     Player::Process::TPlayerProcess* proc;
 
     TState _state;
     bool seeking;
-    QTime time;
     QTimer* keepSizeTimer;
 
+    QString displayName;
+    QString newDisplayName;
     QString initial_subtitle;
     QMap<QString,QString> forced_titles;
 
     int cache_size;
-
-    static QString equalizerListToString(const Settings::TAudioEqualizerList&
-                                         values);
 
     void openFile(const QString& filename, bool loopImage);
     void openStream(const QString& name);
@@ -394,8 +396,8 @@ private:
     void stopPlayer();
     void restartPlayer(TState state = STATE_RESTARTING);
 
-    void setInPointSec(double sec);
-    void setOutPointSec(double sec);
+    void setInPointMS(int ms);
+    void setOutPointMS(int ms);
 
     void initVolume();
     void initMediaSettings();
@@ -441,8 +443,8 @@ private slots:
 
     void displayScreenshotName(const QString& filename);
     void displayUpdatingFontCache();
-    void displayBuffering();
-    void displayBufferingEnded();
+    void onReceivedBuffering();
+    void onReceivedBufferingEnded();
 };
 
 } // namespace Player

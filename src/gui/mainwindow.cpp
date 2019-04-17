@@ -300,14 +300,12 @@ void TMainWindow::createPlayers() {
             this, &TMainWindow::onMediaSettingsChanged);
     connect(player, &Player::TPlayer::videoOutResolutionChanged,
             this, &TMainWindow::onVideoOutResolutionChanged);
-
     connect(player, &Player::TPlayer::newMediaStartedPlaying,
             this, &TMainWindow::onNewMediaStartedPlaying,
             Qt::QueuedConnection);
     connect(player, &Player::TPlayer::mediaStartedPlaying,
             this, &TMainWindow::onMediaStartedPlaying,
             Qt::QueuedConnection);
-
     connect(player, &Player::TPlayer::playerError,
             this, &TMainWindow::onPlayerError,
             Qt::QueuedConnection);
@@ -1756,10 +1754,10 @@ QList<QAction*> TMainWindow::findNamedActions() const {
         QAction* action = allActions.at(i);
         if (!action->isSeparator()) {
             if (action->objectName().isEmpty()) {
-                WZTRACE(QString("Skipping unnamed %1action \"%2\" %3")
-                        .arg(action->menu() ? "menu " : "")
-                        .arg(action->text())
-                        .arg(parentOrMenuName(action)));
+                //WZTRACE(QString("Skipping unnamed %1action \"%2\" %3")
+                //        .arg(action->menu() ? "menu " : "")
+                //        .arg(action->text())
+                //        .arg(parentOrMenuName(action)));
             } else if (action->objectName() == "_q_qlineeditclearaction") {
             } else {
                 selectedActions.append(action);
@@ -1800,9 +1798,6 @@ void TMainWindow::checkActionValid(QString& action, const QString& def) {
 
 void TMainWindow::loadSettings() {
     WZTRACE("");
-
-    // Disable actions
-    enableActions();
 
     // Get all actions with a name
     Action::TAction::allActions = findNamedActions();
@@ -1882,7 +1877,7 @@ void TMainWindow::loadSettings() {
 }
 
 void TMainWindow::saveSettings() {
-    WZTRACE("");
+    WZT;
 
     pref->beginGroup(settingsGroupName());
 
@@ -1959,15 +1954,15 @@ void TMainWindow::displayVideoOut() {
 void TMainWindow::displayInOutPoints() {
 
     QString s;
-    int secs = qRound(player->mset.in_point);
-    if (secs > 0)
-        s = tr("I: %1", "In point in statusbar").arg(TWZTime::formatTimeSec(secs));
+    if (player->mset.in_point > 0) {
+        s = tr("I: %1", "In point in statusbar")
+                .arg(TWZTime::formatMS(player->mset.in_point));
+    }
 
-    secs = qRound(player->mset.out_point);
-    if (secs > 0) {
+    if (player->mset.out_point > 0) {
         if (!s.isEmpty()) s += " ";
         s += tr("O: %1", "Out point in statusbar")
-                .arg(TWZTime::formatTimeSec(secs));
+                .arg(TWZTime::formatMS(player->mset.out_point));
     }
 
     if (player->mset.loop) {
@@ -2003,7 +1998,7 @@ void TMainWindow::showEvent(QShowEvent* event) {
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PAUSED
         && !ignore_show_hide_events) {
-        WZDEBUG("unpausing player");
+        WZDEBUG("Unpausing player");
         player->play();
     }
 
@@ -2016,7 +2011,7 @@ void TMainWindow::hideEvent(QHideEvent* event) {
     if (pref->pause_when_hidden
         && player->state() == Player::STATE_PLAYING
         && !ignore_show_hide_events) {
-        WZDEBUG("pausing player");
+        WZDEBUG("Pausing player");
         player->pause();
     }
 
@@ -2044,8 +2039,7 @@ void TMainWindow::setDefaultValuesFromVideoEqualizer() {
     pref->initial_gamma = video_equalizer->gamma();
 
     QMessageBox::information(this, tr("Information"),
-                             tr("The current values have been stored to be "
-                                "used as default."));
+        tr("The current values have been stored to be used as default."));
 }
 
 void TMainWindow::changeVideoEqualizerBySoftware(bool b) {
@@ -2426,7 +2420,7 @@ void TMainWindow::setTimeLabel(int ms, bool changed) {
     int s = ms / 1000;
     if (s != lastSec) {
         lastSec = s;
-        positionText = TWZTime::formatTimeSec(s);
+        positionText = TWZTime::formatSec(s);
         changed = true;
     }
 
@@ -2462,7 +2456,7 @@ void TMainWindow::onPositionChanged(int ms) {
 void TMainWindow::onDurationChanged(int ms) {
 
     int s = ms / 1000;
-    durationText = "/" + TWZTime::formatTimeSec(s);
+    durationText = "/" + TWZTime::formatSec(s);
 
     if (pref->show_frames) {
         double fps = player->mdat.video_fps;
@@ -3007,7 +3001,7 @@ void TMainWindow::saveThumbnail() {
         if (canonical.isEmpty()) {
             WZWARN("Canonical path for '" + fn + "' not found");
         } else {
-            QString time =TWZTime::formatTimeStampMS(player->mset.current_sec);
+            QString time =TWZTime::formatTimeStampMS(player->mset.current_ms);
             saveThumbnailToIni(canonical, time);
 
             // Remove cached thumbnails
@@ -3109,7 +3103,7 @@ void TMainWindow::showSeekToDialog() {
     TTimeDialog d(this);
     d.setWindowTitle(tr("Seek"));
     d.setMaximumTime((int) player->mdat.duration);
-    d.setTime((int) player->mset.current_sec);
+    d.setTime(qRound(double(player->mset.current_ms) / 1000));
     if (d.exec() == QDialog::Accepted) {
         player->seekSecond(d.time());
     }

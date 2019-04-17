@@ -7,7 +7,7 @@ static QString negativeSign = QLocale().negativeSign();
 static QString decimalPoint = QLocale().decimalPoint();
 
 // Format time as [hh:]mm:ss
-QString TWZTime::formatTimeSec(int secs) {
+QString TWZTime::formatSec(int secs) {
 
     QString negative;
     if (secs < 0) {
@@ -26,19 +26,19 @@ QString TWZTime::formatTimeSec(int secs) {
     if (hours == 0) {
         return QString("%1%2:%3")
                 .arg(negative)
-                .arg(minutes, 2, 10, QChar('0'))
+                .arg(minutes)
                 .arg(secs, 2, 10, QChar('0'));
     }
 
     return QString("%1%2:%3:%4")
             .arg(negative)
-            .arg(hours, 2, 10, QChar('0'))
+            .arg(hours)
             .arg(minutes, 2, 10, QChar('0'))
             .arg(secs, 2, 10, QChar('0'));
 }
 
 // Format time as hh:mm:ss.zzz
-QString TWZTime::formatMS(int ms, bool wantMinutes, bool zeroPadded) {
+QString TWZTime::formatMS(int ms) {
 
     QString negative;
     if (ms < 0) {
@@ -53,35 +53,10 @@ QString TWZTime::formatMS(int ms, bool wantMinutes, bool zeroPadded) {
     int secs = ms / 1000;
     ms -= secs * 1000;
 
-    if (zeroPadded) {
+    if (hours) {
         return QString("%1%2:%3:%4%5%6")
                 .arg(negative)
-                .arg(hours, 2, 10, QChar('0'))
-                .arg(minutes, 2, 10, QChar('0'))
-                .arg(secs, 2, 10, QChar('0'))
-                .arg(decimalPoint)
-                .arg(ms, 3, 10, QChar('0'));
-    }
-
-    QString mSecs;
-    if (ms) {
-        mSecs = QString("%1%2")
-                .arg(decimalPoint)
-                .arg(ms, 3, 10, QChar('0'));
-    }
-
-    if (hours) {
-        return QString("%1%2:%3:%4%5")
-                .arg(negative)
                 .arg(hours)
-                .arg(minutes, 2, 10, QChar('0'))
-                .arg(secs, 2, 10, QChar('0'))
-                .arg(mSecs);
-    }
-
-    if (wantMinutes) {
-        return QString("%1%2:%3%4%5")
-                .arg(negative)
                 .arg(minutes, 2, 10, QChar('0'))
                 .arg(secs, 2, 10, QChar('0'))
                 .arg(decimalPoint)
@@ -89,30 +64,46 @@ QString TWZTime::formatMS(int ms, bool wantMinutes, bool zeroPadded) {
     }
 
     if (minutes) {
-        return QString("%1%2:%3%4")
+        return QString("%1%2:%3%4%5")
                 .arg(negative)
                 .arg(minutes)
                 .arg(secs, 2, 10, QChar('0'))
-                .arg(mSecs);
+                .arg(decimalPoint)
+                .arg(ms, 3, 10, QChar('0'));
     }
 
-    return qApp->translate("TWZTime", "%1%2%3 seconds")
+    return QString("%1%2%3%4")
             .arg(negative)
             .arg(secs)
-            .arg(mSecs);
+            .arg(decimalPoint)
+            .arg(ms, 3, 10, QChar('0'));
 }
 
 // Format time as hh:mm:ss.zzz
-QString TWZTime::formatTimeMS(const double& aSecs,
-                              bool wantMinutes,
-                              bool zeroPadded) {
-    return formatMS(qRound(aSecs * 1000), wantMinutes, zeroPadded);
+QString TWZTime::formatTimeMS(const double& aSecs) {
+    return formatMS(aSecs * 1000);
 }
 
-QString TWZTime::formatTimeStampMS(const double &secs) {
-    return formatTimeMS(secs, true, true);
-}
+QString TWZTime::formatTimeStampMS(int ms) {
 
-QString TWZTime::formatDurationMS(const double &secs) {
-    return formatTimeMS(secs);
+    QString negative;
+    if (ms < 0) {
+        ms = -ms;
+        negative = negativeSign;
+    }
+
+    int hours = ms / 3600000;
+    ms -= hours * 3600000;
+    int minutes = ms / 60000;
+    ms -= minutes * 60000;
+    int secs = ms / 1000;
+    ms -= secs * 1000;
+
+    return QString("%1%2:%3:%4%5%6")
+            .arg(negative)
+            .arg(hours, 2, 10, QChar('0'))
+            .arg(minutes, 2, 10, QChar('0'))
+            .arg(secs, 2, 10, QChar('0'))
+            .arg(decimalPoint)
+            .arg(ms, 3, 10, QChar('0'));
 }

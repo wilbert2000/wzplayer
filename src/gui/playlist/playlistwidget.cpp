@@ -950,8 +950,8 @@ bool TPlaylistWidget::dropMimeData(QTreeWidgetItem *parent,
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
                                            int start, int end) {
-    WZTRACE(QString("Parent '%1' %2 %3")
-            .arg(parent.data().toString()).arg(start).arg(end));
+    //WZTRACE(QString("Parent '%1' %2 %3")
+    //        .arg(parent.data().toString()).arg(start).arg(end));
 
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
 
@@ -991,8 +991,8 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
                                    int start, int end) {
-    WZTRACEOBJ(QString("Parent '%1' %2 %3")
-            .arg(parent.data().toString()).arg(start).arg(end));
+    //WZTRACEOBJ(QString("Parent '%1' %2 %3")
+    //        .arg(parent.data().toString()).arg(start).arg(end));
     QTreeWidget::rowsInserted(parent, start, end);
 
     // Because of setRootIndex(model()->index(0, 0)) in add(),
