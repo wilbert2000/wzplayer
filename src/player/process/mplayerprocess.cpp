@@ -799,9 +799,11 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
     static QRegExp rx_frame("(\\d+)\\/");
 
     // Check for frame in status line. Available types:
-    // 1 - no frames
-    // 2 - exact frames, determining the time stamp
-    // 3 - played frames, always incrementing
+    // 1 - No frames. Frame is always zero
+    // 2 - Exact frames determining the time stamp. When seeking, the frame
+    //     number will also go back or forward.
+    // 3 - Played frames, always incrementing and starting at frame 1. When
+    //     seeking the frame number will just keep incrementing.
 
     md->fuzzy_time = QString::fromUtf8("\u00B1"); // +/- char;
     if (md->video_fps > 0 && rx_frame.indexIn(line) >= 0) {
@@ -824,6 +826,7 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
 
             // Timestamp has resolution of 0.1, hence 0.05
             if (da <= 0.05) {
+                // Upgrade time stamp with extra resolution provided by frame
                 secs = secsc;
                 md->fuzzy_time = "=";
             } else if (da <= frame_off_by_one) {
@@ -833,14 +836,14 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
                 //           .arg(secsc).arg(line));
                 if (d < 0) {
                     start_frame--;
-                    md->fuzzy_time = "<";
+                    md->fuzzy_time = "-";
                 } else {
                     start_frame++;
-                    md->fuzzy_time = ">";
+                    md->fuzzy_time = "+";
                 }
             } else {
-                // Resync start frame
-                int newStartFrame = qRound(secs * md->video_fps) - frame;
+                // Resync start frame for the "played frames" scenario
+                int newStartFrame = frame - qRound(secs * md->video_fps);
                 //WZTRACEOBJ(QString("Frame %1 is out of sync by %2. Secs %3,"
                 //                   " secsc %4, 1/fps %5. Updating start frame"
                 //                   " from %6 to %7.\nLine '%8'")

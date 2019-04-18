@@ -41,7 +41,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 26;
+static const int CURRENT_CONFIG_VERSION = 27;
 const Log4Qt::Level TPreferences::log_default_level = Log4Qt::Level::DEBUG_INT;
 
 TPreferences* pref = 0;
@@ -352,10 +352,6 @@ void TPreferences::reset() {
     // Misc
     use_edl_files = true;
     time_to_kill_player = 5000;
-
-    // Display frame counter in status bar timestamp
-    show_frames = false;
-
     balloon_count = 5;
     change_video_equalizer_on_startup = true;
     clean_config = false;
@@ -681,10 +677,7 @@ void TPreferences::save() {
 
     setValue("use_edl_files", use_edl_files);
     setValue("time_to_kill_player", time_to_kill_player);
-    setValue("show_frames", show_frames);
-
     setValue("balloon_count", balloon_count);
-
     setValue("change_video_equalizer_on_startup",
              change_video_equalizer_on_startup);
 
@@ -1241,10 +1234,7 @@ void TPreferences::load() {
     if (time_to_kill_player < 3000) {
         time_to_kill_player = 3000;
     }
-    show_frames = value("show_frames", show_frames).toBool();
-
     balloon_count = value("balloon_count", balloon_count).toInt();
-
     change_video_equalizer_on_startup = value(
         "change_video_equalizer_on_startup", change_video_equalizer_on_startup)
         .toBool();

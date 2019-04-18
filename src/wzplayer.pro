@@ -104,6 +104,7 @@ HEADERS += gui/action/menu/menu.h \
     gui/propertiesdialog.h \
     gui/stereo3ddialog.h \
     gui/timedialog.h \
+    gui/timelabel.h \
     gui/updatechecker.h \
     gui/verticaltext.h \
     gui/videoequalizer.h \
@@ -228,6 +229,7 @@ SOURCES += gui/action/menu/menu.cpp \
     gui/propertiesdialog.cpp \
     gui/stereo3ddialog.cpp \
     gui/timedialog.cpp \
+    gui/timelabel.cpp \
     gui/updatechecker.cpp \
     gui/verticaltext.cpp \
     gui/videoequalizer.cpp \

@@ -6,7 +6,7 @@
 static QString negativeSign = QLocale().negativeSign();
 static QString decimalPoint = QLocale().decimalPoint();
 
-// Format time as [hh:]mm:ss
+// Format time as [h:]mm:ss
 QString TWZTime::formatSec(int secs) {
 
     QString negative;
@@ -80,9 +80,11 @@ QString TWZTime::formatMS(int ms) {
 }
 
 // Format time as hh:mm:ss.zzz
-QString TWZTime::formatTimeMS(const double& aSecs) {
+QString TWZTime::formatSecAsMS(const double& aSecs) {
     return formatMS(aSecs * 1000);
 }
+
+
 
 QString TWZTime::formatTimeStampMS(int ms) {
 

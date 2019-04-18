@@ -58,7 +58,7 @@ TAspectGroup::TAspectGroup(TMainWindow *mw) :
     connect(nextAspectAct, &TAction::triggered,
             player, &Player::TPlayer::nextAspectRatio);
 
-    connect(this, &TActionGroup::activated,
+    connect(this, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setAspectRatio);
     connect(player, &Player::TPlayer::aspectRatioChanged,
             this, &TAspectGroup::update,
@@ -164,10 +164,9 @@ TRotateGroup::TRotateGroup(TMainWindow* mw) :
     setEnabled(false);
     new TActionGroupItem(mw, this, "rotate_none", tr("No rotation"), 0);
     new TActionGroupItem(mw, this, "rotate_90",
-                         trUtf8("Rotate 90° clockwise"), 90, true, true);
+                         trUtf8("Rotate 90° clockwise"), 90, true);
     new TActionGroupItem(mw, this, "rotate_270",
-                         trUtf8("Rotate 90° counter-clockwise"), 270, true,
-                         true);
+                         trUtf8("Rotate 90° counter-clockwise"), 270, true);
 }
 
 class TMenuTransform : public TMenu {

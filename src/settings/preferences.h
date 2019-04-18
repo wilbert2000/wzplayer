@@ -305,8 +305,8 @@ public:
     QString mouse_middle_click_function;
     QString mouse_xbutton1_click_function;
     QString mouse_xbutton2_click_function;
-    int wheel_function;
 
+    int wheel_function;
     TWheelFunctions wheel_function_cycle;
     bool wheel_function_seeking_reverse;
 
@@ -382,7 +382,6 @@ public:
     //! to play
     bool use_edl_files;
     int time_to_kill_player;
-    bool show_frames;
 
     //! Number of times to show the balloon remembering that the program
     //! is still running in the system tray.

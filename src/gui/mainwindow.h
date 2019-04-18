@@ -89,6 +89,7 @@ class TPropertiesDialog;
 class TAudioEqualizer;
 class TVideoEqualizer;
 class TUpdateChecker;
+class TTimeLabel;
 
 
 class TMainWindow : public QMainWindow {
@@ -463,11 +464,7 @@ private:
     // Statusbar labels
     QLabel* video_info_label;
     QLabel* in_out_points_label;
-    QLabel* time_label;
-
-    // Cache timestamp
-    QString positionText;
-    QString durationText;
+    TTimeLabel* timeLabel;
 
     // Visible state bars
     bool menubar_visible;
@@ -479,7 +476,7 @@ private:
     Action::TAction* viewVideoInfoAct;
     Action::TAction* viewInOutPointsAct;
     Action::TAction* viewVideoTimeAct;
-    Action::TAction* viewFramesAct;
+    Action::TActionGroup* timeResGroup;
     QMenu* statusbarMenu;
 
     // Toolbars
@@ -510,8 +507,6 @@ private:
     void setFilePropertiesData();
     void createFilePropertiesDialog();
     void configureDiscDevices();
-
-    void setTimeLabel(int ms, bool changed);
 
     void checkActionValid(QString& action, const QString& def);
     QList<QAction*> findNamedActions() const;
@@ -602,11 +597,8 @@ private slots:
     // Status bar
     void displayVideoOut();
     void displayInOutPoints();
-    void displayFrames(bool);
 
     void onStateChanged(Player::TState state);
-    void onDurationChanged(int ms);
-    void onPositionChanged(int ms);
     void onVideoOutResolutionChanged(int w, int h);
     void onNewMediaStartedPlaying();
     void onMediaStartedPlaying();

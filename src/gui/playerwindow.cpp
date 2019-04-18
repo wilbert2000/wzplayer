@@ -94,7 +94,9 @@ void TVideoWindow::restoreNormalBackground() {
 }
 
 
-TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
+TPlayerWindow::TPlayerWindow(QWidget* parent,
+                             const QString& name,
+                             bool previewWindow) :
     QWidget(parent),
     video_size(0, 0),
     last_video_out_size(0, 0),
@@ -106,7 +108,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent, const QString& name) :
     double_clicked(false),
     delay_left_click(true),
     dragging(false),
-    isPreviewWindow(name == "preview_window") {
+    isPreviewWindow(previewWindow) {
 
     setObjectName(name);
     setMinimumSize(frame());

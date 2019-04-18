@@ -13,7 +13,7 @@ namespace Menu {
 TTitleGroup::TTitleGroup(TMainWindow *mw) :
     TActionGroup(mw, "title_group") {
 
-    connect(this, &TTitleGroup::activated,
+    connect(this, &TTitleGroup::triggeredID,
             player, &Player::TPlayer::setTitle);
     connect(player, &Player::TPlayer::titleTrackChanged,
             this, &TTitleGroup::setChecked);
@@ -52,7 +52,7 @@ TChapterGroup::TChapterGroup(TMainWindow *mw,
     prevChapterAct(prvChapterAct),
     nextChapterAct(nxtChapterAct) {
 
-    connect(this, &TChapterGroup::activated,
+    connect(this, &TChapterGroup::triggeredID,
             player, &Player::TPlayer::setChapter);
     connect(player, &Player::TPlayer::chapterChanged,
             this, &TChapterGroup::setChecked);
@@ -95,7 +95,7 @@ TAngleGroup::TAngleGroup(TMainWindow *mw, TAction* nxtAngleAct) :
     TActionGroup(mw, "angle_group"),
     nextAngleAct(nxtAngleAct) {
 
-    connect(this, &TAngleGroup::activated,
+    connect(this, &TAngleGroup::triggeredID,
             player, &Player::TPlayer::setAngle);
     connect(player, &Player::TPlayer::titleTracksChanged,
             this, &TAngleGroup::updateAngles);

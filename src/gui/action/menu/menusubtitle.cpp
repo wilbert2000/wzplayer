@@ -21,7 +21,7 @@ TClosedCaptionsGroup::TClosedCaptionsGroup(TMainWindow* mw)
     new TActionGroupItem(mw, this, "cc_ch_3", tr("3"), 3);
     new TActionGroupItem(mw, this, "cc_ch_4", tr("4"), 4);
     setChecked(player->mset.closed_caption_channel);
-    connect(this, &TActionGroup::activated,
+    connect(this, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setClosedCaptionChannel);
 }
 
@@ -54,7 +54,7 @@ TSubFPSGroup::TSubFPSGroup(TMainWindow* mw)
     new TActionGroupItem(mw, this, "sub_fps_30", tr("30"),
                          TMediaSettings::SFPS_30);
     setChecked(player->mset.external_subtitles_fps);
-    connect(this, &TSubFPSGroup::activated,
+    connect(this, &TSubFPSGroup::triggeredID,
             player, &Player::TPlayer::changeExternalSubFPS);
 }
 

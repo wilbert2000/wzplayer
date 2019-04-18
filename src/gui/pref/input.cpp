@@ -105,16 +105,12 @@ void TInput::createMouseCombos() {
     addActionItem("decrease_volume");
     addActionItem("fullscreen");
     addActionItem("screenshot");
-    addActionItem("stay_on_top_always");
-    addActionItem("stay_on_top_never");
-    addActionItem("stay_on_top_playing");
     addActionItem("mute");
     addActionItem("osd_next");
     addActionItem("view_playlist");
     addActionItem("reset_zoom_pan");
     addActionItem("exit_fullscreen");
     addActionItem("speed_normal");
-    addActionItem("toggle_frames");
     addActionItem("view_settings");
     addActionItem("size_toggle_double");
     addActionItem("next_chapter");
@@ -123,6 +119,7 @@ void TInput::createMouseCombos() {
     addActionItem("audio_equalizer");
     addActionItem("show_context_menu");
     addActionItem("next_wheel_function");
+    // TODO: explain dvdnav_mouse and left button
     addActionItem("dvdnav_mouse");
     addActionItem("dvdnav_menu");
     addActionItem("dvdnav_prev");

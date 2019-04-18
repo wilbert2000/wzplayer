@@ -19,14 +19,35 @@
 #ifndef GUI_ACTIONGROUP_H
 #define GUI_ACTIONGROUP_H
 
-#include <QWidget>
-#include <QActionGroup>
 #include "gui/action/action.h"
+#include "wzdebug.h"
+#include <QActionGroup>
 
 namespace Gui {
 namespace Action {
 
-class TActionGroup;
+//! TActionGroup makes it easier to create exclusive menus based on items
+//! with integer data.
+class TActionGroup : public QActionGroup {
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
+public:
+    TActionGroup (QObject* parent, const QString& name);
+
+    //! Remove and delete all items.
+    void clear();
+
+public slots:
+    //! Looks for the item which ID is \a ID and checks it
+    QAction* setChecked(int ID);
+
+signals:
+    //! Emitted when an item has been checked
+    void triggeredID(int);
+
+private slots:
+    void onTriggered(QAction*);
+};
 
 //! This class makes easy to create actions for TActionGroup
 
@@ -37,32 +58,8 @@ public:
                      const QString& name,
                      const QString& text,
                      int data,
-                     bool autoadd = true,
                      bool icon = false,
                      const QKeySequence& shortCut = 0);
-};
-
-
-//! TActionGroup makes easier to create exclusive menus based on items
-//! with an integer data.
-class TActionGroup : public QActionGroup {
-    Q_OBJECT
-
-public:
-    TActionGroup (QObject* parent, const QString& name);
-
-    //! Remove and delete all items.
-    void clear();
-public slots:
-    //! Looks for the item which ID is \a ID and checks it
-    QAction* setChecked(int ID);
-
-signals:
-    //! Emitted when an item has been checked
-    void activated(int);
-
-protected slots:
-    void itemTriggered(QAction*);
 };
 
 } // namespace Action

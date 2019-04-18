@@ -31,10 +31,9 @@ TActionGroupItem::TActionGroupItem(QObject* parent,
                                    const QString& name,
                                    const QString& text,
                                    int data,
-                                   bool autoadd,
                                    bool icon,
                                    const QKeySequence& shortCut)
-    : TAction(parent, name, text, icon ? "" : "noicon", shortCut, autoadd) {
+    : TAction(parent, name, text, icon ? "" : "noicon", shortCut, false) {
 
     setData(data);
     setCheckable(true);
@@ -46,21 +45,22 @@ TActionGroup::TActionGroup(QObject* parent, const QString& name)
     : QActionGroup(parent) {
 
     setObjectName(name);
-    setExclusive(true);
-    connect(this, &TActionGroup::triggered, this, &TActionGroup::itemTriggered);
+    connect(this, &TActionGroup::triggered, this, &TActionGroup::onTriggered);
 }
 
 QAction* TActionGroup::setChecked(int ID) {
 
-    QList <QAction *> l = actions();
-    for (int n = 0; n < l.count(); n++) {
-        QAction* action = l.at(n);
+    QList <QAction*> acts = actions();
+    for (int n = 0; n < acts.count(); n++) {
+        QAction* action = acts.at(n);
         if (!action->isSeparator() && action->data().toInt() == ID) {
             action->setChecked(true);
             return action;
         }
     }
 
+    // Does not need to be an error. TWindowSizeGroup set sizes not in menu.
+    WZDOBJ << "ID" << ID << "not found";
     return 0;
 }
 
@@ -74,13 +74,11 @@ void TActionGroup::clear() {
     }
 }
 
-void TActionGroup::itemTriggered(QAction* a) {
+void TActionGroup::onTriggered(QAction* a) {
 
     int value = a->data().toInt();
-    Log4Qt::Logger::logger("Gui::Action::TActionGroup")->debug(
-                "itemTriggered '%1' ID: %2", a->objectName(), value);
-
-    emit activated(value);
+    WZDOBJ << a->objectName() << value;
+    emit triggeredID(value);
 }
 
 } // namespace Action

@@ -31,13 +31,14 @@
 #include "gui/playlist/playlistwidget.h"
 
 #include "gui/about.h"
-#include "gui/timedialog.h"
-#include "gui/videoequalizer.h"
 #include "gui/audioequalizer.h"
-#include "gui/stereo3ddialog.h"
-#include "gui/updatechecker.h"
 #include "gui/eqslider.h"
 #include "gui/inputurl.h"
+#include "gui/stereo3ddialog.h"
+#include "gui/timedialog.h"
+#include "gui/timelabel.h"
+#include "gui/updatechecker.h"
+#include "gui/videoequalizer.h"
 
 #include "gui/pref/dialog.h"
 #include "gui/pref/interface.h"
@@ -183,7 +184,6 @@ TMainWindow::TMainWindow() :
     connect(player, &Player::TPlayer::audioBitRateChanged,
             titleUpdateTimer, &TWZTimer::logStart);
 
-
     setupNetworkProxy();
     changeStayOnTop(pref->stay_on_top);
 
@@ -237,20 +237,18 @@ void TMainWindow::createStatusBar() {
     in_out_points_label->setContentsMargins(margins);
     statusBar()->addPermanentWidget(in_out_points_label, 0);
 
-    time_label = new QLabel(statusBar());
-    time_label->setObjectName("time_label");
-    TColorUtils::setBackgroundColor(time_label, bgc);
-    TColorUtils::setForegroundColor(time_label, fgc);
-    time_label->setFrameShape(QFrame::NoFrame);
-    time_label->setContentsMargins(margins);
-    time_label->setFont(QFont("Monospace"));
-    time_label->setText("00:00/00:00");
-    statusBar()->addPermanentWidget(time_label, 0);
+    timeLabel = new TTimeLabel(statusBar());
+    timeLabel->setObjectName("time_label");
+    TColorUtils::setBackgroundColor(timeLabel, bgc);
+    TColorUtils::setForegroundColor(timeLabel, fgc);
+    timeLabel->setFrameShape(QFrame::NoFrame);
+    timeLabel->setContentsMargins(margins);
+    statusBar()->addPermanentWidget(timeLabel, 0);
 }
 
 void TMainWindow::createPlayerWindows() {
 
-    playerWindow = new TPlayerWindow(panel, "player_window");
+    playerWindow = new TPlayerWindow(panel, "player_window", false);
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
@@ -275,7 +273,7 @@ void TMainWindow::createPlayerWindows() {
     connect(playerWindow, &Gui::TPlayerWindow::videoOutChanged,
             this, &TMainWindow::displayVideoOut, Qt::QueuedConnection);
 
-    previewWindow = new TPlayerWindow(this, "preview_window");
+    previewWindow = new TPlayerWindow(this, "preview_window", true);
     previewWindow->hide();
 }
 
@@ -286,9 +284,9 @@ void TMainWindow::createPlayers() {
     new Player::TPlayer(this, "player", playerWindow, previewPlayer);
 
     connect(player, &Player::TPlayer::positionChanged,
-            this, &TMainWindow::onPositionChanged);
+            timeLabel, &TTimeLabel::setPosition);
     connect(player, &Player::TPlayer::durationChanged,
-            this, &TMainWindow::onDurationChanged);
+            timeLabel, &TTimeLabel::setDuration);
 
     connect(player, &Player::TPlayer::stateChanged,
             this, &TMainWindow::onStateChanged);
@@ -716,12 +714,12 @@ void TMainWindow::createActions() {
 
     // Color space
     colorSpaceGroup = new Menu::TColorSpaceGroup(this);
-    connect(colorSpaceGroup, &Menu::TColorSpaceGroup::activated,
+    connect(colorSpaceGroup, &Menu::TColorSpaceGroup::triggeredID,
             player, &Player::TPlayer::setColorSpace);
 
     deinterlaceGroup = new Menu::TDeinterlaceGroup(this);
     deinterlaceGroup->setChecked(player->mset.current_deinterlacer);
-    connect(deinterlaceGroup, &Action::Menu::TDeinterlaceGroup::activated,
+    connect(deinterlaceGroup, &Action::Menu::TDeinterlaceGroup::triggeredID,
             player, &Player::TPlayer::setDeinterlace);
 
     toggleDeinterlaceAct = new TAction(this, "toggle_deinterlacing",
@@ -743,7 +741,7 @@ void TMainWindow::createActions() {
 
     rotateGroup = new Menu::TRotateGroup(this);
     rotateGroup->setChecked(player->mset.rotate);
-    connect(rotateGroup, &TActionGroup::activated,
+    connect(rotateGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setRotate);
 
     // Video filters
@@ -758,7 +756,7 @@ void TMainWindow::createActions() {
                          TMediaSettings::DenoiseNormal);
     new TActionGroupItem(this, denoiseGroup, "denoise_soft", tr("Soft"),
                          TMediaSettings::DenoiseSoft);
-    connect(denoiseGroup, &TActionGroup::activated,
+    connect(denoiseGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setDenoiser);
 
     // Unsharp
@@ -767,7 +765,7 @@ void TMainWindow::createActions() {
     new TActionGroupItem(this, sharpenGroup, "sharpen_off", tr("None"), 0);
     new TActionGroupItem(this, sharpenGroup, "blur", tr("Blur"), 1);
     new TActionGroupItem(this, sharpenGroup, "sharpen", tr("Sharpen"), 2);
-    connect(sharpenGroup, &TActionGroup::activated,
+    connect(sharpenGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setSharpen);
 
     // Stereo 3D
@@ -783,7 +781,7 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::nextVideoTrack);
 
     videoTrackGroup = new TActionGroup(this, "videotrack_group");
-    connect(videoTrackGroup, &TActionGroup::activated,
+    connect(videoTrackGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setVideoTrack);
     connect(player, &Player::TPlayer::videoTrackChanged,
             videoTrackGroup, &TActionGroup::setChecked);
@@ -902,7 +900,7 @@ void TMainWindow::createActions() {
     connect(nextAudioTrackAct, &TAction::triggered,
             player, &Player::TPlayer::nextAudioTrack);
     audioTrackGroup = new TActionGroup(this, "audiotrack_group");
-    connect(audioTrackGroup, &TActionGroup::activated,
+    connect(audioTrackGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setAudioTrack);
     connect(player, &Player::TPlayer::audioTrackChanged,
             audioTrackGroup, &TActionGroup::setChecked);
@@ -977,7 +975,7 @@ void TMainWindow::createActions() {
             player, &Player::TPlayer::nextSubtitle);
 
     subtitleTrackGroup = new TActionGroup(this, "subtitle_track_group");
-    connect(subtitleTrackGroup, &TActionGroup::activated,
+    connect(subtitleTrackGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setSubtitle);
     connect(player, &Player::TPlayer::subtitlesChanged,
             this, &TMainWindow::updateSubtitleTracks);
@@ -986,7 +984,7 @@ void TMainWindow::createActions() {
             this, &TMainWindow::updateSubtitleTracks);
 
     secondarySubtitleTrackGroup = new TActionGroup(this, "subtitle_track2_group");
-    connect(secondarySubtitleTrackGroup, &TActionGroup::activated,
+    connect(secondarySubtitleTrackGroup, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setSecondarySubtitle);
     // Need to update all, to disable sub in primary track
     connect(player, &Player::TPlayer::secondarySubtitleTrackChanged,
@@ -1223,13 +1221,18 @@ void TMainWindow::createActions() {
     viewVideoTimeAct->setCheckable(true);
     viewVideoTimeAct->setChecked(true);
     connect(viewVideoTimeAct, &TAction::toggled,
-            time_label, &QLabel::setVisible);
+            timeLabel, &QLabel::setVisible);
 
-    viewFramesAct = new TAction(this, "toggle_frames", tr("Frames"));
-    viewFramesAct->setCheckable(true);
-    viewFramesAct->setChecked(false);
-    connect(viewFramesAct, &TAction::toggled,
-            this, &TMainWindow::displayFrames);
+    timeResGroup = new TActionGroup(this, "time_res_group");
+    new TActionGroupItem(this, timeResGroup, "time_res_second",
+                         tr("Seconds"), TTimeLabel::RES_SECONDS);
+    new TActionGroupItem(this, timeResGroup, "time_res_ms",
+                         tr("Milliseconds"), TTimeLabel::RES_MS);
+    new TActionGroupItem(this, timeResGroup, "time_res_frames",
+                         tr("Frames or millisceconds"),
+                         TTimeLabel::RES_FRAMES);
+    connect(timeResGroup, &TActionGroup::triggeredID,
+            timeLabel, &TTimeLabel::setTimeResolution);
 
     a = new Action::TAction(this, "next_wheel_function",
                             tr("Next wheel function"), 0, Qt::Key_W);
@@ -1262,7 +1265,8 @@ void TMainWindow::createMenus() {
     statusbarMenu->addAction(viewVideoInfoAct);
     statusbarMenu->addAction(viewInOutPointsAct);
     statusbarMenu->addAction(viewVideoTimeAct);
-    statusbarMenu->addAction(viewFramesAct);
+    statusbarMenu->addSeparator();
+    statusbarMenu->addActions(timeResGroup->actions());
 
     // Toolbar context menu
     toolbarMenu = new Menu::TMenu(this, "toolbar_menu", tr("Toolbars"),
@@ -1867,7 +1871,13 @@ void TMainWindow::loadSettings() {
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
     viewInOutPointsAct->setChecked(pref->value("in_out_points", true).toBool());
     viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
-    viewFramesAct->setChecked(pref->show_frames);
+    int res = pref->value("time_resolution", TTimeLabel::RES_SECONDS).toInt();
+    if (res < TTimeLabel::RES_SECONDS
+            || res > TTimeLabel::RES_FRAMES) {
+        res = TTimeLabel::RES_SECONDS;
+    }
+    timeLabel->setTimeResolution(res);
+    timeResGroup->setChecked(res);
     pref->endGroup();
 
     pref->endGroup();
@@ -1904,6 +1914,7 @@ void TMainWindow::saveSettings() {
     pref->setValue("video_info", viewVideoInfoAct->isChecked());
     pref->setValue("in_out_points", viewInOutPointsAct->isChecked());
     pref->setValue("video_time", viewVideoTimeAct->isChecked());
+    pref->setValue("time_resolution", timeLabel->timeResolution());
     pref->endGroup();
 
     pref->endGroup();
@@ -1971,12 +1982,6 @@ void TMainWindow::displayInOutPoints() {
     }
 
     in_out_points_label->setText(s);
-}
-
-void TMainWindow::displayFrames(bool b) {
-
-    pref->show_frames = b;
-    onDurationChanged(player->mdat.durationMS());
 }
 
 void TMainWindow::setFloatingToolbarsVisible(bool visible) {
@@ -2411,67 +2416,6 @@ void TMainWindow::updateSeekDefaultAction(QAction* action) {
         emit seekForwardDefaultActionChanged(seekIntToAction(seekInt));
         emit seekRewindDefaultActionChanged(seekIntToAction(seekInt + 5));
     }
-}
-
-void TMainWindow::setTimeLabel(int ms, bool changed) {
-
-    static int lastSec = -1111;
-
-    int s = ms / 1000;
-    if (s != lastSec) {
-        lastSec = s;
-        positionText = TWZTime::formatSec(s);
-        changed = true;
-    }
-
-    QString frames;
-    if (pref->show_frames) {
-        double fps = player->mdat.video_fps;
-        if (fps > 0) {
-            if (ms < 0) {
-                ms = -ms;
-                s = -s;
-            }
-            ms = ms - s * 1000;
-            int frame = qRound((ms * fps) / 1000);
-            if (frame < 10) {
-                frames = ".0" + QString::number(frame);
-            } else {
-                frames = "."  + QString::number(frame);
-            }
-            frames += player->mdat.fuzzy_time;
-            changed = true;
-        }
-    }
-
-    if (changed) {
-        time_label->setText(positionText + frames + durationText);
-    }
-}
-
-void TMainWindow::onPositionChanged(int ms) {
-    setTimeLabel(ms, false);
-}
-
-void TMainWindow::onDurationChanged(int ms) {
-
-    int s = ms / 1000;
-    durationText = "/" + TWZTime::formatSec(s);
-
-    if (pref->show_frames) {
-        double fps = player->mdat.video_fps;
-        if (fps > 0) {
-            ms = ms - s * 1000;
-            int frame = qRound((ms * fps) / 1000);
-            QString frames = QString::number(frame);
-            if (frames.length() < 2) {
-                frames = "0" + frames;
-            }
-            durationText += "." + frames;
-        }
-    }
-
-    setTimeLabel(ms, true);
 }
 
 void TMainWindow::closeEvent(QCloseEvent* e)  {

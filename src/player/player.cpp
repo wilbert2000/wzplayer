@@ -1800,7 +1800,7 @@ void TPlayer::seekCmd(double value, int mode) {
     if (mode == 0) {
         QString s(tr("Seek %1%2 from %3")
                   .arg(keyFrames ? tr("key frame ") : "" )
-                  .arg(TWZTime::formatTimeMS(value))
+                  .arg(TWZTime::formatSecAsMS(value))
                   .arg(TWZTime::formatMS(mset.current_ms)));
         if (previewPlayer) {
             Gui::msgOSD(s);
@@ -1823,7 +1823,7 @@ void TPlayer::seekCmd(double value, int mode) {
         } else {
             QString s(tr("Seek to %1%2")
                       .arg(keyFrames ? "key frame " : "" )
-                       .arg(TWZTime::formatTimeMS(value)));
+                       .arg(TWZTime::formatSecAsMS(value)));
 
             if (previewPlayer) {
                 Gui::msgOSD(s);

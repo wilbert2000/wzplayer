@@ -33,9 +33,10 @@ TMediaData::TMediaData() :
     detected_type(TYPE_UNKNOWN),
     image(false),
 
-    start_sec(0),
     start_sec_player(0),
+    start_sec(0),
     start_sec_set(false),
+
     pos_sec(0),
     pos_sec_gui(0),
     duration(0),

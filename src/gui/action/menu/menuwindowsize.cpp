@@ -46,7 +46,7 @@ TWindowSizeGroup::TWindowSizeGroup(TMainWindow* mw, TPlayerWindow* pw)
 
     setChecked(size_percentage);
 
-    connect(this, &TWindowSizeGroup::activated,
+    connect(this, &TWindowSizeGroup::triggeredID,
             mw, &TMainWindow::setSizePercentage);
 }
 

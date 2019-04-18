@@ -16,17 +16,17 @@ TOSDGroup::TOSDGroup(TMainWindow *mw) :
 
     // Always enabled
     new TActionGroupItem(mw, this, "osd_none", tr("Subtitles only"),
-        TPreferences::None, true, false, Qt::SHIFT | Qt::Key_O);
+        TPreferences::None, false, Qt::SHIFT | Qt::Key_O);
     new TActionGroupItem(mw, this, "osd_seek", tr("Volume + seek"),
-        TPreferences::Seek, true, false, Qt::CTRL | Qt::Key_O);
+        TPreferences::Seek, false, Qt::CTRL | Qt::Key_O);
     new TActionGroupItem(mw, this, "osd_time", tr("Volume + seek + time"),
-        TPreferences::SeekTimer, true, false, Qt::ALT | Qt::Key_O);
+        TPreferences::SeekTimer, false, Qt::ALT | Qt::Key_O);
     new TActionGroupItem(mw, this, "osd_total",
                          tr("Volume + seek + time + length"),
-                         TPreferences::SeekTimerTotal, true, false,
+                         TPreferences::SeekTimerTotal, false,
                          Qt::META | Qt::Key_O);
     setChecked(pref->osd_level);
-    connect(this, &TOSDGroup::activated,
+    connect(this, &TOSDGroup::triggeredID,
             player, &Player::TPlayer::setOSDLevel);
     connect(player, &Player::TPlayer::osdLevelChanged,
             this, &TOSDGroup::setChecked);
@@ -85,15 +85,15 @@ TStayOnTopGroup::TStayOnTopGroup(TMainWindow *mw) :
     new TToggleStayOnTopAction(mw);
 
     new TActionGroupItem(mw, this, "stay_on_top_never", tr("Never"),
-        TPreferences::NeverOnTop, true, true, Qt::SHIFT | Qt::Key_T);
+        TPreferences::NeverOnTop, true, Qt::SHIFT | Qt::Key_T);
     new TActionGroupItem(mw, this, "stay_on_top_always", tr("Always"),
-        TPreferences::AlwaysOnTop, true, true, Qt::CTRL | Qt::Key_T);
+        TPreferences::AlwaysOnTop, true, Qt::CTRL | Qt::Key_T);
     new TActionGroupItem(mw, this, "stay_on_top_playing", tr("While playing"),
-                         TPreferences::WhilePlayingOnTop, true, true,
+                         TPreferences::WhilePlayingOnTop, true,
                          Qt::ALT | Qt::Key_T);
     setChecked((int) pref->stay_on_top);
 
-    connect(this , &TActionGroup::activated,
+    connect(this , &TActionGroup::triggeredID,
             mw, &TMainWindow::changeStayOnTop);
     connect(mw, &TMainWindow::stayOnTopChanged,
             this, &TActionGroup::setChecked);

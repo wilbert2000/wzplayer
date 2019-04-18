@@ -228,7 +228,7 @@ void TTimeSliderAction::onToolTipEvent(TTimeSlider* slider,
             previewTimer->start();
         }
     } else {
-        QToolTip::showText(pos, TWZTime::formatSec(ms / 1000), slider);
+        QToolTip::showText(pos, TWZTime::formatMS(ms), slider);
     }
 }
 

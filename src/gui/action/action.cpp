@@ -53,12 +53,12 @@ void updateToolTip(QAction* action) {
     }
 }
 
-TAction::TAction (QObject* parent,
-                  const QString& name,
-                  const QString& text,
-                  const QString& icon,
-                  const QKeySequence& shortCut,
-                  bool autoAdd)
+TAction::TAction(QObject* parent,
+                 const QString& name,
+                 const QString& text,
+                 const QString& icon,
+                 const QKeySequence& shortCut,
+                 bool autoAdd)
     : QAction(parent) {
 
     setObjectName(name);

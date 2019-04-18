@@ -28,7 +28,7 @@ TAudioChannelGroup::TAudioChannelGroup(TMainWindow* mw)
     new TActionGroupItem(mw, this, "channels_ful71", tr("7.1 Surround"),
                          TMediaSettings::ChFull71);
     setChecked(player->mset.audio_use_channels);
-    connect(this, &TActionGroup::activated,
+    connect(this, &TActionGroup::triggeredID,
             player, &Player::TPlayer::setAudioChannels);
     // No one else sets it
 }
@@ -63,7 +63,7 @@ TStereoGroup::TStereoGroup(TMainWindow* mw)
     new TActionGroupItem(mw, this, "reverse_channels", tr("Reverse"),
                          TMediaSettings::Reverse);
     setChecked(player->mset.stereo_mode);
-    connect(this, &TStereoGroup::activated,
+    connect(this, &TStereoGroup::triggeredID,
             player, &Player::TPlayer::setStereoMode);
     // No one changes it
 }
