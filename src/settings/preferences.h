@@ -399,6 +399,8 @@ public:
     void clearRecents();
     void addRecent(const QString& url, const QString& title = QString());
 
+    int getInt(const QString& name, int min, int max, int def);
+
 signals:
     void recentsChanged();
 
@@ -406,7 +408,7 @@ private:
     void reset();
     void setPlayerBin0(QString bin);
     void setPlayerID();
-    void setAction(QString& action, const QString& name);
+    void getAction(QString& action, const QString& name);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Settings::TPreferences::TWheelFunctions)

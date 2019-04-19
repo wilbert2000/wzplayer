@@ -825,8 +825,20 @@ void TPreferences::setPlayerBin(QString bin,
         << "additional options" << mpv_additional_options;
 }
 
-void TPreferences::setAction(QString& action, const QString& name) {
+void TPreferences::getAction(QString& action, const QString& name) {
     action = value(name, action).toString();
+}
+
+int TPreferences::getInt(const QString& name, int min, int max, int def) {
+
+    int i = value(name, def).toInt();
+    if (i < min || i > max) {
+        WZW << "Value" << i << "for" << name
+            << "is out of range" << min << "to" << max
+            << ", resetting it to" << def;
+        i = def;
+    }
+    return i;
 }
 
 void TPreferences::load() {
@@ -841,13 +853,8 @@ void TPreferences::load() {
         log_level = log_default_level;
     }
     log_verbose = value("log_verbose", log_verbose).toBool();
-    log_window_max_events = value("log_window_max_events",
-                                  log_window_max_events).toInt();
-    if (log_window_max_events < 10) {
-        log_window_max_events = 10;
-    } else if (log_window_max_events > 100000) {
-        log_window_max_events = 100000;
-    }
+    log_window_max_events = getInt("log_window_max_events", 10, 100000,
+                                   log_window_max_events);
     endGroup(); // Log
 
     // Update Log4Qt. Command line options --loglevel override log level.
@@ -926,29 +933,29 @@ void TPreferences::load() {
 
     frame_drop = value("frame_drop", frame_drop).toBool();
     hard_frame_drop = value("hard_frame_drop", hard_frame_drop).toBool();
-    use_correct_pts = (TOptionState) value("correct_pts", use_correct_pts)
-                      .toInt();
+    use_correct_pts = (TOptionState) getInt("correct_pts", -1, 1,
+                                            use_correct_pts);
 
     initial_postprocessing = value("initial_postprocessing",
                                    initial_postprocessing).toBool();
     postprocessing_quality = value("postprocessing_quality",
                                    postprocessing_quality).toInt();
-    initial_deinterlace = value("initial_deinterlace",
-                                initial_deinterlace).toInt();
-    initial_tv_deinterlace = value("initial_tv_deinterlace",
-                                   initial_tv_deinterlace).toInt();
+    initial_deinterlace = getInt("initial_deinterlace", 0, 5,
+                                 initial_deinterlace);
+    initial_tv_deinterlace = getInt("initial_tv_deinterlace", 0, 5,
+                                   initial_tv_deinterlace);
     initial_zoom_factor = value("initial_zoom_factor", initial_zoom_factor)
                           .toDouble();
 
     monitor_aspect = value("monitor_aspect", monitor_aspect).toString();
 
-    initial_contrast = value("initial_contrast", initial_contrast).toInt();
-    initial_brightness = value("initial_brightness", initial_brightness)
-                         .toInt();
-    initial_hue = value("initial_hue", initial_hue).toInt();
-    initial_saturation = value("initial_saturation", initial_saturation)
-                         .toInt();
-    initial_gamma = value("initial_gamma", initial_gamma).toInt();
+    initial_contrast = getInt("initial_contrast", -100, 100, initial_contrast);
+    initial_brightness = getInt("initial_brightness", -100, 100,
+                                initial_brightness);
+    initial_hue = getInt("initial_hue", -100, 100, initial_hue);
+    initial_saturation = getInt("initial_saturation", -100, 100,
+                                initial_saturation);
+    initial_gamma = getInt("initial_gamma", -100, 100, initial_gamma);
 
     bool ok;
     QString color = value("color_key", QString::number(color_key, 16))
@@ -961,7 +968,7 @@ void TPreferences::load() {
     }
 
     // OSD
-    osd_level = (TOSDLevel) value("osd_level", (int) osd_level).toInt();
+    osd_level = (TOSDLevel) getInt("osd_level", 0, 3, (int) osd_level);
     osd_scale = value("osd_scale", osd_scale).toDouble();
     subfont_osd_scale = value("subfont_osd_scale", subfont_osd_scale)
                         .toDouble();
@@ -969,25 +976,20 @@ void TPreferences::load() {
 
     // Audio tab
     beginGroup("audio");
-    initial_audio_channels = value("initial_audio_channels",
-                                   initial_audio_channels).toInt();
+    initial_audio_channels = getInt("initial_audio_channels", 0, 8,
+                                   initial_audio_channels);
     use_hwac3 = value("use_hwac3", use_hwac3).toBool();
     use_audio_equalizer = value("use_audio_equalizer", use_audio_equalizer)
                           .toBool();
-    use_scaletempo = (TOptionState) value("use_scaletempo", use_scaletempo)
-                     .toInt();
+    use_scaletempo = (TOptionState) getInt("use_scaletempo", -1, 1,
+                                           use_scaletempo);
 
-    initial_stereo_mode = value("initial_stereo_mode", initial_stereo_mode)
-                          .toInt();
+    initial_stereo_mode = getInt("initial_stereo_mode", 0, 4,
+                                 initial_stereo_mode);
 
     global_volume = value("global_volume", global_volume).toBool();
-    initial_volume = value("initial_volume", initial_volume).toInt();
-    if (initial_volume < 0) initial_volume = 0;
-    if (initial_volume > 100) initial_volume = 100;
-
-    volume = value("volume", volume).toInt();
-    if (volume < 0) volume = 0;
-    if (volume > 100) volume = 100;
+    initial_volume = getInt("initial_volume", 0, 100, initial_volume);
+    volume = getInt("volume", 0, 100, volume);
     mute = value("mute", mute).toBool();
 
     global_audio_equalizer = value("global_audio_equalizer",
@@ -999,7 +1001,7 @@ void TPreferences::load() {
     initial_volnorm = value("initial_volnorm", initial_volnorm).toBool();
 
     autosync = value("autosync", autosync).toBool();
-    autosync_factor = value("autosync_factor", autosync_factor).toInt();
+    autosync_factor = getInt("autosync_factor", 0, 1000, autosync_factor);
 
     use_mc = value("use_mc", use_mc).toBool();
     mc_value = value("mc_value", mc_value).toDouble();
@@ -1007,17 +1009,16 @@ void TPreferences::load() {
     audio_lang = value("audio_lang", audio_lang).toString();
 
     autoload_m4a = value("autoload_m4a", autoload_m4a).toBool();
-    min_step = value("min_step", min_step).toInt();
+    min_step = getInt("min_step", 1, 100, min_step);
     endGroup();
 
 
     // Subtitles
     beginGroup("subtitles");
 
-    subtitle_fuzziness = value("subtitle_fuzziness", subtitle_fuzziness)
-                         .toInt();
+    subtitle_fuzziness = getInt("subtitle_fuzziness", 0, 2, subtitle_fuzziness);
     subtitle_language = value("subtitle_language", subtitle_language)
-                        .toString();
+            .toString();
     select_first_subtitle = value("select_first_subtitle",
                                   select_first_subtitle).toBool();
 
@@ -1030,9 +1031,9 @@ void TPreferences::load() {
     use_ass_subtitles = value("use_ass_subtitles", use_ass_subtitles).toBool();
     initial_sub_scale_ass = value("initial_sub_scale_ass",
                                   initial_sub_scale_ass).toDouble();
-    ass_line_spacing = value("ass_line_spacing", ass_line_spacing).toInt();
+    ass_line_spacing = getInt("ass_line_spacing", -20, 20, ass_line_spacing);
 
-    initial_sub_pos = value("initial_sub_pos", initial_sub_pos).toInt();
+    initial_sub_pos = getInt("initial_sub_pos", 0, 150, initial_sub_pos);
     initial_sub_scale = value("initial_sub_scale", initial_sub_scale)
                         .toDouble();
     initial_sub_scale_mpv = value("initial_sub_scale_mpv",
@@ -1069,11 +1070,10 @@ void TPreferences::load() {
     pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
     close_on_finish = value("close_on_finish", close_on_finish).toBool();
 
-    stay_on_top = (TPreferences::TOnTop) value("stay_on_top",
-                                               (int) stay_on_top).toInt();
+    stay_on_top = (TOnTop) getInt("stay_on_top", 0, 2, (int) stay_on_top);
     size_factor = value("size_factor", size_factor).toDouble();
 
-    floating_hide_delay = value("hide_delay", floating_hide_delay).toInt();
+    floating_hide_delay = getInt("hide_delay", 0, INT_MAX, floating_hide_delay);
     start_in_fullscreen = value("start_in_fullscreen", start_in_fullscreen)
                           .toBool();
 
@@ -1081,13 +1081,13 @@ void TPreferences::load() {
 
 
     beginGroup("history");
-    history_recents.setMaxItems(value("recents/max_items",
-                                      history_recents.getMaxItems()).toInt());
+    history_recents.setMaxItems(getInt("recents/max_items", 0, 100,
+                                       history_recents.getMaxItems()));
     history_recents.fromStringList(value("recents", history_recents)
                                    .toStringList());
 
-    history_urls.setMaxItems(value("urls/max_items", history_urls.getMaxItems())
-                             .toInt());
+    history_urls.setMaxItems(getInt("urls/max_items", 0, 100,
+                                    history_urls.getMaxItems()));
     history_urls.fromStringList(value("urls", history_urls).toStringList());
 
     save_dirs = value("save_dirs", save_dirs).toBool();
@@ -1112,7 +1112,7 @@ void TPreferences::load() {
     addPlaylists = value("add_playlists", addPlaylists).toBool();
     addImages = value("add_images", addImages).toBool();
 
-    imageDuration = value("image_duration", imageDuration).toInt();
+    imageDuration = getInt("image_duration", 2, 999, imageDuration);
 
     useDirectoriePlaylists = value("use_directorie_playlists",
                                    useDirectoriePlaylists).toBool();
@@ -1124,34 +1124,30 @@ void TPreferences::load() {
 
 
     beginGroup("mouse");
-    setAction(mouse_left_click_function, "mouse_left_click_function");
+    getAction(mouse_left_click_function, "mouse_left_click_function");
     delay_left_click = value("delay_left_click", delay_left_click).toBool();
-    setAction(mouse_right_click_function, "mouse_right_click_function");
-    setAction(mouse_double_click_function, "mouse_double_click_function");
-    setAction(mouse_middle_click_function, "mouse_middle_click_function");
-    setAction(mouse_xbutton1_click_function, "mouse_xbutton1_click_function");
-    setAction(mouse_xbutton2_click_function, "mouse_xbutton2_click_function");
-    wheel_function = value("mouse_wheel_function", wheel_function).toInt();
-    {
-        int wheel_function_cycle_int = value("wheel_function_cycle",
-                                             (int) wheel_function_cycle)
-                                       .toInt();
-        wheel_function_cycle = (TWheelFunctions) wheel_function_cycle_int;
-    }
+    getAction(mouse_right_click_function, "mouse_right_click_function");
+    getAction(mouse_double_click_function, "mouse_double_click_function");
+    getAction(mouse_middle_click_function, "mouse_middle_click_function");
+    getAction(mouse_xbutton1_click_function, "mouse_xbutton1_click_function");
+    getAction(mouse_xbutton2_click_function, "mouse_xbutton2_click_function");
+    wheel_function = getInt("mouse_wheel_function", 0, 31, wheel_function);
+    wheel_function_cycle = (TWheelFunctions)
+            getInt("wheel_function_cycle", 0, 31, (int) wheel_function_cycle);
     wheel_function_seeking_reverse = value("wheel_function_seeking_reverse",
                                            wheel_function_seeking_reverse)
                                      .toBool();
     endGroup();
 
     beginGroup("seeking");
-    seeking1 = value("seeking1", seeking1).toInt();
-    seeking2 = value("seeking2", seeking2).toInt();
-    seeking3 = value("seeking3", seeking3).toInt();
-    seeking4 = value("seeking4", seeking4).toInt();
-    seeking_current_action = value("seeking_current_action",
-                                   seeking_current_action).toInt();
+    seeking1 = getInt("seeking1", 1, 6000, seeking1);
+    seeking2 = getInt("seeking2", 1, 6000, seeking2);
+    seeking3 = getInt("seeking3", 1, 6000, seeking3);
+    seeking4 = getInt("seeking4", 1, 6000, seeking4);
+    seeking_current_action = getInt("seeking_current_action", 0, 4,
+                                    seeking_current_action);
 
-    seek_rate = value("seek_rate", seek_rate).toInt();
+    seek_rate = getInt("seek_rate", 0, INT_MAX, seek_rate);
     seek_relative = value("seek_relative", seek_relative).toBool();
     seek_keyframes = value("seek_keyframes", seek_keyframes).toBool();
     seek_preview = value("seek_preview", seek_preview).toBool();
@@ -1161,7 +1157,8 @@ void TPreferences::load() {
     // Drives (CD/DVD)
     beginGroup("drives");
     cdrom_device = value("cdrom_device", cdrom_device).toString();
-    vcd_initial_title = value("vcd_initial_title", vcd_initial_title).toInt();
+    vcd_initial_title = getInt("vcd_initial_title", 0, INT_MAX,
+                               vcd_initial_title);
     dvd_device = value("dvd_device", dvd_device).toString();
     use_dvdnav = value("use_dvdnav", use_dvdnav).toBool();
     bluray_device = value("bluray_device", bluray_device).toString();
@@ -1183,32 +1180,28 @@ void TPreferences::load() {
     // Performance
     beginGroup("performance");
     cache_enabled = value("cache_enabled", cache_enabled).toBool();
-    cache_for_files = value("cache_for_files", cache_for_files).toInt();
-    cache_for_streams = value("cache_for_streams", cache_for_streams).toInt();
-    cache_for_tv = value("cache_for_tv", cache_for_tv).toInt();
-    cache_for_brs = value("cache_for_brs", cache_for_brs).toInt();
-    cache_for_dvds = value("cache_for_dvds", cache_for_dvds).toInt();
-    cache_for_vcds = value("cache_for_vcds", cache_for_vcds).toInt();
-    cache_for_audiocds = value("cache_for_audiocds", cache_for_audiocds)
-                         .toInt();
+    cache_for_files = getInt("cache_for_files", 0, 100000, cache_for_files);
+    cache_for_streams = getInt("cache_for_streams", 0, 100000,
+                               cache_for_streams);
+    cache_for_tv = getInt("cache_for_tv", 0, 100000, cache_for_tv);
+    cache_for_brs = getInt("cache_for_brs", 0, 100000, cache_for_brs);
+    cache_for_dvds = getInt("cache_for_dvds", 0, 100000, cache_for_dvds);
+    cache_for_vcds = getInt("cache_for_vcds", 0, 100000, cache_for_vcds);
+    cache_for_audiocds = getInt("cache_for_audiocds", 0, 100000,
+                                cache_for_audiocds);
     endGroup(); // performance
 
 
     // Network
     beginGroup("network");
 
-    int i = value("ip_prefer", ipPrefer).toInt();
-    if (i == IP_PREFER_4 || i == IP_PREFER_6) {
-        ipPrefer = static_cast<TIPPrefer>(i);
-    } else {
-        ipPrefer = IP_PREFER_AUTO;
-    }
+    ipPrefer = (TIPPrefer) getInt("ip_prefer", 0, 2, ipPrefer);
 
     beginGroup("proxy");
     use_proxy = value("use_proxy", use_proxy).toBool();
-    proxy_type = value("type", proxy_type).toInt();
+    proxy_type = getInt("type", 0, 5, proxy_type);
     proxy_host = value("host", proxy_host).toString();
-    proxy_port = value("port", proxy_port).toInt();
+    proxy_port = getInt("port", 0, 65535, proxy_port);
     proxy_username = value("username", proxy_username).toString();
     proxy_password = value("password", proxy_password).toString();
     endGroup(); // proxy
@@ -1229,12 +1222,9 @@ void TPreferences::load() {
         player_additional_audio_filters).toString();
 
     use_edl_files = value("use_edl_files", use_edl_files).toBool();
-    time_to_kill_player = value("time_to_kill_player", time_to_kill_player)
-                          .toInt();
-    if (time_to_kill_player < 3000) {
-        time_to_kill_player = 3000;
-    }
-    balloon_count = value("balloon_count", balloon_count).toInt();
+    time_to_kill_player = getInt("time_to_kill_player", 3000, INT_MAX,
+                                 time_to_kill_player);
+    balloon_count = getInt("balloon_count", 0, 5, balloon_count);
     change_video_equalizer_on_startup = value(
         "change_video_equalizer_on_startup", change_video_equalizer_on_startup)
         .toBool();

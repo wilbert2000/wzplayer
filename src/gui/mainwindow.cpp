@@ -1871,11 +1871,8 @@ void TMainWindow::loadSettings() {
     viewVideoInfoAct->setChecked(pref->value("video_info", true).toBool());
     viewInOutPointsAct->setChecked(pref->value("in_out_points", true).toBool());
     viewVideoTimeAct->setChecked(pref->value("video_time", true).toBool());
-    int res = pref->value("time_resolution", TTimeLabel::RES_SECONDS).toInt();
-    if (res < TTimeLabel::RES_SECONDS
-            || res > TTimeLabel::RES_FRAMES) {
-        res = TTimeLabel::RES_SECONDS;
-    }
+    int res = pref->getInt("time_resolution", TTimeLabel::RES_SECONDS,
+                           TTimeLabel::RES_FRAMES, TTimeLabel::RES_SECONDS);
     timeLabel->setTimeResolution(res);
     timeResGroup->setChecked(res);
     pref->endGroup();
