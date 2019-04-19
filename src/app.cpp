@@ -418,7 +418,7 @@ void TApp::createGUI() {
 
     setActivationWindow(mw);
 
-    WZTRACE("Loading main window settings");
+    WZTRACE("Loading settings main window");
     mw->loadSettings();
 
     mw->setForceCloseOnFinish(close_at_end);
