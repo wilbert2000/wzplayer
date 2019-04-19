@@ -68,8 +68,8 @@ public:
     virtual void setOption(const QString& option_name,
                            const QVariant& value = QVariant()) = 0;
     virtual void addUserOption(const QString& option) = 0;
-    virtual void addVF(const QString& filter_name,
-                       const QVariant& value = QVariant()) = 0;
+    virtual void addVideoFilter(const QString& filter_name,
+                                const QVariant& value = QVariant()) = 0;
     virtual void addAudioFilter(const QString& filter_name,
                        const QVariant& value = QVariant()) = 0;
     virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;

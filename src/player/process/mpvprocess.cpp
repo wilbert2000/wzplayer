@@ -994,7 +994,8 @@ void TMPVProcess::addUserOption(const QString& option) {
     args << option;
 }
 
-void TMPVProcess::addVF(const QString& filter_name, const QVariant& value) {
+void TMPVProcess::addVideoFilter(const QString& filter_name,
+                                 const QVariant& value) {
 
     QString option = value.toString();
 

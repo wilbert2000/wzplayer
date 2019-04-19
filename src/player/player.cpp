@@ -1017,6 +1017,8 @@ void TPlayer::saveRestartState() {
 void TPlayer::startPlayer() {
     WZDOBJ;
 
+    using namespace Settings;
+
     if (_state != STATE_RESTARTING) {
         // Clear background
         playerWindow->repaint();
@@ -1034,7 +1036,7 @@ void TPlayer::startPlayer() {
     }
 
     // Load m4a audio file with the same name as file
-    if (Settings::pref->autoload_m4a && mset.external_audio.isEmpty()) {
+    if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
         QFileInfo fi(fileName);
         if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
             QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
@@ -1050,12 +1052,12 @@ void TPlayer::startPlayer() {
     }
 
     proc->clearArguments();
-    proc->setExecutable(Settings::pref->player_bin);
+    proc->setExecutable(pref->player_bin);
     proc->setFixedOptions();
     proc->disableInput();
     proc->setOption("wid",
         QString::number((qint64) playerWindow->videoWindow()->winId()));
-    if (Settings::pref->log_verbose) {
+    if (pref->log_verbose) {
         proc->setOption("verbose");
     }
 
@@ -1066,7 +1068,7 @@ void TPlayer::startPlayer() {
         int ss = 0;
         if (mdat.selected_type == TMediaData::TYPE_FILE) {
             if (mdat.image) {
-                proc->setImageDuration(Settings::pref->imageDuration);
+                proc->setImageDuration(pref->imageDuration);
             }
             ss = mset.in_point_ms;
             // current_sec may override in point, but cannot be beyond out point
@@ -1095,8 +1097,8 @@ void TPlayer::startPlayer() {
 
     // Setup hardware decoding for MPV.
     // First set mdat.video_hwdec, handle setting hwdec option later
-    QString hwdec = Settings::pref->hwdec;
-    if (Settings::pref->isMPV()) {
+    QString hwdec = pref->hwdec;
+    if (pref->isMPV()) {
         // Disable hardware decoding when there are filters in use
         if (hwdec != "no" && haveVideoFilters()) {
             hwdec = "no";
@@ -1124,24 +1126,24 @@ void TPlayer::startPlayer() {
 
 #ifndef Q_OS_WIN
         // VDPAU codecs
-        if (Settings::pref->vo.startsWith("vdpau")) {
-            if (Settings::pref->isMPlayer()) {
+        if (pref->vo.startsWith("vdpau")) {
+            if (pref->isMPlayer()) {
                 QString c;
-                if (Settings::pref->vdpau.ffh264vdpau) c = "ffh264vdpau,";
-                if (Settings::pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
-                if (Settings::pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
-                if (Settings::pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
-                if (Settings::pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
+                if (pref->vdpau.ffh264vdpau) c = "ffh264vdpau,";
+                if (pref->vdpau.ffmpeg12vdpau) c += "ffmpeg12vdpau,";
+                if (pref->vdpau.ffwmv3vdpau) c += "ffwmv3vdpau,";
+                if (pref->vdpau.ffvc1vdpau) c += "ffvc1vdpau,";
+                if (pref->vdpau.ffodivxvdpau) c += "ffodivxvdpau,";
                 if (!c.isEmpty()) {
                     proc->setOption("vc", c);
                 }
             } else if (mdat.video_hwdec) {
                 QString c;
-                if (Settings::pref->vdpau.ffh264vdpau) c = ",h264";
-                if (Settings::pref->vdpau.ffmpeg12vdpau) c += ",mpeg1video,mpeg2video";
-                if (Settings::pref->vdpau.ffwmv3vdpau) c += ",wmv3";
-                if (Settings::pref->vdpau.ffvc1vdpau) c += ",vc1";
-                if (Settings::pref->vdpau.ffodivxvdpau) c += ",mpeg4";
+                if (pref->vdpau.ffh264vdpau) c = ",h264";
+                if (pref->vdpau.ffmpeg12vdpau) c += ",mpeg1video,mpeg2video";
+                if (pref->vdpau.ffwmv3vdpau) c += ",wmv3";
+                if (pref->vdpau.ffvc1vdpau) c += ",vc1";
+                if (pref->vdpau.ffodivxvdpau) c += ",mpeg4";
                 if (!c.isEmpty()) {
                     proc->setOption("hwdec-codecs", c.mid(1));
                 }
@@ -1152,23 +1154,23 @@ void TPlayer::startPlayer() {
     }
 
     // MPV only
-    if (!hwdec.isEmpty() && Settings::pref->isMPV()) {
+    if (!hwdec.isEmpty() && pref->isMPV()) {
         proc->setOption("hwdec", hwdec);
     }
 
-    if (!Settings::pref->vo.isEmpty()) {
-        proc->setOption("vo", Settings::pref->vo);
+    if (!pref->vo.isEmpty()) {
+        proc->setOption("vo", pref->vo);
     }
 
     // Enable software scaling for vo x11
 #if !defined(Q_OS_WIN)
-    if (Settings::pref->vo.startsWith("x11")) {
+    if (pref->vo.startsWith("x11")) {
         proc->setOption("zoom");
     }
 #endif
 
-    if (!Settings::pref->ao.isEmpty()) {
-        proc->setOption("ao", Settings::pref->ao);
+    if (!pref->ao.isEmpty()) {
+        proc->setOption("ao", pref->ao);
     }
 
     if (mset.current_video_id >= 0) {
@@ -1193,95 +1195,92 @@ void TPlayer::startPlayer() {
         proc->setOption("aspect", aspect_option);
     }
     // Aspect ratio monitor
-    double aspect = Settings::pref->monitorAspectDouble();
+    double aspect = pref->monitorAspectDouble();
     if (aspect > 0) {
         proc->setOption("monitorpixelaspect", aspect);
     }
 
     // Colorkey, only used by XP directx to set color key for overlay
-    if (Settings::pref->useColorKey()) {
-        proc->setOption("colorkey",
-                        TColorUtils::colorToRGB(Settings::pref->color_key));
+    if (pref->useColorKey()) {
+        proc->setOption("colorkey", TColorUtils::colorToRGB(pref->color_key));
     }
 
     // Synchronization
-    if (Settings::pref->frame_drop && Settings::pref->hard_frame_drop) {
+    if (pref->frame_drop && pref->hard_frame_drop) {
         proc->setOption("framedrop", "decoder+vo");
-    } else if (Settings::pref->frame_drop) {
+    } else if (pref->frame_drop) {
         proc->setOption("framedrop", "vo");
-    } else if (Settings::pref->hard_frame_drop) {
+    } else if (pref->hard_frame_drop) {
         proc->setOption("framedrop", "decoder");
     }
-    if (Settings::pref->autosync) {
-        proc->setOption("autosync",
-                        QString::number(Settings::pref->autosync_factor));
+    if (pref->autosync) {
+        proc->setOption("autosync", QString::number(pref->autosync_factor));
     }
-    if (Settings::pref->use_mc) {
-        proc->setOption("mc", QString::number(Settings::pref->mc_value));
+    if (pref->use_mc) {
+        proc->setOption("mc", QString::number(pref->mc_value));
     }
 
     // OSD
     if (previewPlayer) {
         // Normal player
-        proc->setOption("osdlevel", Settings::pref->osd_level);
-        if (Settings::pref->isMPlayer()) {
-            proc->setOption("osd-scale", Settings::pref->subfont_osd_scale);
+        proc->setOption("osdlevel", pref->osd_level);
+        if (pref->isMPlayer()) {
+            proc->setOption("osd-scale", pref->subfont_osd_scale);
         } else {
-            proc->setOption("osd-scale", Settings::pref->osd_scale);
+            proc->setOption("osd-scale", pref->osd_scale);
             proc->setOption("osd-scale-by-window", "no");
         }
     } else {
         // Preview player
-        proc->setOption("osdlevel", Settings::TPreferences::SeekTimer);
-        if (Settings::pref->isMPlayer()) {
-            proc->setOption("osd-scale",
-                            qRound(0.8 * Settings::pref->subfont_osd_scale));
+        proc->setOption("osdlevel", TPreferences::SeekTimer);
+        if (pref->isMPlayer()) {
+            proc->setOption("osd-scale", qRound(0.8 * pref->subfont_osd_scale));
         } else {
-            proc->setOption("osd-scale", 0.8 * Settings::pref->osd_scale);
+            proc->setOption("osd-scale", 0.8 * pref->osd_scale);
             proc->setOption("osd-scale-by-window", "no");
         }
     }
 
     // Subtitle search fuzziness
-    proc->setOption("sub-fuzziness", Settings::pref->subtitle_fuzziness);
+    proc->setOption("sub-fuzziness", pref->subtitle_fuzziness);
 
     // Subtitles fonts
-    if (Settings::pref->use_ass_subtitles && Settings::pref->freetype_support) {
+    if (pref->use_ass_subtitles && pref->freetype_support) {
         // Use ASS options
         proc->setOption("ass");
         proc->setOption("embeddedfonts");
         proc->setOption("ass-font-scale", QString::number(mset.sub_scale_ass));
         proc->setOption("ass-line-spacing",
-                        QString::number(Settings::pref->ass_line_spacing));
+                        QString::number(pref->ass_line_spacing));
 
         // Custom ASS style
-        if (Settings::pref->use_custom_ass_style) {
+        if (pref->use_custom_ass_style) {
             QString ass_force_style;
-            if (Settings::pref->user_forced_ass_style.isEmpty()) {
-                ass_force_style = Settings::pref->ass_styles.toString();
+            if (pref->user_forced_ass_style.isEmpty()) {
+                ass_force_style = pref->ass_styles.toString();
             } else {
-                ass_force_style = Settings::pref->user_forced_ass_style;
+                ass_force_style = pref->user_forced_ass_style;
             }
 
-            if (Settings::pref->isMPV()) {
-                proc->setSubStyles(Settings::pref->ass_styles);
-                if (Settings::pref->force_ass_styles) {
+            if (pref->isMPV()) {
+                proc->setSubStyles(pref->ass_styles);
+                if (pref->force_ass_styles) {
                     proc->setOption("ass-force-style", ass_force_style);
                 }
             } else {
-                if (Settings::pref->force_ass_styles) {
+                if (pref->force_ass_styles) {
                     proc->setOption("ass-force-style", ass_force_style);
                 } else {
-                    proc->setSubStyles(Settings::pref->ass_styles,
-                                       Settings::TPaths::subtitleStyleFileName());
+                    proc->setSubStyles(pref->ass_styles,
+                                       TPaths::subtitleStyleFileName());
                 }
             }
         }
     } else {
         // NO ASS
-        if (Settings::pref->freetype_support)
+        if (pref->freetype_support)
             proc->setOption("noass");
-        if (Settings::pref->isMPV()) {
+        if (pref->isMPV()) {
             proc->setOption("sub-scale", QString::number(mset.sub_scale_mpv));
         } else {
             proc->setOption("subfont-text-scale",
@@ -1290,25 +1289,23 @@ void TPlayer::startPlayer() {
     }
 
     // Subtitle encoding
-    if (Settings::pref->subtitle_enca_language.isEmpty()) {
+    if (pref->subtitle_enca_language.isEmpty()) {
         // No encoding language, set fallback code page
-        if (!Settings::pref->subtitle_encoding_fallback.isEmpty()) {
-            if (Settings::pref->isMPlayer()) {
-                proc->setOption("subcp",
-                                Settings::pref->subtitle_encoding_fallback);
-            } else if (Settings::pref->subtitle_encoding_fallback != "UTF-8") {
+        if (!pref->subtitle_encoding_fallback.isEmpty()) {
+            if (pref->isMPlayer()) {
+                proc->setOption("subcp", pref->subtitle_encoding_fallback);
+            } else if (pref->subtitle_encoding_fallback != "UTF-8") {
                 // Use pref->subtitle_encoding_fallback if encoding is not utf8
                 proc->setOption("subcp",
-                                "utf8:"
-                                + Settings::pref->subtitle_encoding_fallback);
+                                "utf8:" + pref->subtitle_encoding_fallback);
             }
         }
     } else {
         // Add subtitle encoding enca language
-        QString encoding = "enca:"+ Settings::pref->subtitle_enca_language;
+        QString encoding = "enca:"+ pref->subtitle_enca_language;
         // Add subtitle encoding fallback
-        if (!Settings::pref->subtitle_encoding_fallback.isEmpty()) {
-            encoding += ":"+ Settings::pref->subtitle_encoding_fallback;
+        if (!pref->subtitle_encoding_fallback.isEmpty()) {
+            encoding += ":"+ pref->subtitle_encoding_fallback;
         }
         proc->setOption("subcp", encoding);
     }
@@ -1317,7 +1314,7 @@ void TPlayer::startPlayer() {
         proc->setOption("subcc", QString::number(mset.closed_caption_channel));
     }
 
-    if (Settings::pref->use_forced_subs_only) {
+    if (pref->use_forced_subs_only) {
         proc->setOption("forcedsubsonly");
     }
 
@@ -1360,18 +1357,18 @@ void TPlayer::startPlayer() {
 
     // Set fps external file
     if (!mset.sub.filename().isEmpty()
-        && mset.external_subtitles_fps != Settings::TMediaSettings::SFPS_None) {
+        && mset.external_subtitles_fps != TMediaSettings::SFPS_None) {
 
         QString fps;
         switch (mset.external_subtitles_fps) {
-            case Settings::TMediaSettings::SFPS_23: fps = "23"; break;
-            case Settings::TMediaSettings::SFPS_24: fps = "24"; break;
-            case Settings::TMediaSettings::SFPS_25: fps = "25"; break;
-            case Settings::TMediaSettings::SFPS_30: fps = "30"; break;
-            case Settings::TMediaSettings::SFPS_23976:
+            case TMediaSettings::SFPS_23: fps = "23"; break;
+            case TMediaSettings::SFPS_24: fps = "24"; break;
+            case TMediaSettings::SFPS_25: fps = "25"; break;
+            case TMediaSettings::SFPS_30: fps = "30"; break;
+            case TMediaSettings::SFPS_23976:
                 fps = "24000/1001";
                 break;
-            case Settings::TMediaSettings::SFPS_29970:
+            case TMediaSettings::SFPS_29970:
                 fps = "30000/1001";
                 break;
             default: fps = "25";
@@ -1407,8 +1404,8 @@ void TPlayer::startPlayer() {
     }
 
     // Color space video filter
-    if (Settings::pref->isMPV() && mset.color_space
-        != Settings::TMediaSettings::TColorSpace::COLORSPACE_AUTO) {
+    if (pref->isMPV() && mset.color_space
+            != TMediaSettings::TColorSpace::COLORSPACE_AUTO) {
         proc->setOption("vf-add", "format=colormatrix="
                         + mset.getColorSpaceOptionString());
     }
@@ -1425,25 +1422,25 @@ void TPlayer::startPlayer() {
         // Enabled cache
         switch (mdat.selected_type) {
             case TMediaData::TYPE_FILE:
-                cache_size = Settings::pref->cache_for_files;
+                cache_size = pref->cache_for_files;
                 break;
             case TMediaData::TYPE_DVD:
-                cache_size = Settings::pref->cache_for_dvds;
+                cache_size = pref->cache_for_dvds;
                 break;
             case TMediaData::TYPE_VCD:
-                cache_size = Settings::pref->cache_for_vcds;
+                cache_size = pref->cache_for_vcds;
                 break;
             case TMediaData::TYPE_CDDA:
-                cache_size = Settings::pref->cache_for_audiocds;
+                cache_size = pref->cache_for_audiocds;
                 break;
             case TMediaData::TYPE_BLURAY:
-                cache_size = Settings::pref->cache_for_brs;
+                cache_size = pref->cache_for_brs;
                 break;
             case TMediaData::TYPE_STREAM:
-                cache_size = Settings::pref->cache_for_streams;
+                cache_size = pref->cache_for_streams;
                 break;
             case TMediaData::TYPE_TV:
-                cache_size = Settings::pref->cache_for_tv;
+                cache_size = pref->cache_for_tv;
                 break;
             default: cache_size = 0;
         } // switch
@@ -1456,35 +1453,34 @@ void TPlayer::startPlayer() {
         proc->setOption("speed", QString::number(mset.speed));
     }
 
-    if (Settings::pref->use_idx) {
+    if (pref->use_idx) {
         proc->setOption("idx");
     }
 
     if (mdat.image
-        || Settings::pref->use_correct_pts != Settings::TPreferences::Detect) {
+        || pref->use_correct_pts != TPreferences::Detect) {
         proc->setOption("correct-pts",
                         !mdat.image
-                        && Settings::pref->use_correct_pts
-                           == Settings::TPreferences::Enabled);
+                        && pref->use_correct_pts == TPreferences::Enabled);
     }
 
     // Setup screenshot directory.
     // Needs to be setup before the video filters below use it.
-    if (Settings::pref->screenshot_directory.isEmpty()) {
-        Settings::pref->use_screenshot = false;
+    if (pref->screenshot_directory.isEmpty()) {
+        pref->use_screenshot = false;
     } else {
-        QFileInfo fi(Settings::pref->screenshot_directory);
+        QFileInfo fi(pref->screenshot_directory);
         if (!fi.isDir() || !fi.isWritable()) {
-            WZWARNOBJ("Disabled screenshots and capture, directory '"
-                   + Settings::pref->screenshot_directory
-                   + "' is not writable");
+            WZWARNOBJ("Directory \"" + pref->screenshot_directory
+                      + "\" is not writable."
+                      " Disabled screenshots and capture.");
             Settings::pref->use_screenshot = false;
-            // Need to clear to disable capture
-            Settings::pref->screenshot_directory = "";
+            // Need to clear the directory to disable capture
+            pref->screenshot_directory = "";
         }
     }
-    if (Settings::pref->use_screenshot) {
-        proc->setScreenshotDirectory(Settings::pref->screenshot_directory);
+    if (pref->use_screenshot) {
+        proc->setScreenshotDirectory(pref->screenshot_directory);
     }
 
     if (!videoFiltersEnabled(true)) {
@@ -1494,20 +1490,20 @@ void TPlayer::startPlayer() {
     // Video filters:
     // Phase
     if (mset.phase_filter) {
-        proc->addVF("phase", "A");
+        proc->addVideoFilter("phase", "A");
     }
 
     // Deinterlace
-    if (mset.current_deinterlacer != Settings::TMediaSettings::NoDeinterlace) {
+    if (mset.current_deinterlacer != TMediaSettings::NoDeinterlace) {
         switch (mset.current_deinterlacer) {
-            case Settings::TMediaSettings::L5: proc->addVF("l5"); break;
-            case Settings::TMediaSettings::Yadif: proc->addVF("yadif"); break;
-            case Settings::TMediaSettings::LB: proc->addVF("lb"); break;
-            case Settings::TMediaSettings::Yadif_1:
-                proc->addVF("yadif", "1");
+            case TMediaSettings::L5: proc->addVideoFilter("l5"); break;
+            case TMediaSettings::Yadif: proc->addVideoFilter("yadif"); break;
+            case TMediaSettings::LB: proc->addVideoFilter("lb"); break;
+            case TMediaSettings::Yadif_1:
+                proc->addVideoFilter("yadif", "1");
                 break;
-            case Settings::TMediaSettings::Kerndeint:
-                proc->addVF("kerndeint", "5");
+            case TMediaSettings::Kerndeint:
+                proc->addVideoFilter("kerndeint", "5");
                 break;
         }
     }
@@ -1518,83 +1514,82 @@ void TPlayer::startPlayer() {
     }
 
     // Denoise
-    if (mset.current_denoiser != Settings::TMediaSettings::NoDenoise) {
-        if (mset.current_denoiser == Settings::TMediaSettings::DenoiseSoft) {
-            proc->addVF("hqdn3d",
-                        Settings::pref->filters.item("denoise_soft").options());
+    if (mset.current_denoiser != TMediaSettings::NoDenoise) {
+        if (mset.current_denoiser == TMediaSettings::DenoiseSoft) {
+            proc->addVideoFilter("hqdn3d",
+                                 pref->filters.item("denoise_soft").options());
         } else {
-            proc->addVF("hqdn3d",
-                        Settings::pref->filters.item("denoise_normal")
-                        .options());
+            proc->addVideoFilter("hqdn3d",
+                                 pref->filters.item("denoise_normal")
+                                 .options());
         }
     }
 
     // Unsharp
     if (mset.current_unsharp != 0) {
         if (mset.current_unsharp == 1) {
-            proc->addVF("blur", Settings::pref->filters.item("blur").options());
+            proc->addVideoFilter("blur", pref->filters.item("blur").options());
         } else {
-            proc->addVF("sharpen",
-                        Settings::pref->filters.item("sharpen").options());
+            proc->addVideoFilter("sharpen",
+                                 pref->filters.item("sharpen").options());
         }
     }
 
     // Deblock
     if (mset.deblock_filter) {
-        proc->addVF("deblock",
-                    Settings::pref->filters.item("deblock").options());
+        proc->addVideoFilter("deblock",
+                             pref->filters.item("deblock").options());
     }
 
     // Dering
     if (mset.dering_filter) {
-        proc->addVF("dering");
+        proc->addVideoFilter("dering");
     }
 
     // Gradfun
     if (mset.gradfun_filter) {
-        proc->addVF("gradfun",
-                    Settings::pref->filters.item("gradfun").options());
+        proc->addVideoFilter("gradfun",
+                             pref->filters.item("gradfun").options());
     }
 
     // Upscale
     if (mset.upscaling_filter) {
         int width = TDesktop::size(playerWindow).width();
         proc->setOption("sws", "9");
-        proc->addVF("scale", QString::number(width) + ":-2");
+        proc->addVideoFilter("scale", QString::number(width) + ":-2");
     }
 
     // Addnoise
     if (mset.noise_filter) {
-        proc->addVF("noise", Settings::pref->filters.item("noise").options());
+        proc->addVideoFilter("noise", pref->filters.item("noise").options());
     }
 
     // Postprocessing
     if (mset.postprocessing_filter) {
-        proc->addVF("postprocessing");
-        proc->setOption("autoq",
-            QString::number(Settings::pref->postprocessing_quality));
+        proc->addVideoFilter("postprocessing");
+        proc->setOption("autoq", QString::number(pref->postprocessing_quality));
     }
 
     // Letterbox (expand)
     if (mset.add_letterbox) {
-        proc->addVF("expand", QString("aspect=%1")
+        proc->addVideoFilter("expand", QString("aspect=%1")
                     .arg(TDesktop::aspectRatio(playerWindow)));
     }
 
     // Software equalizer
-    if (Settings::pref->use_soft_video_eq) {
-        proc->addVF("eq2");
-        proc->addVF("hue");
-        if (Settings::pref->vo == "gl"
-            || Settings::pref->vo == "gl2"
-            || Settings::pref->vo == "gl_tiled"
+    if (pref->use_soft_video_eq) {
+        proc->addVideoFilter("eq2");
+        proc->addVideoFilter("hue");
+        if (pref->vo == "gl"
+            || pref->vo == "gl2"
+            || pref->vo == "gl_tiled"
 
 #ifdef Q_OS_WIN
-            || Settings::pref->vo == "directx:noaccel"
+            || pref->vo == "directx:noaccel"
 #endif
 
             ) {
-            proc->addVF("scale");
+            proc->addVideoFilter("scale");
         }
     }
 
@@ -1604,57 +1599,54 @@ void TPlayer::startPlayer() {
         proc->setOption("vf-add", mset.player_additional_video_filters);
     }
     // Global
-    if (!Settings::pref->player_additional_video_filters.isEmpty()) {
-        proc->setOption("vf-add",
-                        Settings::pref->player_additional_video_filters);
+    if (!pref->player_additional_video_filters.isEmpty()) {
+        proc->setOption("vf-add", pref->player_additional_video_filters);
     }
 
     // Filters for subtitles on screenshots
-    if (Settings::pref->use_screenshot
-        && Settings::pref->subtitles_on_screenshots) {
-        if (Settings::pref->use_ass_subtitles) {
-            proc->addVF("subs_on_screenshots", "ass");
+    if (pref->use_screenshot
+        && pref->subtitles_on_screenshots) {
+        if (pref->use_ass_subtitles) {
+            proc->addVideoFilter("subs_on_screenshots", "ass");
         } else {
-            proc->addVF("subs_on_screenshots");
+            proc->addVideoFilter("subs_on_screenshots");
         }
     }
 
     // Rotate
     if (mset.rotate) {
-        proc->addVF("rotate", mset.rotate);
+        proc->addVideoFilter("rotate", mset.rotate);
     }
 
     // Flip
     if (mset.flip) {
-        proc->addVF("flip");
+        proc->addVideoFilter("flip");
     }
 
     // Mirror
     if (mset.mirror) {
-        proc->addVF("mirror");
+        proc->addVideoFilter("mirror");
     }
 
     // Screenshots
-    if (Settings::pref->use_screenshot) {
-        proc->addVF("screenshot");
+    if (pref->use_screenshot) {
+        proc->addVideoFilter("screenshot");
     }
 
 end_video_filters:
 
     // Template for screenshots (only works with mpv)
-    if (Settings::pref->isMPV() && Settings::pref->use_screenshot) {
-        if (!Settings::pref->screenshot_template.isEmpty()) {
-            proc->setOption("screenshot_template",
-                            Settings::pref->screenshot_template);
+    if (pref->isMPV() && pref->use_screenshot) {
+        if (!pref->screenshot_template.isEmpty()) {
+            proc->setOption("screenshot_template", pref->screenshot_template);
         }
-        if (!Settings::pref->screenshot_format.isEmpty()) {
-            proc->setOption("screenshot_format",
-                            Settings::pref->screenshot_format);
+        if (!pref->screenshot_format.isEmpty()) {
+            proc->setOption("screenshot_format", pref->screenshot_format);
         }
     }
 
     // Volume
-    if (Settings::pref->player_additional_options.contains("-volume")) {
+    if (pref->player_additional_options.contains("-volume")) {
         WZDEBUGOBJ("Don't set volume since -volume is used");
     } else {
         proc->setOption("volume", QString::number(getVolume()));
@@ -1673,7 +1665,7 @@ end_video_filters:
         proc->setOption("delay", QString::number((double) mset.audio_delay/1000));
     }
 
-    if (Settings::pref->use_hwac3) {
+    if (pref->use_hwac3) {
         proc->setOption("afm", "hwac3");
         WZDEBUGOBJ("Audio filters are disabled when using the S/PDIF output");
     } else {
@@ -1685,16 +1677,16 @@ end_video_filters:
         // Stereo mode
         if (mset.stereo_mode != 0) {
             switch (mset.stereo_mode) {
-                case Settings::TMediaSettings::Left:
+                case TMediaSettings::Left:
                     proc->addAudioFilter("channels", "2:2:0:1:0:0");
                     break;
-                case Settings::TMediaSettings::Right:
+                case TMediaSettings::Right:
                     proc->addAudioFilter("channels", "2:2:1:0:1:1");
                     break;
-                case Settings::TMediaSettings::Mono:
+                case TMediaSettings::Mono:
                     proc->addAudioFilter("pan", "1:0.5:0.5");
                     break;
-                case Settings::TMediaSettings::Reverse:
+                case TMediaSettings::Reverse:
                     proc->addAudioFilter("channels", "2:2:0:1:1:0");
                     break;
             }
@@ -1706,23 +1698,23 @@ end_video_filters:
 
         if (mset.volnorm_filter) {
             proc->addAudioFilter("volnorm",
-                        Settings::pref->filters.item("volnorm").options());
+                                 pref->filters.item("volnorm").options());
         }
 
-        if (Settings::pref->use_scaletempo == Settings::TPreferences::Enabled) {
+        if (pref->use_scaletempo == TPreferences::Enabled) {
             proc->addAudioFilter("scaletempo");
         }
 
         // Audio equalizer
-        if (Settings::pref->use_audio_equalizer) {
-            proc->addAudioFilter("equalizer", equalizerListToString(getAudioEqualizer()));
+        if (pref->use_audio_equalizer) {
+            proc->addAudioFilter("equalizer",
+                                 equalizerListToString(getAudioEqualizer()));
         }
 
         // Additional audio filters
         // Global from pref
-        if (!Settings::pref->player_additional_audio_filters.isEmpty()) {
-            proc->setOption("af-add",
-                            Settings::pref->player_additional_audio_filters);
+        if (!pref->player_additional_audio_filters.isEmpty()) {
+            proc->setOption("af-add", pref->player_additional_audio_filters);
         }
         // This file from mset
         if (!mset.player_additional_audio_filters.isEmpty()) {
@@ -1732,18 +1724,17 @@ end_video_filters:
 
 
     // Set the capture directory
-    proc->setCaptureDirectory(Settings::pref->screenshot_directory);
+    proc->setCaptureDirectory(pref->screenshot_directory);
 
     // Set preferred ip version
-    if (Settings::pref->ipPrefer == Settings::TPreferences::IP_PREFER_4) {
+    if (pref->ipPrefer == TPreferences::IP_PREFER_4) {
         proc->setOption("prefer-ipv4");
-    } else if (Settings::pref->ipPrefer
-               == Settings::TPreferences::IP_PREFER_6) {
+    } else if (pref->ipPrefer == TPreferences::IP_PREFER_6) {
         proc->setOption("prefer-ipv6");
     }
 
     // Load edl file
-    if (Settings::pref->use_edl_files) {
+    if (pref->use_edl_files) {
         QString edl_f;
         QFileInfo f(fileName);
         QString basename = f.path() + "/" + f.completeBaseName();
@@ -1774,13 +1765,12 @@ end_video_filters:
     }
 
     // Global additional options
-    if (!Settings::pref->player_additional_options.isEmpty()) {
-        QStringList args = splitArguments(
-                    Settings::pref->player_additional_options);
-        for (int n = 0; n < args.count(); n++) {
-            QString arg = args[n].trimmed();
+    if (!pref->player_additional_options.isEmpty()) {
+        QStringList args = splitArguments(pref->player_additional_options);
+        for (int i = 0; i < args.count(); i++) {
+            QString arg = args.at(i).trimmed();
             if (!arg.isEmpty()) {
-                WZDEBUGOBJ("Adding argument '" + arg + "'");
+                WZDEBUGOBJ("Adding argument \"" + arg + "\"");
                 proc->addUserOption(arg);
             }
         }
@@ -1791,14 +1781,14 @@ end_video_filters:
 
     // Setup environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    if (Settings::pref->use_proxy
-        && Settings::pref->proxy_type == QNetworkProxy::HttpProxy
-        && !Settings::pref->proxy_host.isEmpty()) {
+    if (pref->use_proxy
+        && pref->proxy_type == QNetworkProxy::HttpProxy
+        && !pref->proxy_host.isEmpty()) {
         QString proxy = QString("http://%1:%2@%3:%4")
-                        .arg(Settings::pref->proxy_username)
-                        .arg(Settings::pref->proxy_password)
-                        .arg(Settings::pref->proxy_host)
-                        .arg(Settings::pref->proxy_port);
+                        .arg(pref->proxy_username)
+                        .arg(pref->proxy_password)
+                        .arg(pref->proxy_host)
+                        .arg(pref->proxy_port);
         env.insert("http_proxy", proxy);
     }
 

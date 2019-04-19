@@ -1305,7 +1305,8 @@ void TMPlayerProcess::addUserOption(const QString& option) {
     args << option;
 }
 
-void TMPlayerProcess::addVF(const QString& filter_name, const QVariant& value) {
+void TMPlayerProcess::addVideoFilter(const QString& filter_name,
+                                     const QVariant& value) {
 
     QString option = value.toString();
 

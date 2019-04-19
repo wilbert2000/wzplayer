@@ -49,10 +49,13 @@ public:
     void disableInput();
     void setOption(const QString& name, const QVariant& value = QVariant());
     void addUserOption(const QString& option);
-    void addVF(const QString& filter_name, const QVariant& value = QVariant());
-    void addAudioFilter(const QString& filter_name, const QVariant& value = QVariant());
+    void addVideoFilter(const QString& filter_name,
+                        const QVariant& value = QVariant());
+    void addAudioFilter(const QString& filter_name,
+                        const QVariant& value = QVariant());
     void addStereo3DFilter(const QString& in, const QString& out);
-    void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null);
+    void setSubStyles(const Settings::TAssStyles& styles,
+                      const QString& assStylesFile = QString::null);
 
     // Slave commands
     void setVolume(int v);
