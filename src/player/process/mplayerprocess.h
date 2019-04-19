@@ -50,7 +50,7 @@ public:
     void setOption(const QString& name, const QVariant& value = QVariant());
     void addUserOption(const QString& option);
     void addVF(const QString& filter_name, const QVariant& value = QVariant());
-    void addAF(const QString& filter_name, const QVariant& value = QVariant());
+    void addAudioFilter(const QString& filter_name, const QVariant& value = QVariant());
     void addStereo3DFilter(const QString& in, const QString& out);
     void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null);
 
@@ -131,12 +131,8 @@ private:
     bool sub_demux;
     int sub_file_id;
 
-    double check_duration_time;
-    int check_duration_time_diff;
-
-    double frame_backstep_time_start;
-    double frame_backstep_time_requested;
-    double frame_backstep_step;
+    int last_duration_check_ms;
+    int check_duration_wait_ms;
 
     bool video_tracks_changed;
     bool get_selected_video_track;
@@ -157,7 +153,7 @@ private:
     static int dvdnav_vts_to_restore;
     static int dvdnav_title_to_restore_vts;
     static int dvdnav_title_to_restore;
-    static double dvdnav_time_to_restore;
+    static int dvdnav_time_to_restore_ms;
     static bool dvdnav_pause_to_restore;
 
     void clearSubSources();

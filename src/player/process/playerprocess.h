@@ -70,7 +70,7 @@ public:
     virtual void addUserOption(const QString& option) = 0;
     virtual void addVF(const QString& filter_name,
                        const QVariant& value = QVariant()) = 0;
-    virtual void addAF(const QString& filter_name,
+    virtual void addAudioFilter(const QString& filter_name,
                        const QVariant& value = QVariant()) = 0;
     virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;
     virtual void setSubStyles(const Settings::TAssStyles& styles,
@@ -154,7 +154,7 @@ signals:
 
     void receivedVideoOut();
     void durationChanged(int ms);
-    void receivedPosition(double sec);
+    void receivedPositionMS(int ms);
     void receivedPause();
 
     void receivedMessage(const QString&);
@@ -207,11 +207,11 @@ protected:
     QString temp_file_name;
 
     double guiTimeToPlayerTime(double sec);
-    double playerTimeToGuiTime(double sec);
+    int playerTimeToGuiTime(int ms);
 
     void notifyTitleTrackChanged(int new_title);
-    void notifyDuration(double duration, bool forceEmit = false);
-    virtual void checkTime(double sec);
+    void notifyDuration(double durationSec, bool forceEmit = false);
+    virtual void checkTime(int ms);
     void notifyTime(double time_sec);
     bool waitForAnswers();
 

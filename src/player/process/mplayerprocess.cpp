@@ -36,14 +36,11 @@ using namespace Settings;
 namespace Player {
 namespace Process {
 
-const double FRAME_BACKSTEP_DEFAULT_STEP = 0.1;
-const double FRAME_BACKSTEP_DISABLED = 3600000;
-
 bool TMPlayerProcess::restore_dvdnav = false;
 int TMPlayerProcess::dvdnav_vts_to_restore;
 int TMPlayerProcess::dvdnav_title_to_restore_vts;
 int TMPlayerProcess::dvdnav_title_to_restore;
-double TMPlayerProcess::dvdnav_time_to_restore;
+int TMPlayerProcess::dvdnav_time_to_restore_ms;
 bool TMPlayerProcess::dvdnav_pause_to_restore;
 
 
@@ -70,7 +67,6 @@ bool TMPlayerProcess::startPlayer() {
     start_frame = 0;
 
     clearSubSources();
-    frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
     clip_info_id = -1;
 
     return TPlayerProcess::startPlayer();
@@ -383,23 +379,24 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
                + " to " + QString::number(title));
 
     // Reset start time and time
-    md->start_sec = 0;
-    md->start_sec_player = 0;
-    md->start_sec_set = false;
+    md->start_ms_player = 0;
+    md->start_ms_used = false;
+    md->start_ms = 0;
+
     notifyTime(0);
 
     if (title <= 0) {
         // Menu: clear selected title, duration and chapters
         title = -1;
         md->titles.setSelectedID(title);
-        md->duration = 0;
+        md->duration_ms = 0;
         md->chapters = Maps::TChapters();
     } else {
         // Title: select it and mark it with the current VTS
         md->titles.setSelectedTitle(title);
         // Get duration and chapters
         const Maps::TTitleData title_data = md->titles[title];
-        md->duration = title_data.getDuration();
+        md->setDurationSec(title_data.getDuration());
         md->chapters = title_data.chapters;
 
         // The duration from the title TOC is not always reliable,
@@ -407,8 +404,9 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
         writeToPlayer("get_property length");
     }
 
-    WZDEBUGOBJ("notifyDuration(" + QString::number(md->duration) + ")");
-    notifyDuration(md->duration, true);
+    double d = md->getDurationSec();
+    WZDEBUGOBJ("notifyDuration(" + QString::number(d) + ")");
+    notifyDuration(d, true);
 
     if (notified_player_is_running) {
         getSelectedAngle();
@@ -449,9 +447,9 @@ void TMPlayerProcess::dvdnavSave() {
                     dvdnav_vts_to_restore);
             }
             dvdnav_title_to_restore = md->titles.getSelectedID();
-            dvdnav_time_to_restore = md->pos_sec;
-            if (dvdnav_time_to_restore > md->duration) {
-                dvdnav_time_to_restore = 0;
+            dvdnav_time_to_restore_ms = md->pos_ms;
+            if (dvdnav_time_to_restore_ms > md->duration_ms) {
+                dvdnav_time_to_restore_ms = 0;
             }
             dvdnav_pause_to_restore = paused;
 
@@ -471,10 +469,11 @@ void TMPlayerProcess::save() {
 }
 
 void TMPlayerProcess::dvdnavRestoreTime() {
-    WZDEBUGOBJ("Restoring time " + QString::number(dvdnav_time_to_restore));
+    WZDEBUGOBJ("Restoring time " + QString::number(dvdnav_time_to_restore_ms));
 
     // seek time, abs, exact, currently paused
-    seekPlayerTime(dvdnav_time_to_restore - 5, 2, false, false);
+    seekPlayerTime(double(dvdnav_time_to_restore_ms) / 1000 - 5,
+                   2, false, false);
     if (dvdnav_pause_to_restore) {
         setPause(dvdnav_pause_to_restore);
     }
@@ -520,7 +519,7 @@ void TMPlayerProcess::dvdnavRestore() {
                        + QString::number(dvdnav_title_to_restore));
             setTitle(dvdnav_title_to_restore);
         }
-        if (dvdnav_time_to_restore > 20) {
+        if (dvdnav_time_to_restore_ms > 20000) {
             QTimer::singleShot(500, this, SLOT(dvdnavRestoreTime()));
         } else if (dvdnav_pause_to_restore) {
             setPause(dvdnav_pause_to_restore);
@@ -665,18 +664,9 @@ bool TMPlayerProcess::parseTitleChapters(Maps::TChapters& chapters,
 }
 
 bool TMPlayerProcess::parsePause() {
-
-    if (md->pos_sec > frame_backstep_time_start) {
-        WZDEBUGOBJ(QString("Retrying frameBackStep at %1 looking for %2")
-                   .arg(md->pos_sec).arg(frame_backstep_time_start));
-        frameBackStep();
-        return true;
-    }
-    frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
+    WZDOBJ;
 
     paused = true;
-
-    WZDEBUGOBJ("emit receivedPause()");
     emit receivedPause();
 
     return true;
@@ -764,15 +754,15 @@ void TMPlayerProcess::playingStarted() {
     get_selected_subtitle = false;
 
     // Reset the check duration timer
-    check_duration_time = md->pos_sec;
+    last_duration_check_ms = md->pos_ms;
     if (md->detectedDisc()) {
         // Don't check disc, it does its own duration managment
-        check_duration_time_diff = 360000;
+        check_duration_wait_ms = 360000 * 1000;
     } else {
-        check_duration_time_diff = 1;
+        check_duration_wait_ms = 1000;
     }
 
-    if (md->duration == 0 && md->detected_type != TMediaData::TYPE_DVDNAV ) {
+    if (md->duration_ms == 0 && md->detected_type != TMediaData::TYPE_DVDNAV ) {
         // See if the duration is known by now
         writeToPlayer("get_property length");
     }
@@ -858,24 +848,27 @@ void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
 
 bool TMPlayerProcess::parseStatusLine(double secs, const QString& line) {
 
+    // Note: parseFrame modifies secs.
+    // TODO: stop modifying secs.
     parseFrame(secs, line);
 
     notifyTime(secs);
 
     if (notified_player_is_running) {
-        // Normal way to go, playing, except for the first frame
+        // Normal way to go, except for the first frame
         notifyChanges();
 
         // Check for changes in duration once in a while.
         // Abs, to protect against time wrappers like TS.
-        if (!paused && qAbs(secs - check_duration_time)
-            > check_duration_time_diff) {
+        if (!paused
+                && qAbs(md->pos_ms - last_duration_check_ms)
+                > check_duration_wait_ms) {
             // Ask for length
             writeToPlayer("get_property length");
             // Wait another while
-            check_duration_time = secs;
-            // Just a little longer
-            check_duration_time_diff *= 4;
+            last_duration_check_ms = md->pos_ms;
+            // But wait 4 times longer
+            check_duration_wait_ms *= 4;
         }
     } else {
         // First and only run of state playing.
@@ -1362,7 +1355,7 @@ void TMPlayerProcess::addStereo3DFilter(const QString& in, const QString& out) {
     args << "-vf-add" << filter;
 }
 
-void TMPlayerProcess::addAF(const QString& filter_name, const QVariant& value) {
+void TMPlayerProcess::addAudioFilter(const QString& filter_name, const QVariant& value) {
     QString s = filter_name;
     if (!value.isNull()) s += "=" + value.toString();
     args << "-af-add" << s;
@@ -1458,40 +1451,7 @@ void TMPlayerProcess::frameStep() {
 }
 
 void TMPlayerProcess::frameBackStep() {
-
-    if (frame_backstep_time_start == FRAME_BACKSTEP_DISABLED) {
-        if (md->video_fps <= 0 || md->video_fps > 70) {
-            frame_backstep_step = FRAME_BACKSTEP_DEFAULT_STEP;
-        } else {
-            frame_backstep_step = 1 / md->video_fps;
-        }
-        frame_backstep_time_start = md->pos_sec - frame_backstep_step;
-        frame_backstep_time_requested = frame_backstep_time_start;
-    } else {
-        // Retry call from parsePause()
-        if (md->video_fps <= 0 || md->video_fps > 70) {
-            frame_backstep_step += FRAME_BACKSTEP_DEFAULT_STEP;
-        } else {
-            frame_backstep_step += 1 / md->video_fps;
-        }
-        frame_backstep_time_requested -= frame_backstep_step;
-    }
-    if (frame_backstep_time_requested < 0) {
-        frame_backstep_time_requested = 0;
-    }
-    WZDEBUGOBJ("Emulating frame back step. Trying "
-            + QString::number(frame_backstep_time_requested));
-
-    seekPlayerTime(frame_backstep_time_requested, // time to seek
-                   2,     // seek absolute
-                   false, // seek keyframes
-                   true); // currently paused
-
-    // Don't retry when hitting zero
-    if (frame_backstep_time_requested <= md->start_sec
-        || frame_backstep_time_requested <= 0) {
-        frame_backstep_time_start = FRAME_BACKSTEP_DISABLED;
-    }
+    WZERROR("MPlayer does not implement frame back step");
 }
 
 void TMPlayerProcess::showOSDText(const QString& text,
@@ -1646,8 +1606,8 @@ void TMPlayerProcess::setTitle(int ID) {
     // Changing title on a menu without duration does not work :(
     // This hack seems to solve it.
     // TODO: find out what is going on and fix
-    if (md->titles.getSelectedID() < 0 && md->duration <= 0) {
-        logger()->debug("setTitle: fixing menu");
+    if (md->titles.getSelectedID() < 0 && md->duration_ms <= 0) {
+        WZDEBUG("Fixing menu");
         // First go to menu of this VTS
         discButtonPressed("menu");
         // Select and hope...

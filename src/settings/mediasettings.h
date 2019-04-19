@@ -62,6 +62,7 @@ public:
     virtual void reset();
 
     int current_ms;
+    double currentSec() const { return double(current_ms) / 1000; }
     int current_video_id;
     int current_audio_id;
     QString external_audio; // external audio file
@@ -156,8 +157,8 @@ public:
     bool flip; //!< Flip image
     bool mirror; //!< Mirrors the image on the Y axis.
 
-    int in_point;
-    int out_point;
+    int in_point_ms;
+    int out_point_ms;
     bool loop; //!< Loop. If true repeat the file
 
     QString current_demuxer;

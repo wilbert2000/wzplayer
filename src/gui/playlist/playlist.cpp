@@ -143,9 +143,7 @@ void TPlaylist::playItem(TPlaylistItem* item, bool keepPaused) {
         if (keepPaused && player->state() == Player::TState::STATE_PAUSED) {
             player->setStartPausedOnce();
         }
-        player->open(item->filename(),
-                     getPlayingTitle(false, false),
-                     playlistWidget->hasSingleItem());
+        player->open(item->filename(), getPlayingTitle(false, false));
     } else {
         WZDEBUG("End of playlist");
         stop();
@@ -333,15 +331,16 @@ void TPlaylist::onNewFileStartedPlaying() {
     }
 
     // Update item duration
-    if (md->duration > 0 && !md->image) {
-        int ms = md->durationMS();
+    if (md->duration_ms > 0
+            && !md->image
+            && md->duration_ms != playingItem->durationMS()) {
         WZDEBUG(QString("Updating duration from %1 ms to %2 ms")
-                .arg(playingItem->durationMS()).arg(ms));
-        if (qAbs(ms - playingItem->durationMS())
+                .arg(playingItem->durationMS()).arg(md->duration_ms));
+        if (qAbs(md->duration_ms - playingItem->durationMS())
                 > TConfig::DURATION_MODIFIED_TRESHOLD) {
             modified = true;
         }
-        playingItem->setDurationMS(ms);
+        playingItem->setDurationMS(md->duration_ms);
     }
 
     if (modified) {
@@ -467,7 +466,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
                                                     0, // duration
                                                     false /* protext name */);
             if (md->titles.getSelectedID() < 0) {
-                item->setDurationMS(md->durationMS());
+                item->setDurationMS(md->duration_ms);
                 playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
             }
         }
@@ -488,7 +487,7 @@ void TPlaylist::onNewMediaStartedPlaying() {
         TPlaylistItem* current = new TPlaylistItem(playlistWidget->root(),
                                                    filename,
                                                    md->name(),
-                                                   qRound(md->duration * 1000),
+                                                   md->duration_ms,
                                                    false);
         playlistWidget->setPlayingItem(current, PSTATE_PLAYING);
     }
@@ -512,8 +511,8 @@ void TPlaylist::onTitleTrackChanged(int id) {
 
     TPlaylistItem* item = playlistWidget->findFilename(filename);
     if (item) {
-        if (player->mdat.duration > 0 || id == -1) {
-            item->setDurationMS(player->mdat.durationMS());
+        if (player->mdat.duration_ms > 0 || id == -1) {
+            item->setDurationMS(player->mdat.duration_ms);
         }
         playlistWidget->setPlayingItem(item, PSTATE_PLAYING);
     } else {

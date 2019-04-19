@@ -48,7 +48,7 @@ public:
     void setOption(const QString& name, const QVariant& value = QVariant());
     void addUserOption(const QString& option);
     void addVF(const QString& filter_name, const QVariant& value = QVariant());
-    void addAF(const QString& filter_name, const QVariant& value = QVariant());
+    void addAudioFilter(const QString& filter_name, const QVariant& value = QVariant());
     void addStereo3DFilter(const QString& in, const QString& out);
     void setSubStyles(const Settings::TAssStyles& styles, const QString& assStylesFile = QString::null);
 
@@ -116,32 +116,28 @@ public:
 
 protected:
     virtual void playingStarted();
-    virtual void checkTime(double sec);
+    virtual void checkTime(int ms);
 
     virtual bool parseLine(QString& line);
     virtual bool parseProperty(const QString& name, const QString& value);
     bool isOptionAvailable(const QString& option);
-    void addVFIfAvailable(const QString& vf, const QString& value = QString::null);
+    void addVFIfAvailable(const QString& vf, const QString& value = "");
 
 protected slots:
     void requestChapterInfo();
 
 private:
     bool received_buffering;
-
     bool received_title_not_found;
+    bool request_bit_rate_info;
+    bool capturing;
 
     bool quit_at_end_of_title;
     int quit_at_end_of_title_ms;
     QTime quit_at_end_of_title_time;
 
-    bool request_bit_rate_info;
-
     QString sub_file;
-
-    QString previous_eq;
-
-    bool capturing;
+    QString previous_audio_equalizer;
 
     void convertChaptersToTitles();
     void fixTitle();
@@ -150,8 +146,10 @@ private:
     bool parseTitleSwitched(QString disc_type, int title);
     bool parseTitleNotFound(const QString& disc_type);
     bool parseVideoTrack(int id, QString name, bool selected);
-    bool parseAudioTrack(int id, const QString& lang, QString name, bool selected);
-    bool parseSubtitleTrack(int id, const QString& lang, QString name, QString type, bool selected);
+    bool parseAudioTrack(int id, const QString& lang, QString name,
+                         bool selected);
+    bool parseSubtitleTrack(int id, const QString& lang, QString name,
+                            QString type, bool selected);
     bool parseMetaDataList(QString list);
     void requestBitrateInfo();
 };

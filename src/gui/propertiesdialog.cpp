@@ -377,12 +377,12 @@ QString TPropertiesDialog::getInfo(const QString& title) {
     if (!md.stream_url.isEmpty()) {
         s += addItem(tr("Stream URL"), md.stream_url);
     }
-    s += addItem(tr("Duration"), TWZTime::formatSecAsMS(md.duration)
+    s += addItem(tr("Duration"), TWZTime::formatMS(md.duration_ms)
                  + " " + tr("(h:min:sec%1ms)").arg(QLocale().decimalPoint()));
     s += addItem(tr("Start time"),
-                 TWZTime::formatSecAsMS(md.start_sec_player)
+                 TWZTime::formatMS(md.start_ms_player)
                  + tr(" (%1 seconds)")
-                 .arg(QString::number(md.start_sec_player)));
+                 .arg(QString::number(md.getStartSecPlayer())));
     s += addItem(tr("Demuxer"), md.demuxer + " - " + md.demuxer_description);
     s += closePar();
 

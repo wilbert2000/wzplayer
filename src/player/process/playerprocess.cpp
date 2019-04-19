@@ -163,26 +163,25 @@ void TPlayerProcess::notifyTitleTrackChanged(int new_title) {
     }
 }
 
-void TPlayerProcess::notifyDuration(double duration, bool forceEmit) {
+void TPlayerProcess::notifyDuration(double durationSec, bool forceEmit) {
 
-    if (duration < 0) {
-        WZWARN(QString("Received negative duration %1").arg(duration));
-        duration = 0;
+    if (durationSec < 0) {
+        WZWARN(QString("Received negative duration %1").arg(durationSec));
+        durationSec = 0;
     }
 
-    int oldMS = md->durationMS();
-    md->duration = duration;
-    int ms = md->durationMS();
+    int oldMS = md->duration_ms;
+    md->setDurationSec(durationSec);
 
-    if (oldMS != ms || forceEmit) {
+    if (oldMS != md->duration_ms || forceEmit) {
         WZDEBUGOBJ(QString("Duration updated from %1 ms to %2 ms")
-                   .arg(oldMS).arg(ms));
-        emit durationChanged(ms);
+                   .arg(oldMS).arg(md->duration_ms));
+        emit durationChanged(md->duration_ms);
     }
 }
 
-void TPlayerProcess::checkTime(double sec) {
-    Q_UNUSED(sec)
+void TPlayerProcess::checkTime(int ms) {
+    Q_UNUSED(ms)
 }
 
  // 2^33 / 90 kHz
@@ -190,7 +189,7 @@ static const double ts_rollover = 8589934592.0 / 90000.0;
 
 double TPlayerProcess::guiTimeToPlayerTime(double sec) {
 
-    sec += md->start_sec;
+    sec += md->getStartSec();
 
     // Handle MPEG-TS PTS timestamp rollover
     if (md->mpegts && sec >= ts_rollover) {
@@ -200,30 +199,32 @@ double TPlayerProcess::guiTimeToPlayerTime(double sec) {
     return sec;
 }
 
-double TPlayerProcess::playerTimeToGuiTime(double sec) {
+int TPlayerProcess::playerTimeToGuiTime(int ms) {
 
     // Substract start time grounding start time at 0
-    sec -= md->start_sec;
+    ms -= md->start_ms;
 
     // Handle MPEG-TS PTS timestamp rollover
-    if (md->mpegts && sec < 0) {
-        sec += ts_rollover;
+    if (md->mpegts && ms < 0) {
+        // TODO: check qRound()
+        ms += qRound(ts_rollover * 1000);
     }
 
-    return sec;
+    return ms;
 }
 
 void TPlayerProcess::notifyTime(double time_sec) {
 
     // Store video timestamp
-    md->pos_sec = time_sec;
-    md->pos_sec_gui = playerTimeToGuiTime(time_sec);
+    md->setPosSec(time_sec);
+    // Set time stamp for GUI
+    md->pos_gui_ms = playerTimeToGuiTime(md->pos_ms);
 
     // Give descendants a look at the time
-    checkTime(md->pos_sec_gui);
+    checkTime(md->pos_gui_ms);
 
     // Pass timestamp to GUI
-    emit receivedPosition(md->pos_sec_gui);
+    emit receivedPositionMS(md->pos_gui_ms);
 }
 
 // TODO: move to TMPVProcess
@@ -430,13 +431,13 @@ bool TPlayerProcess::parseProperty(const QString& name, const QString& value) {
         if (value.isEmpty() || value == "unknown") {
             WZDEBUGOBJ("Start time not set");
         } else {
-            md->start_sec_player = value.toDouble();
+            md->start_ms_player = qRound(value.toDouble() * 1000);
             if (Settings::pref->isMPV()) {
-                md->start_sec_set = true;
-                md->start_sec = md->start_sec_player;
+                md->start_ms_used = true;
+                md->start_ms = md->start_ms_player;
             }
-            WZDEBUGOBJ(QString("Start time set to %1")
-                       .arg(md->start_sec_player));
+            WZDEBUGOBJ(QString("Start time set to %1 ms")
+                       .arg(md->start_ms_player));
         }
         return true;
     }

@@ -284,9 +284,9 @@ void TMainWindow::createPlayers() {
     new Player::TPlayer(this, "player", playerWindow, previewPlayer);
 
     connect(player, &Player::TPlayer::positionChanged,
-            timeLabel, &TTimeLabel::setPosition);
+            timeLabel, &TTimeLabel::setPositionMS);
     connect(player, &Player::TPlayer::durationChanged,
-            timeLabel, &TTimeLabel::setDuration);
+            timeLabel, &TTimeLabel::setDurationMS);
 
     connect(player, &Player::TPlayer::stateChanged,
             this, &TMainWindow::onStateChanged);
@@ -1962,15 +1962,15 @@ void TMainWindow::displayVideoOut() {
 void TMainWindow::displayInOutPoints() {
 
     QString s;
-    if (player->mset.in_point > 0) {
+    if (player->mset.in_point_ms > 0) {
         s = tr("I: %1", "In point in statusbar")
-                .arg(TWZTime::formatMS(player->mset.in_point));
+                .arg(TWZTime::formatMS(player->mset.in_point_ms));
     }
 
-    if (player->mset.out_point > 0) {
+    if (player->mset.out_point_ms > 0) {
         if (!s.isEmpty()) s += " ";
         s += tr("O: %1", "Out point in statusbar")
-                .arg(TWZTime::formatMS(player->mset.out_point));
+                .arg(TWZTime::formatMS(player->mset.out_point_ms));
     }
 
     if (player->mset.loop) {
@@ -3043,8 +3043,8 @@ void TMainWindow::showSeekToDialog() {
 
     TTimeDialog d(this);
     d.setWindowTitle(tr("Seek"));
-    d.setMaximumTime((int) player->mdat.duration);
-    d.setTime(qRound(double(player->mset.current_ms) / 1000));
+    d.setMaximumTime((int) player->mdat.getDurationSec());
+    d.setTime(qRound(player->mset.currentSec()));
     if (d.exec() == QDialog::Accepted) {
         player->seekSecond(d.time());
     }

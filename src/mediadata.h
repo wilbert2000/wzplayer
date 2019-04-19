@@ -63,22 +63,31 @@ public:
     QString stream_url;
 
     // Start time reported by player
-    double start_sec_player;
+    int start_ms_player;
+    double getStartSecPlayer() const { return double(start_ms_player) / 1000; }
+
     // Start time currently in use. Only set for MPV.
-    double start_sec;
-    // Did set start_sec
-    bool start_sec_set;
+    // Did set start_ms
+    bool start_ms_used;
+    int start_ms;
+    double getStartSec() const { return double(start_ms) / 1000; }
     // Kludge for low resolution time stamps MPlayer
     QString fuzzy_time;
 
     // Current time video, without start time substracted
-    double pos_sec;
+    int pos_ms;
+    double getPosSec() const { return double(pos_ms) / 1000; }
+    // TODO: trunc?
+    void setPosSec(const double secs) { pos_ms = qRound(secs * 1000); }
     // Current time video, with start time substracted and MPEG-TS PTS
     // timestamp rollover corrected. Also in TMediaSettings.
-    double pos_sec_gui;
+    int pos_gui_ms;
 
-    double duration;
-    int durationMS() const { return qRound(duration * 1000); }
+    int duration_ms;
+    void setDurationSec(const double secs) {
+        duration_ms = qRound(secs * 1000);
+    }
+    double getDurationSec() const { return double(duration_ms) / 1000; }
 
     // Demuxer
     QString demuxer;

@@ -89,9 +89,7 @@ public:
     bool videoFiltersEnabled(bool displayMessage = false);
 
     //! Generic open, with autodetection of type
-    void open(QString filename = "",
-              QString displayName = "",
-              bool loopImage = false);
+    void open(QString filename = "", QString displayName = "");
     //! Open disc
     void openDisc(TDiscName disc, bool fast_open = false);
 
@@ -391,11 +389,11 @@ private:
     void msg(const QString& s, int timeout = TConfig::MESSAGE_DURATION);
     void msg2(const QString& s, int timeout = TConfig::MESSAGE_DURATION);
 
-    void openFile(const QString& filename, bool loopImage);
+    void openFile(const QString& filename);
     void openStream(const QString& name);
     void openTV(QString channel_id);
 
-    void startPlayer(bool loopImage = false);
+    void startPlayer();
     void stopPlayer();
     void restartPlayer(TState state = STATE_RESTARTING);
 
@@ -433,9 +431,10 @@ private slots:
 
     void onProcessError(QProcess::ProcessError error);
     void onProcessFinished(bool normal_exit, int exit_code, bool eof);
+    void onPreviewPlayerEOF();
 
     void onReceivedMessage(const QString& s);
-    void onReceivedPosition(double sec);
+    void onReceivedPositionMS(int ms);
     void onReceivedPause();
     void onReceivedVideoOut();
     void onAudioTracksChanged();

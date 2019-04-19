@@ -12,7 +12,7 @@ TTimeLabel::TTimeLabel(QWidget* parent) :
     lastSec(-1) {
 
     setFont(QFont("Monospace"));
-    setDuration(0);
+    setDurationMS(0);
 }
 
 static QString decimalPoint = QLocale().decimalPoint();
@@ -37,7 +37,7 @@ QString TTimeLabel::getSuffix(int ms, int secs, const QString& fuzzyTime) {
     return s;
 }
 
-void TTimeLabel::setPos(int ms, bool changed) {
+void TTimeLabel::setPosMS(int ms, bool changed) {
 
     int s = ms / 1000;
     if (s != lastSec) {
@@ -53,11 +53,11 @@ void TTimeLabel::setPos(int ms, bool changed) {
     }
 }
 
-void TTimeLabel::setPosition(int ms) {
-    setPos(ms, false);
+void TTimeLabel::setPositionMS(int ms) {
+    setPosMS(ms, false);
 }
 
-void TTimeLabel::setDuration(int ms) {
+void TTimeLabel::setDurationMS(int ms) {
 
     if (resolution == RES_SECONDS) {
         durationText = "/" + TWZTime::formatSec(qRound(double(ms) / 1000));
@@ -65,13 +65,13 @@ void TTimeLabel::setDuration(int ms) {
         int s = ms / 1000;
         durationText = "/" + TWZTime::formatSec(s) + getSuffix(ms, s, "");
     }
-    setPos(player ? player->mdat.pos_sec_gui * 1000 : 0, true);
+    setPosMS(player ? player->mdat.pos_gui_ms : 0, true);
 }
 
 void TTimeLabel::setTimeResolution(int aResolution) {
 
     resolution = TTimeResolution(aResolution);
-    setDuration(player->mdat.durationMS());
+    setDurationMS(player->mdat.duration_ms);
 }
 
 } // namespace Gui

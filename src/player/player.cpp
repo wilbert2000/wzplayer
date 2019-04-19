@@ -94,8 +94,8 @@ TPlayer::TPlayer(QWidget* parent,
     connect(proc, &Process::TPlayerProcess::playerFullyLoaded,
             this, &TPlayer::onPlayingStarted);
 
-    connect(proc, &Process::TPlayerProcess::receivedPosition,
-            this, &TPlayer::onReceivedPosition);
+    connect(proc, &Process::TPlayerProcess::receivedPositionMS,
+            this, &TPlayer::onReceivedPositionMS);
 
     connect(proc, &Process::TPlayerProcess::receivedPause,
             this, &TPlayer::onReceivedPause);
@@ -155,6 +155,9 @@ TPlayer::TPlayer(QWidget* parent,
 
     connect(proc, &Process::TPlayerProcess::audioBitRateChanged,
             this, &TPlayer::audioBitRateChanged);
+
+    connect(previewPlayer, &TPlayer::mediaEOF,
+            this, &TPlayer::onPreviewPlayerEOF);
 }
 
 TPlayer::~TPlayer() {
@@ -200,6 +203,7 @@ void TPlayer::onProcessError(QProcess::ProcessError error) {
     // Restore normal window background
     playerWindow->restoreNormalWindow();
     if (previewPlayer) {
+        previewPlayer->stop();
         emit playerError(Process::TExitMsg::processErrorToErrorID(error));
     }
 }
@@ -242,6 +246,7 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
 
 void TPlayer::msg(const QString &s, int timeout) {
 
+    // Suppress messages by preview player
     if (previewPlayer) {
         Gui::msg(s, timeout);
     }
@@ -249,6 +254,7 @@ void TPlayer::msg(const QString &s, int timeout) {
 
 void TPlayer::msg2(const QString &s, int timeout) {
 
+    // Suppress messages by preview player
     if (previewPlayer) {
         Gui::msg2(s, timeout);
     }
@@ -383,9 +389,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
 } // openDisc
 
 // Generic open, autodetect type
-void TPlayer::open(QString filename,
-                   QString displayName,
-                   bool loopImage) {
+void TPlayer::open(QString filename, QString displayName) {
     WZDOBJ << filename;
 
     if (filename.isEmpty()) {
@@ -461,7 +465,7 @@ void TPlayer::open(QString filename,
         }
 
         // Local file
-        openFile(filename, loopImage);
+        openFile(filename);
         return;
     }
 
@@ -473,7 +477,7 @@ void TPlayer::open(QString filename,
     }
 }
 
-void TPlayer::openFile(const QString& filename, bool loopImage) {
+void TPlayer::openFile(const QString& filename) {
     WZTOBJ << filename;
 
     close();
@@ -503,7 +507,7 @@ void TPlayer::openFile(const QString& filename, bool loopImage) {
         }
     }
 
-    startPlayer(loopImage);
+    startPlayer();
 }
 
 void TPlayer::openTV(QString channel_id) {
@@ -789,9 +793,19 @@ void TPlayer::startPreviewPlayer() {
                 previewPlayer->open(mdat.filename);
                 return;
             }
-            WZINFO("Preview has been disabled in settings");
+            WZINFO("Preview disabled in settings");
         }
         previewPlayer->stop();
+    }
+}
+
+void TPlayer::onPreviewPlayerEOF() {
+
+    // When stopped, stopping, restarting and loading, the preview player
+    // will be started by onPlayingStarted().
+    // For playing and paused restart it here.
+    if (statePOP()) {
+        startPreviewPlayer();
     }
 }
 
@@ -1000,7 +1014,7 @@ void TPlayer::saveRestartState() {
     }
 }
 
-void TPlayer::startPlayer(bool loopImage) {
+void TPlayer::startPlayer() {
     WZDOBJ;
 
     if (_state != STATE_RESTARTING) {
@@ -1053,16 +1067,11 @@ void TPlayer::startPlayer(bool loopImage) {
         if (mdat.selected_type == TMediaData::TYPE_FILE) {
             if (mdat.image) {
                 proc->setImageDuration(Settings::pref->imageDuration);
-                // loopImage is set by TPlaylist::playItem() when playlist
-                // has only a single item
-                if (loopImage) {
-                    proc->setOption("loop", 0 /* loop forever */);
-                }
             }
-            ss = mset.in_point;
+            ss = mset.in_point_ms;
             // current_sec may override in point, but cannot be beyond out point
             if (mset.current_ms > 0
-                && (mset.out_point <= 0 || mset.current_ms < mset.out_point)) {
+                && (mset.out_point_ms <= 0 || mset.current_ms < mset.out_point_ms)) {
                 ss = mset.current_ms;
             }
             if (restartMS != 0) {
@@ -1670,43 +1679,43 @@ end_video_filters:
     } else {
         // Audio filters
         if (mset.karaoke_filter) {
-            proc->addAF("karaoke");
+            proc->addAudioFilter("karaoke");
         }
 
         // Stereo mode
         if (mset.stereo_mode != 0) {
             switch (mset.stereo_mode) {
                 case Settings::TMediaSettings::Left:
-                    proc->addAF("channels", "2:2:0:1:0:0");
+                    proc->addAudioFilter("channels", "2:2:0:1:0:0");
                     break;
                 case Settings::TMediaSettings::Right:
-                    proc->addAF("channels", "2:2:1:0:1:1");
+                    proc->addAudioFilter("channels", "2:2:1:0:1:1");
                     break;
                 case Settings::TMediaSettings::Mono:
-                    proc->addAF("pan", "1:0.5:0.5");
+                    proc->addAudioFilter("pan", "1:0.5:0.5");
                     break;
                 case Settings::TMediaSettings::Reverse:
-                    proc->addAF("channels", "2:2:0:1:1:0");
+                    proc->addAudioFilter("channels", "2:2:0:1:1:0");
                     break;
             }
         }
 
         if (mset.extrastereo_filter) {
-            proc->addAF("extrastereo");
+            proc->addAudioFilter("extrastereo");
         }
 
         if (mset.volnorm_filter) {
-            proc->addAF("volnorm",
+            proc->addAudioFilter("volnorm",
                         Settings::pref->filters.item("volnorm").options());
         }
 
         if (Settings::pref->use_scaletempo == Settings::TPreferences::Enabled) {
-            proc->addAF("scaletempo");
+            proc->addAudioFilter("scaletempo");
         }
 
         // Audio equalizer
         if (Settings::pref->use_audio_equalizer) {
-            proc->addAF("equalizer", equalizerListToString(getAudioEqualizer()));
+            proc->addAudioFilter("equalizer", equalizerListToString(getAudioEqualizer()));
         }
 
         // Additional audio filters
@@ -1932,12 +1941,12 @@ void TPlayer::setInPointMS(int ms) {
     if (ms < 0) {
         ms = 0;
     }
-    mset.in_point = ms;
+    mset.in_point_ms = ms;
     QString msg = tr("In point set to %1")
-                  .arg(TWZTime::formatMS(mset.in_point));
+                  .arg(TWZTime::formatMS(mset.in_point_ms));
 
-    if (mset.out_point >= 0 && mset.in_point >= mset.out_point) {
-        mset.out_point = -1;
+    if (mset.out_point_ms >= 0 && mset.in_point_ms >= mset.out_point_ms) {
+        mset.out_point_ms = -1;
         mset.loop = false;
         updateLoop();
         msg += tr(", cleared out point and repeat");
@@ -1953,14 +1962,14 @@ void TPlayer::setInPoint() {
 
 void TPlayer::seekInPoint() {
 
-    seekMS(mset.in_point);
-    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatMS(mset.in_point)));
+    seekMS(mset.in_point_ms);
+    Gui::msgOSD(tr("Seeking to %1").arg(TWZTime::formatMS(mset.in_point_ms)));
 }
 
 void TPlayer::clearInPoint() {
     WZDEBUGOBJ("");
 
-    mset.in_point = 0;
+    mset.in_point_ms = 0;
     emit InOutPointsChanged();
     Gui::msgOSD(tr("Cleared in point"));
 }
@@ -1973,14 +1982,14 @@ void TPlayer::setOutPointMS(int ms) {
         return;
     }
 
-    mset.out_point = ms;
+    mset.out_point_ms = ms;
     mset.loop = true;
 
     QString msg;
     msg = tr("Out point set to %1, repeat set")
-            .arg(TWZTime::formatMS(mset.out_point));
-    if (mset.in_point >= mset.out_point) {
-        mset.in_point = 0;
+            .arg(TWZTime::formatMS(mset.out_point_ms));
+    if (mset.in_point_ms >= mset.out_point_ms) {
+        mset.in_point_ms = 0;
         msg += tr(" and cleared in point");
     }
 
@@ -1998,9 +2007,9 @@ void TPlayer::seekOutPoint() {
 
     int seek;
     if (mset.loop && _state != STATE_PAUSED) {
-        seek = mset.in_point;
-    } else if (mset.out_point > 0){
-        seek = mset.out_point;
+        seek = mset.in_point_ms;
+    } else if (mset.out_point_ms > 0){
+        seek = mset.out_point_ms;
     } else {
         Gui::msgOSD(tr("Out point not set"));
         return;
@@ -2012,7 +2021,7 @@ void TPlayer::seekOutPoint() {
 void TPlayer::clearOutPoint() {
     WZDEBUGOBJ("");
 
-    mset.out_point = -1;
+    mset.out_point_ms = -1;
     mset.loop = false;
     updateLoop();
 
@@ -2023,8 +2032,8 @@ void TPlayer::clearOutPoint() {
 void TPlayer::clearInOutPoints() {
     WZDEBUGOBJ("");
 
-    mset.in_point = 0;
-    mset.out_point = -1;
+    mset.in_point_ms = 0;
+    mset.out_point_ms = -1;
     mset.loop = false;
     updateLoop();
 
@@ -2034,7 +2043,7 @@ void TPlayer::clearInOutPoints() {
 
 void TPlayer::updateLoop() {
 
-    if (mset.loop && mset.out_point <= 0) {
+    if (mset.loop && mset.out_point_ms <= 0) {
         proc->setLoop(true);
     } else {
         proc->setLoop(false);
@@ -2837,33 +2846,33 @@ void TPlayer::handleOutPoint() {
     }
 
     // Handle out point
-    if (mset.out_point > 0 && mset.current_ms > mset.out_point) {
+    if (mset.out_point_ms > 0 && mset.current_ms >= mset.out_point_ms) {
         if (mset.loop) {
-            if (!seeking && mset.in_point < mset.out_point) {
-                WZDEBUGOBJ(QString("Position %1 reached out point %2"
+            if (!seeking && mset.in_point_ms < mset.out_point_ms) {
+                WZTRACEOBJ(QString("Position %1 reached out point %2"
                                    ", start seeking in point %3")
                            .arg(mset.current_ms)
-                           .arg(mset.out_point)
-                           .arg(mset.in_point));
+                           .arg(mset.out_point_ms)
+                           .arg(mset.in_point_ms));
                 seeking = true;
-                seekMS(mset.in_point);
+                seekMS(mset.in_point_ms);
             }
         } else {
             WZDEBUGOBJ(QString("Position %1 reached out point %2, sending quit")
-                       .arg(mset.current_ms).arg(mset.out_point));
+                       .arg(mset.current_ms).arg(mset.out_point_ms));
             proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
         }
     } else if (seeking) {
         WZDEBUGOBJ(QString("Done handling out point, position %1 no longer"
                            " after out point %2")
-                   .arg(mset.current_ms).arg(mset.out_point));
+                   .arg(mset.current_ms).arg(mset.out_point_ms));
         seeking = false;
     }
 }
 
-void TPlayer::onReceivedPosition(double sec) {
+void TPlayer::onReceivedPositionMS(int ms) {
 
-    mset.current_ms = sec * 1000;
+    mset.current_ms = ms;
 
     handleOutPoint();
 
@@ -2874,6 +2883,7 @@ void TPlayer::onReceivedPosition(double sec) {
         return;
     }
 
+    double sec = mset.currentSec();
     int chapter_id = mdat.chapters.getSelectedID();
     if (chapter_id >= 0) {
         Maps::TChapterData& chapter = mdat.chapters[chapter_id];
@@ -3406,7 +3416,7 @@ void TPlayer::dvdnavMousePos(const QPoint& pos) {
     if (proc->isReady()
         && mdat.detected_type == TMediaData::TYPE_DVDNAV) {
         // MPlayer won't act if paused. Play if menu not animated.
-        if (_state == STATE_PAUSED && mdat.duration == 0) {
+        if (_state == STATE_PAUSED && mdat.duration_ms == 0) {
             play();
         }
         if (_state == STATE_PLAYING) {

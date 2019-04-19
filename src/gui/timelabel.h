@@ -20,8 +20,8 @@ public:
     TTimeResolution timeResolution() const { return resolution; }
 
 public slots:
-    void setPosition(int ms);
-    void setDuration(int ms);
+    void setPositionMS(int ms);
+    void setDurationMS(int ms);
     void setTimeResolution(int aResolution);
 
 private:
@@ -31,7 +31,7 @@ private:
     int lastSec;
 
     QString getSuffix(int ms, int secs, const QString& fuzzyTime);
-    void setPos(int ms, bool changed);
+    void setPosMS(int ms, bool changed);
 };
 
 } // namespace Gui

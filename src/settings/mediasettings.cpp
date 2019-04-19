@@ -131,8 +131,8 @@ void TMediaSettings::reset() {
     flip = false;
     mirror = false;
 
-    in_point = 0;
-    out_point = -1;
+    in_point_ms = 0;
+    out_point_ms = -1;
     loop = false;
 
     current_demuxer = "unknown";
@@ -282,8 +282,8 @@ void TMediaSettings::list() {
     WZDEBUG("rotate: " + QString::number(rotate));
 
     WZDEBUG("loop: " + QString::number(loop));
-    WZDEBUG("in_point: " + TWZTime::formatMS(in_point));
-    WZDEBUG("out_point: " + TWZTime::formatMS(out_point));
+    WZDEBUG("in_point: " + TWZTime::formatMS(in_point_ms));
+    WZDEBUG("out_point: " + TWZTime::formatMS(out_point_ms));
 
     WZDEBUG("current_demuxer: '" + current_demuxer + "'");
 
@@ -348,7 +348,7 @@ void TMediaSettings::save(QSettings* set) {
 
     set->setValue("external_subtitles_fps", external_subtitles_fps);
 
-    if (current_ms < (md->duration - 10) * 1000) {
+    if (md->duration_ms > 0 && current_ms < md->duration_ms - 10000) {
         set->setValue("current_ms", current_ms);
     } else {
         set->setValue("current_ms", 0);
@@ -413,8 +413,8 @@ void TMediaSettings::save(QSettings* set) {
     set->setValue("mirror", mirror);
 
     set->setValue("loop", loop);
-    set->setValue("in_point", in_point);
-    set->setValue("out_point", out_point);
+    set->setValue("in_point", in_point_ms);
+    set->setValue("out_point", out_point_ms);
 
     set->setValue("player_additional_options", player_additional_options);
     set->setValue("player_additional_video_filters", player_additional_video_filters);
@@ -551,9 +551,9 @@ void TMediaSettings::load(QSettings* set) {
     mirror = set->value("mirror", mirror).toBool();
 
     loop = set->value("loop", loop).toBool();
-    in_point = set->value("in_point", in_point).toInt();
-    if (in_point < 0) in_point = 0;
-    out_point = set->value("out_point", out_point).toInt();
+    in_point_ms = set->value("in_point", in_point_ms).toInt();
+    if (in_point_ms < 0) in_point_ms = 0;
+    out_point_ms = set->value("out_point", out_point_ms).toInt();
 
     player_additional_options = set->value("player_additional_options",
         player_additional_options).toString();

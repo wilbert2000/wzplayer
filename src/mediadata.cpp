@@ -33,13 +33,13 @@ TMediaData::TMediaData() :
     detected_type(TYPE_UNKNOWN),
     image(false),
 
-    start_sec_player(0),
-    start_sec(0),
-    start_sec_set(false),
+    start_ms_player(0),
+    start_ms_used(false),
+    start_ms(0),
 
-    pos_sec(0),
-    pos_sec_gui(0),
-    duration(0),
+    pos_ms(0),
+    pos_gui_ms(0),
+    duration_ms(0),
 
     mpegts(false),
 
@@ -188,13 +188,13 @@ void TMediaData::list() const {
     }
     WZDEBUG("stream_url: '" + stream_url + "'");
 
-    WZDEBUG("start sec: " + QString::number(start_sec));
-    WZDEBUG("start sec player: " + QString::number(start_sec_player));
-    WZDEBUG("start sec set: " + QString::number(start_sec_set));
+    WZDEBUG("start_ms_player: " + QString::number(start_ms_player));
+    WZDEBUG("start_ms_used: " + QString::number(start_ms_used));
+    WZDEBUG("start_ms: " + QString::number(start_ms));
     WZDEBUG("fuzzy time: '" + fuzzy_time + "'");
-    WZDEBUG("pos_sec: " + QString::number(pos_sec));
-    WZDEBUG("pos_sec_gui: " + QString::number(pos_sec_gui));
-    WZDEBUG("duration: " + QString::number(duration));
+    WZDEBUG("pos_ms: " + QString::number(pos_ms));
+    WZDEBUG("pos_gui_ms: " + QString::number(pos_gui_ms));
+    WZDEBUG("duration_ms: " + QString::number(duration_ms));
 
     WZDEBUG("demuxer: '" + demuxer + "'");
     WZDEBUG("mpegts: " + QString::number(mpegts));

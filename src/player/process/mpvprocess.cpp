@@ -44,9 +44,10 @@ TMPVProcess::TMPVProcess(QObject* parent,
 
 bool TMPVProcess::startPlayer() {
 
+    received_buffering = false;
     received_title_not_found = false;
-    quit_at_end_of_title = false;
     request_bit_rate_info = !md->image;
+    quit_at_end_of_title = false;
 
     return TPlayerProcess::startPlayer();
 }
@@ -280,32 +281,40 @@ void TMPVProcess::fixTitle() {
     quit(TExitMsg::ERR_TITLE_NOT_FOUND);
 }
 
-void TMPVProcess::checkTime(double sec) {
+void TMPVProcess::checkTime(int ms) {
 
-    if (md->detected_type == TMediaData::TYPE_CDDA
-            || md->detected_type == TMediaData::TYPE_VCD) {
-        // TODO: check if better to use sec instead of md->time_sec
-        int chapter = md->chapters.idForTime(md->pos_sec, false);
-        int title;
-        if (chapter < 0) {
-            title = -1;
-        } else {
-            title = chapter - md->chapters.firstID() + md->titles.firstID();
+    switch (md->detected_type) {
+        case TMediaData::TYPE_FILE:
+        case TMediaData::TYPE_STREAM:
+        case TMediaData::TYPE_TV:
+        case TMediaData::TYPE_UNKNOWN:
+            break;
+        case TMediaData::TYPE_CDDA:
+        case TMediaData::TYPE_VCD: {
+            // Note: using md->pos_sec_ms instaed of sec, to use player time
+            int chapter = md->chapters.idForTime(md->getPosSec(), false);
+            int title;
+            if (chapter < 0) {
+                title = -1;
+            } else {
+                title = chapter - md->chapters.firstID() + md->titles.firstID();
+            }
+            notifyTitleTrackChanged(title);
         }
-        notifyTitleTrackChanged(title);
-    } else if (md->detected_type == TMediaData::TYPE_DVD
-               || md->detected_type == TMediaData::TYPE_BLURAY) {
-
-        if (notified_player_is_running
-                && md->duration > 0
-                && sec > md->duration
-                && !quit_send) {
-
-            WZDEBUGOBJ(QString("Time %1 past end of title %2. Quitting.")
-                    .arg(sec).arg(md->duration));
-            quit(0);
-            received_end_of_file =  true;
-        }
+            break;
+        case TMediaData::TYPE_DVD:
+        case TMediaData::TYPE_DVDNAV:
+        case TMediaData::TYPE_BLURAY:
+            if (notified_player_is_running
+                    && md->duration_ms > 0
+                    && ms >= md->duration_ms
+                    && !quit_send) {
+                WZDEBUGOBJ(QString("Time %1 ms is past end of title %2 ms."
+                                   " Quitting.")
+                           .arg(ms).arg(md->duration_ms));
+                quit(0);
+                received_end_of_file =  true;
+            }
     }
 }
 
@@ -334,8 +343,7 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
             //   of a title
             // - Quit needs time to arrive
             quit_at_end_of_title = true;
-            quit_at_end_of_title_ms =
-                    (int) ((md->duration - md->pos_sec_gui) * 1000);
+            quit_at_end_of_title_ms = md->duration_ms - md->pos_gui_ms;
             // Quit right away if less than 400 ms to go
             if (quit_at_end_of_title_ms <= 400) {
                 WZDEBUGOBJ("Quitting at end of title");
@@ -378,7 +386,7 @@ void TMPVProcess::convertChaptersToTitles() {
         int firstChapter = md->chapters.firstID();
         md->titles.addTrack(md->titles.getSelectedID(),
                             md->chapters[firstChapter].getName(),
-                            md->duration);
+                            md->getDurationSec());
         md->chapters.setSelectedID(firstChapter);
     } else {
         // Playing all tracks
@@ -395,10 +403,11 @@ void TMPVProcess::convertChaptersToTitles() {
                                     duration);
                 prev_chapter = chapter;
             }
-            // TODO: md->duration no longer provided...
+            // Note: md->duration no longer provided, just in case it reappears
+            // TODO: Request duration
             md->titles.addTrack(prev_chapter.getID() + 1,
                                 prev_chapter.getName(),
-                                md->duration - prev_chapter.getStart());
+                                md->getDurationSec() - prev_chapter.getStart());
         }
     }
 
@@ -410,12 +419,12 @@ void TMPVProcess::playingStarted() {
 
     // MPV can give negative times for TS without giving a start time.
     // Correct them by setting the start time.
-    if (!md->start_sec_set && md->pos_sec < 0) {
-        WZDEBUGOBJ("Setting negative start time " + QString::number(md->pos_sec));
-        md->start_sec = md->pos_sec;
+    if (!md->start_ms_used && md->pos_ms < 0) {
+        WZDOBJ << "Setting negative start time" << md->pos_ms << "ms";
+        md->start_ms = md->pos_ms;
         // No longer need rollover protection (though not set for MPV anyway).
         md->mpegts = false;
-        notifyTime(md->pos_sec);
+        notifyTime(md->getPosSec());
     }
 
     if (TMediaData::isCD(md->detected_type)) {
@@ -474,7 +483,7 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
         }
 
         if (request_bit_rate_info
-                && md->pos_sec_gui > 11
+                && md->pos_gui_ms > 11000
                 && time.elapsed() > 11000) {
             request_bit_rate_info = false;
             requestBitrateInfo();
@@ -1058,34 +1067,29 @@ void TMPVProcess::addStereo3DFilter(const QString& in, const QString& out) {
     args << "--vf-add=stereo3d=" + in + ":" + out;
 }
 
-void TMPVProcess::addAF(const QString& filter_name, const QVariant& value) {
+void TMPVProcess::addAudioFilter(const QString& filter_name,
+                                 const QVariant& value) {
+
     QString option = value.toString();
 
     if (filter_name == "volnorm") {
         QString s = "drc";
         if (!option.isEmpty()) s += "=" + option;
         args << "--af-add=" + s;
-    }
-    else
-    if (filter_name == "channels") {
+    } else if (filter_name == "channels") {
         if (option == "2:2:0:1:0:0") args << "--af-add=channels=2:[0-1,0-0]";
         else
         if (option == "2:2:1:0:1:1") args << "--af-add=channels=2:[1-0,1-1]";
         else
         if (option == "2:2:0:1:1:0") args << "--af-add=channels=2:[0-1,1-0]";
-    }
-    else
-    if (filter_name == "pan") {
+    } else if (filter_name == "pan") {
         if (option == "1:0.5:0.5") {
             args << "--af-add=pan=1:[0.5,0.5]";
         }
-    }
-    else
-    if (filter_name == "equalizer") {
-        previous_eq = option;
+    } else if (filter_name == "equalizer") {
+        previous_audio_equalizer = option;
         args << "--af-add=equalizer=" + option;
-    }
-    else {
+    } else {
         QString s = filter_name;
         if (!option.isEmpty()) s += "=" + option;
         args << "--af-add=" + s;
@@ -1275,13 +1279,15 @@ void TMPVProcess::enableVolnorm(bool b, const QString& option) {
 }
 
 void TMPVProcess::setAudioEqualizer(const QString& values) {
-    if (values == previous_eq) return;
 
-    if (!previous_eq.isEmpty()) {
-        writeToPlayer("af del equalizer=" + previous_eq);
+    if (values == previous_audio_equalizer) {
+        return;
+    }
+    if (!previous_audio_equalizer.isEmpty()) {
+        writeToPlayer("af del equalizer=" + previous_audio_equalizer);
     }
     writeToPlayer("af add equalizer=" + values);
-    previous_eq = values;
+    previous_audio_equalizer = values;
 }
 
 void TMPVProcess::setAudioDelay(double delay) {
