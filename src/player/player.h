@@ -388,6 +388,9 @@ private:
 
     int cache_size;
 
+    void msg(const QString& s, int timeout = TConfig::MESSAGE_DURATION);
+    void msg2(const QString& s, int timeout = TConfig::MESSAGE_DURATION);
+
     void openFile(const QString& filename, bool loopImage);
     void openStream(const QString& name);
     void openTV(QString channel_id);

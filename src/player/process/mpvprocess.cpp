@@ -527,6 +527,7 @@ bool TMPVProcess::parseLine(QString& line) {
     static QRegExp rx_failed_format("^Failed to recognize file format");
     static QRegExp rx_error_http_403("HTTP error 403 ");
     static QRegExp rx_error_http_404("HTTP error 404 ");
+    static QRegExp rx_error("error", Qt::CaseInsensitive);
 
     static QRegExp rx_verbose("^\\[(statusline|term-msg|cplayer)\\] (.*)");
 
@@ -703,6 +704,10 @@ bool TMPVProcess::parseLine(QString& line) {
     if (rx_error_http_404.indexIn(line) >= 0) {
         WZDEBUGOBJ("Stored HTTP 404");
         exit_code_override = TExitMsg::ERR_HTTP_404;
+        return true;
+    }
+    if (rx_error.indexIn(line) >= 0) {
+        emit receivedMessage(line);
         return true;
     }
 

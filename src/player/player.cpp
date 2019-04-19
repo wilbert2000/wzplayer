@@ -195,11 +195,13 @@ QString TPlayer::stateToString() const {
 }
 
 void TPlayer::onProcessError(QProcess::ProcessError error) {
-    WZERROROBJ(QString::number(error));
+    WZEOBJ << error;
 
     // Restore normal window background
     playerWindow->restoreNormalWindow();
-    emit playerError(Player::Process::TExitMsg::processErrorToErrorID(error));
+    if (previewPlayer) {
+        emit playerError(Process::TExitMsg::processErrorToErrorID(error));
+    }
 }
 
 void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
@@ -238,16 +240,30 @@ void TPlayer::onProcessFinished(bool normal_exit, int exit_code, bool eof) {
     }
 }
 
+void TPlayer::msg(const QString &s, int timeout) {
+
+    if (previewPlayer) {
+        Gui::msg(s, timeout);
+    }
+}
+
+void TPlayer::msg2(const QString &s, int timeout) {
+
+    if (previewPlayer) {
+        Gui::msg2(s, timeout);
+    }
+}
+
 void TPlayer::onReceivedMessage(const QString& s) {
 
     if (!mdat.image) {
-        Gui::msg2(s);
+        msg2(s);
     }
 }
 
 void TPlayer::saveMediaSettings() {
 
-    if (mdat.filename.isEmpty()) {
+    if (mdat.filename.isEmpty() || isPreviewPlayer()) {
         return;
     }
     if (!Settings::pref->remember_media_settings) {
@@ -330,7 +346,7 @@ void TPlayer::openDisc(TDiscName disc, bool fast_open) {
         } else {
             WZERROROBJ(QString("Device or file not found '%1'")
                        .arg(disc.device));
-            Gui::msg(tr("Device or file not found: '%1'").arg(disc.device), 0);
+            msg(tr("Device or file not found: '%1'").arg(disc.device), 0);
             return;
         }
     }
@@ -377,7 +393,7 @@ void TPlayer::open(QString filename,
         displayName = this->displayName;
         if (filename.isEmpty()) {
             WZINFOOBJ("No file to play");
-            Gui::msg(tr("No file to play"));
+            msg(tr("No file to play"));
             return;
         }
     }
@@ -416,7 +432,7 @@ void TPlayer::open(QString filename,
     // Forget a previous disc
     mdat.disc.valid = false;
 
-    Gui::msg(tr("Opening %1").arg(newDisplayName), 0);
+    msg(tr("Opening %1").arg(newDisplayName), 0);
 
     if (fi.exists()) {
         if (fi.isRelative()) {
@@ -612,7 +628,7 @@ void TPlayer::stopPlayer() {
     WZDEBUGOBJ(QString("Entering the stopping state with timeout of %1 ms")
                .arg(timeout));
     setState(STATE_STOPPING);
-    Gui::msg(tr("Stopping player..."), 0);
+    msg(tr("Stopping player..."), 0);
     QTime time;
     time.start();
     proc->quit(0);
@@ -630,7 +646,7 @@ void TPlayer::stopPlayer() {
         int sec = qRound(float(timeout - elapsed) / 1000);
         if (sec < lastSec) {
             lastSec = sec;
-            Gui::msg(tr("Waiting %1 seconds for player to quit...").arg(sec));
+            msg(tr("Waiting %1 seconds for player to quit...").arg(sec));
         }
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents, 100);
     };
@@ -639,10 +655,10 @@ void TPlayer::stopPlayer() {
         QString s = tr("Player did not quit in %1 ms, killing it...")
                 .arg(timeout);
         WZWARNOBJ(s);
-        Gui::msg(s);
+        msg(s);
         proc->kill();
     } else {
-        Gui::msg(tr("Player stopped"));
+        msg(tr("Player stopped"));
     }
 
     WZDEBUGOBJ(QString("Player stopped in %1 ms").arg(time.elapsed()));
@@ -863,7 +879,7 @@ void TPlayer::screenshot() {
         WZDEBUGOBJ("Took screenshot");
     } else {
         WZWARNOBJ("Directory for screenshots not valid or not enabled");
-        Gui::msg(tr("Screenshot NOT taken, folder not configured or enabled"));
+        msg(tr("Screenshot NOT taken, folder not configured or enabled"));
     }
 }
 
@@ -872,12 +888,12 @@ void TPlayer::screenshots() {
 
     if (!Settings::pref->use_screenshot) {
         WZWARNOBJ("Screenshots are disabled in capture section of settings");
-        Gui::msg(tr("Screenshots are disabled in capture section of settings"));
+        msg(tr("Screenshots are disabled in capture section of settings"));
         return;
     }
     if (Settings::pref->screenshot_directory.isEmpty()) {
         WZWARNOBJ("Directory not set in capture section of settings");
-        Gui::msg(tr("Directory not set in capture section of settings"));
+        msg(tr("Directory not set in capture section of settings"));
         return;
     }
 
@@ -924,20 +940,20 @@ bool TPlayer::videoFiltersEnabled(bool displayMessage) {
     bool enabled = true;
 
     if (Settings::pref->isMPlayer()) {
-        QString msg;
+        QString s;
         if (Settings::pref->vo.startsWith("vdpau")) {
             enabled = !Settings::pref->vdpau.disable_video_filters;
             if (enabled) {
-                msg = tr("The video driver settings for vdpau allow video "
+                s = tr("The video driver settings for vdpau allow video "
                          " filters, this might not work...");
             } else {
-                msg = tr("Using vdpau, ignoring video filters");
+                s = tr("Using vdpau, ignoring video filters");
             }
         }
 
-        if (!msg.isEmpty() && displayMessage && haveVideoFilters()) {
-            WZDEBUGOBJ(msg);
-            Gui::msg(msg, 0);
+        if (!s.isEmpty() && displayMessage && haveVideoFilters()) {
+            WZDEBUGOBJ(s);
+            msg(s, 0);
         }
     }
 
@@ -996,7 +1012,7 @@ void TPlayer::startPlayer(bool loopImage) {
 
     QString fileName = mdat.filename;
     WZDOBJ << fileName;
-    Gui::msg(tr("Starting %1...").arg(displayName), 0);
+    msg(tr("Starting %1...").arg(displayName), 0);
 
     // Check URL playlist
     if (fileName.endsWith("|playlist")) {
@@ -1075,9 +1091,9 @@ void TPlayer::startPlayer(bool loopImage) {
         // Disable hardware decoding when there are filters in use
         if (hwdec != "no" && haveVideoFilters()) {
             hwdec = "no";
-            QString msg = tr("Disabled hardware decoding for video filters");
-            WZDEBUGOBJ(msg);
-            Gui::msg(msg, 0);
+            QString s = tr("Disabled hardware decoding for video filters");
+            WZDEBUGOBJ(s);
+            msg(s, 0);
         }
         mdat.video_hwdec = hwdec != "no";
     } else {
@@ -1780,7 +1796,7 @@ end_video_filters:
     proc->setProcessEnvironment(env);
 
     if (proc->startPlayer()) {
-        Gui::msg(tr("Loading %1...").arg(displayName), 0);
+        msg(tr("Loading %1...").arg(displayName), 0);
     } else {
         // Error reported by onProcessError()
         WZERROROBJ("Player process didn't start, entering the stopped state");
@@ -3139,7 +3155,7 @@ void TPlayer::setAspectRatio(int id) {
         proc->setAspect(mset.aspect_ratio.toDouble());
 
         emit aspectRatioChanged(aspect_id);
-        Gui::msg(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
+        msg2(tr("Aspect ratio: %1").arg(mset.aspect_ratio.toString()));
 
         // Clear keepSize in case main window resize not arriving
         if (keepSize) {
@@ -3409,7 +3425,7 @@ void TPlayer::displayScreenshotName(const QString& filename) {
 
 void TPlayer::displayUpdatingFontCache() {
     WZDEBUGOBJ("");
-    Gui::msg(tr("Updating the font cache. This may take a while..."));
+    msg(tr("Updating the font cache. This may take a while..."));
 }
 
 bool TPlayer::isBuffering() const {
@@ -3420,7 +3436,7 @@ void TPlayer::onReceivedBuffering() {
 
     if (previewPlayer) {
         WZTRACEOBJ("Buffering...");
-        Gui::msg(tr("Buffering..."));
+        Gui::msg2(tr("Buffering..."));
     }
 }
 
@@ -3428,7 +3444,7 @@ void TPlayer::onReceivedBufferingEnded() {
 
     if (previewPlayer) {
         WZTRACEOBJ("Buffering ended");
-        Gui::msg("Playing from " + TWZTime::formatMS(mset.current_ms));
+        Gui::msg2("Playing from " + TWZTime::formatMS(mset.current_ms));
     }
 }
 

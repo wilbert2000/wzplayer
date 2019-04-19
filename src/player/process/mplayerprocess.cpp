@@ -961,6 +961,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     static QRegExp rx_error_http_403("Server returned 403:");
     static QRegExp rx_error_http_404("Server returned 404:");
     static QRegExp rx_error_no_stream_found("^No stream found to handle url ");
+    static QRegExp rx_error("error", Qt::CaseInsensitive);
 
     // Font cache
     static QRegExp rx_fontcache("^\\[ass\\] Updating font"
@@ -1198,7 +1199,7 @@ bool TMPlayerProcess::parseLine(QString& line) {
     }
 
     // Messages to display
-    if (rx_message.indexIn(line) >= 0) {
+    if (rx_message.indexIn(line) >= 0 || rx_error.indexIn(line) >= 0) {
         WZDEBUGOBJ("emit receivedMessage(" + line + ")");
         emit receivedMessage(line);
         return true;
