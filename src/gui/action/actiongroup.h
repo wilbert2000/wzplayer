@@ -20,7 +20,6 @@
 #define GUI_ACTIONGROUP_H
 
 #include "gui/action/action.h"
-#include "wzdebug.h"
 #include <QActionGroup>
 
 namespace Gui {
@@ -30,7 +29,6 @@ namespace Action {
 //! with integer data.
 class TActionGroup : public QActionGroup {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     TActionGroup (QObject* parent, const QString& name);
 

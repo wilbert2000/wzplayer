@@ -17,11 +17,11 @@
 */
 
 #include "gui/action/actiongroup.h"
+#include "wzdebug.h"
+
 #include <QAction>
 #include <QList>
 #include <QWidget>
-#include "log4qt/logger.h"
-
 
 namespace Gui {
 namespace Action {
@@ -40,6 +40,8 @@ TActionGroupItem::TActionGroupItem(QObject* parent,
     group->addAction(this);
 }
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Action::TActionGroup)
 
 TActionGroup::TActionGroup(QObject* parent, const QString& name)
     : QActionGroup(parent) {
