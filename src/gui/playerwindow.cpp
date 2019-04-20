@@ -49,6 +49,8 @@ TVideoWindow::TVideoWindow(QWidget* parent) :
 
     // TPlayers.startPlayer()'s call to winId() will provide the native handle
     // setAttribute(Qt::WA_NativeWindow);
+
+    setEnabled(false);
 }
 
 void TVideoWindow::paintEvent(QPaintEvent* e) {
@@ -122,9 +124,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent,
     video_window = new TVideoWindow(this);
     video_window->setObjectName("video_" + name);
     video_window->setMinimumSize(QSize(0, 0));
-    if (isPreviewWindow) {
-        video_window->setEnabled(false);
-    } else {
+    if (!isPreviewWindow) {
         video_window->setMouseTracking(true);
     }
     setColorKey();
