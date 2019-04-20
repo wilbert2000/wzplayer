@@ -19,21 +19,14 @@
 #ifndef PLAYER_PROCESS_MPVPROCESS_H
 #define PLAYER_PROCESS_MPVPROCESS_H
 
-#include <QObject>
-#include <QPoint>
-#include <QString>
-#include <QTime>
-
 #include "player/process/playerprocess.h"
 
-class QStringList;
 
 namespace Player {
 namespace Process {
 
 class TMPVProcess : public TPlayerProcess {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit TMPVProcess(QObject* parent,
                          const QString& name,

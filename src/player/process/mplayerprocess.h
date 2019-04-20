@@ -19,23 +19,15 @@
 #ifndef PLAYER_PROCESS_MPLAYERPROCESS_H
 #define PLAYER_PROCESS_MPLAYERPROCESS_H
 
-#include <QObject>
-#include <QString>
-
 #include "player/process/playerprocess.h"
-#include "wzdebug.h"
 #include "mediadata.h"
 
-
-class QStringList;
 
 namespace Player {
 namespace Process {
 
 class TMPlayerProcess : public TPlayerProcess {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     explicit TMPlayerProcess(QObject* parent,
                              const QString& name,

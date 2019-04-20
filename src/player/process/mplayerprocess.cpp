@@ -17,19 +17,16 @@
 */
 
 #include "player/process/mplayerprocess.h"
+#include "player/process/exitmsg.h"
+#include "config.h"
+#include "wzdebug.h"
 
 #include <QDir>
 #include <QRegExp>
-#include <QStringList>
-#include <QApplication>
 #include <QTimer>
 
-#include "config.h"
-#include "player/process/exitmsg.h"
-#include "settings/preferences.h"
-#include "colorutils.h"
-#include "subtracks.h"
-#include "maps/titletracks.h"
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::Process::TMPlayerProcess)
 
 using namespace Settings;
 

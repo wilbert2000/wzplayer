@@ -17,8 +17,10 @@
 */
 
 #include "player/process/process.h"
-#include "log4qt/logger.h"
+#include "wzdebug.h"
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::Process::TProcess)
 
 namespace Player {
 namespace Process {

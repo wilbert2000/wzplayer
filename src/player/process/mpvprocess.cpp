@@ -17,21 +17,22 @@
 */
 
 #include "player/process/mpvprocess.h"
+#include "player/process/playerprocess.h"
+#include "player/process/exitmsg.h"
+#include "player/info/playerinfo.h"
+#include "settings/preferences.h"
+
+#include "mediadata.h"
+#include "colorutils.h"
+#include "config.h"
+#include "name.h"
+#include "wzdebug.h"
 
 #include <QDir>
 #include <QRegExp>
-#include <QStringList>
-#include <QApplication>
 
-#include "config.h"
-#include "player/process/exitmsg.h"
-#include "player/process/playerprocess.h"
-#include "settings/preferences.h"
-#include "colorutils.h"
-#include "player/info/playerinfo.h"
-#include "mediadata.h"
-#include "name.h"
 
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::Process::TMPVProcess)
 
 namespace Player {
 namespace Process {
@@ -415,7 +416,7 @@ void TMPVProcess::convertChaptersToTitles() {
 }
 
 void TMPVProcess::playingStarted() {
-    WZDEBUGOBJ("");
+    WZDOBJ;
 
     // MPV can give negative times for TS without giving a start time.
     // Correct them by setting the start time.

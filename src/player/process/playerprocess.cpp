@@ -17,18 +17,17 @@
 */
 
 #include "player/process/playerprocess.h"
-
-#include <QPoint>
-#include <QDir>
-#include <QFileInfo>
-#include <QString>
-
 #include "player/process/exitmsg.h"
 #include "player/process/mpvprocess.h"
 #include "player/process/mplayerprocess.h"
 #include "settings/aspectratio.h"
 #include "settings/preferences.h"
 #include "wzdebug.h"
+
+#include <QPoint>
+#include <QDir>
+#include <QFileInfo>
+#include <QString>
 
 
 LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::Process::TPlayerProcess)
@@ -81,7 +80,7 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
     }
 
     if (received_end_of_file) {
-        WZWARN("Skipping write of '" + text + "' after eof received");
+        WZWOBJ << "Skipping write of" << text << "after eof";
     } else if (isRunning()) {
 
 #ifdef Q_OS_WIN
@@ -91,7 +90,7 @@ void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
 #endif
 
     } else {
-        WZWARN("Process not running while trying to write '" + text + "'");
+        WZWOBJ << "Process not running while trying to write" << text;
     }
 }
 
@@ -120,8 +119,9 @@ bool TPlayerProcess::startPlayer() {
 
 // Slot called when the process is finished
 void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    WZDEBUGOBJ(QString("Exit code %1, override %2, status %3")
-               .arg(exitCode).arg(exit_code_override).arg(exitStatus));
+    WZDOBJ << "Exit code" << exitCode
+           << "override" << exit_code_override
+           << "status" << exitStatus;
 
     if (exit_code_override) {
         exitCode = exit_code_override;
@@ -135,7 +135,7 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 }
 
 void TPlayerProcess::playingStarted() {
-    WZDEBUGOBJ("");
+    WZDOBJ;
 
     notified_player_is_running = true;
 
@@ -471,44 +471,44 @@ bool TPlayerProcess::parseMetaDataProperty(QString name, QString value) {
     return true;
 }
 
-void TPlayerProcess::setImageDuration(int duration) {
+void TPlayerProcess::setImageDuration(int durationSec) {
 
     int fps, frames;
     if (Settings::pref->isMPlayer()) {
         // Need at least 2 frames
-        if (duration < 2) {
-            duration = 2;
-        } else if (duration > 999) {
-            duration = 999;
+        if (durationSec < 2) {
+            durationSec = 2;
+        } else if (durationSec > 999) {
+            durationSec = 999;
         }
         // When MPlayer runs on 1 fps it will only respond to events once a
         // second. So increasing the framerate...
-        if (duration <= 20) {
+        if (durationSec <= 20) {
             fps = 5;
-        } else if (duration <= 60) {
+        } else if (durationSec <= 60) {
             fps = 2;
         } else {
             fps = 1;
         }
-        frames = duration * fps;
+        frames = durationSec * fps;
     } else {
         // Need at least 2 frames
-        if (duration < 1) {
-            duration = 1;
-        } else if (duration > 999) {
-            duration = 999;
+        if (durationSec < 1) {
+            durationSec = 1;
+        } else if (durationSec > 999) {
+            durationSec = 999;
         }
         // With fps > 1, the displayed duration is off by factor fps
         // With 1 fps, the playtime is one frame too short
         // With fps < 1 the displayed time is off
         fps = 1;
-        frames = (duration * fps) + 1;
+        frames = (durationSec * fps) + 1;
     }
 
     if (temp_file.open()) {
         temp_file_name = temp_file.fileName();
         WZDEBUGOBJ(QString("Writing %1 frames to '%2'. Duration %3, fps %4.")
-                .arg(frames).arg(temp_file_name).arg(duration).arg(fps));
+                .arg(frames).arg(temp_file_name).arg(durationSec).arg(fps));
         temp_file.resize(0);
         QTextStream text(&temp_file);
         for(int i = 0; i < frames; i++) {

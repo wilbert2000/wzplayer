@@ -22,7 +22,6 @@
 #include "player/process/process.h"
 #include "settings/assstyles.h"
 #include "subtracks.h"
-#include "wzdebug.h"
 
 #include <QTemporaryFile>
 #include <QTime>
@@ -35,7 +34,6 @@ namespace Process {
 
 class TPlayerProcess : public TProcess {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     enum ScreenshotType { Single = 0, Multiple = 1 };
 
@@ -75,7 +73,7 @@ public:
     virtual void addStereo3DFilter(const QString& in, const QString& out) = 0;
     virtual void setSubStyles(const Settings::TAssStyles& styles,
                               const QString& assStylesFile = QString::null) = 0;
-    virtual void setImageDuration(int duration);
+    virtual void setImageDuration(int durationSec);
 
     // Slave commands
     void quit(int exit_code);
