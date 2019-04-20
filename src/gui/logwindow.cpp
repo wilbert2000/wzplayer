@@ -43,7 +43,7 @@ TLogWindow::TLogWindow(QWidget* parent)
 
     setupUi(this);
     retranslateUi(this);
-    setObjectName("logwindow");
+    setObjectName("log_window");
 
     edit->setMaximumBlockCount(pref->log_window_max_events);
     edit->setFont(QFont("Monospace"));

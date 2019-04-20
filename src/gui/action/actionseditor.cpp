@@ -172,10 +172,10 @@ QString TActionsEditor::getWindowForAction(QAction* action) const {
                || name.endsWith("_dock")
                || name.startsWith("toolbar")
                || name == "controlbar") {
-        name = "mainwindow";
+        name = "main_window";
     }
 
-    if (name == "mainwindow") {
+    if (name == "main_window") {
         return tr("All");
     }
     if (name == "playlist" || name.startsWith("pl_")) {

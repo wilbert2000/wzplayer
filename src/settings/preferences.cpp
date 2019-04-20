@@ -41,7 +41,7 @@
 
 namespace Settings {
 
-static const int CURRENT_CONFIG_VERSION = 27;
+static const int CURRENT_CONFIG_VERSION = 28;
 const Log4Qt::Level TPreferences::log_default_level = Log4Qt::Level::DEBUG_INT;
 
 TPreferences* pref = 0;

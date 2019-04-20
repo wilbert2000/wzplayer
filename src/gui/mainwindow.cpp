@@ -114,7 +114,7 @@ TMainWindow::TMainWindow() :
 
     mainWindow = this;
 
-    setObjectName("mainwindow");
+    setObjectName("main_window");
     setWindowTitle(TConfig::PROGRAM_NAME);
     setWindowIcon(Images::icon("logo", 64));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -3017,7 +3017,7 @@ void TMainWindow::loadAudioFile() {
 void TMainWindow::helpCLOptions() {
 
     if (help_window == 0) {
-        help_window = new THelpWindow(this, "helpwindow");
+        help_window = new THelpWindow(this, "help_window");
         help_window->setWindowTitle(tr("%1 command line options")
                                     .arg(TConfig::PROGRAM_NAME));
         help_window->loadSettings(pref);

@@ -144,7 +144,7 @@ void TPlayerProcess::notifyPlayingStarted() {
     emit receivedTitleTracks();
 
     notified_player_is_running = true;
-    WZDEBUGOBJ("emit playerFullyLoaded()");
+    WZDEBUGOBJ("emit playingStarted()");
     emit playingStarted();
 }
 
