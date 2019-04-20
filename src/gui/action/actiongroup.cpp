@@ -62,7 +62,7 @@ QAction* TActionGroup::setChecked(int ID) {
     }
 
     // Does not need to be an error. TWindowSizeGroup set sizes not in menu.
-    WZDOBJ << "ID" << ID << "not found";
+    // WZDOBJ << "ID" << ID << "not found";
     return 0;
 }
 
