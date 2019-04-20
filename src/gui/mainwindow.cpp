@@ -147,10 +147,9 @@ TMainWindow::TMainWindow() :
     connect(optimizeSizeTimer, &TWZTimer::timeout,
             this, &TMainWindow::optimizeSizeFactor);
 
-    createPanel();
-    createLogDock();
     createPlayerWindows();
     createPlayers();
+    createLogDock();
     createPlaylist();
     createFavList();
 
@@ -196,15 +195,6 @@ TMainWindow::~TMainWindow() {
     setMessageHandler(0);
 }
 
-void TMainWindow::createPanel() {
-
-    panel = new QWidget(this);
-    panel->setObjectName("panel");
-    panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    panel->setMinimumSize(TPlayerWindow::frame());
-    setCentralWidget(panel);
-}
-
 void TMainWindow::createStatusBar() {
 
     statusBar()->setObjectName("statusbar");
@@ -248,13 +238,8 @@ void TMainWindow::createStatusBar() {
 
 void TMainWindow::createPlayerWindows() {
 
-    playerWindow = new TPlayerWindow(panel, "player_window", false);
-
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setSpacing(0);
-    layout->setMargin(0);
-    layout->addWidget(playerWindow);
-    panel->setLayout(layout);
+    playerWindow = new TPlayerWindow(this, "player_window", false);
+    setCentralWidget(playerWindow);
 
     // Player window mouse events
     connect(playerWindow, &Gui::TPlayerWindow::leftClicked,
@@ -321,7 +306,7 @@ void TMainWindow::createPlayers() {
 
 void TMainWindow::createLogDock() {
 
-    logDock = new TDockWidget(this, panel, "log_dock", tr("Log"));
+    logDock = new TDockWidget(this, playerWindow, "log_dock", tr("Log"));
     logWindow = new TLogWindow(logDock);
     logDock->setWidget(logWindow);
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
@@ -329,7 +314,7 @@ void TMainWindow::createLogDock() {
 
 void TMainWindow::createPlaylist() {
 
-    playlistDock = new TDockWidget(this, panel, "playlist_dock",
+    playlistDock = new TDockWidget(this, playerWindow, "playlist_dock",
                                    tr("Playlist"));
     playlist = new Playlist::TPlaylist(playlistDock);
     playlistDock->setWidget(playlist);
@@ -342,7 +327,8 @@ void TMainWindow::createPlaylist() {
 
 void TMainWindow::createFavList() {
 
-    favListDock = new TDockWidget(this, panel, "favlist_dock", tr("Favorites"));
+    favListDock = new TDockWidget(this, playerWindow, "favlist_dock",
+                                  tr("Favorites"));
     favlist = new Playlist::TFavList(favListDock, playlist);
     favListDock->setWidget(favlist);
     addDockWidget(Qt::RightDockWidgetArea, favListDock);
@@ -1549,10 +1535,10 @@ void TMainWindow::applyNewSettings() {
     useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
     // Interface
-    // Show panel
-    if (!pref->hide_video_window_on_audio_files && !panel->isVisible()) {
+    // Show player window
+    if (!pref->hide_video_window_on_audio_files && !playerWindow->isVisible()) {
         resize(width(), height() + 200);
-        panel->show();
+        playerWindow->show();
     }
     // Hide toolbars delay
     autoHideTimer->setInterval(pref->floating_hide_delay);
@@ -1820,7 +1806,7 @@ void TMainWindow::loadSettings() {
     checkActionValid(pref->mouse_xbutton1_click_function, "");
     checkActionValid(pref->mouse_xbutton2_click_function, "");
 
-    pref->beginGroup(settingsGroupName());
+    pref->beginGroup(objectName());
 
     // Position, size and windowstate
     if (pref->save_window_size_on_exit) {
@@ -1891,7 +1877,7 @@ void TMainWindow::loadSettings() {
 void TMainWindow::saveSettings() {
     WZT;
 
-    pref->beginGroup(settingsGroupName());
+    pref->beginGroup(objectName());
 
     if (pref->save_window_size_on_exit && save_size) {
         pref->setValue("pos", pos());
@@ -3132,7 +3118,7 @@ void TMainWindow::aboutToEnterFullscreen() {
     statusbar_visible = !statusBar()->isHidden();
     first_fullscreen_filename = player->mdat.filename;
 
-    pref->beginGroup(settingsGroupName());
+    pref->beginGroup(objectName());
     pref->setValue("toolbars_state", saveState(TVersion::qtVersion()));
     pref->endGroup();
 }
@@ -3143,7 +3129,7 @@ void TMainWindow::didEnterFullscreen() {
     viewMenuBarAct->setChecked(fullscreen_menubar_visible);
     viewStatusBarAct->setChecked(fullscreen_statusbar_visible);
 
-    pref->beginGroup(settingsGroupName());
+    pref->beginGroup(objectName());
     if (!restoreState(pref->value("toolbars_state_fullscreen").toByteArray(),
                       TVersion::qtVersion())) {
         // First time there is no fullscreen toolbar state
@@ -3170,7 +3156,7 @@ void TMainWindow::aboutToExitFullscreen() {
     fullscreen_menubar_visible = !menuBar()->isHidden();
     fullscreen_statusbar_visible = !statusBar()->isHidden();
 
-    pref->beginGroup(settingsGroupName());
+    pref->beginGroup(objectName());
     pref->setValue("toolbars_state_fullscreen",
                    saveState(TVersion::qtVersion()));
     pref->endGroup();
@@ -3181,7 +3167,7 @@ void TMainWindow::didExitFullscreen() {
     viewMenuBarAct->setChecked(menubar_visible);
     viewStatusBarAct->setChecked(statusbar_visible);
 
-    pref->beginGroup(settingsGroupName());
+    pref->beginGroup(objectName());
     if (!restoreState(pref->value("toolbars_state").toByteArray(),
                       TVersion::qtVersion())) {
         WZWARN("Failed to restore tool state");
@@ -3345,9 +3331,9 @@ void TMainWindow::hidePanel() {
         update();
     }
 
-    if (panel->isVisible()) {
-        QSize s(width(), height() - panel->height());
-        panel->hide();
+    if (playerWindow->isVisible()) {
+        QSize s(width(), height() - playerWindow->height());
+        playerWindow->hide();
         if (!haveDockedDocks()) {
             resize(s);
         }
@@ -3381,7 +3367,7 @@ double TMainWindow::optimizeSize(double size) const {
     }
 
     availableSize = availableSize
-            - frameSize() + panel->frameSize()
+            - frameSize() + playerWindow->frameSize()
             - TPlayerWindow::frame();
 
     QSize video_size = res * size;
@@ -3498,13 +3484,13 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
         }
     } else {
         // Have video
-        if (!panel->isVisible()) {
-            panel->show();
+        if (!playerWindow->isVisible()) {
+            playerWindow->show();
         }
 
         // force_resize is only set for the first video when
         // pref->save_window_size_on_exit is not set.
-        if (panel->width() < 64 || panel->height() < 48) {
+        if (playerWindow->width() < 64 || playerWindow->height() < 48) {
             force_resize = true;
         }
         // Leave maximized window as is.
@@ -3592,17 +3578,17 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
     WZDEBUG(QString("Video size %1 x %2, size factor %3")
             .arg(w).arg(h).arg(pref->size_factor));
 
-    QSize panel_size = QSize(w, h) * size_factor + playerWindow->frame();
-    if (panel_size == panel->size()) {
-        WZTRACE("Panel has requested size");
+    QSize playerSize = QSize(w, h) * size_factor + playerWindow->frame();
+    if (playerSize == playerWindow->size()) {
+        WZTRACE("Player has requested size");
         return;
     }
 
-    QSize new_size = size() + panel_size - panel->size();
+    QSize new_size = size() + playerSize - playerWindow->size();
     resize(new_size);
     emit resizedMainWindow();
 
-    if (panel->size() != panel_size) {
+    if (playerWindow->size() != playerSize) {
         // Resizing the main window can change the height of the toolbars,
         // which will change the height of the panel during the resize.
         // Fix by resizing once again, using the new panel height.
@@ -3611,10 +3597,10 @@ void TMainWindow::resizeMainWindow(int w, int h, double size_factor,
         } else {
             WZDEBUG(QString("Resize failed. Panel size now %1 x %2."
                             " Wanted size %3 x %4")
-                            .arg(panel->size().width())
-                            .arg(panel->size().height())
-                            .arg(panel_size.width())
-                            .arg(panel_size.height()));
+                            .arg(playerWindow->size().width())
+                            .arg(playerWindow->size().height())
+                            .arg(playerSize.width())
+                            .arg(playerSize.height()));
         }
     }
 }

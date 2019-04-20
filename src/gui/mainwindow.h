@@ -217,9 +217,6 @@ protected slots:
     virtual void setWindowCaption(const QString& title);
 
 private:
-    static QString settingsGroupName() { return "mainwindow"; }
-
-    QWidget* panel;
     TPlayerWindow* playerWindow;
     TPlayerWindow* previewWindow;
     Player::TPlayer* previewPlayer;
@@ -490,7 +487,6 @@ private:
 
 
     void createStatusBar();
-    void createPanel();
     void createLogDock();
     void createPlayerWindows();
     void createPlayers();

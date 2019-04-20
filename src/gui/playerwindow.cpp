@@ -269,7 +269,7 @@ void TPlayerWindow::updateVideoWindow() {
 
     // Return to local coords in fullscreen
     if (pref->fullscreen && !isPreviewWindow) {
-        vWin.moveTo(vWin.topLeft() - pos() - parentWidget()->pos());
+        vWin.moveTo(vWin.topLeft() - pos());
     }
 
     // Set geometry video window
