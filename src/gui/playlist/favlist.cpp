@@ -250,9 +250,9 @@ void TFavList::updatePlayingItem() {
             markCurrentFavAction(action);
             playingItem = action->data().value<TPlaylistItem*>();
             state = item->state();
-            WZT << "Found" << item->editName();
+            WZT << "Found" << item->editName() << "in favorites";
         } else {
-            WZT << item->editName() << "not found";
+            WZT << item->editName() << "not found in favorites";
         }
     } else {
         WZTRACE("No playing item");
