@@ -1266,7 +1266,12 @@ void TMainWindow::createMenus() {
     statusbarMenu->addAction(viewInOutPointsAct);
     statusbarMenu->addAction(viewVideoTimeAct);
     statusbarMenu->addSeparator();
-    statusbarMenu->addActions(timeResGroup->actions());
+
+    QMenu* menu = new QMenu(this);
+    menu->menuAction()->setObjectName("time_res_menu");
+    menu->menuAction()->setText(tr("Time resolution"));
+    menu->addActions(timeResGroup->actions());
+    statusbarMenu->addMenu(menu);
 
     // Toolbar context menu
     toolbarMenu = new Menu::TMenu(this, "toolbar_menu", tr("Toolbars"),
@@ -1329,12 +1334,12 @@ void TMainWindow::createMenus() {
             this, &TMainWindow::showContextMenu);
 
     // Set context menu toolbar playlists
-    Action::Menu::TMenu* menu = createPopupMenu();
-    menu->menuAction()->setObjectName("dock_menu");
-    menu->menuAction()->setText(tr("Dock menu"));
-    menu->menuAction()->setIcon(Images::icon("dock_menu"));
-    playlist->setContextMenuToolbar(menu);
-    favlist->setContextMenuToolbar(menu);
+    Action::Menu::TMenu* m = createPopupMenu();
+    m->menuAction()->setObjectName("dock_menu");
+    m->menuAction()->setText(tr("Dock menu"));
+    m->menuAction()->setIcon(Images::icon("dock_menu"));
+    playlist->setContextMenuToolbar(m);
+    favlist->setContextMenuToolbar(m);
 } // createMenus()
 
 // Called by main window to show context popup on toolbars and dock widgets.
