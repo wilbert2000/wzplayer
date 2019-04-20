@@ -26,7 +26,7 @@ public:
     TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player);
 
 signals:
-    void positionChanged(int ms);
+    void positionMSChanged(int ms);
     void percentageChanged(double percentage);
 
     void wheelUp();
@@ -39,21 +39,21 @@ private:
     TWZTimer* updatePosTimer;
     int posMS;
     int durationMS;
-    int requestedPos;
+    int requestedPosMS;
 
     Player::TPlayer* previewPlayer;
     TWZTimer* previewTimer;
     TTimeSlider* previewSlider;
-    int lastPreviewTime;
+    int lastPreviewPosMS;
 
-    void setPos(int ms);
+    void setPosMS(int ms);
     void preview();
 
 private slots:
-    void setPosition(int ms);
-    void setDuration(int ms);
+    void setPositionMS(int ms);
+    void setDurationMS(int ms);
 
-    void onPosChanged(int ms);
+    void onPosMSChanged(int ms);
     void onToolTipEvent(TTimeSlider* slider, QPoint pos, int ms);
 
     void onUpdatePosTimerTimeout();

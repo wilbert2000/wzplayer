@@ -40,8 +40,8 @@ public:
     int getTimeMS(const QPoint& pos);
 
 signals:
-    void posChanged(int ms);
-    void draggingPosChanged(int ms);
+    void posMSChanged(int ms);
+    void draggingPosMSChanged(int ms);
 
     void wheelUp();
     void wheelDown();

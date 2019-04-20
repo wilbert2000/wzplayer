@@ -15,26 +15,26 @@
 namespace Gui {
 namespace Action {
 
-const int POS_RES = 10;
-const int NO_POS = -POS_RES - 1;
+const int POS_RES_MS = 10;
+const int NO_POS_MS = -POS_RES_MS - 1;
 
 TTimeSliderAction::TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player) :
     TWidgetAction(mw),
     posMS(0),
     durationMS(0),
-    requestedPos(0),
+    requestedPosMS(0),
     previewPlayer(player->previewPlayer),
-    lastPreviewTime(NO_POS) {
+    lastPreviewPosMS(NO_POS_MS) {
 
     setObjectName("timeslider_action");
     setText(tr("Time slider"));
 
-    connect(player, &Player::TPlayer::positionChanged,
-            this, &TTimeSliderAction::setPosition);
-    connect(player, &Player::TPlayer::durationChanged,
-            this, &TTimeSliderAction::setDuration);
+    connect(player, &Player::TPlayer::positionMSChanged,
+            this, &TTimeSliderAction::setPositionMS);
+    connect(player, &Player::TPlayer::durationMSChanged,
+            this, &TTimeSliderAction::setDurationMS);
 
-    connect(this, &TTimeSliderAction::positionChanged,
+    connect(this, &TTimeSliderAction::positionMSChanged,
             player, &Player::TPlayer::seekMS);
     connect(this, &TTimeSliderAction::percentageChanged,
             player, &Player::TPlayer::seekPercentage);
@@ -62,10 +62,10 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
     TTimeSlider* slider = new TTimeSlider(parent, posMS, durationMS);
     slider->setEnabled(isEnabled());
 
-    connect(slider, &TTimeSlider::posChanged,
-            this, &TTimeSliderAction::onPosChanged);
-    connect(slider, &TTimeSlider::draggingPosChanged,
-            this, &TTimeSliderAction::onPosChanged);
+    connect(slider, &TTimeSlider::posMSChanged,
+            this, &TTimeSliderAction::onPosMSChanged);
+    connect(slider, &TTimeSlider::draggingPosMSChanged,
+            this, &TTimeSliderAction::onPosMSChanged);
 
     connect(slider, &TTimeSlider::wheelUp,
             this, &TTimeSliderAction::wheelUp);
@@ -79,7 +79,7 @@ QWidget* TTimeSliderAction::createWidget(QWidget* parent) {
 }
 
 // Update this pos and widgets pos
-void TTimeSliderAction::setPos(int ms) {
+void TTimeSliderAction::setPosMS(int ms) {
 
     posMS = ms;
 
@@ -93,7 +93,7 @@ void TTimeSliderAction::setPos(int ms) {
 }
 
 // Slot triggered by player when play position updated
-void TTimeSliderAction::setPosition(int ms) {
+void TTimeSliderAction::setPositionMS(int ms) {
 
     if (ms < 0) {
         ms = 0;
@@ -102,19 +102,19 @@ void TTimeSliderAction::setPosition(int ms) {
     }
 
     if (ms != posMS) {
-        setPos(ms);
+        setPosMS(ms);
     }
 }
 
 // Slot triggered by player when duration updated
-void TTimeSliderAction::setDuration(int ms) {
+void TTimeSliderAction::setDurationMS(int ms) {
     WZDEBUG(QString("Received duration %1 ms").arg(ms));
 
     durationMS = ms;
 
     // Probably changed video
-    lastPreviewTime = NO_POS;
-    requestedPos = NO_POS;
+    lastPreviewPosMS = NO_POS_MS;
+    requestedPosMS = NO_POS_MS;
 
     QList<QWidget*> widgets = createdWidgets();
     for (int i = 0; i < widgets.count(); i++) {
@@ -130,19 +130,19 @@ void TTimeSliderAction::onUpdatePosTimerTimeout() {
     if (previewPlayer->isBuffering()) {
         WZDEBUG("Waiting for player to catch up");
         updatePosTimer->start();
-    } else if (qAbs(requestedPos - posMS) > POS_RES) {
+    } else if (qAbs(requestedPosMS - posMS) > POS_RES_MS) {
         if (Settings::pref->seek_relative) {
-            emit percentageChanged(double(requestedPos * 100) / durationMS);
+            emit percentageChanged(double(requestedPosMS * 100) / durationMS);
         } else {
-            emit positionChanged(requestedPos);
+            emit positionMSChanged(requestedPosMS);
         }
     }
 }
 
 // Slider pos changed
-void TTimeSliderAction::onPosChanged(int ms) {
+void TTimeSliderAction::onPosMSChanged(int ms) {
 
-    requestedPos = ms;
+    requestedPosMS = ms;
     if (durationMS <= 0) {
         WZWARN(QString("Ignoring posChanged() while duration %1 <= 0")
                .arg(durationMS));
@@ -156,9 +156,9 @@ void TTimeSliderAction::preview() {
     TPlayerWindow* playerWindow = previewPlayer->playerWindow;
     QPoint pos = QCursor::pos();
     int ms = previewSlider->getTimeMS(previewSlider->mapFromGlobal(pos));
-    if (qAbs(ms - lastPreviewTime) > POS_RES) {
+    if (qAbs(ms - lastPreviewPosMS) > POS_RES_MS) {
         // 10 ms -> resolution 100 fps
-        lastPreviewTime = ms;
+        lastPreviewPosMS = ms;
 
         // Map geometry parent widget slider to global
         QWidget* parentWidget = previewSlider->parentWidget();

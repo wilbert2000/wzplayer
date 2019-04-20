@@ -283,9 +283,9 @@ void TMainWindow::createPlayers() {
 
     new Player::TPlayer(this, "player", playerWindow, previewPlayer);
 
-    connect(player, &Player::TPlayer::positionChanged,
+    connect(player, &Player::TPlayer::positionMSChanged,
             timeLabel, &TTimeLabel::setPositionMS);
-    connect(player, &Player::TPlayer::durationChanged,
+    connect(player, &Player::TPlayer::durationMSChanged,
             timeLabel, &TTimeLabel::setDurationMS);
 
     connect(player, &Player::TPlayer::stateChanged,

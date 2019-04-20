@@ -339,8 +339,8 @@ signals:
     //! Sent when requested to play, but there is no file to play
     void noFileToPlay();
 
-    void positionChanged(int ms);
-    void durationChanged(int ms);
+    void positionMSChanged(int ms);
+    void durationMSChanged(int ms);
 
     void aspectRatioChanged(int);
 
@@ -377,6 +377,7 @@ private:
 
     TState _state;
     bool seeking;
+
     QTimer* keepSizeTimer;
 
     QString displayName;
@@ -423,6 +424,8 @@ private:
     void pan(int dx, int dy);
 
     void seekCmd(double value, int mode);
+
+    void handleChapters();
     void handleOutPoint();
     void updateLoop();
 

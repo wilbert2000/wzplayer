@@ -67,7 +67,7 @@ void TTimeSlider::startDragging() {
 void TTimeSlider::stopDragging() {
 
     dragging = false;
-    emit posChanged(value());
+    emit posMSChanged(value());
 
     if (pausedPlayer && player->state() == Player::STATE_PAUSED) {
         player->play();
@@ -77,9 +77,9 @@ void TTimeSlider::stopDragging() {
 void TTimeSlider::onValueChanged(int v) {
 
     if (dragging) {
-        emit draggingPosChanged(v);
+        emit draggingPosMSChanged(v);
     } else {
-        emit posChanged(v);
+        emit posMSChanged(v);
     }
 }
 

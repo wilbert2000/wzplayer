@@ -68,11 +68,13 @@ TPlayer::TPlayer(QWidget* parent,
     playerWindow(pw),
     previewPlayer(aPreviewPlayer),
     keepSize(false),
-    _state(STATE_LOADING) {
+    _state(aPreviewPlayer
+           ? STATE_LOADING
+           : STATE_STOPPED) {
 
     setObjectName(name);
 
-    if (name == "player") {
+    if (previewPlayer) {
         qRegisterMetaType<TState>("Player::TState");
         player = this;
     }
@@ -148,7 +150,7 @@ TPlayer::TPlayer(QWidget* parent,
             this, &TPlayer::anglesChanged);
 
     connect(proc, &Process::TPlayerProcess::durationChanged,
-            this, &TPlayer::durationChanged);
+            this, &TPlayer::durationMSChanged);
 
     connect(proc, &Process::TPlayerProcess::videoBitRateChanged,
             this, &TPlayer::videoBitRateChanged);
@@ -669,11 +671,13 @@ void TPlayer::stopPlayer() {
 }
 
 void TPlayer::stop() {
-    WZDEBUGOBJ("Current state " + stateToString());
 
-    stopPlayer();
-    WZDEBUGOBJ("Entering the stopped state");
-    setState(STATE_STOPPED);
+    if (_state != STATE_STOPPED) {
+        WZDEBUGOBJ("Current state " + stateToString());
+        stopPlayer();
+        WZDEBUGOBJ("Entering the stopped state");
+        setState(STATE_STOPPED);
+    }
 }
 
 void TPlayer::play() {
@@ -827,7 +831,7 @@ void TPlayer::onPlayingStartedNewMedia() {
 
 // Slot called when signal playerFullyLoaded arrives.
 void TPlayer::onPlayingStarted() {
-    WZTRACEOBJ("");
+    WZTOBJ;
 
     if (forced_titles.contains(mdat.filename)) {
         mdat.title = forced_titles[mdat.filename];
@@ -1020,8 +1024,10 @@ void TPlayer::startPlayer() {
     using namespace Settings;
 
     if (_state != STATE_RESTARTING) {
-        // Clear background
-        playerWindow->repaint();
+        // Clear background player window
+        if (!mdat.image) {
+            playerWindow->repaint();
+        }
         // Reset media settings
         initMediaSettings();
     }
@@ -1073,7 +1079,8 @@ void TPlayer::startPlayer() {
             ss = mset.in_point_ms;
             // current_sec may override in point, but cannot be beyond out point
             if (mset.current_ms > 0
-                && (mset.out_point_ms <= 0 || mset.current_ms < mset.out_point_ms)) {
+                && (mset.out_point_ms <= 0
+                    || mset.current_ms < mset.out_point_ms)) {
                 ss = mset.current_ms;
             }
             if (restartMS != 0) {
@@ -1086,7 +1093,7 @@ void TPlayer::startPlayer() {
 
         // Set mset.current_ms
         mset.current_ms = ss;
-        emit positionChanged(mset.current_ms);
+        emit positionMSChanged(mset.current_ms);
     }
 
     restartMS = 0;
@@ -2828,45 +2835,7 @@ void TPlayer::setAudioEq9(int value) {
     setAudioEq(9, value);
 }
 
-void TPlayer::handleOutPoint() {
-
-    if (_state != STATE_PLAYING) {
-        seeking = false;
-        return;
-    }
-
-    // Handle out point
-    if (mset.out_point_ms > 0 && mset.current_ms >= mset.out_point_ms) {
-        if (mset.loop) {
-            if (!seeking && mset.in_point_ms < mset.out_point_ms) {
-                WZTRACEOBJ(QString("Position %1 reached out point %2"
-                                   ", start seeking in point %3")
-                           .arg(mset.current_ms)
-                           .arg(mset.out_point_ms)
-                           .arg(mset.in_point_ms));
-                seeking = true;
-                seekMS(mset.in_point_ms);
-            }
-        } else {
-            WZDEBUGOBJ(QString("Position %1 reached out point %2, sending quit")
-                       .arg(mset.current_ms).arg(mset.out_point_ms));
-            proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
-        }
-    } else if (seeking) {
-        WZDEBUGOBJ(QString("Done handling out point, position %1 no longer"
-                           " after out point %2")
-                   .arg(mset.current_ms).arg(mset.out_point_ms));
-        seeking = false;
-    }
-}
-
-void TPlayer::onReceivedPositionMS(int ms) {
-
-    mset.current_ms = ms;
-
-    handleOutPoint();
-
-    emit positionChanged(mset.current_ms);
+void TPlayer::handleChapters() {
 
     // Check chapter
     if (mdat.chapters.count() <= 0 || mset.playing_single_track) {
@@ -2903,6 +2872,48 @@ void TPlayer::onReceivedPositionMS(int ms) {
         WZDEBUGOBJ(QString("Emit chapterChanged(%1)").arg(new_chapter_id));
         emit chapterChanged(new_chapter_id);
     }
+}
+
+void TPlayer::handleOutPoint() {
+
+    if (_state != STATE_PLAYING) {
+        seeking = false;
+        return;
+    }
+
+    // Handle out point
+    if (mset.out_point_ms > 0 && mset.current_ms >= mset.out_point_ms) {
+        if (mset.loop) {
+            if (!seeking && mset.in_point_ms < mset.out_point_ms) {
+                WZTRACEOBJ(QString("Position %1 reached out point %2"
+                                   ", start seeking in point %3")
+                           .arg(mset.current_ms)
+                           .arg(mset.out_point_ms)
+                           .arg(mset.in_point_ms));
+                seeking = true;
+                seekMS(mset.in_point_ms);
+            }
+        } else {
+            WZDEBUGOBJ(QString("Position %1 reached out point %2, sending quit")
+                       .arg(mset.current_ms).arg(mset.out_point_ms));
+            proc->quit(Player::Process::TExitMsg::EXIT_OUT_POINT_REACHED);
+        }
+    } else if (seeking) {
+        WZDEBUGOBJ(QString("Done handling out point, position %1 no longer"
+                           " after out point %2")
+                   .arg(mset.current_ms).arg(mset.out_point_ms));
+        seeking = false;
+    }
+}
+
+void TPlayer::onReceivedPositionMS(int ms) {
+
+    mset.current_ms = ms;
+    handleOutPoint();
+
+    emit positionMSChanged(mset.current_ms);
+
+    handleChapters();
 }
 
 // TMPVProcess sends it only once after initial start

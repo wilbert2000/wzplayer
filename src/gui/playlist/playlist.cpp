@@ -70,7 +70,7 @@ TPlaylist::TPlaylist(TDockWidget* parent) :
             this, &TPlaylist::onNewMediaStartedPlaying);
     connect(player, &Player::TPlayer::titleTrackChanged,
             this, &TPlaylist::onTitleTrackChanged);
-    connect(player, &Player::TPlayer::durationChanged,
+    connect(player, &Player::TPlayer::durationMSChanged,
             this, &TPlaylist::onDurationChanged);
     connect(player, &Player::TPlayer::mediaEOF,
             this, &TPlaylist::onMediaEOF, Qt::QueuedConnection);
