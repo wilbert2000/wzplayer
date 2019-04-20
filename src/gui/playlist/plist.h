@@ -2,7 +2,6 @@
 #define GUI_PLAYLIST_PLIST_H
 
 #include "gui/action/menu/menu.h"
-#include "wzdebug.h"
 #include <QWidget>
 
 
@@ -30,7 +29,6 @@ class TMenuAddRemoved;
 
 class TPList : public QWidget {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
     friend class TMenuAddRemoved;
 public:
     explicit TPList(TDockWidget* parent,

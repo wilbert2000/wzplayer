@@ -18,6 +18,7 @@
 #include "wzfiles.h"
 #include "name.h"
 #include "version.h"
+#include "wzdebug.h"
 
 #include <QVBoxLayout>
 #include <QToolBar>
@@ -109,6 +110,9 @@ void TMenuAddRemoved::onCurrentItemChanged(QTreeWidgetItem* current,
     }
     setEnabled(enable);
 }
+
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TPList)
 
 TPList::TPList(TDockWidget* parent,
                const QString& name,
@@ -510,7 +514,6 @@ void TPList::setPlaylistFilename(const QString& filename) {
 bool TPList::maybeSave() {
 
     if (!playlistWidget->isModified()) {
-        WZTRACEOBJ(tranName + " not modified");
         return true;
     }
 
