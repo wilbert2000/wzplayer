@@ -274,7 +274,7 @@ void TMPVProcess::fixTitle() {
         // Ask player to quit
         quit(0);
         // Pass eof to trigger playNext() in playlist
-        received_end_of_file = true;
+        setEOF();
         return;
     }
 
@@ -314,7 +314,7 @@ void TMPVProcess::checkTime(int ms) {
                                    " Quitting.")
                            .arg(ms).arg(md->duration_ms));
                 quit(0);
-                received_end_of_file =  true;
+                setEOF();
             }
     }
 }
@@ -349,7 +349,7 @@ bool TMPVProcess::parseTitleSwitched(QString disc_type, int title) {
             if (quit_at_end_of_title_ms <= 400) {
                 WZDEBUGOBJ("Quitting at end of title");
                 quit(0);
-                received_end_of_file =  true;
+                setEOF();
             } else {
                 // Quit when quit_at_end_of_title_ms elapsed
                 quit_at_end_of_title_ms -= 400;
@@ -550,7 +550,7 @@ bool TMPVProcess::parseLine(QString& line) {
         quit_at_end_of_title = false;
         WZDEBUGOBJ("Quitting title");
         quit(0);
-        received_end_of_file =  true;
+        setEOF();
         return true;
     }
 

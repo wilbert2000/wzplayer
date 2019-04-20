@@ -171,7 +171,7 @@ void TPlayerProcess::notifyDuration(double durationSec, bool forceEmit) {
     }
 
     int oldMS = md->duration_ms;
-    md->setDurationSec(durationSec);
+    md->duration_ms = qRound(durationSec * 1000);
 
     if (oldMS != md->duration_ms || forceEmit) {
         WZDEBUGOBJ(QString("Duration updated from %1 ms to %2 ms")
@@ -243,6 +243,11 @@ bool TPlayerProcess::waitForAnswers() {
     return false;
 }
 
+void TPlayerProcess::setEOF() {
+
+    received_end_of_file = true;
+}
+
 void TPlayerProcess::quit(int exit_code) {
     WZDEBUGOBJ("");
 
@@ -281,7 +286,7 @@ bool TPlayerProcess::parseLine(QString& line) {
     // End of file
     if (rx_eof.indexIn(line) >= 0)  {
         WZDEBUGOBJ("Received end of file");
-        received_end_of_file = true;
+        setEOF();
         return true;
     }
 

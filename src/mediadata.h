@@ -48,7 +48,6 @@ public:
     };
 
     TMediaData();
-    virtual ~TMediaData() {}
 
     QString filename;
 
@@ -84,9 +83,6 @@ public:
     int pos_gui_ms;
 
     int duration_ms;
-    void setDurationSec(const double secs) {
-        duration_ms = qRound(secs * 1000);
-    }
     double getDurationSec() const { return double(duration_ms) / 1000; }
 
     // Demuxer

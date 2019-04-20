@@ -393,7 +393,7 @@ bool TMPlayerProcess::dvdnavTitleChanged(int title) {
         md->titles.setSelectedTitle(title);
         // Get duration and chapters
         const Maps::TTitleData title_data = md->titles[title];
-        md->setDurationSec(title_data.getDuration());
+        md->duration_ms = qRound(title_data.getDuration() * 1000);
         md->chapters = title_data.chapters;
 
         // The duration from the title TOC is not always reliable,

@@ -199,6 +199,8 @@ protected:
     bool buffering;
 
     bool received_end_of_file;
+    void setEOF();
+
     bool quit_send;
     int exit_code_override;
 
