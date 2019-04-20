@@ -2294,6 +2294,8 @@ void TMainWindow::onMediaStartedPlaying() {
 void TMainWindow::onPlaylistFinished() {
     WZDEBUG("");
 
+    exitFullscreen();
+
     // Handle "Close on end of playlist" option
     if (optionCloseOnFinish != 0) {
         if ((optionCloseOnFinish == 1) || (pref->close_on_finish)) {
