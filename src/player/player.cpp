@@ -3521,7 +3521,6 @@ bool TPlayer::setPreferredAudio() {
         }
     }
 
-    WZDEBUGOBJ("No player overrides");
     return false;
 }
 
@@ -3555,11 +3554,7 @@ void TPlayer::selectPreferredSubtitles() {
         }
     }
 
-    if (wanted_idx < 0) {
-        WZDEBUGOBJ("No player overrides");
-    } else if (wanted_idx == mset.current_sub_idx) {
-        WZDEBUGOBJ("Keeping selected subtitles");
-    } else {
+    if (wanted_idx >= 0 && wanted_idx != mset.current_sub_idx) {
         WZDEBUGOBJ("Selecting preferred subtitles");
         setSubtitle(wanted_idx);
         mset.current_sub_set_by_user = false;

@@ -56,9 +56,6 @@ void TVideoWindow::paintEvent(QPaintEvent* e) {
     if (normalBackground) {
         QPainter painter(this);
         painter.eraseRect(e->rect());
-        WZTOBJ << "Erased" << e->rect();
-    } else {
-        WZTOBJ << "Skipping paint" << e->rect();
     }
 }
 
