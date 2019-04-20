@@ -111,7 +111,7 @@ public:
     virtual void save();
 
 protected:
-    virtual void playingStarted();
+    virtual void notifyPlayingStarted();
     virtual void checkTime(int ms);
 
     virtual bool parseLine(QString& line);

@@ -134,10 +134,8 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
                          exitCode, received_end_of_file);
 }
 
-void TPlayerProcess::playingStarted() {
+void TPlayerProcess::notifyPlayingStarted() {
     WZDOBJ;
-
-    notified_player_is_running = true;
 
     emit receivedVideoOut();
     emit receivedVideoTracks();
@@ -145,8 +143,9 @@ void TPlayerProcess::playingStarted() {
     emit receivedSubtitleTracks();
     emit receivedTitleTracks();
 
+    notified_player_is_running = true;
     WZDEBUGOBJ("emit playerFullyLoaded()");
-    emit playerFullyLoaded();
+    emit playingStarted();
 }
 
 void TPlayerProcess::notifyTitleTrackChanged(int new_title) {

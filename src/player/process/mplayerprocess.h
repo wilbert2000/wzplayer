@@ -109,7 +109,7 @@ public:
     virtual void save();
 
 protected:
-    virtual void playingStarted();
+    virtual void notifyPlayingStarted();
     virtual bool parseLine(QString& line);
     virtual bool parseAudioProperty(const QString& name, const QString& value);
     virtual bool parseVideoProperty(const QString& name, const QString& value);

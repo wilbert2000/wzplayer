@@ -93,7 +93,7 @@ TPlayer::TPlayer(QWidget* parent,
     connect(proc, &Process::TPlayerProcess::processFinished,
             this, &TPlayer::onProcessFinished);
 
-    connect(proc, &Process::TPlayerProcess::playerFullyLoaded,
+    connect(proc, &Process::TPlayerProcess::playingStarted,
             this, &TPlayer::onPlayingStarted);
 
     connect(proc, &Process::TPlayerProcess::receivedPositionMS,
@@ -809,6 +809,7 @@ void TPlayer::onPreviewPlayerEOF() {
     // will be started by onPlayingStarted().
     // For playing and paused restart it here.
     if (statePOP()) {
+        WZDEBUGOBJ("Restarting preview player");
         startPreviewPlayer();
     }
 }
@@ -842,6 +843,7 @@ void TPlayer::onPlayingStarted() {
     setState(STATE_PLAYING);
 
     startPreviewPlayer();
+
     WZTRACEOBJ("emit mediaStartedPlaying()");
     emit mediaStartedPlaying();
 
@@ -3476,9 +3478,10 @@ void TPlayer::updatePreviewWindowSize() {
 void TPlayer::onReceivedVideoOut() {
     WZDEBUGOBJ("");
 
-    // w x h is output resolution selected by player with aspect and filters
-    // applied
-    playerWindow->setResolution(mdat.video_out_width, mdat.video_out_height,
+    // video_out_width x video_out_height is output resolution selected by
+    // player with aspect and filters applied
+    playerWindow->setResolution(mdat.video_out_width,
+                                mdat.video_out_height,
                                 mdat.video_fps);
 
     // Normally, let the main window know the new video dimension, unless

@@ -726,7 +726,7 @@ void TMPlayerProcess::notifyChanges() {
     }
 }
 
-void TMPlayerProcess::playingStarted() {
+void TMPlayerProcess::notifyPlayingStarted() {
     WZDEBUGOBJ("");
 
     // Set mute here because mplayer doesn't have an option
@@ -778,7 +778,7 @@ void TMPlayerProcess::playingStarted() {
     }
 
     // Get the GUI going
-    TPlayerProcess::playingStarted();
+    TPlayerProcess::notifyPlayingStarted();
 }
 
 void TMPlayerProcess::parseFrame(double& secs, const QString& line) {
@@ -870,7 +870,7 @@ bool TMPlayerProcess::parseStatusLine(double secs, const QString& line) {
     } else {
         // First and only run of state playing.
         // Base sets notified_player_is_running.
-        playingStarted();
+        notifyPlayingStarted();
     }
 
     return true;

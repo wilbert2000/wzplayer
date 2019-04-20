@@ -148,7 +148,7 @@ public:
 signals:
     void processFinished(bool normal_exit, int exit_code, bool eof);
 
-    void playerFullyLoaded();
+    void playingStarted();
 
     void receivedVideoOut();
     void durationChanged(int ms);
@@ -215,7 +215,7 @@ protected:
     void notifyTime(double time_sec);
     bool waitForAnswers();
 
-    virtual void playingStarted();
+    virtual void notifyPlayingStarted();
     virtual bool parseLine(QString& line);
     virtual bool parseAudioProperty(const QString& name, const QString& value);
     virtual bool parseVideoProperty(const QString& name, const QString& value);

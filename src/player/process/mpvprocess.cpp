@@ -415,7 +415,7 @@ void TMPVProcess::convertChaptersToTitles() {
     WZDEBUGOBJ("Created " + QString::number(md->titles.count()) + " titles");
 }
 
-void TMPVProcess::playingStarted() {
+void TMPVProcess::notifyPlayingStarted() {
     WZDOBJ;
 
     // MPV can give negative times for TS without giving a start time.
@@ -436,7 +436,7 @@ void TMPVProcess::playingStarted() {
         fixTitle();
     }
 
-    TPlayerProcess::playingStarted();
+    TPlayerProcess::notifyPlayingStarted();
 }
 
 void TMPVProcess::requestBitrateInfo() {
@@ -463,7 +463,7 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
     if (!notified_player_is_running) {
         // First and only run of state playing or paused
         // Base class sets notified_player_is_running to true
-        playingStarted();
+        notifyPlayingStarted();
 
         if (paused) {
             emit receivedPause();
