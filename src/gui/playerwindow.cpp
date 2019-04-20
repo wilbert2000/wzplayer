@@ -28,10 +28,9 @@
 #include <QCursor>
 #include <QEvent>
 #include <QLayout>
-#include <QPixmap>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QApplication>
-#include <QLabel>
 
 
 using namespace Settings;
@@ -41,55 +40,56 @@ namespace Gui {
 // Window containing the video player
 TVideoWindow::TVideoWindow(QWidget* parent) :
     QWidget(parent),
-    normal_background(true) {
+    normalBackground(true) {
 
+    // Don't want background filled
     setAutoFillBackground(false);
     // Don't erase background before paint
     setAttribute(Qt::WA_OpaquePaintEvent);
+
+    // TPlayers.startPlayer()'s call to winId() will provide the native handle
     // setAttribute(Qt::WA_NativeWindow);
 }
 
 void TVideoWindow::paintEvent(QPaintEvent* e) {
 
-    if (normal_background || pref->isMPV()) {
+    if (normalBackground) {
         QPainter painter(this);
         painter.eraseRect(e->rect());
+        WZTOBJ << "Erased" << e->rect();
+    } else {
+        WZTOBJ << "Skipping paint" << e->rect();
     }
 }
 
 void TVideoWindow::setFastBackground() {
 
-    normal_background = false;
+    // Disable paintEvent()
+    normalBackground = false;
     // Disable restore background by system
     setAttribute(Qt::WA_NoSystemBackground);
 
-    // For mplayer disable composition and double buffering on X11.
+    // Disable composition and double buffering on X11.
     // Fills up the log since Qt 5.x. with:
-    // WARN Qt.QWidget::paintEngine: Should no longer be called
+    // "WARN Qt.QWidget::paintEngine: Should no longer be called".
     // If Qt::WA_PaintOnScreen is not set the window will have a bad flicker
     // during resizes due to the background clearing.
-    // TODO: Hence, for now, fixed by supressing the warning in
-    // LogManager::qtMessageHandler()...
-    // Makes the dock flash on screen if enabled with MPV, but MPV does not
-    // need it since its video lives in a child of the player window.
+    // Fixed by supressing the warning in LogManager::qtMessageHandler().
 #ifndef Q_OS_WIN
-    if (pref->isMPlayer()) {
-        setAttribute(Qt::WA_PaintOnScreen);
-    }
+    setAttribute(Qt::WA_PaintOnScreen);
 #endif
 }
 
 void TVideoWindow::restoreNormalBackground() {
 
-    normal_background = true;
+    // Enable paintEvent()
+    normalBackground = true;
     // Enable restore background by system
     setAttribute(Qt::WA_NoSystemBackground, false);
 
-    // For mplayer restore ccomposition and double buffering on X11
+    // Restore ccomposition and double buffering on X11
 #ifndef Q_OS_WIN
-    if (pref->isMPlayer()) {
-        setAttribute(Qt::WA_PaintOnScreen, false);
-    }
+    setAttribute(Qt::WA_PaintOnScreen, false);
 #endif
 }
 
@@ -140,7 +140,7 @@ TPlayerWindow::TPlayerWindow(QWidget* parent,
     setDelayLeftClick(pref->delay_left_click);
 }
 
-void TPlayerWindow::setResolution(int width, int height, const double fps) {
+void TPlayerWindow::setResolution(int width, int height, const double afps) {
     WZDEBUGOBJ(QString("%1 x %2 %3 fps").arg(width).arg(height).arg(fps));
 
     video_size = QSize(width, height);
@@ -149,8 +149,8 @@ void TPlayerWindow::setResolution(int width, int height, const double fps) {
     } else {
         aspect = (double) width / height;
     }
-    this->fps = fps;
-    if (!video_size.isEmpty() && video_window->normal_background) {
+    fps = afps;
+    if (!video_size.isEmpty() && video_window->normalBackground) {
         setFastWindow();
     }
 }

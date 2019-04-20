@@ -23,19 +23,19 @@
 #include <QWidget>
 #include <QPoint>
 #include <QSize>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QResizeEvent>
 #include <QTime>
 
 #include "wzdebug.h"
 
 class QTimer;
+class QPaintEvent;
+class QMouseEvent;
+class QWheelEvent;
+class QResizeEvent;
 
 namespace Gui {
 
-//! TVideoWindow can be instructed to not delete the background.
+// Window for video player
 class TVideoWindow : public QWidget {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
@@ -43,13 +43,13 @@ class TVideoWindow : public QWidget {
 public:
     explicit TVideoWindow(QWidget* parent);
 
-    bool normal_background;
+    bool normalBackground;
 
     void setFastBackground();
     void restoreNormalBackground();
 
 protected:
-    virtual void paintEvent(QPaintEvent*);
+    virtual void paintEvent(QPaintEvent*) override;
 };
 
 
@@ -67,7 +67,7 @@ public:
 
     static QSize frame() { return QSize(2, 2); }
 
-    void setResolution(int width, int height, const double fps);
+    void setResolution(int width, int height, const double afps);
     QSize resolution() const { return video_size; }
     QSize lastVideoOutSize() const { return last_video_out_size; }
     double aspectRatio() const { return aspect; }
