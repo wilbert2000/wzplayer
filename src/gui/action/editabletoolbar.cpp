@@ -28,14 +28,21 @@
 #include "settings/preferences.h"
 #include "desktop.h"
 #include "images.h"
+#include "wztimer.h"
+#include "wzdebug.h"
+
 
 #include <QMenu>
 #include <QResizeEvent>
 #include <QTimer>
+#include <QSizeGrip>
+
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Action::TEditableToolbar)
+
 
 namespace Gui {
 namespace Action {
-
 
 TEditableToolbar::TEditableToolbar(QWidget* parent,
                                    const QString& name,
@@ -61,6 +68,24 @@ TEditableToolbar::TEditableToolbar(QWidget* parent,
         connect(mw, &TMainWindow::didExitFullscreenSignal,
                 this, &TEditableToolbar::reload);
     }
+
+    fixSizeTimer = new TWZTimer(this, "fix_size_timer", false);
+    fixSizeTimer->setSingleShot(true);
+    fixSizeTimer->setInterval(50);
+    connect(fixSizeTimer, &TWZTimer::timeout, this, &TEditableToolbar::fixSize);
+}
+
+void TEditableToolbar::addAct(QAction* action) {
+
+    addAction(action);
+    QWidget* w = widgetForAction(action);
+    w->setObjectName(action->objectName() + "_toolbutton");
+    w->setFocusPolicy(Qt::TabFocus);
+    if (orientation() == Qt::Horizontal) {
+        layout()->setAlignment(w, Qt::AlignVCenter);
+    } else {
+        layout()->setAlignment(w, Qt::AlignHCenter);
+    }
 }
 
 void TEditableToolbar::addMenu(QAction* action) {
@@ -68,6 +93,7 @@ void TEditableToolbar::addMenu(QAction* action) {
     // Create button with menu
     QToolButton* button = new QToolButton();
     button->setObjectName(action->objectName() + "_toolbutton");
+
     QMenu* menu = action->menu();
     button->setMenu(menu);
 
@@ -89,6 +115,12 @@ void TEditableToolbar::addMenu(QAction* action) {
     }
 
     addWidget(button);
+
+    if (orientation() == Qt::Horizontal) {
+        layout()->setAlignment(button, Qt::AlignVCenter);
+    } else {
+        layout()->setAlignment(button, Qt::AlignHCenter);
+    }
 }
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts) {
@@ -117,10 +149,7 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts) {
                         if (actionName.endsWith("_menu")) {
                             addMenu(action);
                         } else {
-                            addAction(action);
-                            QWidget* w = widgetForAction(action);
-                            w->setObjectName(actionName + "_toolbutton");
-                            w->setFocusPolicy(Qt::TabFocus);
+                            addAct(action);
                         }
                     } else {
                         WZERROROBJ("Action '" + actionName + " not found");
@@ -133,7 +162,6 @@ void TEditableToolbar::setActionsFromStringList(const QStringList& acts) {
             i++;
         }
     } // while
-
 } // TEditableToolbar::setActionsFromStringList()
 
 QStringList TEditableToolbar::actionsToStringList() const {
@@ -194,6 +222,51 @@ void TEditableToolbar::loadSettings() {
     pref->beginGroup("toolbars_icon_size");
     setIconSize(pref->value(objectName(), iconSize()).toSize());
     pref->endGroup();
+}
+
+QSize TEditableToolbar::adjustSizeHint(QSize s) const {
+
+    if (isFloating()) {
+        QSize size = Settings::pref->fullscreen
+                ? TDesktop::size(this)
+                : mainWindow->size();
+        if (orientation() == Qt::Horizontal) {
+            s.rwidth() = size.width() * 3 / 4;
+        } else {
+            s.rheight() = size.height() * 3 / 4;
+        }
+    }
+    return s;
+}
+
+QSize TEditableToolbar::sizeHint() const {
+    return adjustSizeHint(QToolBar::sizeHint());
+}
+
+QSize TEditableToolbar::minimumSizeHint() const {
+    return adjustSizeHint(QToolBar::minimumSizeHint());
+}
+
+void TEditableToolbar::fixSize() {
+
+    if (isFloating()) {
+        if (orientation() == Qt::Horizontal) {
+            if (height() != 38) {
+                WZWOBJ << "Fixing height from" << height() << "to 38";
+                resize(width(), 38);
+            }
+        } else if (width() != 88) {
+            WZWOBJ << "Fixing width from" << width() << "to 88";
+            resize(88, height());
+        }
+    }
+}
+
+void TEditableToolbar::resizeEvent(QResizeEvent*) {
+
+    if (isFloating()) {
+        fixSizeTimer->start();
+    }
 }
 
 } // namespace Action

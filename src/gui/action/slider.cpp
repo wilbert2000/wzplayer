@@ -24,6 +24,7 @@
 #include <QStyle>
 #include <QStyleOption>
 #include <QToolBar>
+#include <QLayout>
 
 
 namespace Gui {
@@ -38,10 +39,25 @@ TSlider::TSlider(QWidget* parent) : QSlider(parent) {
     if (toolbar) {
         setOrientation(toolbar->orientation());
         connect(toolbar, &QToolBar::orientationChanged,
-                this, &TSlider::setOrientation);
+                this, &TSlider::onToolbarOrientationChanged);
     } else {
         setOrientation(Qt::Horizontal);
     }
+}
+
+void TSlider::setAlign() {
+
+    if (orientation() == Qt::Horizontal) {
+        parentWidget()->layout()->setAlignment(this, Qt::AlignVCenter);
+    } else {
+        parentWidget()->layout()->setAlignment(this, Qt::AlignHCenter);
+    }
+}
+
+void TSlider::onToolbarOrientationChanged(Qt::Orientation orientation) {
+
+    setOrientation(orientation);
+    setAlign();
 }
 
 // Copied from qslider.cpp and modified to make it compile

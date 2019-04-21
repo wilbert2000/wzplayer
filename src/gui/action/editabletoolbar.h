@@ -21,16 +21,15 @@
 
 #include <QToolBar>
 #include <QStringList>
-#include "wzdebug.h"
 
+
+class TWZTimer;
 
 namespace Gui {
 namespace Action {
 
 class TEditableToolbar : public QToolBar {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     TEditableToolbar(QWidget* parent,
                      const QString& name,
@@ -47,18 +46,29 @@ public:
     void loadSettings();
     void saveSettings();
 
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
+
 public slots:
     void edit();
+
+protected:
+    virtual void resizeEvent(QResizeEvent*) override;
 
 private:
     bool isMainToolbar;
     QStringList currentActions;
     QStringList defaultActions;
 
+    TWZTimer* fixSizeTimer;
+
+    void addAct(QAction* action);
     void addMenu(QAction* action);
+    QSize adjustSizeHint(QSize s) const;
 
 private slots:
     void reload();
+    void fixSize();
 }; // class TEditableToolbar
 
 } // namespace Action

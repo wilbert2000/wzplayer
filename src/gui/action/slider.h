@@ -41,6 +41,12 @@ protected:
         return orientation() == Qt::Horizontal ? pt.x() : pt.y();
     }
     int pixelPosToRangeValue(int pos) const;
+
+private:
+    void setAlign();
+
+private slots:
+    void onToolbarOrientationChanged(Qt::Orientation orientation);
 }; // class TSlider
 
 

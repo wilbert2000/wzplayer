@@ -44,13 +44,13 @@ TTimeSliderAction::TTimeSliderAction(TMainWindow* mw, Player::TPlayer* player) :
     connect(this, &TTimeSliderAction::wheelDown,
             mw, &TMainWindow::wheelDownSeeking);
 
-    updatePosTimer = new TWZTimer(this, "updatepostimer", false);
+    updatePosTimer = new TWZTimer(this, "update_pos_timer", false);
     updatePosTimer->setSingleShot(true);
     updatePosTimer->setInterval(Settings::pref->seek_rate);
     connect(updatePosTimer, &TWZTimer::timeout,
             this, &TTimeSliderAction::onUpdatePosTimerTimeout);
 
-    previewTimer = new TWZTimer(this, "previewtimer", false);
+    previewTimer = new TWZTimer(this, "preview_timer", false);
     previewTimer->setSingleShot(true);
     previewTimer->setInterval(Settings::pref->seek_rate);
     connect(previewTimer, &TWZTimer::timeout,
