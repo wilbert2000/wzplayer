@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
+    <width>494</width>
     <height>620</height>
    </rect>
   </property>
@@ -14,7 +14,16 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -30,7 +39,16 @@
        <property name="spacing">
         <number>16</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
         <number>16</number>
        </property>
        <item>
@@ -60,7 +78,7 @@
             <item row="2" column="0">
              <widget class="QLabel" name="style_label">
               <property name="text">
-               <string>&amp;Style:</string>
+               <string>St&amp;yle:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -155,7 +173,16 @@
             <property name="spacing">
              <number>6</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
@@ -228,7 +255,7 @@
             <item>
              <widget class="QLabel" name="hide_toolbars_label">
               <property name="text">
-               <string>Hide tool&amp;bars after</string>
+               <string>Hide tools after</string>
               </property>
               <property name="buddy">
                <cstring>hide_toolbars_spin</cstring>
