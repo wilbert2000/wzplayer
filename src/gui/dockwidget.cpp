@@ -1,5 +1,6 @@
 #include "gui/dockwidget.h"
 #include "gui/mainwindow.h"
+#include "gui/playerwindow.h"
 #include "desktop.h"
 #include "wztimer.h"
 
@@ -11,11 +12,11 @@ using namespace Settings;
 namespace Gui {
 
 TDockWidget::TDockWidget(QWidget* parent,
-                         QWidget* aPanel,
+                         TPlayerWindow* aPlayerWindow,
                          const QString& objectName,
                          const QString& title) :
     QDockWidget(title, parent),
-    panel(aPanel),
+    playerWindow(aPlayerWindow),
     lastArea(Qt::NoDockWidgetArea) {
 
     setObjectName(objectName);
@@ -44,7 +45,7 @@ void TDockWidget::onDockLocationChanged(Qt::DockWidgetArea area) {
 
 Qt::DockWidgetArea TDockWidget::getArea() const {
 
-    if (isFloating() || !isVisible() || !panel->isVisible()) {
+    if (isFloating() || !isVisible() || !playerWindow->isVisible()) {
         return Qt::NoDockWidgetArea;
     }
     return lastArea;
@@ -58,23 +59,23 @@ void TDockWidget::resizeMainWindow(bool visible) {
         if (visible) {
             r.setWidth(r.width() + frameSize().width());
             if (lastArea == Qt::LeftDockWidgetArea) {
-                r.moveLeft(r.x() - frameSize().width());
+                r.moveLeft(r.left() - frameSize().width());
             }
         } else {
             r.setWidth(r.width() - frameSize().width());
             if (lastArea == Qt::LeftDockWidgetArea) {
-                r.moveLeft(r.x() + frameSize().width());
+                r.moveLeft(r.left() + frameSize().width());
             }
         }
     } else if (visible) {
         r.setHeight(r.height() + frameSize().height());
         if (lastArea == Qt::TopDockWidgetArea) {
-            r.moveTop(r.y() - frameSize().width());
+            r.moveTop(r.top() - frameSize().width());
         }
     } else {
         r.setHeight(r.height() - frameSize().height());
         if (lastArea == Qt::TopDockWidgetArea) {
-            r.moveTop(r.y() + frameSize().width());
+            r.moveTop(r.top() + frameSize().width());
         }
     }
 

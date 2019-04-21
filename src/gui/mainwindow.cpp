@@ -24,6 +24,7 @@
 #include "gui/autohidetimer.h"
 #include "gui/propertiesdialog.h"
 #include "gui/dockwidget.h"
+#include "gui/videowindow.h"
 #include "gui/msg.h"
 
 #include "gui/playlist/playlist.h"
@@ -161,7 +162,7 @@ TMainWindow::TMainWindow() :
     createToolbars();
     createMenus();
 
-    titleUpdateTimer = new TWZTimer(this, "title_update_timer");
+    titleUpdateTimer = new TWZTimer(this, "title_update_timer", false);
     titleUpdateTimer->setSingleShot(true);
     titleUpdateTimer->setInterval(200);
     connect(titleUpdateTimer, &TWZTimer::timeout,
@@ -2248,7 +2249,6 @@ void TMainWindow::onMediaSettingsChanged() {
 }
 
 void TMainWindow::updateTitle() {
-    WZTRACE("");
 
     QString title = playlist->getPlayingTitle(true);
     // setWindowCaption == setWindowTitle() and show it to TMainWindowTray
@@ -3754,7 +3754,7 @@ void TMainWindow::postAction(const QString& actionName, bool hasArg, bool arg) {
     } else {
         WZWARN("Action '" + actionName + "' not found");
         QMessageBox::warning(this, tr("Action not found"),
-                             tr("Action '%1' not found.").arg(actionName));
+                             tr("Action \"%1\" not found.").arg(actionName));
     }
 }
 
@@ -3770,10 +3770,10 @@ void TMainWindow::checkPendingActions() {
         bool value;
         if (actionList.count()) {
             arg = actionList.at(0).toLower();
-            if (arg == "true" || arg == "1") {
+            if (arg == "true") {
                 value = true;
                 actionList.takeFirst();
-            } else if (arg == "false" || arg == "0") {
+            } else if (arg == "false") {
                 value = false;
                 actionList.takeFirst();
             } else {
@@ -3858,7 +3858,7 @@ void TMainWindow::leftClickFunction() {
     WZTRACE("");
 
     if (player->mdat.detected_type == TMediaData::TYPE_DVDNAV
-        && playerWindow->videoWindow()->underMouse()) {
+        && playerWindow->getVideoWindow()->underMouse()) {
         player->dvdnavMouse();
     } else if (!pref->mouse_left_click_function.isEmpty()) {
         processAction(pref->mouse_left_click_function);

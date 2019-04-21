@@ -108,6 +108,7 @@ HEADERS += gui/action/menu/menu.h \
     gui/updatechecker.h \
     gui/verticaltext.h \
     gui/videoequalizer.h \
+    gui/videowindow.h \
     maps/chapters.h \
     maps/map.h \
     maps/titletracks.h \
@@ -233,6 +234,7 @@ SOURCES += gui/action/menu/menu.cpp \
     gui/updatechecker.cpp \
     gui/verticaltext.cpp \
     gui/videoequalizer.cpp \
+    gui/videowindow.cpp \
     maps/chapters.cpp \
     maps/map.cpp \
     maps/titletracks.cpp \

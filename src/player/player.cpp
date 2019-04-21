@@ -21,6 +21,7 @@
 #include "player/process/exitmsg.h"
 
 #include "gui/playerwindow.h"
+#include "gui/videowindow.h"
 #include "gui/msg.h"
 #include "desktop.h"
 
@@ -1064,7 +1065,7 @@ void TPlayer::startPlayer() {
     proc->setFixedOptions();
     proc->disableInput();
     proc->setOption("wid",
-        QString::number((qint64) playerWindow->videoWindow()->winId()));
+        QString::number((qint64) playerWindow->getVideoWindow()->winId()));
     if (pref->log_verbose) {
         proc->setOption("verbose");
     }
@@ -3404,7 +3405,7 @@ void TPlayer::dvdnavMouse() {
         }
         if (_state == STATE_PLAYING) {
             // Give a last update on the mouse position
-            QPoint pos = playerWindow->videoWindow()->mapFromGlobal(
+            QPoint pos = playerWindow->getVideoWindow()->mapFromGlobal(
                              QCursor::pos());
             dvdnavMousePos(pos);
             // Click

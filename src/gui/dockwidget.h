@@ -7,12 +7,14 @@
 
 namespace Gui {
 
+class TPlayerWindow;
+
 class TDockWidget : public QDockWidget {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     TDockWidget(QWidget* parent,
-                QWidget* aPanel,
+                TPlayerWindow* aPlayerWindow,
                 const QString& objectName,
                 const QString& title);
 
@@ -22,7 +24,7 @@ protected:
     virtual void closeEvent(QCloseEvent* e) override;
 
 private:
-    QWidget* panel;
+    TPlayerWindow* playerWindow;
     Qt::DockWidgetArea lastArea;
 
     void resizeMainWindow(bool visible);

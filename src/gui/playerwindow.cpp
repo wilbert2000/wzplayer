@@ -17,86 +17,33 @@
 */
 
 #include "gui/playerwindow.h"
-
+#include "gui/videowindow.h"
 #include "gui/msg.h"
-#include "desktop.h"
 #include "settings/preferences.h"
 #include "colorutils.h"
 #include "images.h"
+#include "desktop.h"
+#include "wzdebug.h"
 
 #include <QTimer>
 #include <QCursor>
+#include <QMouseEvent>
 #include <QEvent>
 #include <QLayout>
-#include <QPaintEvent>
-#include <QPainter>
 #include <QApplication>
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::TPlayerWindow)
 
 using namespace Settings;
 
 namespace Gui {
 
-// Window containing the video player
-TVideoWindow::TVideoWindow(QWidget* parent) :
-    QWidget(parent),
-    normalBackground(true) {
-
-    // Don't want background filled
-    setAutoFillBackground(false);
-    // Don't erase background before paint
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    // TPlayers.startPlayer()'s call to winId() will provide the native handle
-    // setAttribute(Qt::WA_NativeWindow);
-
-    setEnabled(false);
-}
-
-void TVideoWindow::paintEvent(QPaintEvent* e) {
-
-    if (normalBackground) {
-        QPainter painter(this);
-        painter.eraseRect(e->rect());
-    }
-}
-
-void TVideoWindow::setFastBackground() {
-
-    // Disable paintEvent()
-    normalBackground = false;
-    // Disable restore background by system
-    setAttribute(Qt::WA_NoSystemBackground);
-
-    // Disable composition and double buffering on X11.
-    // Fills up the log since Qt 5.x. with:
-    // "WARN Qt.QWidget::paintEngine: Should no longer be called".
-    // If Qt::WA_PaintOnScreen is not set the window will have a bad flicker
-    // during resizes due to the background clearing.
-    // Fixed by supressing the warning in LogManager::qtMessageHandler().
-#ifndef Q_OS_WIN
-    setAttribute(Qt::WA_PaintOnScreen);
-#endif
-}
-
-void TVideoWindow::restoreNormalBackground() {
-
-    // Enable paintEvent()
-    normalBackground = true;
-    // Enable restore background by system
-    setAttribute(Qt::WA_NoSystemBackground, false);
-
-    // Restore ccomposition and double buffering on X11
-#ifndef Q_OS_WIN
-    setAttribute(Qt::WA_PaintOnScreen, false);
-#endif
-}
-
-
 TPlayerWindow::TPlayerWindow(QWidget* parent,
                              const QString& name,
                              bool previewWindow) :
     QWidget(parent),
+    isPreviewWindow(previewWindow),
     video_size(0, 0),
     last_video_out_size(0, 0),
     fps(0),
@@ -106,14 +53,14 @@ TPlayerWindow::TPlayerWindow(QWidget* parent,
     zoom_factor_fullscreen(1.0),
     double_clicked(false),
     delay_left_click(true),
-    dragging(false),
-    isPreviewWindow(previewWindow) {
+    dragging(false) {
 
     setObjectName(name);
     setMinimumSize(frame());
     setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
     TColorUtils::setBackgroundColor(this, QColor(0, 0, 0));
     setAutoFillBackground(true);
+
     if (isPreviewWindow) {
         setEnabled(false);
     } else {
@@ -286,10 +233,14 @@ void TPlayerWindow::updateVideoWindow() {
     //        << "video size" << vsize;
 }
 
-void TPlayerWindow::resizeEvent(QResizeEvent*) {
+void TPlayerWindow::updateSize() {
 
     updateVideoWindow();
     updateSizeFactor();
+}
+
+void TPlayerWindow::resizeEvent(QResizeEvent*) {
+    updateSize();
 }
 
 void TPlayerWindow::startDragging() {

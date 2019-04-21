@@ -25,8 +25,6 @@
 #include <QSize>
 #include <QTime>
 
-#include "wzdebug.h"
-
 class QTimer;
 class QPaintEvent;
 class QMouseEvent;
@@ -35,35 +33,18 @@ class QResizeEvent;
 
 namespace Gui {
 
-// Window for video player
-class TVideoWindow : public QWidget {
-    Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
-public:
-    explicit TVideoWindow(QWidget* parent);
-
-    bool normalBackground;
-
-    void setFastBackground();
-    void restoreNormalBackground();
-
-protected:
-    virtual void paintEvent(QPaintEvent*) override;
-};
-
+class TVideoWindow;
 
 // Window containing video window
 class TPlayerWindow : public QWidget {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     explicit TPlayerWindow(QWidget* parent,
                            const QString& name,
                            bool previewWindow);
 
-    TVideoWindow* videoWindow() const { return video_window; }
+    TVideoWindow* getVideoWindow() const { return video_window; }
 
     static QSize frame() { return QSize(2, 2); }
 
@@ -136,6 +117,7 @@ protected:
 
 private:
     TVideoWindow* video_window;
+    bool isPreviewWindow;
 
     // Geometry
     QSize video_size;
@@ -159,14 +141,13 @@ private:
     QPoint drag_pos;
     bool dragging;
 
-    bool isPreviewWindow;
-
     void moveVideo(QPoint delta);
 
     void startDragging();
     void stopDragging();
 
     void setFastWindow();
+    void updateSize();
 
 private slots:
     void onLeftClicked();
