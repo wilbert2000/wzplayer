@@ -856,6 +856,7 @@ bool TMPlayerProcess::parseStatusLine(double secs, const QString& line) {
         notifyChanges();
 
         // Check for changes in duration once in a while.
+        // MPlayer only cause MPV has duration in status line
         // Abs, to protect against time wrappers like TS.
         if (!paused
                 && qAbs(md->pos_ms - last_duration_check_ms)
