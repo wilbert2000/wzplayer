@@ -343,7 +343,9 @@ void TPlaylist::onNewFileStartedPlaying() {
         playingItem->setDurationMS(md->duration_ms);
     }
 
-    if (modified) {
+    if (playlistWidget->hasSingleItem()) {
+        playlistWidget->clearModified();
+    } else if (modified) {
         playingItem->setModified();
     } else {
         WZDEBUG("Item considered uptodate");
@@ -351,8 +353,7 @@ void TPlaylist::onNewFileStartedPlaying() {
 
     // Could set state playingItem to PSTATE_PLAYING now, but wait for player
     // to change state to playing to not trigger additional calls to
-    // enableActions(). updatePlayingItem() will set state to PSTATE_PLAYING
-    // when player state STATE_PLAYING arrives.
+    // enableActions().
     // playlistWidget->setPlayingItem(playingItem, PSTATE_PLAYING);
 
     return;
