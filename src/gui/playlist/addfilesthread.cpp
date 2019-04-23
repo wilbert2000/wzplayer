@@ -97,7 +97,7 @@ TAddFilesThread::TAddFilesThread(QObject *parent,
 
     for(int i = nameBlacklist.count() - 1; i >=0; i--) {
         const QString& name = nameBlacklist.at(i);
-        if (!name.isEmpty()) {
+        if (!name.isEmpty() && !name.startsWith("#")) {
             rx.setPattern(name);
             if (rx.isValid()) {
                 WZINFOOBJ("Compiled '" + rx.pattern() + "' for blacklist");

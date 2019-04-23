@@ -1331,7 +1331,7 @@ void TPreferences::compileTitleBlackList() {
     QRegExp rx("", Qt::CaseInsensitive);
     for(int i = titleBlacklist.count() - 1; i >= 0; i--) {
         const QString& s = titleBlacklist.at(i);
-        if (!s.isEmpty()) {
+        if (!s.isEmpty() && !s.startsWith("#")) {
             rx.setPattern(s);
             if (rx.isValid()) {
                 WZT << "Adding" << rx.pattern();
