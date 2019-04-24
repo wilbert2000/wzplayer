@@ -69,8 +69,11 @@ TPlaylistItem::TPlaylistItem() :
 }
 
 // Copy constructor
+// Note 1: Cannot use the copy constructor of QTreeWidgetItem,
+// because it does not copy type()
+// Note 2: parent(), children and treeWidget() are not copied. See also clone().
 TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
-    QTreeWidgetItem(item),
+    QTreeWidgetItem(USER_TYPE),
     mFilename(item.filename()),
     mBaseName(item.baseName()),
     mExt(item.extension()),
@@ -95,9 +98,15 @@ TPlaylistItem::TPlaylistItem(const TPlaylistItem& item) :
 
     itemIcon(item.itemIcon) {
 
-    // TODO: Copy constructor QTreeWidgetItem does not copy type()
-    // Post "upgrade" action?
-    WZWARN(QString("Copy constructor called on '%1'").arg(mFilename));
+    // Setup base QTreeWidgetItem
+    setFlags(item.flags());
+
+    setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
+    setTextAlignment(COL_EXT, TEXT_ALIGN_TYPE);
+    setTextAlignment(COL_LENGTH, TEXT_ALIGN_TIME);
+    setTextAlignment(COL_ORDER, TEXT_ALIGN_ORDER);
+
+    setIcon(COL_NAME, itemIcon);
 }
 
 TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
@@ -164,7 +173,6 @@ TPlaylistItem *TPlaylistItem::clone() const {
         TPlaylistItem* parent = parentStack.pop();
 
         // Copy the item
-        // TODO: copy type
         TPlaylistItem* copy = new TPlaylistItem(*item);
 
         // Remember root
