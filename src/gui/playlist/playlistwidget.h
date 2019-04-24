@@ -98,6 +98,8 @@ signals:
     void playingItemUpdated(TPlaylistItem* item);
 
 protected:
+    virtual Qt::DropActions supportedDropActions() const override;
+    virtual void dragEnterEvent(QDragEnterEvent*event) override;
     virtual void dropEvent(QDropEvent* event) override;
     virtual bool dropMimeData(QTreeWidgetItem *parent,
                               int index,
@@ -149,6 +151,7 @@ private:
                   TPlaylistItem* target,
                   int& targetIndex);
     bool dropSelection(TPlaylistItem* target, int targetIndex, Qt::DropAction action);
+    bool hasModelMimeType(const QMimeData* mime);
 
     void resizeNameColumn(TPlaylistItem* item, int level);
     void startWordWrap();

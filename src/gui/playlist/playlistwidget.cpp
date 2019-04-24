@@ -519,12 +519,9 @@ void TPlaylistWidget::updateItemPath() {
 bool TPlaylistWidget::droppingOnItself(QDropEvent *event,
                                        const QModelIndex &index) {
 
-    Qt::DropAction dropAction = event->dropAction();
-    if (dragDropMode() == QAbstractItemView::InternalMove)
-        dropAction = Qt::MoveAction;
     if (event->source() == this
         && event->possibleActions() & Qt::MoveAction
-        && dropAction == Qt::MoveAction) {
+        && event->dropAction() == Qt::MoveAction) {
         QModelIndexList selected = selectedIndexes();
         QModelIndex root = rootIndex();
         QModelIndex child = index;
@@ -564,7 +561,7 @@ bool TPlaylistWidget::dropOn(QDropEvent *event, int *dropRow, int *dropCol,
     }
 
     // If we are allowed to do the drop
-    if (model()->supportedDropActions() & event->dropAction()) {
+    if (supportedDropActions() & event->dropAction()) {
         int row = -1;
         int col = -1;
         if (index != root) {
@@ -770,6 +767,7 @@ void TPlaylistWidget::moveItem(TPlaylistItem* item,
         }
         dest += QFileInfo(source).fileName();
         if (source == dest) {
+            // TODO: set sort to COL_ORDER?
             WZTRACEOBJ("Moving idx only");
         } else {
             item->updateFilename(source, dest);
@@ -815,7 +813,7 @@ void TPlaylistWidget::copyItem(TPlaylistItem* item,
         dest += fi.fileName();
         if (source != dest) {
             item->updateFilename(source, dest);
-        }
+        } // else set sort to COL_ORDER?
     }
 
     // Don't mark playlists as modified
@@ -859,7 +857,7 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
             }
         }
         // Skip file system copy/move
-        WZTRACEOBJ(QString("Skipping '%1'").arg(item->filename()));
+        WZTOBJ << "Internal" << action << item->filename();
         skippedItems.append(item);
     }
 
@@ -913,45 +911,89 @@ bool TPlaylistWidget::dropSelection(TPlaylistItem* target,
     return true;
 }
 
+bool TPlaylistWidget::hasModelMimeType(const QMimeData* mime) {
+
+    const QStringList modelTypes = model()->mimeTypes();
+    for (const auto& modelType : modelTypes) {
+        if (mime->hasFormat(modelType)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void TPlaylistWidget::dropEvent(QDropEvent* event) {
     WZDOBJ << event->mimeData()->formats();
 
-    QModelIndex index;
-    int col = -1;
-    int row = -1;
-    if (dropOn(event, &row, &col, &index)) {
-        event->accept();
-        if (copyDialog) {
-            copyDialog->show();
-            copyDialog->raise();
-            QMessageBox::information(copyDialog, tr("Information"),
-                tr("A copy or move action is still in progress. You can"
-                   " retry after it has finished."));
-        } else {
-            TPlaylistItem* target = static_cast<TPlaylistItem*>(
-                        index.internalPointer());
-            dropSelection(target, row, event->dropAction());
-            // Don't want QAbstractItemView to delete src
-            // because it was "moved"
-            event->setDropAction(Qt::CopyAction);
+    if (hasModelMimeType(event->mimeData())) {
+        QModelIndex index;
+        int col = -1;
+        int row = -1;
+        if (dropOn(event, &row, &col, &index)) {
+            event->accept();
+            if (copyDialog) {
+                copyDialog->show();
+                copyDialog->raise();
+                QMessageBox::information(copyDialog, tr("Information"),
+                    tr("A copy or move action is still in progress. You can"
+                       " retry after it has finished."));
+            } else {
+                TPlaylistItem* target = static_cast<TPlaylistItem*>(
+                            index.internalPointer());
+                dropSelection(target, row, event->dropAction());
+                // Don't want QAbstractItemView to delete src
+                // because it was "moved"
+                event->setDropAction(Qt::CopyAction);
+            }
         }
     }
 
     QTreeWidget::dropEvent(event);
 }
 
+void TPlaylistWidget::dragEnterEvent(QDragEnterEvent* event) {
+    WZD << event->mimeData()->formats();
+
+    // See QAbstractItemView::dragEnterEvent()
+    if (hasModelMimeType(event->mimeData())) {
+        setState(DraggingState);
+        if (event->source() != this) {
+            event->setDropAction(Qt::CopyAction);
+        }
+        event->accept();
+    }
+
+    /*
+    if (e->mimeData()->hasUrls()) {
+        if (e->proposedAction() & Qt::CopyAction) {
+            e->acceptProposedAction();
+            return;
+        }
+        if (e->possibleActions() & Qt::CopyAction) {
+            e->setDropAction(Qt::CopyAction);
+            e->accept();
+            return;
+        }
+    }
+    */
+
+    event->ignore();
+}
+
+Qt::DropActions TPlaylistWidget::supportedDropActions() const {
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
+}
+
 bool TPlaylistWidget::dropMimeData(QTreeWidgetItem *parent,
                                    int index,
                                    const QMimeData *data,
                                    Qt::DropAction action) {
-    WZTRACEOBJ("");
+    WZTOBJ;
     return QTreeWidget::dropMimeData(parent, index, data, action);
 }
 
 void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
                                            int start, int end) {
-    //WZTRACE(QString("Parent '%1' %2 %3")
-    //        .arg(parent.data().toString()).arg(start).arg(end));
 
     QTreeWidget::rowsAboutToBeRemoved(parent, start, end);
 
@@ -991,12 +1033,9 @@ void TPlaylistWidget::rowsAboutToBeRemoved(const QModelIndex &parent,
 
 void TPlaylistWidget::rowsInserted(const QModelIndex &parent,
                                    int start, int end) {
-    //WZTRACEOBJ(QString("Parent '%1' %2 %3")
-    //        .arg(parent.data().toString()).arg(start).arg(end));
+
     QTreeWidget::rowsInserted(parent, start, end);
 
-    // Because of setRootIndex(model()->index(0, 0)) in add(),
-    // root item that needs action is always valid.
     if (!parent.isValid()) {
         return;
     }
