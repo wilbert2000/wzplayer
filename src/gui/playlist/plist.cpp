@@ -88,7 +88,7 @@ void TMenuAddRemoved::onTriggered(QAction* action) {
         parentItem = plist->getPlaylistWidget()->validateItem(parentItem);
         if (parentItem && parentItem->whitelist(s)) {
             QString fn = parentItem->path() + "/" + s;
-            plist->add(QStringList() << fn, false, parentItem);
+            plist->addFiles(QStringList() << fn, false, parentItem);
         }
     }
 }
@@ -120,7 +120,7 @@ TPList::TPList(TDockWidget* parent,
                const QString& aTransName) :
     QWidget(parent),
     dock(parent),
-    thread(0),
+    addFilesThread(0),
     disableEnableActions(0),
     reachedEndOfPlaylist(false),
     shortName(aShortName),
@@ -146,7 +146,7 @@ TPList::TPList(TDockWidget* parent,
 TPList::~TPList() {
 
     // Prevent onThreadFinished handling results
-    thread = 0;
+    addFilesThread = 0;
 }
 
 void TPList::createTree() {
@@ -486,7 +486,7 @@ void TPList::enableActions() {
 }
 
 bool TPList::isBusy() const {
-    return thread || playlistWidget->isBusy();
+    return addFilesThread || playlistWidget->isBusy();
 }
 
 bool TPList::hasPlayableItems() const {
@@ -582,7 +582,7 @@ void TPList::openPlaylist(const QString& filename) {
 
     Settings::pref->last_dir = QFileInfo(filename).absolutePath();
     clear();
-    add(QStringList() << filename, true);
+    addFiles(QStringList() << filename, true);
 }
 
 void TPList::openPlaylistDialog() {
@@ -1189,7 +1189,7 @@ void TPList::paste() {
         if (parent && !parent->isFolder()) {
             parent = parent->plParent();
         }
-        add(files, false, parent);
+        addFiles(files, false, parent);
     }
 }
 
@@ -1205,7 +1205,7 @@ void TPList::addPlayingFile() {
 
    QString fn = player->mdat.filename;
    if (!fn.isEmpty()) {
-       add(QStringList() << fn, false, playlistWidget->plCurrentItem());
+       addFiles(QStringList() << fn, false, playlistWidget->plCurrentItem());
    }
 }
 
@@ -1217,7 +1217,7 @@ void TPList::addFilesDialog() {
         tr("All files") +" (*.*)");
 
     if (files.count() > 0) {
-        add(files, false, playlistWidget->plCurrentItem());
+        addFiles(files, false, playlistWidget->plCurrentItem());
     }
 }
 
@@ -1226,7 +1226,7 @@ void TPList::addDirectoryDialog() {
     QString s = TFileDialog::getExistingDirectory(
                 this, tr("Choose a directory"), Settings::pref->last_dir);
     if (!s.isEmpty()) {
-        add(QStringList() << s, false, playlistWidget->plCurrentItem());
+        addFiles(QStringList() << s, false, playlistWidget->plCurrentItem());
     }
 }
 
@@ -1234,7 +1234,7 @@ void TPList::addUrlsDialog() {
 
     TMultilineInputDialog d(this);
     if (d.exec() == QDialog::Accepted && d.lines().count() > 0) {
-        add(d.lines(), false, playlistWidget->plCurrentItem());
+        addFiles(d.lines(), false, playlistWidget->plCurrentItem());
     }
 }
 
@@ -1352,33 +1352,33 @@ void TPList:: setPLaylistTitle() {
 
 void TPList::abortThread() {
 
-    if (thread) {
+    if (addFilesThread) {
         WZINFOOBJ("Aborting add files thread");
         addStartPlay = false;
         restartThread = false;
-        thread->abort();
+        addFilesThread->abort();
     }
 }
 
 void TPList::onThreadFinished() {
     WZTRACEOBJ("");
 
-    if (thread == 0) {
+    if (addFilesThread == 0) {
         // Only during destruction, so no need to enable actions
         WZDEBUGOBJ("Thread is gone");
         return;
     }
 
     // Get data from thread
-    TPlaylistItem* root = thread->root;
-    thread->root = 0;
-    if (!thread->latestDir.isEmpty() && !isFavList) {
-        Settings::pref->last_dir = thread->latestDir;
+    TPlaylistItem* root = addFilesThread->root;
+    addFilesThread->root = 0;
+    if (!addFilesThread->latestDir.isEmpty() && !isFavList) {
+        Settings::pref->last_dir = addFilesThread->latestDir;
     }
 
     // Clean up
-    delete thread;
-    thread = 0;
+    delete addFilesThread;
+    addFilesThread = 0;
 
     if (root == 0) {
         // Thread aborted
@@ -1387,7 +1387,7 @@ void TPList::onThreadFinished() {
             addStartThread();
         } else {
             WZDEBUGOBJ("Thread aborted");
-            addFiles.clear();
+            addFileList.clear();
 
             enableActions();
             if (!playlistWidget->isBusy()) {
@@ -1397,8 +1397,8 @@ void TPList::onThreadFinished() {
         return;
     }
 
-    QString msg = addFiles.count() == 1 ? addFiles.at(0) : "";
-    addFiles.clear();
+    QString msg = addFileList.count() == 1 ? addFileList.at(0) : "";
+    addFileList.clear();
 
     // Found nothing to play?
     if (root->childCount() == 0) {
@@ -1456,45 +1456,45 @@ void TPList::onThreadFinished() {
 
 void TPList::onPlaylistWidgetBusyChanged() {
     WZTRACEOBJ(QString("File copier busy %1. Add files busy %2")
-               .arg(playlistWidget->isBusy()).arg(thread != 0));
+               .arg(playlistWidget->isBusy()).arg(addFilesThread != 0));
 
-    if (thread == 0) {
+    if (addFilesThread == 0) {
         emit busyChanged();
     }
 }
 
 void TPList::addStartThread() {
 
-    if (thread) {
+    if (addFilesThread) {
         // Thread still running, abort it and restart it in onThreadFinished()
         WZDEBUGOBJ("Add files thread still running. Aborting it...");
         restartThread = true;
-        thread->abort();
+        addFilesThread->abort();
     } else {
         WZDEBUGOBJ("Starting add files thread");
         restartThread = false;
 
         // Allow single image
         bool addImages = Settings::pref->addImages
-                         || ((addFiles.count() == 1)
-                             && extensions.isImage(addFiles.at(0)));
+                || ((addFileList.count() == 1)
+                    && extensions.isImage(addFileList.at(0)));
 
-        thread = new TAddFilesThread(this,
-                                     addFiles,
-                                     Settings::pref->nameBlacklist,
-                                     Settings::pref->addDirectories,
-                                     Settings::pref->addVideo,
-                                     Settings::pref->addAudio,
-                                     Settings::pref->addPlaylists,
-                                     addImages,
-                                     isFavList);
+        addFilesThread = new TAddFilesThread(this,
+                                             addFileList,
+                                             Settings::pref->nameBlacklist,
+                                             Settings::pref->addDirectories,
+                                             Settings::pref->addVideo,
+                                             Settings::pref->addAudio,
+                                             Settings::pref->addPlaylists,
+                                             addImages,
+                                             isFavList);
 
-        connect(thread, &TAddFilesThread::finished,
+        connect(addFilesThread, &TAddFilesThread::finished,
                 this, &TPList::onThreadFinished);
-        connect(thread, &TAddFilesThread::displayMessage,
+        connect(addFilesThread, &TAddFilesThread::displayMessage,
                 msgSlot, &TMsgSlot::msg);
 
-        thread->start();
+        addFilesThread->start();
         enableActions();
         if (!playlistWidget->isBusy()) {
             emit busyChanged();
@@ -1502,13 +1502,13 @@ void TPList::addStartThread() {
     }
 }
 
-void TPList::add(const QStringList& files,
-                 bool startPlay,
-                 TPlaylistItem* target,
-                 const QString& fileToPlay) {
+void TPList::addFiles(const QStringList& files,
+                      bool startPlay,
+                      TPlaylistItem* target,
+                      const QString& fileToPlay) {
     WZDOBJ << files << "startPlay" << startPlay;
 
-    addFiles = files;
+    addFileList = files;
     addStartPlay = startPlay;
     addTarget = target;
     addFileToPlay = fileToPlay;

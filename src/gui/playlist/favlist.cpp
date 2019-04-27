@@ -166,7 +166,7 @@ void TFavList::refresh() {
         loaded = true;
         clear(false);
         if (QFileInfo(Settings::TPaths::favoritesPath()).exists()) {
-            add(QStringList() << playlistFilename);
+            addFiles(QStringList() << playlistFilename);
         }
     }
 }

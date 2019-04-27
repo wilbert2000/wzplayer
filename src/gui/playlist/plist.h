@@ -41,10 +41,10 @@ public:
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
 
     void abortThread();
-    void add(const QStringList& files,
-             bool startPlay = false,
-             TPlaylistItem* target = 0,
-             const QString& fileToPlay = "");
+    void addFiles(const QStringList& files,
+                  bool startPlay = false,
+                  TPlaylistItem* target = 0,
+                  const QString& fileToPlay = "");
     bool isBusy() const;
 
     bool maybeSave();
@@ -71,7 +71,7 @@ protected:
     TPlaylistWidget* playlistWidget;
     Action::TEditableToolbar* toolbar;
     QString playlistFilename;
-    TAddFilesThread* thread;
+    TAddFilesThread* addFilesThread;
     int disableEnableActions;
     bool reachedEndOfPlaylist;
 
@@ -128,7 +128,7 @@ private:
     QToolButton* add_button;
     QToolButton* remove_button;
 
-    QStringList addFiles;
+    QStringList addFileList;
     TPlaylistItem* addTarget;
     QString addFileToPlay;
     bool addStartPlay;

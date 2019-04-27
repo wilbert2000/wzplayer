@@ -44,14 +44,11 @@ namespace Playlist {
 TPlaylist::TPlaylist(TDockWidget* parent) :
     TPList(parent, "playlist", "pl", tr("Playlist")) {
 
-    setAcceptDrops(true);
-
     // Repeat
     repeatAct = new TAction(mainWindow, "pl_repeat", tr("Repeat playlist"),
                             "", Qt::CTRL | Qt::Key_Backslash);
     repeatAct->setCheckable(true);
-    connect(repeatAct, &TAction::triggered,
-            this, &TPlaylist::onRepeatToggled);
+    connect(repeatAct, &TAction::triggered, this, &TPlaylist::onRepeatToggled);
 
     // Shuffle
     shuffleAct = new TAction(mainWindow, "pl_shuffle", tr("Shuffle playlist"),
@@ -583,50 +580,8 @@ void TPlaylist::refresh() {
             }
         }
         clear(false);
-        add(QStringList() << playlistFilename, !playing.isEmpty(), 0, playing);
+        addFiles(QStringList() << playlistFilename, !playing.isEmpty(), 0, playing);
     }
-}
-
-// Drag&drop
-void TPlaylist::dragEnterEvent(QDragEnterEvent *e) {
-    WZD << e->mimeData()->formats();
-
-    if (e->mimeData()->hasUrls()) {
-        if (e->proposedAction() & Qt::CopyAction) {
-            e->acceptProposedAction();
-            return;
-        }
-        if (e->possibleActions() & Qt::CopyAction) {
-            e->setDropAction(Qt::CopyAction);
-            e->accept();
-            return;
-        }
-    }
-    TPList::dragEnterEvent(e);
-}
-
-void TPlaylist::dropEvent(QDropEvent *e) {
-    WZD << e->mimeData()->formats();
-
-    if (e->mimeData()->hasUrls()) {
-        QStringList files;
-        foreach(const QUrl& url, e->mimeData()->urls()) {
-            files.append(url.toString());
-        }
-
-        if (files.count()) {
-            // TODO: see dropIndicator for above/below
-            QTreeWidgetItem* target = playlistWidget->itemAt(
-                        e->pos()
-                        - playlistWidget->pos()
-                        - playlistWidget->viewport()->pos());
-            add(files, false, static_cast<TPlaylistItem*>(target));
-        }
-
-        e->accept();
-        return;
-    }
-    TPList::dropEvent(e);
 }
 
 void TPlaylist::open(const QString &fileName, const QString& name) {
@@ -702,7 +657,7 @@ void TPlaylist::openFiles(const QStringList& files, const QString& fileToPlay) {
 
     if (maybeSave()) {
         clear();
-        add(files, true, 0, fileToPlay);
+        addFiles(files, true, 0, fileToPlay);
     }
 }
 
@@ -716,7 +671,7 @@ void TPlaylist::openDirectory(const QString& dir) {
         openDisc(TDiscName(dir, Settings::pref->useDVDNAV()));
     } else {
         clear();
-        add(QStringList() << dir, true);
+        addFiles(QStringList() << dir, true);
     }
 }
 

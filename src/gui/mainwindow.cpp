@@ -3835,7 +3835,7 @@ void TMainWindow::onReceivedMessage(const QString& msg) {
         }
         if (command == "add_to_playlist") {
             QStringList file_list = arg.split(" <<sep>> ");
-            playlist->add(file_list);
+            playlist->addFiles(file_list);
             return;
         }
         if (command == "media_title") {

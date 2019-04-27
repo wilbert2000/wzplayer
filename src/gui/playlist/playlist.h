@@ -71,9 +71,6 @@ signals:
     void playlistFinished();
 
 protected:
-    virtual void dragEnterEvent(QDragEnterEvent*) override;
-    virtual void dropEvent(QDropEvent*) override;
-
     virtual void clear(bool clearFilename = true) override;
     virtual void playItem(TPlaylistItem* item, bool keepPaused = false) override;
 
