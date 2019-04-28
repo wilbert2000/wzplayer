@@ -139,12 +139,10 @@ TPlaylistItem::TPlaylistItem(QTreeWidgetItem* parent,
                           | Qt::ItemIsEnabled
                           | Qt::ItemIsDragEnabled
                           | Qt::ItemIsEditable;
-
     if (mFolder) {
-        setFlags(flags | Qt::ItemIsDropEnabled);
-    } else {
-        setFlags(flags);
+        flags = flags | Qt::ItemIsDropEnabled;
     }
+    setFlags(flags);
 
     setTextAlignment(COL_NAME, TEXT_ALIGN_NAME);
     setTextAlignment(COL_EXT, TEXT_ALIGN_TYPE);
@@ -944,6 +942,80 @@ bool TPlaylistItem::operator <(const QTreeWidgetItem& other) const {
 
 int TPlaylistItem::compareFilename(const TPlaylistItem& item) const {
     return mFilename.compare(item.mFilename, caseSensitiveFileNames);
+}
+
+QDataStream& operator<<(QDataStream& out, const TPlaylistItem& item) {
+    WZT << item.filename();
+
+    out << item.flags()
+        << item.filename()
+        << item.baseName()
+        << item.durationMS()
+        << item.order()
+
+        << int(item.state())
+        << item.played()
+        << item.edited()
+        << item.modified()
+        << item.playedTime()
+        << item.getBlacklist()
+        << item.childCount();
+
+    // Store children
+    for(int i = 0; i < item.childCount(); i++) {
+        out << *(item.plChild(i));
+    }
+
+    return out;
+}
+
+QDataStream& operator>>(QDataStream& in, TPlaylistItem& item) {
+    WZT << item.filename();
+
+    Qt::ItemFlags flags;
+    in >> flags;
+    item.setFlags(flags);
+
+    QString filename, baseName;
+    in >> filename >> baseName;
+    item.setFilename(filename, baseName);
+
+    int i;
+    in >> i;
+    item.setDurationMS(i);
+    in >> i;
+    item.setOrder(i);
+    in >> i;
+    if (i < PSTATE_STOPPED || i > PSTATE_FAILED) {
+        // TODO: abort
+        WZE << "Got illegal state from data stream" << i;
+        i = PSTATE_STOPPED;
+    }
+    item.setState(TPlaylistItemState(i));
+
+    bool b;
+    in >> b;
+    item.setPlayed(b);
+    in >> b;
+    item.setEdited(b);
+    in >> b;
+    item.setModified(b);
+    in >> i;
+    item.setPlayedTime(i);
+
+    QStringList blacklist;
+    in >> blacklist;
+    item.setBlacklist(blacklist);
+
+    // Get children
+    in >> i;
+    for(int c = 0; c < i; c++) {
+        TPlaylistItem* child = new TPlaylistItem();
+        in >> *child;
+        item.addChild(child);
+    }
+
+    return in;
 }
 
 } // namespace Playlist

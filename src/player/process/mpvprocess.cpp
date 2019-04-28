@@ -539,6 +539,8 @@ bool TMPVProcess::parseLine(QString& line) {
     static QRegExp rx_error_http_404("HTTP error 404 ");
 
     static QRegExp rx_verbose("^\\[(statusline|term-msg|cplayer)\\] (.*)");
+    // Messages to keep out of log. Invalid timestamps.
+    static QRegExp rx_kill_line("^Invalid .*PTS");
 
 
     // Check to see if a DVD title needs to be terminated
@@ -556,6 +558,11 @@ bool TMPVProcess::parseLine(QString& line) {
     // Remove sender when using verbose
     if (rx_verbose.indexIn(line) >= 0) {
         line = rx_verbose.cap(2);
+    }
+
+    // Messages to keep out of log
+    if (rx_kill_line.indexIn(line) >= 0) {
+        return true;
     }
 
     // Parse custom status line

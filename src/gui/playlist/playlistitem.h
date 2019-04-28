@@ -110,10 +110,12 @@ public:
     bool isLink() const;
 
     int playedTime() const { return mPlayedTime; }
+    void setPlayedTime(int time) { mPlayedTime = time; }
 
     void blacklist(const QString& filename);
     bool blacklisted(const QString& filename) const;
     QStringList getBlacklist() const { return mBlacklist; }
+    void setBlacklist(const QStringList& list) { mBlacklist = list; }
     int getBlacklistCount() const { return mBlacklist.count(); }
     bool whitelist(const QString& filename);
 
@@ -136,6 +138,7 @@ public:
     virtual bool operator<(const QTreeWidgetItem& other) const override;
 
     void setSpacing();
+
 
 private:
     static int hSpacing;
@@ -188,6 +191,9 @@ private:
     void setItemIcon();
     void setFileInfo();
 };
+
+QDataStream& operator<<(QDataStream& out, const TPlaylistItem& item);
+QDataStream& operator>>(QDataStream& in, TPlaylistItem& item);
 
 } // namespace Playlist
 } // namespace Gui

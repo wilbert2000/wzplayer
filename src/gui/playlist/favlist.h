@@ -2,7 +2,6 @@
 #define GUI_PLAYLIST_FAVLIST_H
 
 #include "gui/playlist/plist.h"
-#include "wzdebug.h"
 #include <QIcon>
 
 
@@ -22,7 +21,6 @@ class TPlaylist;
 
 class TFavList : public TPList {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit TFavList(TDockWidget* parent, TPlaylist* playlst);
 

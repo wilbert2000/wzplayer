@@ -1,17 +1,18 @@
 #include "gui/playlist/addfilesthread.h"
 
+#include "gui/playlist/playlistitem.h"
+#include "settings/paths.h"
+#include "discname.h"
+#include "name.h"
+#include "extensions.h"
+#include "config.h"
+
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
 #include <QRegExp>
 #include <QTextStream>
 #include <QTextCodec>
-
-#include "gui/playlist/playlistitem.h"
-#include "discname.h"
-#include "name.h"
-#include "extensions.h"
-#include "config.h"
 
 
 namespace Gui {
@@ -137,7 +138,7 @@ TAddFilesThread::~TAddFilesThread() {
 void TAddFilesThread::run() {
 
     playlistPath = QDir::toNativeSeparators(QDir::current().path());
-    WZDEBUGOBJ(QString("Running in directory '%1'").arg(playlistPath));
+    WZDOBJ << "Running in directory" << playlistPath;
 
     root = new TPlaylistItem(0, playlistPath, "", 0);
     root->setFlags(ROOT_FLAGS);

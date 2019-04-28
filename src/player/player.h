@@ -21,7 +21,6 @@
 
 #include <QProcess>
 
-#include "wzdebug.h"
 #include "config.h"
 #include "mediadata.h"
 #include "player/state.h"
@@ -43,8 +42,6 @@ namespace Process {
 
 class TPlayer : public QObject {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     TPlayer(QWidget* parent,
             const QString& name,

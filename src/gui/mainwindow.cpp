@@ -100,7 +100,6 @@ TMainWindow* mainWindow = 0;
 
 TMainWindow::TMainWindow() :
     QMainWindow(),
-    update_checker(0),
     optionCloseOnFinish(-1),
     ignore_show_hide_events(false),
     save_size(true),
@@ -265,8 +264,8 @@ void TMainWindow::createPlayerWindows() {
 
 void TMainWindow::createPlayers() {
 
-    previewPlayer = new Player::TPlayer(this, "preview_player", previewWindow, 0);
-
+    Player::TPlayer* previewPlayer = new Player::TPlayer(this, "preview_player",
+                                                         previewWindow, 0);
     new Player::TPlayer(this, "player", playerWindow, previewPlayer);
 
     connect(player, &Player::TPlayer::positionMSChanged,
@@ -314,6 +313,11 @@ void TMainWindow::createLogDock() {
 }
 
 void TMainWindow::createPlaylist() {
+
+    // Setup meta type TPlaylistItem
+    qRegisterMetaType<Playlist::TPlaylistItem>("Gui::Playlist::TPlaylistItem");
+    qRegisterMetaTypeStreamOperators<Playlist::TPlaylistItem>(
+                "Gui::Playlist::TPlaylistItem");
 
     playlistDock = new TDockWidget(this, playerWindow, "playlist_dock",
                                    tr("Playlist"));
@@ -3208,10 +3212,10 @@ void TMainWindow::enterFullscreenOnPlay() {
 }
 
 void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {
-    WZDEBUG("");
+    WZD;
 
-    if (e->mimeData()->hasUrls()) {
-        if (e->proposedAction() & Qt::CopyAction) {
+    if (!e->isAccepted() && e->mimeData()->hasUrls()) {
+        if (e->proposedAction() & (Qt::CopyAction | Qt::LinkAction)) {
             e->acceptProposedAction();
             return;
         }
@@ -3220,14 +3224,20 @@ void TMainWindow::dragEnterEvent(QDragEnterEvent *e) {
             e->accept();
             return;
         }
+        if (e->possibleActions() & Qt::LinkAction) {
+            e->setDropAction(Qt::LinkAction);
+            e->accept();
+            return;
+        }
+        // TODO: e->ignore()?
     }
     QMainWindow::dragEnterEvent(e);
 }
 
 void TMainWindow::dropEvent(QDropEvent *e) {
-    WZDEBUG("");
+    WZD;
 
-    if (e->mimeData()->hasUrls()) {
+    if (!e->isAccepted() && e->mimeData()->hasUrls()) {
         QStringList files;
         foreach(const QUrl& url, e->mimeData()->urls()) {
             files.append(url.toString());
@@ -3240,7 +3250,7 @@ void TMainWindow::dropEvent(QDropEvent *e) {
 }
 
 void TMainWindow::stop() {
-    WZTRACE("");
+    WZT;
 
     // Playlist stops player
     playlist->stop();
@@ -3829,13 +3839,11 @@ void TMainWindow::onReceivedMessage(const QString& msg) {
             return;
         }
         if (command == "open_files") {
-            QStringList file_list = arg.split(" <<sep>> ");
-            playlist->openFiles(file_list);
+            playlist->openFiles(arg.split(" <<sep>> "));
             return;
         }
         if (command == "add_to_playlist") {
-            QStringList file_list = arg.split(" <<sep>> ");
-            playlist->addFiles(file_list);
+            playlist->getPlaylistWidget()->addFiles(arg.split(" <<sep>> "));
             return;
         }
         if (command == "media_title") {

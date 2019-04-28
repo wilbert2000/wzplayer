@@ -76,6 +76,7 @@ protected:
 
 protected slots:
     virtual void refresh() override;
+    virtual void onRootFilenameChanged(QString rootFilename) override;
 
 private:
     QString dvdTitle;
@@ -100,6 +101,9 @@ private slots:
     void onTitleTrackChanged(int id);
     void onDurationChanged(int ms);
     void onMediaEOF();
+
+    void onNothingToPlay(QString msg);
+    void onLatestDirChanged(QString dir);
 };
 
 } // namespace Playlist

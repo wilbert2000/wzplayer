@@ -1,9 +1,7 @@
 #ifndef GUI_PLAYLIST_PLAYLISTWIDGET_H
 #define GUI_PLAYLIST_PLAYLISTWIDGET_H
 
-#include "gui/playlist/playlist.h"
 #include "gui/playlist/playlistitem.h"
-#include "wzdebug.h"
 #include <QTreeWidget>
 #include <QTimer>
 
@@ -11,21 +9,39 @@
 class QSettings;
 class QtFileCopier;
 class QtCopyDialog;
+class TWZTimer;
 
 namespace Gui {
+
+class TMainWindow;
+
+namespace Action {
+namespace Menu {
+class TMenu;
+}
+}
+
 namespace Playlist {
+
+class TAddFilesThread;
 
 class TPlaylistWidget : public QTreeWidget {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
     explicit TPlaylistWidget(QWidget* parent,
                              TMainWindow* mainWindow,
                              const QString& name,
                              const QString& shortName,
-                             const QString& tranName);
+                             const QString& tranName,
+                             bool favList);
     virtual ~TPlaylistWidget() override;
+
+    void addFiles(const QStringList& files,
+                  TPlaylistItem* target = 0,
+                  int targetIndex = -1,
+                  bool startPlay = false,
+                  const QString& fileToPlay = "");
+    void abort();
 
     TPlaylistItem* playingItem;
     void setPlayingItem(TPlaylistItem* item,
@@ -61,11 +77,10 @@ public:
 
     TPlaylistItem* findPreviousPlayedTime(TPlaylistItem* w);
 
-    void abortFileCopier();
     void clearPlayed();
     void clr();
 
-    bool isBusy() const { return fileCopier; }
+    bool isBusy() const { return addFilesThread || fileCopier; }
     bool isModified() const { return root()->modified(); }
     void clearModified() { root()->setModified(false, true); }
     void emitModifiedChanged();
@@ -79,7 +94,7 @@ public:
     TPlaylistItem* validateItem(TPlaylistItem* folder, TPlaylistItem* item) const;
     TPlaylistItem* validateItem(TPlaylistItem* item) const;
 
-    TPlaylistItem* add(TPlaylistItem* item, TPlaylistItem* target);
+    TPlaylistItem* add(TPlaylistItem* item, TPlaylistItem* target, int index);
     void removeSelected(bool deleteFromDisk);
 
     void setSort(int section, Qt::SortOrder order);
@@ -96,9 +111,16 @@ signals:
     void modifiedChanged();
     void playingItemChanged(TPlaylistItem* item);
     void playingItemUpdated(TPlaylistItem* item);
+    void latestDirChanged(QString dir);
+    void nothingToPlay(QString msg);
+    void rootFilenameChanged(QString rootFilename);
+    void addedItems();
+    void startPlay();
+    void playItem(TPlaylistItem* item);
 
 protected:
     virtual Qt::DropActions supportedDropActions() const override;
+    virtual QStringList mimeTypes() const override;
     virtual void dragEnterEvent(QDragEnterEvent*event) override;
     virtual void dropEvent(QDropEvent* event) override;
     virtual bool dropMimeData(QTreeWidgetItem *parent,
@@ -113,21 +135,35 @@ protected slots:
                               int start, int end) override;
 
 private:
+    TAddFilesThread* addFilesThread;
+    QStringList addFileList;
+    TPlaylistItem* addFilesTarget;
+    int addFilesTargetIndex;
+    bool addFilesStartPlay;
+    QString addFilesFileToPlay;
+    bool addFilesRestartThread;
+    const bool isFavList;
+
     int sortSectionSaved;
     Qt::SortOrder sortOrderSaved;
 
     Action::Menu::TMenu* columnsMenu;
 
     QTimer wordWrapTimer;
-    QTimer scrollTimer;
-    bool scrollToPlaying;
+    TWZTimer* scrollToCurrentItemTimer;
+    bool scrollToCurrent;
 
+    TPlaylistWidget* dropSourceWidget;
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;
     QString stoppedFilename;
     TPlaylistItem* stoppedItem;
 
     bool yesToAll;
+
+    void addFilesStartThread();
+    void abortAddFilesThread();
+    void abortFileCopier();
 
     int countItems(QTreeWidgetItem* w) const;
     int countChildren(TPlaylistItem* w) const;
@@ -150,7 +186,9 @@ private:
     void copyItem(TPlaylistItem* item,
                   TPlaylistItem* target,
                   int& targetIndex);
-    bool dropSelection(TPlaylistItem* target, int targetIndex, Qt::DropAction action);
+    QList<QTreeWidgetItem*> getItemsFromMimeData(const QMimeData* mimeData);
+    bool drop(TPlaylistItem* target, int targetIndex, QDropEvent* event);
+    void dropURLs(TPlaylistItem* target, int row, const QMimeData* mimeData);
     bool hasModelMimeType(const QMimeData* mime);
 
     void resizeNameColumn(TPlaylistItem* item, int level);
@@ -162,8 +200,8 @@ private:
                     bool deleteFromDisk);
 
 private slots:
+    void onAddFilesThreadFinished();
     void scrollToCurrentItem();
-    void scrollToPlayingItem();
     void onWordWrapTimeout();
     void resizeNameColumnAll();
     void onItemExpanded(QTreeWidgetItem* i);

@@ -33,9 +33,8 @@ namespace Gui {
 class TUpdateChecker : public QObject {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
-
 public:
-    TUpdateChecker(QWidget* parent, Settings::TUpdateCheckerData* data);
+    explicit TUpdateChecker(QWidget* parent, Settings::TUpdateCheckerData* data);
 
     void check();
 

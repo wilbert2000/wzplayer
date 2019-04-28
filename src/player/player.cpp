@@ -41,6 +41,7 @@
 #include "extensions.h"
 #include "colorutils.h"
 #include "wzfiles.h"
+#include "wzdebug.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -51,6 +52,8 @@
 #include <QTimer>
 #include <QApplication>
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::TPlayer)
 
 Player::TPlayer* player = 0;
 
@@ -159,8 +162,10 @@ TPlayer::TPlayer(QWidget* parent,
     connect(proc, &Process::TPlayerProcess::audioBitRateChanged,
             this, &TPlayer::audioBitRateChanged);
 
-    connect(previewPlayer, &TPlayer::mediaEOF,
-            this, &TPlayer::onPreviewPlayerEOF);
+    if (previewPlayer) {
+        connect(previewPlayer, &TPlayer::mediaEOF,
+                this, &TPlayer::onPreviewPlayerEOF);
+    }
 }
 
 TPlayer::~TPlayer() {

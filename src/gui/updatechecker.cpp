@@ -61,8 +61,9 @@ TUpdateChecker::TUpdateChecker(QWidget* parent,
     QDate now = QDate::currentDate();
     int days = QDateTime(d->last_checked).daysTo(QDateTime(now));
 
-    WZDEBUG(QString("enabled: %1, days_to_check: %2, days since last check: %3")
-                    .arg(d->enabled).arg(d->days_to_check).arg(days));
+    WZD << "Enabled" << d->enabled
+        << "days_to_check" << d->days_to_check
+        << "days since last check" << days;
     if (!d->enabled || days < d->days_to_check)
         return;
 

@@ -22,15 +22,15 @@ class TAddFilesThread : public QThread {
     LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
-    TAddFilesThread(QObject* parent,
-                    const QStringList& aFiles,
-                    const QStringList& nameBlacklist,
-                    bool recurseSubDirs,
-                    bool videoFiles,
-                    bool audioFiles,
-                    bool playlists,
-                    bool images,
-                    bool favList);
+    explicit TAddFilesThread(QObject* parent,
+                             const QStringList& aFiles,
+                             const QStringList& nameBlacklist,
+                             bool recurseSubDirs,
+                             bool videoFiles,
+                             bool audioFiles,
+                             bool playlists,
+                             bool images,
+                             bool favList);
     virtual ~TAddFilesThread() override;
 
     virtual void run();

@@ -12,11 +12,14 @@
 #include "images.h"
 #include "iconprovider.h"
 #include "wztimer.h"
+#include "wzdebug.h"
 
 #include <QDir>
 #include <QTimer>
 #include <QMessageBox>
 
+
+LOG4QT_DECLARE_STATIC_LOGGER(logger, Gui::Playlist::TFavList)
 
 namespace Gui {
 namespace Playlist {
@@ -71,7 +74,7 @@ TFavList::TFavList(TDockWidget *parent, TPlaylist* playlst) :
     connect(saveTimer, &TWZTimer::timeout,
             this, &TFavList::onSaveTimerTimeout);
 
-    connect(this, &TFavList::addedItems,
+    connect(playlistWidget, &TPlaylistWidget::addedItems,
             this, &TFavList::onAddedItems);
     connect(playlistWidget, &TPlaylistWidget::modifiedChanged,
             this, &TFavList::onModifiedChanged);
@@ -166,7 +169,7 @@ void TFavList::refresh() {
         loaded = true;
         clear(false);
         if (QFileInfo(Settings::TPaths::favoritesPath()).exists()) {
-            addFiles(QStringList() << playlistFilename);
+            playlistWidget->addFiles(QStringList() << playlistFilename);
         }
     }
 }
@@ -258,7 +261,7 @@ void TFavList::updatePlayingItem() {
 }
 
 void TFavList::onSaveTimerTimeout() {
-    WZTRACE("");
+    WZT;
 
     if (playlistWidget->isModified()) {
         if (isBusy() || playlistWidget->isEditing()) {
@@ -266,18 +269,12 @@ void TFavList::onSaveTimerTimeout() {
         } else {
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
             save(false);
-
-            // TODO: Fix clear favorites, for now make sub dirs left behind
-            // after a clear favorites action visible through a refresh.
-            if (playlistWidget->root()->childCount() == 0) {
-                refresh();
-            }
         }
     }
 }
 
 void TFavList::onUpdateTimerTimeout() {
-    WZTRACE("");
+    WZT;
 
     if (isBusy()) {
         updateTimer->logStart();
@@ -287,14 +284,13 @@ void TFavList::onUpdateTimerTimeout() {
 }
 
 void TFavList::requestUpdate() {
-    WZTRACE("");
-
+    WZT;
     currentFavAction = 0;
     updateTimer->logStart();
  }
 
 void TFavList::onAddedItems() {
-    WZTRACE("");
+    WZT;
     requestUpdate();
 }
 

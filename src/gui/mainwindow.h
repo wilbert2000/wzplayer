@@ -33,10 +33,6 @@ class QLabel;
 class QMenu;
 class TWZTimer;
 
-namespace Player {
-class TPlayer;
-}
-
 namespace Settings {
 class TMediaSettings;
 }
@@ -219,7 +215,6 @@ protected slots:
 private:
     TPlayerWindow* playerWindow;
     TPlayerWindow* previewWindow;
-    Player::TPlayer* previewPlayer;
 
     TDockWidget* logDock;
     TLogWindow* logWindow;
@@ -240,7 +235,7 @@ private:
     bool ignore_show_hide_events;
     QString first_fullscreen_filename;
 
-    // Fiddel size and pos
+    // Fiddle width size and pos
     bool save_size;
     bool force_resize;
     bool center_window;

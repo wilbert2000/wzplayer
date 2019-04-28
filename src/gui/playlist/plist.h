@@ -22,7 +22,6 @@ class TEditableToolbar;
 
 namespace Playlist {
 
-class TAddFilesThread;
 class TPlaylistItem;
 class TPlaylistWidget;
 class TMenuAddRemoved;
@@ -35,16 +34,10 @@ public:
                     const QString& name,
                     const QString& aShortName,
                     const QString& aTransName);
-    virtual ~TPList() override;
 
     bool hasPlayableItems() const;
     TPlaylistWidget* getPlaylistWidget() const { return playlistWidget; }
 
-    void abortThread();
-    void addFiles(const QStringList& files,
-                  bool startPlay = false,
-                  TPlaylistItem* target = 0,
-                  const QString& fileToPlay = "");
     bool isBusy() const;
 
     bool maybeSave();
@@ -63,7 +56,6 @@ public slots:
     virtual bool findPlayingItem();
 
 signals:
-    void addedItems();
     void busyChanged();
 
 protected:
@@ -71,7 +63,6 @@ protected:
     TPlaylistWidget* playlistWidget;
     Action::TEditableToolbar* toolbar;
     QString playlistFilename;
-    TAddFilesThread* addFilesThread;
     int disableEnableActions;
     bool reachedEndOfPlaylist;
 
@@ -118,6 +109,7 @@ protected slots:
     virtual void refresh() = 0;
     virtual void removeAll();
 
+    virtual void onRootFilenameChanged(QString rootFilename);
     void startPlay();
     void setPLaylistTitle();
 
@@ -127,12 +119,6 @@ private:
 
     QToolButton* add_button;
     QToolButton* remove_button;
-
-    QStringList addFileList;
-    TPlaylistItem* addTarget;
-    QString addFileToPlay;
-    bool addStartPlay;
-    bool restartThread;
 
     bool isFavList;
     bool skipRemainingMessages;
@@ -149,8 +135,6 @@ private:
     QUrl getBrowseURL();
     void copySelection(const QString& actionName);
 
-    void addStartThread();
-
     bool saveM3uFolder(TPlaylistItem* folder,
                        const QString& path,
                        QTextStream& stream,
@@ -163,6 +147,7 @@ private:
     bool saveM3u(bool allowFail);
 
 private slots:
+    void playItemNoPause(TPlaylistItem* item);
     void playInNewWindow();
     void editName();
     void resetName();
@@ -189,8 +174,6 @@ private slots:
     void onCurrentItemChanged(QTreeWidgetItem* current,
                               QTreeWidgetItem* previous);
     void onItemActivated(QTreeWidgetItem* i, int column);
-    void onThreadFinished();
-    void onPlaylistWidgetBusyChanged();
 };
 
 class TMenuAddRemoved : public Action::Menu::TMenu {

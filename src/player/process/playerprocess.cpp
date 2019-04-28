@@ -44,10 +44,10 @@ TPlayerProcess* TPlayerProcess::createPlayerProcess(QObject* parent,
 
     TPlayerProcess* process;
     if (Settings::pref->isMPlayer()) {
-        ::WZDEBUG("Creating TMPlayerProcess " + name);
+        WZDEBUG("Creating TMPlayerProcess " + name);
         process = new TMPlayerProcess(parent, name, md);
     } else {
-        ::WZDEBUG("Creating TMPVProcess " + name);
+        WZDEBUG("Creating TMPVProcess " + name);
         process = new TMPVProcess(parent, name, md);
     }
 
@@ -69,8 +69,8 @@ TPlayerProcess::TPlayerProcess(QObject* parent,
     //qRegisterMetaType<Maps::TTracks>("Tracks");
     //qRegisterMetaType<Chapters>("Chapters");
 
-    connect(this, SIGNAL(finished(int,QProcess::ExitStatus)),
-            this, SLOT(onFinished(int,QProcess::ExitStatus)));
+    connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
+            this, SLOT(onFinished(int, QProcess::ExitStatus)));
 }
 
 void TPlayerProcess::writeToPlayer(const QString& text, bool log) {
@@ -266,7 +266,7 @@ bool TPlayerProcess::parseLine(QString& line) {
     if (quit_send) {
         return true;
     }
-    WZDEBUGOBJ("'" + line + "'");
+    WZDEBUGOBJ("\"" + line + "\"");
 
     // Video out driver
     if (rx_vo.indexIn(line) >= 0) {
@@ -296,7 +296,7 @@ bool TPlayerProcess::parseLine(QString& line) {
         return true;
     }
 
-    // Like to be parsed a little longer
+    // Continue parsing
     return false;
 }
 

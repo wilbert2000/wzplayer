@@ -33,6 +33,7 @@
 
 #include <QToolBar>
 #include <QMimeData>
+#include <QMessageBox>
 
 
 namespace Gui {
@@ -75,10 +76,31 @@ TPlaylist::TPlaylist(TDockWidget* parent) :
             this, &TPlaylist::startPlay, Qt::QueuedConnection);
 
 
+    connect(playlistWidget, &TPlaylistWidget::nothingToPlay,
+            this, &TPlaylist::onNothingToPlay,
+            Qt::QueuedConnection);
+    connect(playlistWidget, &TPlaylistWidget::latestDirChanged,
+            this, &TPlaylist::onLatestDirChanged);
+
     // Random seed
     QTime t;
     t.start();
     qsrand(t.hour() * 3600 + t.minute() * 60 + t.second());
+}
+
+void TPlaylist::onNothingToPlay(QString msg) {
+    QMessageBox::information(this, tr("Nothing to play"), msg);
+}
+
+void TPlaylist::onLatestDirChanged(QString dir) {
+    Settings::pref->last_dir = dir;
+}
+
+void TPlaylist::onRootFilenameChanged(QString rootFilename) {
+
+    TPList::onRootFilenameChanged(rootFilename);
+    Settings::pref->addRecent(playlistFilename,
+                              playlistWidget->root()->fname());
 }
 
 void TPlaylist::createToolbar() {
@@ -572,15 +594,19 @@ void TPlaylist::onDurationChanged(int ms) {
 void TPlaylist::refresh() {
 
     if (!playlistFilename.isEmpty() && maybeSave()) {
-        QString playing;
+        QString playingFile;
         if (player->statePOP()) {
-            playing = playlistWidget->playingFile();
-            if (!playing.isEmpty()) {
+            playingFile = playlistWidget->playingFile();
+            if (!playingFile.isEmpty()) {
                 player->saveRestartState();
             }
         }
         clear(false);
-        addFiles(QStringList() << playlistFilename, !playing.isEmpty(), 0, playing);
+        playlistWidget->addFiles(QStringList() << playlistFilename,
+                                 0, // target
+                                 -1, // target index
+                                 !playingFile.isEmpty(), // start playing
+                                 playingFile);
     }
 }
 
@@ -657,7 +683,7 @@ void TPlaylist::openFiles(const QStringList& files, const QString& fileToPlay) {
 
     if (maybeSave()) {
         clear();
-        addFiles(files, true, 0, fileToPlay);
+        playlistWidget->addFiles(files, 0, -1, true, fileToPlay);
     }
 }
 
@@ -671,7 +697,7 @@ void TPlaylist::openDirectory(const QString& dir) {
         openDisc(TDiscName(dir, Settings::pref->useDVDNAV()));
     } else {
         clear();
-        addFiles(QStringList() << dir, true);
+        playlistWidget->addFiles(QStringList() << dir, 0, -1, true);
     }
 }
 
