@@ -1,7 +1,5 @@
 #include "gui/playlist/plist.h"
-#include "gui/playlist/playlist.h"
 #include "gui/playlist/playlistwidget.h"
-#include "gui/playlist/addfilesthread.h"
 #include "gui/action/menu/menu.h"
 #include "gui/action/action.h"
 #include "gui/action/editabletoolbar.h"
@@ -11,8 +9,6 @@
 #include "gui/multilineinputdialog.h"
 #include "gui/msg.h"
 #include "player/player.h"
-#include "settings/preferences.h"
-#include "settings/paths.h"
 #include "extensions.h"
 #include "iconprovider.h"
 #include "wzfiles.h"
@@ -276,7 +272,7 @@ void TPList::createActions() {
     cutAct = new TAction(this, shortName + "_cut", tr("Cut file name(s)"),
                          "noicon", QKeySequence("Ctrl+X"));
     cutAct->setIcon(iconProvider.cutIcon);
-    connect(cutAct, &TAction::triggered, this, &TPlaylist::cut);
+    connect(cutAct, &TAction::triggered, this, &TPList::cut);
     contextMenu->addAction(cutAct);
 
     // Copy
@@ -314,7 +310,7 @@ void TPList::createActions() {
                                     tr("Add playing file"), "play");
     playlistAddMenu->addAction(addPlayingFileAct);
     connect(addPlayingFileAct, &TAction::triggered,
-            this, &TPlaylist::addPlayingFile);
+            this, &TPList::addPlayingFile);
 
     // Add files
     TAction* a = new TAction(owner, shortName + "_add_files",
@@ -355,7 +351,7 @@ void TPList::createActions() {
     removeSelectedAct->setIcon(iconProvider.trashIcon);
     playlistRemoveMenu->addAction(removeSelectedAct);
     connect(removeSelectedAct, &TAction::triggered,
-            this, &TPlaylist::removeSelected);
+            this, &TPList::removeSelected);
 
     // Delete from disk
     QString txt = isFavList ?
@@ -368,7 +364,7 @@ void TPList::createActions() {
     removeSelectedFromDiskAct->setIcon(iconProvider.discardIcon);
     playlistRemoveMenu->addAction(removeSelectedFromDiskAct);
     connect(removeSelectedFromDiskAct, &TAction::triggered,
-            this, &TPlaylist::removeSelectedFromDisk);
+            this, &TPList::removeSelectedFromDisk);
 
     // Clear playlist
     removeAllAct = new TAction(this, shortName + "_clear",
@@ -376,7 +372,7 @@ void TPList::createActions() {
         "noicon", Qt::CTRL | Qt::Key_Delete);
     removeAllAct->setIcon(iconProvider.clearIcon);
     playlistRemoveMenu->addAction(removeAllAct);
-    connect(removeAllAct, &TAction::triggered, this, &TPlaylist::removeAll);
+    connect(removeAllAct, &TAction::triggered, this, &TPList::removeAll);
 
     contextMenu->addMenu(playlistRemoveMenu);
 
@@ -1100,7 +1096,7 @@ void TPList::newFolder() {
                    " Do you want to save it now?"),
                 QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
             if (saveAs()) {
-                QTimer::singleShot(0, this, &TPlaylist::newFolder);
+                QTimer::singleShot(0, this, &TPList::newFolder);
             }
         }
         return;
