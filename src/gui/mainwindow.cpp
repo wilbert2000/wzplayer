@@ -2458,7 +2458,7 @@ void TMainWindow::enableSubtitleActions() {
 
     int count = player->mdat.subs.count();
     e = player->statePOP() && count > 0;
-    nextSubtitleAct->setEnabled(e && count > 1);
+    nextSubtitleAct->setEnabled(e);
     // Individual subs in use by the other track already disabled by
     // updateSubtitleTracks
     subtitleTrackGroup->setEnabled(e);
