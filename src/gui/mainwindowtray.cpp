@@ -163,6 +163,10 @@ void TMainWindowTray::showMainWindow() {
     if (!isVisible()) {
         showMainWin(true);
     }
+
+    setWindowState(windowState() & ~Qt::WindowMinimized);
+    raise();
+    activateWindow();
 }
 
 void TMainWindowTray::toggleShowMainWindow() {
@@ -174,6 +178,16 @@ void TMainWindowTray::toggleShowMainWindow() {
         // Never end up without GUI
         showMainWindow();
         updateShowMainWindowActText();
+    }
+}
+
+void TMainWindowTray::onReceivedMessage(const QString& msg) {
+    WZD << msg;
+
+    if (msg == "hello") {
+        showMainWindow();
+    } else {
+        TMainWindow::onReceivedMessage(msg);
     }
 }
 

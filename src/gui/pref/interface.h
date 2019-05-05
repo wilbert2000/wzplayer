@@ -63,9 +63,6 @@ protected:
     void setUseSingleInstance(bool b);
     bool useSingleInstance();
 
-    void setHideVideoOnAudioFiles(bool b);
-    bool hideVideoOnAudioFiles();
-
     // History tab
     void setRecentsMaxItems(int n);
     int recentsMaxItems();

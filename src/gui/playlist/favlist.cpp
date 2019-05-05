@@ -9,6 +9,7 @@
 #include "settings/preferences.h"
 #include "settings/paths.h"
 #include "player/player.h"
+#include "app.h"
 #include "images.h"
 #include "iconprovider.h"
 #include "wztimer.h"
@@ -268,7 +269,9 @@ void TFavList::onSaveTimerTimeout() {
             saveTimer->logStart();
         } else {
             setPlaylistFilename(Settings::TPaths::favoritesFilename());
-            save(false);
+            if (save(false)) {
+                tApp->broadcastMessage("send_actions fav_refresh");
+            }
         }
     }
 }
@@ -299,8 +302,6 @@ void TFavList::onModifiedChanged() {
     if (playlistWidget->isModified()) {
         WZTRACE("Modified set");
         requestUpdate();
-    } else {
-        WZTRACE("Modified cleared");
     }
 }
 
@@ -319,7 +320,7 @@ void TFavList::markCurrentFavAction(QAction* action) {
 }
 
 void TFavList::onFavMenuTriggered(QAction* action) {
-    WZTRACE("");
+    WZT;
 
     if (action->data().isValid()) {
         TPlaylistItem* item = action->data().value<TPlaylistItem*>();

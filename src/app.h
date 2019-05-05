@@ -20,7 +20,6 @@
 #define APP_H
 
 #include "qtsingleapplication/QtSingleApplication"
-#include "log4qt/logger.h"
 
 #include <QtGlobal>
 #include <QString>
@@ -31,7 +30,6 @@
 
 class TApp : public QtSingleApplication {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     enum TExitCode {
              ERROR_INVALID_ARGUMENT = -1,
@@ -101,5 +99,7 @@ private slots:
     void onRequestRestart();
     void onMessageReceived(QString msg);
 };
+
+extern TApp* tApp;
 
 #endif // APP_H

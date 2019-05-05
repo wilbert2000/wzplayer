@@ -1540,11 +1540,6 @@ void TMainWindow::applyNewSettings() {
     useCustomSubStyleAct->setChecked(pref->use_custom_ass_style);
 
     // Interface
-    // Show player window
-    if (!pref->hide_video_window_on_audio_files && !playerWindow->isVisible()) {
-        resize(width(), height() + 200);
-        playerWindow->show();
-    }
     // Hide toolbars delay
     autoHideTimer->setInterval(pref->floating_hide_delay);
 
@@ -3332,8 +3327,8 @@ bool TMainWindow::haveDockedDocks() const {
             || (favListDock->isVisible() && !favListDock->isFloating());
 }
 
-void TMainWindow::hidePanel() {
-    WZDEBUG("");
+void TMainWindow::hidePlayerWindow() {
+    WZD;
 
     // Exit from fullscreen
     if (pref->fullscreen) {
@@ -3489,9 +3484,7 @@ void TMainWindow::onVideoOutResolutionChanged(int w, int h) {
 
     if (w <= 0 || h <= 0) {
         // No video
-        if (pref->hide_video_window_on_audio_files) {
-            hidePanel();
-        }
+        hidePlayerWindow();
     } else {
         // Have video
         if (!playerWindow->isVisible()) {
@@ -3821,11 +3814,7 @@ void TMainWindow::runActionsLater(const QString& actions,
 }
 
 void TMainWindow::onReceivedMessage(const QString& msg) {
-    WZD << msg;
 
-    if (msg == "hello") {
-        return;
-    }
     int pos = msg.indexOf(' ');
     if (pos >= 0) {
         QString command = msg.left(pos);

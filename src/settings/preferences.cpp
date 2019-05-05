@@ -239,7 +239,6 @@ void TPreferences::reset() {
     save_window_size_on_exit = false;
     resize_on_load = true;
     pause_when_hidden = false;
-    hide_video_window_on_audio_files = true;
     close_on_finish = false;
 
     // Fullscreen
@@ -530,8 +529,6 @@ void TPreferences::save() {
     setValue("default_size", default_size);
     setValue("save_window_size_on_exit", save_window_size_on_exit);
     setValue("resize_on_load", resize_on_load);
-    setValue("hide_video_window_on_audio_files",
-             hide_video_window_on_audio_files);
     setValue("pause_when_hidden", pause_when_hidden);
     setValue("close_on_finish", close_on_finish);
 
@@ -1064,9 +1061,6 @@ void TPreferences::load() {
     save_window_size_on_exit = value("save_window_size_on_exit",
                                      save_window_size_on_exit).toBool();
     resize_on_load = value("resize_on_load", resize_on_load).toBool();
-    hide_video_window_on_audio_files = value("hide_video_window_on_audio_files",
-                                             hide_video_window_on_audio_files)
-                                       .toBool();
     pause_when_hidden = value("pause_when_hidden", pause_when_hidden).toBool();
     close_on_finish = value("close_on_finish", close_on_finish).toBool();
 

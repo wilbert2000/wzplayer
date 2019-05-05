@@ -44,7 +44,7 @@ public:
 
 public slots:
     virtual void closeWindow() override;
-    void showMainWindow();
+    virtual void onReceivedMessage(const QString& msg) override;
 
 protected slots:
     virtual void quit();
@@ -59,6 +59,7 @@ private:
     void switchToTray();
     void updateShowMainWindowActText();
     void showMainWin(bool b);
+    void showMainWindow();
 
 private slots:
     void onViewSystemTrayActToggled(bool show);

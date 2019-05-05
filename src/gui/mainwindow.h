@@ -161,7 +161,7 @@ public slots:
     int forceCloseOnFinish() { return optionCloseOnFinish; }
 
     // Handle message from new intance send by TApp
-    void onReceivedMessage(const QString& msg);
+    virtual void onReceivedMessage(const QString& msg);
 
     void save();
 
@@ -508,7 +508,7 @@ private:
     void enableActions();
 
     bool haveDockedDocks() const;
-    void hidePanel();
+    void hidePlayerWindow();
     void setFloatingToolbarsVisible(bool visible);
 
     void removeThumbnail(QString fn);

@@ -123,7 +123,6 @@ void TInterface::setData(Settings::TPreferences* pref) {
 
     setPauseWhenHidden(pref->pause_when_hidden);
     setCloseOnFinish(pref->close_on_finish);
-    setHideVideoOnAudioFiles(pref->hide_video_window_on_audio_files);
 
     // Fullscreen
     hide_toolbars_spin->setValue(pref->floating_hide_delay);
@@ -160,7 +159,6 @@ void TInterface::getData(Settings::TPreferences* pref) {
     pref->save_window_size_on_exit = saveSize();
     pref->pause_when_hidden = pauseWhenHidden();
     pref->close_on_finish = closeOnFinish();
-    pref->hide_video_window_on_audio_files = hideVideoOnAudioFiles();
 
     // Fullscreen
     pref->floating_hide_delay = hide_toolbars_spin->value();
@@ -281,14 +279,6 @@ bool TInterface::pauseWhenHidden() {
     return pause_on_minimize_check->isChecked();
 }
 
-void TInterface::setHideVideoOnAudioFiles(bool b) {
-    hide_video_window_on_audio_check->setChecked(b);
-}
-
-bool TInterface::hideVideoOnAudioFiles() {
-    return hide_video_window_on_audio_check->isChecked();
-}
-
 void TInterface::setRecentsMaxItems(int n) {
     recents_max_items_spin->setValue(n);
 }
@@ -348,10 +338,6 @@ void TInterface::createHelp() {
         tr("If this option is checked, the main window will be automatically "
            "closed when the current file/playlist finishes."));
 
-    setWhatsThis(hide_video_window_on_audio_check,
-        tr("Hide video window when playing audio files"),
-        tr("If this option is enabled the video window will be hidden when"
-           " playing audio files."));
 
     addSectionTitle(tr("Fullscreen"));
 

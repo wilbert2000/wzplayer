@@ -41,37 +41,47 @@
 #ifndef QTLOCALPEER_H
 #define QTLOCALPEER_H
 
-#include <QLocalServer>
-#include <QLocalSocket>
-#include <QDir>
-
 #include "qtlockedfile.h"
+#include <QLocalSocket>
 
-class QtLocalPeer : public QObject
-{
+
+class QLocalServer;
+
+class QtLocalPeer : public QObject {
     Q_OBJECT
-
 public:
-    QtLocalPeer(QObject *parent = 0, const QString &appId = QString());
+    explicit QtLocalPeer(QObject *parent, const QString &appId);
+    virtual ~QtLocalPeer() override;
+
     bool isClient();
     bool sendMessage(const QString &message, int timeout);
-    QString applicationId() const
-        { return id; }
+    void broadcastMessage(const QString &message, int timeout);
 
-Q_SIGNALS:
+signals:
     void messageReceived(const QString &message);
 
-protected Q_SLOTS:
+protected slots:
     void receiveConnection();
-
-protected:
-    QString id;
-    QString socketName;
-    QLocalServer* server;
-    QtLP_Private::QtLockedFile lockFile;
 
 private:
     static const char* ack;
+    static const char* squit;
+
+    QString socketDir;
+    QString serverSocketName;
+    QString clientSocketName;
+    QLocalServer* server;
+    QtLP_Private::QtLockedFile serverLockFile;
+
+    void closeServer();
+    bool sendMsg(const QString& toSocket, const QString &message, int timeout);
+    void connectTo(const QString& toSocket, const QString &message, int timeout);
+    bool listen(const QString& name);
+
+private slots:
+    void onSocketError(QLocalSocket::LocalSocketError socketError);
+    void onSocketReadyRead();
+    void onSocketConnected();
 };
 
 #endif // QTLOCALPEER_H

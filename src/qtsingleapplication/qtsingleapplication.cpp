@@ -56,11 +56,6 @@
     where the first started instance will assume the role of server,
     and the later instances will act as clients of that server.
 
-    By default, the full path of the executable file is used to
-    determine whether two processes are instances of the same
-    application. You can also provide an explicit identifier string
-    that will be compared instead.
-
     The application should create the QtSingleApplication object early
     in the startup phase, and call isRunning() to find out if another
     instance of this application is already running. If isRunning()
@@ -72,10 +67,7 @@
 
     The messageReceived() signal will be emitted when the running
     application receives messages from another instance of the same
-    application. When a message is received it might be helpful to the
-    user to raise the application so that it becomes visible. To
-    facilitate this, QtSingleApplication provides the
-    setActivationWindow() function and the activateWindow() slot.
+    application.
 
     If isRunning() returns true, another instance is already
     running. It may be alerted to the fact that another instance has
@@ -113,7 +105,6 @@
             return !app.sendMessage(someDataString);
 
         MyMainWidget mmw;
-        app.setActivationWindow(&mmw);
         mmw.show();
         return app.exec();
     }
@@ -132,42 +123,19 @@
     \sa QtSingleCoreApplication
 */
 
-
-void QtSingleApplication::sysInit(const QString &appId)
-{
-    actWin = 0;
-    peer = new QtLocalPeer(this, appId);
-    connect(peer, SIGNAL(messageReceived(const QString&)), SIGNAL(messageReceived(const QString&)));
-}
-
-
-/*!
-    Creates a QtSingleApplication object. The application identifier
-    will be QCoreApplication::applicationFilePath(). \a argc, \a
-    argv, and \a GUIenabled are passed on to the QAppliation constructor.
-
-    If you are creating a console application (i.e. setting \a
-    GUIenabled to false), you may consider using
-    QtSingleCoreApplication instead.
-*/
-
-QtSingleApplication::QtSingleApplication(int &argc, char **argv, bool GUIenabled)
-    : QApplication(argc, argv, GUIenabled)
-{
-    sysInit();
-}
-
-
 /*!
     Creates a QtSingleApplication object with the application
     identifier \a appId. \a argc and \a argv are passed on to the
     QAppliation constructor.
 */
 
-QtSingleApplication::QtSingleApplication(const QString &appId, int &argc, char **argv)
-    : QApplication(argc, argv)
-{
-    sysInit(appId);
+QtSingleApplication::QtSingleApplication(const QString &appId,
+                                         int &argc, char **argv) :
+    QApplication(argc, argv) {
+
+    peer = new QtLocalPeer(this, appId);
+    connect(peer, SIGNAL(messageReceived(const QString&)),
+            SIGNAL(messageReceived(const QString&)));
 }
 
 /*!
@@ -181,8 +149,7 @@ QtSingleApplication::QtSingleApplication(const QString &appId, int &argc, char *
     \sa sendMessage()
 */
 
-bool QtSingleApplication::isRunning()
-{
+bool QtSingleApplication::isRunning() {
     return peer->isClient();
 }
 
@@ -200,79 +167,20 @@ bool QtSingleApplication::isRunning()
 
     \sa isRunning(), messageReceived()
 */
-bool QtSingleApplication::sendMessage(const QString &message, int timeout)
-{
+bool QtSingleApplication::sendMessage(const QString &message, int timeout) {
     return peer->sendMessage(message, timeout);
 }
 
-
 /*!
-    Returns the application identifier. Two processes with the same
-    identifier will be regarded as instances of the same application.
+    Tries to send the text \a message to all currently running instances.
+    The QtSingleApplication object in the running instance will emit the
+    messageReceived() signal when it receives the message.
+
+    \sa isRunning(), messageReceived()
 */
-QString QtSingleApplication::id() const
-{
-    return peer->applicationId();
+void QtSingleApplication::broadcastMessage(const QString &message, int timeout) {
+    return peer->broadcastMessage(message, timeout);
 }
-
-
-/*!
-  Sets the activation window of this application to \a aw. The
-  activation window is the widget that will be activated by
-  activateWindow(). This is typically the application's main window.
-
-  If \a activateOnMessage is true (the default), the window will be
-  activated automatically every time a message is received, just prior
-  to the messageReceived() signal being emitted.
-
-  \sa activateWindow(), messageReceived()
-*/
-
-void QtSingleApplication::setActivationWindow(QWidget* aw, bool activateOnMessage)
-{
-    actWin = aw;
-    if (activateOnMessage)
-        connect(peer, SIGNAL(messageReceived(const QString&)), this, SLOT(activateWindow()));
-    else
-        disconnect(peer, SIGNAL(messageReceived(const QString&)), this, SLOT(activateWindow()));
-}
-
-
-/*!
-    Returns the applications activation window if one has been set by
-    calling setActivationWindow(), otherwise returns 0.
-
-    \sa setActivationWindow()
-*/
-QWidget* QtSingleApplication::activationWindow() const
-{
-    return actWin;
-}
-
-
-/*!
-  De-minimizes, raises, and activates this application's activation window.
-  This function does nothing if no activation window has been set.
-
-  This is a convenience function to show the user that this
-  application instance has been activated when he has tried to start
-  another instance.
-
-  This function should typically be called in response to the
-  messageReceived() signal. By default, that will happen
-  automatically, if an activation window has been set.
-
-  \sa setActivationWindow(), messageReceived(), initialize()
-*/
-void QtSingleApplication::activateWindow()
-{
-    if (actWin) {
-        actWin->setWindowState(actWin->windowState() & ~Qt::WindowMinimized);
-        actWin->raise();
-        actWin->activateWindow();
-    }
-}
-
 
 /*!
     \fn void QtSingleApplication::messageReceived(const QString& message)
@@ -281,11 +189,4 @@ void QtSingleApplication::activateWindow()
     message from another instance of this application.
 
     \sa sendMessage(), setActivationWindow(), activateWindow()
-*/
-
-
-/*!
-    \fn void QtSingleApplication::initialize(bool dummy = true)
-
-    \obsolete
 */

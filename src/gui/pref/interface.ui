@@ -200,13 +200,6 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="hide_video_window_on_audio_check">
-              <property name="text">
-               <string>Hide &amp;video window when playing audio files</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QCheckBox" name="pause_on_minimize_check">
               <property name="text">
                <string>Pause when &amp;minimized</string>
@@ -486,7 +479,6 @@
   <tabstop>style_combo</tabstop>
   <tabstop>single_instance_check</tabstop>
   <tabstop>save_size_check</tabstop>
-  <tabstop>hide_video_window_on_audio_check</tabstop>
   <tabstop>pause_on_minimize_check</tabstop>
   <tabstop>close_on_finish_check</tabstop>
   <tabstop>hide_toolbars_spin</tabstop>

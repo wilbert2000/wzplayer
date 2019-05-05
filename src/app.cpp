@@ -30,6 +30,7 @@
 #include "clhelp.h"
 #include "images.h"
 #include "iconprovider.h"
+#include "wzdebug.h"
 
 #include <QFile>
 #include <QDir>
@@ -47,7 +48,12 @@
 #endif
 
 
-// Statics that need to survive a restart
+LOG4QT_DECLARE_STATIC_LOGGER(logger, TApp)
+
+// Global TApp instance
+TApp* tApp = 0;
+
+// TApp statics that need to survive a restart
 bool TApp::restarting = false;
 bool TApp::addCommandLineFiles = true;
 TApp::TStartFS TApp::start_in_fullscreen = TApp::FS_NOT_SET;
@@ -61,6 +67,7 @@ TApp::TApp(int& argc, char** argv) :
     resize_gui(false),
     close_at_end(-1) {
 
+    tApp = this;
     setOrganizationName(TConfig::PROGRAM_ORG);
     setApplicationName(TConfig::PROGRAM_ID);
 
@@ -73,6 +80,7 @@ TApp::~TApp() {
     Settings::TPreferences* p = Settings::pref;
     Settings::pref = 0;
     delete p;
+    tApp = 0;
 }
 
 QString TApp::loadStyleSheet(const QString& filename) {
@@ -361,8 +369,11 @@ TApp::TExitCode TApp::processArgs() {
         }
     }
 
+    // Call to isRunning() starts listening on server or client socket
+    bool running = isRunning();
+
     if (!send_actions.isEmpty()) {
-        if (isRunning()
+        if (running
                 && sendMessage("hello")
                 && sendMessage("send_actions " + send_actions)) {
             return NO_ERROR;
@@ -372,7 +383,7 @@ TApp::TExitCode TApp::processArgs() {
 
     // Single instance
     if (Settings::pref->use_single_window
-            && isRunning()
+            && running
             && sendMessage("hello")) {
 
         if (!subtitle_file.isEmpty()) {
@@ -408,21 +419,15 @@ void TApp::createGUI() {
     connect(this, &TApp::messageReceived,
             this, &TApp::onMessageReceived);
     connect(this, &TApp::receivedMessage,
-            mw, &Gui::TMainWindowTray::showMainWindow,
-            Qt::QueuedConnection);
-    connect(this, &TApp::receivedMessage,
             mw, &Gui::TMainWindowTray::onReceivedMessage,
             Qt::QueuedConnection);
     connect(mw, &Gui::TMainWindowTray::requestRestart,
             this, &TApp::onRequestRestart);
 
-    setActivationWindow(mw);
-
     WZTRACE("Loading settings main window");
     mw->loadSettings();
 
     mw->setForceCloseOnFinish(close_at_end);
-
     if (move_gui) {
         mw->move(gui_position);
     }
