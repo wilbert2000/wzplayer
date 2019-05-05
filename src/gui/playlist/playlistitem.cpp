@@ -269,32 +269,34 @@ void TPlaylistItem::setFileInfo() {
             if (!mExt.isEmpty() && mBaseName.endsWith(mExt, Qt::CaseInsensitive)) {
                 mBaseName = mBaseName.left(mBaseName.length() - mExt.length() - 1);
             }
-
-            // Note: Handle non-existing playlists as URL, to correctly handle
-            // http://bladiblo/blob.m3u8 etc.
-            mPlaylist = fi.exists() && extensions.playlists().contains(mExt);
-            // TPlaylist::onNewMediaStartedPlaying sets mFolder for discs too
-            mFolder = mPlaylist;
             mWZPlaylist = fi.fileName().compare(TConfig::WZPLAYLIST,
                                                 caseSensitiveFileNames) == 0;
             if (mWZPlaylist) {
+                mPlaylist = true;
                 mBaseName = fi.dir().dirName();
                 fi.setFile(fi.absolutePath());
                 if (fi.isSymLink()) {
                     mSymLink = true;
                     mTarget = fi.symLinkTarget();
                 }
-            } else if (!fi.exists()) {
-                if (TDiscName(mFilename).valid) {
+            } else if (fi.exists()) {
+                mPlaylist = extensions.playlists().contains(mExt);
+            } else if (TDiscName(mFilename).valid) {
+                // Note: TPlaylist::onNewMediaStartedPlaying sets mFolder
+                // on the root item of a disc
+                mPlaylist = false;
+                mURL = true;
+                mDisc = true;
+            } else {
+                QUrl url(mFilename);
+                if (url.isValid() && !url.scheme().isEmpty()) {
+                    mPlaylist = false;
                     mURL = true;
-                    mDisc = true;
                 } else {
-                    QUrl url(mFilename);
-                    if (url.isValid() && !url.scheme().isEmpty()) {
-                        mURL = true;
-                    }
+                    mPlaylist = extensions.playlists().contains(mExt);
                 }
             }
+            mFolder = mPlaylist;
         }
     }
 
@@ -333,14 +335,14 @@ void TPlaylistItem::renameDir(const QString& dir, const QString& newDir) {
 
 void TPlaylistItem::updateFilename(const QString& source, const QString& dest) {
 
+    QString d;
     if (mWZPlaylist) {
-        QString d = dest + QDir::separator() + TConfig::WZPLAYLIST;
-        WZTRACE(QString("Setting '%1' to '%2'").arg(source).arg(d));
-        setFilename(d);
+        d = dest + QDir::separator() + TConfig::WZPLAYLIST;
     } else {
-        WZTRACE(QString("Setting '%1' to '%2'").arg(source).arg(dest));
-        setFilename(dest);
+        d = dest;
     }
+    WZT << "Changing" << source << "to" << d;
+    setFilename(d);
 
     if (childCount()) {
         renameDir(source + QDir::separator(), dest + QDir::separator());
@@ -944,10 +946,13 @@ int TPlaylistItem::compareFilename(const TPlaylistItem& item) const {
     return mFilename.compare(item.mFilename, caseSensitiveFileNames);
 }
 
+const QString magic = "plitem";
+
 QDataStream& operator<<(QDataStream& out, const TPlaylistItem& item) {
     WZT << item.filename();
 
-    out << item.flags()
+    out << magic
+        << item.flags()
         << item.filename()
         << item.baseName()
         << item.durationMS()
@@ -972,6 +977,14 @@ QDataStream& operator<<(QDataStream& out, const TPlaylistItem& item) {
 QDataStream& operator>>(QDataStream& in, TPlaylistItem& item) {
     WZT << item.filename();
 
+    QString s;
+    in >> s;
+    if (s != magic) {
+        WZE << "Magic mismatch" << s;
+        in.setStatus(QDataStream::ReadCorruptData);
+        return in;
+    }
+
     Qt::ItemFlags flags;
     in >> flags;
     item.setFlags(flags);
@@ -987,7 +1000,6 @@ QDataStream& operator>>(QDataStream& in, TPlaylistItem& item) {
     item.setOrder(i);
     in >> i;
     if (i < PSTATE_STOPPED || i > PSTATE_FAILED) {
-        // TODO: abort
         WZE << "Got illegal state from data stream" << i;
         i = PSTATE_STOPPED;
     }

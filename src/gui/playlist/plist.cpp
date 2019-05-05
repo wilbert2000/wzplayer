@@ -462,15 +462,14 @@ void TPList::enableActionsCurrentItem() {
 
 void TPList::onCurrentItemChanged(QTreeWidgetItem* current,
                                   QTreeWidgetItem* previous) {
-    WZTRACEOBJ(QString("Changed from '%1' to '%2'")
-            .arg(previous ? previous->text(TPlaylistItem::COL_NAME) : "0")
-            .arg(current ? current->text(TPlaylistItem::COL_NAME) : "0"));
+    WZTOBJ << "Changed from"
+           << (previous ? previous->text(TPlaylistItem::COL_NAME) : "0")
+           << (current ? current->text(TPlaylistItem::COL_NAME) : "0");
 
     enableActionsCurrentItem();
 }
 
 void TPList::enableActions() {
-    WZTRACEOBJ("");
 
     openAct->setEnabled(player->state() != Player::STATE_STOPPING);
 
@@ -627,6 +626,7 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                 if (item->modified()) {
                     QFileInfo fi(filename, TConfig::WZPLAYLIST);
                     filename = QDir::toNativeSeparators(fi.absoluteFilePath());
+                    item->setFilename(filename);
                     if (!saveM3uFile(item, linkFolders, allowFail)) {
                         result = false;
                     }
@@ -674,7 +674,8 @@ bool TPList::saveM3uFile(TPlaylistItem* folder,
         path += QDir::separator();
     }
 
-    QFile file(filename);
+    // Note: QFile does not support native seps
+    QFile file(QFileInfo(filename).absoluteFilePath());
     do {
         if (file.open(QIODevice::WriteOnly)) {
             break;
@@ -1110,11 +1111,9 @@ void TPList::newFolder() {
     }
 
     if (!fi.isDir()) {
-        // TODO: confirm for non wzplaylist?
         path = fi.absolutePath();
     }
 
-    // TODO: ask filename
     QString name = TWZFiles::getNewFilename(path, tr("New folder"));
     if (!QDir(path).mkdir(name)) {
         QString error = strerror(errno);

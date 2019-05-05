@@ -99,7 +99,8 @@ TPlaylistWidget::TPlaylistWidget(QWidget* parent,
 
     // Scroll to current item
     scrollToCurrentItemTimer = new TWZTimer(this, shortName
-                                            + "_scroll_to_current_timer");
+                                            + "_scroll_to_current_timer",
+                                            false);
     scrollToCurrentItemTimer->setSingleShot(true);
     scrollToCurrentItemTimer->setInterval(50);
     connect(scrollToCurrentItemTimer, &QTimer::timeout,
@@ -899,29 +900,18 @@ void TPlaylistWidget::onMoveFinished(int id, bool error) {
 void TPlaylistWidget::moveItem(TPlaylistItem* item,
                                TPlaylistItem* target,
                                int& targetIndex) {
-    WZTRACEOBJ(QString("Move '%1' to '%2' idx %3")
-               .arg(item->filename())
-               .arg(target->filename())
-               .arg(targetIndex));
 
-    bool isCurrentItem = item == plCurrentItem();
-    bool isLink = item->isLink(); // Get before remove from parent
+    bool isLink = item->isLink(); // Get it before removal from parent
 
     // Remove item from parent
     {
         TPlaylistItem* parent = item->plParent();
         if (parent) {
             int idx = parent->indexOfChild(item);
-            if (idx < targetIndex) {
-                WZTRACEOBJ("Decrementing target index");
-                targetIndex--;
-            } else if (idx == targetIndex) {
-                WZDEBUG("Drop on self");
-                targetIndex++;
-                item->setSelected(true);
-                return;
-            }
             parent->takeChild(idx);
+            if (parent == target && idx < targetIndex) {
+                targetIndex--;
+            }
         }
     }
 
@@ -932,48 +922,27 @@ void TPlaylistWidget::moveItem(TPlaylistItem* item,
             dest += QDir::separator();
         }
         dest += QFileInfo(source).fileName();
-        if (source == dest) {
-            // TODO: request to set sort to COL_ORDER
-            WZTRACEOBJ("Moving idx only");
-        } else {
+        if (source != dest) {
             item->updateFilename(source, dest);
-        }
+        } // else TODO: set sort to COL_ORDER?
     }
 
-    WZTRACEOBJ(QString("Inserting item '%1' at idx %2 into '%3'")
-               .arg(item->filename()).arg(targetIndex).arg(target->filename()));
+    WZTOBJ << "Inserting" << item->filename()
+           << "at idx" << targetIndex
+           << "into" << target->filename();
     target->insertChild(targetIndex, item);
-
-    // Don't mark playlists as modified
-    if (item->isFolder()) {
-        target->setModified();
-    } else {
-        item->setModified();
-    }
-    item->setSelected(true);
-    if (isCurrentItem) {
-        setCurrentItem(item);
-    }
-    targetIndex++;
 }
 
 void TPlaylistWidget::copyItem(TPlaylistItem* item,
                                TPlaylistItem* target,
-                               int& targetIndex) {
-    WZTRACEOBJ(QString("Copy '%1' to '%2' idx %3")
-               .arg(item->filename())
-               .arg(target->filename())
-               .arg(targetIndex));
+                               int targetIndex) {
+    WZTOBJ << "Copy" << item->filename()
+           << "to" << target->filename()
+           << "index" << targetIndex;
 
-    bool isCurrentItem = item == plCurrentItem();
-    TPlaylistItem* destItem;
-    if (dropSourceWidget == 0) {
-        destItem = item;
-    } else {
-        destItem = item->clone();
-    }
-    target->insertChild(targetIndex, destItem);
+    target->insertChild(targetIndex, item);
 
+    // Update file name
     QString source = QDir::toNativeSeparators(item->path());
     QFileInfo fi(source);
     if (fi.exists()) {
@@ -986,20 +955,6 @@ void TPlaylistWidget::copyItem(TPlaylistItem* item,
             item->updateFilename(source, dest);
         } // else set sort to COL_ORDER?
     }
-
-    // Don't mark playlists as modified
-    if (destItem->isFolder()) {
-        target->setModified();
-    } else {
-        destItem->setModified();
-    }
-    destItem->setSelected(true);
-    if (isCurrentItem) {
-        setCurrentItem(destItem);
-    }
-    targetIndex++;
-    WZINFO(QString("Moved '%1' to '%2' inside '%3'")
-           .arg(source).arg(destItem->filename()).arg(target->filename()));
 }
 
 QList<QTreeWidgetItem*> TPlaylistWidget::getItemsFromMimeData(
@@ -1030,6 +985,8 @@ bool TPlaylistWidget::drop(TPlaylistItem* target,
     bool targetIsDir = !targetFilename.isEmpty() && targetDir.exists();
     QStringList files;
     QList<TPlaylistItem*> nonFSItems;
+    TPlaylistWidget* dropSourceWidget = dynamic_cast<TPlaylistWidget*>(
+                event->source());
 
     {
         QList<QTreeWidgetItem*> sourceItems;
@@ -1040,7 +997,6 @@ bool TPlaylistWidget::drop(TPlaylistItem* target,
         } else {
             WZDOBJ << "Drop originates from TPlaylistWidget"
                    << dropSourceWidget->objectName();
-            // TODO: there seems to be a "draggable" selection
             sourceItems = dropSourceWidget->selectedItems();
         }
 
@@ -1064,20 +1020,40 @@ bool TPlaylistWidget::drop(TPlaylistItem* target,
         }
     }
 
-    // move/copyItem() and the finished event handlers will select the new items
+    // Selecting the new items when they are dropped
     clearSelection();
 
     // Handle the items that don't need a file sytem copy/move/link
+    if (targetIndex < 0) {
+        targetIndex = target->childCount();
+    }
     for(int i = 0; i < nonFSItems.count(); i++) {
+        TPlaylistItem* item = nonFSItems.at(i);
         if(event->dropAction() == Qt::MoveAction) {
-            moveItem(nonFSItems.at(i), target, targetIndex);
+            moveItem(item, target, targetIndex);
         } else {
-            copyItem(nonFSItems.at(i), target, targetIndex);
+            if (dropSourceWidget) {
+                item = item->clone();
+            }
+            copyItem(item, target, targetIndex);
         }
+
+        // Don't mark playlists as modified
+        if (item->isFolder()) {
+            target->setModified();
+        } else {
+            item->setModified();
+        }
+        // Set first as currentItem
+        if (selectedItems().count() == 0) {
+            setCurrentItem(item);
+        }
+        item->setSelected(true);
+        targetIndex++;
     }
 
     if (files.count() == 0) {
-        WZDEBUG("No files left to copy, move or link");
+        WZDEBUGOBJ("No file system actions required");
         return true;
     }
 
@@ -1151,8 +1127,6 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
             } else {
                 TPlaylistItem* target = static_cast<TPlaylistItem*>(
                             index.internalPointer());
-                dropSourceWidget = dynamic_cast<TPlaylistWidget*>(
-                            event->source());
                 if (gotModelMimeType) {
                     drop(target, row, event);
                 } else {
@@ -1551,10 +1525,7 @@ void TPlaylistWidget::scrollToCurrentItem() {
 
     scrollToCurrent = false;
     if (currentItem()) {
-        WZTRACEOBJ("Scrolling to current item");
         scrollToItem(currentItem());
-    } else {
-        WZTRACEOBJ("No current item");
     }
 }
 

@@ -153,7 +153,6 @@ private:
     TWZTimer* scrollToCurrentItemTimer;
     bool scrollToCurrent;
 
-    TPlaylistWidget* dropSourceWidget;
     QtFileCopier *fileCopier;
     QtCopyDialog *copyDialog;
     QString stoppedFilename;
@@ -185,7 +184,7 @@ private:
                   int& targetIndex);
     void copyItem(TPlaylistItem* item,
                   TPlaylistItem* target,
-                  int& targetIndex);
+                  int targetIndex);
     QList<QTreeWidgetItem*> getItemsFromMimeData(const QMimeData* mimeData);
     bool drop(TPlaylistItem* target, int targetIndex, QDropEvent* event);
     void dropURLs(TPlaylistItem* target, int row, const QMimeData* mimeData);
