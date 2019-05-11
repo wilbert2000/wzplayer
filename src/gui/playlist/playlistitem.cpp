@@ -266,14 +266,18 @@ void TPlaylistItem::setFileInfo() {
         } else {
             mExt = fi.suffix().toLower();
             // Remove extension from base name
-            if (!mExt.isEmpty() && mBaseName.endsWith(mExt, Qt::CaseInsensitive)) {
-                mBaseName = mBaseName.left(mBaseName.length() - mExt.length() - 1);
+            if (!mExt.isEmpty()
+                    && mBaseName.endsWith(mExt, Qt::CaseInsensitive)) {
+                mBaseName = mBaseName.left(mBaseName.length()
+                                           - mExt.length() - 1);
             }
-            mWZPlaylist = fi.fileName().compare(TConfig::WZPLAYLIST,
-                                                caseSensitiveFileNames) == 0;
+
+            mWZPlaylist = fi.fileName().compare(
+                        TConfig::WZPLAYLIST, caseSensitiveFileNames) == 0;
             if (mWZPlaylist) {
                 mPlaylist = true;
                 mBaseName = fi.dir().dirName();
+                // Recheck sym link, but now on dir instead of wzplayer.m3u8
                 fi.setFile(fi.absolutePath());
                 if (fi.isSymLink()) {
                     mSymLink = true;
@@ -290,6 +294,7 @@ void TPlaylistItem::setFileInfo() {
             } else {
                 QUrl url(mFilename);
                 if (url.isValid() && !url.scheme().isEmpty()) {
+                    // Note: URL playlist needs mPlaylist false
                     mPlaylist = false;
                     mURL = true;
                 } else {
@@ -946,12 +951,12 @@ int TPlaylistItem::compareFilename(const TPlaylistItem& item) const {
     return mFilename.compare(item.mFilename, caseSensitiveFileNames);
 }
 
-const QString magic = "plitem";
+static const QString playlistItemMagic = "plitem";
 
 QDataStream& operator<<(QDataStream& out, const TPlaylistItem& item) {
     WZT << item.filename();
 
-    out << magic
+    out << playlistItemMagic
         << item.flags()
         << item.filename()
         << item.baseName()
@@ -964,9 +969,10 @@ QDataStream& operator<<(QDataStream& out, const TPlaylistItem& item) {
         << item.modified()
         << item.playedTime()
         << item.getBlacklist()
+
+        // Store children
         << item.childCount();
 
-    // Store children
     for(int i = 0; i < item.childCount(); i++) {
         out << *(item.plChild(i));
     }
@@ -979,8 +985,9 @@ QDataStream& operator>>(QDataStream& in, TPlaylistItem& item) {
 
     QString s;
     in >> s;
-    if (s != magic) {
-        WZE << "Magic mismatch" << s;
+    if (s != playlistItemMagic) {
+        WZE << "Playlist item magic should be" << playlistItemMagic
+            << "but found" << s << "instead";
         in.setStatus(QDataStream::ReadCorruptData);
         return in;
     }

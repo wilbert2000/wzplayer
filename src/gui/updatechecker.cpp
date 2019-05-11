@@ -117,12 +117,12 @@ void TUpdateChecker::gotReply() {
             QString version = parseVersion(reply->readAll(), "stable");
             if (!version.isEmpty()) {
                 d->last_checked = QDate::currentDate();
-                WZDEBUG("last known version " + d->last_known_version
+                WZDEBUG("Last known version " + d->last_known_version
                         + ", received version " + version
                         + ", installed version " + TVersion::version);
                 if (d->last_known_version != version
                     && version > TVersion::version) {
-                    WZDEBUG("new version found " + version);
+                    WZDEBUG("New version found " + version);
                     emit newVersionFound(version);
                 }
             }

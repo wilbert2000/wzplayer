@@ -927,18 +927,12 @@ void TPlaylistWidget::moveItem(TPlaylistItem* item,
         } // else TODO: set sort to COL_ORDER?
     }
 
-    WZTOBJ << "Inserting" << item->filename()
-           << "at idx" << targetIndex
-           << "into" << target->filename();
     target->insertChild(targetIndex, item);
 }
 
 void TPlaylistWidget::copyItem(TPlaylistItem* item,
                                TPlaylistItem* target,
                                int targetIndex) {
-    WZTOBJ << "Copy" << item->filename()
-           << "to" << target->filename()
-           << "index" << targetIndex;
 
     target->insertChild(targetIndex, item);
 
@@ -953,7 +947,7 @@ void TPlaylistWidget::copyItem(TPlaylistItem* item,
         dest += fi.fileName();
         if (source != dest) {
             item->updateFilename(source, dest);
-        } // else set sort to COL_ORDER?
+        }
     }
 }
 
@@ -1032,6 +1026,7 @@ bool TPlaylistWidget::drop(TPlaylistItem* target,
         if(event->dropAction() == Qt::MoveAction) {
             moveItem(item, target, targetIndex);
         } else {
+            // Clone the internal item
             if (dropSourceWidget) {
                 item = item->clone();
             }
@@ -1044,11 +1039,16 @@ bool TPlaylistWidget::drop(TPlaylistItem* target,
         } else {
             item->setModified();
         }
+
         // Set first as currentItem
         if (selectedItems().count() == 0) {
             setCurrentItem(item);
         }
         item->setSelected(true);
+
+        WZTOBJ << "Inserted" << item->filename()
+               << "at index" << targetIndex
+               << "into" << target->filename();
         targetIndex++;
     }
 
@@ -1111,8 +1111,8 @@ bool TPlaylistWidget::hasModelMimeType(const QMimeData* mime) {
 void TPlaylistWidget::dropEvent(QDropEvent* event) {
     WZDOBJ << event->mimeData()->formats();
 
-    bool gotModelMimeType = hasModelMimeType(event->mimeData());
-    if (gotModelMimeType || event->mimeData()->hasUrls()) {
+    bool haveModelMimeType = hasModelMimeType(event->mimeData());
+    if (haveModelMimeType || event->mimeData()->hasUrls()) {
         QModelIndex index;
         int col = -1;
         int row = -1;
@@ -1127,12 +1127,13 @@ void TPlaylistWidget::dropEvent(QDropEvent* event) {
             } else {
                 TPlaylistItem* target = static_cast<TPlaylistItem*>(
                             index.internalPointer());
-                if (gotModelMimeType) {
+                // Prefer the model mime type
+                if (haveModelMimeType) {
                     drop(target, row, event);
                 } else {
                     dropURLs(target, row, event->mimeData());
                 }
-                // Don't want QAbstractItemView to delete src
+                // Don't want QAbstractItemView to delete the source
                 // because it was "moved"
                 event->setDropAction(Qt::CopyAction);
             }
