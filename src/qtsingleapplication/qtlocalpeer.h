@@ -65,7 +65,7 @@ protected slots:
 
 private:
     static const char* ack;
-    static const char* squit;
+    static const char* serverQuit;
 
     QString socketDir;
     QString serverSocketName;
@@ -74,8 +74,8 @@ private:
     QtLP_Private::QtLockedFile serverLockFile;
 
     void closeServer();
-    bool sendMsg(const QString& toSocket, const QString &message, int timeout);
-    void connectTo(const QString& toSocket, const QString &message, int timeout);
+    bool sendMsg(const QString& destSocket, const QString &message, int timeout);
+    void connectTo(const QString& destSocket, const QString &message, int timeout);
     bool listen(const QString& name);
 
 private slots:

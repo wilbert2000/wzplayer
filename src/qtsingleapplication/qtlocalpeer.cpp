@@ -76,7 +76,7 @@ namespace QtLP_Private {
 LOG4QT_DECLARE_STATIC_LOGGER(logger, QtLocalPeer)
 
 const char* QtLocalPeer::ack = "ack";
-const char* QtLocalPeer::squit = "squit";
+const char* QtLocalPeer::serverQuit = "squit";
 
 static QString getUID() {
 
@@ -102,27 +102,39 @@ static QString getUID() {
     return uid;
 }
 
+static QString getAppCRC() {
+
+    QString app = QFileInfo(QCoreApplication::applicationFilePath())
+            .canonicalFilePath();
+    QByteArray bytes = app.toUtf8();
+    quint16 crc = qChecksum(bytes.constData(), bytes.size());
+    return QString::number(crc, 16);
+}
+
 QtLocalPeer::QtLocalPeer(QObject* parent, const QString &appId) :
     QObject(parent) {
 
-    // Use data dir instead of temp?
+    // Create socket dir
+    // Maybe use data dir instead of temp?
     socketDir = QDir::tempPath();
     if (!socketDir.endsWith("/")) {
         socketDir += "/";
     }
-    socketDir += appId + "-" + getUID();
+    socketDir += appId + "-" + getUID() + "-" + getAppCRC();
     if (!QDir().mkpath(socketDir)) {
         WZE << "Failed to create socket directory" << socketDir
             << strerror(errno);
     }
 
-    clientSocketName = socketDir + "/client-" + QString::number(::getpid());
+    clientSocketName = socketDir + "/client-"
+            + QString::number(QCoreApplication::applicationPid());
     serverSocketName = socketDir + "/server";
 
-    // Open server lock file in unlocked state, will be locked in isClient()
+    // Open server lock file in unlocked state. Locked by isClient().
     serverLockFile.setFileName(serverSocketName + "-lockfile");
     serverLockFile.open(QIODevice::ReadWrite);
 
+    // Create server to listen on socket. Starts listening by isClient().
     server = new QLocalServer(this);
     connect(server, &QLocalServer::newConnection,
             this, &QtLocalPeer::receiveConnection);
@@ -130,6 +142,58 @@ QtLocalPeer::QtLocalPeer(QObject* parent, const QString &appId) :
 
 QtLocalPeer::~QtLocalPeer() {
     closeServer();
+}
+
+// Send message server quit to a remaining client so it can become server.
+// Clean up the socket dir if no more instances left.
+void QtLocalPeer::closeServer() {
+    WZT << "Closing" << server->serverName();
+
+    if (!serverLockFile.isLocked()) {
+        // Client doesn't need aftercare
+        return;
+    }
+
+    // Delete and unlock server
+    delete server;
+    if (!serverLockFile.unlock()) {
+        WZE << "Failed to unlock server lock file"
+            << serverLockFile.fileName() << serverLockFile.errorString();
+        return;
+    }
+
+    // Notify a remaining client the server quit
+    QDir dir(socketDir);
+    dir.setFilter(QDir::Files | QDir::System);
+    QStringList nameFilterList;
+    nameFilterList << "client-*";
+    dir.setNameFilters(nameFilterList);
+    bool foundClient = false;
+
+    foreach(const QFileInfo& fi, dir.entryInfoList()) {
+        if (sendMsg(fi.absoluteFilePath(), serverQuit, 5000)) {
+            // Message succesfully send and acked
+            foundClient = true;
+            break;
+        } else {
+            // Try to remove the unresponsive socket
+            QFile file(fi.absoluteFilePath());
+            if (file.remove()) {
+                WZW << "Removed unresponsive socket" << fi.absoluteFilePath();
+            } else {
+                WZE << "Failed to remove unresponsive socket"
+                    << fi.absoluteFilePath() << file.errorString();
+            }
+        }
+    }
+
+    // Clean up the socket dir
+    if (!foundClient) {
+        serverLockFile.remove();
+        if (!QDir().rmdir(socketDir)) {
+            WZW << "Failed to remove directory" << socketDir << strerror(errno);
+        }
+    }
 }
 
 bool QtLocalPeer::listen(const QString& name) {
@@ -165,7 +229,7 @@ bool QtLocalPeer::isClient() {
 
     // Can we get the server lock?
     if (serverLockFile.lock(QtLP_Private::QtLockedFile::WriteLock, false)) {
-        // Start listening on server socket
+        // Close current socket and start listening on server socket
         listen(serverSocketName);
         // Is server
         return false;
@@ -179,16 +243,16 @@ bool QtLocalPeer::isClient() {
     return true;
 }
 
-bool QtLocalPeer::sendMsg(const QString& toSocket,
+// Send a message to destSocket and wait for ack message received
+bool QtLocalPeer::sendMsg(const QString& destSocket,
                           const QString &message,
                           int timeout) {
 
-    // Connect
+    // Try connect twice
     QLocalSocket socket;
     bool connOk = false;
     for(int i = 0; i < 2; i++) {
-        // Try twice, in case the other instance is just starting up
-        socket.connectToServer(toSocket);
+        socket.connectToServer(destSocket);
         connOk = socket.waitForConnected(timeout/2);
         if (connOk || i)
             break;
@@ -200,13 +264,12 @@ bool QtLocalPeer::sendMsg(const QString& toSocket,
         nanosleep(&ts, NULL);
 #endif
     }
-
     if (!connOk) {
-        WZD << "Failed to connect to" << toSocket << socket.errorString();
+        WZD << "Failed to connect to" << destSocket << socket.errorString();
         return false;
     }
 
-    // Write message
+    // Write message as utf8 to socket
     QByteArray uMsg(message.toUtf8());
     QDataStream ds(&socket);
     ds.writeBytes(uMsg.constData(), uMsg.size());
@@ -221,9 +284,9 @@ bool QtLocalPeer::sendMsg(const QString& toSocket,
     }
 
     if (res) {
-        WZT << "Message" << message << "written to socket" << toSocket;
+        WZT << "Message" << message << "written to socket" << destSocket;
     } else {
-        WZW << "Failed to write message to" << toSocket;
+        WZW << "Failed to write message to" << destSocket;
     }
     return res;
 }
@@ -246,8 +309,8 @@ void QtLocalPeer::onSocketReadyRead() {
         if (bytes == ack) {
             WZT << "Received ack on socket" << socket->serverName();
         } else {
-            WZW << "Failed to receive ack. Instead received" << bytes
-                << "from socket" << socket->serverName();
+            WZW << "Failed to read ack. Instead received" << bytes
+                << "on socket" << socket->serverName();
         }
         socket->deleteLater();
     }
@@ -282,10 +345,10 @@ void QtLocalPeer::onSocketError(QLocalSocket::LocalSocketError socketError) {
     }
 }
 
-void QtLocalPeer::connectTo(const QString& toSocket,
+void QtLocalPeer::connectTo(const QString& destSocket,
                             const QString& message,
                             int timeout) {
-    WZT << "Connecting to" << toSocket;
+    WZT << "Connecting to" << destSocket;
 
     QLocalSocket* socket = new QLocalSocket(this);
     socket->setProperty("msg", message);
@@ -293,14 +356,14 @@ void QtLocalPeer::connectTo(const QString& toSocket,
             this, SLOT(onSocketError(QLocalSocket::LocalSocketError)));
     connect(socket, &QLocalSocket::connected,
             this, &QtLocalPeer::onSocketConnected);
-    socket->connectToServer(toSocket);
+    socket->connectToServer(destSocket);
 
     // Timeout socket
     QTimer::singleShot(timeout, socket, &QLocalSocket::deleteLater);
 }
 
 void QtLocalPeer::broadcastMessage(const QString &message, int timeout) {
-    WZT << message << "timeout" << timeout;
+    WZT << "Message" << message << "timeout" << timeout;
 
     // Make sure we are listening
     isClient();
@@ -324,81 +387,60 @@ void QtLocalPeer::broadcastMessage(const QString &message, int timeout) {
 void QtLocalPeer::receiveConnection() {
 
     QLocalSocket* socket = server->nextPendingConnection();
-    if (!socket)
-        return;
-
-    // Wait message size available
-    while (socket->bytesAvailable() < (int)sizeof(quint32))
-        socket->waitForReadyRead();
-
-    QDataStream ds(socket);
-    QByteArray uMsg;
-    // Get message size
-    quint32 remaining;
-    ds >> remaining;
-    /// Get message
-    uMsg.resize(remaining);
-    int got = 0;
-    char* uMsgBuf = uMsg.data();
-    do {
-        got = ds.readRawData(uMsgBuf, remaining);
-        remaining -= got;
-        uMsgBuf += got;
-    } while (remaining && got >= 0 && socket->waitForReadyRead(2000));
-
-    if (got < 0) {
-        WZW << "Failed to read message" << socket->errorString();
-        delete socket;
+    if (!socket) {
         return;
     }
 
-    QString message(QString::fromUtf8(uMsg));
+    // Wait for message size
+    if (socket->bytesAvailable() < (int)sizeof(quint32)) {
+        socket->waitForReadyRead(3000);
+        if (socket->bytesAvailable() < (int)sizeof(quint32)) {
+            // Timeout the connection
+            WZW << "Connection on socket" << server->serverName()
+                << "timed out after 3000 ms";
+            delete socket;
+            return;
+        }
+    }
+
+    // Get the message
+    QDataStream ds(socket);
+    QByteArray msgBytes;
+    // Get size
+    quint32 remainingBytes;
+    ds >> remainingBytes;
+    /// Get message
+    msgBytes.resize(remainingBytes);
+    int got = 0;
+    char* uMsgBuf = msgBytes.data();
+    do {
+        got = ds.readRawData(uMsgBuf, remainingBytes);
+        remainingBytes -= got;
+        uMsgBuf += got;
+    } while (remainingBytes && got >= 0 && socket->waitForReadyRead(2000));
+
+    if (got < 0) {
+        WZW << "Failed to read message from socket" << server->serverName()
+            << socket->errorString();
+        delete socket;
+        return;
+    }
+    // Convert message from utf8 to QString
+    QString message = QString::fromUtf8(msgBytes);
+
+    // Send ack
     socket->write(ack, qstrlen(ack));
     socket->waitForBytesWritten(1000);
-    socket->waitForDisconnected(1000); // make sure client reads ack
+    socket->waitForDisconnected(1000);
     delete socket;
 
-    if (message == squit) {
-        WZTRACE("Received squit, picking up server role");
+    // Handle the message
+    if (message == serverQuit) {
+        WZTRACE("Received message server quit. Picking up the server socket.");
+        // Close client socket and start listening on the server socket
         isClient();
     } else {
         WZTRACE("emit messageReceived(\"" + message + "\")");
         emit messageReceived(message);
-    }
-}
-
-void QtLocalPeer::closeServer() {
-
-    if (!serverLockFile.isLocked()) {
-        return;
-    }
-
-    // Shutdown server, so a remaining client can become server
-    delete server;
-
-    if (!serverLockFile.unlock()) {
-        WZERROR("Failed to unlock lock file");
-        return;
-    }
-
-    // Notify remaining client to pick up server role
-    QDir dir(socketDir);
-    dir.setFilter(QDir::Files | QDir::System);
-    QStringList nameFilterList;
-    nameFilterList << "client-*";
-    dir.setNameFilters(nameFilterList);
-
-    foreach(const QFileInfo& fi, dir.entryInfoList()) {
-        if (sendMsg(fi.absoluteFilePath(), squit, 5000)) {
-            break;
-        } else {
-            QFile file(fi.absoluteFilePath());
-            if (file.remove()) {
-                WZW << "Removed dead socket" << fi.absoluteFilePath();
-            } else {
-                WZE << "Failed to remove dead socket" << fi.absoluteFilePath()
-                    << file.errorString();
-            }
-        }
     }
 }
