@@ -3470,8 +3470,8 @@ void TPlayer::onReceivedBufferingEnded() {
 void TPlayer::updatePreviewWindowSize() {
 
     if (previewPlayer) {
-        int w = 320;
-        int h = 240;
+        int w = 240;
+        int h = 180;
         double aspect = playerWindow->aspectRatio();
         if (aspect != 0) {
             h = qRound(w / playerWindow->aspectRatio());
