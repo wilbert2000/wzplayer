@@ -45,7 +45,7 @@ public:
                             const QString& name,
                             TMediaData* mdata);
 
-    QTime time;
+    QTime startTime;
 
     bool isRunning() const { return state() == QProcess::Running; }
     bool isReady() const {

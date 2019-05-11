@@ -26,6 +26,7 @@
 #include "colorutils.h"
 #include "config.h"
 #include "name.h"
+#include "wztimer.h"
 #include "wzdebug.h"
 
 #include <QDir>
@@ -37,18 +38,26 @@ LOG4QT_DECLARE_STATIC_LOGGER(logger, Player::Process::TMPVProcess)
 namespace Player {
 namespace Process {
 
+const int BITRATE_START_INTERVAL = 11000;
+
 TMPVProcess::TMPVProcess(QObject* parent,
                          const QString& name,
                          TMediaData* mdata) :
     TPlayerProcess(parent, name, mdata) {
+
+    bitrateTimer = new TWZTimer(this, "bitrate_timer");
+    bitrateTimer->setSingleShot(true);
+    bitrateTimer->setInterval(BITRATE_START_INTERVAL);
+    connect(bitrateTimer, &TWZTimer::timeout,
+            this, &TMPVProcess::requestBitrateInfo);
 }
 
 bool TMPVProcess::startPlayer() {
 
     received_buffering = false;
     received_title_not_found = false;
-    request_bit_rate_info = !md->image;
     quit_at_end_of_title = false;
+    bitrateTimer->stop();
 
     return TPlayerProcess::startPlayer();
 }
@@ -436,12 +445,31 @@ void TMPVProcess::notifyPlayingStarted() {
         fixTitle();
     }
 
+    // Request bitrate
+    if (!md->image) {
+        bitrateTimer->logStart();
+    }
+
     TPlayerProcess::notifyPlayingStarted();
 }
 
 void TMPVProcess::requestBitrateInfo() {
-    writeToPlayer("print_text VIDEO_BITRATE=${=video-bitrate}");
-    writeToPlayer("print_text AUDIO_BITRATE=${=audio-bitrate}");
+
+    if (state() == QProcess::NotRunning
+            || received_end_of_file
+            || quit_send) {
+        return;
+    }
+
+    if (notified_player_is_running
+            && (md->pos_gui_ms > BITRATE_START_INTERVAL - 3000
+                || bitrateTimer->interval() > BITRATE_START_INTERVAL)) {
+        writeToPlayer("print_text VIDEO_BITRATE=${=video-bitrate}");
+        writeToPlayer("print_text AUDIO_BITRATE=${=audio-bitrate}");
+        bitrateTimer->setInterval(2 * bitrateTimer->interval());
+    }
+
+    bitrateTimer->logStart();
 }
 
 bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
@@ -473,21 +501,13 @@ bool TMPVProcess::parseStatusLine(const QRegExp& rx) {
 
     // Don't emit signal receivedPause(), it is not needed for MPV
     if (!paused) {
-        // Parse status flags
+        // Parse status flags buffering and idle
         bool buff = rx.cap(4) == "yes";
         bool idle = rx.cap(5) == "yes";
-
         if (buff || idle) {
             buffering = true;
             emit receivedBuffering();
             return true;
-        }
-
-        if (request_bit_rate_info
-                && md->pos_gui_ms > 11000
-                && time.elapsed() > 11000) {
-            request_bit_rate_info = false;
-            requestBitrateInfo();
         }
     }
 

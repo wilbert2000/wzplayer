@@ -22,6 +22,8 @@
 #include "player/process/playerprocess.h"
 
 
+class TWZTimer;
+
 namespace Player {
 namespace Process {
 
@@ -125,12 +127,13 @@ protected slots:
 private:
     bool received_buffering;
     bool received_title_not_found;
-    bool request_bit_rate_info;
     bool capturing;
 
     bool quit_at_end_of_title;
     int quit_at_end_of_title_ms;
     QTime quit_at_end_of_title_time;
+
+    TWZTimer* bitrateTimer;
 
     QString sub_file;
     QString previous_audio_equalizer;
@@ -147,6 +150,8 @@ private:
     bool parseSubtitleTrack(int id, const QString& lang, QString name,
                             QString type, bool selected);
     bool parseMetaDataList(QString list);
+
+private slots:
     void requestBitrateInfo();
 };
 

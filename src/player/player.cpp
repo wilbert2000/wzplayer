@@ -853,7 +853,7 @@ void TPlayer::onPlayingStarted() {
     WZTRACEOBJ("emit mediaStartedPlaying()");
     emit mediaStartedPlaying();
 
-    WZDEBUGOBJ(QString("Loading done in %1 ms").arg(proc->time.elapsed()));
+    WZDEBUGOBJ(QString("Loading done in %1 ms").arg(proc->startTime.elapsed()));
 }
 
 void TPlayer::clearOSD() {

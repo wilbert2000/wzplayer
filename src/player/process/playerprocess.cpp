@@ -111,7 +111,7 @@ bool TPlayerProcess::startPlayer() {
     quit_send = false;
 
     // Start the player process
-    time.start();
+    startTime.start();
     start();
     // and wait for it to come up
     return waitForStarted();
