@@ -2494,7 +2494,7 @@ void TMainWindow::enablePlayPauseStop() {
         playPauseStopAct->setTextAndTip(tr("Stopping player..."));
         playPauseStopAct->setIcon(iconProvider.iconStopping);
         playPauseStopAct->setEnabled(false);
-        WZTRACE("Disabled in state stopping");
+        //WZTRACE("Disabled in state stopping");
     } else if (ps == Player::STATE_PLAYING) {
         playPauseAct->setTextAndTip(tr("Pause"));
         playPauseAct->setEnabled(true);
@@ -2503,11 +2503,11 @@ void TMainWindow::enablePlayPauseStop() {
         if (playlist->isBusy() || favlist->isBusy()) {
             playPauseAct->setIcon(iconProvider.iconLoading);
             playPauseStopAct->setIcon(iconProvider.iconLoading);
-            WZTRACE("Enabled pause in state playing while busy");
+            //WZTRACE("Enabled pause in state playing while busy");
         } else {
             playPauseAct->setIcon(iconProvider.pauseIcon);
             playPauseStopAct->setIcon(iconProvider.pauseIcon);
-            WZTRACE("Enabled pause in state playing");
+            //WZTRACE("Enabled pause in state playing");
         }
     } else if (ps == Player::STATE_PAUSED) {
         playPauseAct->setTextAndTip(tr("Play"));
@@ -2517,11 +2517,11 @@ void TMainWindow::enablePlayPauseStop() {
         if (playlist->isBusy() || favlist->isBusy()) {
             playPauseAct->setIcon(iconProvider.iconLoading);
             playPauseStopAct->setIcon(iconProvider.iconLoading);
-            WZTRACE("Enabled play in state paused while busy");
+            //WZTRACE("Enabled play in state paused while busy");
         } else {
             playPauseAct->setIcon(iconProvider.playIcon);
             playPauseStopAct->setIcon(iconProvider.playIcon);
-            WZTRACE("Enabled play in state paused");
+            //WZTRACE("Enabled play in state paused");
         }
     } else {
         QString s = player->stateToString().toLower();
@@ -2532,7 +2532,7 @@ void TMainWindow::enablePlayPauseStop() {
             playPauseStopAct->setTextAndTip(tr("Stop %1").arg(s));
             playPauseStopAct->setIcon(iconProvider.iconStopping);
             playPauseStopAct->setEnabled(true);
-            WZTRACE("Enabled stop in state " + s);
+            //WZTRACE("Enabled stop in state " + s);
         } else if (ps == Player::STATE_STOPPED) {
             playPauseAct->setTextAndTip(tr("Play"));
             playPauseAct->setIcon(iconProvider.playIcon);
@@ -2542,8 +2542,8 @@ void TMainWindow::enablePlayPauseStop() {
                     || playlist->hasPlayableItems();
             playPauseAct->setEnabled(e);
             playPauseStopAct->setEnabled(e);
-            WZTRACE(QString("%1 play in state stopped")
-                    .arg(e ? "Enabled" : "Disabled"));
+            //WZTRACE(QString("%1 play in state stopped")
+            //        .arg(e ? "Enabled" : "Disabled"));
         }
     }
 
