@@ -128,7 +128,7 @@ void TTimeSliderAction::setDurationMS(int ms) {
 void TTimeSliderAction::onUpdatePosTimerTimeout() {
 
     if (previewPlayer->isBuffering()) {
-        WZDEBUG("Waiting for player to catch up");
+        WZTRACE("Waiting for player to catch up");
         updatePosTimer->start();
     } else if (qAbs(requestedPosMS - posMS) > POS_RES_MS) {
         if (Settings::pref->seek_relative) {
@@ -228,6 +228,7 @@ void TTimeSliderAction::onToolTipEvent(TTimeSlider* slider,
             previewTimer->start();
         }
     } else {
+        pos.ry() -= 56;
         QToolTip::showText(pos, TWZTime::formatMS(ms), slider);
     }
 }
