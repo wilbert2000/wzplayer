@@ -137,6 +137,11 @@ void TPlayerProcess::onFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 void TPlayerProcess::notifyPlayingStarted() {
     WZDOBJ;
 
+    // Notify duration 0
+    if (md->duration_ms == 0) {
+        emit durationChanged(0);
+    }
+
     emit receivedVideoOut();
     emit receivedVideoTracks();
     emit receivedAudioTracks();
