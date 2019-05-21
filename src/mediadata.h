@@ -51,14 +51,15 @@ public:
 
     QString filename;
 
+    // Type selected by TPlayer.open()
     Type selected_type;
-    // Detected type only set for disc types
+    // Detected type only set for disc types by player proc
     Type detected_type;
     // Parsed disc data set by TPlayer::openDisc()
     TDiscName disc;
-    // Image file
+    // Is filename an image file
     bool image;
-    // Streams
+    // URL stream
     QString stream_url;
 
     // Start time reported by player
@@ -76,12 +77,12 @@ public:
     // Current time video, without start time substracted
     int pos_ms;
     double getPosSec() const { return double(pos_ms) / 1000; }
-    // TODO: trunc?
     void setPosSec(const double secs) { pos_ms = qRound(secs * 1000); }
     // Current time video, with start time substracted and MPEG-TS PTS
-    // timestamp rollover corrected. Also in TMediaSettings.
+    // timestamp rollover corrected. Also stored in TMediaSettings.
     int pos_gui_ms;
 
+    // Duration in ms
     int duration_ms;
     double getDurationSec() const { return double(duration_ms) / 1000; }
 

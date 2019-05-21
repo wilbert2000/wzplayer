@@ -26,7 +26,6 @@
 #include "colorutils.h"
 #include "config.h"
 #include "name.h"
-#include "wztimer.h"
 #include "wzdebug.h"
 
 #include <QDir>
@@ -44,12 +43,6 @@ TMPVProcess::TMPVProcess(QObject* parent,
                          const QString& name,
                          TMediaData* mdata) :
     TPlayerProcess(parent, name, mdata) {
-
-    bitrateTimer = new TWZTimer(this, "bitrate_timer");
-    bitrateTimer->setSingleShot(true);
-    bitrateTimer->setInterval(BITRATE_START_INTERVAL);
-    connect(bitrateTimer, &TWZTimer::timeout,
-            this, &TMPVProcess::requestBitrateInfo);
 }
 
 bool TMPVProcess::startPlayer() {
@@ -57,7 +50,6 @@ bool TMPVProcess::startPlayer() {
     received_buffering = false;
     received_title_not_found = false;
     quit_at_end_of_title = false;
-    bitrateTimer->stop();
 
     return TPlayerProcess::startPlayer();
 }
@@ -445,31 +437,7 @@ void TMPVProcess::notifyPlayingStarted() {
         fixTitle();
     }
 
-    // Request bitrate
-    if (!md->image) {
-        bitrateTimer->logStart();
-    }
-
     TPlayerProcess::notifyPlayingStarted();
-}
-
-void TMPVProcess::requestBitrateInfo() {
-
-    if (state() == QProcess::NotRunning
-            || received_end_of_file
-            || quit_send) {
-        return;
-    }
-
-    if (notified_player_is_running
-            && (md->pos_gui_ms > BITRATE_START_INTERVAL - 3000
-                || bitrateTimer->interval() > BITRATE_START_INTERVAL)) {
-        writeToPlayer("print_text VIDEO_BITRATE=${=video-bitrate}");
-        writeToPlayer("print_text AUDIO_BITRATE=${=audio-bitrate}");
-        bitrateTimer->setInterval(2 * bitrateTimer->interval());
-    }
-
-    bitrateTimer->logStart();
 }
 
 bool TMPVProcess::parseStatusLine(const QRegExp& rx) {

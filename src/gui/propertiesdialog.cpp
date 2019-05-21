@@ -420,15 +420,9 @@ QString TPropertiesDialog::getInfo(const QString& title) {
         s += addItem(tr("Current aspect"),
                      Settings::TAspectRatio::doubleToString(
                          (double) md.video_out_width / md.video_out_height));
-        if (md.video_bitrate == -1) {
-            if (Settings::pref->isMPV() && !md.image) {
-                s += addItem(tr("Bitrate"), tr("Waiting for estimate..."));
-            } else {
-                s += addItem(tr("Bitrate"), tr("Not set"));
-            }
-        } else {
-            s += addItem(tr("Bitrate"),
-                         tr("%1 kbps").arg(md.video_bitrate / 1000));
+        if (md.video_bitrate > 0) {
+            s += addItem(tr("Bitrate"),tr("%1 kbps")
+                         .arg(md.video_bitrate / 1000));
         }
         s += addItem(tr("Frames per second"), QString::number(md.video_fps));
         s += addItem(tr("Angle"), tr("%1/%2").arg(md.angle).arg(md.angles));
@@ -457,13 +451,7 @@ QString TPropertiesDialog::getInfo(const QString& title) {
             tr("%1 - %2").arg(md.audio_codec).arg(md.audio_codec_description));
         s += addItem(tr("Channels"), QString::number(md.audio_nch));
         s += addItem(tr("Rate"), tr("%1 Hz").arg(md.audio_rate));
-        if (md.audio_bitrate == -1) {
-            if (Settings::pref->isMPV() && !md.image) {
-                s += addItem(tr("Bitrate"), tr("Waiting for estimate..."));
-            } else {
-                s += addItem(tr("Bitrate"), tr("Not set"));
-            }
-        } else {
+        if (md.audio_bitrate > 0) {
             s += addItem(tr("Bitrate"),
                          tr("%1 kbps").arg(md.audio_bitrate / 1000));
         }
