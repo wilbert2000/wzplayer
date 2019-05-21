@@ -185,8 +185,22 @@ private:
     void copyItem(TPlaylistItem* item,
                   TPlaylistItem* target,
                   int targetIndex);
+    void handleItem(TPlaylistWidget* sourceWidget,
+                    TPlaylistItem* item,
+                    TPlaylistItem* target,
+                    int& targetIndex,
+                    Qt::DropAction action);
     QList<QTreeWidgetItem*> getItemsFromMimeData(const QMimeData* mimeData);
-    bool drop(TPlaylistItem* target, int targetIndex, QDropEvent* event);
+    void getItems(TPlaylistWidget* sourceWidget,
+                     TPlaylistItem* target,
+                     QStringList& filesForCopier,
+                     QList<TPlaylistItem*>& internalItems,
+                     QDropEvent* event);
+    void dropItems(TPlaylistItem* target,
+                   int targetIndex,
+                   QDropEvent* event,
+                   QStringList& filesForCopier);
+    void drop(TPlaylistItem* target, int targetIndex, QDropEvent* event);
     void dropURLs(TPlaylistItem* target, int row, const QMimeData* mimeData);
     bool hasModelMimeType(const QMimeData* mime);
 

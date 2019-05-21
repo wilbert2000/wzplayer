@@ -924,7 +924,7 @@ void TPlaylistWidget::moveItem(TPlaylistItem* item,
         dest += QFileInfo(source).fileName();
         if (source != dest) {
             item->updateFilename(source, dest);
-        } // else TODO: set sort to COL_ORDER?
+        } // else TODO: maybe check to set sort to COL_ORDER?
     }
 
     target->insertChild(targetIndex, item);
@@ -951,6 +951,42 @@ void TPlaylistWidget::copyItem(TPlaylistItem* item,
     }
 }
 
+void TPlaylistWidget::handleItem(TPlaylistWidget* sourceWidget,
+                                 TPlaylistItem* item,
+                                 TPlaylistItem* target,
+                                 int& targetIndex,
+                                 Qt::DropAction action) {
+
+    if(action == Qt::MoveAction) {
+        moveItem(item, target, targetIndex);
+    } else {
+        // Clone the item if it originates from this app
+        if (sourceWidget) {
+            item = item->clone();
+        }
+        copyItem(item, target, targetIndex);
+    }
+
+    if (item->isFolder()) {
+        // Don't mark a playlist as modified, only its new parent
+        target->setModified();
+    } else {
+        // Mark item modified
+        item->setModified();
+    }
+
+    // Set the current item to the first item of the new selection
+    if (selectedItems().count() == 0) {
+        setCurrentItem(item);
+    }
+    item->setSelected(true);
+
+    WZTOBJ << "Inserted" << item->filename()
+           << "at index" << targetIndex
+           << "into" << target->filename();
+    targetIndex++;
+}
+
 QList<QTreeWidgetItem*> TPlaylistWidget::getItemsFromMimeData(
         const QMimeData* mimeData) {
 
@@ -960,101 +996,97 @@ QList<QTreeWidgetItem*> TPlaylistWidget::getItemsFromMimeData(
     QDataStream stream(&bytes, QIODevice::ReadOnly);
 
     while (!stream.atEnd()) {
+        // Create an item
         TPlaylistItem* item = new TPlaylistItem();
+        // Load the item from stream
         stream >> *item;
+        // Add the item to result list
         items << item;
     }
 
     return items;
 }
 
-bool TPlaylistWidget::drop(TPlaylistItem* target,
-                           int targetIndex,
-                           QDropEvent* event) {
-    WZDEBUG(QString("Selected target '%1'").arg(target->filename()));
+void TPlaylistWidget::getItems(TPlaylistWidget* sourceWidget,
+                               TPlaylistItem* target,
+                               QStringList& filesForCopier,
+                               QList<TPlaylistItem*>& internalItems,
+                               QDropEvent* event) {
 
-    // Collect the dropped files
+
+    QList<QTreeWidgetItem*> sourceItems;
+    if (sourceWidget == 0) {
+        WZDEBUGOBJ("Getting items from mime data");
+        // Get the items from mimeData
+        sourceItems = getItemsFromMimeData(event->mimeData());
+    } else {
+        WZDOBJ << "Getting items from selection TPlaylistWidget"
+               << sourceWidget->objectName();
+        sourceItems = sourceWidget->selectedItems();
+    }
+
     QString targetFilename = target->path();
     QDir targetDir(targetFilename);
     bool targetIsDir = !targetFilename.isEmpty() && targetDir.exists();
-    QStringList files;
-    QList<TPlaylistItem*> nonFSItems;
-    TPlaylistWidget* dropSourceWidget = dynamic_cast<TPlaylistWidget*>(
-                event->source());
 
-    {
-        QList<QTreeWidgetItem*> sourceItems;
-        if (dropSourceWidget == 0) {
-            WZDEBUGOBJ("Drop originates from other app");
-            // Items not from this app. Get items from mimeData
-            sourceItems = getItemsFromMimeData(event->mimeData());
-        } else {
-            WZDOBJ << "Drop originates from TPlaylistWidget"
-                   << dropSourceWidget->objectName();
-            sourceItems = dropSourceWidget->selectedItems();
-        }
+    for(int i = 0; i < sourceItems.length(); i++) {
+        TPlaylistItem* item = static_cast<TPlaylistItem*>(
+                    sourceItems.at(i));
 
-        for(int i = 0; i < sourceItems.length(); i++) {
-            TPlaylistItem* item = static_cast<TPlaylistItem*>(sourceItems.at(i));
-            if (targetIsDir && !item->isLink()) {
-                QFileInfo source(item->path());
-                if (event->dropAction() == Qt::CopyAction
-                        || event->dropAction() == Qt::LinkAction
-                        || source.dir() != targetDir) {
-                    files.append(source.absoluteFilePath());
-                    WZTRACEOBJ(QString("Added '%1' to file copier")
-                               .arg(source.absoluteFilePath()));
-                    continue;
-                }
+        if (targetIsDir && !item->isLink()) {
+            QFileInfo source(item->path());
+            if (event->dropAction() == Qt::CopyAction
+                    || event->dropAction() == Qt::LinkAction
+                    || source.dir() != targetDir) {
+                filesForCopier.append(source.absoluteFilePath());
+                WZTOBJ << "Added" <<  source.absoluteFilePath()
+                       << "to file copier";
+                continue;
             }
-            // No need for file system action
-            WZTOBJ << "No file system" << event->dropAction()
-                   << "for" << item->filename();
-            nonFSItems.append(item);
         }
-    }
 
-    // Selecting the new items when they are dropped
+        // No need for file system action
+        WZTOBJ << "Selected internal" << event->dropAction()
+               << "for" << item->filename();
+        internalItems.append(item);
+    }
+}
+
+void TPlaylistWidget::dropItems(TPlaylistItem* target,
+                                int targetIndex,
+                                QDropEvent* event,
+                                QStringList& filesForCopier) {
+
+    QList<TPlaylistItem*> internalItems;
+    TPlaylistWidget* sourceWidget = dynamic_cast<TPlaylistWidget*>(
+                event->source());
+    getItems(sourceWidget, target, filesForCopier, internalItems, event);
+
+    // The new items will be selected when they are dropped
     clearSelection();
 
-    // Handle the items that don't need a file sytem copy/move/link
+    // Handle the items that don't need a file sytem update
     if (targetIndex < 0) {
         targetIndex = target->childCount();
     }
-    for(int i = 0; i < nonFSItems.count(); i++) {
-        TPlaylistItem* item = nonFSItems.at(i);
-        if(event->dropAction() == Qt::MoveAction) {
-            moveItem(item, target, targetIndex);
-        } else {
-            // Clone the internal item
-            if (dropSourceWidget) {
-                item = item->clone();
-            }
-            copyItem(item, target, targetIndex);
-        }
-
-        // Don't mark playlists as modified
-        if (item->isFolder()) {
-            target->setModified();
-        } else {
-            item->setModified();
-        }
-
-        // Set first as currentItem
-        if (selectedItems().count() == 0) {
-            setCurrentItem(item);
-        }
-        item->setSelected(true);
-
-        WZTOBJ << "Inserted" << item->filename()
-               << "at index" << targetIndex
-               << "into" << target->filename();
-        targetIndex++;
+    for(int i = 0; i < internalItems.count(); i++) {
+        handleItem(sourceWidget, internalItems.at(i),
+                   target, targetIndex,
+                   event->dropAction());
     }
+}
 
-    if (files.count() == 0) {
-        WZDEBUGOBJ("No file system actions required");
-        return true;
+void TPlaylistWidget::drop(TPlaylistItem* target,
+                           int targetIndex,
+                           QDropEvent* event) {
+    WZDOBJ << "Target" << target->filename() << "index" << targetIndex;
+
+    // Drop items. Returns with the files for the file copier.
+    QStringList filesForCopier;
+    dropItems(target, targetIndex, event, filesForCopier);
+    if (filesForCopier.count() == 0) {
+        WZDEBUGOBJ("No file system update required");
+        return;
     }
 
     // Setup the file copier
@@ -1065,29 +1097,36 @@ bool TPlaylistWidget::drop(TPlaylistItem* target,
             this, &TPlaylistWidget::onDropDone,
             Qt::QueuedConnection);
 
+    // Signal we are busy
     emit busyChanged();
 
-    // Pass files to copier
+    // Pass the files to the copier
+    QString targetFilename = target->path();
     if (event->dropAction() == Qt::MoveAction) {
+        // Remember a stopped playing item
         stoppedFilename = "";
+        // Stop a playing item before it is moved
         connect(fileCopier, &QtFileCopier::aboutToStart,
                 this, &TPlaylistWidget::onMoveAboutToStart);
+        // Update a finished item
         connect(fileCopier, &QtFileCopier::finished,
                 this, &TPlaylistWidget::onMoveFinished);
-        fileCopier->moveFiles(files, target->path(), 0);
+        // Start moving
+        fileCopier->moveFiles(filesForCopier, targetFilename, 0);
     } else {
+        // Update a finished item
         connect(fileCopier, &QtFileCopier::finished,
                 this, &TPlaylistWidget::onCopyFinished);
+        // Select copy or link
         QtFileCopier::CopyFlags flags;
         if (event->dropAction() == Qt::LinkAction) {
             flags = QtFileCopier::MakeLinks;
         } else {
             flags = 0;
         }
-        fileCopier->copyFiles(files, target->path(), flags);
+        // Start copying
+        fileCopier->copyFiles(filesForCopier, targetFilename, flags);
     }
-
-    return true;
 }
 
 void TPlaylistWidget::dropURLs(TPlaylistItem* target,
