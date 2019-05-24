@@ -1026,6 +1026,123 @@ void TPlayer::saveRestartState() {
     }
 }
 
+void TPlayer::setAudioOptions(const QString& fileName) {
+
+    using namespace Settings;
+
+    // Disable audio for preview player
+    if (isPreviewPlayer()) {
+        proc->setOption("ao", "null");
+        return;
+    }
+
+    if (!pref->ao.isEmpty()) {
+        proc->setOption("ao", pref->ao);
+    }
+
+    // Forced audio codec
+    if (!mset.forced_audio_codec.isEmpty()) {
+        proc->setOption("ac", mset.forced_audio_codec);
+    }
+
+    // Load m4a audio file with the same name as file
+    if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
+        QFileInfo fi(fileName);
+        if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
+            QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
+            if (!QFile::exists(file2)) {
+                // Check for upper case
+                file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
+            }
+            if (QFile::exists(file2)) {
+                WZDEBUGOBJ("Using external audio file '" + file2 + "'");
+                mset.external_audio = file2;
+            }
+        }
+    }
+
+    if (!mset.external_audio.isEmpty()) {
+        proc->setOption("audiofile", mset.external_audio);
+    } else if (mset.current_audio_id >= 0) {
+        proc->setOption("aid", QString::number(mset.current_audio_id));
+    }
+
+    if (!pref->player_additional_options.contains("-volume")) {
+        proc->setOption("volume", QString::number(getVolume()));
+    }
+
+    if (getMute()) {
+        proc->setOption("mute");
+    }
+
+    // Audio channels
+    if (mset.audio_use_channels != 0) {
+        proc->setOption("channels", QString::number(mset.audio_use_channels));
+    }
+
+    // Audio delay
+    if (mset.audio_delay != 0) {
+        proc->setOption("delay", QString::number(double(mset.audio_delay)/1000));
+    }
+
+    // S/PDIF
+    if (pref->use_hwac3) {
+        proc->setOption("afm", "hwac3");
+        WZINFOOBJ("Disabled audio filters for S/PDIF output");
+        return;
+    }
+
+    // Stereo mode
+    if (mset.stereo_mode != 0) {
+        switch (mset.stereo_mode) {
+            case TMediaSettings::Left:
+                proc->addAudioFilter("channels", "2:2:0:1:0:0");
+                break;
+            case TMediaSettings::Right:
+                proc->addAudioFilter("channels", "2:2:1:0:1:1");
+                break;
+            case TMediaSettings::Mono:
+                proc->addAudioFilter("pan", "1:0.5:0.5");
+                break;
+            case TMediaSettings::Reverse:
+                proc->addAudioFilter("channels", "2:2:0:1:1:0");
+                break;
+        }
+    }
+
+    // Audio filters
+    if (mset.volnorm_filter) {
+        proc->addAudioFilter("volnorm",
+                             pref->filters.item("volnorm").options());
+    }
+    if (mset.extrastereo_filter) {
+        proc->addAudioFilter("extrastereo");
+    }
+    if (mset.karaoke_filter) {
+        proc->addAudioFilter("karaoke");
+    }
+
+    if (pref->use_scaletempo == TPreferences::Enabled) {
+        proc->addAudioFilter("scaletempo");
+    }
+
+    // Audio equalizer
+    if (pref->use_audio_equalizer) {
+        proc->addAudioFilter("equalizer",
+                             equalizerListToString(getAudioEqualizer()));
+    }
+
+    // Additional audio filters
+    // Global from pref
+    if (!pref->player_additional_audio_filters.isEmpty()) {
+        proc->setOption("af-add", pref->player_additional_audio_filters);
+    }
+    // This file from mset
+    if (!mset.player_additional_audio_filters.isEmpty()) {
+        proc->setOption("af-add", mset.player_additional_audio_filters);
+    }
+}
+
 void TPlayer::startPlayer() {
     WZDOBJ;
 
@@ -1047,22 +1164,6 @@ void TPlayer::startPlayer() {
     // Check URL playlist
     if (fileName.endsWith("|playlist")) {
         fileName = fileName.remove("|playlist");
-    }
-
-    // Load m4a audio file with the same name as file
-    if (pref->autoload_m4a && mset.external_audio.isEmpty()) {
-        QFileInfo fi(fileName);
-        if (fi.exists() && !fi.isDir() && fi.suffix().toLower() == "mp4") {
-            QString file2 = fi.path() + "/" + fi.completeBaseName() + ".m4a";
-            if (!QFile::exists(file2)) {
-                // Check for upper case
-                file2 = fi.path() + "/" + fi.completeBaseName() + ".M4A";
-            }
-            if (QFile::exists(file2)) {
-                WZDEBUGOBJ("Using external audio file '" + file2 + "'");
-                mset.external_audio = file2;
-            }
-        }
     }
 
     proc->clearArguments();
@@ -1130,10 +1231,6 @@ void TPlayer::startPlayer() {
     if (!mset.forced_demuxer.isEmpty()) {
         proc->setOption("demuxer", mset.forced_demuxer);
     }
-    // Forced audio codec
-    if (!mset.forced_audio_codec.isEmpty()) {
-        proc->setOption("ac", mset.forced_audio_codec);
-    }
     // Forced video codec
     if (!mset.forced_video_codec.isEmpty()) {
         proc->setOption("vc", mset.forced_video_codec);
@@ -1184,20 +1281,8 @@ void TPlayer::startPlayer() {
     }
 #endif
 
-    if (!pref->ao.isEmpty()) {
-        proc->setOption("ao", pref->ao);
-    }
-
     if (mset.current_video_id >= 0) {
         proc->setOption("vid", QString::number(mset.current_video_id));
-    }
-
-    if (mset.external_audio.isEmpty() && mset.current_audio_id >= 0) {
-        proc->setOption("aid", QString::number(mset.current_audio_id));
-    }
-
-    if (!mset.external_audio.isEmpty()) {
-        proc->setOption("audiofile", mset.external_audio);
     }
 
     // Aspect ratio video
@@ -1650,96 +1735,22 @@ void TPlayer::startPlayer() {
 
 end_video_filters:
 
-    // Template for screenshots (only works with mpv)
-    if (pref->isMPV() && pref->use_screenshot) {
-        if (!pref->screenshot_template.isEmpty()) {
-            proc->setOption("screenshot_template", pref->screenshot_template);
-        }
-        if (!pref->screenshot_format.isEmpty()) {
-            proc->setOption("screenshot_format", pref->screenshot_format);
-        }
-    }
-
-    // Volume
-    if (pref->player_additional_options.contains("-volume")) {
-        WZDEBUGOBJ("Don't set volume since -volume is used");
-    } else {
-        proc->setOption("volume", QString::number(getVolume()));
-    }
-
-    if (getMute() || isPreviewPlayer()) {
-        proc->setOption("mute");
-    }
-
-    // Audio channels
-    if (mset.audio_use_channels != 0) {
-        proc->setOption("channels", QString::number(mset.audio_use_channels));
-    }
-
-    if (mset.audio_delay != 0) {
-        proc->setOption("delay", QString::number((double) mset.audio_delay/1000));
-    }
-
-    if (pref->use_hwac3) {
-        proc->setOption("afm", "hwac3");
-        WZDEBUGOBJ("Audio filters are disabled when using the S/PDIF output");
-    } else {
-        // Audio filters
-        if (mset.karaoke_filter) {
-            proc->addAudioFilter("karaoke");
-        }
-
-        // Stereo mode
-        if (mset.stereo_mode != 0) {
-            switch (mset.stereo_mode) {
-                case TMediaSettings::Left:
-                    proc->addAudioFilter("channels", "2:2:0:1:0:0");
-                    break;
-                case TMediaSettings::Right:
-                    proc->addAudioFilter("channels", "2:2:1:0:1:1");
-                    break;
-                case TMediaSettings::Mono:
-                    proc->addAudioFilter("pan", "1:0.5:0.5");
-                    break;
-                case TMediaSettings::Reverse:
-                    proc->addAudioFilter("channels", "2:2:0:1:1:0");
-                    break;
+    if (previewPlayer) {
+        // MPV only: set template for screenshots.
+        if (pref->isMPV() && pref->use_screenshot) {
+            if (!pref->screenshot_template.isEmpty()) {
+                proc->setOption("screenshot_template", pref->screenshot_template);
+            }
+            if (!pref->screenshot_format.isEmpty()) {
+                proc->setOption("screenshot_format", pref->screenshot_format);
             }
         }
-
-        if (mset.extrastereo_filter) {
-            proc->addAudioFilter("extrastereo");
-        }
-
-        if (mset.volnorm_filter) {
-            proc->addAudioFilter("volnorm",
-                                 pref->filters.item("volnorm").options());
-        }
-
-        if (pref->use_scaletempo == TPreferences::Enabled) {
-            proc->addAudioFilter("scaletempo");
-        }
-
-        // Audio equalizer
-        if (pref->use_audio_equalizer) {
-            proc->addAudioFilter("equalizer",
-                                 equalizerListToString(getAudioEqualizer()));
-        }
-
-        // Additional audio filters
-        // Global from pref
-        if (!pref->player_additional_audio_filters.isEmpty()) {
-            proc->setOption("af-add", pref->player_additional_audio_filters);
-        }
-        // This file from mset
-        if (!mset.player_additional_audio_filters.isEmpty()) {
-            proc->setOption("af-add", mset.player_additional_audio_filters);
-        }
+        // Set capture directory
+        proc->setCaptureDirectory(pref->screenshot_directory);
     }
 
-
-    // Set the capture directory
-    proc->setCaptureDirectory(pref->screenshot_directory);
+    // Set audio options
+    setAudioOptions(fileName);
 
     // Set preferred ip version
     if (pref->ipPrefer == TPreferences::IP_PREFER_4) {

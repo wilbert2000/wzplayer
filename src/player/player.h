@@ -391,6 +391,7 @@ private:
     void openStream(const QString& name);
     void openTV(QString channel_id);
 
+    void setAudioOptions(const QString& fileName);
     void startPlayer();
     void stopPlayer();
     void restartPlayer(TState state = STATE_RESTARTING);
