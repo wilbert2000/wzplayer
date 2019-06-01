@@ -3527,23 +3527,13 @@ void TMainWindow::resizeStickyWindow(int w, int h) {
     if (pref->fullscreen || isMaximized()) {
         return;
     }
-
-    QRect avail = QApplication::desktop()->availableGeometry(this);
-
     // Prevent resize of window snapped by KDE, the resize will fail...
-    int fh = frameGeometry().size().height();
-    if (fh == avail.height() || fh == (avail.height() / 2)) {
-        if (pos().y() == avail.y()
-                || pos().y() + fh == avail.y() + avail.height()) {
-            if (pos().x() == avail.x()
-                    || pos().x() + frameGeometry().size().width()
-                    == avail.x() + avail.width()) {
-                WZDEBUG("Skipping resize of snapped window");
-                return;
-            }
-        }
+    if (TDesktop::windowIsSnapped(this)) {
+        WZDEBUG("Skipping resize of snapped window");
+        return;
     }
 
+    QRect avail = QApplication::desktop()->availableGeometry(this);
     bool stickx = pos().x() - avail.x() + frameGeometry().size().width()
                   >= avail.width();
     bool sticky = pos().y() - avail.y() + frameGeometry().size().height()

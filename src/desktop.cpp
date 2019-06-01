@@ -87,4 +87,37 @@ bool TDesktop::keepInsideDesktop(QWidget* w) {
     return true;
 }
 
+bool TDesktop::windowIsSnapped(QWidget* w) {
 
+    QRect avail = QApplication::desktop()->availableGeometry(w);
+    QRect frame = w->frameGeometry();
+    if (frame.height() == avail.height()) {
+        if (frame.width() == avail.width() / 2) {
+            if (frame.x() == avail.x()
+                    || frame.x() == avail.x() + avail.width() / 2 + 1) {
+                return true;
+            }
+        }
+    } else if (frame.height() == avail.height() / 2) {
+        if (frame.width() == avail.width()) {
+            if (frame.y() == avail.y()
+                    || frame.y() == avail.y() + avail.height() / 2 + 1) {
+                return true;
+            }
+        } else if (frame.width() == avail.width() / 2) {
+            if (frame.x() == avail.x()) {
+                if (frame.y() == avail.y()
+                        || frame.y() == avail.y() + avail.height() / 2 + 1) {
+                    return true;
+                }
+            } else if (frame.x() == avail.x() + avail.width() / 2 + 1) {
+                if (frame.y() == avail.y()
+                        || frame.y() == avail.y() + avail.height() / 2 + 1) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}

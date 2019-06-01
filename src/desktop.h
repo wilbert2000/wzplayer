@@ -31,6 +31,7 @@ public:
     static double aspectRatio(const QWidget* w);
     static void centerWindow(QWidget* w);
     static bool keepInsideDesktop(QWidget* w);
+    static bool windowIsSnapped(QWidget* w);
 };
 
 #endif // DESKTOP_H
