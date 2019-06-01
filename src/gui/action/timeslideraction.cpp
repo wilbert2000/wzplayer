@@ -127,10 +127,7 @@ void TTimeSliderAction::setDurationMS(int ms) {
 
 void TTimeSliderAction::onUpdatePosTimerTimeout() {
 
-    if (previewPlayer->isBuffering()) {
-        WZTRACE("Waiting for player to catch up");
-        updatePosTimer->start();
-    } else if (qAbs(requestedPosMS - posMS) > POS_RES_MS) {
+    if (qAbs(requestedPosMS - posMS) > POS_RES_MS) {
         if (Settings::pref->seek_relative) {
             emit percentageChanged(double(requestedPosMS * 100) / durationMS);
         } else {
