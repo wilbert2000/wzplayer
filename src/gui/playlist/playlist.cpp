@@ -355,8 +355,9 @@ void TPlaylist::onNewFileStartedPlaying() {
             && md->duration_ms != playingItem->durationMS()) {
         WZDEBUG(QString("Updating duration from %1 ms to %2 ms")
                 .arg(playingItem->durationMS()).arg(md->duration_ms));
-        if (qAbs(md->duration_ms - playingItem->durationMS())
-                > TConfig::DURATION_MODIFIED_TRESHOLD) {
+        // Set modified if seconds mismatch
+        if (qRound(double(md->duration_ms) / 1000)
+                != qRound(double(playingItem->durationMS()) / 1000)) {
             modified = true;
         }
         playingItem->setDurationMS(md->duration_ms);
@@ -544,51 +545,49 @@ void TPlaylist::onTitleTrackChanged(int id) {
 void TPlaylist::onDurationChanged(int ms) {
 
     TPlaylistItem* item = playlistWidget->playingItem;
-    if (item) {
-        if (item->isDisc()) {
-            int selectedTitle = player->mdat.titles.getSelectedID();
-            int itemTitle = TDiscName(item->filename()).title;
-            if (selectedTitle == itemTitle) {
-                if (ms > 0 || itemTitle == -1) {
-                    WZTRACE(QString("Updating duration title %1 with name '%2'"
-                                    " from %3 ms to %4 ms")
-                            .arg(itemTitle)
-                            .arg(item->baseName())
-                            .arg(item->durationMS())
-                            .arg(ms));
-                    item->setDurationMSEmit(ms);
-                } else {
-                    WZTRACE(QString("Keeping duration item title %1 with name"
-                                    " '%2' and duration %3 ms instead of %4 ms")
-                            .arg(itemTitle)
-                            .arg(item->baseName())
-                            .arg(item->durationMS())
-                            .arg(ms));
-                }
-            } else {
-                WZTRACE(QString("Selected title %1 does not match item title %2"
-                                " with name '%3'")
-                        .arg(selectedTitle)
-                        .arg(itemTitle)
-                        .arg(item->baseName()));
-            }
-        } else if (ms > 0 && !player->mdat.image) {
-            WZTRACE(QString("Updating duration '%1' from %2 ms to %3 ms")
-                    .arg(item->baseName()).arg(item->durationMS()).arg(ms));
-            if (qAbs(ms - item->durationMS())
-                    > TConfig::DURATION_MODIFIED_TRESHOLD) {
-                item->setModified();
-            }
-            item->setDurationMSEmit(ms);
-        } else {
-            WZTRACE(QString("Keeping duration %1 ms instead of %2 ms for '%3'")
-                    .arg(item->durationMS())
-                    .arg(ms)
-                    .arg(item->baseName()));
-        }
-    } else {
+    if (item == 0) {
         WZTRACE("No playing item");
+        return;
     }
+
+    if (item->isDisc()) {
+        int selectedTitle = player->mdat.titles.getSelectedID();
+        int itemTitle = TDiscName(item->filename()).title;
+        if (selectedTitle == itemTitle) {
+            if (ms > 0 || itemTitle == -1) {
+                WZT << "Updating duration title" << itemTitle
+                << "with name" << item->baseName()
+                << "from" << item->durationMS()
+                << "to" << ms << "ms";
+                item->setDurationMSEmit(ms);
+            } else {
+                WZT << "Keeping duration" << item->durationMS() << "ms"
+                    << "for item title" << itemTitle
+                    << "with name" << item->baseName()
+                    << "ignoring new duration" << ms << "ms";
+            }
+        } else {
+            WZT << "Selected title" << selectedTitle
+                << "does not match item title" << itemTitle
+                << "with name" << item->baseName();
+        }
+        return;
+    } // if (item->isDisc()) {
+
+    if (ms > 0 && !player->mdat.image) {
+        WZT << "Updating duration" << item->baseName()
+            << "from" << item->durationMS() << "to" << ms << "ms";
+        // Set modified if seconds mismatch
+        if (qRound(double(ms) / 1000)
+                != qRound(double(item->durationMS()) / 1000)) {
+            item->setModified();
+        }
+        item->setDurationMSEmit(ms);
+        return;
+    }
+
+    WZT << "Keeping duration" << item->durationMS() << "ms for"
+        << item->baseName() << "ignoring new duration" << ms << "ms";
 }
 
 void TPlaylist::refresh() {

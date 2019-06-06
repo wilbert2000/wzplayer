@@ -15,7 +15,6 @@ public:
     static const double ZOOM_MAX;
     static const double ZOOM_STEP;
     static const int PAN_STEP;
-    static const int DURATION_MODIFIED_TRESHOLD;
 
     static const QString PROGRAM_ORG;
     static const QString PROGRAM_ID;

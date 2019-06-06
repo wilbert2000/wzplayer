@@ -13,8 +13,6 @@ const double TConfig::ZOOM_STEP = 0.02;
 
 const int TConfig::PAN_STEP = 8;
 
-const int TConfig::DURATION_MODIFIED_TRESHOLD = 500;
-
 const QString TConfig::PROGRAM_ORG("WH");
 const QString TConfig::PROGRAM_ID("wzplayer");
 const QString TConfig::PROGRAM_NAME("WZPlayer");

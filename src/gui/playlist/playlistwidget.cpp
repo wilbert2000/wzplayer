@@ -996,11 +996,11 @@ QList<QTreeWidgetItem*> TPlaylistWidget::getItemsFromMimeData(
     QDataStream stream(&bytes, QIODevice::ReadOnly);
 
     while (!stream.atEnd()) {
-        // Create an item
+        // Create item
         TPlaylistItem* item = new TPlaylistItem();
-        // Load the item from stream
+        // Load item from stream
         stream >> *item;
-        // Add the item to result list
+        // Add item to result list
         items << item;
     }
 
@@ -1057,6 +1057,7 @@ void TPlaylistWidget::dropItems(TPlaylistItem* target,
                                 QDropEvent* event,
                                 QStringList& filesForCopier) {
 
+    // Collect items for file copier and internal items
     QList<TPlaylistItem*> internalItems;
     TPlaylistWidget* sourceWidget = dynamic_cast<TPlaylistWidget*>(
                 event->source());

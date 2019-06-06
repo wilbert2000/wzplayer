@@ -337,10 +337,11 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
     }
 
     QTextStream stream(&file);
-    stream.setLocale(QLocale::c());
     if (playlistItem->extension() == "m3u") {
         stream.setCodec(QTextCodec::codecForLocale());
     } else {
+        // Set the C locale to get a decimal . when reading version 3 durations.
+        stream.setLocale(QLocale::c());
         stream.setCodec("UTF-8");
     }
 
@@ -364,14 +365,17 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
             continue;
         }
         if (rx.indexIn(line) >= 0) {
+            // Get name and duration as int or since version 3 as decimal
             durationMS = qRound(rx.cap(1).toDouble() * 1000);
             name = rx.cap(3).simplified();
         } else if (!line.startsWith("#")) {
+            // Add playlist item
             edited = !name.isEmpty() && name != TName::nameForURL(line);
             addItem(playlistItem, line, name, durationMS, edited, true);
             name = "";
             durationMS = 0;
         } else if (line.startsWith("#WZP-blacklist:")) {
+            // Add blacklist item
             QString fn = line.mid(15);
             if (fn.startsWith(path)) {
                 fn = fn.mid(path.length());

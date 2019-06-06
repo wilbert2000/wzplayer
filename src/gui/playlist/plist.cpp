@@ -644,7 +644,9 @@ bool TPList::saveM3uFolder(TPlaylistItem* folder,
                 continue;
             }
         } else {
-            double d = double(item->durationMS()) / 1000;
+            // Version 3
+            // double d = double(item->durationMS()) / 1000;
+            int d = qRound(double(item->durationMS()) / 1000);
             stream << "#EXTINF:" << d << "," << item->baseName() << "\n";
             if (!savedMetaData) {
                 if (isFavList || d || item->edited()) {
@@ -706,15 +708,14 @@ bool TPList::saveM3uFile(TPlaylistItem* folder,
     } while (true);
 
 
-    // TODO: Preserve non 3-version
-    // Use EXT-X-VERSION=3 so we can store durations in seconds with fraction.
-
     QTextStream stream(&file);
-    stream.setLocale(QLocale::c()); // Need . as decimal separator
+    // Need . as decimal separator when writing version 3
+    // stream.setLocale(QLocale::c());
     stream.setCodec("UTF-8");
 
     stream << "#EXTM3U" << "\n"
-           << "#EXT-X-VERSION:3\n"
+           // No longer writing version 3 files
+           // << "#EXT-X-VERSION:3\n"
            << "# Playlist created by WZPlayer " << TVersion::version << "\n";
 
     // Keep track of whether we saved anything usefull
@@ -776,7 +777,7 @@ bool TPList::saveM3uFile(TPlaylistItem* folder,
 
 bool TPList::saveM3u(bool allowFail) {
 
-    // Save sort
+    // Save sort section and order
     int savedSortSection = playlistWidget->sortSection;
     Qt::SortOrder savedSortOrder = playlistWidget->sortOrder;
 
