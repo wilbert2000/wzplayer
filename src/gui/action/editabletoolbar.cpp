@@ -124,7 +124,6 @@ void TEditableToolbar::addMenu(QAction* action) {
 }
 
 void TEditableToolbar::setActionsFromStringList(const QStringList& acts) {
-    WZTRACEOBJ("");
 
     clear();
     // Copy actions
