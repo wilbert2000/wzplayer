@@ -225,7 +225,6 @@ void TTimeSliderAction::onToolTipEvent(TTimeSlider* slider,
             previewTimer->start();
         }
     } else {
-        pos.ry() -= 56;
         QToolTip::showText(pos, TWZTime::formatMS(ms), slider);
     }
 }
