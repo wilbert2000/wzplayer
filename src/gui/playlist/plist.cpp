@@ -713,7 +713,7 @@ bool TPList::saveM3uFile(TPlaylistItem* folder,
     // stream.setLocale(QLocale::c());
     stream.setCodec("UTF-8");
 
-    stream << "#EXTM3U" << "\n"
+    stream << "#EXTM3U\n"
            // No longer writing version 3 files
            // << "#EXT-X-VERSION:3\n"
            << "# Playlist created by WZPlayer " << TVersion::version << "\n";
