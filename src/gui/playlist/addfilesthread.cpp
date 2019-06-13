@@ -372,6 +372,7 @@ bool TAddFilesThread::openM3u(TPlaylistItem* playlistItem,
             // Add playlist item
             edited = !name.isEmpty() && name != TName::nameForURL(line);
             addItem(playlistItem, line, name, durationMS, edited, true);
+            // Reset name and duration
             name = "";
             durationMS = 0;
         } else if (line.startsWith("#WZP-blacklist:")) {
